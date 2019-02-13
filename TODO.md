@@ -1,0 +1,30 @@
+## TODO
+
+- Reset mouse position
+- Add react-selenium-testing
+- Tests for interface
+- Parallel (need prebuild? worker-farm?)
+- Customize hooks to non-storybook env
+
+## Runtime function
+
+```ts
+// NOTE This need parallel tests
+export function describeBrowser(browserName: string) {
+  const testContext: string[] = [];
+
+  chai.use(chaiImage(testContext));
+
+  describe(browserName, function() {
+    before(async function() {
+      this.browser = await getBrowser(config, config.browsers[browserName]);
+    });
+
+    beforeEach(async function() {
+      await switchStory.call(this, testContext);
+    });
+
+    require("path/to/test.ts");
+  });
+}
+```

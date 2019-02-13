@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "declarationDir": "./lib",
+    "sourceMap": true,
+    "declaration": true,
+    "module": "commonjs",
+    "strict": true,
+    "jsx": "react",
+    "target": "esnext",
+    "esModuleInterop": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "typeRoots": ["./types", "./node_modules/@types"]
+  }
+}
