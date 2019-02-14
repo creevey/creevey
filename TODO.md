@@ -1,5 +1,6 @@
 ## TODO
 
+- Build correct `d.ts` files. For now, you should remove require types from `lib/creevey.js` after build.
 - Reset mouse position
 - Add react-selenium-testing
 - Tests for interface
