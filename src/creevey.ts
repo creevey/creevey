@@ -4,6 +4,9 @@ import commonInterface from "mocha/lib/interfaces/common";
 import { createBrowserSuites, createDescriber, describeFactory, itFactory } from "./helpers";
 import { Config } from "./types";
 
+import "../types/chai";
+import "../types/mocha";
+
 export default function creevey(config: Config) {
   // NOTE redefine BDD interface
   Mocha.interfaces.bdd = function seleniumInterface(suite: Suite) {

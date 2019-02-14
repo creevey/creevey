@@ -2,6 +2,7 @@
   "name": "creevey",
   "version": "0.0.0",
   "main": "lib/creevey.js",
+  "types": "lib/creevey.d.ts",
   "repository": "git@github.com:wKich/creevey.git",
   "license": "MIT",
   "scripts": {
