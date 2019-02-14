@@ -9,6 +9,7 @@ export interface Config {
     port: number;
     path: string;
   };
+  testDir: string;
   screenDir: string;
   reportDir: string;
   browsers: { [key: string]: Capabilities };

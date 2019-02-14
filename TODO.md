@@ -1,6 +1,10 @@
 ## TODO
 
 - Build correct `d.ts` files. For now, you should remove require types from `lib/creevey.js` after build.
+- Pass `config` to server initialization
+- Add `worker-farm` to start mocha threads by browser (fork with options)
+- Single fork for single browser
+- Another mocha UI
 - Reset mouse position
 - Add react-selenium-testing
 - Tests for interface
