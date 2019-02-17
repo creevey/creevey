@@ -1,36 +1,34 @@
-import Mocha, { Suite } from "mocha";
-import commonInterface from "mocha/lib/interfaces/common";
+import cluster from "cluster";
+import { Config, Workers } from "./types";
 
-import { createBrowserSuites, createDescriber, describeFactory, itFactory } from "./helpers";
-import { Config } from "./types";
+// TODO binary
+// TODO args to config
 
-import "../types/chai";
-import "../types/mocha";
+// TODO main mocha initializer
+// TODO child mocha initializer
 
-export default function creevey(config: Config) {
-  // NOTE redefine BDD interface
-  Mocha.interfaces.bdd = function seleniumInterface(suite: Suite) {
-    const suites = [suite];
-    const browserSuites = createBrowserSuites(config, suites);
+if (cluster.isMaster) {
+  console.log(`Master ${process.pid} is running`);
 
-    suite.on("pre-require", function preRequire(context, file, mocha) {
-      const common = commonInterface(suites, context, mocha);
+  // TODO Types
+  const apiServer = require("./server/api");
 
-      const describer = createDescriber(config, browserSuites, suites, file);
-      const describe = describeFactory(describer, common);
-      const it = itFactory(suites, file, common);
+  // TODO read config
+  // TODO default config
+  const config: Config = require("./config");
 
-      context.before = common.before;
-      context.after = common.after;
-      context.beforeEach = common.beforeEach;
-      context.afterEach = common.afterEach;
-      context.run = mocha.options.delay ? common.runWithSuite(suite) : () => null;
+  // Types?
+  const workers: Workers = {};
 
-      context.describe = context.context = describe;
-      context.xdescribe = context.xcontext = context.describe.skip;
+  Object.keys(config.browsers).forEach(browser => {
+    const browserConfig = config.browsers[browser];
+    workers[browser] = Array.from({ length: browserConfig.limit }).map(() =>
+      cluster.fork({ browser, config: JSON.stringify(config.browsers[browser]) })
+    );
+  });
 
-      context.it = context.specify = it;
-      context.xit = context.xspecify = context.it.skip;
-    });
-  };
+  apiServer(config, workers);
+} else {
+  console.log(`Worker ${process.pid} started`);
+  require("./server/worker");
 }
