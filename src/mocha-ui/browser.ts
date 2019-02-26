@@ -1,7 +1,7 @@
 import http from "http";
 import { Context } from "mocha";
 import { Builder, until, By } from "selenium-webdriver";
-import { Config, Capabilities } from "./types";
+import { Config, Capabilities } from "../types";
 
 function getRealIp(): Promise<string> {
   return new Promise((resolve, reject) =>

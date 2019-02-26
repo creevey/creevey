@@ -5,7 +5,7 @@ import { PNG } from "pngjs";
 import pixelmatch from "pixelmatch";
 import mkdirp from "mkdirp";
 
-import { Config } from "./types";
+import { Config } from "../types";
 
 const statAsync = promisify(fs.stat);
 const readFileAsync = promisify(fs.readFile);

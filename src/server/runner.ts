@@ -1,9 +1,9 @@
-import { Tests, Config } from "../types";
+import { Tests, Config, Workers } from "../types";
 
 export default class Runner {
   tests: [];
   wss: WebSocket[];
-  constructor(config: Config) {}
+  constructor(config: Config, workers: Workers) {}
 
   subscribe(ws: WebSocket) {}
 

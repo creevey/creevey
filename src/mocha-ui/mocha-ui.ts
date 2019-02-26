@@ -2,10 +2,10 @@ import Mocha, { Suite } from "mocha";
 import commonInterface from "mocha/lib/interfaces/common";
 
 import { createBrowserSuites, createDescriber, describeFactory, itFactory } from "./helpers";
-import { Config } from "./types";
+import { Config } from "../types";
 
-import "../types/chai";
-import "../types/mocha";
+import "../../types/chai";
+import "../../types/mocha";
 
 export default function creevey(config: Config) {
   // @ts-ignore

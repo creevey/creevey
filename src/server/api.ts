@@ -2,7 +2,6 @@ import http from "http";
 import Koa from "koa";
 import WebSocket from "ws";
 import { Config, Command, Workers } from "../types";
-import startTests from "./start";
 import Runner from "./runner";
 
 export default function creeveyServer(config: Config, workers: Workers) {
@@ -10,9 +9,7 @@ export default function creeveyServer(config: Config, workers: Workers) {
   const server = http.createServer(app.callback());
   const wss = new WebSocket.Server({ server });
 
-  const runner = new Runner(config);
-
-  let isRunning = false;
+  const runner = new Runner(config, workers);
 
   wss.on("connection", ws => {
     runner.subscribe(ws);
@@ -27,23 +24,16 @@ export default function creeveyServer(config: Config, workers: Workers) {
 
       switch (command.type) {
         case "getTests": {
-          ws.send(JSON.stringify(tests));
+          ws.send(JSON.stringify(runner.getTests()));
           return;
         }
         case "start": {
-          if (isRunning) {
-            return;
-          }
-          isRunning = true;
-          startTests(tests, workers).then(() => (isRunning = false));
+          // TODO tests to start
+          runner.start();
           return;
         }
         case "stop": {
-          if (!isRunning) {
-            return;
-          }
-          isRunning = false;
-          // TODO
+          runner.stop();
           return;
         }
       }

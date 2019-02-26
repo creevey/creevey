@@ -4,7 +4,7 @@ import commonInterface, { CommonFunctions, CreateOptions } from "mocha/lib/inter
 
 import chaiImage from "./chai-image";
 import { getBrowser, switchStory } from "./browser";
-import { Config } from "./types";
+import { Config } from "../types";
 
 type CreateSuite = (options: CreateOptions, parentSuite: Suite) => Suite;
 type Describer = (title: string, fn: (this: Suite) => void, createSuite: CreateSuite) => Suite | Suite[];
