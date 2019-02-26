@@ -54,6 +54,8 @@ export default class Runner {
   }
 
   start(ids: string[]) {
+    // TODO split every browser workers on each separate pool
+    // TODO generate tasks for pools
     const queue = [];
     Object.keys(this.workers).forEach(browser => {
       this.workers[browser].forEach(worker => {});
