@@ -23,7 +23,7 @@ export function createBrowserSuites(config: Config, suites: Suite[]) {
     browserSuite.ctx.browserName = browserName;
 
     browserSuite.beforeAll(async () => {
-      browserSuite.ctx.browser = await getBrowser(config, capabilities);
+      browserSuite.ctx.browser = await getBrowser(config, capabilities); // <===== custom function get it from config, to allow redefine
     });
 
     return browserSuite;
@@ -53,7 +53,7 @@ export function createDescriber(config: Config, browserSuites: Suite[], suites: 
     const storySuite = createSuite({ title, fn, file }, parentSuite);
 
     storySuite.beforeEach(async function() {
-      await switchStory.call(this, testContext);
+      await switchStory.call(this, testContext); // <====== custom function get it from config to allow redefine. Check suite level and beforeEach
     });
 
     return storySuite;

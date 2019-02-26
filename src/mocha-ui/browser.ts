@@ -39,6 +39,7 @@ export async function getBrowser(config: Config, capabilities: Capabilities) {
 }
 
 export async function switchStory(this: Context, testContext: string[]) {
+  // TODO add checks and good error messages
   const test = this.currentTest!.title;
   const story = this.currentTest!.parent!.title;
   const kind = this.currentTest!.parent!.parent!.title;

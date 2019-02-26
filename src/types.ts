@@ -25,9 +25,12 @@ export interface Workers {
   [browser: string]: Array<Worker & { isRunning?: boolean }>;
 }
 
-export interface Tests {
-  [kind: string]: { [story: string]: Array<{ test: string; skip?: string[] }> };
+export interface Test {
+  suites: string[];
+  title: string;
+  skip?: string[];
+  status?: string[];
 }
 
 // TODO payload types
-export type Command = { type: "getTests" } | { type: "start"; payload: Tests[] } | { type: "stop" };
+export type Command = { type: "getTests" } | { type: "start"; payload: string[] } | { type: "stop" };

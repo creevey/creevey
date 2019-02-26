@@ -12,9 +12,12 @@ export default function creeveyServer(config: Config, workers: Workers) {
   const runner = new Runner(config, workers);
 
   wss.on("connection", ws => {
-    runner.subscribe(ws);
+    const unsubscribe = runner.subscribe(ws);
 
-    ws.on("close", () => console.log("connection close"));
+    ws.on("close", () => {
+      unsubscribe();
+      console.log("connection close");
+    });
     ws.on("message", message => {
       if (typeof message != "string") {
         return;
@@ -29,7 +32,7 @@ export default function creeveyServer(config: Config, workers: Workers) {
         }
         case "start": {
           // TODO tests to start
-          runner.start();
+          runner.start(command.payload);
           return;
         }
         case "stop": {

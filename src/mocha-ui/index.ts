@@ -1,1 +1,1 @@
-export default "./mocha-ui";
+export default "./ui";

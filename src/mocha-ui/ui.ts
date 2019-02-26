@@ -7,9 +7,11 @@ import { Config } from "../types";
 import "../../types/chai";
 import "../../types/mocha";
 
-export default function creevey(config: Config) {
+// TODO process.cwd() read config
+
+export default function defineCreevey(config: Config) {
   // @ts-ignore
-  Mocha.interfaces.creevey = function seleniumInterface(suite: Suite) {
+  Mocha.interfaces.creevey = function creeveyInterface(suite: Suite) {
     const suites = [suite];
     const browserSuites = createBrowserSuites(config, suites);
 
