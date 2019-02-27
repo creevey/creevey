@@ -1,27 +1,28 @@
 import fs from "fs";
 import path from "path";
+import { EventEmitter } from "events";
 import uuid from "uuid";
-import WebSocket from "ws";
 import { Config, Workers, Test } from "../types";
+import Pool from "./pool";
 
-export default class Runner {
+export default class Runner extends EventEmitter {
   private tests: { [id: string]: Test } = {};
-  private wss: WebSocket[] = [];
-  private workers: Workers;
-  constructor(config: Config, workers: Workers) {
-    this.workers = workers;
-    this.load(config.testDir);
+  private pools: Pool[];
+  constructor(config: Config) {
+    super();
+
+    this.pools = Object.keys(config.browsers).map(browser => {
+      const pool = new Pool(config, browser);
+
+      // TODO maybe types
+      pool.on("message", this.emit.bind(this, "message"));
+
+      return pool;
+    });
+    this.loadTests(config.testDir);
   }
 
-  public subscribe(ws: WebSocket) {
-    this.wss.push(ws);
-    return () => {
-      const wsIndex = this.wss.indexOf(ws);
-      if (wsIndex >= 0) this.wss.splice(wsIndex, 1);
-    };
-  }
-
-  load(testDir: string) {
+  loadTests(testDir: string) {
     const tests = this.tests;
     let suites: string[] = [];
 
@@ -54,25 +55,16 @@ export default class Runner {
   }
 
   start(ids: string[]) {
-    // TODO split every browser workers on each separate pool
-    // TODO generate tasks for pools
-    const queue = [];
-    Object.keys(this.workers).forEach(browser => {
-      this.workers[browser].forEach(worker => {});
-    });
-    //
-    // get free worker
-    // get test for that worker
-    // send pending status for test
-    // send start test for worker
-    // flag worker as busy
-    // subscribe worker on end
-    // send result status for test
-    // flag worker as free
-    // repeat
+    // TODO send runner status
+
+    return Promise.all(this.pools.map(pool => pool.startTests(ids.map(id => this.tests[id]))));
   }
 
-  stop() {}
+  stop() {
+    // TODO send runner status
+
+    this.pools.forEach(pool => pool.stop());
+  }
 
   getTests() {
     return this.tests;

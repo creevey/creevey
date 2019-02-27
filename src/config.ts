@@ -1,6 +1,7 @@
 import path from "path";
+import { Config } from "./types";
 
-const config = {
+const config: Config = {
   gridUrl: "http://screen-dbg:shot@grid.testkontur.ru/wd/hub",
   address: {
     host: "localhost",
@@ -10,10 +11,11 @@ const config = {
   testDir: path.join(__dirname, "tests"),
   screenDir: path.join(__dirname, "images"),
   reportDir: path.join(__dirname, "report"),
+  maxRetries: 1,
   browsers: {
-    chrome: { browserName: "chrome" },
-    firefox: { browserName: "firefox" },
-    ie11: { browserName: "internet explorer" }
+    chrome: { browserName: "chrome", limit: 1 },
+    firefox: { browserName: "firefox", limit: 1 },
+    ie11: { browserName: "internet explorer", limit: 1 }
   }
 };
 

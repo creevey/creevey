@@ -1,4 +1,4 @@
-import { Worker } from "cluster";
+import { Worker as ClusterWorker } from "cluster";
 
 export interface Capabilities {
   browserName: string;
@@ -18,11 +18,16 @@ export interface Config {
   testDir: string;
   screenDir: string;
   reportDir: string;
+  maxRetries: number;
   browsers: { [key: string]: Capabilities & BrowserConfig };
 }
 
+export interface Worker extends ClusterWorker {
+  isRunnning?: boolean;
+}
+
 export interface Workers {
-  [browser: string]: Array<Worker & { isRunning?: boolean }>;
+  [browser: string]: Worker[];
 }
 
 export interface Test {

@@ -4,20 +4,22 @@ import WebSocket from "ws";
 import { Config, Command, Workers } from "../types";
 import Runner from "./runner";
 
-export default function creeveyServer(config: Config, workers: Workers) {
+export default function creeveyServer(runner: Runner) {
   const app = new Koa();
   const server = http.createServer(app.callback());
   const wss = new WebSocket.Server({ server });
 
-  const runner = new Runner(config, workers);
+  // TODO maybe event types
+  runner.on("message", message => {
+    wss.clients.forEach(ws => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(message);
+      }
+    });
+  });
 
   wss.on("connection", ws => {
-    const unsubscribe = runner.subscribe(ws);
-
-    ws.on("close", () => {
-      unsubscribe();
-      console.log("connection close");
-    });
+    ws.on("close", () => console.log("connection close"));
     ws.on("message", message => {
       if (typeof message != "string") {
         return;
@@ -31,7 +33,6 @@ export default function creeveyServer(config: Config, workers: Workers) {
           return;
         }
         case "start": {
-          // TODO tests to start
           runner.start(command.payload);
           return;
         }
@@ -46,13 +47,3 @@ export default function creeveyServer(config: Config, workers: Workers) {
 
   server.listen(3000);
 }
-
-/*
-commands:
-  - getTests
-  - start
-  - stop
-
-events:
-  - status
-*/

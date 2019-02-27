@@ -1,5 +1,6 @@
 import cluster from "cluster";
-import { Config, Workers } from "./types";
+import { Config } from "./types";
+import Runner from "./server/runner";
 
 // TODO binary
 // TODO args to config
@@ -17,17 +18,9 @@ if (cluster.isMaster) {
   // TODO default config
   const config: Config = require("./config");
 
-  // Types?
-  const workers: Workers = {};
+  const runner = new Runner(config);
 
-  Object.keys(config.browsers).forEach(browser => {
-    const browserConfig = config.browsers[browser];
-    workers[browser] = Array.from({ length: browserConfig.limit }).map(() =>
-      cluster.fork({ browser, config: JSON.stringify(config.browsers[browser]) })
-    );
-  });
-
-  apiServer(config, workers);
+  apiServer(runner);
 } else {
   console.log(`Worker ${process.pid} started`);
   require("./server/worker");

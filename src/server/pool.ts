@@ -1,21 +1,40 @@
-export default class Pool {
-  // TODO retries
-  constructor(workers) {
-    this.workers = workers;
+import cluster from "cluster";
+import { EventEmitter } from "events";
+import Task from "./task";
+import { Worker, Config, Test } from "../types";
+
+export default class Pool extends EventEmitter {
+  private maxRetries: number;
+  private workers: Worker[];
+  private queue: Task[] = [];
+  constructor(config: Config, browser: string) {
+    super();
+
+    const browserConfig = config.browsers[browser];
+
+    this.maxRetries = config.maxRetries;
+    this.workers = Array.from({ length: browserConfig.limit }).map(() =>
+      cluster.fork({ browser, config: JSON.stringify(config.browsers[browser]) })
+    );
   }
 
-  addTask(task) {
+  startTests(tests: Test[]) {}
+
+  addTask(task: Task) {
     this.queue.push(task);
     this.process();
   }
 
   process() {
     const worker = this.getFreeWorker();
+    const [task] = this.queue;
 
-    if (!worker || this.queue.length == 0) return;
+    if (!worker || !task) return;
 
-    const task = this.queue.pop();
+    this.queue.shift();
 
+    task.pending();
+    worker.isRunnning = true;
     worker.once("message", message => {
       if (message == "failed") {
         task.retries += 1;
@@ -29,13 +48,15 @@ export default class Pool {
       if (message == "success") {
         task.success();
       }
-      this.freeWorker(worker);
+      worker.isRunnning = false;
       this.process();
     });
-    worker.send(task);
+    worker.send(task.payload);
   }
 
-  getFreeWorker() {
-    // ???
+  getFreeWorker(): Worker | undefined {
+    const freeWorkers = this.workers.filter(worker => !worker.isRunnning);
+
+    return freeWorkers[Math.floor(Math.random() * freeWorkers.length)];
   }
 }
