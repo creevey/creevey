@@ -31,10 +31,10 @@ export interface Workers {
 }
 
 export interface Test {
+  id: string;
   suites: string[];
   title: string;
   skip?: string[];
-  status?: string[];
 }
 
 // TODO payload types

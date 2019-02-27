@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { EventEmitter } from "events";
 import uuid from "uuid";
-import { Config, Workers, Test } from "../types";
+import { Config, Test } from "../types";
 import Pool from "./pool";
 
 export default class Runner extends EventEmitter {
@@ -33,9 +33,9 @@ export default class Runner extends EventEmitter {
     }
 
     function it(title: string) {
-      const test: Test = { suites, title };
+      const test: Test = { id: uuid.v4(), suites, title };
 
-      tests[uuid.v4()] = test;
+      tests[test.id] = test;
 
       return test;
     }
@@ -57,7 +57,9 @@ export default class Runner extends EventEmitter {
   start(ids: string[]) {
     // TODO send runner status
 
-    return Promise.all(this.pools.map(pool => pool.startTests(ids.map(id => this.tests[id]))));
+    const tests = ids.map(id => this.tests[id]);
+
+    this.pools.forEach(pool => pool.start(tests));
   }
 
   stop() {
@@ -69,51 +71,4 @@ export default class Runner extends EventEmitter {
   getTests() {
     return this.tests;
   }
-}
-
-function startTests(tests: Tests, workers: Workers) {
-  const flattenTests: { [browser: string]: Array<{ kind: string; story: string; test: string }> } = {};
-  const browsers = Object.keys(workers);
-  const workerPromises: Promise<void>[] = [];
-
-  browsers.forEach(browser => (flattenTests[browser] = []));
-
-  Object.entries(tests).forEach(([kind, kindTests]) =>
-    Object.entries(kindTests).forEach(([story, storyTests]) =>
-      storyTests.forEach(({ test, skip = [] }) =>
-        browsers
-          .filter(browser => skip.includes(browser))
-          .forEach(browser => flattenTests[browser].push({ kind, story, test }))
-      )
-    )
-  );
-
-  browsers.forEach(browser => {
-    workers[browser].forEach(worker => {
-      workerPromises.push(
-        new Promise(resolve => {
-          function runTest() {
-            const test = flattenTests[browser].shift();
-            if (!test) {
-              resolve();
-            }
-            worker.send(JSON.stringify({ type: "runTest", payload: test }));
-          }
-          worker.on("message", (message: string) => {
-            const event = JSON.parse(message);
-
-            // TODO send event
-            // sucess, failed
-            console.log(event);
-
-            runTest();
-          });
-
-          runTest();
-        })
-      );
-    });
-  });
-
-  return Promise.all(workerPromises);
 }

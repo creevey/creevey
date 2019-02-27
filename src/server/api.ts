@@ -1,7 +1,7 @@
 import http from "http";
 import Koa from "koa";
 import WebSocket from "ws";
-import { Config, Command, Workers } from "../types";
+import { Command } from "../types";
 import Runner from "./runner";
 
 export default function creeveyServer(runner: Runner) {
@@ -13,7 +13,7 @@ export default function creeveyServer(runner: Runner) {
   runner.on("message", message => {
     wss.clients.forEach(ws => {
       if (ws.readyState === WebSocket.OPEN) {
-        ws.send(message);
+        ws.send(JSON.stringify(message));
       }
     });
   });

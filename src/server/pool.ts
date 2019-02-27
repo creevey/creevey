@@ -1,57 +1,65 @@
 import cluster from "cluster";
 import { EventEmitter } from "events";
-import Task from "./task";
 import { Worker, Config, Test } from "../types";
 
+interface TestQueue extends Test {
+  retries: number;
+}
+
 export default class Pool extends EventEmitter {
+  private browser: string;
   private maxRetries: number;
   private workers: Worker[];
-  private queue: Task[] = [];
+  private queue: TestQueue[] = [];
   constructor(config: Config, browser: string) {
     super();
 
     const browserConfig = config.browsers[browser];
 
+    this.browser = browser;
     this.maxRetries = config.maxRetries;
     this.workers = Array.from({ length: browserConfig.limit }).map(() =>
       cluster.fork({ browser, config: JSON.stringify(config.browsers[browser]) })
     );
   }
 
-  startTests(tests: Test[]) {}
-
-  addTask(task: Task) {
-    this.queue.push(task);
+  start(tests: Test[]) {
+    this.queue = tests.map(test => ({ ...test, retries: 0 }));
     this.process();
+  }
+
+  stop() {
+    // TODO clear queue, wait to worker finished
   }
 
   process() {
     const worker = this.getFreeWorker();
-    const [task] = this.queue;
+    const [test] = this.queue;
 
-    if (!worker || !task) return;
+    if (!worker || !test) return;
 
     this.queue.shift();
 
-    task.pending();
+    this.emit("message", { test, browser: this.browser, status: "pending" });
+
     worker.isRunnning = true;
     worker.once("message", message => {
       if (message == "failed") {
-        task.retries += 1;
-        if (task.retries == this.maxRetries) {
-          task.failed();
+        test.retries += 1;
+        if (test.retries == this.maxRetries) {
+          this.emit("message", { test, browser: this.browser, status: "failed" });
         } else {
-          task.retry();
-          this.queue.push(task);
+          this.emit("message", { test, browser: this.browser, status: "retry" });
+          this.queue.push(test);
         }
       }
       if (message == "success") {
-        task.success();
+        this.emit("message", { test, browser: this.browser, status: "success" });
       }
       worker.isRunnning = false;
       this.process();
     });
-    worker.send(task.payload);
+    worker.send(JSON.stringify(test));
   }
 
   getFreeWorker(): Worker | undefined {
