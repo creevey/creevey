@@ -1,1 +1,1 @@
-export default "./ui";
+import "./ui";

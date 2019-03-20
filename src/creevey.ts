@@ -1,6 +1,6 @@
 import cluster from "cluster";
-import { Config } from "./types";
 import Runner from "./server/runner";
+import { readConfig } from "./utils";
 
 // TODO binary
 // TODO args to config
@@ -11,11 +11,7 @@ if (cluster.isMaster) {
   // TODO Types
   const apiServer = require("./server/api").default;
 
-  // TODO read config
-  // TODO default config
-  const config: Config = require("./config").default;
-
-  const runner = new Runner(config);
+  const runner = new Runner(readConfig());
 
   apiServer(runner);
 } else {

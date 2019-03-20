@@ -3,7 +3,7 @@
     "declarationDir": "./lib",
     "sourceMap": true,
     "declaration": true,
-    "module": "commonjs",
+    "module": "esnext",
     "strict": true,
     "jsx": "react",
     "target": "esnext",

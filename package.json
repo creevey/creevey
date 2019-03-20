@@ -7,9 +7,10 @@
   "license": "MIT",
   "scripts": {
     "check": "tsc --noEmit",
-    "build": "npm-run-all --continue-on-error --parallel build:*",
+    "build": "npm-run-all --continue-on-error build:*",
     "build:types": "tsc --emitDeclarationOnly",
-    "build:js": "babel src --out-dir lib --extensions \".ts,.tsx\" --source-maps inline"
+    "build:js": "babel src --out-dir lib --extensions \".ts,.tsx\" --source-maps inline",
+    "build:dts": "dts-generator --out ./lib/creevey.d.ts --project ./ --prefix creevey --types ../types/chai --types ../types/mocha --exclude \"types /*.d.ts\" --exclude \"node_modules/**/*.d.ts\""
   },
   "peerDependencies": {
     "chai": "^4.2.0",
@@ -41,6 +42,7 @@
     "@types/selenium-webdriver": "^3.0.14",
     "@types/uuid": "^3.4.4",
     "@types/ws": "^6.0.1",
+    "dts-generator": "^3.0.0",
     "npm-run-all": "^4.1.5",
     "typescript": "^3.3.3"
   }

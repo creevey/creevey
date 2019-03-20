@@ -1,42 +1,40 @@
-import { WebDriver } from "selenium-webdriver";
-
-declare module "mocha" {
+declare namespace Mocha {
   // NOTE @types/mocha don't have `retries` method in MochaGlobals
-  export interface MochaGlobals {
+  interface MochaGlobals {
     retries: (n: number) => MochaGlobals;
   }
 
-  export interface Context {
-    browser: WebDriver;
+  interface Context {
+    browser: import("selenium-webdriver").WebDriver;
     browserName: string;
     kind: string;
     story: string;
   }
 
-  export interface SuiteFunction {
+  interface SuiteFunction {
     (title: string, fn: (this: Suite) => void): Suite | Suite[];
     only: ExclusiveSuiteFunction;
     skip: PendingSuiteFunction;
   }
 
-  export interface ExclusiveSuiteFunction {
+  interface ExclusiveSuiteFunction {
     (browsers: string[], title: string, fn: (this: Suite) => void): Suite | Suite[];
   }
 
-  export interface PendingSuiteFunction {
+  interface PendingSuiteFunction {
     (browsers: string[], title: string, fn: (this: Suite) => void): Suite | Suite[];
   }
 
-  export interface TestFunction {
+  interface TestFunction {
     only: ExclusiveTestFunction;
     skip: PendingTestFunction;
   }
 
-  export interface ExclusiveTestFunction {
+  interface ExclusiveTestFunction {
     (browsers: string[], title: string, fn?: AsyncFunc): Test;
   }
 
-  export interface PendingTestFunction {
+  interface PendingTestFunction {
     (browsers: string[], title: string, fn?: AsyncFunc): Test;
   }
 }
