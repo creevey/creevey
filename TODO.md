@@ -2,7 +2,7 @@
 
 - [ ] Test work ui and server
 - [x] Test types
-- [ ] Add binary
+- [x] Add binary
 - [ ] Fail if try run test with incorrect id
 - [x] Build correct `d.ts` files. For now, you should remove require types from `lib/creevey.js` after build.
 - [x] Pass `config` to server initialization (use process.cwd())

@@ -4,12 +4,14 @@ Visual testing with magic
 
 ## How to use
 
+### Mocha UI
+
 - Define config `creevey.js`
 
 ```js
-import path from "path";
+const path = require("path");
 
-const config = {
+module.exports = {
   gridUrl: "<gridUrl>/wd/hub",
   address: {
     host: "localhost",
@@ -26,8 +28,6 @@ const config = {
     ie11: { browserName: "internet explorer", limit: 1 }
   }
 };
-
-export default config;
 ```
 
 - Define mocha.opts
@@ -38,4 +38,22 @@ export default config;
 ./tests/*
 ```
 
-- Run tests `mocha --opts ./mocha.opts`
+- Run tests `yarn mocha --opts ./mocha.opts`
+
+### Creevey CLI
+
+- Define config `creevey.js`
+- If you want to use `typescript`, add first line to config `require("ts-node").register({ files: true });`
+- Run test server `yarn creevey`
+
+### Programmatic API
+
+```js
+import creevey from "crevey";
+
+const config = {
+  /* ... */
+};
+
+creveey(config);
+```

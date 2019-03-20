@@ -1,20 +1,21 @@
 import cluster from "cluster";
 import Runner from "./server/runner";
-import { readConfig } from "./utils";
+import { Config } from "./types";
 
-// TODO binary
 // TODO args to config
 
-if (cluster.isMaster) {
-  console.log(`Master ${process.pid} is running`);
+export default function creevey(config: Config) {
+  if (cluster.isMaster) {
+    console.log(`Master ${process.pid} is running`);
 
-  // TODO Types
-  const apiServer = require("./server/api").default;
+    // TODO Types
+    const apiServer = require("./server/api").default;
 
-  const runner = new Runner(readConfig());
+    const runner = new Runner(config);
 
-  apiServer(runner);
-} else {
-  console.log(`Worker ${process.pid} started`);
-  require("./server/worker");
+    apiServer(runner);
+  } else {
+    console.log(`Worker ${process.pid} started`);
+    require("./server/worker");
+  }
 }

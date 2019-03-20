@@ -1,16 +1,19 @@
 {
   "name": "creevey",
   "version": "0.0.0",
+  "bin": {
+    "creevey": "./lib/cli.js"
+  },
   "main": "lib/creevey.js",
-  "types": "lib/creevey.d.ts",
+  "types": "lib/index.d.ts",
   "repository": "git@github.com:wKich/creevey.git",
   "license": "MIT",
   "scripts": {
     "check": "tsc --noEmit",
-    "build": "npm-run-all --continue-on-error build:*",
+    "build": "npm-run-all --continue-on-error --parallel build:*",
     "build:types": "tsc --emitDeclarationOnly",
     "build:js": "babel src --out-dir lib --extensions \".ts,.tsx\" --source-maps inline",
-    "build:dts": "dts-generator --out ./lib/creevey.d.ts --project ./ --prefix creevey --types ../types/chai --types ../types/mocha --exclude \"types /*.d.ts\" --exclude \"node_modules/**/*.d.ts\""
+    "build:dts": "dts-generator --out ./lib/index.d.ts --project ./ --prefix creevey --types ../types/chai --types ../types/mocha --exclude \"types /*.d.ts\" --exclude \"node_modules/**/*.d.ts\""
   },
   "peerDependencies": {
     "chai": "^4.2.0",
