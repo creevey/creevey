@@ -20,11 +20,11 @@ function getRealIp(): Promise<string> {
   );
 }
 
-export async function getBrowser(this: Context) {
-  const { address, browsers } = this.config;
-  const capabilities = browsers[this.browserName];
+export async function getBrowser(config: Config, browserName: string) {
+  const { gridUrl, address, browsers } = config;
+  const capabilities = browsers[browserName];
   const browser = await new Builder()
-    .usingServer(this.config.gridUrl)
+    .usingServer(gridUrl)
     .withCapabilities(capabilities)
     .build();
 
@@ -38,7 +38,7 @@ export async function getBrowser(this: Context) {
   await browser.get(`${hostUrl}?${storybookQuery}`);
   await browser.wait(until.elementLocated(By.css("#root")), 10000);
 
-  this.browser = browser;
+  return browser;
 }
 
 export async function switchStory(this: Context) {
@@ -46,7 +46,6 @@ export async function switchStory(this: Context) {
   const test = this.currentTest!.title;
   const story = this.currentTest!.parent!.title;
   const kind = this.currentTest!.parent!.parent!.title;
-  const browserName = this.currentTest!.parent!.parent!.parent!.title;
 
   await this.browser.executeScript(
     // tslint:disable
@@ -65,7 +64,7 @@ export async function switchStory(this: Context) {
   );
 
   this.testScope.length = 0;
-  this.testScope.push(browserName, kind, story, test);
+  this.testScope.push(this.browserName, kind, story, test);
 }
 
 export function readConfig(): Config {
@@ -74,7 +73,10 @@ export function readConfig(): Config {
 
   if (!config.hooks) {
     config.hooks = {
-      beforeAll: getBrowser,
+      async beforeAll(this: Context) {
+        const { config, browserName } = this;
+        this.browser = await getBrowser(config, browserName);
+      },
       beforeEach: switchStory
     };
   }

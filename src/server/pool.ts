@@ -18,9 +18,7 @@ export default class Pool extends EventEmitter {
 
     this.browser = browser;
     this.maxRetries = config.maxRetries;
-    this.workers = Array.from({ length: browserConfig.limit }).map(() =>
-      cluster.fork({ browser, config: JSON.stringify(config.browsers[browser]) })
-    );
+    this.workers = Array.from({ length: browserConfig.limit }).map(() => cluster.fork({ browser }));
   }
 
   start(tests: Test[]) {

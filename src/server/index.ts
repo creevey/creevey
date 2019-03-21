@@ -9,6 +9,6 @@ export default function(config: Config) {
   } else {
     console.log(`Worker ${process.pid} started`);
 
-    require("./worker");
+    require("./worker").default(config);
   }
 }
