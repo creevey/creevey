@@ -14,7 +14,8 @@
 - [ ] Parallel (need prebuild? worker-farm?)
   - [x] Custom server runner
   - [ ] Patch mocha runner with cluster
-- [ ] Customize hooks to non-storybook env
+- [x] Allow customize hooks to non-storybook env
+- [ ] Defined default config + deep merge
 - [ ] Add storybook addon (add `All stories` story and `renderStory` global func)
 - [ ] Typescript config
 - [ ] Simplify types re-export
@@ -23,6 +24,7 @@
   - [ ] tests run with default timeout even if it changed in config
   - [ ] cwd and require conflict each other
   - [ ] mocha opts and mocha bin is not prefect support
+- [ ] Support mocha options for workers
 
 ## Runtime function
 

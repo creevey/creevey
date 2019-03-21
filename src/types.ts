@@ -1,4 +1,5 @@
 import { Worker as ClusterWorker } from "cluster";
+import { Context } from "mocha";
 
 export interface Capabilities {
   browserName: string;
@@ -20,6 +21,10 @@ export interface Config {
   reportDir: string;
   maxRetries: number;
   browsers: { [key: string]: Capabilities & BrowserConfig };
+  hooks: {
+    beforeAll: (this: Context) => void;
+    beforeEach: (this: Context) => void;
+  };
 }
 
 export interface Worker extends ClusterWorker {

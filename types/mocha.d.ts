@@ -5,10 +5,10 @@ declare namespace Mocha {
   }
 
   interface Context {
+    config: import("creevey/lib/types").Config;
     browser: import("selenium-webdriver").WebDriver;
     browserName: string;
-    kind: string;
-    story: string;
+    testScope: string[];
   }
 
   interface SuiteFunction {

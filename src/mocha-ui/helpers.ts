@@ -3,7 +3,6 @@ import { Suite, AsyncFunc, Test, TestFunction, SuiteFunction } from "mocha";
 import commonInterface, { CommonFunctions, CreateOptions } from "mocha/lib/interfaces/common";
 
 import chaiImage from "./chai-image";
-import { getBrowser, switchStory } from "./browser";
 import { Config } from "../types";
 
 type CreateSuite = (options: CreateOptions, parentSuite: Suite) => Suite;
@@ -13,27 +12,25 @@ export function createBrowserSuites(config: Config, suites: Suite[]) {
   // @ts-ignore `context` and `mocha` args not used here
   const commonGlobal = commonInterface(suites);
 
-  return Object.entries(config.browsers).map(([browserName, capabilities]) => {
+  return Object.entries(config.browsers).map(([browserName]) => {
     const browserSuite = commonGlobal.suite.create({
       title: browserName,
       file: "",
       fn: () => null
     });
 
+    browserSuite.ctx.config = config;
     browserSuite.ctx.browserName = browserName;
-
-    browserSuite.beforeAll(async () => {
-      browserSuite.ctx.browser = await getBrowser(config, capabilities); // <===== custom function get it from config, to allow redefine
-    });
+    browserSuite.beforeAll(config.hooks.beforeAll);
 
     return browserSuite;
   });
 }
 
 export function createDescriber(config: Config, browserSuites: Suite[], suites: Suite[], file: string): Describer {
-  const testContext: string[] = [];
+  const testScope: string[] = [];
 
-  chai.use(chaiImage(config, testContext));
+  chai.use(chaiImage(config, testScope));
 
   return function describer(title: string, fn: (this: Suite) => void, createSuite: CreateSuite): Suite | Suite[] {
     const [parentSuite] = suites;
@@ -52,9 +49,8 @@ export function createDescriber(config: Config, browserSuites: Suite[], suites: 
 
     const storySuite = createSuite({ title, fn, file }, parentSuite);
 
-    storySuite.beforeEach(async function() {
-      await switchStory.call(this, testContext); // <====== custom function get it from config to allow redefine. Check suite level and beforeEach
-    });
+    storySuite.ctx.testScope = testScope;
+    storySuite.beforeEach(config.hooks.beforeEach);
 
     return storySuite;
   };

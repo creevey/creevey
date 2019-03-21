@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "declarationDir": "./lib",
     "sourceMap": true,
     "declaration": true,
@@ -10,7 +11,10 @@
     "esModuleInterop": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "typeRoots": ["./types", "./node_modules/@types"]
+    "typeRoots": ["./types", "./node_modules/@types"],
+    "paths": {
+      "creevey/lib/*": ["src/*"]
+    }
   },
   "exclude": ["./src/cli.ts", "./lib"]
 }
