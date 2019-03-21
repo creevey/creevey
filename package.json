@@ -8,6 +8,7 @@
   "repository": "git@github.com:wKich/creevey.git",
   "license": "MIT",
   "scripts": {
+    "clean": "rimraf lib",
     "lint": "npm-run-all --continue-on-error --parallel lint:*",
     "lint:tsc": "tsc --noEmit",
     "build": "npm-run-all --continue-on-error --parallel build:*",
@@ -47,6 +48,7 @@
     "@types/ws": "^6.0.1",
     "dts-generator": "^3.0.0",
     "npm-run-all": "^4.1.5",
+    "rimraf": "^2.6.3",
     "typescript": "^3.3.4000"
   }
 }

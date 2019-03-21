@@ -12,5 +12,5 @@
     "noUnusedParameters": true,
     "typeRoots": ["./types", "./node_modules/@types"]
   },
-  "exclude": ["./src/cli.ts"]
+  "exclude": ["./src/cli.ts", "./lib"]
 }

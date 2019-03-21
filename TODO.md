@@ -17,6 +17,7 @@
 - [ ] Customize hooks to non-storybook env
 - [ ] Add storybook addon (add `All stories` story and `renderStory` global func)
 - [ ] Typescript config
+- [ ] Simplify types re-export
 - [ ] vscode mocha explorer
   - [ ] codelens run not work (need full path)
   - [ ] tests run with default timeout even if it changed in config
