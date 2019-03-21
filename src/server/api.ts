@@ -4,7 +4,7 @@ import WebSocket from "ws";
 import { Command } from "../types";
 import Runner from "./runner";
 
-export default function creeveyServer(runner: Runner) {
+export default function apiServer(runner: Runner) {
   const app = new Koa();
   const server = http.createServer(app.callback());
   const wss = new WebSocket.Server({ server });

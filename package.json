@@ -4,7 +4,6 @@
   "bin": {
     "creevey": "./lib/cli.js"
   },
-  "main": "lib/creevey.js",
   "types": "lib/index.d.ts",
   "repository": "git@github.com:wKich/creevey.git",
   "license": "MIT",

@@ -7,7 +7,7 @@ import { readConfig } from "../utils";
 const config = readConfig();
 
 // @ts-ignore
-Mocha.interfaces.creevey = function creeveyInterface(suite: Suite) {
+Mocha.interfaces.creevey = function creevey(suite: Suite) {
   const suites = [suite];
   const browserSuites = createBrowserSuites(config, suites);
 
