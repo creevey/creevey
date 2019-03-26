@@ -2,7 +2,10 @@
 
 - [x] Test types
 - [x] Add binary
-- [ ] Subscribe on workers ready
+- [x] Subscribe on workers ready
+- [ ] Add cli arguments
+- [ ] Custom reporter
+- [ ] Allow to use Teamcity reporter
 - [x] Mocha workers for server
 - [ ] Fail if try run test with incorrect id
 - [x] Build correct `d.ts` files. For now, you should remove require types from `lib/creevey.js` after build.
@@ -26,6 +29,7 @@
   - [ ] mocha opts and mocha bin is not prefect support
 - [ ] Support mocha options for workers
 - [ ] Support load test files from glob patterns
+- [ ] Separate class for Worker
 
 ## Runtime function
 

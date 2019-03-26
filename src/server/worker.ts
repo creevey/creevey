@@ -27,8 +27,6 @@ export default async function worker(config: Config) {
   const browser = await getBrowser(config, browserName);
   const testScope: string[] = [];
 
-  console.log(`Browser for ${browserName} started`);
-
   chai.use(chaiImage(config, testScope));
 
   fs.readdirSync(config.testDir).forEach(file => {
@@ -43,15 +41,25 @@ export default async function worker(config: Config) {
   });
   mocha.suite.beforeEach(switchStory);
 
+  // TODO Custom reporter => collect fail results => on end send fail results
+
   process.on("message", message => {
     console.log(browserName, JSON.parse(message));
     const { suites, title } = JSON.parse(message);
 
     mocha.grep([...suites.reverse(), title].join(" "));
-    mocha.run(() => {
+    mocha.run(failures => {
       if (process.send) {
-        process.send("success");
+        if (failures > 0) {
+          process.send(JSON.stringify({ status: "failed" }));
+        } else {
+          process.send(JSON.stringify({ status: "success" }));
+        }
       }
     });
   });
+
+  if (process.send) {
+    process.send(JSON.stringify({ status: "ready" }));
+  }
 }
