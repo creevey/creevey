@@ -18,9 +18,10 @@
   - [x] Custom server runner
   - [x] Patch mocha runner with cluster
 - [x] Allow customize hooks to non-storybook env
-- [ ] Defined default config + deep merge
+- [x] Defined default config + deep merge
 - [ ] Add storybook addon (add `All stories` story and `renderStory` global func)
 - [ ] Typescript config
+  - [ ] Better handle config/defaultConfig types
 - [ ] Simplify types re-export
 - [ ] vscode mocha explorer
   - [ ] codelens run not work (need full path)

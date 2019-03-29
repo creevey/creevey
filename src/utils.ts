@@ -67,9 +67,20 @@ export async function switchStory(this: Context) {
   this.testScope.push(this.browserName, kind, story, test);
 }
 
+const defaultConfig = {
+  testDir: path.join(process.cwd(), "tests"),
+  screenDir: path.join(process.cwd(), "images"),
+  reportDir: path.join(process.cwd(), "report"),
+  maxRetries: 1
+};
+const defaultBrowserConfig = { limit: 1 };
+
 export function readConfig(): Config {
   const configModule = require(path.join(process.cwd(), "./creevey"));
-  const config: Config = configModule && configModule.__esModule ? configModule.default : configModule;
+  const userConfig: Config = configModule && configModule.__esModule ? configModule.default : configModule;
+  const config = { ...defaultConfig, ...userConfig };
+
+  Object.values(config.browsers).forEach(browserConfig => Object.assign(browserConfig, defaultBrowserConfig));
 
   if (!config.hooks) {
     config.hooks = {
