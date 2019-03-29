@@ -68,15 +68,15 @@ export async function switchStory(this: Context) {
 }
 
 const defaultConfig = {
-  testDir: path.join(process.cwd(), "tests"),
-  screenDir: path.join(process.cwd(), "images"),
-  reportDir: path.join(process.cwd(), "report"),
+  testDir: path.resolve("tests"),
+  screenDir: path.resolve("images"),
+  reportDir: path.resolve("report"),
   maxRetries: 1
 };
 const defaultBrowserConfig = { limit: 1 };
 
-export function readConfig(): Config {
-  const configModule = require(path.join(process.cwd(), "./creevey"));
+export function readConfig(configPath: string): Config {
+  const configModule = require(configPath);
   const userConfig: Config = configModule && configModule.__esModule ? configModule.default : configModule;
   const config = { ...defaultConfig, ...userConfig };
 

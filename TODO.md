@@ -4,6 +4,8 @@
 - [x] Add binary
 - [x] Subscribe on workers ready
 - [ ] Add cli arguments
+  - [x] config
+  - [ ] grep/kind/story
 - [ ] Custom reporter
 - [ ] Allow to use Teamcity reporter
 - [x] Mocha workers for server

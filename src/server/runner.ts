@@ -6,6 +6,7 @@ import { Config, Test } from "../types";
 import Pool from "./pool";
 
 export default class Runner extends EventEmitter {
+  private testDir: string;
   private tests: { [id: string]: Test } = {};
   private pools: Pool[];
   constructor(config: Config) {
@@ -19,10 +20,10 @@ export default class Runner extends EventEmitter {
 
       return pool;
     });
-    this.loadTests(config.testDir);
+    this.testDir = config.testDir;
   }
 
-  loadTests(testDir: string) {
+  loadTests() {
     const tests = this.tests;
     let suites: string[] = [];
 
@@ -49,9 +50,7 @@ export default class Runner extends EventEmitter {
     // @ts-ignore
     global.it = it;
 
-    fs.readdirSync(testDir).forEach(function(file) {
-      require(path.join(testDir, file));
-    });
+    fs.readdirSync(this.testDir).forEach(file => require(path.join(this.testDir, file)));
   }
 
   start(ids: string[]) {

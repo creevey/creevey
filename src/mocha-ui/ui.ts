@@ -1,10 +1,12 @@
+import path from "path";
 import Mocha, { Suite } from "mocha";
 import commonInterface from "mocha/lib/interfaces/common";
 
 import { createBrowserSuites, createDescriber, describeFactory, itFactory } from "./helpers";
 import { readConfig } from "../utils";
 
-const config = readConfig();
+const configPath = path.resolve("creevey");
+const config = readConfig(configPath);
 
 // @ts-ignore
 Mocha.interfaces.creevey = function creevey(suite: Suite) {

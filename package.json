@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "koa": "^2.7.0",
+    "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "pixelmatch": "^4.0.2",
     "pngjs": "^3.4.0",
@@ -38,6 +39,7 @@
     "@babel/preset-typescript": "^7.3.3",
     "@types/chai": "^4.1.7",
     "@types/koa": "^2.0.48",
+    "@types/minimist": "^1.2.0",
     "@types/mkdirp": "^0.5.2",
     "@types/mocha": "^5.2.6",
     "@types/node": "^11.11.4",
