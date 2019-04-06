@@ -3,9 +3,21 @@
 - [x] Test types
 - [x] Add binary
 - [x] Subscribe on workers ready
+- [ ] Web interface
+  - [ ] webpack build
+  - [ ] usage react-ui
+  - [ ] output tests tree
+  - [ ] allow start/stop
+  - [ ] output test status
+  - [ ] output reported images
+    - [ ] like github does
+    - [ ] switch by hotkeys
+  - [ ] approve images
+- [ ] Save images report in multiple runs
 - [ ] Add cli arguments
   - [x] config
   - [ ] grep/kind/story
+- [ ] Add test parser
 - [ ] Custom reporter
 - [ ] Allow to use Teamcity reporter
 - [x] Mocha workers for server
@@ -15,7 +27,7 @@
 - [x] Single fork for single browser thread
 - [ ] Reset mouse position
 - [ ] Add react-selenium-testing
-- [ ] Tests for interface
+- [ ] Add unit tests
 - [x] Parallel (need prebuild? worker-farm?)
   - [x] Custom server runner
   - [x] Patch mocha runner with cluster
@@ -24,7 +36,7 @@
 - [ ] Add storybook addon (add `All stories` story and `renderStory` global func)
 - [ ] Typescript config
   - [ ] Better handle config/defaultConfig types
-- [ ] Simplify types re-export
+- [ ] Simplify types re-export for lib usage
 - [ ] vscode mocha explorer
   - [ ] codelens run not work (need full path)
   - [ ] tests run with default timeout even if it changed in config
@@ -33,6 +45,8 @@
 - [ ] Support mocha options for workers
 - [ ] Support load test files from glob patterns
 - [ ] Separate class for Worker
+- [ ] Storybook fow web ui
+- [ ] is uuid needed?
 
 ## Runtime function
 

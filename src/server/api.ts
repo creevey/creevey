@@ -1,5 +1,7 @@
+import path from "path";
 import http from "http";
 import Koa from "koa";
+import serve from "koa-static";
 import WebSocket from "ws";
 import { Command } from "../types";
 import Runner from "./runner";
@@ -8,6 +10,8 @@ export default function apiServer(runner: Runner) {
   const app = new Koa();
   const server = http.createServer(app.callback());
   const wss = new WebSocket.Server({ server });
+
+  app.use(serve(path.join(__dirname, "../client")));
 
   // TODO maybe event types
   runner.on("message", message => {
