@@ -14,9 +14,9 @@
     "prebuild": "yarn clean",
     "build": "npm-run-all --continue-on-error --parallel build:*",
     "build:types": "tsc --emitDeclarationOnly",
-    "build:js": "babel src --out-dir lib --extensions \".ts,.tsx\" --ignore ./src/client",
+    "build:js": "babel src --out-dir lib --extensions .ts --ignore src/client",
     "build:client": "webpack",
-    "build:dts": "dts-generator --out ./lib/index.d.ts --project ./ --prefix creevey --types ../types/chai --types ../types/mocha --exclude \"types /*.d.ts\" --exclude \"node_modules/**/*.d.ts\""
+    "build:dts": "dts-generator --out lib/index.d.ts --project ./ --prefix creevey --types ../types/chai --types ../types/mocha --exclude \"node_modules/**/*.d.ts\" --exclude \"./*.ts\" --exclude src/cli.ts --exclude \"src/client/**/*.tsx\""
   },
   "peerDependencies": {
     "chai": "^4.2.0",

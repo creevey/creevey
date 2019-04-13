@@ -17,5 +17,5 @@
       "creevey/lib/*": ["src/*"]
     }
   },
-  "exclude": ["./*.ts", "./src/cli.ts", "./lib"]
+  "exclude": ["./*.ts", "./lib"]
 }
