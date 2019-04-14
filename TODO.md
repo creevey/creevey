@@ -3,10 +3,20 @@
 - [x] Test types
 - [x] Add binary
 - [x] Subscribe on workers ready
+- [x] Parallel (need prebuild? worker-farm?)
+  - [x] Custom server runner
+  - [x] Patch mocha runner with cluster
+- [x] Allow customize hooks to non-storybook env
+- [x] Defined default config + deep merge
+- [x] Build correct `d.ts` files. For now, you should remove require types from `lib/creevey.js` after build.
+- [x] Pass `config` to server initialization (use process.cwd())
+- [x] Single fork for single browser thread
+- [x] Mocha workers for server
+- [x] Add test parser
 - [ ] Allow start/stop tests
 - [ ] Web interface
-  - [ ] webpack build
-  - [ ] usage react-ui
+  - [x] webpack build
+  - [x] usage react-ui
   - [ ] output tests tree
   - [ ] allow start/stop
   - [ ] output test status
@@ -18,22 +28,12 @@
 - [ ] Add cli arguments
   - [x] config
   - [ ] grep/kind/story
-- [ ] Add test parser
-- [ ] Custom reporter
+- [ ] Custom mocha reporter for worker
 - [ ] Allow to use Teamcity reporter
-- [x] Mocha workers for server
 - [ ] Fail if try run test with incorrect id
-- [x] Build correct `d.ts` files. For now, you should remove require types from `lib/creevey.js` after build.
-- [x] Pass `config` to server initialization (use process.cwd())
-- [x] Single fork for single browser thread
 - [ ] Reset mouse position
 - [ ] Add react-selenium-testing
 - [ ] Add unit tests
-- [x] Parallel (need prebuild? worker-farm?)
-  - [x] Custom server runner
-  - [x] Patch mocha runner with cluster
-- [x] Allow customize hooks to non-storybook env
-- [x] Defined default config + deep merge
 - [ ] Add storybook addon (add `All stories` story and `renderStory` global func)
 - [ ] Typescript config
   - [ ] Better handle config/defaultConfig types
@@ -46,8 +46,12 @@
 - [ ] Support mocha options for workers
 - [ ] Support load test files from glob patterns
 - [ ] Separate class for Worker
-- [ ] Storybook fow web ui
-- [ ] is uuid needed?
+- [ ] Storybook for web ui
+- [ ] is uuid needed? (rework api to allow start tests by path)
+- [ ] reconnect to selenium
+- [ ] subscribe websocket api (status commands)
+- [ ] websocket api types
+- [ ] Status runner
 
 ## Runtime function
 
