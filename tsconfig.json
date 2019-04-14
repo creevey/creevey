@@ -17,5 +17,9 @@
       "creevey/lib/*": ["src/*"]
     }
   },
-  "exclude": ["./*.ts", "./lib"]
+  "exclude": [
+    // NOTE: This need to generate d.ts bundle with correct path
+    "./*.ts",
+    "./lib"
+  ]
 }

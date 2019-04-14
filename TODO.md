@@ -3,6 +3,7 @@
 - [x] Test types
 - [x] Add binary
 - [x] Subscribe on workers ready
+- [ ] Allow start/stop tests
 - [ ] Web interface
   - [ ] webpack build
   - [ ] usage react-ui
