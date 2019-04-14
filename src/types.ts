@@ -42,5 +42,10 @@ export interface Test {
   skip?: string[];
 }
 
-// TODO payload types
+export type TestStatus = "pending" | "retry" | "failed" | "success";
+
 export type Command = { type: "getTests" } | { type: "start"; payload: string[] } | { type: "stop" };
+
+export type Message =
+  | { type: "getTests"; payload: { [id: string]: Test } }
+  | { type: "testStatus"; payload: { browser: string; test: Test; status: TestStatus } };

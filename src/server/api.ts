@@ -17,7 +17,7 @@ export default function apiServer(runner: Runner) {
   runner.on("message", message => {
     wss.clients.forEach(ws => {
       if (ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify(message));
+        ws.send(JSON.stringify({ type: "testStatus", payload: message }));
       }
     });
   });
@@ -33,7 +33,7 @@ export default function apiServer(runner: Runner) {
 
       switch (command.type) {
         case "getTests": {
-          ws.send(JSON.stringify(runner.getTests()));
+          ws.send(JSON.stringify({ type: "getTests", payload: runner.getTests() }));
           return;
         }
         case "start": {
