@@ -9,8 +9,6 @@ interface TestQueue extends Test {
 export default class Pool extends EventEmitter {
   private browser: string;
   private maxRetries: number;
-  private isRunnning: boolean = false;
-  private isReady: boolean = false;
   private workers: Worker[];
   private queue: TestQueue[] = [];
   constructor(config: Config, browser: string) {
@@ -26,19 +24,11 @@ export default class Pool extends EventEmitter {
   }
 
   start(tests: Test[]) {
-    if (!this.isReady || this.isRunnning) {
-      return false;
-    }
     this.queue = tests.map(test => ({ ...test, retries: 0 }));
-    this.isRunnning = true;
     this.process();
-
-    return true;
   }
 
   stop() {
-    this.isRunnning = false;
-    this.isReady = false;
     this.queue = [];
   }
 
@@ -59,7 +49,7 @@ export default class Pool extends EventEmitter {
       const { status } = JSON.parse(message);
 
       if (status == "failed") {
-        const shouldRetry = test.retries == this.maxRetries || !this.isRunnning;
+        const shouldRetry = test.retries == this.maxRetries;
         if (shouldRetry) {
           test.retries += 1;
           this.emit("message", { test, browser, status: "retry" });
@@ -76,7 +66,6 @@ export default class Pool extends EventEmitter {
       if (this.queue.length > 0) {
         this.process();
       } else if (this.workers.filter(worker => !worker.isRunnning).length == this.workers.length) {
-        this.isReady = true;
         this.emit("message", { browser, status: "ready" });
       }
     });
@@ -89,6 +78,7 @@ export default class Pool extends EventEmitter {
     return freeWorkers[Math.floor(Math.random() * freeWorkers.length)];
   }
 
+  // TODO ready flags
   private waitForReady() {
     let readyWorkers = 0;
     this.workers.forEach(worker => {
@@ -99,7 +89,6 @@ export default class Pool extends EventEmitter {
         }
         readyWorkers += 1;
         if (readyWorkers == this.workers.length) {
-          this.isReady = true;
           this.emit("message", { browser: this.browser, status: "ready" });
         }
       });
