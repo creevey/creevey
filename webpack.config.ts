@@ -21,7 +21,12 @@ const config: Configuration = {
   plugins: [new HtmlWebpackPlugin({ template: "./src/client/index.html" })],
   devServer: {
     port: 8000,
-    proxy: { "/api": "http://localhost:3000" }
+    proxy: {
+      "/": {
+        target: "ws://localhost:3000",
+        ws: true
+      }
+    }
   }
 };
 
