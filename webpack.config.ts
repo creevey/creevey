@@ -18,7 +18,11 @@ const config: Configuration = {
       }
     ]
   },
-  plugins: [new HtmlWebpackPlugin({ template: "./src/client/index.html" })]
+  plugins: [new HtmlWebpackPlugin({ template: "./src/client/index.html" })],
+  devServer: {
+    port: 8000,
+    proxy: { "/api": "http://localhost:3000" }
+  }
 };
 
 export default config;
