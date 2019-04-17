@@ -47,11 +47,12 @@
 - [ ] Support load test files from glob patterns
 - [ ] Separate class for Worker
 - [ ] Storybook for web ui
-- [ ] is uuid needed? (rework api to allow start tests by path)
 - [ ] reconnect to selenium
 - [ ] subscribe websocket api (status commands)
 - [ ] websocket api types
 - [ ] Status runner
+- [ ] Read reported images and watch
+- [ ] Add logger lib
 
 ## Runtime function
 

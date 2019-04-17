@@ -35,17 +35,71 @@ export interface Workers {
   [browser: string]: Worker[];
 }
 
-export interface Test {
-  id: string;
-  suites: string[];
-  title: string;
-  skip?: string[];
+export interface Images {
+  [name: string]: {
+    expected: string;
+    diff?: string;
+    actual?: string;
+  };
 }
 
-export type TestStatus = "pending" | "retry" | "failed" | "success";
+export type TestStatus = "unknown" | "pending" | "failed" | "success";
 
-export type Command = { type: "getTests" } | { type: "start"; payload: string[] } | { type: "stop" };
+export interface Test {
+  id: string;
+  path: string[];
+  retries: number;
+  skip?: boolean;
+  result?: {
+    [retry: number]: {
+      status: TestStatus;
+      images?: Images;
+    };
+  };
+}
 
-export type Message =
-  | { type: "getTests"; payload: { [id: string]: Test } }
-  | { type: "testStatus"; payload: { browser: string; test: Test; status: TestStatus } };
+/**
+ * {
+ *   Button: {        // suite
+ *     playground: {  // suite
+ *       idle: {      // test
+ *         chrome: {  // browser
+ *           id: uuid,
+ *           path: [Button, palyground, idle, chrome],
+ *           result?: {
+ *             retry: {
+ *               status: enum,
+ *               iamges?: {
+ *                 idle: {  // image name
+ *                   expected: string,
+ *                   diff?: string,
+ *                   actual?: string,
+ *                 }
+ *               }
+ *             }
+ *           }
+ *         }
+ *       }
+ *     }
+ *   }
+ * }
+ */
+export interface Tests {
+  [title: string]: Tests | Test;
+}
+
+export interface CreeveyStatus {
+  isRunning: boolean;
+  tests: Tests;
+}
+
+export interface TestUpdate {
+  path: string[];
+  retry: number;
+  status: TestStatus;
+  images?: Images;
+}
+
+export type Request = { type: "status" } | { type: "start"; payload: string[] } | { type: "stop" };
+
+export type Response = { type: "status"; payload: CreeveyStatus } | { type: "test"; payload: TestUpdate };

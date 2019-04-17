@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import chai from "chai";
 import Mocha, { Suite, Context } from "mocha";
-import { Config } from "../types";
+import { Config, Test } from "../types";
 import { getBrowser, switchStory } from "../utils";
 import chaiImage from "../mocha-ui/chai-image";
 
@@ -14,12 +14,7 @@ Suite.prototype.cleanReferences = () => {};
 //
 
 // TODO ui
-
-// init browser
-// save browser to ctx
-// switch story before run
-// subscribe
-// run tests
+// TODO onError, unhandlerRejection
 
 export default async function worker(config: Config) {
   const mocha = new Mocha();
@@ -44,10 +39,13 @@ export default async function worker(config: Config) {
   // TODO Custom reporter => collect fail results => on end send fail results
 
   process.on("message", message => {
-    console.log(browserName, JSON.parse(message));
-    const { suites, title } = JSON.parse(message);
+    // TODO path reverse
+    const test: Test = JSON.parse(message);
+    const testPath = [...test.path].reverse().join(" ");
 
-    mocha.grep([...suites.reverse(), title].join(" "));
+    console.log(browserName, testPath);
+
+    mocha.grep(testPath);
     mocha.run(failures => {
       if (process.send) {
         if (failures > 0) {
@@ -59,7 +57,5 @@ export default async function worker(config: Config) {
     });
   });
 
-  if (process.send) {
-    process.send(JSON.stringify({ status: "ready" }));
-  }
+  console.log(browserName, "ready");
 }

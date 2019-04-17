@@ -3,7 +3,7 @@ import http from "http";
 import Koa from "koa";
 import serve from "koa-static";
 import WebSocket from "ws";
-import { Command } from "../types";
+import { Request, Response, TestUpdate } from "../types";
 import Runner from "./runner";
 
 export default function apiServer(runner: Runner) {
@@ -14,26 +14,37 @@ export default function apiServer(runner: Runner) {
   app.use(serve(path.join(__dirname, "../client")));
 
   // TODO maybe event types
-  runner.on("message", message => {
+  runner.on("test", (payload: TestUpdate) => {
     wss.clients.forEach(ws => {
       if (ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ type: "testStatus", payload: message }));
+        // TODO
+        // test
+        // image
+        const message: Response = { type: "test", payload };
+        ws.send(JSON.stringify(message));
       }
     });
   });
 
   wss.on("connection", ws => {
-    ws.on("close", () => console.log("connection close"));
+    console.log("[WebSocketServer]:", "Connection open");
+
+    ws.on("error", error => console.log("[WebSocket]:", error));
+    ws.on("open", () => console.log("[WebSocket]:", "Connection open"));
+    ws.on("close", () => console.log("[WebSocket]:", "Connection close"));
     ws.on("message", message => {
       if (typeof message != "string") {
+        console.log("[WebSocket]:", "unhandled message", message);
         return;
       }
 
-      const command: Command = JSON.parse(message);
+      const command: Request = JSON.parse(message);
+      console.log("[WebSocket]:", "message", message);
 
       switch (command.type) {
-        case "getTests": {
-          ws.send(JSON.stringify({ type: "getTests", payload: runner.getTests() }));
+        case "status": {
+          const message: Response = { type: command.type, payload: runner.status };
+          ws.send(JSON.stringify(message));
           return;
         }
         case "start": {
@@ -46,8 +57,9 @@ export default function apiServer(runner: Runner) {
         }
       }
     });
-    console.log("connection open");
   });
+
+  wss.on("error", error => console.log("[WebSocketServer]:", error));
 
   server.listen(3000);
 }
