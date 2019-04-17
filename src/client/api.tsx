@@ -1,5 +1,5 @@
 import { EventEmitter } from "events";
-import { Command, Message } from "../types";
+import { Request, Response } from "../types";
 
 // TODO subscribe
 // TODO runner status
@@ -9,28 +9,29 @@ export class CreeveyAPI extends EventEmitter {
     super();
     this.ws = new WebSocket(`ws://${window.location.host}`);
     this.ws.addEventListener("message", this.handleMessage);
+    this.ws.addEventListener("open", () => this.emit("ready"));
   }
 
-  private handleMessage(message: MessageEvent) {
-    const data: Message = JSON.parse(message.data);
+  private handleMessage = (message: MessageEvent) => {
+    const data: Response = JSON.parse(message.data);
     switch (data.type) {
-      case "getTests": {
-        this.emit("tests", data.payload);
+      case "status": {
+        this.emit("status", data.payload);
         return;
       }
-      case "testStatus": {
-        this.emit("status", data.payload);
+      case "test": {
+        this.emit("test", data.payload);
       }
     }
     console.log(data);
-  }
+  };
 
-  private send(command: Command) {
+  private send(command: Request) {
     this.ws.send(JSON.stringify(command));
   }
 
   public getTests() {
-    this.send({ type: "getTests" });
+    this.send({ type: "status" });
   }
 
   public start(ids: string[]) {

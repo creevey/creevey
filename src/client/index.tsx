@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { CreeveyApp } from "./components/CreeveyApp";
+import { CreeveyApp } from "./CreeveyApp";
 
 import "./index.css";
 

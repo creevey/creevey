@@ -103,3 +103,14 @@ export interface TestUpdate {
 export type Request = { type: "status" } | { type: "start"; payload: string[] } | { type: "stop" };
 
 export type Response = { type: "status"; payload: CreeveyStatus } | { type: "test"; payload: TestUpdate };
+
+export function isTest(x: Tests | Test): x is Test {
+  return (
+    Object.prototype.hasOwnProperty.call(x, "id") &&
+    Object.prototype.hasOwnProperty.call(x, "path") &&
+    Object.prototype.hasOwnProperty.call(x, "retries") &&
+    Array.isArray(x.path) &&
+    typeof x.id == "string" &&
+    typeof x.retries == "number"
+  );
+}
