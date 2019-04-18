@@ -17,7 +17,7 @@
     "build": "npm-run-all --continue-on-error --parallel build:*",
     "build:types": "tsc --emitDeclarationOnly",
     "build:js": "babel src --out-dir lib --extensions .ts --ignore src/client",
-    "build:client": "webpack",
+    "build:client": "webpack --mode production",
     "build:dts": "dts-generator --out lib/index.d.ts --project ./ --prefix creevey --types ../types/chai --types ../types/mocha --exclude \"node_modules/**/*.d.ts\" --exclude \"./*.ts\" --exclude src/cli.ts --exclude \"src/client/**/*.tsx\""
   },
   "peerDependencies": {

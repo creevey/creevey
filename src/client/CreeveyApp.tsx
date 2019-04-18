@@ -34,7 +34,7 @@ export class CreeveyApp extends React.Component<{}, { tests: Tests | null; isRun
           )}
         </TopBar>
         {this.state.tests ? (
-          Object.entries(this.state.tests).map(([title, suite]) => <TestTree title={title} tests={suite} />)
+          Object.entries(this.state.tests).map(([title, suite]) => <TestTree key={title} title={title} tests={suite} />)
         ) : (
           <Loader type="big" active />
         )}
