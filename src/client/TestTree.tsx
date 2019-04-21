@@ -3,15 +3,17 @@ import Checkbox from "@skbkontur/react-ui/Checkbox";
 import Gapped from "@skbkontur/react-ui/Gapped";
 import ArrowTriangleRightIcon from "@skbkontur/react-icons/ArrowTriangleRight";
 import { Test, Tests, isTest } from "../types";
+import { TestTree } from "./CreeveyContext";
+
+
 
 interface TestTreeContextType {
   onChange: (title: string, checked: boolean, indeterminate: boolean) => void;
 }
 interface TestTreeProps {
   title: string;
-  checked: boolean;
-  indeterminate: boolean;
   tests: Tests | Test;
+  tree: TestTree;
 }
 interface TestTreeState {
   opened: boolean;
@@ -37,7 +39,7 @@ function defaultTestTreeState(props: TestTreeProps) {
   };
 }
 
-export const TestTreeContext = React.createContext<TestTreeContextType>({ onChange: noop });
+export const TestTreeContext = React.createContext<TestTreeContextType>({ onChange: () => {} });
 
 export class TestTree extends React.Component<TestTreeProps, TestTreeState> {
   static defaultProps = { checked: true, indeterminate: false };
