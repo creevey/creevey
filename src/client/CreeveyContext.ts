@@ -12,19 +12,9 @@ export interface Tests {
 }
 
 export interface CreeveyContextType {
-  isRunning: boolean;
-  tests: Tests | null;
-  start: () => void;
-  stop: () => void;
   onTestToogle: (path: string[], checked: boolean) => void;
 }
 
 function noop() {}
 
-export const CreeveyContex = React.createContext<CreeveyContextType>({
-  isRunning: false,
-  tests: null,
-  start: noop,
-  stop: noop,
-  onTestToogle: noop
-});
+export const CreeveyContex = React.createContext<CreeveyContextType>({ onTestToogle: noop });
