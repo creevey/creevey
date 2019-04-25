@@ -39,7 +39,6 @@ export default async function worker(config: Config) {
   // TODO Custom reporter => collect fail results => on end send fail results
 
   process.on("message", message => {
-    // TODO path reverse
     const test: Test = JSON.parse(message);
     const testPath = [...test.path].reverse().join(" ");
 
@@ -56,6 +55,8 @@ export default async function worker(config: Config) {
       }
     });
   });
+
+  setInterval(() => browser.getTitle(), 30 * 1000);
 
   console.log(browserName, "ready");
 }
