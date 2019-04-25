@@ -213,4 +213,23 @@ describe("toogleChecked", () => {
 
     expect(actualTests).to.deep.equal(expectedTests);
   });
+
+  it("should check root suite", () => {
+    const tests: Tests = {
+      path: [],
+      checked: false,
+      indeterminate: false,
+      children: { foo: { ...mockTest(), checked: false } }
+    };
+    const expectedTests: Tests = {
+      path: [],
+      checked: true,
+      indeterminate: false,
+      children: { foo: { ...mockTest(), checked: true } }
+    };
+
+    const actualTests = toogleChecked(tests, [], true);
+
+    expect(actualTests).to.deep.equal(expectedTests);
+  });
 });
