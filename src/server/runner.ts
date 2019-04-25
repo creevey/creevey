@@ -108,7 +108,7 @@ export default class Runner extends EventEmitter {
       const lastSuite = suitePath
         .reverse()
         .reduce((suite, token) => (suite[token] = (suite[token] || {}) as Tests), tests);
-      lastSuite[browser] = test;
+      lastSuite[browser] = { ...test, path: [...test.path].reverse() };
     });
     return {
       isRunning: this.isRunning,

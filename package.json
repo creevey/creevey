@@ -11,6 +11,7 @@
     "clean": "rimraf lib",
     "lint": "npm-run-all --continue-on-error --parallel lint:*",
     "lint:tsc": "tsc --noEmit",
+    "test": "mocha --opts mocha.opts",
     "start": "npm-run-all --parallel start:*",
     "start:client": "webpack-dev-server",
     "prebuild": "yarn clean",
@@ -18,7 +19,7 @@
     "build:types": "tsc --emitDeclarationOnly",
     "build:js": "babel src --out-dir lib --extensions .ts --ignore src/client",
     "build:client": "webpack --mode production",
-    "build:dts": "dts-generator --out lib/index.d.ts --project ./ --prefix creevey --types ../types/chai --types ../types/mocha --exclude \"node_modules/**/*.d.ts\" --exclude \"./*.ts\" --exclude src/cli.ts --exclude \"src/client/**/*.tsx\""
+    "build:dts": "dts-generator --out lib/index.d.ts --project ./ --prefix creevey --types ../types/chai --types ../types/mocha --exclude \"node_modules/**/*.d.ts\" --exclude \"./*.ts\" --exclude src/cli.ts --exclude \"src/client/**/*.{ts,tsx}\""
   },
   "peerDependencies": {
     "chai": "^4.2.0",

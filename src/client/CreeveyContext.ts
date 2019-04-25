@@ -6,6 +6,7 @@ export interface Test extends ApiTest {
 }
 
 export interface Tests {
+  path: string[];
   checked: boolean;
   indeterminate: boolean;
   children: { [title: string]: Tests | Test };

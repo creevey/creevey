@@ -20,6 +20,7 @@
   "exclude": [
     // NOTE: This need to generate d.ts bundle with correct path
     "./*.ts",
-    "./lib"
+    "./lib",
+    "./tests"
   ]
 }

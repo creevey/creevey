@@ -104,11 +104,11 @@ export type Request = { type: "status" } | { type: "start"; payload: string[] } 
 
 export type Response = { type: "status"; payload: CreeveyStatus } | { type: "test"; payload: TestUpdate };
 
-export function isTest(x: Tests | Test): x is Test {
+export function isTest<T1, T2 extends { id: string; path: string[]; retries: number }>(x: T1 | T2): x is T2 {
   return (
-    Object.prototype.hasOwnProperty.call(x, "id") &&
-    Object.prototype.hasOwnProperty.call(x, "path") &&
-    Object.prototype.hasOwnProperty.call(x, "retries") &&
+    "id" in x &&
+    "path" in x &&
+    "retries" in x &&
     Array.isArray(x.path) &&
     typeof x.id == "string" &&
     typeof x.retries == "number"
