@@ -5,7 +5,7 @@ import Loader from "@skbkontur/react-ui/Loader";
 import Spinner from "@skbkontur/react-ui/Spinner";
 import { CreeveyStatus, Tests as ApiTests, TestUpdate, Response, Request, isTest } from "../types";
 import { TestTree } from "./TestTree";
-import { CreeveyContex, Tests } from "./CreeveyContext";
+import { CreeveyContex, Tests, Test } from "./CreeveyContext";
 import { toogleChecked } from "./helpers";
 
 interface CreeveyAppState {
@@ -14,18 +14,52 @@ interface CreeveyAppState {
 }
 
 function extendsTests(tests: ApiTests, path: string[]): Tests {
+  const children = Object.entries(tests).reduce(
+    (extendedTests, [title, subTests]) => ({
+      ...extendedTests,
+      [title]: isTest(subTests) ? { ...subTests, checked: true } : extendsTests(subTests, [...path, title])
+    }),
+    {}
+  );
+  // TODO status
   return {
     path,
+    status: "unknown",
     checked: true,
     indeterminate: false,
-    children: Object.entries(tests).reduce(
-      (extendedTests, [title, subTests]) => ({
-        ...extendedTests,
-        [title]: isTest(subTests) ? { ...subTests, checked: true } : extendsTests(subTests, [...path, title])
-      }),
-      {}
-    )
+    children
   };
+}
+
+function getCheckedTests(tests: Tests | Test): Test[] {
+  if (isTest(tests)) {
+    return tests.checked ? [tests] : [];
+  }
+  if (!tests.checked && !tests.indeterminate) {
+    return [];
+  }
+  return Object.values(tests.children).reduce(
+    (checkedTests: Test[], subTests) => [...checkedTests, ...getCheckedTests(subTests)],
+    []
+  );
+}
+
+function updateTestStatus(tests: Tests, path: string[], update: TestUpdate): Tests {
+  const [title, ...restPath] = path;
+  const subTests = tests.children[title];
+  const newTests = { ...tests, children: { ...tests.children } };
+  if (isTest(subTests)) {
+    const { retry, status, images } = update;
+    newTests.children[title] = {
+      ...subTests,
+      retries: retry,
+      result: { ...(subTests.result || {}), [retry]: { status, images } }
+    };
+  } else {
+    newTests.children[title] = updateTestStatus(subTests, restPath, update);
+  }
+
+  return newTests;
 }
 
 export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
@@ -61,7 +95,9 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
   }
 
   handleStart = () => {
-    this.start([]);
+    if (!this.state.tests) return;
+
+    this.start(getCheckedTests(this.state.tests).map(test => test.id));
   };
 
   handleStop = () => this.stop();
@@ -81,7 +117,15 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
     });
   };
 
-  handleTest = (test: TestUpdate) => console.log(test);
+  handleTest = (test: TestUpdate) => {
+    this.setState(state => {
+      if (!state.tests) {
+        return state;
+      }
+
+      return { ...state, tests: updateTestStatus(state.tests, test.path, test) };
+    });
+  };
 
   private handleMessage = (message: MessageEvent) => {
     const data: Response = JSON.parse(message.data);

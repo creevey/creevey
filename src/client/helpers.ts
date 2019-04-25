@@ -13,7 +13,7 @@ function checkTests(tests: Tests | Test, checked: boolean): Tests | Test {
     return { ...tests, checked };
   }
   return {
-    path: tests.path,
+    ...tests,
     checked,
     indeterminate: false,
     children: Object.entries(tests.children).reduce(
@@ -23,7 +23,7 @@ function checkTests(tests: Tests | Test, checked: boolean): Tests | Test {
   };
 }
 
-function updateTest(tests: Tests): Tests {
+function updateChecked(tests: Tests): Tests {
   const children = Object.values(tests.children);
   const checkedEvery = children.every(test => test.checked);
   const checkedSome = children.some(test => test.checked);
@@ -47,8 +47,8 @@ export function toogleChecked(tests: Tests, path: string[], checked: boolean): T
         return subTests;
       }
       const lastToken = path.slice(parentPath.length)[0];
-      return updateTest({ ...parentTests, children: { ...parentTests.children, [lastToken]: subTests } });
+      return updateChecked({ ...parentTests, children: { ...parentTests.children, [lastToken]: subTests } });
     }, checkedTests);
 
-  return updateTest({ ...tests, children: { ...tests.children, [path[0]]: rootTests } });
+  return updateChecked({ ...tests, children: { ...tests.children, [path[0]]: rootTests } });
 }

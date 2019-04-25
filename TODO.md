@@ -13,11 +13,13 @@
 - [x] Single fork for single browser thread
 - [x] Mocha workers for server
 - [x] Add test parser
+- [ ] Selenium keep alive
 - [ ] Allow start/stop tests
 - [ ] Web interface
   - [x] webpack build
   - [x] usage react-ui
-  - [ ] output tests tree
+  - [x] output tests tree
+  - [ ] output skiped tests
   - [ ] allow start/stop
   - [ ] output test status
   - [ ] output reported images

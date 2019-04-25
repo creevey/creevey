@@ -1,5 +1,5 @@
 import React from "react";
-import { Test as ApiTest } from "../types";
+import { Test as ApiTest, TestStatus } from "../types";
 
 export interface Test extends ApiTest {
   checked: boolean;
@@ -7,6 +7,7 @@ export interface Test extends ApiTest {
 
 export interface Tests {
   path: string[];
+  status: TestStatus;
   checked: boolean;
   indeterminate: boolean;
   children: { [title: string]: Tests | Test };
