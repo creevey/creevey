@@ -39,7 +39,7 @@ export default class Runner extends EventEmitter {
     this.tests[message.test.id];
     const testUpdate: TestUpdate = {
       status,
-      path: test.path,
+      path: [...test.path].reverse(),
       retry: test.retries
     };
     this.emit("test", testUpdate);
