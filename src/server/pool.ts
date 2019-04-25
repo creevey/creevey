@@ -22,6 +22,7 @@ export default class Pool extends EventEmitter {
 
   stop() {
     this.queue = [];
+    // TODO set stopForced flag
   }
 
   process() {
@@ -39,6 +40,7 @@ export default class Pool extends EventEmitter {
       // TODO send failed with payload
       const { status }: { status: TestStatus } = JSON.parse(message);
 
+      // TODO check stopForced flag and free workers => send event
       if (status == "failed") {
         const shouldRetry = test.retries == this.maxRetries;
         if (shouldRetry) {
@@ -52,6 +54,7 @@ export default class Pool extends EventEmitter {
       if (this.queue.length > 0) {
         this.process();
       }
+      // TODO on empty queue set shouldStop flag => all workers stops => send event
     });
     worker.send(JSON.stringify(test));
   }

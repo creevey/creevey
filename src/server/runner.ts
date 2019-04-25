@@ -82,6 +82,7 @@ export default class Runner extends EventEmitter {
     if (this.isRunning) return;
 
     this.isRunning = true;
+    // TODO send running status
 
     const tests: { [browser: string]: { id: string; path: string[] }[] } = {};
 
@@ -93,12 +94,15 @@ export default class Runner extends EventEmitter {
       .forEach(({ path: [browser, ...path], id }) => tests[browser].push({ id, path }));
 
     this.browsers.forEach(browser => this.pools[browser].start(tests[browser]));
+    // TODO subscribe on stop
   }
 
   public stop() {
+    if (!this.isRunning) return;
     // TODO wait for stop
     this.browsers.forEach(browser => this.pools[browser].stop());
     this.isRunning = false;
+    // TODO send running status
   }
 
   public get status(): CreeveyStatus {
