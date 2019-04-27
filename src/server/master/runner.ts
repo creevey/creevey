@@ -5,13 +5,14 @@ import uuid from "uuid";
 import { Config, Test, CreeveyStatus, Tests, TestStatus, TestUpdate } from "../../types";
 import Pool from "./pool";
 
-// TODO status
 export default class Runner extends EventEmitter {
   private testDir: string;
   private tests: { [id: string]: Test } = {};
   private browsers: string[];
   private pools: { [browser: string]: Pool } = {};
-  private isRunning: boolean = false;
+  private get isRunning(): boolean {
+    return Object.values(this.pools).some(pool => pool.isRunning);
+  }
   constructor(config: Config) {
     super();
 
@@ -43,6 +44,12 @@ export default class Runner extends EventEmitter {
       retry: test.retries
     };
     this.emit("test", testUpdate);
+  };
+
+  private handlePoolStop = () => {
+    if (!this.isRunning) {
+      this.emit("stop");
+    }
   };
 
   public loadTests() {
@@ -81,28 +88,26 @@ export default class Runner extends EventEmitter {
   public start(ids: string[]) {
     if (this.isRunning) return;
 
-    this.isRunning = true;
-    // TODO send running status
+    const testsToStart = ids.map(id => this.tests[id]).filter(test => test && !test.skip);
+    const testsByBrowser: { [browser: string]: { id: string; path: string[] }[] } = {};
 
-    const tests: { [browser: string]: { id: string; path: string[] }[] } = {};
+    this.browsers.forEach(browser => (testsByBrowser[browser] = []));
 
-    this.browsers.forEach(browser => (tests[browser] = []));
+    testsToStart.forEach(({ path: [browser, ...path], id }) => testsByBrowser[browser].push({ id, path }));
 
-    ids
-      .map(id => this.tests[id])
-      .filter(({ skip }) => !skip)
-      .forEach(({ path: [browser, ...path], id }) => tests[browser].push({ id, path }));
+    this.browsers.forEach(browser => {
+      const pool = this.pools[browser];
 
-    this.browsers.forEach(browser => this.pools[browser].start(tests[browser]));
-    // TODO subscribe on stop
+      if (pool.start(testsByBrowser[browser])) {
+        pool.once("stop", this.handlePoolStop);
+      }
+    });
+    this.emit("start", testsToStart.map(({ id }) => id));
   }
 
   public stop() {
     if (!this.isRunning) return;
-    // TODO wait for stop
     this.browsers.forEach(browser => this.pools[browser].stop());
-    this.isRunning = false;
-    // TODO send running status
   }
 
   public get status(): CreeveyStatus {

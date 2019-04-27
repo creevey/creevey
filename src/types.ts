@@ -43,7 +43,8 @@ export interface Images {
   };
 }
 
-export type TestStatus = "unknown" | "pending" | "failed" | "success";
+// TODO rename usages pending => runnign
+export type TestStatus = "unknown" | "pending" | "running" | "failed" | "success";
 
 export interface Test {
   id: string;
@@ -102,7 +103,11 @@ export interface TestUpdate {
 
 export type Request = { type: "status" } | { type: "start"; payload: string[] } | { type: "stop" };
 
-export type Response = { type: "status"; payload: CreeveyStatus } | { type: "test"; payload: TestUpdate };
+export type Response =
+  | { type: "status"; payload: CreeveyStatus }
+  | { type: "start"; payload: string[] }
+  | { type: "stop" }
+  | { type: "test"; payload: TestUpdate };
 
 export function isTest<T1, T2 extends Test>(x: T1 | T2): x is T2 {
   return (

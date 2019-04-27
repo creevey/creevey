@@ -9,6 +9,6 @@ export default function(config: Config) {
   } else {
     console.log("[CreeveyWorker]:", `Started with pid ${process.pid}`);
 
-    require("./worker/worker").default(config);
+    require("./worker").default(config);
   }
 }

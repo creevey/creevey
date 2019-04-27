@@ -6,6 +6,10 @@ export default class Pool extends EventEmitter {
   private maxRetries: number;
   private workers: Worker[];
   private queue: Test[] = [];
+  private forcedStop: boolean = false;
+  public get isRunning(): boolean {
+    return this.workers.length !== this.freeWorkers.length;
+  }
   constructor(config: Config, browser: string) {
     super();
 
@@ -15,14 +19,20 @@ export default class Pool extends EventEmitter {
     this.workers = Array.from({ length: browserConfig.limit }).map(() => cluster.fork({ browser }));
   }
 
-  start(tests: { id: string; path: string[] }[]) {
+  start(tests: { id: string; path: string[] }[]): boolean {
+    if (this.isRunning) return false;
+
     this.queue = tests.map(({ id, path }) => ({ id, path, retries: 0 }));
     this.process();
+
+    return true;
   }
 
   stop() {
+    if (!this.isRunning) return;
+
+    this.forcedStop = true;
     this.queue = [];
-    // TODO set stopForced flag
   }
 
   process() {
@@ -40,9 +50,8 @@ export default class Pool extends EventEmitter {
       // TODO send failed with payload
       const { status }: { status: TestStatus } = JSON.parse(message);
 
-      // TODO check stopForced flag and free workers => send event
       if (status == "failed") {
-        const shouldRetry = test.retries == this.maxRetries;
+        const shouldRetry = test.retries == this.maxRetries || !this.forcedStop;
         if (shouldRetry) {
           test.retries += 1;
           this.queue.push(test);
@@ -53,8 +62,10 @@ export default class Pool extends EventEmitter {
 
       if (this.queue.length > 0) {
         this.process();
+      } else if (this.workers.length === this.freeWorkers.length) {
+        this.forcedStop = false;
+        this.emit("stop");
       }
-      // TODO on empty queue set shouldStop flag => all workers stops => send event
     });
     worker.send(JSON.stringify(test));
   }
@@ -64,8 +75,10 @@ export default class Pool extends EventEmitter {
   }
 
   private getFreeWorker(): Worker | undefined {
-    const freeWorkers = this.workers.filter(worker => !worker.isRunnning);
+    return this.freeWorkers[Math.floor(Math.random() * this.freeWorkers.length)];
+  }
 
-    return freeWorkers[Math.floor(Math.random() * freeWorkers.length)];
+  private get freeWorkers() {
+    return this.workers.filter(worker => !worker.isRunnning);
   }
 }
