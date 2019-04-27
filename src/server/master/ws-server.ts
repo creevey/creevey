@@ -3,10 +3,10 @@ import http from "http";
 import Koa from "koa";
 import serve from "koa-static";
 import WebSocket from "ws";
-import { Request, Response, TestUpdate } from "../types";
+import { Request, Response, TestUpdate } from "../../types";
 import Runner from "./runner";
 
-export default function apiServer(runner: Runner) {
+export default function server(runner: Runner) {
   const app = new Koa();
   const server = http.createServer(app.callback());
   const wss = new WebSocket.Server({ server });

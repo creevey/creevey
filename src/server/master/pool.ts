@@ -1,6 +1,6 @@
 import cluster from "cluster";
 import { EventEmitter } from "events";
-import { Worker, Config, Test, TestStatus } from "../types";
+import { Worker, Config, Test, TestStatus } from "../../types";
 
 export default class Pool extends EventEmitter {
   private maxRetries: number;

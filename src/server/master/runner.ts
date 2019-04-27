@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { EventEmitter } from "events";
 import uuid from "uuid";
-import { Config, Test, CreeveyStatus, Tests, TestStatus, TestUpdate } from "../types";
+import { Config, Test, CreeveyStatus, Tests, TestStatus, TestUpdate } from "../../types";
 import Pool from "./pool";
 
 // TODO status
@@ -46,7 +46,7 @@ export default class Runner extends EventEmitter {
   };
 
   public loadTests() {
-    console.log("[Runner]", "Start loading tests");
+    console.log("[CreeveyRunner]:", "Start loading tests");
     // TODO load tests from separated process
     const { browsers, tests } = this;
     let suites: string[] = [];
@@ -75,7 +75,7 @@ export default class Runner extends EventEmitter {
     global.it = it;
 
     fs.readdirSync(this.testDir).forEach(file => require(path.join(this.testDir, file)));
-    console.log("[Runner]", "Tests loaded");
+    console.log("[CreeveyRunner]:", "Tests loaded");
   }
 
   public start(ids: string[]) {

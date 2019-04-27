@@ -13,7 +13,7 @@
 - [x] Single fork for single browser thread
 - [x] Mocha workers for server
 - [x] Add test parser
-- [ ] Selenium keep alive
+- [x] Selenium keep alive
 - [ ] Allow start/stop tests
 - [ ] Web interface
   - [x] webpack build

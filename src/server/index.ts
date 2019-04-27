@@ -3,12 +3,12 @@ import { Config } from "../types";
 
 export default function(config: Config) {
   if (cluster.isMaster) {
-    console.log(`Master ${process.pid} is running`);
+    console.log("[CreeveyMaster]:", `Started with pid ${process.pid}`);
 
     require("./master").default(config);
   } else {
-    console.log(`Worker ${process.pid} started`);
+    console.log("[CreeveyWorker]:", `Started with pid ${process.pid}`);
 
-    require("./worker").default(config);
+    require("./worker/worker").default(config);
   }
 }
