@@ -43,7 +43,7 @@ export default class Pool extends EventEmitter {
 
     this.queue.shift();
 
-    this.sendStatus({ test, status: "pending" });
+    this.sendStatus({ test, status: "running" });
 
     worker.isRunnning = true;
     worker.once("message", message => {
@@ -51,7 +51,7 @@ export default class Pool extends EventEmitter {
       const { status }: { status: TestStatus } = JSON.parse(message);
 
       if (status == "failed") {
-        const shouldRetry = test.retries == this.maxRetries || !this.forcedStop;
+        const shouldRetry = test.retries < this.maxRetries && !this.forcedStop;
         if (shouldRetry) {
           test.retries += 1;
           this.queue.push(test);

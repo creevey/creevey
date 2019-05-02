@@ -71,7 +71,7 @@ const defaultConfig = {
   testDir: path.resolve("tests"),
   screenDir: path.resolve("images"),
   reportDir: path.resolve("report"),
-  maxRetries: 1
+  maxRetries: 0
 };
 const defaultBrowserConfig = { limit: 1 };
 
