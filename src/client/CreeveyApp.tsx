@@ -134,6 +134,15 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
         this.handleStatus(data.payload);
         return;
       }
+      case "start": {
+        // TODO update tests status
+        this.setState({ isRunning: true });
+        return;
+      }
+      case "stop": {
+        this.setState({ isRunning: false });
+        return;
+      }
       case "test": {
         this.handleTest(data.payload);
       }

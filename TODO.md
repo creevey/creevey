@@ -14,18 +14,20 @@
 - [x] Mocha workers for server
 - [x] Add test parser
 - [x] Selenium keep alive
-- [ ] Allow start/stop tests
+- [x] Allow start/stop tests
 - [ ] Web interface
   - [x] webpack build
   - [x] usage react-ui
   - [x] output tests tree
-  - [ ] output skiped tests
-  - [ ] allow start/stop
+  - [x] allow start/stop
+  - [ ] comm with API by test id
   - [ ] output test status
+    - [ ] update/recalc status
   - [ ] output reported images
     - [ ] like github does
     - [ ] switch by hotkeys
   - [ ] approve images
+  - [ ] output skiped tests
 - [ ] Save images report in multiple runs
 - [ ] Add cli arguments
   - [x] config

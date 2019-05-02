@@ -4,6 +4,7 @@ import Gapped from "@skbkontur/react-ui/Gapped";
 import ArrowTriangleRightIcon from "@skbkontur/react-icons/ArrowTriangleRight";
 import DeleteIcon from "@skbkontur/react-icons/Delete";
 import OkIcon from "@skbkontur/react-icons/Ok";
+import HelpDotIcon from "@skbkontur/react-icons/HelpDot";
 import { isTest } from "../types";
 import { Tests, Test, CreeveyContex } from "./CreeveyContext";
 import Spinner from "@skbkontur/react-ui/Spinner";
@@ -87,8 +88,11 @@ export class TestTree extends React.Component<TestTreeProps, TestTreeState> {
       case "success": {
         return <OkIcon color="green" />;
       }
-      case "pending": {
+      case "running": {
         return <Spinner type="mini" />;
+      }
+      case "pending": {
+        return <HelpDotIcon color="blue" />
       }
       default: {
         return null;

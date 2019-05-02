@@ -36,6 +36,7 @@ export interface Workers {
 }
 
 export interface Images {
+  // TODO optional
   [name: string]: {
     expected: string;
     diff?: string;
@@ -52,6 +53,7 @@ export interface Test {
   retries: number;
   skip?: boolean;
   result?: {
+    // TODO optional
     [retry: number]: {
       status: TestStatus;
       images?: Images;
@@ -86,6 +88,7 @@ export interface Test {
  * }
  */
 export interface Tests {
+  // TODO optional
   [title: string]: Tests | Test;
 }
 

@@ -35,6 +35,7 @@ export default class Runner extends EventEmitter {
     if (status == "pending") {
       test.retries += 1;
     }
+    // TODO update status
     // TODO add images
     test.result[test.retries] = { status };
     this.tests[message.test.id];
@@ -86,6 +87,7 @@ export default class Runner extends EventEmitter {
   }
 
   public start(ids: string[]) {
+    // TODO set tests status => pending
     if (this.isRunning) return;
 
     const testsToStart = ids.map(id => this.tests[id]).filter(test => test && !test.skip);
