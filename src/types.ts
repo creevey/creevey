@@ -61,43 +61,13 @@ export interface Test {
   };
 }
 
-/**
- * {
- *   Button: {        // suite
- *     playground: {  // suite
- *       idle: {      // test
- *         chrome: {  // browser
- *           id: uuid,
- *           path: [Button, palyground, idle, chrome],
- *           result?: {
- *             retry: {
- *               status: enum,
- *               iamges?: {
- *                 idle: {  // image name
- *                   expected: string,
- *                   diff?: string,
- *                   actual?: string,
- *                 }
- *               }
- *             }
- *           }
- *         }
- *       }
- *     }
- *   }
- * }
- */
-export interface Tests {
-  // TODO optional
-  [title: string]: Tests | Test;
-}
-
 export interface CreeveyStatus {
   isRunning: boolean;
-  tests: Tests;
+  testsById: { [id: string]: Test | undefined };
 }
 
 export interface TestUpdate {
+  // TODO should be only test id
   path: string[];
   retry: number;
   status: TestStatus;

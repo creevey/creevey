@@ -6,12 +6,12 @@ import DeleteIcon from "@skbkontur/react-icons/Delete";
 import OkIcon from "@skbkontur/react-icons/Ok";
 import HelpDotIcon from "@skbkontur/react-icons/HelpDot";
 import { isTest } from "../types";
-import { Tests, Test, CreeveyContex } from "./CreeveyContext";
+import { Suite, Test, CreeveyContex } from "./CreeveyContext";
 import Spinner from "@skbkontur/react-ui/Spinner";
 
 interface TestTreeProps {
   title: string;
-  tests: Tests | Test;
+  tests: Suite | Test;
 }
 
 interface TestTreeState {
@@ -92,7 +92,7 @@ export class TestTree extends React.Component<TestTreeProps, TestTreeState> {
         return <Spinner type="mini" />;
       }
       case "pending": {
-        return <HelpDotIcon color="blue" />
+        return <HelpDotIcon color="blue" />;
       }
       default: {
         return null;

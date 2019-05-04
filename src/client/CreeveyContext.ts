@@ -5,12 +5,12 @@ export interface Test extends ApiTest {
   checked: boolean;
 }
 
-export interface Tests {
+export interface Suite {
   path: string[];
   status: TestStatus;
   checked: boolean;
   indeterminate: boolean;
-  children: { [title: string]: Tests | Test };
+  children: { [title: string]: Suite | Test };
 }
 
 export interface CreeveyContextType {

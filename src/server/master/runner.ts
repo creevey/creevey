@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { EventEmitter } from "events";
 import uuid from "uuid";
-import { Config, Test, CreeveyStatus, Tests, TestStatus, TestUpdate } from "../../types";
+import { Config, Test, CreeveyStatus, TestStatus, TestUpdate } from "../../types";
 import Pool from "./pool";
 
 export default class Runner extends EventEmitter {
@@ -113,17 +113,9 @@ export default class Runner extends EventEmitter {
   }
 
   public get status(): CreeveyStatus {
-    const tests: Tests = {};
-    Object.values(this.tests).forEach(test => {
-      const [browser, ...suitePath] = test.path;
-      const lastSuite = suitePath
-        .reverse()
-        .reduce((suite, token) => (suite[token] = (suite[token] || {}) as Tests), tests);
-      lastSuite[browser] = { ...test, path: [...test.path].reverse() };
-    });
     return {
       isRunning: this.isRunning,
-      tests
+      testsById: this.tests
     };
   }
 }
