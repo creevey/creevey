@@ -8,6 +8,7 @@ import mkdirp from "mkdirp";
 import { Config } from "../types";
 
 const statAsync = promisify(fs.stat);
+const readdirAsync = promisify(fs.readdir);
 const readFileAsync = promisify(fs.readFile);
 const writeFileAsync = promisify(fs.writeFile);
 const mkdirpAsync = promisify(mkdirp);
@@ -20,6 +21,20 @@ async function getStat(filePath: string): Promise<Stats | null> {
       return Promise.resolve(null);
     }
     throw error;
+  }
+}
+
+async function getLastImageNumber(imageDir: string, imageName: string): Promise<number> {
+  const actualImagesRegexp = new RegExp(`${imageName}-actual-(\\d+)\\.png`);
+
+  try {
+    return (await readdirAsync(imageDir))
+      .map(filename => filename.replace(actualImagesRegexp, "$1"))
+      .map(Number)
+      .filter(x => !isNaN(x))
+      .sort((a, b) => b - a)[0];
+  } catch (_error) {
+    return 0;
   }
 }
 
@@ -70,15 +85,12 @@ function compareImages(expect: Buffer, actual: Buffer): Buffer {
   return PNG.sync.write(diffImage);
 }
 
-async function saveImages(imageDir: string, imageName: string, expect: Buffer, actual: Buffer, diff: Buffer) {
+async function saveImages(imageDir: string, imageName: string, imageNumber: number, expect: Buffer, diff: Buffer) {
   const imagePath = path.join(imageDir, `${imageName}`);
 
-  await mkdirpAsync(imageDir);
-
   return Promise.all([
-    writeFileAsync(`${imagePath}-expect.png`, expect),
-    writeFileAsync(`${imagePath}-actual.png`, actual),
-    writeFileAsync(`${imagePath}-diff.png`, diff)
+    writeFileAsync(`${imagePath}-expect-${imageNumber}.png`, expect),
+    writeFileAsync(`${imagePath}-diff-${imageNumber}.png`, diff)
   ]);
 }
 
@@ -90,15 +102,16 @@ export default (config: Config, context: string[]) =>
       const actual = Buffer.from(actualBase64, "base64");
 
       // context => [browser, kind, story, test]
+      const reportImageDir = path.join(config.reportDir, ...context);
+      const imageNumber = (await getLastImageNumber(reportImageDir, imageName)) + 1;
+
+      await mkdirpAsync(reportImageDir);
+      await writeFileAsync(path.join(reportImageDir, `${imageName}-actual-${imageNumber}.png`), actual);
+
       const expectImageDir = path.join(config.screenDir, ...context);
       const expectImageStat = await getStat(path.join(expectImageDir, `${imageName}.png`));
 
-      const reportImageDir = path.join(config.reportDir, ...context);
-
       if (!expectImageStat) {
-        await mkdirpAsync(reportImageDir);
-        await writeFileAsync(path.join(reportImageDir, `${imageName}-actual.png`), actual);
-
         throw new Error(`Expected image '${imageName}' does not exists`);
       }
 
@@ -113,7 +126,7 @@ export default (config: Config, context: string[]) =>
 
       const diff = compareImages(expect, actual);
 
-      await saveImages(reportImageDir, imageName, expect, actual, diff);
+      await saveImages(reportImageDir, imageName, imageNumber, expect, diff);
 
       // NOTE В случае, если имеющие одинаковый размер картинки не будут отличаться по содержимому, то код можно упростить
       throw new Error(`Expected image '${imageName}' to match ${equalBySize ? "but was equal by size" : ""}`);

@@ -28,17 +28,19 @@
     - [ ] switch by hotkeys
   - [ ] approve images
   - [ ] output skiped tests
-- [ ] Save images report in multiple runs
+- [x] Save images report in multiple runs
 - [ ] Add cli arguments
   - [x] config
   - [ ] grep/kind/story
+  - [ ] update
+  - [ ] reporter
 - [ ] Custom mocha reporter for worker
 - [ ] Allow to use Teamcity reporter
-- [ ] Fail if try run test with incorrect id
 - [ ] Reset mouse position
 - [ ] Add react-selenium-testing
 - [ ] Add unit tests
 - [ ] Add storybook addon (add `All stories` story and `renderStory` global func)
+  - [ ] Update to Storybook@5.x
 - [ ] Typescript config
   - [ ] Better handle config/defaultConfig types
 - [ ] Simplify types re-export for lib usage
