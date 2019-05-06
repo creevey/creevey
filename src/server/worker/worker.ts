@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import chai from "chai";
 import Mocha, { Suite, Context } from "mocha";
-import { Config, Test } from "../../types";
+import { Config, Test, Images } from "../../types";
 import { getBrowser, switchStory } from "../../utils";
 import chaiImage from "../../mocha-ui/chai-image";
 
@@ -17,12 +17,18 @@ Suite.prototype.cleanReferences = () => {};
 // TODO onError, unhandlerRejection
 
 export default async function worker(config: Config) {
+  function saveImageHandler(imageName: string, imageNumber: number, type: keyof Images) {
+    const image = (images[imageName] = images[imageName] || {});
+    image[type] = `${imageName}-${type}-${imageNumber}.png`;
+  }
+
   const mocha = new Mocha();
   const browserName = process.env.browser as string;
   const browser = await getBrowser(config, browserName);
   const testScope: string[] = [];
+  const images: { [name: string]: Partial<Images> | undefined } = {};
 
-  chai.use(chaiImage(config, testScope));
+  chai.use(chaiImage(config, testScope, saveImageHandler));
 
   fs.readdirSync(config.testDir).forEach(file => {
     mocha.addFile(path.join(config.testDir, file));
@@ -40,7 +46,8 @@ export default async function worker(config: Config) {
 
   process.on("message", message => {
     const test: Test = JSON.parse(message);
-    const testPath = [...test.path].reverse().join(" ");
+    // TODO slice browser
+    const testPath = [...test.path.slice(1)].reverse().join(" ");
 
     console.log(browserName, testPath);
 
@@ -48,9 +55,9 @@ export default async function worker(config: Config) {
     mocha.run(failures => {
       if (process.send) {
         if (failures > 0) {
-          process.send(JSON.stringify({ status: "failed" }));
+          process.send(JSON.stringify({ status: "failed", images }));
         } else {
-          process.send(JSON.stringify({ status: "success" }));
+          process.send(JSON.stringify({ status: "success", images }));
         }
       }
     });

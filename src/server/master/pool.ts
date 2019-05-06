@@ -1,6 +1,6 @@
 import cluster from "cluster";
 import { EventEmitter } from "events";
-import { Worker, Config, Test, TestStatus } from "../../types";
+import { Worker, Config, Test, TestResult } from "../../types";
 
 export default class Pool extends EventEmitter {
   private maxRetries: number;
@@ -41,14 +41,17 @@ export default class Pool extends EventEmitter {
 
     if (!worker || !test) return;
 
+    const { id } = test;
+
     this.queue.shift();
 
-    this.sendStatus({ test, status: "running" });
+    this.sendStatus({ id, result: { status: "running" } });
 
     worker.isRunnning = true;
     worker.once("message", message => {
       // TODO send failed with payload
-      const { status }: { status: TestStatus } = JSON.parse(message);
+      const result: TestResult = JSON.parse(message);
+      const { status } = result;
 
       if (status == "failed") {
         const shouldRetry = test.retries < this.maxRetries && !this.forcedStop;
@@ -57,7 +60,7 @@ export default class Pool extends EventEmitter {
           this.queue.push(test);
         }
       }
-      this.sendStatus({ test, status });
+      this.sendStatus({ id, result });
       worker.isRunnning = false;
 
       if (this.queue.length > 0) {
@@ -70,7 +73,7 @@ export default class Pool extends EventEmitter {
     worker.send(JSON.stringify(test));
   }
 
-  private sendStatus(message: { test: Test; status: TestStatus }) {
+  private sendStatus(message: { id: string; result: TestResult }) {
     this.emit("test", message);
   }
 

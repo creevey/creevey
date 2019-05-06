@@ -78,10 +78,12 @@ export class TestTree extends React.Component<TestTreeProps, TestTreeState> {
   }
 
   renderStatus(test: Test) {
-    if (!test.result) return null;
     const { result, retries } = test;
+    if (!result) return null;
+    const lastResult = result[retries];
+    if (!lastResult) return null;
 
-    switch (result[retries].status) {
+    switch (lastResult.status) {
       case "failed": {
         return <DeleteIcon color="red" />;
       }

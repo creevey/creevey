@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { EventEmitter } from "events";
 import uuid from "uuid";
-import { Config, Test, CreeveyStatus, TestStatus, TestUpdate } from "../../types";
+import { Config, Test, CreeveyStatus, TestUpdate, TestResult } from "../../types";
 import Pool from "./pool";
 
 export default class Runner extends EventEmitter {
@@ -23,26 +23,20 @@ export default class Runner extends EventEmitter {
       .map(pool => pool.on("test", this.handlePoolMessage));
   }
 
-  private handlePoolMessage = (message: { test: Test; status: TestStatus }) => {
-    const {
-      status,
-      test: { id }
-    } = message;
+  private handlePoolMessage = (message: { id: string; result: TestResult }) => {
+    const { result, id } = message;
     const test = this.tests[id];
     if (!test.result) {
       test.result = {};
     }
-    if (status == "pending") {
+    if (result.status == "running") {
       test.retries += 1;
     }
-    // TODO update status
-    // TODO add images
-    test.result[test.retries] = { status };
-    this.tests[message.test.id];
+    test.result[test.retries] = result;
     const testUpdate: TestUpdate = {
-      status,
-      path: [...test.path].reverse(),
-      retry: test.retries
+      id,
+      retry: test.retries,
+      ...result
     };
     this.emit("test", testUpdate);
   };
@@ -97,6 +91,7 @@ export default class Runner extends EventEmitter {
 
     testsToStart.forEach(({ path: [browser, ...path], id }) => testsByBrowser[browser].push({ id, path }));
 
+    // TODO check testsToStart length
     this.browsers.forEach(browser => {
       const pool = this.pools[browser];
 

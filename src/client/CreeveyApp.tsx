@@ -70,11 +70,13 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
 
   handleTest = (test: TestUpdate) => {
     this.setState(state => {
-      if (!state.tests) {
+      const path = state.pathsById[test.id];
+
+      if (!state.tests || !path) {
         return state;
       }
 
-      return { ...state, tests: updateTestStatus(state.tests, test.path, test) };
+      return { ...state, tests: updateTestStatus(state.tests, path, test) };
     });
   };
 

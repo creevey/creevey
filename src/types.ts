@@ -36,16 +36,19 @@ export interface Workers {
 }
 
 export interface Images {
-  // TODO optional
-  [name: string]: {
-    expected: string;
-    diff?: string;
-    actual?: string;
-  };
+  actual: string;
+  expect?: string;
+  diff?: string;
 }
 
-// TODO rename usages pending => runnign
 export type TestStatus = "unknown" | "pending" | "running" | "failed" | "success";
+
+export interface TestResult {
+  status: TestStatus;
+  images?: {
+    [name: string]: Images | undefined;
+  };
+}
 
 export interface Test {
   id: string;
@@ -53,11 +56,7 @@ export interface Test {
   retries: number;
   skip?: boolean;
   result?: {
-    // TODO optional
-    [retry: number]: {
-      status: TestStatus;
-      images?: Images;
-    };
+    [retry: number]: TestResult | undefined;
   };
 }
 
@@ -66,12 +65,9 @@ export interface CreeveyStatus {
   testsById: { [id: string]: Test | undefined };
 }
 
-export interface TestUpdate {
-  // TODO should be only test id
-  path: string[];
+export interface TestUpdate extends TestResult {
+  id: string;
   retry: number;
-  status: TestStatus;
-  images?: Images;
 }
 
 export type Request = { type: "status" } | { type: "start"; payload: string[] } | { type: "stop" };

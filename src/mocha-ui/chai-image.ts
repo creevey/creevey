@@ -5,13 +5,15 @@ import { PNG } from "pngjs";
 import pixelmatch from "pixelmatch";
 import mkdirp from "mkdirp";
 
-import { Config } from "../types";
+import { Config, Images } from "../types";
 
 const statAsync = promisify(fs.stat);
 const readdirAsync = promisify(fs.readdir);
 const readFileAsync = promisify(fs.readFile);
 const writeFileAsync = promisify(fs.writeFile);
 const mkdirpAsync = promisify(mkdirp);
+
+function noop() {}
 
 async function getStat(filePath: string): Promise<Stats | null> {
   try {
@@ -85,17 +87,12 @@ function compareImages(expect: Buffer, actual: Buffer): Buffer {
   return PNG.sync.write(diffImage);
 }
 
-async function saveImages(imageDir: string, imageName: string, imageNumber: number, expect: Buffer, diff: Buffer) {
-  const imagePath = path.join(imageDir, `${imageName}`);
-
-  return Promise.all([
-    writeFileAsync(`${imagePath}-expect-${imageNumber}.png`, expect),
-    writeFileAsync(`${imagePath}-diff-${imageNumber}.png`, diff)
-  ]);
-}
-
 // NOTE Chai don't have right types, see https://github.com/DefinitelyTyped/DefinitelyTyped/issues/29922
-export default (config: Config, context: string[]) =>
+export default (
+  config: Config,
+  context: string[],
+  onSaveImage: (imageName: string, imageNumber: number, type: keyof Images) => void = noop
+) =>
   function chaiImage({ Assertion }: any, utils: Chai.ChaiUtils) {
     utils.addMethod(Assertion.prototype, "matchImage", async function matchImage(imageName: string) {
       const actualBase64: string = utils.flag(this, "object");
@@ -107,6 +104,7 @@ export default (config: Config, context: string[]) =>
 
       await mkdirpAsync(reportImageDir);
       await writeFileAsync(path.join(reportImageDir, `${imageName}-actual-${imageNumber}.png`), actual);
+      onSaveImage(imageName, imageNumber, "actual");
 
       const expectImageDir = path.join(config.screenDir, ...context);
       const expectImageStat = await getStat(path.join(expectImageDir, `${imageName}.png`));
@@ -126,7 +124,10 @@ export default (config: Config, context: string[]) =>
 
       const diff = compareImages(expect, actual);
 
-      await saveImages(reportImageDir, imageName, imageNumber, expect, diff);
+      await writeFileAsync(path.join(reportImageDir, `${imageName}-expect-${imageNumber}.png`), expect);
+      onSaveImage(imageName, imageNumber, "expect");
+      await writeFileAsync(path.join(reportImageDir, `${imageName}-diff-${imageNumber}.png`), diff);
+      onSaveImage(imageName, imageNumber, "diff");
 
       // NOTE В случае, если имеющие одинаковый размер картинки не будут отличаться по содержимому, то код можно упростить
       throw new Error(`Expected image '${imageName}' to match ${equalBySize ? "but was equal by size" : ""}`);
