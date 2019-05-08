@@ -26,7 +26,7 @@ export default async function worker(config: Config) {
   const browserName = process.env.browser as string;
   const browser = await getBrowser(config, browserName);
   const testScope: string[] = [];
-  const images: { [name: string]: Partial<Images> | undefined } = {};
+  let images: { [name: string]: Partial<Images> | undefined } = {};
 
   chai.use(chaiImage(config, testScope, saveImageHandler));
 
@@ -46,12 +46,11 @@ export default async function worker(config: Config) {
 
   process.on("message", message => {
     const test: Test = JSON.parse(message);
-    // TODO slice browser
-    const testPath = [...test.path.slice(1)].reverse().join(" ");
+    const testPath = [...test.path].reverse().join(" ");
 
     console.log(browserName, testPath);
 
-    mocha.grep(testPath);
+    mocha.grep(new RegExp(`^${testPath}$`));
     mocha.run(failures => {
       if (process.send) {
         if (failures > 0) {
@@ -60,6 +59,7 @@ export default async function worker(config: Config) {
           process.send(JSON.stringify({ status: "success", images }));
         }
       }
+      images = {};
     });
   });
 
