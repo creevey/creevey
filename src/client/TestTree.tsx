@@ -78,9 +78,9 @@ export class TestTree extends React.Component<TestTreeProps, TestTreeState> {
   }
 
   renderStatus(test: Test) {
-    const { result, retries } = test;
-    if (!result) return null;
-    const lastResult = result[retries];
+    const { results, retries } = test;
+    if (!results) return null;
+    const lastResult = results[retries];
     if (!lastResult) return null;
 
     switch (lastResult.status) {

@@ -55,7 +55,7 @@ export interface Test {
   path: string[];
   retries: number;
   skip?: boolean;
-  result?: {
+  results?: {
     [retry: number]: TestResult | undefined;
   };
 }

@@ -26,13 +26,13 @@ export default class Runner extends EventEmitter {
   private handlePoolMessage = (message: { id: string; result: TestResult }) => {
     const { result, id } = message;
     const test = this.tests[id];
-    if (!test.result) {
-      test.result = {};
+    if (!test.results) {
+      test.results = {};
     }
     if (result.status == "running") {
       test.retries += 1;
     }
-    test.result[test.retries] = result;
+    test.results[test.retries] = result;
     const testUpdate: TestUpdate = {
       id,
       retry: test.retries,

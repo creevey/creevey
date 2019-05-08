@@ -104,7 +104,7 @@ export function updateTestStatus(tests: Suite, path: string[], update: TestUpdat
     newTests.children[title] = {
       ...subTests,
       retries: retry,
-      result: { ...(subTests.result || {}), [retry]: { status, images } }
+      results: { ...(subTests.results || {}), [retry]: { status, images } }
     };
   } else {
     newTests.children[title] = updateTestStatus(subTests, restPath, update);
