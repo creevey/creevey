@@ -1,7 +1,7 @@
 import { Suite, Test } from "./CreeveyContext";
 import { Test as ApiTest, isTest, TestUpdate } from "../types";
 
-function getTestsByPath(tests: Suite, path: string[]): Suite | Test {
+export function getTestsByPath(tests: Suite, path: string[]): Suite | Test {
   return path.reduce(
     (subTests: Suite | Test, pathToken) => (isTest(subTests) ? subTests : subTests.children[pathToken]),
     tests

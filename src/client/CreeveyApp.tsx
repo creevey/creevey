@@ -3,10 +3,11 @@ import TopBar from "@skbkontur/react-ui/TopBar";
 import Logotype from "@skbkontur/react-ui/Logotype";
 import Loader from "@skbkontur/react-ui/Loader";
 import Spinner from "@skbkontur/react-ui/Spinner";
-import { CreeveyStatus, TestUpdate, Response, Request } from "../types";
+import { CreeveyStatus, TestUpdate, Response, Request, isTest } from "../types";
 import { TestTree } from "./TestTree";
-import { CreeveyContex, Suite } from "./CreeveyContext";
-import { toogleChecked, treeifyTests, getCheckedTests, updateTestStatus } from "./helpers";
+import { CreeveyContex, Suite, Test } from "./CreeveyContext";
+import { toogleChecked, treeifyTests, getCheckedTests, updateTestStatus, getTestsByPath } from "./helpers";
+import { TestResultsView } from "./TestResultsView";
 
 interface CreeveyAppState {
   pathsById: {
@@ -14,10 +15,16 @@ interface CreeveyAppState {
   };
   tests: Suite | null;
   isRunning: boolean;
+  openedTest: Test | null;
 }
 
 export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
-  state: CreeveyAppState = { pathsById: {}, tests: null, isRunning: false };
+  state: CreeveyAppState = {
+    pathsById: {},
+    tests: null,
+    isRunning: false,
+    openedTest: null
+  };
   private ws: WebSocket;
 
   constructor(props: {}) {
@@ -28,9 +35,14 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
     this.ws.addEventListener("open", () => this.getStatus());
   }
   render() {
-    const { tests } = this.state;
+    const { tests, openedTest } = this.state;
     return (
-      <CreeveyContex.Provider value={{ onTestToogle: this.handleTestToogle }}>
+      <CreeveyContex.Provider
+        value={{
+          onTestResultsOpen: this.handleTestResultsOpen,
+          onTestToogle: this.handleTestToogle
+        }}
+      >
         <TopBar>
           <TopBar.Item>
             <Logotype locale={{ prefix: "c", suffix: "lin" }} suffix="creevey" />
@@ -44,9 +56,25 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
           )}
         </TopBar>
         {tests ? <TestTree title="<Root>" tests={tests} /> : <Loader type="big" active />}
+        {openedTest && openedTest.results && (
+          <TestResultsView test={openedTest} onClose={this.handleTestResultsClose} />
+        )}
       </CreeveyContex.Provider>
     );
   }
+
+  handleTestResultsClose = () => this.setState({ openedTest: null });
+  handleTestResultsOpen = (path: string[]) => {
+    this.setState(state => {
+      if (!this.state.tests) return state;
+
+      const testOrSuite = getTestsByPath(this.state.tests, path);
+
+      if (!isTest(testOrSuite)) return state;
+
+      return { ...state, openedTest: testOrSuite };
+    });
+  };
 
   handleTestToogle = (path: string[], checked: boolean) => {
     this.setState(state => {

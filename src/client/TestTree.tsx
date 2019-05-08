@@ -1,6 +1,7 @@
 import React from "react";
 import Checkbox from "@skbkontur/react-ui/Checkbox";
 import Gapped from "@skbkontur/react-ui/Gapped";
+import Button from "@skbkontur/react-ui/Button";
 import ArrowTriangleRightIcon from "@skbkontur/react-icons/ArrowTriangleRight";
 import DeleteIcon from "@skbkontur/react-icons/Delete";
 import OkIcon from "@skbkontur/react-icons/Ok";
@@ -37,17 +38,18 @@ export class TestTree extends React.Component<TestTreeProps, TestTreeState> {
   }
   render() {
     const { tests } = this.props;
-    const checkbox = (
-      <Gapped gap={5}>
-        <Checkbox ref={this.checkbox} checked={tests.checked} onChange={this.handleCheck} />
-        {this.props.title}
-      </Gapped>
-    );
     if (isTest(tests)) {
+      const emptyResults = !tests.results || Object.keys(tests.results).length == 0;
       return (
         <div style={{ marginLeft: "20px" }}>
           <Gapped gap={5}>
-            {checkbox} {this.renderStatus(tests)}
+            <Gapped gap={5}>
+              <Checkbox ref={this.checkbox} checked={tests.checked} onChange={this.handleCheck} />
+              <Button use="link" disabled={emptyResults} onClick={this.handleOpenTestResults}>
+                {this.props.title}
+              </Button>
+            </Gapped>
+            {this.renderStatus(tests)}
           </Gapped>
         </div>
       );
@@ -64,7 +66,12 @@ export class TestTree extends React.Component<TestTreeProps, TestTreeState> {
           >
             <ArrowTriangleRightIcon onClick={this.handleSubTreeOpen} />
           </span>
-          {checkbox}
+          <Gapped gap={5}>
+            <Checkbox ref={this.checkbox} checked={tests.checked} onChange={this.handleCheck} />
+            <Button use="link" onClick={this.handleSubTreeOpen}>
+              {this.props.title}
+            </Button>
+          </Gapped>
         </Gapped>
         {this.state.opened && (
           <div style={{ marginLeft: "20px" }}>
@@ -102,6 +109,7 @@ export class TestTree extends React.Component<TestTreeProps, TestTreeState> {
     }
   }
 
+  handleOpenTestResults = () => this.context.onTestResultsOpen(this.props.tests.path);
   handleSubTreeOpen = () => this.setState(({ opened }) => ({ opened: !opened }));
   handleCheck = (_: React.ChangeEvent, checked: boolean) => {
     this.context.onTestToogle(this.props.tests.path, checked);
