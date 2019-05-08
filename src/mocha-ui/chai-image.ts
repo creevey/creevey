@@ -98,7 +98,7 @@ export default (
       const actualBase64: string = utils.flag(this, "object");
       const actual = Buffer.from(actualBase64, "base64");
 
-      // context => [browser, kind, story, test]
+      // context => [kind, story, test, browser]
       const reportImageDir = path.join(config.reportDir, ...context);
       const imageNumber = (await getLastImageNumber(reportImageDir, imageName)) + 1;
 

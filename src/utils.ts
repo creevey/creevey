@@ -64,7 +64,7 @@ export async function switchStory(this: Context) {
   );
 
   this.testScope.length = 0;
-  this.testScope.push(this.browserName, kind, story, test);
+  this.testScope.push(kind, story, test, this.browserName);
 }
 
 const defaultConfig = {
