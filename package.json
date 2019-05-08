@@ -27,8 +27,6 @@
     "selenium-webdriver": "^4.0.0-alpha.1"
   },
   "dependencies": {
-    "@skbkontur/react-icons": "^3.1.8",
-    "@skbkontur/react-ui": "^0.48.0",
     "koa": "^2.7.0",
     "koa-static": "^5.0.0",
     "minimist": "^1.2.0",
@@ -46,6 +44,8 @@
     "@babel/preset-env": "^7.4.4",
     "@babel/preset-react": "^7.0.0",
     "@babel/preset-typescript": "^7.3.3",
+    "@skbkontur/react-icons": "^3.1.8",
+    "@skbkontur/react-ui": "^0.48.0",
     "@types/chai": "^4.1.7",
     "@types/html-webpack-plugin": "^3.2.0",
     "@types/koa": "^2.0.48",
