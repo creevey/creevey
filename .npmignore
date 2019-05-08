@@ -1,2 +1,4 @@
 src
+tests
+types
 lib/client/**/*.d.ts

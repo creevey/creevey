@@ -56,6 +56,7 @@
 - [ ] Add Storybook for web ui components
 - [ ] Status runner
 - [ ] Add logger lib
+- [ ] Config npmignore files
 
 ## Runtime function
 
