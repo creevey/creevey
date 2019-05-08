@@ -15,12 +15,15 @@
 - [x] Add test parser
 - [x] Selenium keep alive
 - [x] Allow start/stop tests
+- [x] reconnect to selenium (sending keep-alive)
+- [x] subscribe websocket api (status commands)
+- [x] websocket api types
 - [ ] Web interface
   - [x] webpack build
   - [x] usage react-ui
   - [x] output tests tree
   - [x] allow start/stop
-  - [ ] comm with API by test id
+  - [x] comm with API by test id
   - [ ] output test status
     - [ ] update/recalc status
   - [ ] output reported images
@@ -28,6 +31,7 @@
     - [ ] switch by hotkeys
   - [ ] approve images
   - [ ] output skiped tests
+- [ ] Save/Load results in/from report dir (js/json)
 - [x] Save images report in multiple runs
 - [ ] Add cli arguments
   - [x] config
@@ -36,28 +40,21 @@
   - [ ] reporter
 - [ ] Custom mocha reporter for worker
 - [ ] Allow to use Teamcity reporter
-- [ ] Reset mouse position
-- [ ] Add react-selenium-testing
-- [ ] Add unit tests
 - [ ] Add storybook addon (add `All stories` story and `renderStory` global func)
   - [ ] Update to Storybook@5.x
-- [ ] Typescript config
-  - [ ] Better handle config/defaultConfig types
+- [ ] Generate static page in report dir
+- [ ] Reset mouse position
+- [ ] Support mocha options for workers
+- [ ] Add unit tests
+- [ ] Support load test files from glob patterns
 - [ ] Simplify types re-export for lib usage
 - [ ] vscode mocha explorer
   - [ ] codelens run not work (need full path)
   - [ ] tests run with default timeout even if it changed in config
   - [ ] cwd and require conflict each other
   - [ ] mocha opts and mocha bin is not prefect support
-- [ ] Support mocha options for workers
-- [ ] Support load test files from glob patterns
-- [ ] Separate class for Worker
-- [ ] Storybook for web ui
-- [ ] reconnect to selenium
-- [ ] subscribe websocket api (status commands)
-- [ ] websocket api types
+- [ ] Add Storybook for web ui components
 - [ ] Status runner
-- [ ] Read reported images and watch
 - [ ] Add logger lib
 
 ## Runtime function
