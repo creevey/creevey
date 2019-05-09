@@ -8,5 +8,5 @@ export default function master(config: Config) {
 
   runner.loadTests();
 
-  creeveyServer(creeveyApi(runner));
+  creeveyServer(creeveyApi(runner), config.reportDir);
 }

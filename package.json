@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "koa": "^2.7.0",
+    "koa-mount": "^4.0.0",
     "koa-static": "^5.0.0",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
@@ -49,6 +50,7 @@
     "@types/chai": "^4.1.7",
     "@types/html-webpack-plugin": "^3.2.0",
     "@types/koa": "^2.0.48",
+    "@types/koa-mount": "^3.0.1",
     "@types/koa-static": "^4.0.1",
     "@types/minimist": "^1.2.0",
     "@types/mkdirp": "^0.5.2",
