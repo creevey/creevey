@@ -24,13 +24,14 @@
   - [x] output tests tree
   - [x] allow start/stop
   - [x] comm with API by test id
-  - [ ] output test status
+  - [ ] output test status (pending)
     - [ ] update/recalc status
-  - [ ] output reported images
+  - [x] output reported images
     - [ ] like github does
     - [ ] switch by hotkeys
   - [ ] approve images
-  - [ ] output skiped tests
+  - [ ] output skipped tests
+  - [ ] use classnames
 - [ ] Save/Load results in/from report dir (js/json)
 - [x] Save images report in multiple runs
 - [ ] Add cli arguments

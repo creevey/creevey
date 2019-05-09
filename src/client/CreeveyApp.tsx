@@ -55,7 +55,13 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
             <TopBar.Item onClick={this.start}>Start</TopBar.Item>
           )}
         </TopBar>
-        {tests ? <TestTree title="<Root>" tests={tests} /> : <Loader type="big" active />}
+        {tests ? (
+          <div style={{ marginLeft: "10px" }}>
+            <TestTree title="<Root>" tests={tests} />
+          </div>
+        ) : (
+          <Loader type="big" active />
+        )}
         {openedTest && openedTest.results && (
           <TestResultsView test={openedTest} onClose={this.handleTestResultsClose} />
         )}

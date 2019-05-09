@@ -15,7 +15,7 @@ interface TestResultsViewState {
 }
 
 export class TestResultsView extends React.Component<TestResultsViewProps, TestResultsViewState> {
-  state: TestResultsViewState = { activePage: 0 };
+  state: TestResultsViewState = { activePage: 1 };
 
   render() {
     const {
@@ -23,19 +23,21 @@ export class TestResultsView extends React.Component<TestResultsViewProps, TestR
       test: { results = {} }
     } = this.props;
     const { activePage } = this.state;
-    const activeRetry = Object.keys(results).map(Number)[activePage];
+    const activeRetry = Object.keys(results).map(Number)[activePage - 1];
     const result = results[activeRetry];
     return (
-      <SidePage onClose={onClose}>
+      <SidePage onClose={onClose} width={1200}>
         <SidePage.Header>Title</SidePage.Header>
         <SidePage.Body>
           <SidePage.Container>
-            <Paging
-              activePage={activePage + 1}
-              onPageChange={this.handlePageChange}
-              pagesCount={Object.keys(results).length}
-            />
-            {result && this.renderResult(result)}
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <Paging
+                activePage={activePage}
+                onPageChange={this.handlePageChange}
+                pagesCount={Object.keys(results).length}
+              />
+              {result && this.renderResult(result)}
+            </div>
           </SidePage.Container>
         </SidePage.Body>
         <SidePage.Footer panel>
@@ -55,11 +57,15 @@ export class TestResultsView extends React.Component<TestResultsViewProps, TestR
       if (!image) return null;
 
       return (
-        <React.Fragment key={name}>
-          <img src={this.getImageUrl(path, image.actual)} />
-          {image.diff && <img src={this.getImageUrl(path, image.diff)} />}
-          {image.expect && <img src={this.getImageUrl(path, image.expect)} />}
-        </React.Fragment>
+        <div key={name} style={{ background: "#eee", textAlign: "center" }}>
+          <img src={this.getImageUrl(path, image.actual)} style={{ margin: "20px", border: "1px solid #888" }} />
+          {image.diff && (
+            <img src={this.getImageUrl(path, image.diff)} style={{ margin: "20px", border: "1px solid #888" }} />
+          )}
+          {image.expect && (
+            <img src={this.getImageUrl(path, image.expect)} style={{ margin: "20px", border: "1px solid #888" }} />
+          )}
+        </div>
       );
     });
   }
