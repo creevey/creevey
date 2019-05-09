@@ -22,7 +22,7 @@ export default async function worker(config: Config) {
     image[type] = `${imageName}-${type}-${imageNumber}.png`;
   }
 
-  const mocha = new Mocha();
+  const mocha = new Mocha({ timeout: 30000 });
   const browserName = process.env.browser as string;
   const browser = await getBrowser(config, browserName);
   const testScope: string[] = [];
