@@ -10,9 +10,6 @@ import chaiImage from "../../mocha-ui/chai-image";
 // @ts-ignore see issue for more info https://github.com/mochajs/mocha/issues/2783
 Suite.prototype.cleanReferences = () => {};
 
-// define chai image
-//
-
 // TODO ui
 // TODO onError, unhandlerRejection
 
@@ -26,7 +23,7 @@ export default async function worker(config: Config) {
   const browserName = process.env.browser as string;
   const browser = await getBrowser(config, browserName);
   const testScope: string[] = [];
-  let images: { [name: string]: Partial<Images> | undefined } = {};
+  let images: Partial<{ [name: string]: Partial<Images> }> = {};
 
   chai.use(chaiImage(config, testScope, saveImageHandler));
 

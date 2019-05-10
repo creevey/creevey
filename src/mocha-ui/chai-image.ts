@@ -20,7 +20,7 @@ async function getStat(filePath: string): Promise<Stats | null> {
     return await statAsync(filePath);
   } catch (error) {
     if (error.code === "ENOENT") {
-      return Promise.resolve(null);
+      return null;
     }
     throw error;
   }
