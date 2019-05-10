@@ -2,8 +2,9 @@ import React from "react";
 import SidePage from "@skbkontur/react-ui/SidePage";
 import Button from "@skbkontur/react-ui/Button";
 import Paging from "@skbkontur/react-ui/Paging";
-import { Test } from "./CreeveyContext";
+import { Test, CreeveyContex } from "./CreeveyContext";
 import { TestResult } from "../types";
+import { ImagesView } from "./ImagesView";
 
 interface TestResultsViewProps {
   test: Test;
@@ -15,6 +16,8 @@ interface TestResultsViewState {
 }
 
 export class TestResultsView extends React.Component<TestResultsViewProps, TestResultsViewState> {
+  static contextType = CreeveyContex;
+  context: React.ContextType<typeof CreeveyContex> = this.context;
   state: TestResultsViewState = {};
 
   render() {
@@ -26,6 +29,7 @@ export class TestResultsView extends React.Component<TestResultsViewProps, TestR
     const { activePage = retries.length } = this.state;
     const activeRetry = retries.map(Number)[activePage - 1];
     const result = results[activeRetry];
+    // TODO Output tile and image name
     return (
       <SidePage onClose={onClose} width={1200}>
         <SidePage.Header>Title</SidePage.Header>
@@ -49,25 +53,37 @@ export class TestResultsView extends React.Component<TestResultsViewProps, TestR
     const {
       test: { path }
     } = this.props;
+    const imagesUrl = `/report/${path.join("/")}`;
 
     return Object.entries(images).map(([name, image]) => {
       if (!image) return null;
 
+      const { actual, diff, expect } = image;
+
       return (
-        <div key={name} style={{ background: "#eee", textAlign: "center" }}>
-          <img src={this.getImageUrl(path, image.actual)} style={{ margin: "20px", border: "1px solid #888" }} />
-          {image.diff && (
-            <img src={this.getImageUrl(path, image.diff)} style={{ margin: "20px", border: "1px solid #888" }} />
-          )}
-          {image.expect && (
-            <img src={this.getImageUrl(path, image.expect)} style={{ margin: "20px", border: "1px solid #888" }} />
-          )}
-        </div>
+        <ImagesView
+          key={name}
+          imageName={name}
+          url={imagesUrl}
+          actual={actual}
+          diff={diff}
+          expect={expect}
+          onApprove={this.handleApprove}
+        />
       );
     });
   }
 
   private handlePageChange = (page: number) => this.setState({ activePage: page });
 
-  private getImageUrl = (path: string[], name: string) => `report/${path.join("/")}/${name}`;
+  private handleApprove = (imageName: string) => {
+    const {
+      test: { id, results = {} }
+    } = this.props;
+    const retries = Object.keys(results);
+    const { activePage = retries.length } = this.state;
+    const activeRetry = retries.map(Number)[activePage - 1];
+
+    this.context.onImageApprove(id, activeRetry, imageName);
+  };
 }

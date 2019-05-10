@@ -47,9 +47,10 @@ export default function creeveyApi(runner: Runner): CreeveyApi {
           runner.stop();
           return;
         }
-        // case 'approve': {
-        //   TODO
-        // }
+        case "approve": {
+          runner.approve(command.payload);
+          return;
+        }
       }
     }
   };

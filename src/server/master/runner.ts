@@ -1,12 +1,30 @@
 import fs from "fs";
 import path from "path";
+import { promisify } from "util";
 import { EventEmitter } from "events";
 import uuid from "uuid";
 import { Config, Test, CreeveyStatus, TestUpdate, TestResult, ApprovePayload, isDefined } from "../../types";
 import Pool from "./pool";
 
+const statAsync = promisify(fs.stat);
+const copyFileAsync = promisify(fs.copyFile);
+
+async function existsAsync(filePath: string): Promise<boolean> {
+  try {
+    await statAsync(filePath);
+    return true;
+  } catch (error) {
+    if (error.code === "ENOENT") {
+      return false;
+    }
+    throw error;
+  }
+}
+
 export default class Runner extends EventEmitter {
   private testDir: string;
+  private screenDir: string;
+  private reportDir: string;
   private tests: Partial<{ [id: string]: Test }> = {};
   private browsers: string[];
   private pools: { [browser: string]: Pool } = {};
@@ -17,6 +35,8 @@ export default class Runner extends EventEmitter {
     super();
 
     this.testDir = config.testDir;
+    this.screenDir = config.screenDir;
+    this.reportDir = config.reportDir;
     this.browsers = Object.keys(config.browsers);
     this.browsers
       .map(browser => (this.pools[browser] = new Pool(config, browser)))
@@ -116,5 +136,19 @@ export default class Runner extends EventEmitter {
       isRunning: this.isRunning,
       testsById: this.tests
     };
+  }
+
+  public async approve({ id, retry, image }: ApprovePayload) {
+    const test = this.tests[id];
+    if (!test || !test.results) return;
+    const result = test.results[retry];
+    if (!result || !result.images) return;
+    const images = result.images[image];
+    if (!images) return;
+    const testPath = path.join(...[...test.path].reverse());
+    const srcImagePath = path.join(this.reportDir, testPath, images.actual);
+    const dstImagePath = path.join(this.screenDir, testPath, `${image}.png`);
+    if (!(await existsAsync(srcImagePath))) return;
+    await copyFileAsync(srcImagePath, dstImagePath);
   }
 }

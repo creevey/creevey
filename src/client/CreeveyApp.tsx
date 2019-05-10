@@ -38,7 +38,8 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
       <CreeveyContex.Provider
         value={{
           onTestResultsOpen: this.handleTestResultsOpen,
-          onTestToogle: this.handleTestToogle
+          onTestToogle: this.handleTestToogle,
+          onImageApprove: this.handleImageApprove
         }}
       >
         <TopBar>
@@ -87,6 +88,8 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
       return { ...state, tests: toogleChecked(state.tests, path, checked) };
     });
   };
+
+  handleImageApprove = (id: string, retry: number, image: string) => this.approve(id, retry, image);
 
   handleStatus = ({ isRunning, testsById }: CreeveyStatus) => {
     const pathsById = Object.entries(testsById).reduce(
@@ -148,7 +151,11 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
     this.send({ type: "start", payload: getCheckedTests(this.state.tests).map(test => test.id) });
   };
 
-  public stop = () => {
+  private stop = () => {
     this.send({ type: "stop" });
+  };
+
+  private approve = (id: string, retry: number, image: string) => {
+    this.send({ type: "approve", payload: { id, retry, image } });
   };
 }

@@ -66,7 +66,17 @@ export interface TestUpdate extends TestResult {
   retry: number;
 }
 
-export type Request = { type: "status" } | { type: "start"; payload: string[] } | { type: "stop" };
+export interface ApprovePayload {
+  id: string;
+  retry: number;
+  image: string;
+}
+
+export type Request =
+  | { type: "status" }
+  | { type: "start"; payload: string[] }
+  | { type: "stop" }
+  | { type: "approve"; payload: ApprovePayload };
 
 export type Response =
   | { type: "status"; payload: CreeveyStatus }

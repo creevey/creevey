@@ -29,7 +29,7 @@
   - [x] output reported images
     - [ ] like github does
     - [ ] switch by hotkeys
-  - [ ] approve images
+  - [x] approve images
   - [ ] output skipped tests
   - [ ] use classnames
 - [ ] Save/Load results in/from report dir (js/json)
@@ -49,6 +49,7 @@
 - [ ] Add unit tests
 - [ ] Support load test files from glob patterns
 - [ ] Simplify types re-export for lib usage
+- [ ] Allow assert multiple images in one test
 - [ ] vscode mocha explorer
   - [ ] codelens run not work (need full path)
   - [ ] tests run with default timeout even if it changed in config
