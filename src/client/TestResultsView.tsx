@@ -11,19 +11,20 @@ interface TestResultsViewProps {
 }
 
 interface TestResultsViewState {
-  activePage: number;
+  activePage?: number;
 }
 
 export class TestResultsView extends React.Component<TestResultsViewProps, TestResultsViewState> {
-  state: TestResultsViewState = { activePage: 1 };
+  state: TestResultsViewState = {};
 
   render() {
     const {
       onClose,
       test: { results = {} }
     } = this.props;
-    const { activePage } = this.state;
-    const activeRetry = Object.keys(results).map(Number)[activePage - 1];
+    const retries = Object.keys(results);
+    const { activePage = retries.length } = this.state;
+    const activeRetry = retries.map(Number)[activePage - 1];
     const result = results[activeRetry];
     return (
       <SidePage onClose={onClose} width={1200}>
@@ -31,11 +32,7 @@ export class TestResultsView extends React.Component<TestResultsViewProps, TestR
         <SidePage.Body>
           <SidePage.Container>
             <div style={{ display: "flex", flexDirection: "column" }}>
-              <Paging
-                activePage={activePage}
-                onPageChange={this.handlePageChange}
-                pagesCount={Object.keys(results).length}
-              />
+              <Paging activePage={activePage} onPageChange={this.handlePageChange} pagesCount={retries.length} />
               {result && this.renderResult(result)}
             </div>
           </SidePage.Container>
