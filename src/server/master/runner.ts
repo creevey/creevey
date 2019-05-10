@@ -2,12 +2,12 @@ import fs from "fs";
 import path from "path";
 import { EventEmitter } from "events";
 import uuid from "uuid";
-import { Config, Test, CreeveyStatus, TestUpdate, TestResult } from "../../types";
+import { Config, Test, CreeveyStatus, TestUpdate, TestResult, ApprovePayload, isDefined } from "../../types";
 import Pool from "./pool";
 
 export default class Runner extends EventEmitter {
   private testDir: string;
-  private tests: { [id: string]: Test } = {};
+  private tests: Partial<{ [id: string]: Test }> = {};
   private browsers: string[];
   private pools: { [browser: string]: Pool } = {};
   private get isRunning(): boolean {
@@ -26,6 +26,7 @@ export default class Runner extends EventEmitter {
   private handlePoolMessage = (message: { id: string; result: TestResult }) => {
     const { result, id } = message;
     const test = this.tests[id];
+    if (!test) return;
     if (!test.results) {
       test.results = {};
     }
@@ -68,7 +69,7 @@ export default class Runner extends EventEmitter {
     it.skip = function skip(browsers: string[], title: string) {
       it(title)
         .filter(({ path: [browser] }) => browsers.includes(browser))
-        .forEach(test => (tests[test.id].skip = true));
+        .forEach(test => (test.skip = true));
     };
 
     // @ts-ignore
@@ -84,7 +85,10 @@ export default class Runner extends EventEmitter {
     // TODO set tests status => pending
     if (this.isRunning) return;
 
-    const testsToStart = ids.map(id => this.tests[id]).filter(test => test && !test.skip);
+    const testsToStart = ids
+      .map(id => this.tests[id])
+      .filter(isDefined)
+      .filter(test => !test.skip);
     const testsByBrowser: { [browser: string]: { id: string; path: string[] }[] } = {};
 
     this.browsers.forEach(browser => (testsByBrowser[browser] = []));

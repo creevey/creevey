@@ -10,9 +10,7 @@ import { toogleChecked, treeifyTests, getCheckedTests, updateTestStatus, getTest
 import { TestResultsView } from "./TestResultsView";
 
 interface CreeveyAppState {
-  pathsById: {
-    [id: string]: string[] | undefined;
-  };
+  pathsById: Partial<{ [id: string]: string[] }>;
   tests: Suite | null;
   isRunning: boolean;
   openedTest: Test | null;

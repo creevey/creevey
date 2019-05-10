@@ -45,9 +45,7 @@ export type TestStatus = "unknown" | "pending" | "running" | "failed" | "success
 
 export interface TestResult {
   status: TestStatus;
-  images?: {
-    [name: string]: Images | undefined;
-  };
+  images?: Partial<{ [name: string]: Images }>;
 }
 
 export interface Test {
@@ -55,14 +53,12 @@ export interface Test {
   path: string[];
   retries: number;
   skip?: boolean;
-  results?: {
-    [retry: number]: TestResult | undefined;
-  };
+  results?: Partial<{ [retry: number]: TestResult }>;
 }
 
 export interface CreeveyStatus {
   isRunning: boolean;
-  testsById: { [id: string]: Test | undefined };
+  testsById: Partial<{ [id: string]: Test }>;
 }
 
 export interface TestUpdate extends TestResult {
@@ -87,4 +83,8 @@ export function isTest<T1, T2 extends Test>(x: T1 | T2): x is T2 {
     typeof x.id == "string" &&
     typeof x.retries == "number"
   );
+}
+
+export function isDefined<T>(value: T | undefined): value is T {
+  return value !== undefined;
 }
