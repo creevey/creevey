@@ -3,7 +3,7 @@ import Mocha, { Suite } from "mocha";
 import commonInterface from "mocha/lib/interfaces/common";
 
 import { createBrowserSuites, createDescriber, describeFactory, itFactory } from "./helpers";
-import { readConfig } from "../utils";
+import { readConfig } from "../config";
 
 const configPath = path.resolve("creevey");
 const config = readConfig(configPath);

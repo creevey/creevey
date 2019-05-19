@@ -16,6 +16,8 @@ export interface Config {
     port: number;
     path: string;
   };
+  preprocessors: string[];
+  testRegex: string;
   testDir: string;
   screenDir: string;
   reportDir: string;

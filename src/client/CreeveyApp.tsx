@@ -28,6 +28,7 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
   constructor(props: {}) {
     super(props);
 
+    // TODO Check host, enter offline mode
     this.ws = new WebSocket(`ws://${window.location.host}`);
     this.ws.addEventListener("message", this.handleMessage);
     this.ws.addEventListener("open", () => this.getStatus());

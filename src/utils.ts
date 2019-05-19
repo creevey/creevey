@@ -1,4 +1,3 @@
-import path from "path";
 import http from "http";
 import { Context } from "mocha";
 import { Builder, until, By } from "selenium-webdriver";
@@ -65,32 +64,4 @@ export async function switchStory(this: Context) {
 
   this.testScope.length = 0;
   this.testScope.push(kind, story, test, this.browserName);
-}
-
-const defaultConfig = {
-  testDir: path.resolve("tests"),
-  screenDir: path.resolve("images"),
-  reportDir: path.resolve("report"),
-  maxRetries: 0
-};
-const defaultBrowserConfig = { limit: 1 };
-
-export function readConfig(configPath: string): Config {
-  const configModule = require(configPath);
-  const userConfig: Config = configModule && configModule.__esModule ? configModule.default : configModule;
-  const config = { ...defaultConfig, ...userConfig };
-
-  Object.values(config.browsers).forEach(browserConfig => Object.assign(browserConfig, defaultBrowserConfig));
-
-  if (!config.hooks) {
-    config.hooks = {
-      async beforeAll(this: Context) {
-        const { config, browserName } = this;
-        this.browser = await getBrowser(config, browserName);
-      },
-      beforeEach: switchStory
-    };
-  }
-
-  return config;
 }

@@ -32,22 +32,24 @@
   - [x] approve images
   - [ ] output skipped tests
   - [ ] use classnames
-- [ ] Save/Load results in/from report dir (js/json)
+  - [ ] Offile mode, load report data
+- [ ] Generate static page in report dir
+- [x] Save/Load results in/from report dir (js/json)
 - [x] Save images report in multiple runs
 - [ ] Add cli arguments
   - [x] config
   - [ ] grep/kind/story
   - [ ] update
   - [ ] reporter
+- [ ] Update Readme (preprocessors, testRegexp)
 - [ ] Custom mocha reporter for worker
 - [ ] Allow to use Teamcity reporter
 - [ ] Add storybook addon (add `All stories` story and `renderStory` global func)
   - [ ] Update to Storybook@5.x
-- [ ] Generate static page in report dir
 - [ ] Reset mouse position
 - [ ] Support mocha options for workers
 - [ ] Add unit tests
-- [ ] Support load test files from glob patterns
+- [x] Support load test files from glob patterns
 - [ ] Simplify types re-export for lib usage
 - [ ] Allow assert multiple images in one test
 - [ ] vscode mocha explorer
