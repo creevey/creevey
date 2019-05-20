@@ -5,15 +5,7 @@ import { promisify } from "util";
 const readdirAsync = promisify(readdir);
 
 export class Loader {
-  private testRegex: RegExp;
-  constructor(
-    { preprocessors, testRegex }: { preprocessors: string[]; testRegex: string },
-    private loadCallback: (filePath: string) => void
-  ) {
-    preprocessors.forEach(require);
-
-    this.testRegex = new RegExp(testRegex);
-  }
+  constructor(private testRegex: RegExp, private loadCallback: (filePath: string) => void) {}
   public async loadTests(directory: string) {
     const dirContent = await readdirAsync(directory, { withFileTypes: true });
     for (const dirent of dirContent) {

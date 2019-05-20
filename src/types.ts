@@ -16,8 +16,7 @@ export interface Config {
     port: number;
     path: string;
   };
-  preprocessors: string[];
-  testRegex: string;
+  testRegex: RegExp;
   testDir: string;
   screenDir: string;
   reportDir: string;
@@ -27,6 +26,12 @@ export interface Config {
     beforeAll: (this: Context) => void;
     beforeEach: (this: Context) => void;
   };
+}
+
+export interface Options {
+  config: string;
+  parser: boolean;
+  browser?: string;
 }
 
 export interface Worker extends ClusterWorker {

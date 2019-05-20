@@ -38,10 +38,11 @@
 - [x] Save images report in multiple runs
 - [ ] Add cli arguments
   - [x] config
+  - [x] parser
   - [ ] grep/kind/story
   - [ ] update
   - [ ] reporter
-- [ ] Update Readme (preprocessors, testRegexp)
+- [ ] Update args readme (config, parser, ...)
 - [ ] Custom mocha reporter for worker
 - [ ] Allow to use Teamcity reporter
 - [ ] Add storybook addon (add `All stories` story and `renderStory` global func)

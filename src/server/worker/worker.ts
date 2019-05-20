@@ -26,7 +26,7 @@ export default async function worker(config: Config) {
 
   chai.use(chaiImage(config, testScope, saveImageHandler));
 
-  await new Loader(config, filePath => mocha.addFile(filePath)).loadTests(config.testDir);
+  await new Loader(config.testRegex, filePath => mocha.addFile(filePath)).loadTests(config.testDir);
 
   mocha.suite.beforeAll(function(this: Context) {
     this.config = config;

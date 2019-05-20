@@ -16,7 +16,10 @@ export default class Pool extends EventEmitter {
     const browserConfig = config.browsers[browser];
 
     this.maxRetries = config.maxRetries;
-    this.workers = Array.from({ length: browserConfig.limit }).map(() => cluster.fork({ browser }));
+    this.workers = Array.from({ length: browserConfig.limit }).map(() => {
+      cluster.setupMaster({ args: ["--browser", browser] });
+      return cluster.fork();
+    });
   }
 
   start(tests: { id: string; path: string[] }[]): boolean {

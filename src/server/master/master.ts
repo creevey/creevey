@@ -1,6 +1,6 @@
 import path from "path";
 import { writeFileSync } from "fs";
-import { fork } from "child_process";
+import cluster from "cluster";
 import Runner from "./runner";
 import creeveyServer from "./server";
 import { Config, Test, isDefined } from "../../types";
@@ -18,17 +18,11 @@ function reportDataModule<T>(data: T) {
 `;
 }
 
-function loadTests(config: Config) {
+function loadTests() {
   return new Promise(resolve => {
     console.log("[CreeveyRunner]:", "Start loading tests");
-    const parser = fork(path.join(__dirname, "parser"), [], {
-      env: {
-        browsers: JSON.stringify(Object.keys(config.browsers)),
-        preprocessors: JSON.stringify(config.preprocessors),
-        testDir: config.testDir,
-        testRegex: config.testRegex
-      }
-    });
+    cluster.setupMaster({ args: ["--parser"] });
+    const parser = cluster.fork();
     parser.once("message", message => {
       const tests: Partial<{ [id: string]: Test }> = JSON.parse(message);
       console.log("[CreeveyRunner]:", "Tests loaded");
@@ -60,7 +54,7 @@ export default async function master(config: Config) {
   } catch (error) {
     // Ignore error
   }
-  const tests = await loadTests(config);
+  const tests = await loadTests();
   const mergedTests = mergeTests(tests, testsWithReports);
 
   const runner = new Runner(config, mergedTests);
