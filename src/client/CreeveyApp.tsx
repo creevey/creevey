@@ -3,11 +3,15 @@ import TopBar from "@skbkontur/react-ui/TopBar";
 import Logotype from "@skbkontur/react-ui/Logotype";
 import Loader from "@skbkontur/react-ui/Loader";
 import Spinner from "@skbkontur/react-ui/Spinner";
-import { CreeveyStatus, TestUpdate, Response, Request, isTest } from "../types";
+import { CreeveyStatus, TestUpdate, Response, Request, isTest, Test as ApiTest } from "../types";
 import { TestTree } from "./TestTree";
 import { CreeveyContex, Suite, Test } from "./CreeveyContext";
 import { toogleChecked, treeifyTests, getCheckedTests, updateTestStatus, getTestsByPath } from "./helpers";
 import { TestResultsView } from "./TestResultsView";
+
+declare global {
+  const creeveyData: Partial<{ [id: string]: ApiTest }>;
+}
 
 interface CreeveyAppState {
   pathsById: Partial<{ [id: string]: string[] }>;
@@ -23,15 +27,21 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
     isRunning: false,
     openedTest: null
   };
-  private ws: WebSocket;
+  private ws?: WebSocket;
 
   constructor(props: {}) {
     super(props);
 
-    // TODO Check host, enter offline mode
-    this.ws = new WebSocket(`ws://${window.location.host}`);
-    this.ws.addEventListener("message", this.handleMessage);
-    this.ws.addEventListener("open", () => this.getStatus());
+    if (window.location.host) {
+      this.ws = new WebSocket(`ws://${window.location.host}`);
+      this.ws.addEventListener("message", this.handleMessage);
+      this.ws.addEventListener("open", () => this.getStatus());
+    } else {
+      const script = document.createElement("script");
+      script.src = "data.js";
+      script.onload = this.handleCreeveyData;
+      document.body.appendChild(script);
+    }
   }
   render() {
     const { tests, openedTest } = this.state;
@@ -68,6 +78,17 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
       </CreeveyContex.Provider>
     );
   }
+
+  handleCreeveyData = () => {
+    const pathsById = Object.entries(creeveyData).reduce(
+      (obj, [id, test]) => (test ? { ...obj, [id]: [...test.path].reverse() } : obj),
+      {}
+    );
+    this.setState({
+      tests: treeifyTests(creeveyData),
+      pathsById
+    });
+  };
 
   handleTestResultsClose = () => this.setState({ openedTest: null });
   handleTestResultsOpen = (path: string[]) => {
@@ -139,6 +160,8 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
   };
 
   private send(command: Request) {
+    if (!this.ws) return;
+
     this.ws.send(JSON.stringify(command));
   }
 

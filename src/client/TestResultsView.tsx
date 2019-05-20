@@ -53,7 +53,8 @@ export class TestResultsView extends React.Component<TestResultsViewProps, TestR
     const {
       test: { path }
     } = this.props;
-    const imagesUrl = `/report/${path.join("/")}`;
+    // TODO should better handle offline mode
+    const imagesUrl = window.location.host ? `/report/${path.join("/")}` : path.join("/");
 
     return Object.entries(images).map(([name, image]) => {
       if (!image) return null;

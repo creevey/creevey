@@ -32,8 +32,8 @@
   - [x] approve images
   - [ ] output skipped tests
   - [ ] use classnames
-  - [ ] Offile mode, load report data
-- [ ] Generate static page in report dir
+  - [x] Offile mode, load report data
+- [x] Generate static page in report dir
 - [x] Save/Load results in/from report dir (js/json)
 - [x] Save images report in multiple runs
 - [ ] Add cli arguments

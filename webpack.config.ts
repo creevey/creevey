@@ -4,10 +4,7 @@ import { Configuration } from "webpack";
 
 const config: Configuration = {
   entry: "./src/client/index.tsx",
-  output: {
-    path: path.join(__dirname, "./lib/client"),
-    publicPath: "/"
-  },
+  output: { path: path.join(__dirname, "./lib/client") },
   module: {
     rules: [
       {

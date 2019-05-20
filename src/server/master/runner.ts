@@ -1,12 +1,12 @@
-import fs from "fs";
 import path from "path";
+import { copyFile } from "fs";
 import { promisify } from "util";
 import { EventEmitter } from "events";
 import mkdirp from "mkdirp";
 import { Config, Test, CreeveyStatus, TestUpdate, TestResult, ApprovePayload, isDefined } from "../../types";
 import Pool from "./pool";
 
-const copyFileAsync = promisify(fs.copyFile);
+const copyFileAsync = promisify(copyFile);
 const mkdirpAsync = promisify(mkdirp);
 
 export default class Runner extends EventEmitter {

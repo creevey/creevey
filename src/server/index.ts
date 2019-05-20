@@ -3,8 +3,11 @@ import cluster from "cluster";
 import { readConfig } from "../config";
 import { Options } from "../types";
 
+// TODO grep
+// TODO update
 export default function(options: Options) {
   const config = readConfig(path.resolve(options.config));
+  const browser = options.browser;
 
   if (options.parser) {
     require("./master/parser").default(config);
@@ -15,6 +18,7 @@ export default function(options: Options) {
   } else if (cluster.isWorker) {
     console.log("[CreeveyWorker]:", `Started with pid ${process.pid}`);
 
-    require("./worker").default(config);
+    // TODO Check browser type
+    require("./worker").default(config, browser);
   }
 }

@@ -12,14 +12,13 @@ Suite.prototype.cleanReferences = () => {};
 // TODO ui
 // TODO onError, unhandlerRejection
 
-export default async function worker(config: Config) {
+export default async function worker(config: Config, browserName: string) {
   function saveImageHandler(imageName: string, imageNumber: number, type: keyof Images) {
     const image = (images[imageName] = images[imageName] || {});
     image[type] = `${imageName}-${type}-${imageNumber}.png`;
   }
 
   const mocha = new Mocha({ timeout: 30000 });
-  const browserName = process.env.browser as string;
   const browser = await getBrowser(config, browserName);
   const testScope: string[] = [];
   let images: Partial<{ [name: string]: Partial<Images> }> = {};
