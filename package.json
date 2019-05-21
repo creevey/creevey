@@ -1,6 +1,6 @@
 {
   "name": "creevey",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "bin": {
     "creevey": "./lib/cli.js"
   },
