@@ -1,10 +1,12 @@
 import cluster from "cluster";
 import { EventEmitter } from "events";
-import { Worker, Config, Test, TestResult } from "../../types";
+import { Worker, Config, Test, TestResult, Capabilities, BrowserConfig } from "../../types";
 
 export default class Pool extends EventEmitter {
   private maxRetries: number;
-  private workers: Worker[];
+  private browser: string;
+  private config: Capabilities & BrowserConfig;
+  private workers: Worker[] = [];
   private queue: Test[] = [];
   private forcedStop: boolean = false;
   public get isRunning(): boolean {
@@ -13,13 +15,18 @@ export default class Pool extends EventEmitter {
   constructor(config: Config, browser: string) {
     super();
 
-    const browserConfig = config.browsers[browser];
-
     this.maxRetries = config.maxRetries;
-    this.workers = Array.from({ length: browserConfig.limit }).map(() => {
-      cluster.setupMaster({ args: ["--browser", browser] });
+    this.browser = browser;
+    this.config = config.browsers[browser];
+  }
+
+  init() {
+    this.workers = Array.from({ length: this.config.limit }).map(() => {
+      cluster.setupMaster({ args: ["--browser", this.browser] });
       return cluster.fork();
     });
+    // TODO handle errors
+    return Promise.all(this.workers.map(worker => new Promise(resolve => worker.once("message", resolve))));
   }
 
   start(tests: { id: string; path: string[] }[]): boolean {

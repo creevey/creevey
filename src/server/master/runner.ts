@@ -55,6 +55,10 @@ export default class Runner extends EventEmitter {
     }
   };
 
+  public init() {
+    return Promise.all(Object.values(this.pools).map(pool => pool.init()));
+  }
+
   public start(ids: string[]) {
     // TODO set tests status => pending
     if (this.isRunning) return;

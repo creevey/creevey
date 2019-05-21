@@ -36,9 +36,11 @@
 - [x] Generate static page in report dir
 - [x] Save/Load results in/from report dir (js/json)
 - [x] Save images report in multiple runs
+- [ ] Handle error on mocha hooks
 - [ ] Add cli arguments
   - [x] config
   - [x] parser
+  - [x] ui
   - [ ] grep/kind/story
   - [ ] update
   - [ ] reporter
@@ -47,9 +49,11 @@
 - [ ] Allow to use Teamcity reporter
 - [ ] Add storybook addon (add `All stories` story and `renderStory` global func)
   - [ ] Update to Storybook@5.x
-- [ ] Reset mouse position
+  - [ ] Reset mouse position
 - [ ] Support mocha options for workers
 - [ ] Add unit tests
+- [ ] Better handle websocket messages
+- [x] Add worker ready event
 - [x] Support load test files from glob patterns
 - [ ] Simplify types re-export for lib usage
 - [ ] Allow assert multiple images in one test

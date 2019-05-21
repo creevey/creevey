@@ -31,6 +31,7 @@ export interface Config {
 export interface Options {
   config: string;
   parser: boolean;
+  ui: boolean;
   browser?: string;
 }
 

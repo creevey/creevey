@@ -2,13 +2,13 @@ import path from "path";
 import { writeFileSync, copyFile, readdir } from "fs";
 import { promisify } from "util";
 import cluster from "cluster";
-import Runner from "./runner";
-import creeveyServer from "./server";
+import mkdirp from "mkdirp";
 import { Config, Test, isDefined } from "../../types";
-import creeveyApi from "./api";
+import Runner from "./runner";
 
 const copyFileAsync = promisify(copyFile);
 const readdirAsync = promisify(readdir);
+const mkdirpAsync = promisify(mkdirp);
 
 function reportDataModule<T>(data: T) {
   return `
@@ -55,6 +55,7 @@ async function copyStatics(reportDir: string) {
   const files = (await readdirAsync(clientDir, { withFileTypes: true }))
     .filter(dirent => !/\.d\.ts$/.test(dirent.name))
     .map(dirent => dirent.name);
+  await mkdirpAsync(reportDir);
   for (const file of files) {
     await copyFileAsync(path.join(clientDir, file), path.join(reportDir, file));
   }
@@ -73,8 +74,7 @@ export default async function master(config: Config) {
 
   const runner = new Runner(config, mergedTests);
 
-  creeveyServer(creeveyApi(runner), config.reportDir);
-
+  await runner.init();
   await copyStatics(config.reportDir);
 
   process.on("SIGINT", () => {
@@ -86,4 +86,6 @@ export default async function master(config: Config) {
     }
   });
   process.on("exit", () => writeFileSync(reportDataPath, reportDataModule(runner.status.testsById)));
+
+  return runner;
 }

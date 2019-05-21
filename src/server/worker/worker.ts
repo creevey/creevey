@@ -58,5 +58,9 @@ export default async function worker(config: Config, browserName: string) {
 
   setInterval(() => browser.getTitle(), 30 * 1000);
 
-  console.log(browserName, "ready");
+  console.log("[CreeveyWorker]:", `Ready ${browserName}:${process.pid}`);
+
+  if (process.send) {
+    process.send(JSON.stringify({ type: "ready" }));
+  }
 }
