@@ -46,7 +46,7 @@
   - [ ] reporter
 - [ ] Update args readme (config, parser, ...)
 - [ ] Custom mocha reporter for worker
-- [ ] Allow to use Teamcity reporter
+- [x] Allow to use Teamcity reporter
 - [ ] Add storybook addon (add `All stories` story and `renderStory` global func)
   - [ ] Update to Storybook@5.x
   - [ ] Reset mouse position
@@ -66,6 +66,7 @@
 - [ ] Status runner
 - [ ] Add logger lib
 - [ ] Config npmignore files
+- [ ] Programmic API
 
 ## Runtime function
 

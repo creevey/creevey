@@ -1,6 +1,6 @@
 import chai from "chai";
 import Mocha, { Suite, Context } from "mocha";
-import { Config, Test, Images } from "../../types";
+import { Config, Test, Images, Options } from "../../types";
 import { getBrowser, switchStory } from "../../utils";
 import chaiImage from "../../mocha-ui/chai-image";
 import { Loader } from "../../loader";
@@ -12,14 +12,15 @@ Suite.prototype.cleanReferences = () => {};
 // TODO ui
 // TODO onError, unhandlerRejection
 
-export default async function worker(config: Config, browserName: string) {
+// FIXME browser options hotfix
+export default async function worker(config: Config, options: Options & { browser: string }) {
   function saveImageHandler(imageName: string, imageNumber: number, type: keyof Images) {
     const image = (images[imageName] = images[imageName] || {});
     image[type] = `${imageName}-${type}-${imageNumber}.png`;
   }
 
-  const mocha = new Mocha({ timeout: 30000 });
-  const browser = await getBrowser(config, browserName);
+  const mocha = new Mocha({ timeout: 30000, reporter: options.reporter });
+  const browser = await getBrowser(config, options.browser);
   const testScope: string[] = [];
   let images: Partial<{ [name: string]: Partial<Images> }> = {};
 
@@ -30,7 +31,7 @@ export default async function worker(config: Config, browserName: string) {
   mocha.suite.beforeAll(function(this: Context) {
     this.config = config;
     this.browser = browser;
-    this.browserName = browserName;
+    this.browserName = options.browser;
     this.testScope = testScope;
   });
   mocha.suite.beforeEach(switchStory);
@@ -40,8 +41,6 @@ export default async function worker(config: Config, browserName: string) {
   process.on("message", message => {
     const test: Test = JSON.parse(message);
     const testPath = [...test.path].reverse().join(" ");
-
-    console.log(browserName, testPath);
 
     mocha.grep(new RegExp(`^${testPath}$`));
     mocha.run(failures => {
@@ -58,7 +57,7 @@ export default async function worker(config: Config, browserName: string) {
 
   setInterval(() => browser.getTitle(), 30 * 1000);
 
-  console.log("[CreeveyWorker]:", `Ready ${browserName}:${process.pid}`);
+  console.log("[CreeveyWorker]:", `Ready ${options.browser}:${process.pid}`);
 
   if (process.send) {
     process.send(JSON.stringify({ type: "ready" }));

@@ -18,6 +18,6 @@ export default async function(options: Options) {
     console.log("[CreeveyWorker]:", `Started ${browser}:${process.pid}`);
 
     // TODO Check browser type
-    require("./worker").default(config, browser);
+    require("./worker").default(config, options);
   }
 }

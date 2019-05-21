@@ -33,6 +33,7 @@ export interface Options {
   parser: boolean;
   ui: boolean;
   browser?: string;
+  reporter?: string;
 }
 
 export interface Worker extends ClusterWorker {
