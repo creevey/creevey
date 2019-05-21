@@ -43,22 +43,12 @@ module.exports = {
 ### Creevey CLI
 
 - Define config `creevey.js`
-- If you want to use `typescript`, add first line to config `require("ts-node").register({ files: true, transpileOnly: true });`
-- Run test server `yarn creevey [--config <path>]`
-- Or run specific tests without starting server `yarn creevey [--config <path>]`
-
-### Programmatic API
-
-```ts
-import creevey from "crevey/lib/server";
-import { Config } from "creevey/lib/types";
-
-const config: Config = {
-  /* ... */
-};
-
-creveey(config);
-```
+- To allow use `typescript`:
+  - Add first line to config file `require("ts-node").register({ files: true, transpileOnly: true });`
+  - Define in config `testRegex: /\.ts$/,`
+- Run test server `yarn creevey --ui`
+- Open webpage `http://localhost:3000/`
+- Or run tests without starting server `yarn creevey`
 
 ### Requirements
 
