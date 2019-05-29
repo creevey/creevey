@@ -18,6 +18,9 @@
 - [x] reconnect to selenium (sending keep-alive)
 - [x] subscribe websocket api (status commands)
 - [x] websocket api types
+- [ ] Allow define sets (test files, address, browsers)
+  - [ ] Filter tests by suites in parser
+  - [ ] Merge common config with browser config
 - [ ] Not graceful exit master process on error in workers
 - [ ] Ignore elements from screenshot
 - [ ] Web interface
