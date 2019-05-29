@@ -5,11 +5,18 @@ export default class Reporter extends reporters.Base {
     super(runner);
     // TODO chalk
 
+    runner.on("test", test =>
+      console.log(`[START:${process.pid}]`, `${options.reporterOptions.topLevelSuite}/${test.titlePath().join("/")}`)
+    );
     runner.on("pass", test =>
-      console.log("[PASS]", `${test.titlePath().join("/")}/${options.reporterOptions.topLevelSuite}`)
+      console.log(`[PASS:${process.pid}]`, `${options.reporterOptions.topLevelSuite}/${test.titlePath().join("/")}`)
     );
     runner.on("fail", (test, error) =>
-      console.log("[FAIL]", `${test.titlePath().join("/")}/${options.reporterOptions.topLevelSuite}`, error.message)
+      console.log(
+        `[FAIL:${process.pid}]`,
+        `${options.reporterOptions.topLevelSuite}/${test.titlePath().join("/")}`,
+        error.message
+      )
     );
   }
 }
