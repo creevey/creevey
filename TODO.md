@@ -18,6 +18,8 @@
 - [x] reconnect to selenium (sending keep-alive)
 - [x] subscribe websocket api (status commands)
 - [x] websocket api types
+- [ ] Not graceful exit master process on error in workers
+- [ ] Ignore elements from screenshot
 - [ ] Web interface
   - [x] webpack build
   - [x] usage react-ui
