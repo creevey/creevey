@@ -81,6 +81,7 @@ export default class Pool extends EventEmitter {
       }
     });
     worker.send(JSON.stringify(test));
+    this.process();
   }
 
   private sendStatus(message: { id: string; result: TestResult }) {
