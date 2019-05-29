@@ -17,7 +17,9 @@ export function readConfig(configPath: string): Config {
   const userConfig: Config = configModule && configModule.__esModule ? configModule.default : configModule;
   const config = { ...defaultConfig, ...userConfig };
 
-  Object.values(config.browsers).forEach(browserConfig => Object.assign(browserConfig, defaultBrowserConfig));
+  Object.entries(config.browsers).forEach(
+    ([browser, browserConfig]) => (config.browsers[browser] = { ...defaultBrowserConfig, ...browserConfig })
+  );
 
   if (!config.hooks) {
     config.hooks = {
