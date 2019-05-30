@@ -49,6 +49,7 @@ export class TestResultsView extends React.Component<TestResultsViewProps, TestR
   }
 
   private renderResult({ images }: TestResult) {
+    // TODO render error message
     if (!images) return null;
     const {
       test: { path }

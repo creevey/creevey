@@ -21,7 +21,8 @@
 - [ ] Allow define sets (test files, address, browsers)
   - [ ] Filter tests by suites in parser
   - [ ] Merge common config with browser config
-- [ ] Not graceful exit master process on error in workers
+- [x] Not graceful exit master process on error in workers
+- [x] Add worker timeout and restart it
 - [ ] Ignore elements from screenshot
 - [ ] Web interface
   - [x] webpack build
@@ -38,6 +39,7 @@
   - [ ] output skipped tests
   - [ ] use classnames
   - [x] Offile mode, load report data
+  - [ ] Output test error message
 - [x] Generate static page in report dir
 - [x] Save/Load results in/from report dir (js/json)
 - [x] Save images report in multiple runs
@@ -48,9 +50,9 @@
   - [x] ui
   - [ ] grep/kind/story
   - [ ] update
-  - [ ] reporter
+  - [x] reporter
 - [ ] Update args readme (config, parser, ...)
-- [ ] Custom mocha reporter for worker
+- [x] Custom mocha reporter for worker
 - [x] Allow to use Teamcity reporter
 - [ ] Add storybook addon (add `All stories` story and `renderStory` global func)
   - [ ] Update to Storybook@5.x
@@ -60,6 +62,7 @@
 - [ ] Better handle websocket messages
 - [x] Add worker ready event
 - [x] Support load test files from glob patterns
+- [ ] Allow defined mocha hooks
 - [ ] Simplify types re-export for lib usage
 - [ ] Allow assert multiple images in one test
 - [ ] vscode mocha explorer

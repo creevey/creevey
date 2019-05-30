@@ -79,6 +79,8 @@ export default async function master(config: Config) {
 
   process.on("SIGINT", () => {
     if (runner.isRunning) {
+      // TODO Better handle stop
+      setTimeout(() => process.exit(0), 10000);
       runner.once("stop", () => process.exit(0));
       runner.stop();
     } else {

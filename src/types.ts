@@ -44,6 +44,19 @@ export interface Workers {
   [browser: string]: Worker[];
 }
 
+export type WorkerMessage =
+  | {
+      type: "ready";
+    }
+  | {
+      type: "error";
+      payload: any;
+    }
+  | {
+      type: "test";
+      payload: TestResult;
+    };
+
 export interface Images {
   actual: string;
   expect?: string;
@@ -55,6 +68,7 @@ export type TestStatus = "unknown" | "pending" | "running" | "failed" | "success
 export interface TestResult {
   status: TestStatus;
   images?: Partial<{ [name: string]: Images }>;
+  error?: any;
 }
 
 export interface Test {

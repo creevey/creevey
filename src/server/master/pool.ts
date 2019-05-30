@@ -1,6 +1,6 @@
 import cluster from "cluster";
 import { EventEmitter } from "events";
-import { Worker, Config, Test, TestResult, Capabilities, BrowserConfig } from "../../types";
+import { Worker, Config, Test, TestResult, Capabilities, BrowserConfig, WorkerMessage } from "../../types";
 
 export default class Pool extends EventEmitter {
   private maxRetries: number;
@@ -39,7 +39,11 @@ export default class Pool extends EventEmitter {
   }
 
   stop() {
-    if (!this.isRunning) return;
+    // TODO Timeout
+    if (!this.isRunning) {
+      // TODO this.emit("stop");
+      return;
+    }
 
     this.forcedStop = true;
     this.queue = [];
@@ -58,9 +62,15 @@ export default class Pool extends EventEmitter {
     this.sendStatus({ id, result: { status: "running" } });
 
     worker.isRunnning = true;
-    worker.once("message", message => {
-      // TODO send failed with payload
-      const result: TestResult = JSON.parse(message);
+    worker.once("message", data => {
+      const message: WorkerMessage = JSON.parse(data);
+      if (message.type != "test") {
+        // TODO handle retry
+        this.handleMessage(worker, message);
+        this.process();
+        return;
+      }
+      const result = message.payload;
       const { status } = result;
 
       if (status == "failed") {
@@ -94,5 +104,20 @@ export default class Pool extends EventEmitter {
 
   private get freeWorkers() {
     return this.workers.filter(worker => !worker.isRunnning);
+  }
+
+  private handleMessage(worker: Worker, message: WorkerMessage) {
+    if (message.type == "error") {
+      worker.once("exit", () => {
+        cluster.setupMaster({ args: ["--browser", this.browser, ...process.argv.slice(2)] });
+        const newWorker = cluster.fork();
+        // TODO handle errors
+        newWorker.once("message", () => {
+          this.workers[this.workers.indexOf(worker)] = newWorker;
+          this.process();
+        });
+      });
+      worker.kill();
+    }
   }
 }

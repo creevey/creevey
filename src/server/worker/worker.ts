@@ -10,14 +10,24 @@ import Reporter from "./reporter";
 // @ts-ignore see issue for more info https://github.com/mochajs/mocha/issues/2783
 Suite.prototype.cleanReferences = () => {};
 
-// TODO ui
-// TODO onError, unhandlerRejection
-
 // FIXME browser options hotfix
 export default async function worker(config: Config, options: Options & { browser: string }) {
   function saveImageHandler(imageName: string, imageNumber: number, type: keyof Images) {
     const image = (images[imageName] = images[imageName] || {});
     image[type] = `${imageName}-${type}-${imageNumber}.png`;
+  }
+
+  function runHandler(failures: number) {
+    if (process.send) {
+      if (failures > 0) {
+        process.send(JSON.stringify({ type: "test", payload: { status: "failed", images } }));
+      } else {
+        process.send(JSON.stringify({ type: "test", payload: { status: "success", images, error } }));
+      }
+    }
+    // TODO Should we move into `process.on`
+    images = {};
+    error = null;
   }
 
   const mocha = new Mocha({
@@ -28,6 +38,7 @@ export default async function worker(config: Config, options: Options & { browse
   const browser = await getBrowser(config, options.browser);
   const testScope: string[] = [];
   let images: Partial<{ [name: string]: Partial<Images> }> = {};
+  let error: any = null;
 
   chai.use(chaiImage(config, testScope, saveImageHandler));
 
@@ -41,23 +52,21 @@ export default async function worker(config: Config, options: Options & { browse
   });
   mocha.suite.beforeEach(switchStory);
 
-  // TODO Custom reporter => collect fail results => on end send fail results
+  process.on("unhandledRejection", reason => {
+    if (process.send) {
+      process.send(JSON.stringify({ type: "error", payload: reason }));
+    }
+  });
 
   process.on("message", message => {
     const test: Test = JSON.parse(message);
     const testPath = [...test.path].reverse().join(" ");
 
     mocha.grep(new RegExp(`^${testPath}$`));
-    mocha.run(failures => {
-      if (process.send) {
-        if (failures > 0) {
-          process.send(JSON.stringify({ status: "failed", images }));
-        } else {
-          process.send(JSON.stringify({ status: "success", images }));
-        }
-      }
-      images = {};
-    });
+    const runner = mocha.run(runHandler);
+
+    // TODO How handle browser corruption?
+    runner.on("fail", (_test, testError) => (error = testError));
   });
 
   setInterval(() => browser.getTitle(), 30 * 1000);
