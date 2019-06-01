@@ -1,10 +1,10 @@
 import WebSocket from "ws";
 import Runner from "./runner";
-import { Request, Response, TestUpdate, CreeveyStatus } from "../../types";
+import { Request, Response, CreeveyUpdate } from "../../types";
 
 export interface CreeveyApi {
   subscribe: (wss: WebSocket.Server) => void;
-  handleMessage: (ws: WebSocket, message: WebSocket.Data) => void;
+  handleMessage: (message: WebSocket.Data) => void;
 }
 
 function broadcast(wss: WebSocket.Server, message: Response) {
@@ -16,14 +16,20 @@ function broadcast(wss: WebSocket.Server, message: Response) {
 }
 
 export default function creeveyApi(runner: Runner): CreeveyApi {
+  let seq = 0;
   return {
     subscribe(wss: WebSocket.Server) {
-      runner.on("test", (payload: TestUpdate) => broadcast(wss, { type: "test", payload }));
-      runner.on("start", (payload: string[]) => broadcast(wss, { type: "start", payload }));
-      runner.on("stop", () => broadcast(wss, { type: "stop" }));
+      wss.on("connection", ws => {
+        const message: Response = { type: "status", seq, payload: runner.status };
+        ws.send(JSON.stringify(message));
+      });
+      runner.on("update", (payload: CreeveyUpdate) => {
+        seq += 1;
+        broadcast(wss, { type: "update", seq, payload });
+      });
     },
 
-    handleMessage(ws: WebSocket, message: WebSocket.Data) {
+    handleMessage(message: WebSocket.Data) {
       if (typeof message != "string") {
         console.log("[WebSocket]:", "unhandled message", message);
         return;
@@ -33,12 +39,6 @@ export default function creeveyApi(runner: Runner): CreeveyApi {
       console.log("[WebSocket]:", "message", message);
 
       switch (command.type) {
-        case "status": {
-          const payload: CreeveyStatus = runner.status;
-          const message: Response = { type: command.type, payload };
-          ws.send(JSON.stringify(message));
-          return;
-        }
         case "start": {
           runner.start(command.payload);
           return;

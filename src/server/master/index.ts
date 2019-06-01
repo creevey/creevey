@@ -12,8 +12,7 @@ export default async function(config: Config, options: Options) {
       const isSuccess = Object.values(runner.status.testsById)
         .filter(isDefined)
         .filter(({ skip }) => !skip)
-        .map(({ retries, results }) => results && results[retries])
-        .every(result => Boolean(result && result.status == "success"));
+        .every(({ status }) => status == "success");
       // TODO output summary
       process.exit(isSuccess ? 0 : -1);
     });

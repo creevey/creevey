@@ -22,7 +22,7 @@ export default function server(api: CreeveyApi, reportDir: string) {
     ws.on("error", error => console.log("[WebSocket]:", error));
     ws.on("open", () => console.log("[WebSocket]:", "Connection open"));
     ws.on("close", () => console.log("[WebSocket]:", "Connection close"));
-    ws.on("message", message => api.handleMessage(ws, message));
+    ws.on("message", api.handleMessage);
   });
 
   wss.on("error", error => console.log("[WebSocketServer]:", error));

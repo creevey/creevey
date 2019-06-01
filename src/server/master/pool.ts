@@ -1,13 +1,13 @@
 import cluster from "cluster";
 import { EventEmitter } from "events";
-import { Worker, Config, Test, TestResult, Capabilities, BrowserConfig, WorkerMessage } from "../../types";
+import { Worker, Config, TestResult, Capabilities, BrowserConfig, WorkerMessage, TestStatus } from "../../types";
 
 export default class Pool extends EventEmitter {
   private maxRetries: number;
   private browser: string;
   private config: Capabilities & BrowserConfig;
   private workers: Worker[] = [];
-  private queue: Test[] = [];
+  private queue: { id: string; path: string[]; retries: number }[] = [];
   private forcedStop: boolean = false;
   public get isRunning(): boolean {
     return this.workers.length !== this.freeWorkers.length;
@@ -59,7 +59,7 @@ export default class Pool extends EventEmitter {
 
     this.queue.shift();
 
-    this.sendStatus({ id, result: { status: "running" } });
+    this.sendStatus({ id, status: "running" });
 
     worker.isRunnning = true;
     worker.once("message", data => {
@@ -81,7 +81,7 @@ export default class Pool extends EventEmitter {
           this.queue.push(test);
         }
       }
-      this.sendStatus({ id, result });
+      this.sendStatus({ id, status, result });
       worker.isRunnning = false;
 
       if (this.queue.length > 0) {
@@ -95,7 +95,7 @@ export default class Pool extends EventEmitter {
     this.process();
   }
 
-  private sendStatus(message: { id: string; result: TestResult }) {
+  private sendStatus(message: { id: string; status: TestStatus; result?: TestResult }) {
     this.emit("test", message);
   }
 

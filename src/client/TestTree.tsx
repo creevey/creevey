@@ -39,7 +39,7 @@ export class TestTree extends React.Component<TestTreeProps, TestTreeState> {
   render() {
     const { tests } = this.props;
     if (isTest(tests)) {
-      const emptyResults = !tests.results || Object.keys(tests.results).length == 0;
+      const emptyResults = !tests.results || tests.results.length == 0;
       return (
         <div style={{ marginLeft: "20px" }}>
           <Gapped gap={5}>
@@ -84,13 +84,8 @@ export class TestTree extends React.Component<TestTreeProps, TestTreeState> {
     );
   }
 
-  renderStatus(test: Test) {
-    const { results, retries } = test;
-    if (!results) return null;
-    const lastResult = results[retries];
-    if (!lastResult) return null;
-
-    switch (lastResult.status) {
+  renderStatus({ status }: Test) {
+    switch (status) {
       case "failed": {
         return <DeleteIcon color="red" />;
       }

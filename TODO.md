@@ -18,51 +18,52 @@
 - [x] reconnect to selenium (sending keep-alive)
 - [x] subscribe websocket api (status commands)
 - [x] websocket api types
-- [ ] Allow define sets (test files, address, browsers)
-  - [ ] Filter tests by suites in parser
-  - [ ] Merge common config with browser config
+- [x] Generate static page in report dir
+- [x] Save/Load results in/from report dir (js/json)
+- [x] Save images report in multiple runs
 - [x] Not graceful exit master process on error in workers
 - [x] Add worker timeout and restart it
 - [x] ~~Ignore elements from screenshot~~
+- [x] Custom mocha reporter for worker
+- [x] Allow to use Teamcity reporter
+- [x] Add worker ready event
+- [x] Support load test files from glob patterns
+- [x] Better handle websocket messages
+- [ ] Allow define sets (test files, address, browsers)
+  - [ ] Filter tests by suites in parser
+  - [ ] Merge common config with browser config
 - [ ] Web interface
   - [x] webpack build
   - [x] usage react-ui
   - [x] output tests tree
   - [x] allow start/stop
   - [x] comm with API by test id
-  - [ ] output test status (pending)
-    - [ ] update/recalc status
-  - [x] output reported images
-    - [ ] like github does
-    - [ ] switch by hotkeys
   - [x] approve images
-  - [ ] output skipped tests
-  - [ ] use classnames
   - [x] Offile mode, load report data
   - [x] Output test error message
+  - [x] output reported images
+  - [ ] better images view like github does
+  - [ ] switch images by hotkeys
+  - [x] output test status (pending)
+  - [ ] update/recalc suite status
+  - [ ] output skipped tests
+  - [ ] use classnames
   - [ ] ApprovedRetry
-- [x] Generate static page in report dir
-- [x] Save/Load results in/from report dir (js/json)
-- [x] Save images report in multiple runs
+- [ ] Composite images
 - [ ] Handle error on mocha hooks
 - [ ] Add cli arguments
   - [x] config
   - [x] parser
   - [x] ui
+  - [x] reporter
   - [ ] grep/kind/story
   - [ ] update
-  - [x] reporter
 - [ ] Update args readme (config, parser, ...)
-- [x] Custom mocha reporter for worker
-- [x] Allow to use Teamcity reporter
 - [ ] Add storybook addon (add `All stories` story and `renderStory` global func)
   - [ ] Update to Storybook@5.x
   - [ ] Reset mouse position
 - [ ] Support mocha options for workers
 - [ ] Add unit tests
-- [ ] Better handle websocket messages
-- [x] Add worker ready event
-- [x] Support load test files from glob patterns
 - [ ] Allow define mocha hooks
 - [ ] Simplify types re-export for lib usage
 - [ ] Allow assert multiple images in one test
@@ -76,6 +77,7 @@
 - [ ] Add logger lib
 - [ ] Config npmignore files
 - [ ] Programmic API
+- [ ] Hotupdate tests
 
 ## Runtime function
 

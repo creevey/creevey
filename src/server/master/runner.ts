@@ -3,7 +3,16 @@ import { copyFile } from "fs";
 import { promisify } from "util";
 import { EventEmitter } from "events";
 import mkdirp from "mkdirp";
-import { Config, Test, CreeveyStatus, TestUpdate, TestResult, ApprovePayload, isDefined } from "../../types";
+import {
+  Config,
+  Test,
+  CreeveyStatus,
+  TestResult,
+  ApprovePayload,
+  isDefined,
+  CreeveyUpdate,
+  TestStatus
+} from "../../types";
 import Pool from "./pool";
 
 const copyFileAsync = promisify(copyFile);
@@ -30,28 +39,25 @@ export default class Runner extends EventEmitter {
       .map(pool => pool.on("test", this.handlePoolMessage));
   }
 
-  private handlePoolMessage = (message: { id: string; result: TestResult }) => {
-    const { result, id } = message;
+  private handlePoolMessage = (message: { id: string; status: TestStatus; result?: TestResult }) => {
+    const { id, status, result } = message;
     const test = this.tests[id];
     if (!test) return;
+    test.status = status;
+    if (!result) {
+      this.sendUpdate({ testsById: { [id]: { status } } });
+      return;
+    }
     if (!test.results) {
-      test.results = {};
+      test.results = [];
     }
-    if (result.status == "running") {
-      test.retries += 1;
-    }
-    test.results[test.retries] = result;
-    const testUpdate: TestUpdate = {
-      id,
-      retry: test.retries,
-      ...result
-    };
-    this.emit("test", testUpdate);
+    test.results.push(result);
+    this.sendUpdate({ testsById: { [id]: { status, results: [result] } } });
   };
 
   private handlePoolStop = () => {
     if (!this.isRunning) {
-      this.emit("stop");
+      this.sendUpdate({ isRunning: false });
     }
   };
 
@@ -60,28 +66,40 @@ export default class Runner extends EventEmitter {
   }
 
   public start(ids: string[]) {
-    // TODO set tests status => pending
+    interface TestsByBrowser {
+      [browser: string]: { id: string; path: string[] }[];
+    }
     if (this.isRunning) return;
 
     const testsToStart = ids
       .map(id => this.tests[id])
       .filter(isDefined)
       .filter(test => !test.skip);
-    const testsByBrowser: { [browser: string]: { id: string; path: string[] }[] } = {};
 
-    this.browsers.forEach(browser => (testsByBrowser[browser] = []));
+    if (testsToStart.length == 0) return;
 
-    testsToStart.forEach(({ path: [browser, ...path], id }) => testsByBrowser[browser].push({ id, path }));
+    this.sendUpdate({
+      isRunning: true,
+      testsById: testsToStart.reduce((update, { id }) => ({ ...update, [id]: { status: "pending" } }), {})
+    });
 
-    // TODO check testsToStart length
+    const testsByBrowser: TestsByBrowser = testsToStart.reduce((tests: TestsByBrowser, test) => {
+      const { id, path } = test;
+      const [browser, ...restPath] = path;
+      test.status = "pending";
+      return {
+        ...tests,
+        [browser]: [...(tests[browser] || []), { id, path: restPath }]
+      };
+    }, {});
+
     this.browsers.forEach(browser => {
       const pool = this.pools[browser];
 
-      if (pool.start(testsByBrowser[browser])) {
+      if (testsByBrowser[browser].length > 0 && pool.start(testsByBrowser[browser])) {
         pool.once("stop", this.handlePoolStop);
       }
     });
-    this.emit("start", testsToStart.map(({ id }) => id));
   }
 
   public stop() {
@@ -108,5 +126,10 @@ export default class Runner extends EventEmitter {
     const dstImagePath = path.join(this.screenDir, testPath, `${image}.png`);
     await mkdirpAsync(path.join(this.screenDir, testPath));
     await copyFileAsync(srcImagePath, dstImagePath);
+    // TODO approved
+  }
+
+  private sendUpdate(data: CreeveyUpdate) {
+    this.emit("update", data);
   }
 }

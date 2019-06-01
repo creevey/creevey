@@ -22,12 +22,10 @@ export class TestResultsView extends React.Component<TestResultsViewProps, TestR
   render() {
     const {
       onClose,
-      test: { results = {}, path }
+      test: { results = [], path }
     } = this.props;
-    const retries = Object.keys(results);
-    const { activePage = retries.length } = this.state;
-    const activeRetry = retries.map(Number)[activePage - 1];
-    const result = results[activeRetry];
+    const { activePage = results.length } = this.state;
+    const result = results[activePage - 1];
     // TODO Output tile and image name
     return (
       <SidePage onClose={onClose} width={1200}>
@@ -35,7 +33,7 @@ export class TestResultsView extends React.Component<TestResultsViewProps, TestR
         <SidePage.Body>
           <SidePage.Container>
             <div style={{ display: "flex", flexDirection: "column" }}>
-              <Paging activePage={activePage} onPageChange={this.handlePageChange} pagesCount={retries.length} />
+              <Paging activePage={activePage} onPageChange={this.handlePageChange} pagesCount={results.length} />
               {result && this.renderError(result.error)}
               {result && this.renderImages(result.images)}
             </div>
@@ -51,7 +49,6 @@ export class TestResultsView extends React.Component<TestResultsViewProps, TestR
   }
 
   private renderImages(images?: Partial<{ [name: string]: Images }>) {
-    // TODO render error message
     if (!images) return null;
     const {
       test: { path }
@@ -64,6 +61,7 @@ export class TestResultsView extends React.Component<TestResultsViewProps, TestR
 
       const { actual, diff, expect } = image;
 
+      // TODO Render approved images
       return (
         <ImagesView
           key={name}
@@ -82,12 +80,10 @@ export class TestResultsView extends React.Component<TestResultsViewProps, TestR
 
   private handleApprove = (imageName: string) => {
     const {
-      test: { id, results = {} }
+      test: { id, results = [] }
     } = this.props;
-    const retries = Object.keys(results);
-    const { activePage = retries.length } = this.state;
-    const activeRetry = retries.map(Number)[activePage - 1];
+    const { activePage = results.length } = this.state;
 
-    this.context.onImageApprove(id, activeRetry, imageName);
+    this.context.onImageApprove(id, activePage - 1, imageName);
   };
 }

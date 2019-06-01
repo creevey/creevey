@@ -3,7 +3,7 @@ import TopBar from "@skbkontur/react-ui/TopBar";
 import Logotype from "@skbkontur/react-ui/Logotype";
 import Loader from "@skbkontur/react-ui/Loader";
 import Spinner from "@skbkontur/react-ui/Spinner";
-import { CreeveyStatus, TestUpdate, Response, Request, isTest, Test as ApiTest } from "../types";
+import { CreeveyStatus, Response, Request, isTest, Test as ApiTest, CreeveyUpdate, isDefined } from "../types";
 import { TestTree } from "./TestTree";
 import { CreeveyContex, Suite, Test } from "./CreeveyContext";
 import { toogleChecked, treeifyTests, getCheckedTests, updateTestStatus, getTestsByPath } from "./helpers";
@@ -28,14 +28,13 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
     openedTest: null
   };
   private ws?: WebSocket;
+  private seq: number = 0;
 
   constructor(props: {}) {
     super(props);
 
     if (window.location.host) {
-      this.ws = new WebSocket(`ws://${window.location.host}`);
-      this.ws.addEventListener("message", this.handleMessage);
-      this.ws.addEventListener("open", () => this.getStatus());
+      this.connect();
     } else {
       const script = document.createElement("script");
       script.src = "data.js";
@@ -125,36 +124,51 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
     });
   };
 
-  handleTest = (test: TestUpdate) => {
-    this.setState(state => {
-      const path = state.pathsById[test.id];
-
-      if (!state.tests || !path) {
-        return state;
-      }
-
-      return { ...state, tests: updateTestStatus(state.tests, path, test) };
-    });
+  handleUpdate = ({ isRunning, testsById }: CreeveyUpdate) => {
+    if (isDefined(isRunning)) {
+      this.setState({ isRunning });
+    }
+    if (isDefined(testsById)) {
+      this.setState(state => {
+        if (!state.tests) return state;
+        return {
+          ...state,
+          tests: Object.entries(testsById).reduce((tests, [id, test]) => {
+            const path = state.pathsById[id];
+            if (!test || !path) return tests;
+            // TODO deep merge
+            return updateTestStatus(tests, path, test);
+          }, state.tests)
+        };
+      });
+    }
   };
+
+  private connect() {
+    if (this.ws) {
+      this.ws.removeEventListener("message", this.handleMessage);
+      this.ws.close();
+    }
+    this.ws = new WebSocket(`ws://${window.location.host}`);
+    this.ws.addEventListener("message", this.handleMessage);
+  }
 
   private handleMessage = (message: MessageEvent) => {
     const data: Response = JSON.parse(message.data);
     switch (data.type) {
       case "status": {
+        this.seq = data.seq;
         this.handleStatus(data.payload);
         return;
       }
-      case "start": {
-        // TODO update tests status
-        this.setState({ isRunning: true });
+      case "update": {
+        this.seq += 1;
+        if (this.seq != data.seq) {
+          this.connect();
+        } else {
+          this.handleUpdate(data.payload);
+        }
         return;
-      }
-      case "stop": {
-        this.setState({ isRunning: false });
-        return;
-      }
-      case "test": {
-        this.handleTest(data.payload);
       }
     }
   };
@@ -163,10 +177,6 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
     if (!this.ws) return;
 
     this.ws.send(JSON.stringify(command));
-  }
-
-  public getStatus() {
-    this.send({ type: "status" });
   }
 
   private start = () => {

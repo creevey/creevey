@@ -7,7 +7,7 @@ export interface Test extends ApiTest {
 
 export interface Suite {
   path: string[];
-  status: TestStatus;
+  status?: TestStatus;
   checked: boolean;
   indeterminate: boolean;
   children: { [title: string]: Suite | Test };

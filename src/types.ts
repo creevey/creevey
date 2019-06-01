@@ -40,10 +40,6 @@ export interface Worker extends ClusterWorker {
   isRunnning?: boolean;
 }
 
-export interface Workers {
-  [browser: string]: Worker[];
-}
-
 export type WorkerMessage =
   | {
       type: "ready";
@@ -63,10 +59,10 @@ export interface Images {
   diff?: string;
 }
 
-export type TestStatus = "unknown" | "pending" | "running" | "failed" | "success";
+export type TestStatus = "pending" | "running" | "failed" | "success";
 
 export interface TestResult {
-  status: TestStatus;
+  status: "failed" | "success";
   images?: Partial<{ [name: string]: Images }>;
   error?: string;
 }
@@ -74,10 +70,14 @@ export interface TestResult {
 export interface Test {
   id: string;
   path: string[];
-  retries: number;
-  approvedRetry?: number;
+  approvedImages?: Partial<{
+    [image: string]: {
+      retry: number;
+    };
+  }>;
   skip?: boolean;
-  results?: Partial<{ [retry: number]: TestResult }>;
+  status?: TestStatus;
+  results?: TestResult[];
 }
 
 export interface CreeveyStatus {
@@ -85,9 +85,9 @@ export interface CreeveyStatus {
   testsById: Partial<{ [id: string]: Test }>;
 }
 
-export interface TestUpdate extends TestResult {
-  id: string;
-  retry: number;
+export interface CreeveyUpdate {
+  isRunning?: boolean;
+  testsById?: Partial<{ [id: string]: Partial<Test> }>;
 }
 
 export interface ApprovePayload {
@@ -97,26 +97,16 @@ export interface ApprovePayload {
 }
 
 export type Request =
-  | { type: "status" }
   | { type: "start"; payload: string[] }
   | { type: "stop" }
   | { type: "approve"; payload: ApprovePayload };
 
 export type Response =
-  | { type: "status"; payload: CreeveyStatus }
-  | { type: "start"; payload: string[] }
-  | { type: "stop" }
-  | { type: "test"; payload: TestUpdate };
+  | { type: "status"; seq: number; payload: CreeveyStatus }
+  | { type: "update"; seq: number; payload: CreeveyUpdate };
 
 export function isTest<T1, T2 extends Test>(x: T1 | T2): x is T2 {
-  return (
-    "id" in x &&
-    "path" in x &&
-    "retries" in x &&
-    Array.isArray(x.path) &&
-    typeof x.id == "string" &&
-    typeof x.retries == "number"
-  );
+  return "id" in x && "path" in x && "retries" in x && Array.isArray(x.path) && typeof x.id == "string";
 }
 
 export function isDefined<T>(value: T | undefined): value is T {

@@ -1,5 +1,5 @@
 import { Suite, Test } from "./CreeveyContext";
-import { Test as ApiTest, isTest, TestUpdate } from "../types";
+import { Test as ApiTest, isTest, isDefined } from "../types";
 
 export function getTestsByPath(tests: Suite, path: string[]): Suite | Test {
   return path.reduce(
@@ -57,7 +57,6 @@ export function treeifyTests(testsById: { [id: string]: ApiTest | undefined }): 
   function makeEmptySuiteNode(path: string[] = []): Suite {
     return {
       path,
-      status: "unknown",
       checked: true,
       indeterminate: false,
       children: {}
@@ -95,17 +94,18 @@ export function getCheckedTests(tests: Suite | Test): Test[] {
   );
 }
 
-export function updateTestStatus(tests: Suite, path: string[], update: TestUpdate): Suite {
+export function updateTestStatus(tests: Suite, path: string[], update: Partial<ApiTest>): Suite {
   const [title, ...restPath] = path;
   const subTests = tests.children[title];
   const newTests = { ...tests, children: { ...tests.children } };
   if (isTest(subTests)) {
-    const { retry, status, images } = update;
-    newTests.children[title] = {
-      ...subTests,
-      retries: retry,
-      results: { ...(subTests.results || {}), [retry]: { status, images } }
-    };
+    const test = { ...subTests };
+    const { status, results } = update;
+    if (isDefined(status)) test.status = status;
+    if (isDefined(results)) {
+      test.results = [...(test.results || []), ...results];
+    }
+    newTests.children[title] = test
   } else {
     newTests.children[title] = updateTestStatus(subTests, restPath, update);
   }
