@@ -66,6 +66,7 @@ export default class Pool extends EventEmitter {
       const message: WorkerMessage = JSON.parse(data);
       if (message.type != "test") {
         // TODO handle retry
+        // TODO emit stop event
         this.handleMessage(worker, message);
         this.process();
         return;

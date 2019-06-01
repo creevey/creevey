@@ -1,9 +1,8 @@
 import React from "react";
 import SidePage from "@skbkontur/react-ui/SidePage";
-import Button from "@skbkontur/react-ui/Button";
 import Paging from "@skbkontur/react-ui/Paging";
 import { Test, CreeveyContex } from "./CreeveyContext";
-import { TestResult } from "../types";
+import { Images } from "../types";
 import { ImagesView } from "./ImagesView";
 
 interface TestResultsViewProps {
@@ -23,7 +22,7 @@ export class TestResultsView extends React.Component<TestResultsViewProps, TestR
   render() {
     const {
       onClose,
-      test: { results = {} }
+      test: { results = {}, path }
     } = this.props;
     const retries = Object.keys(results);
     const { activePage = retries.length } = this.state;
@@ -32,23 +31,26 @@ export class TestResultsView extends React.Component<TestResultsViewProps, TestR
     // TODO Output tile and image name
     return (
       <SidePage onClose={onClose} width={1200}>
-        <SidePage.Header>Title</SidePage.Header>
+        <SidePage.Header>{path.join("/")}</SidePage.Header>
         <SidePage.Body>
           <SidePage.Container>
             <div style={{ display: "flex", flexDirection: "column" }}>
               <Paging activePage={activePage} onPageChange={this.handlePageChange} pagesCount={retries.length} />
-              {result && this.renderResult(result)}
+              {result && this.renderError(result.error)}
+              {result && this.renderImages(result.images)}
             </div>
           </SidePage.Container>
         </SidePage.Body>
-        <SidePage.Footer panel>
-          <Button onClick={onClose}>Close</Button>
-        </SidePage.Footer>
       </SidePage>
     );
   }
 
-  private renderResult({ images }: TestResult) {
+  private renderError(error?: string) {
+    if (!error) return null;
+    return <div style={{ background: "#eee", textAlign: "center" }}>{error}</div>;
+  }
+
+  private renderImages(images?: Partial<{ [name: string]: Images }>) {
     // TODO render error message
     if (!images) return null;
     const {

@@ -66,7 +66,10 @@ export default async function worker(config: Config, options: Options & { browse
     const runner = mocha.run(runHandler);
 
     // TODO How handle browser corruption?
-    runner.on("fail", (_test, testError) => (error = testError));
+    runner.on(
+      "fail",
+      (_test, testError) => (error = testError instanceof Error ? testError.stack || testError.message : testError)
+    );
   });
 
   setInterval(() => browser.getTitle(), 30 * 1000);

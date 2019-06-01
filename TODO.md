@@ -23,7 +23,7 @@
   - [ ] Merge common config with browser config
 - [x] Not graceful exit master process on error in workers
 - [x] Add worker timeout and restart it
-- [ ] Ignore elements from screenshot
+- [x] ~~Ignore elements from screenshot~~
 - [ ] Web interface
   - [x] webpack build
   - [x] usage react-ui
@@ -39,7 +39,8 @@
   - [ ] output skipped tests
   - [ ] use classnames
   - [x] Offile mode, load report data
-  - [ ] Output test error message
+  - [x] Output test error message
+  - [ ] ApprovedRetry
 - [x] Generate static page in report dir
 - [x] Save/Load results in/from report dir (js/json)
 - [x] Save images report in multiple runs
@@ -62,7 +63,7 @@
 - [ ] Better handle websocket messages
 - [x] Add worker ready event
 - [x] Support load test files from glob patterns
-- [ ] Allow defined mocha hooks
+- [ ] Allow define mocha hooks
 - [ ] Simplify types re-export for lib usage
 - [ ] Allow assert multiple images in one test
 - [ ] vscode mocha explorer

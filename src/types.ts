@@ -68,13 +68,14 @@ export type TestStatus = "unknown" | "pending" | "running" | "failed" | "success
 export interface TestResult {
   status: TestStatus;
   images?: Partial<{ [name: string]: Images }>;
-  error?: any;
+  error?: string;
 }
 
 export interface Test {
   id: string;
   path: string[];
   retries: number;
+  approvedRetry?: number;
   skip?: boolean;
   results?: Partial<{ [retry: number]: TestResult }>;
 }
