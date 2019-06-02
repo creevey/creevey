@@ -43,11 +43,14 @@
   - [x] Output test error message
   - [x] output reported images
   - [ ] better images view like github does
-  - [ ] switch images by hotkeys
+    - [ ] SlideView
+    - [ ] BlendView
+  - [x] switch images by hotkeys
+  - [ ] Allow view fullscale images
   - [x] output test status (pending)
   - [ ] update/recalc suite status
   - [ ] output skipped tests
-  - [ ] use classnames
+  - [x] use classnames (emotion)
   - [x] ApprovedRetry
 - [ ] Composite images
 - [ ] Handle error on mocha hooks
