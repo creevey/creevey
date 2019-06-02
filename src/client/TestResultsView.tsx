@@ -1,4 +1,5 @@
 import React from "react";
+import { css } from "@emotion/core";
 import SidePage from "@skbkontur/react-ui/SidePage";
 import Paging from "@skbkontur/react-ui/Paging";
 import { Test, CreeveyContex } from "./CreeveyContext";
@@ -31,7 +32,12 @@ export class TestResultsView extends React.Component<TestResultsViewProps, TestR
         <SidePage.Header>{path.join("/")}</SidePage.Header>
         <SidePage.Body>
           <SidePage.Container>
-            <div style={{ display: "flex", flexDirection: "column" }}>
+            <div
+              css={css`
+                display: flex;
+                flex-direction: column;
+              `}
+            >
               <Paging activePage={activePage} onPageChange={this.handlePageChange} pagesCount={results.length} />
               {result && this.renderError(result.error)}
               {result && this.renderImages(result.images)}
@@ -44,7 +50,16 @@ export class TestResultsView extends React.Component<TestResultsViewProps, TestR
 
   private renderError(error?: string) {
     if (!error) return null;
-    return <div style={{ background: "#eee", textAlign: "center" }}>{error}</div>;
+    return (
+      <div
+        css={css`
+          background: #eee;
+          text-align: center;
+        `}
+      >
+        {error}
+      </div>
+    );
   }
 
   private renderImages(images?: Partial<{ [name: string]: Images }>) {

@@ -1,4 +1,5 @@
 import React from "react";
+import { css } from "@emotion/core";
 import Checkbox from "@skbkontur/react-ui/Checkbox";
 import Gapped from "@skbkontur/react-ui/Gapped";
 import Button from "@skbkontur/react-ui/Button";
@@ -41,7 +42,11 @@ export class TestTree extends React.Component<TestTreeProps, TestTreeState> {
     if (isTest(tests)) {
       const emptyResults = !tests.results || tests.results.length == 0;
       return (
-        <div style={{ marginLeft: "20px" }}>
+        <div
+          css={css`
+            margin-left: 20px;
+          `}
+        >
           <Gapped gap={5}>
             <Gapped gap={5}>
               <Checkbox ref={this.checkbox} checked={tests.checked} onChange={this.handleCheck} />
@@ -58,11 +63,11 @@ export class TestTree extends React.Component<TestTreeProps, TestTreeState> {
       <>
         <Gapped gap={5}>
           <span
-            style={{
-              display: "inline-block",
-              cursor: "pointer",
-              transform: this.state.opened ? "rotate(45deg)" : ""
-            }}
+            css={css`
+              display: inline-block;
+              cursor: pointer;
+              transform: ${this.state.opened ? "rotate(45deg)" : ""};
+            `}
           >
             <ArrowTriangleRightIcon onClick={this.handleSubTreeOpen} />
           </span>
@@ -74,7 +79,11 @@ export class TestTree extends React.Component<TestTreeProps, TestTreeState> {
           </Gapped>
         </Gapped>
         {this.state.opened && (
-          <div style={{ marginLeft: "20px" }}>
+          <div
+            css={css`
+              margin-left: 20px;
+            `}
+          >
             {Object.entries(tests.children).map(([title, suite]) => (
               <TestTree key={title} title={title} tests={suite} />
             ))}
@@ -87,16 +96,16 @@ export class TestTree extends React.Component<TestTreeProps, TestTreeState> {
   renderStatus({ status }: Test) {
     switch (status) {
       case "failed": {
-        return <DeleteIcon color="red" />;
+        return <DeleteIcon color="#d9472b" />;
       }
       case "success": {
-        return <OkIcon color="green" />;
+        return <OkIcon color="#419d14" />;
       }
       case "running": {
         return <Spinner type="mini" />;
       }
       case "pending": {
-        return <HelpDotIcon color="blue" />;
+        return <HelpDotIcon color="#1d85d0" />;
       }
       default: {
         return null;

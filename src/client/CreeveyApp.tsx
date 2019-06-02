@@ -1,4 +1,5 @@
 import React from "react";
+import { css } from "@emotion/core";
 import TopBar from "@skbkontur/react-ui/TopBar";
 import Logotype from "@skbkontur/react-ui/Logotype";
 import Loader from "@skbkontur/react-ui/Loader";
@@ -66,7 +67,11 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
           )}
         </TopBar>
         {tests ? (
-          <div style={{ marginLeft: "10px" }}>
+          <div
+            css={css`
+              margin-left: 10px;
+            `}
+          >
             <TestTree title="<Root>" tests={tests} />
           </div>
         ) : (
