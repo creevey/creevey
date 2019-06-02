@@ -70,14 +70,10 @@ export interface TestResult {
 export interface Test {
   id: string;
   path: string[];
-  approvedImages?: Partial<{
-    [image: string]: {
-      retry: number;
-    };
-  }>;
   skip?: boolean;
   status?: TestStatus;
   results?: TestResult[];
+  approved?: Partial<{ [image: string]: number }>;
 }
 
 export interface CreeveyStatus {

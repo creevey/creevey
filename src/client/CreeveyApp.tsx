@@ -17,7 +17,7 @@ interface CreeveyAppState {
   pathsById: Partial<{ [id: string]: string[] }>;
   tests: Suite | null;
   isRunning: boolean;
-  openedTest: Test | null;
+  openedTestId: string | null;
 }
 
 export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
@@ -25,7 +25,7 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
     pathsById: {},
     tests: null,
     isRunning: false,
-    openedTest: null
+    openedTestId: null
   };
   private ws?: WebSocket;
   private seq: number = 0;
@@ -43,7 +43,8 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
     }
   }
   render() {
-    const { tests, openedTest } = this.state;
+    const { tests } = this.state;
+    const openedTest = this.getOpenedTest();
     return (
       <CreeveyContex.Provider
         value={{
@@ -89,16 +90,12 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
     });
   };
 
-  handleTestResultsClose = () => this.setState({ openedTest: null });
-  handleTestResultsOpen = (path: string[]) => {
+  handleTestResultsClose = () => this.setState({ openedTestId: null });
+  handleTestResultsOpen = (id: string) => {
     this.setState(state => {
       if (!this.state.tests) return state;
 
-      const testOrSuite = getTestsByPath(this.state.tests, path);
-
-      if (!isTest(testOrSuite)) return state;
-
-      return { ...state, openedTest: testOrSuite };
+      return { ...state, openedTestId: id };
     });
   };
 
@@ -136,7 +133,6 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
           tests: Object.entries(testsById).reduce((tests, [id, test]) => {
             const path = state.pathsById[id];
             if (!test || !path) return tests;
-            // TODO deep merge
             return updateTestStatus(tests, path, test);
           }, state.tests)
         };
@@ -151,6 +147,15 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
     }
     this.ws = new WebSocket(`ws://${window.location.host}`);
     this.ws.addEventListener("message", this.handleMessage);
+  }
+
+  private getOpenedTest(): Test | undefined {
+    const { tests, pathsById, openedTestId } = this.state;
+    if (!tests || !openedTestId) return;
+    const path = pathsById[openedTestId];
+    if (!path) return;
+    const testOrSuite = getTestsByPath(tests, path);
+    if (isTest(testOrSuite)) return testOrSuite;
   }
 
   private handleMessage = (message: MessageEvent) => {

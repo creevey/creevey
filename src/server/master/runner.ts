@@ -83,7 +83,7 @@ export default class Runner extends EventEmitter {
       testsById: testsToStart.reduce((update, { id }) => ({ ...update, [id]: { status: "pending" } }), {})
     });
 
-    const testsByBrowser: TestsByBrowser = testsToStart.reduce((tests: TestsByBrowser, test) => {
+    const testsByBrowser: Partial<TestsByBrowser> = testsToStart.reduce((tests: TestsByBrowser, test) => {
       const { id, path } = test;
       const [browser, ...restPath] = path;
       test.status = "pending";
@@ -95,8 +95,9 @@ export default class Runner extends EventEmitter {
 
     this.browsers.forEach(browser => {
       const pool = this.pools[browser];
+      const tests = testsByBrowser[browser];
 
-      if (testsByBrowser[browser].length > 0 && pool.start(testsByBrowser[browser])) {
+      if (tests && tests.length > 0 && pool.start(tests)) {
         pool.once("stop", this.handlePoolStop);
       }
     });
@@ -121,12 +122,16 @@ export default class Runner extends EventEmitter {
     if (!result || !result.images) return;
     const images = result.images[image];
     if (!images) return;
+    if (!test.approved) {
+      test.approved = {};
+    }
     const testPath = path.join(...[...test.path].reverse());
     const srcImagePath = path.join(this.reportDir, testPath, images.actual);
     const dstImagePath = path.join(this.screenDir, testPath, `${image}.png`);
     await mkdirpAsync(path.join(this.screenDir, testPath));
     await copyFileAsync(srcImagePath, dstImagePath);
-    // TODO approved
+    test.approved[image] = retry;
+    this.sendUpdate({ testsById: { [id]: { approved: { [image]: retry } } } });
   }
 
   private sendUpdate(data: CreeveyUpdate) {

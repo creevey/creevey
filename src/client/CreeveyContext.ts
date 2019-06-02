@@ -14,7 +14,7 @@ export interface Suite {
 }
 
 export interface CreeveyContextType {
-  onTestResultsOpen: (path: string[]) => void;
+  onTestResultsOpen: (id: string) => void;
   onTestToogle: (path: string[], checked: boolean) => void;
   onImageApprove: (id: string, retry: number, image: string) => void;
 }

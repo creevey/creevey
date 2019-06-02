@@ -26,7 +26,6 @@ export class TestResultsView extends React.Component<TestResultsViewProps, TestR
     } = this.props;
     const { activePage = results.length } = this.state;
     const result = results[activePage - 1];
-    // TODO Output tile and image name
     return (
       <SidePage onClose={onClose} width={1200}>
         <SidePage.Header>{path.join("/")}</SidePage.Header>
@@ -51,8 +50,11 @@ export class TestResultsView extends React.Component<TestResultsViewProps, TestR
   private renderImages(images?: Partial<{ [name: string]: Images }>) {
     if (!images) return null;
     const {
-      test: { path }
+      test: { path, results = [], approved = {} }
     } = this.props;
+    const { activePage = results.length } = this.state;
+    const retry = activePage - 1;
+    const result = results[retry];
     // TODO should better handle offline mode
     const imagesUrl = window.location.host ? `/report/${path.join("/")}` : path.join("/");
 
@@ -60,8 +62,8 @@ export class TestResultsView extends React.Component<TestResultsViewProps, TestR
       if (!image) return null;
 
       const { actual, diff, expect } = image;
+      const isApproved = approved[name] == retry || (result && result.status == "success");
 
-      // TODO Render approved images
       return (
         <ImagesView
           key={name}
@@ -70,6 +72,7 @@ export class TestResultsView extends React.Component<TestResultsViewProps, TestR
           actual={actual}
           diff={diff}
           expect={expect}
+          approved={isApproved}
           onApprove={this.handleApprove}
         />
       );

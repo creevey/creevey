@@ -48,7 +48,7 @@
   - [ ] update/recalc suite status
   - [ ] output skipped tests
   - [ ] use classnames
-  - [ ] ApprovedRetry
+  - [x] ApprovedRetry
 - [ ] Composite images
 - [ ] Handle error on mocha hooks
 - [ ] Add cli arguments
@@ -78,6 +78,7 @@
 - [ ] Config npmignore files
 - [ ] Programmic API
 - [ ] Hotupdate tests
+- [ ] Server state sync
 
 ## Runtime function
 

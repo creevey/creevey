@@ -99,13 +99,17 @@ export function updateTestStatus(tests: Suite, path: string[], update: Partial<A
   const subTests = tests.children[title];
   const newTests = { ...tests, children: { ...tests.children } };
   if (isTest(subTests)) {
+    // TODO deep merge
     const test = { ...subTests };
-    const { status, results } = update;
+    const { status, results, approved } = update;
     if (isDefined(status)) test.status = status;
     if (isDefined(results)) {
       test.results = [...(test.results || []), ...results];
     }
-    newTests.children[title] = test
+    if (isDefined(approved)) {
+      test.approved = { ...(test.approved || {}), ...approved };
+    }
+    newTests.children[title] = test;
   } else {
     newTests.children[title] = updateTestStatus(subTests, restPath, update);
   }
