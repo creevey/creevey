@@ -42,9 +42,9 @@
   - [x] Offile mode, load report data
   - [x] Output test error message
   - [x] output reported images
-  - [ ] better images view like github does
-    - [ ] SlideView
-    - [ ] BlendView
+  - [x] better images view like github does
+    - [x] SlideView
+    - [x] BlendView
   - [x] switch images by hotkeys
   - [ ] Allow view fullscale images
   - [x] output test status (pending)
