@@ -1,4 +1,10 @@
 src
 tests
 types
-lib/client/**/*.d.ts
+lib/client/**/*
+!lib/client/**/*.js
+!lib/client/**/*.eot
+!lib/client/**/*.png
+!lib/client/**/*.html
+!lib/client/**/*.woff
+!lib/client/**/*.woff2

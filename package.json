@@ -28,7 +28,6 @@
     "selenium-webdriver": "^4.0.0-alpha.1"
   },
   "dependencies": {
-    "@emotion/core": "^10.0.10",
     "koa": "^2.7.0",
     "koa-mount": "^4.0.0",
     "koa-static": "^5.0.0",
@@ -48,6 +47,7 @@
     "@babel/preset-react": "^7.0.0",
     "@babel/preset-typescript": "^7.3.3",
     "@emotion/babel-preset-css-prop": "^10.0.9",
+    "@emotion/core": "^10.0.10",
     "@skbkontur/react-icons": "^3.1.8",
     "@skbkontur/react-ui": "^0.48.0",
     "@types/chai": "^4.1.7",
