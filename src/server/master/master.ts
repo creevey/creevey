@@ -22,7 +22,7 @@ function reportDataModule<T>(data: T) {
 `;
 }
 
-function loadTests() {
+function loadTests(): Promise<Partial<{ [id: string]: Test }>> {
   return new Promise(resolve => {
     console.log("[CreeveyRunner]:", "Start loading tests");
     cluster.setupMaster({ args: ["--parser"] });
