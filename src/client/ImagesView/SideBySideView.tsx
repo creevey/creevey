@@ -2,7 +2,7 @@ import React from "react";
 import { css } from "@emotion/core";
 import { ViewProps } from "./ImagesView";
 
-export function TogetherView({ url, actual, diff, expect }: ViewProps) {
+export function SideBySideView({ url, actual, diff, expect }: ViewProps) {
   return (
     <>
       <img

@@ -2,7 +2,7 @@ import React from "react";
 import { css } from "@emotion/core";
 import Button from "@skbkontur/react-ui/Button";
 import Switcher from "@skbkontur/react-ui/Switcher";
-import { TogetherView } from "./TogetherView";
+import { SideBySideView } from "./SideBySideView";
 import { SwapView } from "./SwapView";
 import { SlideView } from "./SlideView";
 import { BlendView } from "./BlendView";
@@ -14,7 +14,7 @@ export interface ViewProps {
   expect: string;
 }
 
-type ViewMode = "together" | "swap" | "slide" | "blend";
+type ViewMode = "side-by-side" | "swap" | "slide" | "blend";
 
 interface ImagesViewProps {
   imageName: string;
@@ -31,17 +31,17 @@ interface ImagesViewState {
 }
 
 const views = {
-  together: TogetherView,
+  "side-by-side": SideBySideView,
   swap: SwapView,
   slide: SlideView,
   blend: BlendView
 };
 
-const modes: ViewMode[] = ["together", "swap", "slide", "blend"];
+const modes: ViewMode[] = ["side-by-side", "swap", "slide", "blend"];
 
 export class ImagesView extends React.Component<ImagesViewProps, ImagesViewState> {
   public state: ImagesViewState = {
-    mode: "together"
+    mode: "side-by-side"
   };
   render() {
     const { url, actual, diff, expect, approved } = this.props;
