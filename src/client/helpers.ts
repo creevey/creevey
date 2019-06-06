@@ -1,5 +1,5 @@
 import { Suite, Test } from "./CreeveyContext";
-import { Test as ApiTest, isTest, isDefined } from "../types";
+import { Test as ApiTest, isTest, isDefined, TestStatus } from "../types";
 
 export function getTestsByPath(tests: Suite, path: string[]): Suite | Test {
   return path.reduce(
@@ -69,7 +69,9 @@ export function treeifyTests(testsById: { [id: string]: ApiTest | undefined }): 
     const [browser, ...suitePath] = test.path;
     const lastSuite = suitePath.reverse().reduce((suite, token) => {
       const subSuite = suite.children[token] || makeEmptySuiteNode([...suite.path, token]);
+      subSuite.status = calcStatus(subSuite.status, test.status);
       suite.children[token] = subSuite;
+      suite.status = calcStatus(suite.status, subSuite.status);
       if (isTest(subSuite)) {
         throw new Error(`Suite and Test should not have same path '${JSON.stringify(subSuite.path)}'`);
       }
@@ -99,20 +101,29 @@ export function updateTestStatus(tests: Suite, path: string[], update: Partial<A
   const subTests = tests.children[title];
   const newTests = { ...tests, children: { ...tests.children } };
   if (isTest(subTests)) {
-    // TODO deep merge
     const test = { ...subTests };
     const { status, results, approved } = update;
     if (isDefined(status)) test.status = status;
-    if (isDefined(results)) {
-      test.results = [...(test.results || []), ...results];
-    }
-    if (isDefined(approved)) {
-      test.approved = { ...(test.approved || {}), ...approved };
-    }
+    if (isDefined(results)) test.results = [...(test.results || []), ...results];
+    if (isDefined(approved)) test.approved = { ...(test.approved || {}), ...approved };
     newTests.children[title] = test;
   } else {
     newTests.children[title] = updateTestStatus(subTests, restPath, update);
   }
+  newTests.status = Object.values(newTests.children)
+    .map(({ status }) => status)
+    .reduce(calcStatus);
 
   return newTests;
+}
+
+function calcStatus(oldStatus?: TestStatus, newStatus?: TestStatus): TestStatus | undefined {
+  if (
+    !oldStatus ||
+    (oldStatus == "success" && newStatus != "success") ||
+    (oldStatus == "failed" && newStatus != "failed" && newStatus != "success") ||
+    (oldStatus == "pending" && newStatus != "pending" && newStatus != "failed" && newStatus != "success")
+  )
+    return newStatus || oldStatus;
+  return oldStatus;
 }

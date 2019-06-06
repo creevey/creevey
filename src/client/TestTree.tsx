@@ -77,6 +77,7 @@ export class TestTree extends React.Component<TestTreeProps, TestTreeState> {
               {this.props.title}
             </Button>
           </Gapped>
+          {this.renderStatus(tests)}
         </Gapped>
         {this.state.opened && (
           <div
@@ -93,7 +94,7 @@ export class TestTree extends React.Component<TestTreeProps, TestTreeState> {
     );
   }
 
-  renderStatus({ status }: Test) {
+  renderStatus({ status }: Suite | Test) {
     switch (status) {
       case "failed": {
         return <DeleteIcon color="#d9472b" />;
