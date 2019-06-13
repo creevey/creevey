@@ -48,10 +48,11 @@
   - [x] switch images by hotkeys
   - [ ] Allow view fullscale images
   - [x] output test status (pending)
-  - [ ] update/recalc suite status
+  - [x] update/recalc suite status
   - [ ] output skipped tests
   - [x] use classnames (emotion)
   - [x] ApprovedRetry
+- [ ] Allow clean approved images
 - [ ] Composite images
 - [ ] Handle error on mocha hooks
 - [ ] Add cli arguments
