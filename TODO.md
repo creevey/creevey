@@ -46,12 +46,16 @@
     - [x] SlideView
     - [x] BlendView
   - [x] switch images by hotkeys
-  - [ ] Allow view fullscale images
   - [x] output test status (pending)
   - [x] update/recalc suite status
-  - [ ] output skipped tests
   - [x] use classnames (emotion)
   - [x] ApprovedRetry
+  - [ ] Incorrect output new images
+  - [ ] Fit large images inside TestResultView
+  - [ ] Allow view fullscale images
+  - [ ] output skipped tests
+- [ ] Reload IE page on start
+- [ ] Setup viewport size
 - [ ] Allow clean approved images
 - [ ] Composite images
 - [ ] Handle error on mocha hooks

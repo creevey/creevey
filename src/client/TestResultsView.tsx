@@ -83,7 +83,7 @@ export class TestResultsView extends React.Component<TestResultsViewProps, TestR
         <ImagesView
           key={name}
           imageName={name}
-          url={imagesUrl}
+          url={encodeURI(imagesUrl)}
           actual={actual}
           diff={diff}
           expect={expect}
