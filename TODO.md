@@ -50,14 +50,14 @@
   - [x] update/recalc suite status
   - [x] use classnames (emotion)
   - [x] ApprovedRetry
-  - [ ] Incorrect output new images
+  - [x] Fix incorrect output new images
   - [ ] Fit large images inside TestResultView
   - [ ] Allow view fullscale images
   - [ ] output skipped tests
-- [ ] Reload IE page on start
+- [ ] Reload IE page on start (don't handle storybook hotreload)
 - [ ] Setup viewport size
 - [ ] Allow clean approved images
-- [ ] Composite images
+- [x] ~~Composite images~~
 - [ ] Handle error on mocha hooks
 - [ ] Add cli arguments
   - [x] config

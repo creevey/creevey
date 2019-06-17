@@ -64,8 +64,20 @@ export class ImagesView extends React.Component<ImagesViewProps, ImagesViewState
           />
         ) : (
           <>
-            <Switcher items={modes} onChange={this.handleChangeView} value={mode} />
-            {diff && expect ? <ViewComponent url={url} actual={actual} diff={diff} expect={expect} /> : null}
+            {diff && expect ? (
+              <>
+                <Switcher items={modes} onChange={this.handleChangeView} value={mode} />
+                <ViewComponent url={url} actual={actual} diff={diff} expect={expect} />
+              </>
+            ) : (
+              <img
+                src={`${url}/${actual}`}
+                css={css`
+                  border: 1px solid #419d14;
+                  margin-bottom: 20px;
+                `}
+              />
+            )}
             <div>
               <Button use="primary" onClick={this.handleApprove} width="100px">
                 {"Approve"}
