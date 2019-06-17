@@ -46,7 +46,7 @@ export async function switchStory(this: Context) {
   const story = this.currentTest!.parent!.title;
   const kind = this.currentTest!.parent!.parent!.title;
 
-  await this.browser.executeScript(
+  const { width, height } = await this.browser.executeScript(
     // tslint:disable
     // @ts-ignore
     function(kind, story) {
@@ -56,16 +56,23 @@ export async function switchStory(this: Context) {
         kind: kind,
         story: story
       });
+      var bodyRect = document.body.getBoundingClientRect();
+      return {
+        width: Math.min(document.documentElement.clientWidth, bodyRect.width),
+        height: Math.min(document.documentElement.clientHeight, bodyRect.height)
+      };
       // tslint:enable
     },
     kind,
     story
   );
-  const body = await this.browser.findElement(By.css("body"));
-  const { width, height } = await body.getRect();
   await this.browser
     .actions({ bridge: true })
-    .move({ origin: body, x: Math.ceil((-1 * width) / 2), y: Math.ceil((-1 * height) / 2) })
+    .move({
+      origin: this.browser.findElement(By.css("body")),
+      x: Math.ceil((-1 * width) / 2),
+      y: Math.ceil((-1 * height) / 2)
+    })
     .perform();
 
   this.testScope.length = 0;
