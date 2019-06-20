@@ -60,7 +60,10 @@ export default async function worker(config: Config, options: Options & { browse
 
   process.on("message", message => {
     const test: Test = JSON.parse(message);
-    const testPath = [...test.path].reverse().join(" ");
+    const testPath = [...test.path]
+      .reverse()
+      .join(" ")
+      .replace(/[|\\{}()[\]^$+*?.-]/g, "\\$&");
 
     mocha.grep(new RegExp(`^${testPath}$`));
     const runner = mocha.run(runHandler);
