@@ -49,7 +49,7 @@
     "@emotion/babel-preset-css-prop": "^10.0.9",
     "@emotion/core": "^10.0.10",
     "@skbkontur/react-icons": "^3.1.8",
-    "@skbkontur/react-ui": "^0.52.0",
+    "@skbkontur/react-ui": "0.0.0-75af0d4d53",
     "@types/chai": "^4.1.7",
     "@types/html-webpack-plugin": "^3.2.0",
     "@types/koa": "^2.0.48",
