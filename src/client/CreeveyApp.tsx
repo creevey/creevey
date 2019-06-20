@@ -55,16 +55,18 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
         }}
       >
         <TopBar>
-          <TopBar.Item>
-            <Logotype locale={{ prefix: "c", suffix: "lin" }} suffix="creevey" />
-          </TopBar.Item>
-          {this.state.isRunning ? (
-            <TopBar.Item onClick={this.stop}>
-              <Spinner type="mini" caption="Running" />
+          <TopBar.Start>
+            <TopBar.Item>
+              <Logotype locale={{ prefix: "c", suffix: "lin" }} suffix="creevey" />
             </TopBar.Item>
-          ) : (
-            <TopBar.Item onClick={this.start}>Start</TopBar.Item>
-          )}
+            {this.state.isRunning ? (
+              <TopBar.Item onClick={this.stop}>
+                <Spinner type="mini" caption="Running" />
+              </TopBar.Item>
+            ) : (
+              <TopBar.Item onClick={this.start}>Start</TopBar.Item>
+            )}
+          </TopBar.Start>
         </TopBar>
         {tests ? (
           <div

@@ -1,11 +1,13 @@
 import React from "react";
 import { css } from "@emotion/core";
+import ThemeProvider from "@skbkontur/react-ui/ThemeProvider";
 import Button from "@skbkontur/react-ui/Button";
 import Switcher from "@skbkontur/react-ui/Switcher";
 import { SideBySideView } from "./SideBySideView";
 import { SwapView } from "./SwapView";
 import { SlideView } from "./SlideView";
 import { BlendView } from "./BlendView";
+import FLAT_THEME from "@skbkontur/react-ui/lib/theming/themes/FlatTheme";
 
 export interface ViewProps {
   url: string;
@@ -38,6 +40,15 @@ const views = {
 };
 
 const modes: ViewMode[] = ["side-by-side", "swap", "slide", "blend"];
+const SwitcherTheme = {
+  ...FLAT_THEME,
+  btnDefaultActiveBg: "none",
+  btnDefaultHoverBg: "none",
+  btnDefaultHoverBgStart: "none",
+  btnDefaultHoverBgEnd: "none",
+  btnDefaultBorder: "1px solid transparent",
+  btnDefaultHoverBorderColor: "transparent"
+};
 
 export class ImagesView extends React.Component<ImagesViewProps, ImagesViewState> {
   public state: ImagesViewState = {
@@ -66,7 +77,9 @@ export class ImagesView extends React.Component<ImagesViewProps, ImagesViewState
           <>
             {diff && expect ? (
               <>
-                <Switcher items={modes} onChange={this.handleChangeView} value={mode} />
+                <ThemeProvider value={SwitcherTheme}>
+                  <Switcher items={modes} onChange={this.handleChangeView} value={mode} />
+                </ThemeProvider>
                 <ViewComponent url={url} actual={actual} diff={diff} expect={expect} />
               </>
             ) : (
