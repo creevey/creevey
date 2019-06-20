@@ -18,14 +18,29 @@ module.exports = {
     port: 6060,
     path: "/iframe.html"
   },
+  testRegex: /\.ts$/,
   testDir: path.join(__dirname, "tests"),
   screenDir: path.join(__dirname, "images"),
   reportDir: path.join(__dirname, "report"),
-  maxRetries: 1,
+  maxRetries: 2,
   browsers: {
-    chrome: { browserName: "chrome", limit: 1 },
-    firefox: { browserName: "firefox", limit: 1 },
-    ie11: { browserName: "internet explorer", limit: 1 }
+    chrome: { browserName: "chrome" },
+    firefox: { browserName: "firefox" },
+    ie11: {
+      browserName: "internet explorer",
+      gridUrl: "<gridUrl>/wd/hub",
+      limit: 2
+      /* capabilities */
+    },
+    chromeFlat: {
+      browserName: "chrome",
+      testRegex: /(Button|Input).ts$/,
+      address: {
+        host: "localhost",
+        port: 6061,
+        path: "/iframe.html"
+      }
+    }
   }
 };
 ```

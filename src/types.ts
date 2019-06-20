@@ -7,15 +7,20 @@ export interface Capabilities {
 
 export interface BrowserConfig {
   limit: number;
+  gridUrl?: string;
+  address?: Address;
+  testRegex?: RegExp;
+}
+
+interface Address {
+  host: string;
+  port: number;
+  path: string;
 }
 
 export interface Config {
   gridUrl: string;
-  address: {
-    host: string;
-    port: number;
-    path: string;
-  };
+  address: Address;
   testRegex: RegExp;
   testDir: string;
   screenDir: string;

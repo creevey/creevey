@@ -20,8 +20,10 @@ function getRealIp(): Promise<string> {
 }
 
 export async function getBrowser(config: Config, browserName: string) {
-  const { gridUrl, address, browsers } = config;
-  const capabilities = browsers[browserName];
+  const { browsers } = config;
+  const { gridUrl = config.gridUrl, address = config.address, limit, testRegex, ...capabilities } = browsers[
+    browserName
+  ];
   const browser = await new Builder()
     .usingServer(gridUrl)
     .withCapabilities(capabilities)

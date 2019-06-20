@@ -5,6 +5,7 @@ import { Loader } from "../../loader";
 export default async function parse(config: Config) {
   const tests: Partial<{ [id: string]: Test }> = {};
   let suites: string[] = [];
+  let testFilePath = "";
 
   function describe(title: string, describeFn: () => void) {
     suites = [title, ...suites];
@@ -14,13 +15,17 @@ export default async function parse(config: Config) {
 
   function it(title: string): Test[] {
     return Object.keys(config.browsers)
-      .map(browser => [browser, title, ...suites])
-      .map(testPath => ({
+      .map(browser => ({
+        testPath: [browser, title, ...suites],
+        config: config.browsers[browser]
+      }))
+      .map(({ testPath, config }) => ({
         id: createHash("sha1")
           .update(testPath.join("/"))
           .digest("hex"),
         path: testPath,
-        retries: 0
+        retries: 0,
+        skip: config.testRegex && !config.testRegex.test(testFilePath)
       }))
       .map(test => (tests[test.id] = test));
   }
@@ -36,7 +41,10 @@ export default async function parse(config: Config) {
   // @ts-ignore
   global.it = it;
 
-  await new Loader(config.testRegex, require).loadTests(config.testDir);
+  await new Loader(config.testRegex, filePath => {
+    testFilePath = filePath;
+    require(filePath);
+  }).loadTests(config.testDir);
 
   if (process.send) {
     process.send(JSON.stringify(tests));

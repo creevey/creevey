@@ -29,9 +29,9 @@
 - [x] Add worker ready event
 - [x] Support load test files from glob patterns
 - [x] Better handle websocket messages
-- [ ] Allow define sets (test files, address, browsers)
-  - [ ] Filter tests by suites in parser
-  - [ ] Merge common config with browser config
+- [x] Allow define sets (test files, address, browsers)
+  - [x] Filter tests by path in parser
+  - [x] Merge common config with browser config
 - [ ] Web interface
   - [x] webpack build
   - [x] usage react-ui
@@ -53,7 +53,8 @@
   - [x] Fix incorrect output new images
   - [ ] Fit large images inside TestResultView
   - [ ] Allow view fullscale images
-  - [ ] output skipped tests
+  - [x] output skipped tests
+- [x] Test grep regexp dont work with parenthesis
 - [ ] Reload IE page on start (don't handle storybook hotreload)
 - [ ] Setup viewport size
 - [ ] Allow clean approved images
