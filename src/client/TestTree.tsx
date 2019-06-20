@@ -41,7 +41,7 @@ export class TestTree extends React.Component<TestTreeProps, TestTreeState> {
     const { tests } = this.props;
     if (isTest(tests)) {
       const emptyResults = !tests.results || tests.results.length == 0;
-      return (
+      return tests.skip ? null : (
         <div
           css={css`
             margin-left: 20px;
