@@ -23,7 +23,7 @@ interface TestTreeState {
 export class TestTree extends React.Component<TestTreeProps, TestTreeState> {
   static contextType = CreeveyContex;
   context: React.ContextType<typeof CreeveyContex> = this.context;
-  state: TestTreeState = { opened: false };
+  state: TestTreeState = { opened: this.props.tests.path.length == 0 };
   checkbox = React.createRef<Checkbox>();
 
   componentDidUpdate(prevProps: TestTreeProps) {
