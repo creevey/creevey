@@ -41,7 +41,7 @@ export class TestTree extends React.Component<TestTreeProps, TestTreeState> {
     const { tests } = this.props;
     if (isTest(tests)) {
       const emptyResults = !tests.results || tests.results.length == 0;
-      return tests.skip ? null : (
+      return (
         <div
           css={css`
             margin-left: 20px;
@@ -49,8 +49,13 @@ export class TestTree extends React.Component<TestTreeProps, TestTreeState> {
         >
           <Gapped gap={5}>
             <Gapped gap={5}>
-              <Checkbox ref={this.checkbox} checked={tests.checked} onChange={this.handleCheck} />
-              <Button use="link" disabled={emptyResults} onClick={this.handleOpenTestResults}>
+              <Checkbox
+                ref={this.checkbox}
+                checked={tests.skip ? false : tests.checked}
+                disabled={tests.skip}
+                onChange={this.handleCheck}
+              />
+              <Button use="link" disabled={tests.skip || emptyResults} onClick={this.handleOpenTestResults}>
                 {this.props.title}
               </Button>
             </Gapped>
