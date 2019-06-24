@@ -27,6 +27,7 @@ export default async function parse(config: Config) {
         retries: 0,
         skip: Boolean(config.testRegex && !config.testRegex.test(testFilePath))
       }))
+      .filter(({ skip }) => !skip)
       .map(test => (tests[test.id] = test));
   }
 
