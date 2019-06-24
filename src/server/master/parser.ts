@@ -25,7 +25,7 @@ export default async function parse(config: Config) {
           .digest("hex"),
         path: testPath,
         retries: 0,
-        skip: config.testRegex && !config.testRegex.test(testFilePath)
+        skip: Boolean(config.testRegex && !config.testRegex.test(testFilePath))
       }))
       .map(test => (tests[test.id] = test));
   }

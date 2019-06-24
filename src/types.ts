@@ -75,7 +75,7 @@ export interface TestResult {
 export interface Test {
   id: string;
   path: string[];
-  skip?: boolean;
+  skip: boolean;
   status?: TestStatus;
   results?: TestResult[];
   approved?: Partial<{ [image: string]: number }>;

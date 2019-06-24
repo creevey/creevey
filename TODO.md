@@ -55,6 +55,7 @@
   - [ ] Allow view fullscale images
   - [x] output skipped tests
 - [x] Test grep regexp dont work with parenthesis
+- [x] Don't respect skip flag from report json
 - [ ] Reload IE page on start (don't handle storybook hotreload)
 - [ ] Setup viewport size
 - [ ] Allow clean approved images
