@@ -1,5 +1,5 @@
 import chai from "chai";
-import Mocha, { Suite, Context } from "mocha";
+import Mocha, { Suite, Context, AsyncFunc } from "mocha";
 import { Config, Test, Images, Options } from "../../types";
 import { getBrowser, switchStory } from "../../utils";
 import chaiImage from "../../mocha-ui/chai-image";
@@ -9,6 +9,13 @@ import Reporter from "./reporter";
 // After end of each suite mocha clean all hooks and don't allow re-run tests without full re-init
 // @ts-ignore see issue for more info https://github.com/mochajs/mocha/issues/2783
 Suite.prototype.cleanReferences = () => {};
+
+function patchMochaInterface(suite: Suite) {
+  suite.on("pre-require", context => {
+    // @ts-ignore
+    context.it.skip = (_browsers: string[], title: string, fn?: AsyncFunc) => context.it(title, fn);
+  });
+}
 
 // FIXME browser options hotfix
 export default async function worker(config: Config, options: Options & { browser: string }) {
@@ -51,6 +58,7 @@ export default async function worker(config: Config, options: Options & { browse
     this.testScope = testScope;
   });
   mocha.suite.beforeEach(switchStory);
+  patchMochaInterface(mocha.suite);
 
   process.on("unhandledRejection", reason => {
     if (process.send) {
