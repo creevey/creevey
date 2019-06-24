@@ -82,7 +82,7 @@ function compareImages(expect: Buffer, actual: Buffer): Buffer {
     expectImageData = normalizeImageSize(expectImage, width, height);
   }
 
-  pixelmatch(expectImageData, actualImageData, diffImage.data, width, height, { threshold: 0 });
+  pixelmatch(expectImageData, actualImageData, diffImage.data, width, height, { threshold: 0, includeAA: true });
 
   return PNG.sync.write(diffImage);
 }
