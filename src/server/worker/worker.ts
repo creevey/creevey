@@ -27,9 +27,12 @@ export default async function worker(config: Config, options: Options & { browse
   function runHandler(failures: number) {
     if (process.send) {
       if (failures > 0) {
-        process.send(JSON.stringify({ type: "test", payload: { status: "failed", images } }));
+        const isTimeout = typeof error == "string" && error.toLowerCase().includes("timeout");
+        process.send(
+          JSON.stringify({ type: isTimeout ? "error" : "test", payload: { status: "failed", images, error } })
+        );
       } else {
-        process.send(JSON.stringify({ type: "test", payload: { status: "success", images, error } }));
+        process.send(JSON.stringify({ type: "test", payload: { status: "success", images } }));
       }
     }
     // TODO Should we move into `process.on`
