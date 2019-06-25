@@ -51,11 +51,17 @@
   - [x] use classnames (emotion)
   - [x] ApprovedRetry
   - [x] Fix incorrect output new images
+  - [x] output skipped tests
   - [ ] Fit large images inside TestResultView
   - [ ] Allow view fullscale images
-  - [x] output skipped tests
+  - [ ] Output test error message
+  - [ ] Improve perfomance on initial load
 - [x] Test grep regexp dont work with parenthesis
 - [x] Don't respect skip flag from report json
+- [ ] Fix skip/unskip tests between run without delete report dir
+- [ ] Restart selenium driver on timeout
+- [ ] Color output in console
+- [ ] HotReload tests files without restart
 - [ ] Reload IE page on start (don't handle storybook hotreload)
 - [ ] Setup viewport size
 - [ ] Allow clean approved images
@@ -71,7 +77,7 @@
 - [ ] Update args readme (config, parser, ...)
 - [ ] Add storybook addon (add `All stories` story and `renderStory` global func)
   - [ ] Update to Storybook@5.x
-  - [ ] Reset mouse position
+  - [x] Reset mouse position
 - [ ] Support mocha options for workers
 - [ ] Add unit tests
 - [ ] Allow define mocha hooks
@@ -87,7 +93,6 @@
 - [ ] Add logger lib
 - [ ] Config npmignore files
 - [ ] Programmic API
-- [ ] Hotupdate tests
 - [ ] Server state sync
 
 ## Runtime function

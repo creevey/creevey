@@ -6,7 +6,7 @@ import Button from "@skbkontur/react-ui/Button";
 import ArrowTriangleRightIcon from "@skbkontur/react-icons/ArrowTriangleRight";
 import DeleteIcon from "@skbkontur/react-icons/Delete";
 import OkIcon from "@skbkontur/react-icons/Ok";
-import HelpDotIcon from "@skbkontur/react-icons/HelpDot";
+import ClockIcon from "@skbkontur/react-icons/Clock";
 import { isTest } from "../types";
 import { Suite, Test, CreeveyContex } from "./CreeveyContext";
 import Spinner from "@skbkontur/react-ui/Spinner";
@@ -108,10 +108,10 @@ export class TestTree extends React.Component<TestTreeProps, TestTreeState> {
         return <OkIcon color="#419d14" />;
       }
       case "running": {
-        return <Spinner type="mini" />;
+        return <Spinner type="mini" caption="" dimmed />;
       }
       case "pending": {
-        return <HelpDotIcon color="#1d85d0" />;
+        return <ClockIcon color="#a0a0a0" />;
       }
       default: {
         return null;
