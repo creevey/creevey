@@ -58,6 +58,7 @@ export default class Runner extends EventEmitter {
   private handlePoolStop = () => {
     if (!this.isRunning) {
       this.sendUpdate({ isRunning: false });
+      this.emit("stop");
     }
   };
 
