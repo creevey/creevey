@@ -27,5 +27,5 @@ export default function server(api: CreeveyApi, reportDir: string) {
 
   wss.on("error", error => console.log("[WebSocketServer]:", error));
 
-  server.listen(3000);
+  server.listen(3000, () => console.log("[CreeveyServer]:", "Started on http://localhost:3000"));
 }

@@ -58,9 +58,11 @@
   - [ ] Improve perfomance on initial load
 - [x] Test grep regexp dont work with parenthesis
 - [x] Don't respect skip flag from report json
+- [ ] Mocha worker `Possible EventEmitter memory leak detected. 11 error listeners added`
+- [ ] Force to leave reason comment for skiped tests
 - [ ] Fix skip/unskip tests between run without delete report dir
 - [ ] Restart selenium driver on timeout
-- [ ] Color output in console
+- [x] Color output in console
 - [ ] HotReload tests files without restart
 - [ ] Reload IE page on start (don't handle storybook hotreload)
 - [ ] Setup viewport size

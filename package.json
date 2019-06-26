@@ -28,6 +28,7 @@
     "selenium-webdriver": "^4.0.0-alpha.1"
   },
   "dependencies": {
+    "chalk": "^2.4.2",
     "koa": "^2.7.0",
     "koa-mount": "^4.0.0",
     "koa-static": "^5.0.0",
