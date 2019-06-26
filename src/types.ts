@@ -26,6 +26,7 @@ export interface Config {
   screenDir: string;
   reportDir: string;
   maxRetries: number;
+  threshold: number;
   browsers: { [key: string]: Capabilities & BrowserConfig };
   hooks: {
     beforeAll: (this: Context) => void;

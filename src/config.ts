@@ -8,7 +8,8 @@ export const defaultConfig = {
   testDir: path.resolve("tests"),
   screenDir: path.resolve("images"),
   reportDir: path.resolve("report"),
-  maxRetries: 0
+  maxRetries: 0,
+  threshold: 0
 };
 const defaultBrowserConfig = { limit: 1 };
 

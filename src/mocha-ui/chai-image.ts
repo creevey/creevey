@@ -63,7 +63,7 @@ function normalizeImageSize(image: PNG, width: number, height: number): Buffer {
   return normalizedImage;
 }
 
-function compareImages(expect: Buffer, actual: Buffer): Buffer {
+function compareImages(expect: Buffer, actual: Buffer, threshold: number): { isEqual: boolean; diff: Buffer } {
   const expectImage = PNG.sync.read(expect);
   const actualImage = PNG.sync.read(actual);
 
@@ -82,9 +82,19 @@ function compareImages(expect: Buffer, actual: Buffer): Buffer {
     expectImageData = normalizeImageSize(expectImage, width, height);
   }
 
-  pixelmatch(expectImageData, actualImageData, diffImage.data, width, height, { threshold: 0, includeAA: true });
+  pixelmatch(expectImageData, actualImageData, diffImage.data, width, height, { threshold, includeAA: true });
 
-  return PNG.sync.write(diffImage);
+  return {
+    isEqual: !hasDiffPixels(diffImage.data),
+    diff: PNG.sync.write(diffImage)
+  };
+}
+
+function hasDiffPixels(diff: Buffer) {
+  for (let i = 0; i < diff.length; i += 4) {
+    if (diff[i + 0] == 255 && diff[i + 1] == 0 && diff[i + 2] == 0 && diff[i + 3] == 255) return true;
+  }
+  return false;
 }
 
 // NOTE Chai don't have right types, see https://github.com/DefinitelyTyped/DefinitelyTyped/issues/29922
@@ -115,14 +125,17 @@ export default (
 
       const expect = await readFileAsync(path.join(expectImageDir, `${imageName}.png`));
 
-      const equalBySize = expectImageStat.size === actual.length;
-      const equalByContent = actual.equals(expect);
+      const equalBySize = expect.length === actual.length;
 
-      if (equalBySize && equalByContent) {
+      if (equalBySize && actual.equals(expect)) {
         return;
       }
 
-      const diff = compareImages(expect, actual);
+      const { isEqual, diff } = compareImages(expect, actual, config.threshold);
+
+      if (isEqual) {
+        return;
+      }
 
       await writeFileAsync(path.join(reportImageDir, `${imageName}-expect-${imageNumber}.png`), expect);
       onSaveImage(imageName, imageNumber, "expect");
