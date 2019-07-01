@@ -43,11 +43,11 @@ export default async function worker(config: Config, options: Options & { browse
   const mocha = new Mocha({
     timeout: 30000,
     reporter: process.env.TEAMCITY_VERSION ? TeamcityReporter : options.reporter || CreeveyReporter,
-    reporterOptions: { topLevelSuite: options.browser, willRetry: () => retry < config.maxRetries }
+    reporterOptions: { topLevelSuite: options.browser, willRetry: () => retries < config.maxRetries }
   });
   const browser = await getBrowser(config, options.browser);
   const testScope: string[] = [];
-  let retry: number = 0;
+  let retries: number = 0;
   let images: Partial<{ [name: string]: Partial<Images> }> = {};
   let error: any = null;
 
@@ -71,8 +71,8 @@ export default async function worker(config: Config, options: Options & { browse
   });
 
   process.on("message", message => {
-    const test: { id: string; path: string[]; retry: number } = JSON.parse(message);
-    retry = test.retry;
+    const test: { id: string; path: string[]; retries: number } = JSON.parse(message);
+    retries = test.retries;
     const testPath = [...test.path]
       .reverse()
       .join(" ")
