@@ -23,7 +23,7 @@ export default class Pool extends EventEmitter {
   init() {
     this.workers = Array.from({ length: this.config.limit }).map(() => {
       cluster.setupMaster({ args: ["--browser", this.browser, ...process.argv.slice(2)] });
-      return cluster.fork();
+      return cluster.fork({ TEAMCITY_VERSION: process.env.TEAMCITY_VERSION });
     });
     // TODO handle errors
     return Promise.all(this.workers.map(worker => new Promise(resolve => worker.once("message", resolve))));
