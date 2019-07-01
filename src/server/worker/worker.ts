@@ -1,10 +1,10 @@
 import chai from "chai";
 import Mocha, { Suite, Context, AsyncFunc } from "mocha";
-import { Config, Test, Images, Options } from "../../types";
+import { Config, Images, Options } from "../../types";
 import { getBrowser, switchStory } from "../../utils";
 import chaiImage from "../../mocha-ui/chai-image";
 import { Loader } from "../../loader";
-import Reporter from "./reporter";
+import { CreeveyReporter, TeamcityReporter } from "./reporter";
 
 // After end of each suite mocha clean all hooks and don't allow re-run tests without full re-init
 // @ts-ignore see issue for more info https://github.com/mochajs/mocha/issues/2783
@@ -35,18 +35,19 @@ export default async function worker(config: Config, options: Options & { browse
         process.send(JSON.stringify({ type: "test", payload: { status: "success", images } }));
       }
     }
-    // TODO Should we move into `process.on`
+    // TODO Should we move into `process.on`?
     images = {};
     error = null;
   }
 
   const mocha = new Mocha({
     timeout: 30000,
-    reporter: options.reporter || Reporter,
-    reporterOptions: { topLevelSuite: options.browser }
+    reporter: process.env.TEAMCITY_VERSION ? TeamcityReporter : options.reporter || CreeveyReporter,
+    reporterOptions: { topLevelSuite: options.browser, willRetry: () => retry < config.maxRetries }
   });
   const browser = await getBrowser(config, options.browser);
   const testScope: string[] = [];
+  let retry: number = 0;
   let images: Partial<{ [name: string]: Partial<Images> }> = {};
   let error: any = null;
 
@@ -70,7 +71,8 @@ export default async function worker(config: Config, options: Options & { browse
   });
 
   process.on("message", message => {
-    const test: Test = JSON.parse(message);
+    const test: { id: string; path: string[]; retry: number } = JSON.parse(message);
+    retry = test.retry;
     const testPath = [...test.path]
       .reverse()
       .join(" ")
