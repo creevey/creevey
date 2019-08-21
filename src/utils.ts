@@ -21,9 +21,14 @@ function getRealIp(): Promise<string> {
 
 export async function getBrowser(config: Config, browserName: string) {
   const { browsers } = config;
-  const { gridUrl = config.gridUrl, address = config.address, limit, testRegex, ...capabilities } = browsers[
-    browserName
-  ];
+  const {
+    gridUrl = config.gridUrl,
+    address = config.address,
+    limit,
+    testRegex,
+    resolution,
+    ...capabilities
+  } = browsers[browserName];
   const browser = await new Builder()
     .usingServer(gridUrl)
     .withCapabilities(capabilities)
@@ -36,6 +41,12 @@ export async function getBrowser(config: Config, browserName: string) {
   const hostUrl = `http://${address.host}:${address.port}/${address.path}`;
   const storybookQuery = "selectedKind=All&selectedStory=Stories";
 
+  if (resolution) {
+    await browser
+      .manage()
+      .window()
+      .setRect(resolution);
+  }
   await browser.get(`${hostUrl}?${storybookQuery}`);
   await browser.wait(until.elementLocated(By.css("#root")), 10000);
 

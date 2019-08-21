@@ -3,6 +3,7 @@ import { Context } from "mocha";
 
 export interface Capabilities {
   browserName: string;
+  resolution?: { width: number; height: number };
 }
 
 export interface BrowserConfig {
