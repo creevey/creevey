@@ -43,7 +43,11 @@ export default async function worker(config: Config, options: Options & { browse
   const mocha = new Mocha({
     timeout: 30000,
     reporter: process.env.TEAMCITY_VERSION ? TeamcityReporter : options.reporter || CreeveyReporter,
-    reporterOptions: { topLevelSuite: options.browser, willRetry: () => retries < config.maxRetries }
+    reporterOptions: {
+      topLevelSuite: options.browser,
+      willRetry: () => retries < config.maxRetries,
+      images: () => images
+    }
   });
   const browser = await getBrowser(config, options.browser);
   const testScope: string[] = [];

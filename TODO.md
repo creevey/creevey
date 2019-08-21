@@ -61,6 +61,7 @@
 - [x] Don't respect skip flag from report json
 - [x] Browser resolution option
 - [x] Fix TeamCity reporter `<unknown test name>`
+- [x] Output images for Teamcity reporter
 - [ ] Mocha worker `Possible EventEmitter memory leak detected. 11 error listeners added`
 - [ ] Force to leave reason comment for skiped tests
 - [ ] Fix skip/unskip tests between run without delete report dir

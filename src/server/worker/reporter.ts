@@ -1,5 +1,6 @@
 import chalk from "chalk";
 import { Runner, reporters, MochaOptions } from "mocha";
+import { Images, isDefined } from "../../types";
 
 export class CreeveyReporter extends reporters.Base {
   constructor(runner: Runner, options: MochaOptions) {
@@ -28,7 +29,12 @@ export class TeamcityReporter extends reporters.Base {
     super(runner);
 
     const topLevelSuite = this.escape(options.reporterOptions.topLevelSuite);
-    const willRetry = options.reporterOptions.willRetry;
+    const { willRetry, images } = options.reporterOptions as {
+      willRetry: () => boolean;
+      images: () => Partial<{
+        [name: string]: Partial<Images>;
+      }>;
+    };
 
     runner.on("suite", suite =>
       suite.root
@@ -40,7 +46,22 @@ export class TeamcityReporter extends reporters.Base {
       console.log(`##teamcity[testStarted name='${this.escape(test.title)}' flowId='${process.pid}']`)
     );
 
-    runner.on("fail", (test, error) =>
+    runner.on("fail", (test, error) => {
+      Object.values(images()).forEach(image => {
+        if (!image) return;
+        Object.values(image)
+          .filter(isDefined)
+          .forEach(imageName =>
+            console.log(
+              `##teamcity[testMetadata testName='${this.escape(test.title)}' type='image' value='report.zip!/${test
+                .titlePath()
+                .slice(0, -1)
+                .map(this.escape)
+                .join("/")}/${topLevelSuite}/${imageName}' flowId='${process.pid}']`
+            )
+          );
+      });
+
       // Output failed test as passed due TC don't support retry mechanic
       // https://teamcity-support.jetbrains.com/hc/en-us/community/posts/207216829-Count-test-as-successful-if-at-least-one-try-is-successful?page=1#community_comment_207394125
       willRetry()
@@ -49,8 +70,8 @@ export class TeamcityReporter extends reporters.Base {
             `##teamcity[testFailed name='${this.escape(test.title)}' message='${this.escape(
               error.message
             )}' details='${this.escape(error.stack)}' flowId='${process.pid}']`
-          )
-    );
+          );
+    });
 
     runner.on("pending", test =>
       console.log(
