@@ -55,7 +55,6 @@ export class TeamcityReporter extends reporters.Base {
             console.log(
               `##teamcity[testMetadata testName='${this.escape(test.title)}' type='image' value='report.zip!/${test
                 .titlePath()
-                .slice(0, -1)
                 .map(this.escape)
                 .join("/")}/${topLevelSuite}/${imageName}' flowId='${process.pid}']`
             )
