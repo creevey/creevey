@@ -37,9 +37,7 @@ export class TeamcityReporter extends reporters.Base {
     );
 
     runner.on("test", test =>
-      console.log(
-        `##teamcity[testStarted name='${this.escape(test.title)}' captureStandardOutput='true' flowId='${process.pid}']`
-      )
+      console.log(`##teamcity[testStarted name='${this.escape(test.title)}' flowId='${process.pid}']`)
     );
 
     runner.on("fail", (test, error) =>
@@ -50,7 +48,7 @@ export class TeamcityReporter extends reporters.Base {
         : console.log(
             `##teamcity[testFailed name='${this.escape(test.title)}' message='${this.escape(
               error.message
-            )}' details='${this.escape(error.stack)}' captureStandardOutput='true' flowId='${process.pid}']`
+            )}' details='${this.escape(error.stack)}' flowId='${process.pid}']`
           )
     );
 
