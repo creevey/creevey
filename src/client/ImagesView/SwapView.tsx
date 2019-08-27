@@ -3,8 +3,8 @@ import { css } from "@emotion/core";
 import { ViewProps } from "./ImagesView";
 
 const colors = {
-  actual: "#419d14",
-  expect: "#d9472b"
+  actual: "#d9472b",
+  expect: "#419d14"
 };
 
 interface SwapViewState {
@@ -21,7 +21,7 @@ export class SwapView extends React.Component<ViewProps, SwapViewState> {
         css={css`
           display: inline-block;
           cursor: pointer;
-          margin: 20px;
+          margin: 20px 0;
         `}
       >
         <input
@@ -39,6 +39,7 @@ export class SwapView extends React.Component<ViewProps, SwapViewState> {
           src={`${url}/${this.props[image]}`}
           css={css`
             border: 1px solid ${colors[image]};
+            max-width: 100%;
           `}
         />
       </label>

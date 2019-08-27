@@ -67,12 +67,15 @@ export class ImagesView extends React.Component<ImagesViewProps, ImagesViewState
         `}
       >
         {approved ? (
-          <img
-            src={`${url}/${actual}`}
-            css={css`
-              border: 1px solid #419d14;
-            `}
-          />
+          <a href={`${url}/${actual}`} target="_blank">
+            <img
+              src={`${url}/${actual}`}
+              css={css`
+                border: 1px solid #419d14;
+                max-width: 100%;
+              `}
+            />
+          </a>
         ) : (
           <>
             {diff && expect ? (
@@ -83,13 +86,16 @@ export class ImagesView extends React.Component<ImagesViewProps, ImagesViewState
                 <ViewComponent url={url} actual={actual} diff={diff} expect={expect} />
               </>
             ) : (
-              <img
-                src={`${url}/${actual}`}
-                css={css`
-                  border: 1px solid #419d14;
-                  margin-bottom: 20px;
-                `}
-              />
+              <a href={`${url}/${actual}`} target="_blank">
+                <img
+                  src={`${url}/${actual}`}
+                  css={css`
+                    border: 1px solid #419d14;
+                    margin-bottom: 20px;
+                    max-width: 100%;
+                  `}
+                />
+              </a>
             )}
             <div>
               <Button use="primary" onClick={this.handleApprove} width="100px">

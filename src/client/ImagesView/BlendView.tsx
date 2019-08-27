@@ -8,7 +8,7 @@ export function BlendView({ url, actual, expect }: ViewProps) {
       css={css`
         display: inline-block;
         position: relative;
-        margin: 20px;
+        margin: 20px 0;
         filter: invert(100%);
       `}
     >
@@ -17,6 +17,7 @@ export function BlendView({ url, actual, expect }: ViewProps) {
         css={css`
           position: absolute;
           border: 1px solid #419d14;
+          max-width: 100%;
         `}
       />
       <img
@@ -24,6 +25,7 @@ export function BlendView({ url, actual, expect }: ViewProps) {
         css={css`
           vertical-align: top;
           border: 1px solid #d9472b;
+          max-width: 100%;
           mix-blend-mode: difference;
         `}
       />

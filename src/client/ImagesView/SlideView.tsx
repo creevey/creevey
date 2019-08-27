@@ -22,7 +22,8 @@ export class SlideView extends React.Component<ViewProps, SlideViewState> {
         css={css`
           display: inline-block;
           position: relative;
-          margin: 20px;
+          margin: 20px 0;
+          max-width: 100%;
         `}
       >
         <input
@@ -33,21 +34,19 @@ export class SlideView extends React.Component<ViewProps, SlideViewState> {
             background: none;
             outline: none;
             height: 100%;
-            width: 100%;
+            width: calc(100% + 2px); /* compensate borders */
             margin: 0;
             z-index: 1;
             -webkit-appearance: none;
             &::-webkit-slider-thumb {
-              border-top: 1px solid transparent;
-              border-bottom: 1px solid transparent;
-              border-left: 1px solid #888;
+              box-shadow: 0 0 0 0.5px #888;
               height: ${height}px;
-              width: 1px;
+              width: 0px;
               -webkit-appearance: none;
             }
           `}
           min="0"
-          max={width}
+          max={width + 2} /* compensate borders */
           defaultValue={value}
           onChange={this.handleSlide}
         />
@@ -61,8 +60,9 @@ export class SlideView extends React.Component<ViewProps, SlideViewState> {
           <img
             src={`${url}/${expect}`}
             css={css`
-              border: 1px solid #d9472b;
+              border: 1px solid #419d14;
               vertical-align: top;
+              width: ${width}px;
             `}
             onLoad={this.handleImageLoad}
           />
@@ -70,8 +70,9 @@ export class SlideView extends React.Component<ViewProps, SlideViewState> {
         <img
           src={`${url}/${actual}`}
           css={css`
-            border: 1px solid #419d14;
+            border: 1px solid #d9472b;
             vertical-align: top;
+            max-width: 100%;
           `}
           onLoad={this.handleImageLoad}
         />
