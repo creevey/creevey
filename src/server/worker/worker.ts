@@ -28,9 +28,13 @@ export default async function worker(config: Config, options: Options & { browse
     if (process.send) {
       if (failures > 0) {
         const isTimeout = typeof error == "string" && error.toLowerCase().includes("timeout");
+        const isError = isTimeout && retries < config.maxRetries;
         process.send(
-          JSON.stringify({ type: isTimeout ? "error" : "test", payload: { status: "failed", images, error } })
+          JSON.stringify({ type: isError ? "error" : "test", payload: { status: "failed", images, error } })
         );
+        if (isTimeout) {
+          process.exit(-1);
+        }
       } else {
         process.send(JSON.stringify({ type: "test", payload: { status: "success", images } }));
       }

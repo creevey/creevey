@@ -23,7 +23,9 @@ export default class Pool extends EventEmitter {
   init() {
     this.workers = Array.from({ length: this.config.limit }).map(() => {
       cluster.setupMaster({ args: ["--browser", this.browser, ...process.argv.slice(2)] });
-      return cluster.fork();
+      const worker = cluster.fork();
+      this.exitHandler(worker);
+      return worker;
     });
     // TODO handle errors
     return Promise.all(this.workers.map(worker => new Promise(resolve => worker.once("message", resolve))));
@@ -64,23 +66,26 @@ export default class Pool extends EventEmitter {
     worker.isRunnning = true;
     worker.once("message", data => {
       const message: WorkerMessage = JSON.parse(data);
-      if (message.type != "test") {
-        // TODO handle retry
+      if (message.type == "ready") {
+        return;
+      }
+      const { type, payload } = message;
+      const shouldRetry =
+        (type == "error" || payload.status == "failed") && test.retries < this.maxRetries && !this.forcedStop;
+
+      if (shouldRetry) {
+        test.retries += 1;
+        this.queue.push(test);
+      }
+
+      if (type == "error") {
         // TODO emit stop event
-        this.handleMessage(worker, message);
         this.process();
         return;
       }
       const result = message.payload;
       const { status } = result;
 
-      if (status == "failed") {
-        const shouldRetry = test.retries < this.maxRetries && !this.forcedStop;
-        if (shouldRetry) {
-          test.retries += 1;
-          this.queue.push(test);
-        }
-      }
       this.sendStatus({ id, status, result });
       worker.isRunnning = false;
 
@@ -107,18 +112,16 @@ export default class Pool extends EventEmitter {
     return this.workers.filter(worker => !worker.isRunnning);
   }
 
-  private handleMessage(worker: Worker, message: WorkerMessage) {
-    if (message.type == "error") {
-      worker.once("exit", () => {
-        cluster.setupMaster({ args: ["--browser", this.browser, ...process.argv.slice(2)] });
-        const newWorker = cluster.fork();
-        // TODO handle errors
-        newWorker.once("message", () => {
-          this.workers[this.workers.indexOf(worker)] = newWorker;
-          this.process();
-        });
+  private exitHandler(worker: Worker) {
+    worker.once("exit", () => {
+      cluster.setupMaster({ args: ["--browser", this.browser, ...process.argv.slice(2)] });
+      const newWorker = cluster.fork();
+      this.exitHandler(newWorker);
+      // TODO handle errors
+      newWorker.once("message", () => {
+        this.workers[this.workers.indexOf(worker)] = newWorker;
+        this.process();
       });
-      worker.kill();
-    }
+    });
   }
 }
