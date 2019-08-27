@@ -51,14 +51,30 @@ export class TestResultsView extends React.Component<TestResultsViewProps, TestR
   private renderError(error?: string) {
     if (!error) return null;
     return (
-      <div
+      <details
+        open
         css={css`
           background: #eee;
-          text-align: center;
+          padding: 10px 20px;
         `}
       >
-        {error}
-      </div>
+        <summary
+          css={css`
+            outline: none;
+            cursor: pointer;
+            user-select: none;
+          `}
+        >
+          Error message:
+        </summary>
+        <div
+          css={css`
+            background: #fff;
+          `}
+        >
+          {error}
+        </div>
+      </details>
     );
   }
 
