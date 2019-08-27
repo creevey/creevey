@@ -32,7 +32,7 @@
 - [x] Allow define sets (test files, address, browsers)
   - [x] Filter tests by path in parser
   - [x] Merge common config with browser config
-- [ ] Web interface
+- [x] Web interface
   - [x] webpack build
   - [x] usage react-ui
   - [x] output tests tree
@@ -52,34 +52,38 @@
   - [x] ApprovedRetry
   - [x] Fix incorrect output new images
   - [x] output skipped tests
-  - [ ] Fit large images inside TestResultView
-  - [ ] Allow view fullscale images
-  - [ ] Output test error message
-  - [ ] Improve perfomance on initial load
-  - [ ] Invert expect/actual color
+  - [x] Output test error message
+  - [x] Fit large images inside TestResultView
+  - [x] Allow view fullscale images
+  - [x] Invert expect/actual color
+  - [x] Better output test error message
 - [x] Test grep regexp dont work with parenthesis
 - [x] Don't respect skip flag from report json
 - [x] Browser resolution option
 - [x] Fix TeamCity reporter `<unknown test name>`
 - [x] Output images for Teamcity reporter
-- [ ] Mocha worker `Possible EventEmitter memory leak detected. 11 error listeners added`
-- [ ] Force to leave reason comment for skiped tests
-- [ ] Fix skip/unskip tests between run without delete report dir
-- [ ] Restart selenium driver on timeout
+- [x] Setup viewport size
 - [x] Color output in console
-- [ ] HotReload tests files without restart
+- [ ] Firefox double click if clicks in different tests
 - [ ] Reload IE page on start (don't handle storybook hotreload)
-- [ ] Setup viewport size
 - [ ] Allow clean approved images
-- [x] ~~Composite images~~
-- [ ] Handle error on mocha hooks
+- [ ] Generate runtime tests based on stories
 - [ ] Add cli arguments
   - [x] config
   - [x] parser
   - [x] ui
   - [x] reporter
+  - [ ] init
   - [ ] grep/kind/story
   - [ ] update
+- [ ] Improve UI performance on initial load
+- [ ] Mocha worker `Possible EventEmitter memory leak detected. 11 error listeners added`
+- [ ] Force to leave reason comment for skiped tests
+- [ ] Fix skip/unskip tests between run without delete report dir
+- [ ] Restart selenium driver on timeout
+- [ ] HotReload tests files without restart
+- [x] ~~Composite images~~
+- [ ] Handle error on mocha hooks
 - [ ] Update args readme (config, parser, ...)
 - [ ] Add storybook addon (add `All stories` story and `renderStory` global func)
   - [ ] Update to Storybook@5.x
