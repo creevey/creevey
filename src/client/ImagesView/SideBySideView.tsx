@@ -4,7 +4,14 @@ import { ViewProps } from "./ImagesView";
 
 export function SideBySideView({ url, actual, diff, expect }: ViewProps) {
   return (
-    <>
+    <div
+      css={css`
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        align-content: space-between;
+      `}
+    >
       <a href={`${url}/${expect}`} target="_blank">
         <img
           src={`${url}/${expect}`}
@@ -35,6 +42,6 @@ export function SideBySideView({ url, actual, diff, expect }: ViewProps) {
           `}
         />
       </a>
-    </>
+    </div>
   );
 }
