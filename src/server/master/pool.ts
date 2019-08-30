@@ -55,6 +55,12 @@ export default class Pool extends EventEmitter {
     const worker = this.getFreeWorker();
     const [test] = this.queue;
 
+    if (this.queue.length == 0 && this.workers.length === this.freeWorkers.length) {
+      this.forcedStop = false;
+      this.emit("stop");
+      return;
+    }
+
     if (!worker || !test) return;
 
     const { id } = test;
@@ -66,35 +72,22 @@ export default class Pool extends EventEmitter {
     worker.isRunnning = true;
     worker.once("message", data => {
       const message: WorkerMessage = JSON.parse(data);
-      if (message.type == "ready") {
-        return;
-      }
-      const { type, payload } = message;
-      const shouldRetry =
-        (type == "error" || payload.status == "failed") && test.retries < this.maxRetries && !this.forcedStop;
+      if (message.type == "ready") return;
+      if (message.type == "error") worker.kill();
+
+      const { payload: result } = message;
+      const { status } = result;
+      const shouldRetry = status == "failed" && test.retries < this.maxRetries && !this.forcedStop;
 
       if (shouldRetry) {
         test.retries += 1;
         this.queue.push(test);
       }
 
-      if (type == "error") {
-        // TODO emit stop event
-        this.process();
-        return;
-      }
-      const result = message.payload;
-      const { status } = result;
-
-      this.sendStatus({ id, status, result });
       worker.isRunnning = false;
 
-      if (this.queue.length > 0) {
-        this.process();
-      } else if (this.workers.length === this.freeWorkers.length) {
-        this.forcedStop = false;
-        this.emit("stop");
-      }
+      this.sendStatus({ id, status, result });
+      this.process();
     });
     worker.send(JSON.stringify(test));
     this.process();
@@ -108,8 +101,12 @@ export default class Pool extends EventEmitter {
     return this.freeWorkers[Math.floor(Math.random() * this.freeWorkers.length)];
   }
 
+  private get aliveWorkers() {
+    return this.workers.filter(worker => !worker.exitedAfterDisconnect);
+  }
+
   private get freeWorkers() {
-    return this.workers.filter(worker => !worker.isRunnning);
+    return this.aliveWorkers.filter(worker => !worker.isRunnning);
   }
 
   private exitHandler(worker: Worker) {

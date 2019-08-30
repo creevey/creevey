@@ -18,7 +18,7 @@ export class CreeveyReporter extends reporters.Base {
       console.log(
         `[${chalk.red("FAIL")}:${topLevelSuite}:${process.pid}]`,
         chalk.cyan(test.titlePath().join("/")),
-        error.message
+        error instanceof Error ? error.stack || error.message : error
       )
     );
   }

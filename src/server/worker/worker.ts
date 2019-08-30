@@ -1,4 +1,5 @@
 import chai from "chai";
+import chalk from "chalk";
 import Mocha, { Suite, Context, AsyncFunc } from "mocha";
 import { Config, Images, Options } from "../../types";
 import { getBrowser, switchStory } from "../../utils";
@@ -28,13 +29,9 @@ export default async function worker(config: Config, options: Options & { browse
     if (process.send) {
       if (failures > 0) {
         const isTimeout = typeof error == "string" && error.toLowerCase().includes("timeout");
-        const isError = isTimeout && retries < config.maxRetries;
         process.send(
-          JSON.stringify({ type: isError ? "error" : "test", payload: { status: "failed", images, error } })
+          JSON.stringify({ type: isTimeout ? "error" : "test", payload: { status: "failed", images, error } })
         );
-        if (isTimeout) {
-          process.exit(-1);
-        }
       } else {
         process.send(JSON.stringify({ type: "test", payload: { status: "success", images } }));
       }
@@ -74,7 +71,9 @@ export default async function worker(config: Config, options: Options & { browse
 
   process.on("unhandledRejection", reason => {
     if (process.send) {
-      process.send(JSON.stringify({ type: "error", payload: reason }));
+      error = reason instanceof Error ? reason.stack || reason.message : reason;
+      console.log(`[${chalk.red("FAIL")}:${options.browser}:${process.pid}]`, chalk.cyan(testScope.join("/")), error);
+      process.send(JSON.stringify({ type: "error", payload: { status: "failed", images, error } }));
     }
   });
 
@@ -90,10 +89,7 @@ export default async function worker(config: Config, options: Options & { browse
     const runner = mocha.run(runHandler);
 
     // TODO How handle browser corruption?
-    runner.on(
-      "fail",
-      (_test, testError) => (error = testError instanceof Error ? testError.stack || testError.message : testError)
-    );
+    runner.on("fail", (_test, reason) => (error = reason instanceof Error ? reason.stack || reason.message : reason));
   });
 
   setInterval(() => browser.getTitle(), 30 * 1000);
