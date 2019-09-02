@@ -6,7 +6,7 @@ import { Options } from "./types";
 
 const argv = minimist<Options>(process.argv.slice(2), {
   string: ["config", "browser", "reporter"],
-  boolean: ["parser", "ui"],
+  boolean: ["parser", "ui", "update"],
   default: { config: "./creevey", parser: false, ui: false }
 });
 

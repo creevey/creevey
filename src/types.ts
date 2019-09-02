@@ -39,6 +39,7 @@ export interface Options {
   config: string;
   parser: boolean;
   ui: boolean;
+  update: boolean;
   browser?: string;
   reporter?: string;
 }
@@ -112,6 +113,6 @@ export function isTest<T1, T2 extends Test>(x: T1 | T2): x is T2 {
   return "id" in x && "path" in x && "retries" in x && Array.isArray(x.path) && typeof x.id == "string";
 }
 
-export function isDefined<T>(value: T | undefined): value is T {
-  return value !== undefined;
+export function isDefined<T>(value: T | null | undefined): value is T {
+  return value !== null && value !== undefined;
 }

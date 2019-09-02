@@ -73,9 +73,9 @@
   - [x] parser
   - [x] ui
   - [x] reporter
+  - [x] update
   - [ ] init
   - [ ] grep/kind/story
-  - [ ] update
 - [ ] Improve UI performance on initial load
 - [ ] Mocha worker `Possible EventEmitter memory leak detected. 11 error listeners added`
 - [ ] Force to leave reason comment for skiped tests
@@ -104,6 +104,7 @@
 - [ ] Config npmignore files
 - [ ] Programmic API
 - [ ] Server state sync
+- [ ] Rewrite to use `worker_threads` instead of `cluster` to allow use shared memory
 
 ## Runtime function
 
