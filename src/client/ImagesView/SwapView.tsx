@@ -14,7 +14,6 @@ interface SwapViewState {
 export class SwapView extends React.Component<ViewProps, SwapViewState> {
   public state: SwapViewState = { image: "actual" };
   render() {
-    const { url } = this.props;
     const { image } = this.state;
     return (
       <label
@@ -31,12 +30,13 @@ export class SwapView extends React.Component<ViewProps, SwapViewState> {
             width: 0;
             height: 0;
             z-index: -1;
+            -webkit-appearance: none;
           `}
           type="checkbox"
           onChange={this.handleChangeView}
         />
         <img
-          src={`${url}/${this.props[image]}`}
+          src={this.props[image]}
           css={css`
             border: 1px solid ${colors[image]};
             max-width: 100%;

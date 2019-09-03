@@ -2,7 +2,7 @@ import React from "react";
 import { css } from "@emotion/core";
 import { ViewProps } from "./ImagesView";
 
-export function BlendView({ url, actual, expect }: ViewProps) {
+export function BlendView({ actual, expect }: ViewProps) {
   return (
     <div
       css={css`
@@ -13,7 +13,7 @@ export function BlendView({ url, actual, expect }: ViewProps) {
       `}
     >
       <img
-        src={`${url}/${actual}`}
+        src={actual}
         css={css`
           position: absolute;
           border: 1px solid #419d14;
@@ -21,7 +21,7 @@ export function BlendView({ url, actual, expect }: ViewProps) {
         `}
       />
       <img
-        src={`${url}/${expect}`}
+        src={expect}
         css={css`
           vertical-align: top;
           border: 1px solid #d9472b;

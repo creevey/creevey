@@ -15,7 +15,7 @@ export class SlideView extends React.Component<ViewProps, SlideViewState> {
     value: "0"
   };
   render() {
-    const { url, actual, expect } = this.props;
+    const { actual, expect } = this.props;
     const { width, height, value } = this.state;
     return (
       <div
@@ -58,7 +58,7 @@ export class SlideView extends React.Component<ViewProps, SlideViewState> {
           `}
         >
           <img
-            src={`${url}/${expect}`}
+            src={expect}
             css={css`
               border: 1px solid #419d14;
               vertical-align: top;
@@ -68,7 +68,7 @@ export class SlideView extends React.Component<ViewProps, SlideViewState> {
           />
         </div>
         <img
-          src={`${url}/${actual}`}
+          src={actual}
           css={css`
             border: 1px solid #d9472b;
             vertical-align: top;

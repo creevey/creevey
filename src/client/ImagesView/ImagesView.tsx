@@ -10,7 +10,6 @@ import { BlendView } from "./BlendView";
 import FLAT_THEME from "@skbkontur/react-ui/lib/theming/themes/FlatTheme";
 
 export interface ViewProps {
-  url: string;
   actual: string;
   diff: string;
   expect: string;
@@ -83,7 +82,7 @@ export class ImagesView extends React.Component<ImagesViewProps, ImagesViewState
                 <ThemeProvider value={SwitcherTheme}>
                   <Switcher items={modes} onChange={this.handleChangeView} value={mode} />
                 </ThemeProvider>
-                <ViewComponent url={url} actual={actual} diff={diff} expect={expect} />
+                <ViewComponent actual={`${url}/${actual}`} diff={`${url}/${diff}`} expect={`${url}/${expect}`} />
               </>
             ) : (
               <a href={`${url}/${actual}`} target="_blank">
