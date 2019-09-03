@@ -21,7 +21,7 @@ export function createBrowserSuites(config: Config, suites: Suite[]) {
 
     browserSuite.ctx.config = config;
     browserSuite.ctx.browserName = browserName;
-    browserSuite.beforeAll(config.hooks.beforeAll);
+    if (config.hooks) browserSuite.beforeAll(config.hooks.beforeAll);
 
     return browserSuite;
   });
@@ -50,7 +50,7 @@ export function createDescriber(config: Config, browserSuites: Suite[], suites: 
     const storySuite = createSuite({ title, fn, file }, parentSuite);
 
     storySuite.ctx.testScope = testScope;
-    storySuite.beforeEach(config.hooks.beforeEach);
+    if (config.hooks) storySuite.beforeEach(config.hooks.beforeEach);
 
     return storySuite;
   };

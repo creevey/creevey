@@ -4,7 +4,7 @@ import { switchStory, getBrowser } from "./utils";
 import { Config } from "./types";
 
 export const defaultConfig = {
-  testRegex: "\\.js$",
+  testRegex: /\.js$/,
   testDir: path.resolve("tests"),
   screenDir: path.resolve("images"),
   reportDir: path.resolve("report"),

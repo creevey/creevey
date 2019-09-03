@@ -29,7 +29,7 @@ export interface Config {
   maxRetries: number;
   threshold: number;
   browsers: { [key: string]: Capabilities & BrowserConfig };
-  hooks: {
+  hooks?: {
     beforeAll: (this: Context) => void;
     beforeEach: (this: Context) => void;
   };
