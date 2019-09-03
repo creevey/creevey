@@ -20,7 +20,9 @@
     "build:js": "babel src --out-dir lib --extensions .ts --ignore src/client",
     "build:client": "webpack --mode production",
     "build:dts": "dts-generator --out lib/index.d.ts --project ./ --prefix creevey --types ../types/chai --types ../types/mocha --exclude \"node_modules/**/*.d.ts\" --exclude \"./*.ts\" --exclude src/cli.ts --exclude \"src/client/**/*.{ts,tsx}\"",
-    "prepublishOnly": "yarn build"
+    "prepublishOnly": "yarn build",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
   },
   "peerDependencies": {
     "chai": "^4.2.0",
@@ -51,6 +53,10 @@
     "@emotion/core": "^10.0.16",
     "@skbkontur/react-icons": "^3.1.9",
     "@skbkontur/react-ui": "1.1.2",
+    "@storybook/addon-actions": "^5.1.11",
+    "@storybook/addon-links": "^5.1.11",
+    "@storybook/addons": "^5.1.11",
+    "@storybook/react": "^5.1.11",
     "@types/chai": "^4.2.0",
     "@types/html-webpack-plugin": "^3.2.1",
     "@types/koa": "^2.0.49",
@@ -65,6 +71,7 @@
     "@types/react": "^16.9.2",
     "@types/react-dom": "^16.9.0",
     "@types/selenium-webdriver": "^4.0.2",
+    "@types/storybook__react": "^4.0.2",
     "@types/uuid": "^3.4.5",
     "@types/webpack": "^4.39.0",
     "@types/webpack-dev-server": "^3.1.7",
