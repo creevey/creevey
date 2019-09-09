@@ -70,6 +70,7 @@
 - [x] Add Storybook for web ui components
 - [x] ~~Composite images~~ (Split your story or test)
 - [x] Restart selenium driver on timeout
+- [ ] Export decorator from creevey
 - [ ] Firefox double click if clicks in different tests
 - [ ] Reload IE page on start (don't handle storybook hotreload)
 - [ ] Allow clean approved images

@@ -1,3 +1,4 @@
+import { StoriesRaw } from "@storybook/api/dist/modules/stories";
 import { Worker as ClusterWorker } from "cluster";
 import { Context } from "mocha";
 
@@ -51,6 +52,7 @@ export interface Worker extends ClusterWorker {
 export type WorkerMessage =
   | {
       type: "ready";
+      payload: { stories: StoriesRaw };
     }
   | {
       type: "error";

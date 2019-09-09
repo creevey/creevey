@@ -1,7 +1,8 @@
 import http from "http";
 import { Context } from "mocha";
-import { Builder, until, By } from "selenium-webdriver";
+import { Builder, By, until, WebDriver } from "selenium-webdriver";
 import { Config } from "./types";
+import { StoryContext } from "@storybook/addons";
 
 function getRealIp(): Promise<string> {
   return new Promise((resolve, reject) =>
@@ -19,6 +20,47 @@ function getRealIp(): Promise<string> {
   );
 }
 
+async function resetMousePosition(browser: WebDriver) {
+  const { width, height } = await browser.executeScript(function() {
+    // TODO Storybook already scroll to the top, so this line no more needed
+    // TODO Check on storybook 4.x
+    // window.scrollTo(0, 0);
+
+    var bodyRect = document.body.getBoundingClientRect();
+    return {
+      width: Math.min(document.documentElement.clientWidth, bodyRect.width),
+      height: Math.min(document.documentElement.clientHeight, bodyRect.height)
+    };
+  });
+  await browser
+    .actions({ bridge: true })
+    .move({
+      origin: browser.findElement(By.css("body")),
+      x: Math.ceil((-1 * width) / 2),
+      y: Math.ceil((-1 * height) / 2)
+    })
+    .perform();
+}
+
+async function selectStory(browser: WebDriver, kind: string, story: string) {
+  browser.executeScript(function() {
+    // @ts-ignore
+    window.selectStory(true);
+  });
+  await browser.wait(until.elementLocated(By.css(".sb-nopreview")));
+  const storyContext: StoryContext = await browser.executeAsyncScript(
+    // @ts-ignore
+    function(storyId, kind, name, callback) {
+      // @ts-ignore
+      window.selectStory(storyId, kind, name, callback);
+    },
+    `${kind}--${story}`.toLowerCase(),
+    kind,
+    story
+  );
+  return storyContext;
+}
+
 export async function getBrowser(config: Config, browserName: string) {
   const { browsers } = config;
   const {
@@ -34,12 +76,9 @@ export async function getBrowser(config: Config, browserName: string) {
     .withCapabilities(capabilities)
     .build();
 
-  if (address.host === "localhost") {
+  if (address.host === "localhost" || address.host === "127.0.0.1") {
     address.host = await getRealIp();
   }
-
-  const hostUrl = `http://${address.host}:${address.port}/${address.path}`;
-  const storybookQuery = "selectedKind=All&selectedStory=Stories";
 
   if (resolution) {
     await browser
@@ -47,7 +86,7 @@ export async function getBrowser(config: Config, browserName: string) {
       .window()
       .setRect(resolution);
   }
-  await browser.get(`${hostUrl}?${storybookQuery}`);
+  await browser.get(`http://${address.host}:${address.port}/${address.path}`);
   await browser.wait(until.elementLocated(By.css("#root")), 10000);
 
   return browser;
@@ -59,35 +98,11 @@ export async function switchStory(this: Context) {
   const story = this.currentTest!.parent!.title;
   const kind = this.currentTest!.parent!.parent!.title;
 
-  const { width, height } = await this.browser.executeScript(
-    // tslint:disable
-    // @ts-ignore
-    function(kind, story) {
-      window.scrollTo(0, 0);
-      // @ts-ignore
-      window.renderStory({
-        kind: kind,
-        story: story
-      });
-      var bodyRect = document.body.getBoundingClientRect();
-      return {
-        width: Math.min(document.documentElement.clientWidth, bodyRect.width),
-        height: Math.min(document.documentElement.clientHeight, bodyRect.height)
-      };
-      // tslint:enable
-    },
-    kind,
-    story
-  );
-  await this.browser
-    .actions({ bridge: true })
-    .move({
-      origin: this.browser.findElement(By.css("body")),
-      x: Math.ceil((-1 * width) / 2),
-      y: Math.ceil((-1 * height) / 2)
-    })
-    .perform();
+  await resetMousePosition(this.browser);
+  const storyContext = await selectStory(this.browser, kind, story);
 
   this.testScope.length = 0;
   this.testScope.push(kind, story, test, this.browserName);
+
+  return storyContext;
 }

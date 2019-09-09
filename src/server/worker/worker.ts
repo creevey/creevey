@@ -51,6 +51,11 @@ export default async function worker(config: Config, options: Options & { browse
     }
   });
   const browser = await getBrowser(config, options.browser);
+  // @ts-ignore
+  const stories = await browser.executeAsyncScript(function(callback) {
+    // @ts-ignore
+    window.getStories(callback);
+  });
   const testScope: string[] = [];
   let retries: number = 0;
   let images: Partial<{ [name: string]: Partial<Images> }> = {};
@@ -66,6 +71,7 @@ export default async function worker(config: Config, options: Options & { browse
     this.browserName = options.browser;
     this.testScope = testScope;
   });
+  // TODO Handle story context
   mocha.suite.beforeEach(switchStory);
   patchMochaInterface(mocha.suite);
 
@@ -97,6 +103,6 @@ export default async function worker(config: Config, options: Options & { browse
   console.log("[CreeveyWorker]:", `Ready ${options.browser}:${process.pid}`);
 
   if (process.send) {
-    process.send(JSON.stringify({ type: "ready" }));
+    process.send(JSON.stringify({ type: "ready", payload: { stories } }));
   }
 }

@@ -28,6 +28,7 @@ export default class Pool extends EventEmitter {
       return worker;
     });
     // TODO handle errors
+    // TODO Send stories into runner
     return Promise.all(this.workers.map(worker => new Promise(resolve => worker.once("message", resolve))));
   }
 
