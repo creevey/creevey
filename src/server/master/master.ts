@@ -25,7 +25,7 @@ function reportDataModule<T>(data: T) {
 function loadTests(): Promise<Partial<{ [id: string]: Test }>> {
   return new Promise(resolve => {
     console.log("[CreeveyRunner]:", "Start loading tests");
-    cluster.setupMaster({ args: ["--parser"] });
+    cluster.setupMaster({ args: ["--parser", ...process.argv.slice(2)] });
     const parser = cluster.fork();
     parser.once("message", message => {
       const tests: Partial<{ [id: string]: Test }> = JSON.parse(message);
@@ -53,7 +53,7 @@ function mergeTests(tests: Partial<{ [id: string]: Test }>, testsWithReports: Pa
 async function copyStatics(reportDir: string) {
   const clientDir = path.join(__dirname, "../../client");
   const files = (await readdirAsync(clientDir, { withFileTypes: true }))
-    .filter(dirent => !/\.d\.ts$/.test(dirent.name))
+    .filter(dirent => dirent.isFile() && !/\.d\.ts$/.test(dirent.name))
     .map(dirent => dirent.name);
   await mkdirpAsync(reportDir);
   for (const file of files) {
