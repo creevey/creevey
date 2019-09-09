@@ -62,3 +62,6 @@ typings/
 
 # Build sources
 lib
+
+# Screenshot tests report
+report
