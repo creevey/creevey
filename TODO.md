@@ -64,47 +64,58 @@
 - [x] Output images for Teamcity reporter
 - [x] Setup viewport size
 - [x] Color output in console
+- [x] Server state sync
+- [x] Config npmignore files
+- [x] Status runner
+- [x] Add Storybook for web ui components
+- [x] ~~Composite images~~ (Split your story or test)
+- [x] Restart selenium driver on timeout
 - [ ] Firefox double click if clicks in different tests
 - [ ] Reload IE page on start (don't handle storybook hotreload)
 - [ ] Allow clean approved images
 - [ ] Generate runtime tests based on stories
+- [ ] Allow leave reason comment for skiped tests
+- [ ] Update args readme (config, parser, ...)
+- [ ] Simplify types re-export for lib usage
+- [ ] Allow assert multiple images in one test
 - [ ] Add cli arguments
   - [x] config
   - [x] parser
   - [x] ui
   - [x] reporter
   - [x] update
-  - [ ] init
+  - [x] ~~init~~
   - [ ] grep/kind/story
+- [ ] Add storybook addon (add `All stories` story and `renderStory` global func)
+  - [x] Update to Storybook@5.x
+  - [x] Reset mouse position
+  - [ ] Support sotrybook 4.x-5.x
+  - [ ] Write decorator that allow do some actions
+- [ ] Transform to monorepo
+  - [ ] `chai-image`
+  - [ ] `creevey`
+  - [ ] `creevey-ui`
+  - [ ] `creevey-book` (storybook decorator)
+- [ ] Allow use custom API (wd/wdio/puppeter/etc)
 - [ ] Improve UI performance on initial load
 - [ ] Mocha worker `Possible EventEmitter memory leak detected. 11 error listeners added`
-- [ ] Force to leave reason comment for skiped tests
 - [ ] Fix skip/unskip tests between run without delete report dir
-- [ ] Restart selenium driver on timeout
 - [ ] HotReload tests files without restart
-- [x] ~~Composite images~~
 - [ ] Handle error on mocha hooks
-- [ ] Update args readme (config, parser, ...)
-- [ ] Add storybook addon (add `All stories` story and `renderStory` global func)
-  - [ ] Update to Storybook@5.x
-  - [x] Reset mouse position
+- [ ] Allow use standalone storybook
 - [ ] Support mocha options for workers
 - [ ] Add unit tests
 - [ ] Allow define mocha hooks
-- [ ] Simplify types re-export for lib usage
-- [ ] Allow assert multiple images in one test
+- [ ] Add logger lib
+- [ ] Programmic API
+- [ ] Rewrite to use `worker_threads` instead of `cluster` to allow use shared memory
 - [ ] vscode mocha explorer
   - [ ] codelens run not work (need full path)
   - [ ] tests run with default timeout even if it changed in config
   - [ ] cwd and require conflict each other
   - [ ] mocha opts and mocha bin is not prefect support
-- [ ] Add Storybook for web ui components
-- [ ] Status runner
-- [ ] Add logger lib
-- [ ] Config npmignore files
-- [ ] Programmic API
-- [ ] Server state sync
-- [ ] Rewrite to use `worker_threads` instead of `cluster` to allow use shared memory
+  - [ ] See for features to https://github.com/tsuyoshiwada/storybook-chrome-screenshot
+- [ ] Use own runner instead of mocha
 
 ## Runtime function
 
