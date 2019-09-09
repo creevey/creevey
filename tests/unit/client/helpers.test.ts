@@ -1,7 +1,7 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
-import { toogleChecked } from "../../src/client/helpers";
-import { Suite } from "../../src/client/CreeveyContext";
+import { toogleChecked } from "../../../src/client/helpers";
+import { Suite } from "../../../src/client/CreeveyContext";
 
 function mockTest() {
   return {
