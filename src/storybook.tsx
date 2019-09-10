@@ -24,13 +24,14 @@ addons.getChannel().once("setStories", ({ stories }) => {
   window.getStories = callback => callback(stories);
 });
 
-export default () => {
+export function withCreevey() {
   let storyDidMountCallback: StoryDidMountCallback = () => {};
   // @ts-ignore
   window.selectStory = (storyId: string, kind: string, name: string, callback: StoryDidMountCallback) => {
     storyDidMountCallback = callback;
     addons.getChannel().emit("setCurrentStory", { storyId, name, kind });
   };
+
   return makeDecorator({
     name: "withCreevey",
     parameterName: "creevey",
@@ -43,4 +44,4 @@ export default () => {
       );
     }
   });
-};
+}

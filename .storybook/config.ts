@@ -1,5 +1,5 @@
 import { configure, addDecorator } from "@storybook/react";
-import withCreevey from "../src/storybook";
+import { withCreevey } from "../src/storybook";
 
 addDecorator(withCreevey());
 
