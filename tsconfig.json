@@ -14,13 +14,8 @@
     "noUnusedParameters": true,
     "typeRoots": ["./types", "./node_modules/@types"],
     "paths": {
-      "creevey/lib/*": ["src/*"]
+      "creevey": ["src"]
     }
   },
-  "exclude": [
-    // NOTE: This need to generate d.ts bundle with correct path
-    "./*.ts",
-    "./lib",
-    "./tests"
-  ]
+  "exclude": ["./report"]
 }

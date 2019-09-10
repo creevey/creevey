@@ -4,6 +4,7 @@
   "bin": {
     "creevey": "./lib/cli.js"
   },
+  "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "repository": "git@github.com:wKich/creevey.git",
   "license": "MIT",
@@ -18,12 +19,11 @@
     "start:client": "webpack-dev-server",
     "start:storybook": "start-storybook -p 6006",
     "start:creevey": "wait-on -t 30000 http-get://localhost:6006/ && node --require ./scripts/babel-register -- src/cli --ui",
-    "prebuild": "yarn clean",
+    "prebuild": "yarn clean && mkdir lib",
     "build": "npm-run-all --continue-on-error --parallel build:*",
-    "build:types": "tsc --emitDeclarationOnly",
-    "build:js": "babel src --out-dir lib --extensions .ts --ignore src/client",
+    "build:types": "tsc --emitDeclarationOnly -p scripts/tsconfig.prod.json",
+    "build:creevey": "babel src --out-dir lib --extensions .ts,.tsx --ignore src/client",
     "build:client": "webpack --mode production",
-    "build:dts": "dts-generator --out lib/index.d.ts --project ./ --prefix creevey --types ../types/chai --types ../types/mocha --exclude \"node_modules/**/*.d.ts\" --exclude \"./*.ts\" --exclude src/cli.ts --exclude \"src/client/**/*.{ts,tsx}\"",
     "prepublishOnly": "yarn build"
   },
   "peerDependencies": {
@@ -81,7 +81,6 @@
     "babel-loader": "^8.0.6",
     "chai": "^4.2.0",
     "css-loader": "^3.2.0",
-    "dts-generator": "^3.0.0",
     "file-loader": "^4.2.0",
     "html-webpack-plugin": "^3.2.0",
     "mocha": "^6.2.0",

@@ -2,7 +2,6 @@
   "sourceMaps": "inline",
   "presets": [
     "@babel/preset-react",
-    "@emotion/babel-preset-css-prop",
     "@babel/preset-typescript",
     ["@babel/preset-env", { "targets": { "node": true } }]
   ],

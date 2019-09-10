@@ -5,6 +5,7 @@ export default async ({ config }: { config: Configuration }) => {
 
   // babel-loader
   config.module.rules[0].test = /\.(mjs|(j|t)sx?)$/;
+  config.module.rules[0].use[0].options.overrides = [{ presets: ["@emotion/babel-preset-css-prop"] }];
 
   // /\.css$/ -> css-loader
   // TODO Remove after update @skbkontur/react-ui

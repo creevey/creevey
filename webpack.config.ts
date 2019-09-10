@@ -10,7 +10,12 @@ const config: Configuration = {
       {
         test: /\.tsx?/,
         exclude: /node_modules/,
-        use: "babel-loader"
+        use: {
+          loader: "babel-loader",
+          options: {
+            overrides: [{ presets: ["@emotion/babel-preset-css-prop"] }]
+          }
+        }
       },
       {
         test: /\.css$/,
