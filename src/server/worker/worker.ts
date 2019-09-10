@@ -3,7 +3,7 @@ import chalk from "chalk";
 import Mocha, { Suite, Context, AsyncFunc } from "mocha";
 import { Config, Images, Options } from "../../types";
 import { getBrowser, switchStory } from "../../utils";
-import chaiImage from "../../mocha-ui/chai-image";
+import chaiImage from "../../chai-image";
 import { Loader } from "../../loader";
 import { CreeveyReporter, TeamcityReporter } from "./reporter";
 
