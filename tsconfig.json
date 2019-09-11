@@ -15,7 +15,10 @@
     "typeRoots": ["./types", "./node_modules/@types"],
     "paths": {
       "creevey": ["src"]
-    }
+    },
+    // Workaround for storybook https://github.com/storybookjs/storybook/issues/7069
+    // Remove after update on 5.2.0
+    "skipLibCheck": true
   },
   "exclude": ["./report"]
 }
