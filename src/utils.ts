@@ -22,9 +22,8 @@ function getRealIp(): Promise<string> {
 
 async function resetMousePosition(browser: WebDriver) {
   const { width, height } = await browser.executeScript(function() {
-    // TODO Storybook already scroll to the top, so this line no more needed
-    // TODO Check on storybook 4.x
-    // window.scrollTo(0, 0);
+    // NOTE On storybook >= 4.x already reset scroll
+    window.scrollTo(0, 0);
 
     var bodyRect = document.body.getBoundingClientRect();
     return {
@@ -43,11 +42,6 @@ async function resetMousePosition(browser: WebDriver) {
 }
 
 async function selectStory(browser: WebDriver, kind: string, story: string) {
-  browser.executeScript(function() {
-    // @ts-ignore
-    window.selectStory(true);
-  });
-  await browser.wait(until.elementLocated(By.css(".sb-nopreview")));
   const storyContext: StoryContext = await browser.executeAsyncScript(
     // @ts-ignore
     function(storyId, kind, name, callback) {

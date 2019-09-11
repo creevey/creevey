@@ -70,7 +70,7 @@
 - [x] Add Storybook for web ui components
 - [x] ~~Composite images~~ (Split your story or test)
 - [x] Restart selenium driver on timeout
-- [ ] Export decorator from creevey
+- [x] Export decorator from creevey
 - [ ] Firefox double click if clicks in different tests
 - [ ] Reload IE page on start (don't handle storybook hotreload)
 - [ ] Allow clean approved images
@@ -90,13 +90,13 @@
 - [ ] Add storybook addon (add `All stories` story and `renderStory` global func)
   - [x] Update to Storybook@5.x
   - [x] Reset mouse position
-  - [ ] Support sotrybook 4.x-5.x
+  - [x] Support sotrybook 4.x-5.x
   - [ ] Write decorator that allow do some actions
 - [ ] Transform to monorepo
   - [ ] `chai-image`
   - [ ] `creevey`
   - [ ] `creevey-ui`
-  - [ ] `creevey-book` (storybook decorator)
+  - [ ] `creevey-album` (storybook decorator and integration)
 - [ ] Allow use custom API (wd/wdio/puppeter/etc)
 - [ ] Improve UI performance on initial load
 - [ ] Mocha worker `Possible EventEmitter memory leak detected. 11 error listeners added`

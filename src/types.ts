@@ -2,7 +2,7 @@ import { API as StorybookAPI } from "@storybook/api";
 import { Worker as ClusterWorker } from "cluster";
 import { Context } from "mocha";
 
-type StoriesRaw = StorybookAPI extends { setStories: (stories: infer T) => void } ? T : never;
+export type StoriesRaw = StorybookAPI extends { setStories: (stories: infer T) => void } ? T : never;
 
 export interface Capabilities {
   browserName: string;
