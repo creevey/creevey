@@ -4,8 +4,7 @@ Visual testing with magic
 
 ## How to use
 
-### Mocha UI
-
+- `npm install -D creevey`
 - Define config `creevey.js`
 
 ```js
@@ -45,56 +44,25 @@ module.exports = {
 };
 ```
 
-- Define mocha.opts
+- Add story decorator into your storybook config:
 
+```js
+import { withCreevey } from "creevey";
+
+addDecorator(withCreevey());
+
+const req = require.context("../components", true, /.stories.tsx?$/);
+
+function loadStories() {
+  req.keys().forEach(filename => req(filename));
+}
+
+configure(loadStories, module);
 ```
---require creevey/lib/mocha-ui
---ui creevey
-./tests/*
-```
 
-- Run tests `yarn mocha --opts ./mocha.opts`
-
-### Creevey CLI
-
-- Define config `creevey.js`
 - To allow use `typescript`:
   - Add first line to config file `require("ts-node").register({ files: true, transpileOnly: true });`
   - Define in config `testRegex: /\.ts$/,`
 - Run test server `yarn creevey --ui`
 - Open webpage `http://localhost:3000/`
 - Or run tests without starting server `yarn creevey`
-
-### Requirements
-
-- Add code below to your storybook config
-
-```ts
-import React from "react";
-import ReactDOM from "react-dom";
-import { storiesOf, getStorybook } from "@storybook/react";
-
-let stories = null;
-
-function renderStory({ kind, story }) {
-  const root = document.getElementById("root");
-
-  ReactDOM.unmountComponentAtNode(root);
-  ReactDOM.render(stories[kind][story](), root);
-}
-
-storiesOf("All", module).add("Stories", () => {
-  if (!stories) {
-    stories = {};
-    getStorybook().forEach(kind => {
-      stories[kind.kind] = {};
-      kind.stories.forEach(story => {
-        stories[kind.kind][story.name] = story.render;
-      });
-    });
-  }
-  window.renderStory = renderStory;
-  window.getStorybook = getStorybook;
-  return <div />;
-});
-```
