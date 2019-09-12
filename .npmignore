@@ -7,7 +7,6 @@ tsconfig.json
 webpack.config.ts
 src
 tests
-types
 report
 scripts
 stories

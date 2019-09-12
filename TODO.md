@@ -71,6 +71,8 @@
 - [x] ~~Composite images~~ (Split your story or test)
 - [x] Restart selenium driver on timeout
 - [x] Export decorator from creevey
+- [ ] Improve ts support for creevey (like webpack does)
+  - [ ] Don't work with ts-node + esnext modules
 - [ ] Firefox double click if clicks in different tests
 - [ ] Reload IE page on start (don't handle storybook hotreload)
 - [ ] Allow clean approved images
