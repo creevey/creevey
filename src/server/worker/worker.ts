@@ -1,7 +1,7 @@
 import chai from "chai";
 import chalk from "chalk";
 import Mocha, { Suite, Context, AsyncFunc } from "mocha";
-import { Config, Images, Options } from "../../types";
+import { Config, Images, Options, BrowserConfig } from "../../types";
 import { getBrowser, switchStory } from "../../utils";
 import chaiImage from "../../chai-image";
 import { Loader } from "../../loader";
@@ -50,7 +50,8 @@ export default async function worker(config: Config, options: Options & { browse
       images: () => images
     }
   });
-  const browser = await getBrowser(config, options.browser);
+  const browserConfig = config.browsers[options.browser] as BrowserConfig;
+  const browser = await getBrowser(config, browserConfig);
   // @ts-ignore
   const stories = await browser.executeAsyncScript(function(callback) {
     // @ts-ignore

@@ -4,8 +4,13 @@ import { readConfig } from "../config";
 import { Options } from "../types";
 
 export default async function(options: Options) {
-  const config = readConfig(path.resolve(options.config));
+  const config = readConfig(path.resolve(options.config)) || { gridUrl: options.gridUrl };
   const { browser, parser, update } = options;
+
+  if (!config.gridUrl) {
+    console.log("Please specify `gridUrl`");
+    process.exit(-1);
+  }
 
   // TODO output error if parse && ui
   switch (true) {

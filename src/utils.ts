@@ -1,7 +1,7 @@
 import http from "http";
 import { Context } from "mocha";
 import { Builder, By, until, WebDriver } from "selenium-webdriver";
-import { Config } from "./types";
+import { Config, BrowserConfig } from "./types";
 import { StoryContext } from "@storybook/addons";
 
 function getRealIp(): Promise<string> {
@@ -41,6 +41,28 @@ async function resetMousePosition(browser: WebDriver) {
     .perform();
 }
 
+async function resizeViewport(browser: WebDriver, viewport: { width: number; height: number }) {
+  const windowRect = await browser
+    .manage()
+    .window()
+    .getRect();
+  const { innerWidth, innerHeight } = await browser.executeScript(function() {
+    return {
+      innerWidth: window.innerWidth,
+      innerHeight: window.innerHeight
+    };
+  });
+  const dWidth = windowRect.width - innerWidth;
+  const dHeight = windowRect.height - innerHeight;
+  await browser
+    .manage()
+    .window()
+    .setRect({
+      width: viewport.width + dWidth,
+      height: viewport.height + dHeight
+    });
+}
+
 async function selectStory(browser: WebDriver, kind: string, story: string) {
   const storyContext: StoryContext = await browser.executeAsyncScript(
     // @ts-ignore
@@ -55,32 +77,25 @@ async function selectStory(browser: WebDriver, kind: string, story: string) {
   return storyContext;
 }
 
-export async function getBrowser(config: Config, browserName: string) {
-  const { browsers } = config;
+export async function getBrowser(config: Config, browserConfig: BrowserConfig) {
   const {
     gridUrl = config.gridUrl,
     address = config.address,
     limit,
     testRegex,
-    resolution,
+    viewport,
     ...capabilities
-  } = browsers[browserName];
+  } = browserConfig;
+  const realAddress = address.replace(/(localhost|127\.0\.0\.1)/, await getRealIp());
   const browser = await new Builder()
     .usingServer(gridUrl)
     .withCapabilities(capabilities)
     .build();
 
-  if (address.host === "localhost" || address.host === "127.0.0.1") {
-    address.host = await getRealIp();
+  if (viewport) {
+    await resizeViewport(browser, viewport);
   }
-
-  if (resolution) {
-    await browser
-      .manage()
-      .window()
-      .setRect(resolution);
-  }
-  await browser.get(`http://${address.host}:${address.port}/${address.path}`);
+  await browser.get(`${realAddress}/iframe.html`);
   await browser.wait(until.elementLocated(By.css("#root")), 10000);
 
   return browser;

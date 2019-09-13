@@ -6,45 +6,45 @@ export type StoriesRaw = StorybookAPI extends { setStories: (stories: infer T) =
 
 export interface Capabilities {
   browserName: string;
-  resolution?: { width: number; height: number };
 }
 
-export interface BrowserConfig {
-  limit: number;
+export type BrowserConfig = Capabilities & {
+  limit?: number;
   gridUrl?: string;
-  address?: Address;
+  address?: string;
   testRegex?: RegExp;
-}
+  viewport?: { width: number; height: number };
+};
 
-interface Address {
-  host: string;
-  port: number;
-  path: string;
-}
+export type Browser = boolean | string | BrowserConfig;
 
 export interface Config {
   gridUrl: string;
-  address: Address;
+  address: string;
   testRegex: RegExp;
   testDir: string;
   screenDir: string;
   reportDir: string;
   maxRetries: number;
   threshold: number;
-  browsers: { [key: string]: Capabilities & BrowserConfig };
+  browsers: { [key: string]: Browser };
   hooks?: {
     beforeAll: (this: Context) => void;
     beforeEach: (this: Context) => void;
   };
 }
 
+export type CreeveyConfig = Config | Partial<Omit<Config, "gridUrl">>;
+
 export interface Options {
   config: string;
+  port: number;
   parser: boolean;
   ui: boolean;
   update: boolean;
   browser?: string;
   reporter?: string;
+  gridUrl?: string;
 }
 
 export interface Worker extends ClusterWorker {

@@ -1,11 +1,11 @@
 import cluster from "cluster";
 import { EventEmitter } from "events";
-import { Worker, Config, TestResult, Capabilities, BrowserConfig, WorkerMessage, TestStatus } from "../../types";
+import { Worker, Config, TestResult, BrowserConfig, WorkerMessage, TestStatus } from "../../types";
 
 export default class Pool extends EventEmitter {
   private maxRetries: number;
   private browser: string;
-  private config: Capabilities & BrowserConfig;
+  private config: BrowserConfig;
   private workers: Worker[] = [];
   private queue: { id: string; path: string[]; retries: number }[] = [];
   private forcedStop: boolean = false;
@@ -17,11 +17,11 @@ export default class Pool extends EventEmitter {
 
     this.maxRetries = config.maxRetries;
     this.browser = browser;
-    this.config = config.browsers[browser];
+    this.config = config.browsers[browser] as BrowserConfig;
   }
 
   init() {
-    this.workers = Array.from({ length: this.config.limit }).map(() => {
+    this.workers = Array.from({ length: this.config.limit || 1 }).map(() => {
       cluster.setupMaster({ args: ["--browser", this.browser, ...process.argv.slice(2)] });
       const worker = cluster.fork();
       this.exitHandler(worker);

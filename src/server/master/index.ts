@@ -6,7 +6,7 @@ import { Config, Options, isDefined } from "../../types";
 export default async function(config: Config, options: Options) {
   const runner = await master(config);
   if (options.ui) {
-    creeveyServer(creeveyApi(runner), config.reportDir);
+    creeveyServer(creeveyApi(runner), config.reportDir, options.port);
   } else {
     runner.once("stop", () => {
       const isSuccess = Object.values(runner.status.testsById)

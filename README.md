@@ -1,68 +1,59 @@
 # creevey
 
-Visual testing with magic
+Pretty easy visual testing with magic
 
 ## How to use
 
 - `npm install -D creevey`
-- Define config `creevey.js`
+- Add `withCreevey` as top-level storybook decorator
+- Run tests `yarn creevey --gridUrl "<gridUrl>/wd/hub"`
 
-```js
-const path = require("path");
+## What's storybook decorator?
 
-module.exports = {
+[Using Decorators](https://storybook.js.org/docs/basics/writing-stories/#using-decorators)
+
+```ts
+// .storybook/config.js
+import { addDecorator } from "@storybook/react";
+import { withCreevey } from "creevey";
+
+addDecorator(withCreevey());
+
+/* ... */
+```
+
+## Also you can define `creevey.config.ts`
+
+```ts
+import path from "path";
+import { CreeveyConfig } from "creevey";
+
+const config: CreeveyConfig = {
   gridUrl: "<gridUrl>/wd/hub",
-  address: {
-    host: "localhost",
-    port: 6060,
-    path: "/iframe.html"
-  },
+  storybookUrl: "http://localhost:6006",
   testRegex: /\.ts$/,
   testDir: path.join(__dirname, "tests"),
   screenDir: path.join(__dirname, "images"),
   reportDir: path.join(__dirname, "report"),
+  threshold: 0.1,
   maxRetries: 2,
   browsers: {
-    chrome: { browserName: "chrome" },
-    firefox: { browserName: "firefox" },
+    chrome: true,
+    ff: "firefox",
     ie11: {
       browserName: "internet explorer",
       gridUrl: "<gridUrl>/wd/hub",
       limit: 2
       /* capabilities */
     },
-    chromeFlat: {
+    otherChrome: {
       browserName: "chrome",
       testRegex: /(Button|Input).ts$/,
-      address: {
-        host: "localhost",
-        port: 6061,
-        path: "/iframe.html"
-      }
+      storybookUrl: "http://mystoryhost:6007",
+      viewport: { width: 1024, height: 720 }
     }
   }
 };
+
+export default config;
 ```
-
-- Add story decorator into your storybook config:
-
-```js
-import { withCreevey } from "creevey";
-
-addDecorator(withCreevey());
-
-const req = require.context("../components", true, /.stories.tsx?$/);
-
-function loadStories() {
-  req.keys().forEach(filename => req(filename));
-}
-
-configure(loadStories, module);
-```
-
-- To allow use `typescript`:
-  - Add first line to config file `require("ts-node").register({ files: true, transpileOnly: true });`
-  - Define in config `testRegex: /\.ts$/,`
-- Run test server `yarn creevey --ui`
-- Open webpage `http://localhost:3000/`
-- Or run tests without starting server `yarn creevey`

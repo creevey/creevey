@@ -1,5 +1,5 @@
 import { createHash } from "crypto";
-import { Test, Config } from "../../types";
+import { Test, Config, BrowserConfig } from "../../types";
 import { Loader } from "../../loader";
 
 export default async function parse(config: Config) {
@@ -17,7 +17,7 @@ export default async function parse(config: Config) {
     return Object.keys(config.browsers)
       .map(browser => ({
         testPath: [browser, title, ...suites],
-        config: config.browsers[browser]
+        config: config.browsers[browser] as BrowserConfig
       }))
       .map(({ testPath, config }) => ({
         id: createHash("sha1")

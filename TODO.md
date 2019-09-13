@@ -71,15 +71,18 @@
 - [x] ~~Composite images~~ (Split your story or test)
 - [x] Restart selenium driver on timeout
 - [x] Export decorator from creevey
-- [ ] Improve ts support for creevey (like webpack does)
-  - [ ] Don't work with ts-node + esnext modules
+- [x] Improve ts support for creevey (like webpack does)
+  - [x] Don't work with ts-node + esnext modules
+- [x] Define simple version for browsers
+- [x] Simplify types re-export for lib usage
+- [x] Calc correct viewport size
+- [ ] Output cli help
 - [ ] Firefox double click if clicks in different tests
 - [ ] Reload IE page on start (don't handle storybook hotreload)
 - [ ] Allow clean approved images
 - [ ] Generate runtime tests based on stories
 - [ ] Allow leave reason comment for skiped tests
 - [ ] Update args readme (config, parser, ...)
-- [ ] Simplify types re-export for lib usage
 - [ ] Allow assert multiple images in one test
 - [ ] Add cli arguments
   - [x] config
@@ -88,6 +91,7 @@
   - [x] reporter
   - [x] update
   - [x] ~~init~~
+  - [x] port
   - [ ] grep/kind/story
 - [ ] Add storybook addon (add `All stories` story and `renderStory` global func)
   - [x] Update to Storybook@5.x

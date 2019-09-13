@@ -1,7 +1,7 @@
 *.tgz
 .babelrc
 .storybook
-creevey.ts
+creevey.config.ts
 mocha.opts
 tsconfig.json
 webpack.config.ts

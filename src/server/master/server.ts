@@ -6,7 +6,7 @@ import mount from "koa-mount";
 import WebSocket from "ws";
 import { CreeveyApi } from "./api";
 
-export default function server(api: CreeveyApi, reportDir: string) {
+export default function server(api: CreeveyApi, reportDir: string, port: number) {
   const app = new Koa();
   const server = http.createServer(app.callback());
   const wss = new WebSocket.Server({ server });
@@ -27,5 +27,5 @@ export default function server(api: CreeveyApi, reportDir: string) {
 
   wss.on("error", error => console.log("[WebSocketServer]:", error));
 
-  server.listen(3000, () => console.log("[CreeveyServer]:", "Started on http://localhost:3000"));
+  server.listen(port, () => console.log("[CreeveyServer]:", `Started on http://localhost:${port}`));
 }
