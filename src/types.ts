@@ -81,6 +81,7 @@ export interface TestResult {
 
 export interface Test {
   id: string;
+  // example: [browser, test, story, kind],
   path: string[];
   skip: boolean;
   status?: TestStatus;

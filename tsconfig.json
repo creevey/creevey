@@ -19,5 +19,5 @@
     // Workaround for storybook https://github.com/storybookjs/storybook/issues/7641
     "skipLibCheck": true
   },
-  "exclude": ["./report"]
+  "exclude": ["./report", "./lib"]
 }
