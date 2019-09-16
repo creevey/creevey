@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import addons, { makeDecorator, StoryContext, StoryGetter } from "@storybook/addons";
-import { getStorybook, RenderFunction } from "@storybook/react";
+import { getStorybook } from "@storybook/react";
 import { StoriesRaw } from "./types";
 
 export type StoriesRawOld = Partial<{
@@ -9,7 +9,7 @@ export type StoriesRawOld = Partial<{
     id: string;
     name: string;
     kind: string;
-    render: RenderFunction;
+    render: Function;
   };
 }>;
 export type StoryDidMountCallback = (context?: StoryContext) => void;

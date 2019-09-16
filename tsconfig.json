@@ -16,8 +16,7 @@
     "paths": {
       "creevey": ["src"]
     },
-    // Workaround for storybook https://github.com/storybookjs/storybook/issues/7069
-    // Remove after update on 5.2.0
+    // Workaround for storybook https://github.com/storybookjs/storybook/issues/7641
     "skipLibCheck": true
   },
   "exclude": ["./report"]
