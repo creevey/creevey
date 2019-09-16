@@ -3,9 +3,4 @@ import { withCreevey } from "../src/storybook";
 
 addDecorator(withCreevey());
 
-const req = require.context("../stories", true, /\.stories\.tsx$/);
-function loadStories() {
-  req.keys().forEach(filename => req(filename));
-}
-
-configure(loadStories, module);
+configure(require.context("../stories", true, /\.stories\.tsx$/), module);
