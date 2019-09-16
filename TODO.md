@@ -76,6 +76,7 @@
 - [x] Define simple version for browsers
 - [x] Simplify types re-export for lib usage
 - [x] Calc correct viewport size
+- [x] Fix skip/unskip tests between run without delete report dir
 - [ ] Output cli help
 - [ ] Firefox double click if clicks in different tests
 - [ ] Reload IE page on start (don't handle storybook hotreload)
@@ -103,10 +104,10 @@
   - [ ] `creevey`
   - [ ] `creevey-ui`
   - [ ] `creevey-album` (storybook decorator and integration)
+  - [ ] `creevey-selenium`
 - [ ] Allow use custom API (wd/wdio/puppeter/etc)
 - [ ] Improve UI performance on initial load
 - [ ] Mocha worker `Possible EventEmitter memory leak detected. 11 error listeners added`
-- [ ] Fix skip/unskip tests between run without delete report dir
 - [ ] HotReload tests files without restart
 - [ ] Handle error on mocha hooks
 - [ ] Allow use standalone storybook

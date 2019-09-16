@@ -7,6 +7,7 @@ export interface Test extends ApiTest {
 
 export interface Suite {
   path: string[];
+  skip: boolean;
   status?: TestStatus;
   checked: boolean;
   indeterminate: boolean;

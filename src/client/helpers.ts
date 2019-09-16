@@ -57,6 +57,7 @@ export function treeifyTests(testsById: { [id: string]: ApiTest | undefined }): 
   function makeEmptySuiteNode(path: string[] = []): Suite {
     return {
       path,
+      skip: true,
       checked: true,
       indeterminate: false,
       children: {}
@@ -69,7 +70,9 @@ export function treeifyTests(testsById: { [id: string]: ApiTest | undefined }): 
     const [browser, ...suitePath] = test.path;
     const lastSuite = suitePath.reverse().reduce((suite, token) => {
       const subSuite = suite.children[token] || makeEmptySuiteNode([...suite.path, token]);
+      if (!test.skip) subSuite.skip = false;
       subSuite.status = calcStatus(subSuite.status, test.status);
+      if (!subSuite.skip) suite.skip = false;
       suite.children[token] = subSuite;
       suite.status = calcStatus(suite.status, subSuite.status);
       if (isTest(subSuite)) {

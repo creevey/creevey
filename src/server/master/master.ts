@@ -36,18 +36,24 @@ function loadTests(): Promise<Partial<{ [id: string]: Test }>> {
 }
 
 function mergeTests(tests: Partial<{ [id: string]: Test }>, testsWithReports: Partial<{ [id: string]: Test }>) {
-  const mergedTests: Partial<{ [id: string]: Test }> = {};
-  Object.values(tests)
+  return Object.values(tests)
+    .concat(
+      Object.values(testsWithReports)
+        .filter(isDefined)
+        .map(test => ({ ...test, skip: true }))
+    )
     .filter(isDefined)
-    .forEach(
-      test =>
-        (mergedTests[test.id] = {
-          ...test,
-          ...(testsWithReports[test.id] || {})
-        })
+    .reduce(
+      (mergedTests: Partial<{ [id: string]: Test }>, test): Partial<{ [id: string]: Test }> =>
+        (mergedTests = {
+          ...mergedTests,
+          [test.id]: {
+            ...(mergedTests[test.id] || {}),
+            ...test
+          }
+        }),
+      {}
     );
-
-  return mergedTests;
 }
 
 async function copyStatics(reportDir: string) {
@@ -69,6 +75,7 @@ export default async function master(config: Config) {
   } catch (error) {
     // Ignore error
   }
+  // TODO Ignore test dir for now. After actions tests should be deprecated
   const tests = await loadTests();
   const mergedTests = mergeTests(tests, testsWithReports);
 

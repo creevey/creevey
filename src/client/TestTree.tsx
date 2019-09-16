@@ -55,7 +55,7 @@ export class TestTree extends React.Component<TestTreeProps, TestTreeState> {
                 disabled={tests.skip}
                 onChange={this.handleCheck}
               />
-              <Button use="link" disabled={tests.skip || emptyResults} onClick={this.handleOpenTestResults}>
+              <Button use="link" disabled={emptyResults} onClick={this.handleOpenTestResults}>
                 {this.props.title}
               </Button>
             </Gapped>
@@ -77,7 +77,12 @@ export class TestTree extends React.Component<TestTreeProps, TestTreeState> {
             <ArrowTriangleRightIcon onClick={this.handleSubTreeOpen} />
           </span>
           <Gapped gap={5}>
-            <Checkbox ref={this.checkbox} checked={tests.checked} onChange={this.handleCheck} />
+            <Checkbox
+              ref={this.checkbox}
+              checked={tests.skip ? false : tests.checked}
+              disabled={tests.skip}
+              onChange={this.handleCheck}
+            />
             <Button use="link" onClick={this.handleSubTreeOpen}>
               {this.props.title}
             </Button>
