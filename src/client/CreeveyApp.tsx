@@ -87,6 +87,9 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
   }
 
   handleCreeveyData = () => {
+    Object.values(creeveyData)
+      .filter(isDefined)
+      .forEach(test => (test.path = this.splitLastPathToken(test.path)));
     const pathsById = Object.entries(creeveyData).reduce(
       (obj, [id, test]) => (test ? { ...obj, [id]: [...test.path].reverse() } : obj),
       {}
@@ -117,6 +120,9 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
   handleImageApprove = (id: string, retry: number, image: string) => this.approve(id, retry, image);
 
   handleStatus = ({ isRunning, testsById }: CreeveyStatus) => {
+    Object.values(testsById)
+      .filter(isDefined)
+      .forEach(test => (test.path = this.splitLastPathToken(test.path)));
     const pathsById = Object.entries(testsById).reduce(
       (obj, [id, test]) => (test ? { ...obj, [id]: [...test.path].reverse() } : obj),
       {}
@@ -146,6 +152,16 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
       });
     }
   };
+
+  private splitLastPathToken(path: string[]) {
+    return [
+      ...path.slice(0, -1),
+      ...path
+        .slice(-1)[0]
+        .split("/")
+        .reverse()
+    ];
+  }
 
   private connect() {
     if (this.ws) {

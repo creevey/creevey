@@ -70,7 +70,7 @@ async function selectStory(browser: WebDriver, kind: string, story: string) {
       // @ts-ignore
       window.selectStory(storyId, kind, name, callback);
     },
-    `${kind}--${story}`.toLowerCase(),
+    `${kind}--${story}`.toLowerCase().replace(/\//g, "-"),
     kind,
     story
   );
@@ -106,6 +106,7 @@ export async function switchStory(this: Context) {
   const test = this.currentTest!.title;
   const story = this.currentTest!.parent!.title;
   const kind = this.currentTest!.parent!.parent!.title;
+  console.log(kind, story, test);
 
   await resetMousePosition(this.browser);
   const storyContext = await selectStory(this.browser, kind, story);
