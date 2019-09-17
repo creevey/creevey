@@ -84,6 +84,7 @@ export interface Test {
   // example: [browser, test, story, kind],
   path: string[];
   skip: boolean;
+  retries: number;
   status?: TestStatus;
   results?: TestResult[];
   approved?: Partial<{ [image: string]: number }>;
