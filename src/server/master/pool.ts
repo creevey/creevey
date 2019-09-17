@@ -1,6 +1,6 @@
 import cluster from "cluster";
 import { EventEmitter } from "events";
-import { Worker, Config, TestResult, BrowserConfig, WorkerMessage, TestStatus } from "../../types";
+import { Worker, Config, TestResult, BrowserConfig, WorkerMessage, TestStatus, StoriesRaw } from "../../types";
 
 export default class Pool extends EventEmitter {
   private maxRetries: number;
@@ -20,7 +20,7 @@ export default class Pool extends EventEmitter {
     this.config = config.browsers[browser] as BrowserConfig;
   }
 
-  init() {
+  init(): Promise<StoriesRaw | undefined> {
     this.workers = Array.from({ length: this.config.limit || 1 }).map(() => {
       cluster.setupMaster({ args: ["--browser", this.browser, ...process.argv.slice(2)] });
       const worker = cluster.fork();
@@ -28,8 +28,12 @@ export default class Pool extends EventEmitter {
       return worker;
     });
     // TODO handle errors
-    // TODO Send stories into runner
-    return Promise.all(this.workers.map(worker => new Promise(resolve => worker.once("message", resolve))));
+    return Promise.all(
+      this.workers.map(worker => new Promise((resolve: (value: string) => void) => worker.once("message", resolve)))
+    ).then(([data]) => {
+      const message: WorkerMessage = JSON.parse(data);
+      if (message.type == "ready") return message.payload.stories;
+    });
   }
 
   start(tests: { id: string; path: string[] }[]): boolean {

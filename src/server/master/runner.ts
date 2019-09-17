@@ -14,6 +14,7 @@ import {
   TestStatus
 } from "../../types";
 import Pool from "./pool";
+import { createHash } from "crypto";
 
 const copyFileAsync = promisify(copyFile);
 const mkdirpAsync = promisify(mkdirp);
@@ -21,16 +22,15 @@ const mkdirpAsync = promisify(mkdirp);
 export default class Runner extends EventEmitter {
   private screenDir: string;
   private reportDir: string;
-  private tests: Partial<{ [id: string]: Test }> = {};
+  public tests: Partial<{ [id: string]: Test }> = {};
   private browsers: string[];
   private pools: { [browser: string]: Pool } = {};
   public get isRunning(): boolean {
     return Object.values(this.pools).some(pool => pool.isRunning);
   }
-  constructor(config: Config, tests: Partial<{ [id: string]: Test }>) {
+  constructor(config: Config) {
     super();
 
-    this.tests = tests;
     this.screenDir = config.screenDir;
     this.reportDir = config.reportDir;
     this.browsers = Object.keys(config.browsers);
@@ -62,8 +62,29 @@ export default class Runner extends EventEmitter {
     }
   };
 
-  public init() {
-    return Promise.all(Object.values(this.pools).map(pool => pool.init()));
+  public async init(): Promise<Partial<{ [id: string]: Test }>> {
+    // TODO init return array of stories for every browser. Convert stories to tests, merge with tests
+    const tests: Partial<{ [id: string]: Test }> = {};
+    await Promise.all(
+      Object.entries(this.pools).map(async ([browser, pool]) => {
+        const stories = await pool.init();
+        if (!stories) return;
+        Object.values(stories).forEach(story => {
+          const testPath = [browser, "idle", story.name, story.kind];
+          const testId = createHash("sha1")
+            .update(testPath.join("/"))
+            .digest("hex");
+          // TODO calc skip by params
+          tests[testId] = {
+            id: testId,
+            path: testPath,
+            retries: 0,
+            skip: false
+          };
+        });
+      })
+    );
+    return tests;
   }
 
   public start(ids: string[]) {

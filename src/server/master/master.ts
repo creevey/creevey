@@ -35,13 +35,13 @@ function loadTests(): Promise<Partial<{ [id: string]: Test }>> {
   });
 }
 
-function mergeTests(tests: Partial<{ [id: string]: Test }>, testsWithReports: Partial<{ [id: string]: Test }>) {
-  return Object.values(tests)
-    .concat(
-      Object.values(testsWithReports)
-        .filter(isDefined)
-        .map(test => ({ ...test, skip: true }))
-    )
+function mergeTests(
+  tests: Partial<{ [id: string]: Test }>,
+  testsWithReports: Partial<{ [id: string]: Test }>,
+  testsFromStories: Partial<{ [id: string]: Test }>
+) {
+  return Object.values(testsWithReports)
+    .concat(Object.values(testsFromStories), Object.values(tests))
     .filter(isDefined)
     .reduce(
       (mergedTests: Partial<{ [id: string]: Test }>, test): Partial<{ [id: string]: Test }> =>
@@ -69,19 +69,21 @@ async function copyStatics(reportDir: string) {
 
 export default async function master(config: Config) {
   const reportDataPath = path.join(config.reportDir, "data.js");
-  let testsWithReports = {};
+  let testsFromReport = {};
   try {
-    testsWithReports = require(reportDataPath);
+    testsFromReport = require(reportDataPath);
   } catch (error) {
     // Ignore error
   }
   // TODO Ignore test dir for now. After actions tests should be deprecated
   const tests = await loadTests();
-  const mergedTests = mergeTests(tests, testsWithReports);
 
-  const runner = new Runner(config, mergedTests);
+  const runner = new Runner(config);
 
-  await runner.init();
+  const testsFromStories = await runner.init();
+  const mergedTests = mergeTests(tests, testsFromReport, testsFromStories);
+  runner.tests = mergedTests;
+
   await copyStatics(config.reportDir);
 
   process.on("SIGINT", () => {

@@ -80,11 +80,13 @@
 - [ ] Output cli help
 - [ ] Firefox double click if clicks in different tests
 - [ ] Reload IE page on start (don't handle storybook hotreload)
-- [ ] Allow clean approved images
-- [ ] Generate runtime tests based on stories
+- [x] Allow clean approved images
+- [x] Generate runtime tests based on stories
 - [ ] Allow leave reason comment for skiped tests
 - [ ] Update args readme (config, parser, ...)
 - [ ] Allow assert multiple images in one test
+- [ ] Show removed tests results, mark these as removed
+- [ ] Tests from storybook use convention name 'idle', move to const
 - [ ] Add cli arguments
   - [x] config
   - [x] parser
