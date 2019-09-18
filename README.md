@@ -57,3 +57,64 @@ const config: CreeveyConfig = {
 
 export default config;
 ```
+
+## Creevey CLI options
+
+- `--config` — Specify path to config file. Default `./creevey.config`
+- `--reporter` — Use another reporter for mocha instead of default `spec`
+- `--gridUrl` — Specify selenium grid url, work only in zero-config
+- `--ui` — Start web server
+- `--update` — Approve all images from `report` directory
+- `--port` — Specify port for web server. Default `3000`
+
+## `withCreevey` decorator parameters
+
+You can specify storybook parameters for `withCreevey` decorator:
+
+```tsx
+// Global parameters can be defined in storybook config
+addDecorator(withCreevey({
+  captureElement: '#root',
+  skip: /* see examples below */,
+  actions: /* see examples below */,
+}));
+
+// For new `Component Story Format` (CSF) https://storybook.js.org/docs/formats/component-story-format/
+// Kind-level parameters work for all stories inside
+export default {
+  title: "Views",
+  parameters: {
+    creevey: { /* ... */ }
+  }
+};
+
+// Story-level parameters work only for that story
+export const simple = () => <MyComponent />;
+simple.story = {
+  parameters: {
+    creevey: { /* ... */ }
+  }
+};
+
+// For Old `StoriesOf` API (Storybook version < 5.2)
+storiesOf('Views', module)
+  .addParameters({ creevey: { /* ... */ } }) // Kind-level
+  .add('simple', () => <MyComponent />, { creevey: { /* ... */ } }); // Story-level
+```
+
+NOTE: Parameters for story will be merged with parameters from higher levels
+
+## `skip` option examples:
+
+- Skip all stories for all browsers:
+  - `skip: 'Skip reason message'`
+  - `skip: { reason: 'Skip reason message' }`
+- Skip all stories for specific browsers:
+  - `skip: { in: 'ie11' }`
+  - `skip: { in: ['ie11', 'chrome'] }`
+  - `skip: { in: /^fire.*/ }`
+- Skip specific stories for all browsers:
+  - `skip: { stories: 'simple' }`
+  - `skip: { stories: ['simple', 'special'] }`
+  - `skip: { stories: /.*Button$/ }`
+- Multiple skip options: `skip: [{ /* ... */ }]`

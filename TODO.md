@@ -84,7 +84,7 @@
 - [x] Generate runtime tests based on stories
 - [ ] Allow leave reason comment for skiped tests
 - [ ] Update args readme (config, parser, ...)
-- [ ] Allow assert multiple images in one test
+- [ ] Allow assert multiple images in one test (chai toMatchImages())
 - [ ] Show removed tests results, mark these as removed
 - [ ] Tests from storybook use convention name 'idle', move to const
 - [ ] Add cli arguments
@@ -101,12 +101,15 @@
   - [x] Reset mouse position
   - [x] Support sotrybook 4.x-5.x
   - [ ] Write decorator that allow do some actions
+  - [ ] Support stories separators https://storybook.js.org/docs/basics/writing-stories/#story-hierarchy
+  - [ ] Support stories name convention https://storybook.js.org/docs/formats/component-story-format/#storybook-export-vs-name-handling
 - [ ] Transform to monorepo
   - [ ] `chai-image`
   - [ ] `creevey`
   - [ ] `creevey-ui`
   - [ ] `creevey-album` (storybook decorator and integration)
   - [ ] `creevey-selenium`
+- [ ] Write about differences
 - [ ] Allow use custom API (wd/wdio/puppeter/etc)
 - [ ] Improve UI performance on initial load
 - [ ] Mocha worker `Possible EventEmitter memory leak detected. 11 error listeners added`
