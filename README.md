@@ -100,6 +100,8 @@ simple.story = {
 storiesOf('Views', module)
   .addParameters({ creevey: { /* ... */ } }) // Kind-level
   .add('simple', () => <MyComponent />, { creevey: { /* ... */ } }); // Story-level
+
+// For Storybook version < 4.0 you can use global parameters only
 ```
 
 NOTE: Parameters for story will be merged with parameters from higher levels

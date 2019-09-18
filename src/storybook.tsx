@@ -1,14 +1,15 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import addons, { makeDecorator, StoryContext, StoryGetter } from "@storybook/addons";
-import { getStorybook } from "@storybook/react";
-import { StoriesRaw } from "./types";
+import { getStorybook, addParameters } from "@storybook/react";
+import { StoriesRaw, WithCreeveyParameters } from "./types";
 
 export type StoriesRawOld = Partial<{
   [id: string]: {
     id: string;
     name: string;
     kind: string;
+    parameters: { creevey: WithCreeveyParameters };
     render: Function;
   };
 }>;
@@ -30,7 +31,7 @@ class CreeveyStoryWrapper extends React.Component<CreeveyStoryWrapperProps> {
   }
 }
 
-export function withCreevey() {
+export function withCreevey(parameters: WithCreeveyParameters) {
   function selectStory(storyId: string, kind: string, name: string, callback: StoryDidMountCallback) {
     storyDidMountCallback = callback;
     // NOTE Hack to trigger force re-render same story
@@ -39,6 +40,8 @@ export function withCreevey() {
   }
   let storyDidMountCallback: StoryDidMountCallback = () => {};
   let stories: StoriesRaw = {};
+
+  addParameters({ creevey: parameters });
 
   addons.getChannel().once("setStories", (data: { stories: StoriesRaw }) => ({ stories } = data));
   // @ts-ignore
@@ -60,7 +63,7 @@ export function withCreevey() {
   });
 }
 
-export function withCreeveyOld() {
+export function withCreeveyOld(parameters: WithCreeveyParameters) {
   function selectStory(storyId: string, _kind: string, _name: string, callback: StoryDidMountCallback) {
     const story = stories[storyId];
 
@@ -82,7 +85,8 @@ export function withCreeveyOld() {
           id: storyId,
           name: story.name,
           kind: kind.kind,
-          render: story.render
+          render: story.render,
+          parameters: { creevey: parameters }
         };
       });
     });

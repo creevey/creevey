@@ -100,6 +100,18 @@ export interface CreeveyUpdate {
   testsById?: Partial<{ [id: string]: Partial<Test> }>;
 }
 
+interface SkipParameter {
+  reason?: string;
+  in?: string | string[] | RegExp;
+  stories?: string | string[] | RegExp;
+}
+
+export interface WithCreeveyParameters {
+  captureElement?: string;
+  skip?: string | SkipParameter | SkipParameter[];
+  // TODO actions/tests
+}
+
 export interface ApprovePayload {
   id: string;
   retry: number;
