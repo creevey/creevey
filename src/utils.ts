@@ -3,6 +3,7 @@ import { Context } from "mocha";
 import { Builder, By, until, WebDriver } from "selenium-webdriver";
 import { Config, BrowserConfig } from "./types";
 import { StoryContext } from "@storybook/addons";
+import { toId } from "@storybook/router";
 
 function getRealIp(): Promise<string> {
   return new Promise((resolve, reject) =>
@@ -70,7 +71,8 @@ async function selectStory(browser: WebDriver, kind: string, story: string) {
       // @ts-ignore
       window.selectStory(storyId, kind, name, callback);
     },
-    `${kind}--${story}`.toLowerCase().replace(/\//g, "-"),
+    // NOTE: `toId` don't exists in storybook 3.x
+    toId ? toId(kind, story) : `${kind}--${story}`.toLowerCase(),
     kind,
     story
   );
