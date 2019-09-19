@@ -41,6 +41,7 @@ function mergeTests(
   testsFromStories: Partial<{ [id: string]: Test }>
 ) {
   return Object.values(testsWithReports)
+    .map(test => test && { ...test, skip: true })
     .concat(Object.values(testsFromStories), Object.values(tests))
     .filter(isDefined)
     .reduce(
