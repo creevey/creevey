@@ -42,10 +42,12 @@ export default async function parse(config: Config) {
   // @ts-ignore
   global.it = it;
 
-  await new Loader(config.testRegex, filePath => {
-    testFilePath = filePath;
-    require(filePath);
-  }).loadTests(config.testDir);
+  if (config.testDir) {
+    await new Loader(config.testRegex, filePath => {
+      testFilePath = filePath;
+      require(filePath);
+    }).loadTests(config.testDir);
+  }
 
   if (process.send) {
     process.send(JSON.stringify(tests));

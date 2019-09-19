@@ -22,7 +22,7 @@ export interface Config {
   gridUrl: string;
   address: string;
   testRegex: RegExp;
-  testDir: string;
+  testDir?: string;
   screenDir: string;
   reportDir: string;
   maxRetries: number;

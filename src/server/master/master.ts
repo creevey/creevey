@@ -75,8 +75,7 @@ export default async function master(config: Config) {
   } catch (error) {
     // Ignore error
   }
-  // TODO Ignore test dir for now. After actions tests should be deprecated
-  const tests = await loadTests();
+  const tests = config.testDir ? await loadTests() : {};
 
   const runner = new Runner(config);
 

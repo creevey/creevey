@@ -92,7 +92,7 @@ export default async function worker(config: Config, options: Options & { browse
 
   chai.use(chaiImage(config, testScope, saveImageHandler));
 
-  await new Loader(config.testRegex, filePath => mocha.addFile(filePath)).loadTests(config.testDir);
+  if (config.testDir) await new Loader(config.testRegex, filePath => mocha.addFile(filePath)).loadTests(config.testDir);
 
   convertStories(mocha.suite, stories);
 

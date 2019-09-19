@@ -5,10 +5,9 @@ import { Context } from "mocha";
 import { switchStory, getBrowser } from "./utils";
 import { Config, Browser, BrowserConfig } from "./types";
 
-export const defaultConfig: Omit<Config, "gridUrl"> = {
+export const defaultConfig: Omit<Config, "gridUrl" | "testDir"> = {
   address: "http://localhost:6006",
   testRegex: /\.(t|j)s$/,
-  testDir: path.resolve("tests"),
   screenDir: path.resolve("images"),
   reportDir: path.resolve("report"),
   maxRetries: 0,
