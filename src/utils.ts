@@ -82,7 +82,7 @@ async function selectStory(browser: WebDriver, kind: string, story: string) {
 export async function getBrowser(config: Config, browserConfig: BrowserConfig) {
   const {
     gridUrl = config.gridUrl,
-    address = config.address,
+    storybookUrl: address = config.storybookUrl,
     limit,
     testRegex,
     viewport,

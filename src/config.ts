@@ -6,7 +6,7 @@ import { switchStory, getBrowser } from "./utils";
 import { Config, Browser, BrowserConfig } from "./types";
 
 export const defaultConfig: Omit<Config, "gridUrl" | "testDir"> = {
-  address: "http://localhost:6006",
+  storybookUrl: "http://localhost:6006",
   testRegex: /\.(t|j)s$/,
   screenDir: path.resolve("images"),
   reportDir: path.resolve("report"),

@@ -11,7 +11,7 @@ export interface Capabilities {
 export type BrowserConfig = Capabilities & {
   limit?: number;
   gridUrl?: string;
-  address?: string;
+  storybookUrl?: string;
   testRegex?: RegExp;
   viewport?: { width: number; height: number };
 };
@@ -20,7 +20,7 @@ export type Browser = boolean | string | BrowserConfig;
 
 export interface Config {
   gridUrl: string;
-  address: string;
+  storybookUrl: string;
   testRegex: RegExp;
   testDir?: string;
   screenDir: string;
