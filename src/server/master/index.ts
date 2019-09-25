@@ -8,6 +8,7 @@ export default async function(config: Config, options: Options) {
   if (options.ui) {
     creeveyServer(creeveyApi(runner), config.reportDir, options.port);
   } else {
+    // TODO Exit if runner don't have tests to run
     runner.once("stop", () => {
       const isSuccess = Object.values(runner.status.testsById)
         .filter(isDefined)

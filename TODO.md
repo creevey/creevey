@@ -68,7 +68,6 @@
 - [x] Config npmignore files
 - [x] Status runner
 - [x] Add Storybook for web ui components
-- [x] ~~Composite images~~ (Split your story or test)
 - [x] Restart selenium driver on timeout
 - [x] Export decorator from creevey
 - [x] Improve ts support for creevey (like webpack does)
@@ -77,16 +76,17 @@
 - [x] Simplify types re-export for lib usage
 - [x] Calc correct viewport size
 - [x] Fix skip/unskip tests between run without delete report dir
+- [x] Allow clean approved images
+- [x] Generate runtime tests based on stories
 - [ ] Output cli help
 - [ ] Firefox double click if clicks in different tests
 - [ ] Reload IE page on start (don't handle storybook hotreload)
-- [x] Allow clean approved images
-- [x] Generate runtime tests based on stories
 - [ ] Allow leave reason comment for skiped tests
 - [ ] Update args readme (config, parser, ...)
 - [ ] Allow assert multiple images in one test (chai toMatchImages())
 - [ ] Show removed tests results, mark these as removed
 - [ ] Tests from storybook use convention name 'idle', move to const
+- [ ] Allow Composite images
 - [ ] Add cli arguments
   - [x] config
   - [x] parser
@@ -105,6 +105,7 @@
   - [ ] Support stories name convention https://storybook.js.org/docs/formats/component-story-format/#storybook-export-vs-name-handling
 - [ ] Transform to monorepo
   - [ ] `chai-image`
+  - [ ] `jest-image`
   - [ ] `creevey`
   - [ ] `creevey-ui`
   - [ ] `creevey-album` (storybook decorator and integration)

@@ -31,8 +31,6 @@ import { CreeveyConfig } from "creevey";
 const config: CreeveyConfig = {
   gridUrl: "<gridUrl>/wd/hub",
   storybookUrl: "http://localhost:6006",
-  testRegex: /\.ts$/,
-  testDir: path.join(__dirname, "tests"),
   screenDir: path.join(__dirname, "images"),
   reportDir: path.join(__dirname, "report"),
   threshold: 0.1,
@@ -48,7 +46,6 @@ const config: CreeveyConfig = {
     },
     otherChrome: {
       browserName: "chrome",
-      testRegex: /(Button|Input).ts$/,
       storybookUrl: "http://mystoryhost:6007",
       viewport: { width: 1024, height: 720 }
     }
