@@ -100,15 +100,17 @@ export interface CreeveyUpdate {
   testsById?: Partial<{ [id: string]: Partial<Test> }>;
 }
 
-interface SkipParameter {
+interface SkipOption {
   reason?: string;
   in?: string | string[] | RegExp;
   stories?: string | string[] | RegExp;
 }
 
+export type SkipOptions = string | SkipOption | SkipOption[];
+
 export interface WithCreeveyParameters {
   captureElement?: string;
-  skip?: string | SkipParameter | SkipParameter[];
+  skip?: SkipOptions;
   // TODO actions/tests
 }
 

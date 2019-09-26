@@ -33,4 +33,8 @@ declare namespace Mocha {
   interface PendingTestFunction {
     (browsers: string[], title: string, fn?: AsyncFunc): Test;
   }
+
+  interface Test {
+    skipReason: string | boolean;
+  }
 }

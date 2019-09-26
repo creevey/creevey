@@ -74,9 +74,9 @@ export class TeamcityReporter extends reporters.Base {
 
     runner.on("pending", test =>
       console.log(
-        `##teamcity[testIgnored name='${this.escape(test.title)}' message='${this.escape(test.title)}' flowId='${
-          process.pid
-        }']`
+        `##teamcity[testIgnored name='${this.escape(test.title)}' message='${this.escape(
+          typeof test.skipReason == "boolean" ? test.title : test.skipReason
+        )}' flowId='${process.pid}']`
       )
     );
 

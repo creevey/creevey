@@ -1,12 +1,12 @@
-import chai, { expect } from "chai";
+import chai from "chai";
 import chalk from "chalk";
-import Mocha, { Suite, Context, AsyncFunc, Test } from "mocha";
-import { By } from "selenium-webdriver";
+import Mocha, { Suite, Context, AsyncFunc } from "mocha";
 import { Config, Images, Options, StoriesRaw, BrowserConfig } from "../../types";
 import { getBrowser, switchStory } from "../../utils";
 import chaiImage from "../../chai-image";
 import { Loader } from "../../loader";
 import { CreeveyReporter, TeamcityReporter } from "./reporter";
+import { convertStories } from "./stories";
 
 // After end of each suite mocha clean all hooks and don't allow re-run tests without full re-init
 // @ts-ignore see issue for more info https://github.com/mochajs/mocha/issues/2783
@@ -16,33 +16,6 @@ function patchMochaInterface(suite: Suite) {
   suite.on("pre-require", context => {
     // @ts-ignore
     context.it.skip = (_browsers: string[], title: string, fn?: AsyncFunc) => context.it(title, fn);
-  });
-}
-
-async function storyTest(this: Mocha.Context) {
-  const element = await this.browser.findElement(By.css("#root"));
-  await expect(await element.takeScreenshot()).to.matchImage("idle");
-}
-
-function convertStories(suite: Suite, stories: StoriesRaw) {
-  Object.values(stories).forEach(story => {
-    // TODO add file prop
-    let kindSuite = suite.suites.find(kindSuite => kindSuite.title == story.kind);
-    if (!kindSuite) {
-      kindSuite = new Suite(story.kind, suite.ctx);
-      kindSuite.parent = suite;
-      suite.addSuite(kindSuite);
-    }
-    let storySuite = kindSuite.suites.find(storySuite => storySuite.title == story.name);
-    if (!storySuite) {
-      storySuite = new Suite(story.name, kindSuite.ctx);
-      storySuite.parent = kindSuite;
-      kindSuite.addSuite(storySuite);
-    }
-    // TODO add tests with actions
-    // TODO add file prop
-    // TODO Check if test already exists
-    storySuite.addTest(new Test("idle", storyTest));
   });
 }
 
@@ -94,7 +67,7 @@ export default async function worker(config: Config, options: Options & { browse
 
   if (config.testDir) await new Loader(config.testRegex, filePath => mocha.addFile(filePath)).loadTests(config.testDir);
 
-  convertStories(mocha.suite, stories);
+  convertStories(mocha.suite, options.browser, stories);
 
   mocha.suite.beforeAll(function(this: Context) {
     this.config = config;
