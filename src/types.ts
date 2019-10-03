@@ -83,7 +83,7 @@ export interface Test {
   id: string;
   // example: [browser, test, story, kind],
   path: string[];
-  skip: boolean;
+  skip: boolean | string;
   retries: number;
   status?: TestStatus;
   results?: TestResult[];

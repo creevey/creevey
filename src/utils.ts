@@ -117,3 +117,25 @@ export async function switchStory(this: Context) {
 
   return storyContext;
 }
+
+export function shouldSkip(story: string, browser: string, skipOptions: SkipOptions): string | boolean {
+  if (typeof skipOptions == "string") {
+    return skipOptions;
+  }
+  if (Array.isArray(skipOptions)) {
+    return skipOptions.map(skipOption => shouldSkip(story, browser, skipOption)).find(isDefined) || false;
+  }
+  const { in: browsers, stories, reason = true } = skipOptions;
+  const skipByBrowser =
+    (typeof browsers == "string" && browsers == browser) ||
+    (Array.isArray(browsers) && browsers.includes(browser)) ||
+    (browsers instanceof RegExp && browsers.test(browser)) ||
+    !isDefined(browsers);
+  const skipByStory =
+    (typeof stories == "string" && stories == story) ||
+    (Array.isArray(stories) && stories.includes(story)) ||
+    (stories instanceof RegExp && stories.test(story)) ||
+    !isDefined(stories);
+
+  return skipByBrowser && skipByStory && reason;
+}

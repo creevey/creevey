@@ -2,6 +2,7 @@ import path from "path";
 import { copyFile } from "fs";
 import { promisify } from "util";
 import { EventEmitter } from "events";
+import { createHash } from "crypto";
 import mkdirp from "mkdirp";
 import {
   Config,
@@ -11,10 +12,11 @@ import {
   ApprovePayload,
   isDefined,
   CreeveyUpdate,
-  TestStatus
+  TestStatus,
+  WithCreeveyParameters
 } from "../../types";
+import { shouldSkip } from "../../utils";
 import Pool from "./pool";
-import { createHash } from "crypto";
 
 const copyFileAsync = promisify(copyFile);
 const mkdirpAsync = promisify(mkdirp);
@@ -70,16 +72,16 @@ export default class Runner extends EventEmitter {
         const stories = await pool.init();
         if (!stories) return;
         Object.values(stories).forEach(story => {
-          const testPath = [browser, "idle", story.name, story.kind];
+          const params = story.parameters.creevey as WithCreeveyParameters;
+          const testPath = [browser, story.name, story.name, story.kind];
           const testId = createHash("sha1")
             .update(testPath.join("/"))
             .digest("hex");
-          // TODO calc skip by params
           tests[testId] = {
             id: testId,
             path: testPath,
             retries: 0,
-            skip: false
+            skip: params.skip ? shouldSkip(story.name, browser, params.skip) : false
           };
         });
       })

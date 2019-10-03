@@ -6,7 +6,10 @@ import octocatExpect from "./fixtures/octocat-expect.png";
 import octocatDiff from "./fixtures/octocat-diff.png";
 import octocatActual from "./fixtures/octocat-actual.png";
 
-export default { title: "ImagesViews" };
+export default {
+  title: "ImagesViews",
+  parameters: { creevey: { skip: { in: ["firefox", "ie11"], reason: "Only Chrome is supporter" } } }
+};
 
 export const Blend = () => <BlendView expect={octocatExpect} diff={octocatDiff} actual={octocatActual} />;
 export const SideBySide = () => <SideBySideView expect={octocatExpect} diff={octocatDiff} actual={octocatActual} />;

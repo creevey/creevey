@@ -31,7 +31,7 @@ class CreeveyStoryWrapper extends React.Component<CreeveyStoryWrapperProps> {
   }
 }
 
-export function withCreevey(parameters?: WithCreeveyParameters) {
+export function withCreevey(parameters: WithCreeveyParameters = {}) {
   function selectStory(storyId: string, kind: string, name: string, callback: StoryDidMountCallback) {
     storyDidMountCallback = callback;
     // NOTE Hack to trigger force re-render same story
@@ -63,7 +63,7 @@ export function withCreevey(parameters?: WithCreeveyParameters) {
   });
 }
 
-export function withCreeveyOld(parameters?: WithCreeveyParameters) {
+export function withCreeveyOld(parameters: WithCreeveyParameters = {}) {
   function selectStory(storyId: string, _kind: string, _name: string, callback: StoryDidMountCallback) {
     const story = stories[storyId];
 
