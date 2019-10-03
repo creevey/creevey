@@ -1,9 +1,20 @@
 import http from "http";
 import { Context } from "mocha";
-import { Builder, By, until, WebDriver } from "selenium-webdriver";
-import { Config, BrowserConfig } from "./types";
+import { Builder, By, until, WebDriver, Origin } from "selenium-webdriver";
+import { Config, BrowserConfig, SkipOptions, isDefined } from "./types";
 import { StoryContext } from "@storybook/addons";
 import { toId } from "@storybook/router";
+
+const HideScrollStyleSheet = `
+  html {
+    overflow: -moz-scrollbars-none;
+    -ms-overflow-style: none;
+  }
+  html::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+  }
+`;
 
 function getRealIp(): Promise<string> {
   return new Promise((resolve, reject) =>
@@ -22,24 +33,38 @@ function getRealIp(): Promise<string> {
 }
 
 async function resetMousePosition(browser: WebDriver) {
-  const { width, height } = await browser.executeScript(function() {
+  const isChrome = (await browser.getCapabilities()).get("browserName") == "chrome";
+  const { top, left, width, height } = await browser.executeScript(function() {
     // NOTE On storybook >= 4.x already reset scroll
     window.scrollTo(0, 0);
 
     var bodyRect = document.body.getBoundingClientRect();
     return {
-      width: Math.min(document.documentElement.clientWidth, bodyRect.width),
-      height: Math.min(document.documentElement.clientHeight, bodyRect.height)
+      top: bodyRect.top,
+      left: bodyRect.left,
+      width: bodyRect.width,
+      height: bodyRect.height
     };
   });
-  await browser
-    .actions({ bridge: true })
-    .move({
-      origin: browser.findElement(By.css("body")),
-      x: Math.ceil((-1 * width) / 2),
-      y: Math.ceil((-1 * height) / 2)
-    })
-    .perform();
+
+  if (isChrome) {
+    // NOTE Bridge mode not support move mouse relative viewport
+    await browser
+      .actions({ bridge: true })
+      .move({
+        origin: browser.findElement(By.css("body")),
+        x: Math.ceil((-1 * width) / 2) - left,
+        y: Math.ceil((-1 * height) / 2) - top
+      })
+      .perform();
+  } else {
+    // NOTE Firefox for some reason moving by 0 x 0 move cursor in bottom left corner :sad:
+    // NOTE IE don't emit move events until force window focus or connect by RDP on virtual machine
+    await browser
+      .actions()
+      .move({ origin: Origin.VIEWPORT, x: 0, y: 1 })
+      .perform();
+  }
 }
 
 async function resizeViewport(browser: WebDriver, viewport: { width: number; height: number }) {
@@ -99,6 +124,14 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig) {
   }
   await browser.get(`${realAddress}/iframe.html`);
   await browser.wait(until.elementLocated(By.css("#root")), 10000);
+  // @ts-ignore
+  await browser.executeScript(function(stylesheet) {
+    var style = document.createElement("style");
+    var textnode = document.createTextNode(stylesheet);
+    style.setAttribute("type", "text/css");
+    style.appendChild(textnode);
+    document.head.appendChild(style);
+  }, HideScrollStyleSheet);
 
   return browser;
 }

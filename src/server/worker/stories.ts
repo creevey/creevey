@@ -1,11 +1,79 @@
+import { PNG } from "pngjs";
 import { expect } from "chai";
 import { Suite, Context, Test } from "mocha";
 import { By, WebDriver } from "selenium-webdriver";
 import { StoriesRaw, WithCreeveyParameters } from "../../types";
 import { shouldSkip } from "../../utils";
 
-function takeScreenshot(browser: WebDriver, captureElement?: string) {
+async function takeCompositeScreenshot(
+  browser: WebDriver,
+  windowSize: { width: number; height: number },
+  elementRect: DOMRect
+) {
+  const screens = [];
+  const cols = Math.ceil(elementRect.width / windowSize.width);
+  const rows = Math.ceil(elementRect.height / windowSize.height);
+  const xOffset = Math.max(0, cols * windowSize.width - elementRect.width);
+  const yOffset = Math.max(0, rows * windowSize.height - elementRect.height);
+  for (let row = 0; row < rows; row += 1) {
+    for (let col = 0; col < cols; col += 1) {
+      const dx = Math.min(windowSize.width * col + elementRect.left, Math.max(0, elementRect.right - windowSize.width));
+      const dy = Math.min(
+        windowSize.height * row + elementRect.top,
+        Math.max(0, elementRect.bottom - windowSize.height)
+      );
+      await browser.executeScript(
+        // @ts-ignore
+        function(x, y) {
+          window.scrollTo(x, y);
+        },
+        dx,
+        dy
+      );
+      screens.push(await browser.takeScreenshot());
+    }
+  }
+  const images = screens.map(s => Buffer.from(s, "base64")).map(b => PNG.sync.read(b));
+  const compositeImage = new PNG({ width: elementRect.width, height: elementRect.height });
+
+  for (let y = 0; y < elementRect.height; y += 1) {
+    for (let x = 0; x < elementRect.width; x += 1) {
+      const col = Math.floor(x / windowSize.width);
+      const row = Math.floor(y / windowSize.height);
+      const isLastCol = cols - col == 1;
+      const isLastRow = rows - row == 1;
+      const i = (y * elementRect.width + x) * 4;
+      const j =
+        ((y % windowSize.height) * windowSize.width + (x % windowSize.width)) * 4 +
+        (isLastRow ? yOffset * windowSize.width * 4 : 0) +
+        (isLastCol ? xOffset * 4 : 0);
+      const image = images[row * cols + col];
+      compositeImage.data[i + 0] = image.data[j + 0];
+      compositeImage.data[i + 1] = image.data[j + 1];
+      compositeImage.data[i + 2] = image.data[j + 2];
+      compositeImage.data[i + 3] = image.data[j + 3];
+    }
+  }
+  return PNG.sync.write(compositeImage).toString("base64");
+}
+
+async function takeScreenshot(browser: WebDriver, captureElement?: string) {
   if (!captureElement) return browser.takeScreenshot();
+
+  const { elementRect, windowSize } = await browser.executeScript(function(selector: string) {
+    return {
+      elementRect: document.querySelector(selector)!.getBoundingClientRect(),
+      windowSize: { width: window.innerWidth, height: window.innerHeight }
+    };
+  }, captureElement);
+
+  if (
+    elementRect.width + elementRect.left > windowSize.width ||
+    elementRect.height + elementRect.top > windowSize.height
+  ) {
+    return takeCompositeScreenshot(browser, windowSize, elementRect);
+  }
+
   return browser.findElement(By.css(captureElement)).takeScreenshot();
 }
 
