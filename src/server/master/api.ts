@@ -36,7 +36,7 @@ export default function creeveyApi(runner: Runner): CreeveyApi {
       }
 
       const command: Request = JSON.parse(message);
-      console.log("[WebSocket]:", "message", message);
+      // console.log("[WebSocket]:", "message", message);
 
       switch (command.type) {
         case "start": {

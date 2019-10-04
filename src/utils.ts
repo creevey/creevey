@@ -3,18 +3,14 @@ import { Context } from "mocha";
 import { Builder, By, until, WebDriver, Origin } from "selenium-webdriver";
 import { Config, BrowserConfig, SkipOptions, isDefined } from "./types";
 import { StoryContext } from "@storybook/addons";
-import { toId } from "@storybook/router";
 
-const HideScrollStyleSheet = `
-  html {
-    overflow: -moz-scrollbars-none;
-    -ms-overflow-style: none;
-  }
-  html::-webkit-scrollbar {
-    width: 0 !important;
-    height: 0 !important;
-  }
-`;
+// Need to support storybook 3.x
+let toId: Function | null = null;
+try {
+  ({ toId } = require("@storybook/router"));
+} catch (_) {
+  /* ignore */
+}
 
 function getRealIp(): Promise<string> {
   return new Promise((resolve, reject) =>
@@ -124,14 +120,6 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig) {
   }
   await browser.get(`${realAddress}/iframe.html`);
   await browser.wait(until.elementLocated(By.css("#root")), 10000);
-  // @ts-ignore
-  await browser.executeScript(function(stylesheet) {
-    var style = document.createElement("style");
-    var textnode = document.createTextNode(stylesheet);
-    style.setAttribute("type", "text/css");
-    style.appendChild(textnode);
-    document.head.appendChild(style);
-  }, HideScrollStyleSheet);
 
   return browser;
 }

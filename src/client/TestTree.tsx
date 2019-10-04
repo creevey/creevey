@@ -52,7 +52,7 @@ export class TestTree extends React.Component<TestTreeProps, TestTreeState> {
               <Checkbox
                 ref={this.checkbox}
                 checked={tests.skip ? false : tests.checked}
-                disabled={tests.skip}
+                disabled={Boolean(tests.skip)}
                 onChange={this.handleCheck}
               />
               <Button use="link" disabled={emptyResults} onClick={this.handleOpenTestResults}>
@@ -80,7 +80,7 @@ export class TestTree extends React.Component<TestTreeProps, TestTreeState> {
             <Checkbox
               ref={this.checkbox}
               checked={tests.skip ? false : tests.checked}
-              disabled={tests.skip}
+              disabled={Boolean(tests.skip)}
               onChange={this.handleCheck}
             />
             <Button use="link" onClick={this.handleSubTreeOpen}>

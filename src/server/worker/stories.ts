@@ -5,6 +5,45 @@ import { By, WebDriver } from "selenium-webdriver";
 import { StoriesRaw, WithCreeveyParameters } from "../../types";
 import { shouldSkip } from "../../utils";
 
+const HideScrollStyleSheet = `
+html {
+  overflow: -moz-scrollbars-none;
+  -ms-overflow-style: none;
+}
+html::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+`;
+
+async function hideBrowserScroll(browser: WebDriver) {
+  // @ts-ignore
+  await browser.executeScript(function(stylesheet) {
+    var style = document.createElement("style");
+    var textnode = document.createTextNode(stylesheet);
+    style.setAttribute("type", "text/css");
+    style.appendChild(textnode);
+    document.head.appendChild(style);
+    // @ts-ignore
+    window.__CREEVEY_RESTORE_SCROLL__ = function() {
+      if (document.head.contains(style)) {
+        document.head.removeChild(style);
+      }
+      // @ts-ignore
+      delete window.__CREEVEY_RESTORE_SCROLL__;
+    };
+  }, HideScrollStyleSheet);
+
+  return () =>
+    browser.executeScript(function() {
+      // @ts-ignore
+      if (window.__CREEVEY_RESTORE_SCROLL__) {
+        // @ts-ignore
+        window.__CREEVEY_RESTORE_SCROLL__();
+      }
+    });
+}
+
 async function takeCompositeScreenshot(
   browser: WebDriver,
   windowSize: { width: number; height: number },
@@ -13,8 +52,11 @@ async function takeCompositeScreenshot(
   const screens = [];
   const cols = Math.ceil(elementRect.width / windowSize.width);
   const rows = Math.ceil(elementRect.height / windowSize.height);
-  const xOffset = Math.max(0, cols * windowSize.width - elementRect.width);
-  const yOffset = Math.max(0, rows * windowSize.height - elementRect.height);
+  const isFitHorizontally = windowSize.width >= elementRect.width + elementRect.left;
+  const isFitVertically = windowSize.height >= elementRect.height + elementRect.top;
+  const xOffset = isFitHorizontally ? elementRect.left : Math.max(0, cols * windowSize.width - elementRect.width);
+  const yOffset = isFitVertically ? elementRect.top : Math.max(0, rows * windowSize.height - elementRect.height);
+  const restoreScroll = await hideBrowserScroll(browser);
   for (let row = 0; row < rows; row += 1) {
     for (let col = 0; col < cols; col += 1) {
       const dx = Math.min(windowSize.width * col + elementRect.left, Math.max(0, elementRect.right - windowSize.width));
@@ -33,6 +75,8 @@ async function takeCompositeScreenshot(
       screens.push(await browser.takeScreenshot());
     }
   }
+  await restoreScroll();
+
   const images = screens.map(s => Buffer.from(s, "base64")).map(b => PNG.sync.read(b));
   const compositeImage = new PNG({ width: elementRect.width, height: elementRect.height });
 
