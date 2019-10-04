@@ -94,7 +94,7 @@ async function selectStory(browser: WebDriver, kind: string, story: string) {
     // @ts-ignore
     function(storyId, kind, name, callback) {
       // @ts-ignore
-      window.selectStory(storyId, kind, name, callback);
+      window.__CREEVEY_SELECT_STORY__(storyId, kind, name, callback);
     },
     // NOTE: `toId` don't exists in storybook 3.x
     toId ? toId(kind, story) : `${kind}--${story}`.toLowerCase(),

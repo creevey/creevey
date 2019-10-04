@@ -60,7 +60,7 @@ export default async function worker(config: Config, options: Options & { browse
   // @ts-ignore
   const stories: StoriesRaw = await browser.executeAsyncScript(function(callback) {
     // @ts-ignore
-    window.getStories(callback);
+    window.__CREEVEY_GET_STORIES__(callback);
   });
 
   chai.use(chaiImage(config, testScope, saveImageHandler));

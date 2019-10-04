@@ -45,9 +45,9 @@ export function withCreevey(parameters: WithCreeveyParameters = {}) {
 
   addons.getChannel().once("setStories", (data: { stories: StoriesRaw }) => ({ stories } = data));
   // @ts-ignore
-  window.getStories = callback => callback(stories);
+  window.__CREEVEY_GET_STORIES__ = callback => callback(stories);
   // @ts-ignore
-  window.selectStory = selectStory;
+  window.__CREEVEY_SELECT_STORY__ = selectStory;
 
   return makeDecorator({
     name: "withCreevey",
@@ -77,7 +77,7 @@ export function withCreeveyOld(parameters: WithCreeveyParameters = {}) {
   const root = document.getElementById("root") as HTMLElement;
 
   // @ts-ignore
-  window.getStories = callback => {
+  window.__CREEVEY_GET_STORIES__ = callback => {
     getStorybook().forEach(kind => {
       kind.stories.forEach(story => {
         const storyId = `${kind.kind}--${story.name}`.toLowerCase();
@@ -94,7 +94,7 @@ export function withCreeveyOld(parameters: WithCreeveyParameters = {}) {
     callback(stories);
   };
   // @ts-ignore
-  window.selectStory = selectStory;
+  window.__CREEVEY_SELECT_STORY__ = selectStory;
 
   return (getStory: StoryGetter, context: StoryContext) => getStory(context);
 }
