@@ -82,11 +82,12 @@
 - [ ] Firefox double click if clicks in different tests
 - [ ] Reload IE page on start (don't handle storybook hotreload)
 - [x] Allow leave reason comment for skiped tests
-- [ ] Update args readme (config, parser, ...)
+- [x] Update args readme (config, parser, ...)
 - [ ] Allow assert multiple images in one test (chai toMatchImages())
 - [ ] Show removed tests results, mark these as removed
 - [ ] Tests/images from storybook use convention name 'idle', move to const
 - [ ] Fix check/uncheck with skipped tests in UI
+- [ ] Allow hide skipped tests in UI
 - [x] Allow Composite images
 - [ ] Add cli arguments
   - [x] config
