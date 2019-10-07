@@ -43,7 +43,17 @@ export function withCreevey(parameters: WithCreeveyParameters = {}) {
 
   addParameters({ creevey: parameters });
 
-  addons.getChannel().once("setStories", (data: { stories: StoriesRaw }) => ({ stories } = data));
+  addons.getChannel().once("setStories", (data: { stories: StoriesRaw }) => {
+    Object.entries(data.stories).forEach(([storyId, story]) => {
+      const {
+        // @ts-ignore prop hooks exists in runtime
+        hooks,
+        parameters: { component, ...restParameters },
+        ...restStory
+      } = story;
+      stories[storyId] = { parameters: restParameters, ...restStory };
+    });
+  });
   // @ts-ignore
   window.__CREEVEY_GET_STORIES__ = callback => callback(stories);
   // @ts-ignore
