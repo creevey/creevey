@@ -23,7 +23,15 @@ interface CreeveyStoryWrapperProps {
 class CreeveyStoryWrapper extends React.Component<CreeveyStoryWrapperProps> {
   componentDidMount() {
     const { context, onDidMount } = this.props;
-    onDidMount(context);
+
+    if (!context) return onDidMount();
+
+    const {
+      hooks,
+      parameters: { component, ...restParameters },
+      ...restContext
+    } = context;
+    onDidMount({ parameters: restParameters, ...restContext });
   }
 
   render() {
