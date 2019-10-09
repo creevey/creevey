@@ -1,6 +1,7 @@
 *.tgz
 .babelrc
 .storybook
+.gitattributes
 creevey.config.ts
 mocha.opts
 tsconfig.json

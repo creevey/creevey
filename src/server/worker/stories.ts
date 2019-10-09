@@ -56,7 +56,7 @@ async function takeCompositeScreenshot(
   const isFitVertically = windowSize.height >= elementRect.height + elementRect.top;
   const xOffset = isFitHorizontally ? elementRect.left : Math.max(0, cols * windowSize.width - elementRect.width);
   const yOffset = isFitVertically ? elementRect.top : Math.max(0, rows * windowSize.height - elementRect.height);
-  const restoreScroll = await hideBrowserScroll(browser);
+
   for (let row = 0; row < rows; row += 1) {
     for (let col = 0; col < cols; col += 1) {
       const dx = Math.min(windowSize.width * col + elementRect.left, Math.max(0, elementRect.right - windowSize.width));
@@ -75,7 +75,6 @@ async function takeCompositeScreenshot(
       screens.push(await browser.takeScreenshot());
     }
   }
-  await restoreScroll();
 
   const images = screens.map(s => Buffer.from(s, "base64")).map(b => PNG.sync.read(b));
   const compositeImage = new PNG({ width: elementRect.width, height: elementRect.height });
@@ -104,6 +103,7 @@ async function takeCompositeScreenshot(
 async function takeScreenshot(browser: WebDriver, captureElement?: string) {
   if (!captureElement) return browser.takeScreenshot();
 
+  const restoreScroll = await hideBrowserScroll(browser);
   const { elementRect, windowSize } = await browser.executeScript(function(selector: string) {
     return {
       elementRect: document.querySelector(selector)!.getBoundingClientRect(),
@@ -111,14 +111,17 @@ async function takeScreenshot(browser: WebDriver, captureElement?: string) {
     };
   }, captureElement);
 
-  if (
-    elementRect.width + elementRect.left > windowSize.width ||
-    elementRect.height + elementRect.top > windowSize.height
-  ) {
-    return takeCompositeScreenshot(browser, windowSize, elementRect);
-  }
+  const isFitIntoViewport =
+    elementRect.width + elementRect.left <= windowSize.width &&
+    elementRect.height + elementRect.top <= windowSize.height;
 
-  return browser.findElement(By.css(captureElement)).takeScreenshot();
+  const screenshot = await (isFitIntoViewport
+    ? browser.findElement(By.css(captureElement)).takeScreenshot()
+    : takeCompositeScreenshot(browser, windowSize, elementRect));
+
+  await restoreScroll();
+
+  return screenshot;
 }
 
 function storyTestFabric(creeveyParams: WithCreeveyParameters) {
