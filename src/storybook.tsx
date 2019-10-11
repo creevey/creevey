@@ -1,8 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { NativeEventSource, EventSourcePolyfill } from "event-source-polyfill";
 import addons, { makeDecorator, StoryContext, StoryGetter } from "@storybook/addons";
 import { getStorybook, addParameters } from "@storybook/react";
 import { StoriesRaw, WithCreeveyParameters } from "./types";
+
+// NOTE If you don't use babel-polyfill or any other polyfills that add EventSource for IE11
+// You don't get hot reload in IE11. So put polyfill for that to better UX
+window.EventSource = NativeEventSource || EventSourcePolyfill;
 
 export type StoriesRawOld = Partial<{
   [id: string]: {

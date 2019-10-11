@@ -39,6 +39,7 @@
   },
   "dependencies": {
     "chalk": "^2.4.2",
+    "event-source-polyfill": "^1.0.9",
     "interpret": "^1.2.0",
     "koa": "^2.8.2",
     "koa-mount": "^4.0.0",
