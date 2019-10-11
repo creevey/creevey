@@ -5,18 +5,17 @@ import { By, WebDriver } from "selenium-webdriver";
 import { StoriesRaw, WithCreeveyParameters } from "../../types";
 import { shouldSkip } from "../../utils";
 
-const HideScrollStyleSheet = `
+async function hideBrowserScroll(browser: WebDriver) {
+  const HideScrollStyles = `
 html {
-  overflow: -moz-scrollbars-none;
-  -ms-overflow-style: none;
+  overflow: -moz-scrollbars-none !important;
+  -ms-overflow-style: none !important;
 }
 html::-webkit-scrollbar {
-  width: 0;
-  height: 0;
+  width: 0 !important;
+  height: 0 !important;
 }
 `;
-
-async function hideBrowserScroll(browser: WebDriver) {
   // @ts-ignore
   await browser.executeScript(function(stylesheet) {
     var style = document.createElement("style");
@@ -32,7 +31,7 @@ async function hideBrowserScroll(browser: WebDriver) {
       // @ts-ignore
       delete window.__CREEVEY_RESTORE_SCROLL__;
     };
-  }, HideScrollStyleSheet);
+  }, HideScrollStyles);
 
   return () =>
     browser.executeScript(function() {

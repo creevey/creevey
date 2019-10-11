@@ -100,6 +100,30 @@ async function selectStory(browser: WebDriver, kind: string, story: string) {
   return storyContext;
 }
 
+function disableAnimations(browser: WebDriver) {
+  const disableAnimationsStyles = `
+*,
+*:hover,
+*::before,
+*::after {
+  animation-delay: -0.0001ms !important;
+  animation-duration: 0s !important;
+  animation-play-state: paused !important;
+  cursor: none !important;
+  caret-color: transparent !important;
+  transition: 0s !important;
+}
+`;
+  //@ts-ignore
+  return browser.executeScript(function(stylesheet) {
+    var style = document.createElement("style");
+    var textnode = document.createTextNode(stylesheet);
+    style.setAttribute("type", "text/css");
+    style.appendChild(textnode);
+    document.head.appendChild(style);
+  }, disableAnimationsStyles);
+}
+
 export async function getBrowser(config: Config, browserConfig: BrowserConfig) {
   const {
     gridUrl = config.gridUrl,
@@ -120,6 +144,7 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig) {
   }
   await browser.get(`${realAddress}/iframe.html`);
   await browser.wait(until.elementLocated(By.css("#root")), 10000);
+  await disableAnimations(browser);
 
   return browser;
 }
