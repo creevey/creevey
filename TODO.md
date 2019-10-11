@@ -1,4 +1,7 @@
-## TODO
+# TODO
+
+<details>
+<summary>Done</summary>
 
 - [x] Test types
 - [x] Add binary
@@ -78,18 +81,10 @@
 - [x] Fix skip/unskip tests between run without delete report dir
 - [x] Allow clean approved images
 - [x] Generate runtime tests based on stories
-- [ ] Output cli help
-- [ ] Firefox double click if clicks in different tests
-- [ ] Reload IE page on start (don't handle storybook hotreload)
+- [x] Reload IE page on start (don't handle storybook hotreload)
 - [x] Allow leave reason comment for skiped tests
 - [x] Update args readme (config, parser, ...)
-- [ ] Allow assert multiple images in one test (chai toMatchImages())
-- [ ] Show removed tests results, mark these as removed
-- [ ] Tests/images from storybook use convention name 'idle', move to const
-- [ ] Fix check/uncheck with skipped tests in UI
-- [ ] Allow hide skipped tests in UI
-- [x] Allow Composite images
-- [ ] Add cli arguments
+- [x] Add cli arguments
   - [x] config
   - [x] parser
   - [x] ui
@@ -97,14 +92,27 @@
   - [x] update
   - [x] ~~init~~
   - [x] port
-  - [ ] grep/kind/story
-- [ ] Add storybook addon (add `All stories` story and `renderStory` global func)
+- [x] Storybook integration
   - [x] Update to Storybook@5.x
   - [x] Reset mouse position
-  - [x] Support sotrybook 4.x-5.x
-  - [ ] Write decorator that allow do some actions
-  - [ ] Support stories separators https://storybook.js.org/docs/basics/writing-stories/#story-hierarchy
-  - [ ] Support stories name convention https://storybook.js.org/docs/formats/component-story-format/#storybook-export-vs-name-handling
+  - [x] Support sotrybook 3.x-5.x
+- [x] Allow Composite images
+
+  </details>
+
+## First priority
+
+- [ ] Storybook integration
+  - [ ] Write decorator that allow declare tests/actions for each story
+  - [ ] Simplify generated tests tree acording by stories/tests/images
+- [ ] Bugs
+  - [ ] Fix check/uncheck with skipped tests in UI
+  - [ ] Firefox double click if clicks in different tests
+  - [ ] Reconnect on `WebDriverError: Session timed out or not found`
+  - [ ] Mocha worker `Possible EventEmitter memory leak detected. 11 error listeners added`
+- [ ] Improve CLI
+  - [ ] Output cli help
+  - [ ] Add grep/kind/story option
 - [ ] Transform to monorepo
   - [ ] `chai-image`
   - [ ] `jest-image`
@@ -112,24 +120,44 @@
   - [ ] `creevey-ui`
   - [ ] `creevey-album` (storybook decorator and integration)
   - [ ] `creevey-selenium`
+- [ ] Allow assert multiple images in one test (chai toMatchImages())
+- [ ] Rework UI
+  - [ ] Improve UI performance on initial load
+  - [ ] Show removed tests results, mark these as removed
+  - [ ] Allow hide skipped tests in UI
+  - [ ] Put tests tree into side page, that hide on small screens
+  - [ ] Output test result view into main page block
+  - [ ] Add bottom padding into test tree
 - [ ] Write about differences with other tools
-- [ ] Reconnect on `WebDriverError: Session timed out or not found`
+- [ ] Add unit tests
+- [ ] Add logger lib
+
+## Not in first time
+
+- [ ] Storybook integration
+  - [ ] Support stories separators https://storybook.js.org/docs/basics/writing-stories/#story-hierarchy
+  - [ ] Support stories name convention https://storybook.js.org/docs/formats/component-story-format/#storybook-export-vs-name-handling
+- [ ] Rewrite to use `worker_threads` instead of `cluster` to allow use shared memory
+- [ ] Use https://github.com/gidztech/jest-puppeteer-docker
 - [ ] Allow use custom API (wd/wdio/puppeter/etc)
-- [ ] Improve UI performance on initial load
-- [ ] Mocha worker `Possible EventEmitter memory leak detected. 11 error listeners added`
+- [ ] Allow use creevey without storybook
 - [ ] HotReload tests files without restart
 - [ ] Handle error on mocha hooks
-- [ ] Allow use standalone storybook
 - [ ] Support mocha options for workers
-- [ ] Add unit tests
 - [ ] Allow define mocha hooks
-- [ ] Add logger lib
 - [ ] Programmic API
-- [ ] Rewrite to use `worker_threads` instead of `cluster` to allow use shared memory
+
+## Far future
+
+- [ ] Storybook integration
+  - [ ] Render tests UI as a part of storybook UI
+  - [ ] Framework agnostic decorator
+
+## Maybe Never
+
 - [ ] vscode mocha explorer
   - [ ] codelens run not work (need full path)
   - [ ] tests run with default timeout even if it changed in config
   - [ ] cwd and require conflict each other
   - [ ] mocha opts and mocha bin is not prefect support
-  - [ ] See for features to https://github.com/tsuyoshiwada/storybook-chrome-screenshot
 - [ ] Use own runner instead of mocha
