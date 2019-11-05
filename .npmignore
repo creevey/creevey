@@ -2,9 +2,10 @@
 .babelrc
 .storybook
 .gitattributes
-creevey.config.ts
+TODO.md
 mocha.opts
 tsconfig.json
+creevey.config.ts
 webpack.config.ts
 src
 tests
