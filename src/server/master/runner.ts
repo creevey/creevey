@@ -12,8 +12,7 @@ import {
   ApprovePayload,
   isDefined,
   CreeveyUpdate,
-  TestStatus,
-  WithCreeveyParameters
+  TestStatus
 } from "../../types";
 import { shouldSkip } from "../../utils";
 import Pool from "./pool";
@@ -68,22 +67,24 @@ export default class Runner extends EventEmitter {
     // TODO init return array of stories for every browser. Convert stories to tests, merge with tests
     const tests: Partial<{ [id: string]: Test }> = {};
     await Promise.all(
-      Object.entries(this.pools).map(async ([browser, pool]) => {
+      Object.entries(this.pools).map(async ([browser, pool]: [string, Pool]) => {
         const stories = await pool.init();
         if (!stories) return;
-        Object.values(stories).forEach(story => {
-          const params = story.parameters.creevey as WithCreeveyParameters;
-          const testPath = [browser, story.name, story.name, story.kind];
-          const testId = createHash("sha1")
-            .update(testPath.join("/"))
-            .digest("hex");
-          tests[testId] = {
-            id: testId,
-            path: testPath,
-            retries: 0,
-            skip: params.skip ? shouldSkip(story.name, browser, params.skip) : false
-          };
-        });
+        Object.values(stories)
+          .filter(isDefined)
+          .forEach(story => {
+            const { name, kind, params: { skip = false } = {} } = story;
+            const testPath = [browser, name, name, kind];
+            const testId = createHash("sha1")
+              .update(testPath.join("/"))
+              .digest("hex");
+            tests[testId] = {
+              id: testId,
+              path: testPath,
+              retries: 0,
+              skip: skip ? shouldSkip(name, browser, skip) : false
+            };
+          });
       })
     );
     return tests;

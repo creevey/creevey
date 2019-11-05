@@ -2,7 +2,9 @@ import { API as StorybookAPI } from "@storybook/api";
 import { Worker as ClusterWorker } from "cluster";
 import { Context } from "mocha";
 
-export type StoriesRaw = StorybookAPI extends { setStories: (stories: infer T) => void } ? T : never;
+export type StoriesRaw = StorybookAPI extends { setStories: (stories: infer SS) => void } ? SS : never;
+
+export type StoryInput = StoriesRaw extends { [id: string]: infer S } ? S : never;
 
 export interface Capabilities {
   browserName: string;
@@ -108,11 +110,23 @@ interface SkipOption {
 
 export type SkipOptions = string | SkipOption | SkipOption[];
 
-export interface WithCreeveyParameters {
+export interface CreeveyStoryParams {
   captureElement?: string;
   skip?: SkipOptions;
-  // TODO actions/tests
+  // tests: {
+  //   [name: string]: (creeveyAPI: CreeveyTestAPI) => void;
+  // };
 }
+
+export type CreeveyStory = {
+  id: string;
+  name: string;
+  kind: string;
+  params?: CreeveyStoryParams;
+};
+export type CreeveyStories = Partial<{
+  [id: string]: CreeveyStory;
+}>;
 
 export interface ApprovePayload {
   id: string;

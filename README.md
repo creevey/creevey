@@ -73,7 +73,7 @@ You can specify storybook parameters for `withCreevey` decorator:
 addDecorator(withCreevey({
   captureElement: '#root',
   skip: /* see examples below */,
-  actions: /* see examples below */,
+  tests: /* TODO */
 }));
 
 // For new `Component Story Format` (CSF) https://storybook.js.org/docs/formats/component-story-format/
@@ -117,3 +117,9 @@ NOTE: Parameters for story will be merged with parameters from higher levels
   - `skip: { stories: ['simple', 'special'] }`
   - `skip: { stories: /.*Button$/ }`
 - Multiple skip options: `skip: [{ /* ... */ }]`
+
+## FAQ
+
+### Get error `Cannot find module '/path/to/project/creevey.config'` with CRA
+
+CRA don't have `@babel/register` or `ts-node` in deps, that used to load TypeScript modules in runtime. So you need to install one of those packages explicitly

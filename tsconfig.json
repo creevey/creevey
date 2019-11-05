@@ -17,5 +17,5 @@
       "creevey": ["src"]
     }
   },
-  "exclude": ["./report", "./lib"]
+  "exclude": ["./report", "./lib", "./scripts/dist"]
 }

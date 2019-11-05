@@ -102,6 +102,8 @@
 
 ## First priority
 
+- [ ] Better error message about open storybook page
+- [ ] Exit if worker got `UnhandledPromiseRejectionWarning`
 - [ ] Storybook integration
   - [ ] Write decorator that allow declare tests/actions for each story
   - [ ] Simplify generated tests tree acording by stories/tests/images
@@ -110,6 +112,7 @@
   - [ ] Firefox double click if clicks in different tests
   - [ ] Reconnect on `WebDriverError: Session timed out or not found`
   - [ ] Mocha worker `Possible EventEmitter memory leak detected. 11 error listeners added`
+  - [ ] Not properly work with CRA (need to install ts-node or @babel/register)
 - [ ] Improve CLI
   - [ ] Output cli help
   - [ ] Add grep/kind/story option
