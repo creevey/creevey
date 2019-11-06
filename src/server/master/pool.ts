@@ -1,6 +1,6 @@
 import cluster from "cluster";
 import { EventEmitter } from "events";
-import { Worker, Config, TestResult, BrowserConfig, WorkerMessage, TestStatus, CreeveyStories } from "../../types";
+import { Worker, Config, TestResult, BrowserConfig, WorkerMessage, TestStatus, Test } from "../../types";
 
 export default class Pool extends EventEmitter {
   private maxRetries: number;
@@ -20,7 +20,7 @@ export default class Pool extends EventEmitter {
     this.config = config.browsers[browser] as BrowserConfig;
   }
 
-  init(): Promise<CreeveyStories | undefined> {
+  init(): Promise<Partial<{ [id: string]: Test }> | undefined> {
     this.workers = Array.from({ length: this.config.limit || 1 }).map(() => {
       cluster.setupMaster({ args: ["--browser", this.browser, ...process.argv.slice(2)] });
       const worker = cluster.fork();
@@ -32,7 +32,7 @@ export default class Pool extends EventEmitter {
       this.workers.map(worker => new Promise((resolve: (value: string) => void) => worker.once("message", resolve)))
     ).then(([data]) => {
       const message: WorkerMessage = JSON.parse(data);
-      if (message.type == "ready") return message.payload.stories;
+      if (message.type == "ready") return message.payload.tests;
     });
   }
 

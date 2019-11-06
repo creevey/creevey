@@ -2,7 +2,6 @@ import path from "path";
 import { copyFile } from "fs";
 import { promisify } from "util";
 import { EventEmitter } from "events";
-import { createHash } from "crypto";
 import mkdirp from "mkdirp";
 import {
   Config,
@@ -14,7 +13,6 @@ import {
   CreeveyUpdate,
   TestStatus
 } from "../../types";
-import { shouldSkip } from "../../utils";
 import Pool from "./pool";
 
 const copyFileAsync = promisify(copyFile);
@@ -65,29 +63,19 @@ export default class Runner extends EventEmitter {
 
   public async init(): Promise<Partial<{ [id: string]: Test }>> {
     // TODO init return array of stories for every browser. Convert stories to tests, merge with tests
-    const tests: Partial<{ [id: string]: Test }> = {};
+    const poolTests: Partial<{ [id: string]: Test }> = {};
     await Promise.all(
-      Object.entries(this.pools).map(async ([browser, pool]: [string, Pool]) => {
-        const stories = await pool.init();
-        if (!stories) return;
-        Object.values(stories)
+      Object.values(this.pools).map(async pool => {
+        const tests = await pool.init();
+        if (!tests) return;
+        Object.values(tests)
           .filter(isDefined)
-          .forEach(story => {
-            const { name, kind, params: { skip = false } = {} } = story;
-            const testPath = [browser, name, name, kind];
-            const testId = createHash("sha1")
-              .update(testPath.join("/"))
-              .digest("hex");
-            tests[testId] = {
-              id: testId,
-              path: testPath,
-              retries: 0,
-              skip: skip ? shouldSkip(name, browser, skip) : false
-            };
+          .forEach(test => {
+            poolTests[test.id] = test;
           });
       })
     );
-    return tests;
+    return poolTests;
   }
 
   public start(ids: string[]) {
@@ -150,7 +138,8 @@ export default class Runner extends EventEmitter {
     if (!test.approved) {
       test.approved = {};
     }
-    const testPath = path.join(...[...test.path].reverse());
+    const [browser, ...restPath] = test.path;
+    const testPath = path.join(...restPath.reverse(), image == browser ? "" : browser);
     const srcImagePath = path.join(this.reportDir, testPath, images.actual);
     const dstImagePath = path.join(this.screenDir, testPath, `${image}.png`);
     await mkdirpAsync(path.join(this.screenDir, testPath));

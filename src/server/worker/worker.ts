@@ -67,7 +67,7 @@ export default async function worker(config: Config, options: Options & { browse
 
   if (config.testDir) await new Loader(config.testRegex, filePath => mocha.addFile(filePath)).loadTests(config.testDir);
 
-  convertStories(mocha.suite, options.browser, stories);
+  const tests = convertStories(mocha.suite, options.browser, stories);
 
   mocha.suite.beforeAll(function(this: Context) {
     this.config = config;
@@ -107,6 +107,6 @@ export default async function worker(config: Config, options: Options & { browse
   console.log("[CreeveyWorker]:", `Ready ${options.browser}:${process.pid}`);
 
   if (process.send) {
-    process.send(JSON.stringify({ type: "ready", payload: { stories } }));
+    process.send(JSON.stringify({ type: "ready", payload: { tests } }));
   }
 }

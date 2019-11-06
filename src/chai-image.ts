@@ -110,6 +110,10 @@ export default (
       const actual = Buffer.from(actualBase64, "base64");
 
       // context => [kind, story, test, browser]
+      // rootSuite -> kindSuite -> storyTest -> [browsers.png]
+      // rootSuite -> kindSuite -> storySuite -> test -> [browsers.png]
+      if (!imageName) imageName = context.pop() as string;
+
       const reportImageDir = path.join(config.reportDir, ...context);
       const imageNumber = (await getLastImageNumber(reportImageDir, imageName)) + 1;
 
@@ -145,5 +149,10 @@ export default (
 
       // NOTE В случае, если имеющие одинаковый размер картинки не будут отличаться по содержимому, то код можно упростить
       throw new Error(`Expected image '${imageName}' to match ${equalBySize ? "but was equal by size" : ""}`);
+    });
+
+    utils.addMethod(Assertion.prototype, "matchImages", async function matchImages() {
+      // images object
+      throw new Error("Not Implemented");
     });
   };

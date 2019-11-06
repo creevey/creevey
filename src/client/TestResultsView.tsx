@@ -86,8 +86,10 @@ export class TestResultsView extends React.Component<TestResultsViewProps, TestR
     const { activePage = results.length } = this.state;
     const retry = activePage - 1;
     const result = results[retry];
+    // path => [kind, story, test, browser]
+    const browser = path.slice(-1)[0];
     // TODO should better handle offline mode
-    const imagesUrl = window.location.host ? `/report/${path.join("/")}` : path.join("/");
+    const imagesUrl = window.location.host ? `/report/${path.slice(0, -1).join("/")}` : path.slice(0, -1).join("/");
 
     return Object.entries(images).map(([name, image]) => {
       if (!image) return null;
@@ -99,7 +101,7 @@ export class TestResultsView extends React.Component<TestResultsViewProps, TestR
         <ImagesView
           key={name}
           imageName={name}
-          url={encodeURI(imagesUrl)}
+          url={encodeURI(name == browser ? imagesUrl : `${imagesUrl}/${browser}`)}
           actual={actual}
           diff={diff}
           expect={expect}

@@ -56,7 +56,7 @@ export interface Worker extends ClusterWorker {
 export type WorkerMessage =
   | {
       type: "ready";
-      payload: { stories: StoriesRaw };
+      payload: { tests: Partial<{ [id: string]: Test }> };
     }
   | {
       type: "error";
@@ -77,6 +77,8 @@ export type TestStatus = "pending" | "running" | "failed" | "success";
 
 export interface TestResult {
   status: "failed" | "success";
+  // TODO
+  // images?: Partial<{ [name: string]: Images }> | Images;
   images?: Partial<{ [name: string]: Images }>;
   error?: string;
 }
@@ -106,6 +108,8 @@ interface SkipOption {
   reason?: string;
   in?: string | string[] | RegExp;
   stories?: string | string[] | RegExp;
+  // TODO Implement
+  // tests?: string | string[] | RegExp;
 }
 
 export type SkipOptions = string | SkipOption | SkipOption[];
@@ -113,6 +117,9 @@ export type SkipOptions = string | SkipOption | SkipOption[];
 export interface CreeveyStoryParams {
   captureElement?: string;
   skip?: SkipOptions;
+  _seleniumTests?: {
+    [name: string]: (this: Context) => void;
+  };
   // tests: {
   //   [name: string]: (creeveyAPI: CreeveyTestAPI) => void;
   // };

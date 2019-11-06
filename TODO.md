@@ -104,6 +104,8 @@
 
 - [ ] Better error message about open storybook page
 - [ ] Exit if worker got `UnhandledPromiseRejectionWarning`
+- [ ] Serialize skip regexp
+- [ ] Skip tests inside sotry
 - [ ] Storybook integration
   - [ ] Write decorator that allow declare tests/actions for each story
   - [ ] Simplify generated tests tree acording by stories/tests/images

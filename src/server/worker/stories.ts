@@ -2,8 +2,9 @@ import { PNG } from "pngjs";
 import { expect } from "chai";
 import { Suite, Context, Test } from "mocha";
 import { By, WebDriver } from "selenium-webdriver";
-import { CreeveyStories, isDefined } from "../../types";
+import { CreeveyStories, isDefined, Test as CreeveyTest } from "../../types";
 import { shouldSkip } from "../../utils";
+import { createHash } from "crypto";
 
 async function hideBrowserScroll(browser: WebDriver) {
   const HideScrollStyles = `
@@ -126,43 +127,82 @@ async function takeScreenshot(browser: WebDriver, captureElement?: string) {
 function storyTestFabric(captureElement?: string) {
   return async function storyTest(this: Context) {
     const screenshot = await takeScreenshot(this.browser, captureElement);
-    await expect(screenshot).to.matchImage("idle");
+    await expect(screenshot).to.matchImage();
   };
 }
 
-export function convertStories(rootSuite: Suite, browserName: string, stories: CreeveyStories) {
+function findOrCreateSuite(name: string, parent: Suite): Suite {
+  const suite = parent.suites.find(({ title }) => title == name) || new Suite(name, parent.ctx);
+  if (!suite.parent) {
+    suite.parent = parent;
+    parent.addSuite(suite);
+  }
+  return suite;
+}
+
+function createTest(name: string, fn: (this: Context) => void, skip: string | boolean): Test {
+  const test = new Test(name, skip ? undefined : fn);
+  test.pending = Boolean(skip);
+  // NOTE Can't define skip reason in mocha https://github.com/mochajs/mocha/issues/2026
+  test.skipReason = skip;
+
+  return test;
+}
+
+function createCreeveyTest(testPath: string[], skip: string | boolean): CreeveyTest {
+  const testId = createHash("sha1")
+    .update(testPath.join("/"))
+    .digest("hex");
+  return {
+    id: testId,
+    path: testPath,
+    retries: 0,
+    skip
+  };
+}
+
+export function convertStories(
+  rootSuite: Suite,
+  browserName: string,
+  stories: CreeveyStories
+): Partial<{ [id: string]: CreeveyTest }> {
+  const creeveyTests: { [id: string]: CreeveyTest } = {};
+
   Object.values(stories)
     .filter(isDefined)
     .forEach(story => {
-      // TODO tests
-      const { skip, captureElement } = story.params || {};
+      const { skip, captureElement, _seleniumTests: tests } = story.params || {};
       const skipReason = skip ? shouldSkip(story.name, browserName, skip) : false;
+      const kindSuite = findOrCreateSuite(story.kind, rootSuite);
 
-      let kindSuite = rootSuite.suites.find(kindSuite => kindSuite.title == story.kind);
-      if (!kindSuite) {
-        kindSuite = new Suite(story.kind, rootSuite.ctx);
-        kindSuite.parent = rootSuite;
-        rootSuite.addSuite(kindSuite);
+      // typeof tests === "undefined" => rootSuite -> kindSuite -> storyTest -> [browsers.png]
+      // typeof tests === "function"  => rootSuite -> kindSuite -> storyTest -> browser -> [images.png]
+      // typeof tests === "object"    => rootSuite -> kindSuite -> storySuite -> test -> [browsers.png]
+      // typeof tests === "object"    => rootSuite -> kindSuite -> storySuite -> test -> browser -> [images.png]
+
+      if (!tests) {
+        const test = createCreeveyTest([browserName, story.name, story.kind], skipReason);
+        creeveyTests[test.id] = test;
+        kindSuite.addTest(createTest(story.name, storyTestFabric(captureElement), skipReason));
+        return;
       }
-      // TODO Maybe we need simplify tests tree
-      // rootSuite -> kindSuite -> storyTest -> [browsers.png]
-      // rootSuite -> kindSuite -> storyTest -> browser -> [images.png]
-      // rootSuite -> kindSuite -> storySuite -> test -> [browsers.png]
-      // rootSuite -> kindSuite -> storySuite -> test -> browser -> [images.png]
-      let storySuite = kindSuite.suites.find(storySuite => storySuite.title == story.name);
-      if (!storySuite) {
-        storySuite = new Suite(story.name, kindSuite.ctx);
-        storySuite.parent = kindSuite;
-        kindSuite.addSuite(storySuite);
-      }
+
+      const storySuite = findOrCreateSuite(story.name, kindSuite);
+
       // TODO params from storybook 3.x - 5.x
-      // TODO add tests with actions
       // TODO Check if test already exists
-      const storyTest = new Test(story.name, skipReason ? undefined : storyTestFabric(captureElement));
-      storyTest.pending = Boolean(skipReason);
-      // NOTE Can't define skip reason in mocha https://github.com/mochajs/mocha/issues/2026
-      storyTest.skipReason = skipReason;
+      // TODO tests as a function
 
-      storySuite.addTest(storyTest);
+      Object.keys(tests).forEach(testName => {
+        const test = createCreeveyTest([browserName, testName, story.name, story.kind], skipReason);
+        creeveyTests[test.id] = test;
+
+        //@ts-ignore
+        const testFn = eval(tests[testName]);
+
+        storySuite.addTest(createTest(testName, testFn, skipReason));
+      });
     });
+
+  return creeveyTests;
 }

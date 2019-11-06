@@ -1,5 +1,5 @@
-import http from "http";
-import { Context } from "mocha";
+import https from "https";
+import { Context, Test, Suite } from "mocha";
 import { Builder, By, until, WebDriver, Origin } from "selenium-webdriver";
 import { Config, BrowserConfig, SkipOptions, isDefined } from "./types";
 import { StoryContext } from "@storybook/addons";
@@ -14,7 +14,7 @@ try {
 
 function getRealIp(): Promise<string> {
   return new Promise((resolve, reject) =>
-    http.get("http://fake.dev.kontur/ip", res => {
+    https.get("https://fake.testkontur.ru/ip", res => {
       if (res.statusCode !== 200) {
         return reject(new Error(`Couldn't resolve real ip for \`localhost\`. Status code: ${res.statusCode}`));
       }
@@ -150,16 +150,28 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig) {
 }
 
 export async function switchStory(this: Context) {
-  // TODO add checks and good error messages
-  const test = this.currentTest!.title;
-  const story = this.currentTest!.parent!.title;
-  const kind = this.currentTest!.parent!.parent!.title;
+  let testOrSuite: Test | Suite | undefined = this.currentTest;
+
+  this.testScope.length = 0;
+  this.testScope.push(this.browserName);
+  while (testOrSuite && testOrSuite.title) {
+    this.testScope.push(testOrSuite.title);
+    testOrSuite = testOrSuite.parent;
+  }
+  // `kindSuite -> storySuite -> test`
+  // `kindSuite -> storyTest`
+  // TODO If story or kind is undefined should throw error
+  let [, test, story, kind] = this.testScope;
+
+  if (!kind) {
+    kind = story;
+    story = test;
+  }
 
   await resetMousePosition(this.browser);
   const storyContext = await selectStory(this.browser, kind, story);
 
-  this.testScope.length = 0;
-  this.testScope.push(kind, story, test, this.browserName);
+  this.testScope.reverse();
 
   return storyContext;
 }
