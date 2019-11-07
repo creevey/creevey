@@ -108,7 +108,7 @@
 - [ ] Skip tests inside sotry
 - [ ] Storybook integration
   - [ ] Write decorator that allow declare tests/actions for each story
-  - [ ] Simplify generated tests tree acording by stories/tests/images
+  - [x] Simplify generated tests tree acording by stories/tests/images
 - [ ] Bugs
   - [ ] Fix check/uncheck with skipped tests in UI
   - [ ] Firefox double click if clicks in different tests
