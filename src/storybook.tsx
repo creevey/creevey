@@ -90,7 +90,7 @@ export function withCreeveyOld(parameters: CreeveyStoryParams = {}) {
           id: storyId,
           name: story.name,
           kind: kind.kind,
-          parameters
+          parameters: { creevey: parameters }
         });
       });
     });
