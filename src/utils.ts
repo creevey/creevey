@@ -147,8 +147,12 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig) {
   if (viewport) {
     await resizeViewport(browser, viewport);
   }
-  await browser.get(`${realAddress}/iframe.html`);
-  await browser.wait(until.elementLocated(By.css("#root")), 10000);
+  try {
+    await browser.get(`${realAddress}/iframe.html`);
+    await browser.wait(until.elementLocated(By.css("#root")), 10000);
+  } catch (_) {
+    throw new Error(`Cann't load storybook root page by URL ${realAddress}/iframe.html`);
+  }
   await disableAnimations(browser);
 
   return browser;
