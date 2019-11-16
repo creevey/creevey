@@ -103,9 +103,9 @@
 ## First priority
 
 - [x] Better error message about open storybook page
-- [ ] Exit if worker got `UnhandledPromiseRejectionWarning`
+- [x] Exit if worker got `UnhandledPromiseRejectionWarning`
 - [ ] Serialize skip regexp
-- [ ] Skip tests inside sotry
+- [ ] Skip tests inside story
 - [ ] Storybook integration
   - [ ] Write decorator that allow declare tests/actions for each story
   - [x] Simplify generated tests tree acording by stories/tests/images
