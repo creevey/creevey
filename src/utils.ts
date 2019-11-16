@@ -1,4 +1,4 @@
-import http from "http";
+import https from "https";
 import { Context, Test, Suite } from "mocha";
 import { Builder, By, until, WebDriver, Origin } from "selenium-webdriver";
 import { Config, BrowserConfig, SkipOptions, isDefined } from "./types";
@@ -14,7 +14,7 @@ try {
 
 function getRealIp(): Promise<string> {
   return new Promise((resolve, reject) =>
-    http.get("http://fake.dev.kontur/ip", res => {
+    https.get("https://fake.testkontur.ru/ip", res => {
       if (res.statusCode !== 200) {
         return reject(new Error(`Couldn't resolve real ip for \`localhost\`. Status code: ${res.statusCode}`));
       }
