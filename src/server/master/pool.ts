@@ -33,6 +33,7 @@ export default class Pool extends EventEmitter {
     ).then(([data]) => {
       const message: WorkerMessage = JSON.parse(data);
       if (message.type == "ready") return message.payload.tests;
+      if (message.type == "error") throw message.payload.error;
     });
   }
 

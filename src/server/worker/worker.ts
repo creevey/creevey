@@ -40,11 +40,23 @@ export default async function worker(config: Config, options: Options & { browse
     // TODO Should we move into `process.on`?
     images = {};
     error = null;
+    isRunning = false;
   }
+
+  process.on("unhandledRejection", reason => {
+    if (process.send) {
+      error = reason instanceof Error ? reason.stack || reason.message : reason;
+      if (isRunning) {
+        console.log(`[${chalk.red("FAIL")}:${options.browser}:${process.pid}]`, chalk.cyan(testScope.join("/")), error);
+      }
+      process.send(JSON.stringify({ type: "error", payload: { status: "failed", images, error } }));
+    }
+  });
 
   let retries: number = 0;
   let images: Partial<{ [name: string]: Partial<Images> }> = {};
   let error: any = null;
+  let isRunning: boolean = false;
   const testScope: string[] = [];
   const mocha = new Mocha({
     timeout: 30000,
@@ -79,15 +91,8 @@ export default async function worker(config: Config, options: Options & { browse
   mocha.suite.beforeEach(switchStory);
   patchMochaInterface(mocha.suite);
 
-  process.on("unhandledRejection", reason => {
-    if (process.send) {
-      error = reason instanceof Error ? reason.stack || reason.message : reason;
-      console.log(`[${chalk.red("FAIL")}:${options.browser}:${process.pid}]`, chalk.cyan(testScope.join("/")), error);
-      process.send(JSON.stringify({ type: "error", payload: { status: "failed", images, error } }));
-    }
-  });
-
   process.on("message", message => {
+    isRunning = true;
     const test: { id: string; path: string[]; retries: number } = JSON.parse(message);
     retries = test.retries;
     const testPath = [...test.path]

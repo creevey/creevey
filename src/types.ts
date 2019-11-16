@@ -60,7 +60,7 @@ export type WorkerMessage =
     }
   | {
       type: "error";
-      payload: any;
+      payload: { status: "failed"; error: string };
     }
   | {
       type: "test";

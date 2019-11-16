@@ -102,7 +102,7 @@
 
 ## First priority
 
-- [ ] Better error message about open storybook page
+- [x] Better error message about open storybook page
 - [ ] Exit if worker got `UnhandledPromiseRejectionWarning`
 - [ ] Serialize skip regexp
 - [ ] Skip tests inside sotry
