@@ -12,6 +12,8 @@ try {
   /* ignore */
 }
 
+const LOCALHOST_REGEXP = /(localhost|127\.0\.0\.1)/;
+
 function getRealIp(): Promise<string> {
   return new Promise((resolve, reject) =>
     https.get("https://fake.testkontur.ru/ip", res => {
@@ -133,7 +135,10 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig) {
     viewport,
     ...capabilities
   } = browserConfig;
-  const realAddress = address.replace(/(localhost|127\.0\.0\.1)/, await getRealIp());
+  let realAddress = address;
+  if (LOCALHOST_REGEXP.test(address)) {
+    realAddress = address.replace(LOCALHOST_REGEXP, await getRealIp());
+  }
   const browser = await new Builder()
     .usingServer(gridUrl)
     .withCapabilities(capabilities)
