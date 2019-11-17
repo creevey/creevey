@@ -139,6 +139,8 @@
 
 ## Not in first time
 
+- [ ] Husky, lint-staged
+- [ ] Github Actions
 - [ ] Storybook integration
   - [ ] Support stories separators https://storybook.js.org/docs/basics/writing-stories/#story-hierarchy
   - [ ] Support stories name convention https://storybook.js.org/docs/formats/component-story-format/#storybook-export-vs-name-handling
