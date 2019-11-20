@@ -41,13 +41,17 @@ function normalizeBrowserConfig(name: string, config: Browser): BrowserConfig {
 }
 
 export function readConfig(configPath: string): Config | undefined {
-  let ext = path.extname(configPath);
-  if (ext == ".config") {
-    ext = Object.keys(extensions).find(key => fs.existsSync(`${configPath}${key}`)) || ext;
-  }
-  registerCompiler(extensions[ext]);
-
   if (!fs.existsSync(require.resolve(configPath))) return;
+
+  try {
+    require(configPath);
+  } catch (e) {
+    let ext = path.extname(configPath);
+    if (ext == ".config") {
+      ext = Object.keys(extensions).find(key => fs.existsSync(`${configPath}${key}`)) || ext;
+    }
+    registerCompiler(extensions[ext]);
+  }
 
   const configModule = require(configPath);
   const userConfig: Config = configModule && configModule.__esModule ? configModule.default : configModule;

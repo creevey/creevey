@@ -1,6 +1,8 @@
+import "jsdom-global/register";
 import chai from "chai";
 import chalk from "chalk";
 import Mocha, { Suite, Context, AsyncFunc } from "mocha";
+import { addHook } from "pirates";
 import { Config, Images, Options, StoriesRaw, BrowserConfig } from "../../types";
 import { getBrowser, switchStory } from "../../utils";
 import chaiImage from "../../chai-image";
@@ -18,6 +20,12 @@ function patchMochaInterface(suite: Suite) {
     context.it.skip = (_browsers: string[], title: string, fn?: AsyncFunc) => context.it(title, fn);
   });
 }
+
+// TODO Define other extensions
+addHook(() => "", {
+  exts: [".css", ".png"],
+  ignoreNodeModules: false
+});
 
 // FIXME browser options hotfix
 export default async function worker(config: Config, options: Options & { browser: string }) {

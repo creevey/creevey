@@ -107,8 +107,8 @@
 - [ ] Serialize skip regexp
 - [ ] Skip tests inside story
 - [ ] Storybook integration
-  - [ ] Write decorator that allow declare tests/actions for each story
   - [x] Simplify generated tests tree acording by stories/tests/images
+  - [ ] Note about support only Component Story Format (CSF)
 - [ ] Bugs
   - [ ] Fix check/uncheck with skipped tests in UI
   - [ ] Firefox double click if clicks in different tests
