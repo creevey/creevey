@@ -1,8 +1,9 @@
+import path from "path";
 import { PNG } from "pngjs";
-import { expect } from "chai";
+import chai, { expect } from "chai";
 import { Suite, Context, Test } from "mocha";
-import { By, WebDriver } from "selenium-webdriver";
-import { CreeveyStories, isDefined, Test as CreeveyTest } from "../../types";
+import selenium, { By, WebDriver } from "selenium-webdriver";
+import { CreeveyStories, isDefined, Test as CreeveyTest, CreeveyStoryParams } from "../../types";
 import { shouldSkip } from "../../utils";
 import { createHash } from "crypto";
 
@@ -171,7 +172,7 @@ export function convertStories(
   Object.values(stories)
     .filter(isDefined)
     .forEach(story => {
-      const { skip, captureElement, _seleniumTests: tests } = story.params || {};
+      const { skip, captureElement, __filename } = story.params || {};
       const skipReason = skip ? shouldSkip(story.name, browserName, skip) : false;
       const kindSuite = findOrCreateSuite(story.kind, rootSuite);
 
@@ -180,25 +181,29 @@ export function convertStories(
       // typeof tests === "object"    => rootSuite -> kindSuite -> storySuite -> test -> [browsers.png]
       // typeof tests === "object"    => rootSuite -> kindSuite -> storySuite -> test -> browser -> [images.png]
 
-      if (!tests) {
+      if (!__filename) {
         const test = createCreeveyTest([browserName, story.name, story.kind], skipReason);
         creeveyTests[test.id] = test;
         kindSuite.addTest(createTest(story.name, storyTestFabric(captureElement), skipReason));
         return;
       }
 
+      // TODO register css/less/scss/png/jpg/woff/ttf/etc require extensions
+
+      // NOTE Only Component Story Format (CSF) is support
+      const stories = require(path.join(process.cwd(), __filename));
+      if (!stories[story.name] || !stories[story.name].story)
+        throw new Error(
+          "Creevey support only `Component Story Format (CSF)` stories. For more details see https://storybook.js.org/docs/formats/component-story-format/"
+        );
+      const tests: CreeveyStoryParams["_seleniumTests"] = stories[story.name].story.parameters.creevey._seleniumTests;
+
       const storySuite = findOrCreateSuite(story.name, kindSuite);
 
-      // TODO params from storybook 3.x - 5.x
-      // TODO Check if test already exists
-      // TODO tests as a function
-
-      Object.keys(tests).forEach(testName => {
+      // @ts-ignore
+      Object.entries(tests(selenium, chai)).forEach(([testName, testFn]) => {
         const test = createCreeveyTest([browserName, testName, story.name, story.kind], skipReason);
         creeveyTests[test.id] = test;
-
-        //@ts-ignore
-        const testFn = eval(tests[testName]);
 
         storySuite.addTest(createTest(testName, testFn, skipReason));
       });

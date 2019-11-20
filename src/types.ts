@@ -1,6 +1,8 @@
 import { API as StorybookAPI } from "@storybook/api";
 import { Worker as ClusterWorker } from "cluster";
 import { Context } from "mocha";
+import Chai from "chai";
+import Selenium from "selenium-webdriver";
 
 export type StoriesRaw = StorybookAPI extends { setStories: (stories: infer SS) => void } ? SS : never;
 
@@ -77,7 +79,7 @@ export type TestStatus = "pending" | "running" | "failed" | "success";
 
 export interface TestResult {
   status: "failed" | "success";
-  // TODO
+  // TODO Remove checks `name == browser` in TestResultsView
   // images?: Partial<{ [name: string]: Images }> | Images;
   images?: Partial<{ [name: string]: Images }>;
   error?: string;
@@ -85,7 +87,7 @@ export interface TestResult {
 
 export interface Test {
   id: string;
-  // example: [browser, test, story, kind],
+  // NOTE example: [browser, test, story, kind],
   path: string[];
   skip: boolean | string;
   retries: number;
@@ -117,9 +119,13 @@ export type SkipOptions = string | SkipOption | SkipOption[];
 export interface CreeveyStoryParams {
   captureElement?: string;
   skip?: SkipOptions;
-  _seleniumTests?: {
+  _seleniumTests?: (
+    selenium: typeof Selenium,
+    chai: typeof Chai
+  ) => {
     [name: string]: (this: Context) => void;
   };
+  __filename?: string;
   // tests: {
   //   [name: string]: (creeveyAPI: CreeveyTestAPI) => void;
   // };
