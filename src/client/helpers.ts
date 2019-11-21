@@ -80,7 +80,8 @@ export function treeifyTests(testsById: { [id: string]: ApiTest | undefined }): 
       }
       return subSuite;
     }, rootSuite);
-    lastSuite.children[browser] = { ...test, checked: true, path: [...test.path].reverse() };
+    test.path.reverse();
+    lastSuite.children[browser] = { ...test, checked: true };
   });
 
   return rootSuite;

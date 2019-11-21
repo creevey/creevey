@@ -44,14 +44,14 @@ export default class Runner extends EventEmitter {
     if (!test) return;
     test.status = status;
     if (!result) {
-      this.sendUpdate({ testsById: { [id]: { status } } });
+      this.sendUpdate({ testsById: { [id]: { path: test.path, status } } });
       return;
     }
     if (!test.results) {
       test.results = [];
     }
     test.results.push(result);
-    this.sendUpdate({ testsById: { [id]: { status, results: [result] } } });
+    this.sendUpdate({ testsById: { [id]: { path: test.path, status, results: [result] } } });
   };
 
   private handlePoolStop = () => {
@@ -93,7 +93,10 @@ export default class Runner extends EventEmitter {
 
     this.sendUpdate({
       isRunning: true,
-      testsById: testsToStart.reduce((update, { id }) => ({ ...update, [id]: { status: "pending" } }), {})
+      testsById: testsToStart.reduce(
+        (update, { id }) => ({ ...update, [id]: { path: this.tests[id]!.path, status: "pending" } }),
+        {}
+      )
     });
 
     const testsByBrowser: Partial<TestsByBrowser> = testsToStart.reduce((tests: TestsByBrowser, test) => {
@@ -145,7 +148,7 @@ export default class Runner extends EventEmitter {
     await mkdirpAsync(path.join(this.screenDir, testPath));
     await copyFileAsync(srcImagePath, dstImagePath);
     test.approved[image] = retry;
-    this.sendUpdate({ testsById: { [id]: { approved: { [image]: retry } } } });
+    this.sendUpdate({ testsById: { [id]: { path: test.path, approved: { [image]: retry } } } });
   }
 
   private sendUpdate(data: CreeveyUpdate) {

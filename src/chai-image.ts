@@ -104,7 +104,7 @@ export default (
   onSaveImage: (imageName: string, imageNumber: number, type: keyof Images) => void = noop
 ) =>
   function chaiImage({ Assertion }: any, utils: Chai.ChaiUtils) {
-    utils.addMethod(Assertion.prototype, "matchImage", async function matchImage(imageName: string) {
+    utils.addMethod(Assertion.prototype, "matchImage", async function matchImage(imageName?: string) {
       //@ts-ignore on @types/chai@4.2.0 `utils.addMethod` contains broken typings
       const actualBase64: string = utils.flag(this, "object");
       const actual = Buffer.from(actualBase64, "base64");

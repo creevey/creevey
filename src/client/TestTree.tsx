@@ -124,7 +124,7 @@ export class TestTree extends React.Component<TestTreeProps, TestTreeState> {
     }
   }
 
-  handleOpenTestResults = () => isTest(this.props.tests) && this.context.onTestResultsOpen(this.props.tests.id);
+  handleOpenTestResults = () => isTest(this.props.tests) && this.context.onTestResultsOpen(this.props.tests.path);
   handleSubTreeOpen = () => this.setState(({ opened }) => ({ opened: !opened }));
   handleCheck = (_: React.ChangeEvent, checked: boolean) => {
     this.context.onTestToogle(this.props.tests.path, checked);

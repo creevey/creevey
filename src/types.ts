@@ -103,7 +103,7 @@ export interface CreeveyStatus {
 
 export interface CreeveyUpdate {
   isRunning?: boolean;
-  testsById?: Partial<{ [id: string]: Partial<Test> }>;
+  testsById?: Partial<{ [id: string]: Partial<Test> & { path: string[] } }>;
 }
 
 interface SkipOption {

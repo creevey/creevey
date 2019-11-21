@@ -15,18 +15,16 @@ declare global {
 }
 
 interface CreeveyAppState {
-  pathsById: Partial<{ [id: string]: string[] }>;
   tests: Suite | null;
   isRunning: boolean;
-  openedTestId: string | null;
+  openedTestPath: string[] | null;
 }
 
 export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
   state: CreeveyAppState = {
-    pathsById: {},
     tests: null,
     isRunning: false,
-    openedTestId: null
+    openedTestPath: null
   };
   private ws?: WebSocket;
   private seq: number = 0;
@@ -90,22 +88,17 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
     Object.values(creeveyData)
       .filter(isDefined)
       .forEach(test => (test.path = this.splitLastPathToken(test.path)));
-    const pathsById = Object.entries(creeveyData).reduce(
-      (obj, [id, test]) => (test ? { ...obj, [id]: [...test.path].reverse() } : obj),
-      {}
-    );
     this.setState({
-      tests: treeifyTests(creeveyData),
-      pathsById
+      tests: treeifyTests(creeveyData)
     });
   };
 
-  handleTestResultsClose = () => this.setState({ openedTestId: null });
-  handleTestResultsOpen = (id: string) => {
+  handleTestResultsClose = () => this.setState({ openedTestPath: null });
+  handleTestResultsOpen = (path: string[]) => {
     this.setState(state => {
       if (!this.state.tests) return state;
 
-      return { ...state, openedTestId: id };
+      return { ...state, openedTestPath: path };
     });
   };
 
@@ -123,13 +116,8 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
     Object.values(testsById)
       .filter(isDefined)
       .forEach(test => (test.path = this.splitLastPathToken(test.path)));
-    const pathsById = Object.entries(testsById).reduce(
-      (obj, [id, test]) => (test ? { ...obj, [id]: [...test.path].reverse() } : obj),
-      {}
-    );
     this.setState({
       tests: treeifyTests(testsById),
-      pathsById,
       isRunning
     });
   };
@@ -143,10 +131,9 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
         if (!state.tests) return state;
         return {
           ...state,
-          tests: Object.entries(testsById).reduce((tests, [id, test]) => {
-            const path = state.pathsById[id];
-            if (!test || !path) return tests;
-            return updateTestStatus(tests, path, test);
+          tests: Object.values(testsById).reduce((tests, test) => {
+            if (!test) return tests;
+            return updateTestStatus(tests, this.splitLastPathToken(test.path).reverse(), test);
           }, state.tests)
         };
       });
@@ -154,13 +141,9 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
   };
 
   private splitLastPathToken(path: string[]) {
-    return [
-      ...path.slice(0, -1),
-      ...path
-        .slice(-1)[0]
-        .split("/")
-        .reverse()
-    ];
+    // NOTE: Do some dirty mutable magic
+    // ['chrome', 'idle', 'playground', 'Button/Error'] => ['chrome', 'idle', 'playground', 'Error', 'Button']
+    return path.splice(path.length - 1, 1, ...path[path.length - 1].split("/").reverse()), path;
   }
 
   private connect() {
@@ -173,11 +156,9 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
   }
 
   private getOpenedTest(): Test | undefined {
-    const { tests, pathsById, openedTestId } = this.state;
-    if (!tests || !openedTestId) return;
-    const path = pathsById[openedTestId];
-    if (!path) return;
-    const testOrSuite = getTestsByPath(tests, path);
+    const { tests, openedTestPath } = this.state;
+    if (!tests || !openedTestPath) return;
+    const testOrSuite = getTestsByPath(tests, openedTestPath);
     if (isTest(testOrSuite)) return testOrSuite;
   }
 
