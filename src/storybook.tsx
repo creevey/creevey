@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import { NativeEventSource, EventSourcePolyfill } from "event-source-polyfill";
 import addons, { makeDecorator, StoryContext, StoryGetter } from "@storybook/addons";
 import { getStorybook, addParameters } from "@storybook/react";
-import { StoriesRaw, CreeveyStoryParams, StoryInput, CreeveyStory, CreeveyStories } from "./types";
+import { StoriesRaw, CreeveyStoryParams, StoryInput, CreeveyStory, CreeveyStories, SkipOption } from "./types";
 
 // NOTE If you don't use babel-polyfill or any other polyfills that add EventSource for IE11
 // You don't get hot reload in IE11. So put polyfill for that to better UX
@@ -114,10 +114,28 @@ function serializeStory(story: StoryInput | StoryContext): CreeveyStory {
   } = story;
 
   const creevey: CreeveyStoryParams = parameters.creevey;
-  const { __filename, _seleniumTests, ...params } = creevey;
-
-  // TODO serialize param `skip` regexp
+  const { __filename, _seleniumTests, skip, ...params } = creevey;
 
   // NOTE Filter stories filename if no tests
-  return { id, name, kind, params: { ...params, ...(_seleniumTests ? { __filename } : {}) } };
+  return {
+    id,
+    name,
+    kind,
+    params: {
+      ...params,
+      ...(_seleniumTests ? { __filename } : {}),
+      ...(!skip || typeof skip == "string"
+        ? { skip }
+        : { skip: Array.isArray(skip) ? skip.map(serializeSkip) : serializeSkip(skip) })
+    }
+  };
+}
+
+function serializeSkip(skip: SkipOption): SkipOption {
+  let { reason, in: browsers, stories } = skip;
+
+  if (browsers instanceof RegExp) browsers = browsers.toString();
+  if (stories instanceof RegExp) stories = stories.toString();
+
+  return { reason, in: browsers, stories };
 }

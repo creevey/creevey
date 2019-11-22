@@ -106,7 +106,7 @@ export interface CreeveyUpdate {
   testsById?: Partial<{ [id: string]: Partial<Test> & { path: string[] } }>;
 }
 
-interface SkipOption {
+export interface SkipOption {
   reason?: string;
   in?: string | string[] | RegExp;
   stories?: string | string[] | RegExp;

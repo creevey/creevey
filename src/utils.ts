@@ -194,15 +194,23 @@ export function shouldSkip(story: string, browser: string, skipOptions: SkipOpti
   }
   const { in: browsers, stories, reason = true } = skipOptions;
   const skipByBrowser =
-    (typeof browsers == "string" && browsers == browser) ||
+    (typeof browsers == "string" && (deserializeRegExp(browsers) || new RegExp(`^${browsers}$`)).test(browser)) ||
     (Array.isArray(browsers) && browsers.includes(browser)) ||
-    (browsers instanceof RegExp && browsers.test(browser)) ||
     !isDefined(browsers);
   const skipByStory =
-    (typeof stories == "string" && stories == story) ||
+    (typeof stories == "string" && (deserializeRegExp(stories) || new RegExp(`^${stories}$`)).test(story)) ||
     (Array.isArray(stories) && stories.includes(story)) ||
-    (stories instanceof RegExp && stories.test(story)) ||
     !isDefined(stories);
 
   return skipByBrowser && skipByStory && reason;
+}
+
+function deserializeRegExp(regex: string): RegExp | null {
+  const fragments = regex.match(/\/(.*?)\/([a-z]*)?$/i);
+
+  if (!fragments) return null;
+
+  const [, pattern, flags] = fragments;
+
+  return new RegExp(pattern, flags || "");
 }

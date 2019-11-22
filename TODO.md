@@ -104,7 +104,7 @@
 
 - [x] Better error message about open storybook page
 - [x] Exit if worker got `UnhandledPromiseRejectionWarning`
-- [ ] Serialize skip regexp
+- [x] Serialize skip regexp
 - [ ] Skip tests inside story
 - [ ] Storybook integration
   - [x] Simplify generated tests tree acording by stories/tests/images
