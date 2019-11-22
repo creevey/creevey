@@ -1,8 +1,8 @@
-import { API as StorybookAPI } from "@storybook/api";
-import { Worker as ClusterWorker } from "cluster";
-import { Context } from "mocha";
-import Chai from "chai";
-import Selenium from "selenium-webdriver";
+import { API as StorybookAPI } from '@storybook/api';
+import { Worker as ClusterWorker } from 'cluster';
+import { Context } from 'mocha';
+import Chai from 'chai';
+import Selenium from 'selenium-webdriver';
 
 export type StoriesRaw = StorybookAPI extends { setStories: (stories: infer SS) => void } ? SS : never;
 
@@ -38,7 +38,7 @@ export interface Config {
   };
 }
 
-export type CreeveyConfig = Config | Partial<Omit<Config, "gridUrl">>;
+export type CreeveyConfig = Config | Partial<Omit<Config, 'gridUrl'>>;
 
 export interface Options {
   config: string;
@@ -57,15 +57,15 @@ export interface Worker extends ClusterWorker {
 
 export type WorkerMessage =
   | {
-      type: "ready";
+      type: 'ready';
       payload: { tests: Partial<{ [id: string]: Test }> };
     }
   | {
-      type: "error";
-      payload: { status: "failed"; error: string };
+      type: 'error';
+      payload: { status: 'failed'; error: string };
     }
   | {
-      type: "test";
+      type: 'test';
       payload: TestResult;
     };
 
@@ -75,10 +75,10 @@ export interface Images {
   diff?: string;
 }
 
-export type TestStatus = "pending" | "running" | "failed" | "success";
+export type TestStatus = 'pending' | 'running' | 'failed' | 'success';
 
 export interface TestResult {
-  status: "failed" | "success";
+  status: 'failed' | 'success';
   // TODO Remove checks `name == browser` in TestResultsView
   // images?: Partial<{ [name: string]: Images }> | Images;
   images?: Partial<{ [name: string]: Images }>;
@@ -122,7 +122,7 @@ export interface CreeveyStoryParams {
   skip?: SkipOptions;
   _seleniumTests?: (
     selenium: typeof Selenium,
-    chai: typeof Chai
+    chai: typeof Chai,
   ) => {
     [name: string]: (this: Context) => void;
   };
@@ -149,12 +149,12 @@ export interface ApprovePayload {
 }
 
 export type Request =
-  | { type: "status" }
-  | { type: "start"; payload: string[] }
-  | { type: "stop" }
-  | { type: "approve"; payload: ApprovePayload };
+  | { type: 'status' }
+  | { type: 'start'; payload: string[] }
+  | { type: 'stop' }
+  | { type: 'approve'; payload: ApprovePayload };
 
-export type Response = { type: "status"; payload: CreeveyStatus } | { type: "update"; payload: CreeveyUpdate };
+export type Response = { type: 'status'; payload: CreeveyStatus } | { type: 'update'; payload: CreeveyUpdate };
 
 export interface CreeveyTest extends Test {
   checked: boolean;
@@ -170,7 +170,7 @@ export interface CreeveySuite {
 }
 
 export function isTest<T1, T2 extends Test>(x: T1 | T2): x is T2 {
-  return "id" in x && "path" in x && "retries" in x && Array.isArray(x.path) && typeof x.id == "string";
+  return 'id' in x && 'path' in x && 'retries' in x && Array.isArray(x.path) && typeof x.id == 'string';
 }
 
 export function isDefined<T>(value: T | null | undefined): value is T {

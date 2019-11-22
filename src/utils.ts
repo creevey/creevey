@@ -1,13 +1,13 @@
-import https from "https";
-import { Context, Test, Suite } from "mocha";
-import { Builder, By, until, WebDriver, Origin } from "selenium-webdriver";
-import { Config, BrowserConfig, SkipOptions, isDefined, CreeveyStory } from "./types";
-import { StoryContext } from "@storybook/addons";
+import https from 'https';
+import { Context, Test, Suite } from 'mocha';
+import { Builder, By, until, WebDriver, Origin } from 'selenium-webdriver';
+import { Config, BrowserConfig, SkipOptions, isDefined, CreeveyStory } from './types';
+import { StoryContext } from '@storybook/addons';
 
 // Need to support storybook 3.x
 let toId: Function | null = null;
 try {
-  ({ toId } = require("@storybook/router"));
+  ({ toId } = require('@storybook/router'));
 } catch (_) {
   /* ignore */
 }
@@ -16,22 +16,22 @@ const LOCALHOST_REGEXP = /(localhost|127\.0\.0\.1)/;
 
 function getRealIp(): Promise<string> {
   return new Promise((resolve, reject) =>
-    https.get("https://fake.testkontur.ru/ip", res => {
+    https.get('https://fake.testkontur.ru/ip', res => {
       if (res.statusCode !== 200) {
         return reject(new Error(`Couldn't resolve real ip for \`localhost\`. Status code: ${res.statusCode}`));
       }
 
-      let data = "";
+      let data = '';
 
-      res.setEncoding("utf8");
-      res.on("data", chunk => (data += chunk));
-      res.on("end", () => resolve(data));
-    })
+      res.setEncoding('utf8');
+      res.on('data', chunk => (data += chunk));
+      res.on('end', () => resolve(data));
+    }),
   );
 }
 
 async function resetMousePosition(browser: WebDriver) {
-  const isChrome = (await browser.getCapabilities()).get("browserName") == "chrome";
+  const isChrome = (await browser.getCapabilities()).get('browserName') == 'chrome';
   const { top, left, width, height } = await browser.executeScript(function() {
     // NOTE On storybook >= 4.x already reset scroll
     window.scrollTo(0, 0);
@@ -41,7 +41,7 @@ async function resetMousePosition(browser: WebDriver) {
       top: bodyRect.top,
       left: bodyRect.left,
       width: bodyRect.width,
-      height: bodyRect.height
+      height: bodyRect.height,
     };
   });
 
@@ -50,9 +50,9 @@ async function resetMousePosition(browser: WebDriver) {
     await browser
       .actions({ bridge: true })
       .move({
-        origin: browser.findElement(By.css("body")),
+        origin: browser.findElement(By.css('body')),
         x: Math.ceil((-1 * width) / 2) - left,
-        y: Math.ceil((-1 * height) / 2) - top
+        y: Math.ceil((-1 * height) / 2) - top,
       })
       .perform();
   } else {
@@ -73,7 +73,7 @@ async function resizeViewport(browser: WebDriver, viewport: { width: number; hei
   const { innerWidth, innerHeight } = await browser.executeScript(function() {
     return {
       innerWidth: window.innerWidth,
-      innerHeight: window.innerHeight
+      innerHeight: window.innerHeight,
     };
   });
   const dWidth = windowRect.width - innerWidth;
@@ -83,7 +83,7 @@ async function resizeViewport(browser: WebDriver, viewport: { width: number; hei
     .window()
     .setRect({
       width: viewport.width + dWidth,
-      height: viewport.height + dHeight
+      height: viewport.height + dHeight,
     });
 }
 
@@ -97,7 +97,7 @@ async function selectStory(browser: WebDriver, kind: string, story: string) {
     // NOTE: `toId` don't exists in storybook 3.x
     toId ? toId(kind, story) : `${kind}--${story}`.toLowerCase(),
     kind,
-    story
+    story,
   );
   return storyContext;
 }
@@ -118,9 +118,9 @@ function disableAnimations(browser: WebDriver) {
 `;
   //@ts-ignore
   return browser.executeScript(function(stylesheet) {
-    var style = document.createElement("style");
+    var style = document.createElement('style');
     var textnode = document.createTextNode(stylesheet);
-    style.setAttribute("type", "text/css");
+    style.setAttribute('type', 'text/css');
     style.appendChild(textnode);
     document.head.appendChild(style);
   }, disableAnimationsStyles);
@@ -149,7 +149,7 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig) {
   }
   try {
     await browser.get(`${realAddress}/iframe.html`);
-    await browser.wait(until.elementLocated(By.css("#root")), 10000);
+    await browser.wait(until.elementLocated(By.css('#root')), 10000);
   } catch (_) {
     throw new Error(`Cann't load storybook root page by URL ${realAddress}/iframe.html`);
   }
@@ -186,7 +186,7 @@ export async function switchStory(this: Context) {
 }
 
 export function shouldSkip(story: CreeveyStory, browser: string, skipOptions: SkipOptions): string | boolean {
-  if (typeof skipOptions == "string") {
+  if (typeof skipOptions == 'string') {
     return skipOptions;
   }
   if (Array.isArray(skipOptions)) {
@@ -202,7 +202,7 @@ export function shouldSkip(story: CreeveyStory, browser: string, skipOptions: Sk
 
 function matchBy(pattern: string | string[] | RegExp | undefined, value: string): boolean {
   return (
-    (typeof pattern == "string" && (deserializeRegExp(pattern) || new RegExp(`^${pattern}$`)).test(value)) ||
+    (typeof pattern == 'string' && (deserializeRegExp(pattern) || new RegExp(`^${pattern}$`)).test(value)) ||
     (Array.isArray(pattern) && pattern.includes(value)) ||
     !isDefined(pattern)
   );
@@ -215,5 +215,5 @@ function deserializeRegExp(regex: string): RegExp | null {
 
   const [, pattern, flags] = fragments;
 
-  return new RegExp(pattern, flags || "");
+  return new RegExp(pattern, flags || '');
 }

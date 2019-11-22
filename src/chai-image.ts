@@ -1,11 +1,11 @@
-import { promisify } from "util";
-import fs, { Stats } from "fs";
-import path from "path";
-import { PNG } from "pngjs";
-import pixelmatch from "pixelmatch";
-import mkdirp from "mkdirp";
+import { promisify } from 'util';
+import fs, { Stats } from 'fs';
+import path from 'path';
+import { PNG } from 'pngjs';
+import pixelmatch from 'pixelmatch';
+import mkdirp from 'mkdirp';
 
-import { Config, Images } from "./types";
+import { Config, Images } from './types';
 
 const statAsync = promisify(fs.stat);
 const readdirAsync = promisify(fs.readdir);
@@ -19,7 +19,7 @@ async function getStat(filePath: string): Promise<Stats | null> {
   try {
     return await statAsync(filePath);
   } catch (error) {
-    if (error.code === "ENOENT") {
+    if (error.code === 'ENOENT') {
       return null;
     }
     throw error;
@@ -31,7 +31,7 @@ async function getLastImageNumber(imageDir: string, imageName: string): Promise<
 
   try {
     return (await readdirAsync(imageDir))
-      .map(filename => filename.replace(actualImagesRegexp, "$1"))
+      .map(filename => filename.replace(actualImagesRegexp, '$1'))
       .map(Number)
       .filter(x => !isNaN(x))
       .sort((a, b) => b - a)[0];
@@ -86,7 +86,7 @@ function compareImages(expect: Buffer, actual: Buffer, threshold: number): { isE
 
   return {
     isEqual: !hasDiffPixels(diffImage.data),
-    diff: PNG.sync.write(diffImage)
+    diff: PNG.sync.write(diffImage),
   };
 }
 
@@ -101,13 +101,13 @@ function hasDiffPixels(diff: Buffer) {
 export default (
   config: Config,
   context: string[],
-  onSaveImage: (imageName: string, imageNumber: number, type: keyof Images) => void = noop
+  onSaveImage: (imageName: string, imageNumber: number, type: keyof Images) => void = noop,
 ) =>
   function chaiImage({ Assertion }: any, utils: Chai.ChaiUtils) {
-    utils.addMethod(Assertion.prototype, "matchImage", async function matchImage(imageName?: string) {
+    utils.addMethod(Assertion.prototype, 'matchImage', async function matchImage(imageName?: string) {
       //@ts-ignore on @types/chai@4.2.0 `utils.addMethod` contains broken typings
-      const actualBase64: string = utils.flag(this, "object");
-      const actual = Buffer.from(actualBase64, "base64");
+      const actualBase64: string = utils.flag(this, 'object');
+      const actual = Buffer.from(actualBase64, 'base64');
 
       // context => [kind, story, test, browser]
       // rootSuite -> kindSuite -> storyTest -> [browsers.png]
@@ -119,7 +119,7 @@ export default (
 
       await mkdirpAsync(reportImageDir);
       await writeFileAsync(path.join(reportImageDir, `${imageName}-actual-${imageNumber}.png`), actual);
-      onSaveImage(imageName, imageNumber, "actual");
+      onSaveImage(imageName, imageNumber, 'actual');
 
       const expectImageDir = path.join(config.screenDir, ...context);
       const expectImageStat = await getStat(path.join(expectImageDir, `${imageName}.png`));
@@ -143,16 +143,16 @@ export default (
       }
 
       await writeFileAsync(path.join(reportImageDir, `${imageName}-expect-${imageNumber}.png`), expect);
-      onSaveImage(imageName, imageNumber, "expect");
+      onSaveImage(imageName, imageNumber, 'expect');
       await writeFileAsync(path.join(reportImageDir, `${imageName}-diff-${imageNumber}.png`), diff);
-      onSaveImage(imageName, imageNumber, "diff");
+      onSaveImage(imageName, imageNumber, 'diff');
 
       // NOTE В случае, если имеющие одинаковый размер картинки не будут отличаться по содержимому, то код можно упростить
-      throw new Error(`Expected image '${imageName}' to match ${equalBySize ? "but was equal by size" : ""}`);
+      throw new Error(`Expected image '${imageName}' to match ${equalBySize ? 'but was equal by size' : ''}`);
     });
 
-    utils.addMethod(Assertion.prototype, "matchImages", async function matchImages() {
+    utils.addMethod(Assertion.prototype, 'matchImages', async function matchImages() {
       // images object
-      throw new Error("Not Implemented");
+      throw new Error('Not Implemented');
     });
   };

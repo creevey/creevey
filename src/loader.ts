@@ -1,6 +1,6 @@
-import path from "path";
-import { readdir } from "fs";
-import { promisify } from "util";
+import path from 'path';
+import { readdir } from 'fs';
+import { promisify } from 'util';
 
 const readdirAsync = promisify(readdir);
 

@@ -1,9 +1,9 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import { NativeEventSource, EventSourcePolyfill } from "event-source-polyfill";
-import addons, { makeDecorator, StoryContext, StoryGetter } from "@storybook/addons";
-import { getStorybook, addParameters } from "@storybook/react";
-import { StoriesRaw, CreeveyStoryParams, StoryInput, CreeveyStory, CreeveyStories, SkipOption } from "./types";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { NativeEventSource, EventSourcePolyfill } from 'event-source-polyfill';
+import addons, { makeDecorator, StoryContext, StoryGetter } from '@storybook/addons';
+import { getStorybook, addParameters } from '@storybook/react';
+import { StoriesRaw, CreeveyStoryParams, StoryInput, CreeveyStory, CreeveyStories, SkipOption } from './types';
 
 // NOTE If you don't use babel-polyfill or any other polyfills that add EventSource for IE11
 // You don't get hot reload in IE11. So put polyfill for that to better UX
@@ -34,15 +34,15 @@ export function withCreevey(parameters: CreeveyStoryParams = {}) {
   function selectStory(storyId: string, kind: string, name: string, callback: StoryDidMountCallback) {
     storyDidMountCallback = callback;
     // NOTE Hack to trigger force re-render same story
-    addons.getChannel().emit("setCurrentStory", { storyId: true, name, kind });
-    setTimeout(() => addons.getChannel().emit("setCurrentStory", { storyId, name, kind }), 100);
+    addons.getChannel().emit('setCurrentStory', { storyId: true, name, kind });
+    setTimeout(() => addons.getChannel().emit('setCurrentStory', { storyId, name, kind }), 100);
   }
   let storyDidMountCallback: StoryDidMountCallback = () => {};
   let stories: CreeveyStories = {};
 
   addParameters({ creevey: parameters });
 
-  addons.getChannel().once("setStories", (data: { stories: StoriesRaw }) => {
+  addons.getChannel().once('setStories', (data: { stories: StoriesRaw }) => {
     Object.entries(data.stories).forEach(([storyId, story]) => {
       stories[storyId] = serializeStory(story);
     });
@@ -53,8 +53,8 @@ export function withCreevey(parameters: CreeveyStoryParams = {}) {
   window.__CREEVEY_SELECT_STORY__ = selectStory;
 
   return makeDecorator({
-    name: "withCreevey",
-    parameterName: "creevey",
+    name: 'withCreevey',
+    parameterName: 'creevey',
     // TODO what data exists in settings argument?
     wrapper(getStory, context, _settings) {
       return (
@@ -62,7 +62,7 @@ export function withCreevey(parameters: CreeveyStoryParams = {}) {
           {getStory(context)}
         </CreeveyStoryWrapper>
       );
-    }
+    },
   });
 }
 
@@ -77,7 +77,7 @@ export function withCreeveyOld(parameters: CreeveyStoryParams = {}) {
     }
   }
   let storyRenders: { [id: string]: Function } = {};
-  const root = document.getElementById("root") as HTMLElement;
+  const root = document.getElementById('root') as HTMLElement;
 
   // @ts-ignore
   window.__CREEVEY_GET_STORIES__ = callback => {
@@ -90,7 +90,7 @@ export function withCreeveyOld(parameters: CreeveyStoryParams = {}) {
           id: storyId,
           name: story.name,
           kind: kind.kind,
-          parameters: { creevey: parameters }
+          parameters: { creevey: parameters },
         });
       });
     });
@@ -110,7 +110,7 @@ function serializeStory(story: StoryInput | StoryContext): CreeveyStory {
     kind,
     parameters,
     // @ts-ignore prop hooks exists in runtime
-    hooks
+    hooks,
   } = story;
 
   const creevey: CreeveyStoryParams = parameters.creevey;
@@ -124,10 +124,10 @@ function serializeStory(story: StoryInput | StoryContext): CreeveyStory {
     params: {
       ...params,
       ...(_seleniumTests ? { __filename } : {}),
-      ...(!skip || typeof skip == "string"
+      ...(!skip || typeof skip == 'string'
         ? { skip }
-        : { skip: Array.isArray(skip) ? skip.map(serializeSkip) : serializeSkip(skip) })
-    }
+        : { skip: Array.isArray(skip) ? skip.map(serializeSkip) : serializeSkip(skip) }),
+    },
   };
 }
 

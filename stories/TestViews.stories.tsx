@@ -1,16 +1,16 @@
-import React, { FunctionComponent } from "react";
-import { css } from "@emotion/core";
+import React, { FunctionComponent } from 'react';
+import { css } from '@emotion/core';
 
 export default {
-  title: "TestViews",
+  title: 'TestViews',
   parameters: {
     creevey: {
       captureElement: '[data-tid="CaptureElement"]',
       skip: {
-        stories: "Component Chunk"
-      }
-    }
-  }
+        stories: 'Component Chunk',
+      },
+    },
+  },
 };
 
 const CHUNK_SIZE = 250;

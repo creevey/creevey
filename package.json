@@ -133,7 +133,7 @@
   },
   "lint-staged": {
     "**/*.ts?(x)": [
-      "yarn fix",
+      "prettier --write",
       "git add"
     ]
   }

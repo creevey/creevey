@@ -1,22 +1,22 @@
-import React from "react";
-import Chai from "chai";
-import Mocha from "mocha";
-import Selenium from "selenium-webdriver";
+import React from 'react';
+import Chai from 'chai';
+import Mocha from 'mocha';
+import Selenium from 'selenium-webdriver';
 
-import { BlendView, SideBySideView, SlideView, SwapView } from "../src/client/CreeveyAppView/ImagesView";
+import { BlendView, SideBySideView, SlideView, SwapView } from '../src/client/CreeveyAppView/ImagesView';
 
-import octocatExpect from "./fixtures/octocat-expect.png";
-import octocatDiff from "./fixtures/octocat-diff.png";
-import octocatActual from "./fixtures/octocat-actual.png";
+import octocatExpect from './fixtures/octocat-expect.png';
+import octocatDiff from './fixtures/octocat-diff.png';
+import octocatActual from './fixtures/octocat-actual.png';
 
 export default {
-  title: "ImagesViews",
+  title: 'ImagesViews',
   parameters: {
     creevey: {
-      skip: { in: ["firefox", "ie11"], reason: "Only Chrome is supporter" },
-      __filename
-    }
-  }
+      skip: { in: ['firefox', 'ie11'], reason: 'Only Chrome is supporter' },
+      __filename,
+    },
+  },
 };
 
 export const Blend = () => <BlendView expect={octocatExpect} diff={octocatDiff} actual={octocatActual} />;
@@ -30,11 +30,11 @@ Slide.story = {
       _seleniumTests({ By }: typeof Selenium, { expect }: typeof Chai) {
         return {
           async idle(this: Mocha.Context) {
-            const element = await this.browser.findElement(By.css("#root"));
+            const element = await this.browser.findElement(By.css('#root'));
             await expect(await element.takeScreenshot()).to.matchImage();
           },
           async click(this: Mocha.Context) {
-            const element = await this.browser.findElement(By.css("#root"));
+            const element = await this.browser.findElement(By.css('#root'));
 
             await this.browser
               .actions({ bridge: true })
@@ -42,9 +42,9 @@ Slide.story = {
               .perform();
 
             await expect(await element.takeScreenshot()).to.matchImage();
-          }
+          },
         };
-      }
-    }
-  }
+      },
+    },
+  },
 };
