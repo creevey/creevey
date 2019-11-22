@@ -18,6 +18,7 @@
     "clean": "rimraf lib",
     "lint": "npm-run-all --continue-on-error --parallel lint:*",
     "lint:tsc": "tsc --noEmit",
+    "lint:prettier": "prettier --check ./**/*{.ts,.tsx}",
     "test": "npm-run-all --parallel test:*",
     "test:unit": "mocha --opts mocha.opts",
     "test:ui": "node --require ./scripts/babel-register -- src/cli",
@@ -25,6 +26,8 @@
     "start:client": "webpack-dev-server",
     "start:storybook": "start-storybook --ci -p 6006",
     "start:creevey": "wait-on -t 30000 http-get://localhost:6006/ && node --require ./scripts/babel-register -- src/cli --ui",
+    "fix": "npm-run-all fix:*",
+    "fix:prettier": "prettier --write ./**/*{.ts,.tsx}",
     "prebuild": "yarn clean && mkdir lib",
     "build": "npm-run-all --continue-on-error --parallel build:*",
     "build:types": "tsc --emitDeclarationOnly -p scripts/tsconfig.prod.json",
@@ -104,7 +107,9 @@
     "git-cz": "^3.3.0",
     "html-webpack-plugin": "^3.2.0",
     "husky": "^3.0.9",
+    "lint-staged": "^9.4.3",
     "npm-run-all": "^4.1.5",
+    "prettier": "^1.19.1",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "rimraf": "^3.0.0",
@@ -120,5 +125,16 @@
     "commitizen": {
       "path": "cz-conventional-changelog"
     }
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "**/*.ts?(x)": [
+      "yarn fix",
+      "git add"
+    ]
   }
 }
