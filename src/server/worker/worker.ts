@@ -70,6 +70,7 @@ export default async function worker(config: Config, options: Options & { browse
     timeout: 30000,
     reporter: process.env.TEAMCITY_VERSION ? TeamcityReporter : options.reporter || CreeveyReporter,
     reporterOptions: {
+      reportDir: config.reportDir,
       topLevelSuite: options.browser,
       willRetry: () => retries < config.maxRetries,
       images: () => images

@@ -29,7 +29,8 @@ export class TeamcityReporter extends reporters.Base {
     super(runner);
 
     const topLevelSuite = this.escape(options.reporterOptions.topLevelSuite);
-    const { willRetry, images } = options.reporterOptions as {
+    const { reportDir, willRetry, images } = options.reporterOptions as {
+      reportDir: string;
       willRetry: () => boolean;
       images: () => Partial<{
         [name: string]: Partial<Images>;
@@ -54,7 +55,7 @@ export class TeamcityReporter extends reporters.Base {
           .forEach(fileName =>
             // TODO output by report directory path
             console.log(
-              `##teamcity[testMetadata testName='${this.escape(test.title)}' type='image' value='report.zip!/${test
+              `##teamcity[testMetadata testName='${this.escape(test.title)}' type='image' value='${reportDir}/${test
                 .titlePath()
                 .map(this.escape)
                 .join("/")}/${name == topLevelSuite ? fileName : `${topLevelSuite}/${fileName}`}' flowId='${
