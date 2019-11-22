@@ -173,7 +173,7 @@ export function convertStories(
     .filter(isDefined)
     .forEach(story => {
       const { skip, captureElement, __filename } = story.params || {};
-      const skipReason = skip ? shouldSkip(story.name, browserName, skip) : false;
+      const skipReason = skip ? shouldSkip(story, browserName, skip) : false;
       const kindSuite = findOrCreateSuite(story.kind, rootSuite);
 
       // typeof tests === "undefined" => rootSuite -> kindSuite -> storyTest -> [browsers.png]

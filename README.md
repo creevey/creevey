@@ -114,10 +114,14 @@ NOTE: Parameters for story will be merged with parameters from higher levels
   - `skip: { in: 'ie11' }`
   - `skip: { in: ['ie11', 'chrome'] }`
   - `skip: { in: /^fire.*/ }`
+- Skip all stories in specific kinds:
+  - `skip: { kinds: 'Button' }`
+  - `skip: { kinds: ['Button', 'Input'] }`
+  - `skip: { kinds: /.*Modal$/ }`
 - Skip specific stories for all browsers:
   - `skip: { stories: 'simple' }`
   - `skip: { stories: ['simple', 'special'] }`
-  - `skip: { stories: /.*Button$/ }`
+  - `skip: { stories: /.*large$/ }`
 - Multiple skip options: `skip: [{ /* ... */ }]`
 
 ## FAQ

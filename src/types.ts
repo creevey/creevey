@@ -109,6 +109,7 @@ export interface CreeveyUpdate {
 export interface SkipOption {
   reason?: string;
   in?: string | string[] | RegExp;
+  kinds?: string | string[] | RegExp;
   stories?: string | string[] | RegExp;
   // TODO Implement
   // tests?: string | string[] | RegExp;

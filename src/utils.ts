@@ -1,7 +1,7 @@
 import https from "https";
 import { Context, Test, Suite } from "mocha";
 import { Builder, By, until, WebDriver, Origin } from "selenium-webdriver";
-import { Config, BrowserConfig, SkipOptions, isDefined } from "./types";
+import { Config, BrowserConfig, SkipOptions, isDefined, CreeveyStory } from "./types";
 import { StoryContext } from "@storybook/addons";
 
 // Need to support storybook 3.x
@@ -185,24 +185,27 @@ export async function switchStory(this: Context) {
   return storyContext;
 }
 
-export function shouldSkip(story: string, browser: string, skipOptions: SkipOptions): string | boolean {
+export function shouldSkip(story: CreeveyStory, browser: string, skipOptions: SkipOptions): string | boolean {
   if (typeof skipOptions == "string") {
     return skipOptions;
   }
   if (Array.isArray(skipOptions)) {
-    return skipOptions.map(skipOption => shouldSkip(story, browser, skipOption)).find(isDefined) || false;
+    return skipOptions.map(skipOption => shouldSkip(story, browser, skipOption)).find(Boolean) || false;
   }
-  const { in: browsers, stories, reason = true } = skipOptions;
-  const skipByBrowser =
-    (typeof browsers == "string" && (deserializeRegExp(browsers) || new RegExp(`^${browsers}$`)).test(browser)) ||
-    (Array.isArray(browsers) && browsers.includes(browser)) ||
-    !isDefined(browsers);
-  const skipByStory =
-    (typeof stories == "string" && (deserializeRegExp(stories) || new RegExp(`^${stories}$`)).test(story)) ||
-    (Array.isArray(stories) && stories.includes(story)) ||
-    !isDefined(stories);
+  const { in: browsers, stories, kinds, reason = true } = skipOptions;
+  const skipByBrowser = matchBy(browsers, browser);
+  const skipByKind = matchBy(kinds, story.kind);
+  const skipByStory = matchBy(stories, story.name);
 
-  return skipByBrowser && skipByStory && reason;
+  return skipByBrowser && skipByKind && skipByStory && reason;
+}
+
+function matchBy(pattern: string | string[] | RegExp | undefined, value: string): boolean {
+  return (
+    (typeof pattern == "string" && (deserializeRegExp(pattern) || new RegExp(`^${pattern}$`)).test(value)) ||
+    (Array.isArray(pattern) && pattern.includes(value)) ||
+    !isDefined(pattern)
+  );
 }
 
 function deserializeRegExp(regex: string): RegExp | null {
