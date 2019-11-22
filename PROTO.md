@@ -28,11 +28,11 @@ type CreeveyStat = {
 ```ts
 const tests = {
   name(api) {
-    const element = api.find("selector");
-    api.findAll("selector");
+    const element = api.find('selector');
+    api.findAll('selector');
     api.click(element);
-    api.capture("name");
-  }
+    api.capture('name');
+  },
 };
 ```
 

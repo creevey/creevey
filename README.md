@@ -16,8 +16,8 @@ Pretty easy visual testing with magic
 
 ```ts
 // .storybook/config.js
-import { addDecorator } from "@storybook/react";
-import { withCreevey } from "creevey";
+import { addDecorator } from '@storybook/react';
+import { withCreevey } from 'creevey';
 
 addDecorator(withCreevey());
 
@@ -27,31 +27,31 @@ addDecorator(withCreevey());
 ## Also you can define `creevey.config.ts`
 
 ```ts
-import path from "path";
-import { CreeveyConfig } from "creevey";
+import path from 'path';
+import { CreeveyConfig } from 'creevey';
 
 const config: CreeveyConfig = {
-  gridUrl: "<gridUrl>/wd/hub",
-  storybookUrl: "http://localhost:6006",
-  screenDir: path.join(__dirname, "images"),
-  reportDir: path.join(__dirname, "report"),
+  gridUrl: '<gridUrl>/wd/hub',
+  storybookUrl: 'http://localhost:6006',
+  screenDir: path.join(__dirname, 'images'),
+  reportDir: path.join(__dirname, 'report'),
   threshold: 0.1,
   maxRetries: 2,
   browsers: {
     chrome: true,
-    ff: "firefox",
+    ff: 'firefox',
     ie11: {
-      browserName: "internet explorer",
-      gridUrl: "<gridUrl>/wd/hub",
-      limit: 2
+      browserName: 'internet explorer',
+      gridUrl: '<gridUrl>/wd/hub',
+      limit: 2,
       /* capabilities */
     },
     otherChrome: {
-      browserName: "chrome",
-      storybookUrl: "http://mystoryhost:6007",
-      viewport: { width: 1024, height: 720 }
-    }
-  }
+      browserName: 'chrome',
+      storybookUrl: 'http://mystoryhost:6007',
+      viewport: { width: 1024, height: 720 },
+    },
+  },
 };
 
 export default config;
