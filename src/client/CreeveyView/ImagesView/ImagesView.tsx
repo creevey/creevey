@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 import { css } from '@emotion/core';
 import { SideBySideView } from './SideBySideView';
 import { SwapView } from './SwapView';
@@ -23,14 +23,14 @@ interface ImagesViewProps {
   mode: ViewMode;
 }
 
-const views = {
+const views: { [mode in ViewMode]: FunctionComponent<ViewProps> } = {
   'side-by-side': SideBySideView,
   swap: SwapView,
   slide: SlideView,
   blend: BlendView,
 };
 
-export function ImagesView({ url, actual, diff, expect, approved, mode }: ImagesViewProps) {
+export function ImagesView({ url, actual, diff, expect, approved, mode }: ImagesViewProps): JSX.Element {
   const ViewComponent = views[mode];
 
   return (
@@ -42,8 +42,9 @@ export function ImagesView({ url, actual, diff, expect, approved, mode }: Images
       `}
     >
       {approved ? (
-        <a href={`${url}/${actual}`} target="_blank">
+        <a href={`${url}/${actual}`} target="_blank" rel="noopener noreferrer">
           <img
+            alt="actual"
             src={`${url}/${actual}`}
             css={css`
               border: 1px solid #419d14;
@@ -56,8 +57,9 @@ export function ImagesView({ url, actual, diff, expect, approved, mode }: Images
           {diff && expect ? (
             <ViewComponent actual={`${url}/${actual}`} diff={`${url}/${diff}`} expect={`${url}/${expect}`} />
           ) : (
-            <a href={`${url}/${actual}`} target="_blank">
+            <a href={`${url}/${actual}`} target="_blank" rel="noopener noreferrer">
               <img
+                alt="actual"
                 src={`${url}/${actual}`}
                 css={css`
                   border: 1px solid #419d14;

@@ -2,7 +2,7 @@ import React from 'react';
 import { css } from '@emotion/core';
 import { ViewProps } from './ImagesView';
 
-export function SideBySideView({ actual, diff, expect }: ViewProps) {
+export function SideBySideView({ actual, diff, expect }: ViewProps): JSX.Element {
   return (
     <div
       css={css`
@@ -12,8 +12,9 @@ export function SideBySideView({ actual, diff, expect }: ViewProps) {
         align-content: space-between;
       `}
     >
-      <a href={expect} target="_blank">
+      <a href={expect} target="_blank" rel="noopener noreferrer">
         <img
+          alt="expect"
           src={expect}
           css={css`
             margin: 20px 0;
@@ -22,8 +23,9 @@ export function SideBySideView({ actual, diff, expect }: ViewProps) {
           `}
         />
       </a>
-      <a href={diff} target="_blank">
+      <a href={diff} target="_blank" rel="noopener noreferrer">
         <img
+          alt="diff"
           src={diff}
           css={css`
             margin: 20px 0;
@@ -32,8 +34,9 @@ export function SideBySideView({ actual, diff, expect }: ViewProps) {
           `}
         />
       </a>
-      <a href={actual} target="_blank">
+      <a href={actual} target="_blank" rel="noopener noreferrer">
         <img
+          alt="actual"
           src={actual}
           css={css`
             margin: 20px 0;

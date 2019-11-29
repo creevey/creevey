@@ -13,14 +13,14 @@ export interface TestLinkProps {
   test: CreeveyTest;
 }
 
-export function TestLink({ title, test }: TestLinkProps) {
+export function TestLink({ title, test }: TestLinkProps): JSX.Element {
   const { onTestOrSuiteToggle } = useContext(CreeveyContex);
   const { onOpenTest } = useContext(SideBarContext);
 
   const emptyResults = !test.results || test.results.length == 0;
 
-  const handleCheck = (_: React.ChangeEvent, value: boolean) => onTestOrSuiteToggle(test.path, value);
-  const handleOpen = () => onOpenTest(test);
+  const handleCheck = (_: React.ChangeEvent, value: boolean): void => onTestOrSuiteToggle(test.path, value);
+  const handleOpen = (): void => onOpenTest(test);
 
   return (
     <div

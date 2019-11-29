@@ -5,6 +5,33 @@ export interface CreeveyViewFilter {
   subStrings: string[];
 }
 
+function makeEmptySuiteNode(path: string[] = []): CreeveySuite {
+  return {
+    path,
+    skip: true,
+    checked: true,
+    indeterminate: false,
+    children: {},
+  };
+}
+
+export function splitLastPathToken(path: string[]): string[] {
+  // NOTE: Do some dirty mutable magic
+  // ['chrome', 'idle', 'playground', 'Button/Error'] => ['chrome', 'idle', 'playground', 'Error', 'Button']
+  return path.splice(path.length - 1, 1, ...path[path.length - 1].split('/').reverse()), path;
+}
+
+function calcStatus(oldStatus?: TestStatus, newStatus?: TestStatus): TestStatus | undefined {
+  if (
+    !oldStatus ||
+    (oldStatus == 'success' && newStatus != 'success') ||
+    (oldStatus == 'failed' && newStatus != 'failed' && newStatus != 'success') ||
+    (oldStatus == 'pending' && newStatus != 'pending' && newStatus != 'failed' && newStatus != 'success')
+  )
+    return newStatus || oldStatus;
+  return oldStatus;
+}
+
 export function getSuiteOrTestByPath(suite: CreeveySuite, path: string[]): CreeveySuite | CreeveyTest {
   return path.reduce(
     (suiteOrTest: CreeveySuite | CreeveyTest, pathToken) =>
@@ -119,23 +146,6 @@ export function updateTestStatus(suite: CreeveySuite, path: string[], update: Pa
     .reduce(calcStatus);
 }
 
-function calcStatus(oldStatus?: TestStatus, newStatus?: TestStatus): TestStatus | undefined {
-  if (
-    !oldStatus ||
-    (oldStatus == 'success' && newStatus != 'success') ||
-    (oldStatus == 'failed' && newStatus != 'failed' && newStatus != 'success') ||
-    (oldStatus == 'pending' && newStatus != 'pending' && newStatus != 'failed' && newStatus != 'success')
-  )
-    return newStatus || oldStatus;
-  return oldStatus;
-}
-
-export function splitLastPathToken(path: string[]) {
-  // NOTE: Do some dirty mutable magic
-  // ['chrome', 'idle', 'playground', 'Button/Error'] => ['chrome', 'idle', 'playground', 'Error', 'Button']
-  return path.splice(path.length - 1, 1, ...path[path.length - 1].split('/').reverse()), path;
-}
-
 export function filterTests(suite: CreeveySuite, filter: CreeveyViewFilter): CreeveySuite {
   const { status, subStrings } = filter;
   if (!status && !subStrings.length) return suite;
@@ -158,14 +168,4 @@ export function filterTests(suite: CreeveySuite, filter: CreeveyViewFilter): Cre
   });
 
   return filteredSuite;
-}
-
-function makeEmptySuiteNode(path: string[] = []): CreeveySuite {
-  return {
-    path,
-    skip: true,
-    checked: true,
-    indeterminate: false,
-    children: {},
-  };
 }

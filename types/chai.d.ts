@@ -1,7 +1,7 @@
 /// <reference types="chai" />
 declare namespace Chai {
   interface ChaiStatic {
-    use(fn: (chai: any, utils: ChaiUtils) => void): ChaiStatic;
+    use(fn: (chai: ChaiStatic, utils: ChaiUtils) => void): ChaiStatic;
   }
 
   interface Assertion {

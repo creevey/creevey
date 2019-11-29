@@ -14,36 +14,39 @@ export interface CreeveyAppProps {
   };
 }
 
-export function CreeveyApp({ api, initialState }: CreeveyAppProps) {
+export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element {
   const [tests, updateTests] = useImmer(initialState.tests);
   const [isRunning, setIsRunning] = useState(initialState.isRunning);
 
-  useEffect(() => api?.onUpdate(handleUpdate), []);
+  // TODO unsubscribe
+  useEffect(
+    () =>
+      api?.onUpdate(({ isRunning, tests }: CreeveyUpdate) => {
+        if (isDefined(isRunning)) setIsRunning(isRunning);
+        if (isDefined(tests))
+          updateTests(draft => {
+            Object.values(tests).forEach(
+              test => test && updateTestStatus(draft, splitLastPathToken(test.path).reverse(), test),
+            );
+          });
+      }),
+    [api, updateTests],
+  );
 
-  const handleUpdate = ({ isRunning, tests }: CreeveyUpdate) => {
-    if (isDefined(isRunning)) setIsRunning(isRunning);
-    if (isDefined(tests))
-      updateTests(draft => {
-        Object.values(tests).forEach(
-          test => test && updateTestStatus(draft, splitLastPathToken(test.path).reverse(), test),
-        );
-      });
-  };
-
-  const handleTestOrSuiteToggle = (path: string[], checked: boolean) => {
+  const handleTestOrSuiteToggle = (path: string[], checked: boolean): void => {
     updateTests(draft => {
       toggleChecked(draft, path, checked);
     });
   };
-  const handleImageApprove = (id: string, retry: number, image: string) => {
+  const handleImageApprove = (id: string, retry: number, image: string): void => {
     if (!api) return;
     api.approve(id, retry, image);
   };
-  const handleStart = (tests: CreeveySuite) => {
+  const handleStart = (tests: CreeveySuite): void => {
     if (!api) return;
     api.start(getCheckedTests(tests).map(test => test.id));
   };
-  const handleStop = () => {
+  const handleStop = (): void => {
     if (!api) return;
     api.stop();
   };

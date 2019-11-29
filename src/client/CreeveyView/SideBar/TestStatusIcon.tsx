@@ -9,7 +9,7 @@ export interface TestStatusIconProps {
   status?: TestStatus;
 }
 
-export function TestStatusIcon({ status }: TestStatusIconProps) {
+export function TestStatusIcon({ status }: TestStatusIconProps): JSX.Element | null {
   switch (status) {
     case 'failed': {
       return <DeleteIcon color="#d9472b" />;

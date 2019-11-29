@@ -7,7 +7,13 @@ import { CreeveyStories, isDefined, Test as CreeveyTest, CreeveyStoryParams } fr
 import { shouldSkip } from '../../utils';
 import { createHash } from 'crypto';
 
-async function hideBrowserScroll(browser: WebDriver) {
+declare global {
+  interface Window {
+    __CREEVEY_RESTORE_SCROLL__?: () => void;
+  }
+}
+
+async function hideBrowserScroll(browser: WebDriver): Promise<() => Promise<void>> {
   const HideScrollStyles = `
 html {
   overflow: -moz-scrollbars-none !important;
@@ -18,28 +24,27 @@ html::-webkit-scrollbar {
   height: 0 !important;
 }
 `;
-  // @ts-ignore
-  await browser.executeScript(function(stylesheet) {
+
+  await browser.executeScript(function(stylesheet: string) {
+    /* eslint-disable no-var */
     var style = document.createElement('style');
     var textnode = document.createTextNode(stylesheet);
     style.setAttribute('type', 'text/css');
     style.appendChild(textnode);
     document.head.appendChild(style);
-    // @ts-ignore
+
     window.__CREEVEY_RESTORE_SCROLL__ = function() {
       if (document.head.contains(style)) {
         document.head.removeChild(style);
       }
-      // @ts-ignore
       delete window.__CREEVEY_RESTORE_SCROLL__;
     };
+    /* eslint-enable no-var */
   }, HideScrollStyles);
 
   return () =>
     browser.executeScript(function() {
-      // @ts-ignore
       if (window.__CREEVEY_RESTORE_SCROLL__) {
-        // @ts-ignore
         window.__CREEVEY_RESTORE_SCROLL__();
       }
     });
@@ -49,7 +54,7 @@ async function takeCompositeScreenshot(
   browser: WebDriver,
   windowSize: { width: number; height: number },
   elementRect: DOMRect,
-) {
+): Promise<string> {
   const screens = [];
   const cols = Math.ceil(elementRect.width / windowSize.width);
   const rows = Math.ceil(elementRect.height / windowSize.height);
@@ -66,8 +71,7 @@ async function takeCompositeScreenshot(
         Math.max(0, elementRect.bottom - windowSize.height),
       );
       await browser.executeScript(
-        // @ts-ignore
-        function(x, y) {
+        function(x: number, y: number) {
           window.scrollTo(x, y);
         },
         dx,
@@ -101,13 +105,13 @@ async function takeCompositeScreenshot(
   return PNG.sync.write(compositeImage).toString('base64');
 }
 
-async function takeScreenshot(browser: WebDriver, captureElement?: string) {
+async function takeScreenshot(browser: WebDriver, captureElement?: string): Promise<string> {
   if (!captureElement) return browser.takeScreenshot();
 
   const restoreScroll = await hideBrowserScroll(browser);
   const { elementRect, windowSize } = await browser.executeScript(function(selector: string) {
     return {
-      elementRect: document.querySelector(selector)!.getBoundingClientRect(),
+      elementRect: document.querySelector(selector)?.getBoundingClientRect(),
       windowSize: { width: window.innerWidth, height: window.innerHeight },
     };
   }, captureElement);
@@ -141,7 +145,7 @@ function findOrCreateSuite(name: string, parent: Suite): Suite {
   return suite;
 }
 
-function createTest(name: string, fn: (this: Context) => void, skip: string | boolean): Test {
+function createTest(name: string, fn: (this: Context) => Promise<void>, skip: string | boolean): Test {
   const test = new Test(name, skip ? undefined : fn);
   test.pending = Boolean(skip);
   // NOTE Can't define skip reason in mocha https://github.com/mochajs/mocha/issues/2026
@@ -191,16 +195,19 @@ export function convertStories(
       // TODO register css/less/scss/png/jpg/woff/ttf/etc require extensions
 
       // NOTE Only Component Story Format (CSF) is support
-      const stories = require(path.join(process.cwd(), __filename));
-      if (!stories[story.name] || !stories[story.name].story)
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const stories = require(path.join(process.cwd(), __filename)) as {
+        [story: string]: undefined | { story?: { parameters?: { creevey?: CreeveyStoryParams } } };
+      };
+      if (!stories[story.name] || !stories[story.name]?.story)
         throw new Error(
           'Creevey support only `Component Story Format (CSF)` stories. For more details see https://storybook.js.org/docs/formats/component-story-format/',
         );
-      const tests: CreeveyStoryParams['_seleniumTests'] = stories[story.name].story.parameters.creevey._seleniumTests;
+      const tests: CreeveyStoryParams['_seleniumTests'] =
+        stories[story.name]?.story?.parameters?.creevey?._seleniumTests ?? (() => ({}));
 
       const storySuite = findOrCreateSuite(story.name, kindSuite);
 
-      // @ts-ignore
       Object.entries(tests(selenium, chai)).forEach(([testName, testFn]) => {
         const test = createCreeveyTest([browserName, testName, story.name, story.kind], skipReason);
         creeveyTests[test.id] = test;

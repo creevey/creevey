@@ -4,7 +4,7 @@ import Button from '@skbkontur/react-ui/Button';
 import Input from '@skbkontur/react-ui/Input';
 import { css } from '@emotion/core';
 import SearchIcon from '@skbkontur/react-icons/Search';
-import { CreeveyContex } from 'src/client/CreeveyContext';
+import { CreeveyContex } from '../../CreeveyContext';
 
 interface SideBarHeaderProps {
   onStart: () => void;
@@ -12,10 +12,10 @@ interface SideBarHeaderProps {
   onFilterChange: (rawFilter: string) => void;
 }
 
-export function SideBarHeader({ onStop, onStart, onFilterChange }: SideBarHeaderProps) {
+export function SideBarHeader({ onStop, onStart, onFilterChange }: SideBarHeaderProps): JSX.Element {
   const { isRunning } = useContext(CreeveyContex);
 
-  const handleFilterChange = (_: React.ChangeEvent, value: string) => onFilterChange(value);
+  const handleFilterChange = (_: React.ChangeEvent, value: string): void => onFilterChange(value);
 
   return (
     <div

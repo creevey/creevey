@@ -22,8 +22,9 @@ export function PageHeader({
   viewMode,
   onImageChange,
   onViewModeChange,
-}: PageHeaderProps) {
-  const handleViewModeChange = (_: any, mode: string) => onViewModeChange(mode as ViewMode);
+}: PageHeaderProps): JSX.Element {
+  const handleViewModeChange = (_: { target: { value: string } }, mode: string): void =>
+    onViewModeChange(mode as ViewMode);
 
   return (
     <>
@@ -33,7 +34,7 @@ export function PageHeader({
         `}
       >
         {images.map(name => (
-          <Button use="link" onClick={() => onImageChange(name)} disabled={name === currentImage}>
+          <Button key={name} use="link" onClick={() => onImageChange(name)} disabled={name === currentImage}>
             {name}
           </Button>
         ))}

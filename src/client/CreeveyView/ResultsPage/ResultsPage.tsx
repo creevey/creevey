@@ -17,7 +17,7 @@ interface TestResultsProps {
 }
 
 // TODO should better handle offline mode
-export function ResultsPage({ id, path, results = [], approved = {} }: TestResultsProps) {
+export function ResultsPage({ id, path, results = [], approved = {} }: TestResultsProps): JSX.Element {
   const imageNames = Object.keys(results[results.length - 1]?.images ?? {});
   const initialImageName = imageNames[0];
 
@@ -35,7 +35,7 @@ export function ResultsPage({ id, path, results = [], approved = {} }: TestResul
   const url = encodeURI(imageName == browser ? imagesUrl : `${imagesUrl}/${browser}`);
   const hasDiffAndExpect = Boolean(image?.diff && image.expect);
 
-  const handleApprove = () => onImageApprove(id, retry - 1, imageName);
+  const handleApprove = (): void => onImageApprove(id, retry - 1, imageName);
 
   return (
     <div

@@ -3,12 +3,12 @@ import ScrollContainer from '@skbkontur/react-ui/ScrollContainer';
 import { TestTree } from './TestTree';
 import { SideBarHeader } from './SideBarHeader';
 import { css } from '@emotion/core';
-import { CreeveySuite, TestStatus, CreeveyTest } from '../../../types';
+import { CreeveySuite, TestStatus, CreeveyTest, noop } from '../../../types';
 import { filterTests, CreeveyViewFilter } from '../../helpers';
-import { CreeveyContex } from 'src/client/CreeveyContext';
+import { CreeveyContex } from '../../CreeveyContext';
 
 export const SideBarContext = createContext<{ onOpenTest: (test: CreeveyTest) => void }>({
-  onOpenTest() {},
+  onOpenTest: noop,
 });
 
 export interface SideBarProps {
@@ -16,14 +16,14 @@ export interface SideBarProps {
   onOpenTest: (test: CreeveyTest) => void;
 }
 
-export function SideBar({ rootSuite, onOpenTest }: SideBarProps) {
+export function SideBar({ rootSuite, onOpenTest }: SideBarProps): JSX.Element {
   const { onStart, onStop } = useContext(CreeveyContex);
   const [filter, setFilter] = useState<CreeveyViewFilter>({ status: null, subStrings: [] });
 
   const suite = filterTests(rootSuite, filter);
 
-  const handleStart = () => onStart(suite);
-  const handleFilterChange = (rawFilter: string) => {
+  const handleStart = (): void => onStart(suite);
+  const handleFilterChange = (rawFilter: string): void => {
     let status: TestStatus | null = null;
     const subStrings: string[] = [];
     const tokens = rawFilter
@@ -32,7 +32,7 @@ export function SideBar({ rootSuite, onOpenTest }: SideBarProps) {
       .map(word => word.toLowerCase());
 
     tokens.forEach(word => {
-      const [, matchedStatus] = word.match(/^status:(failed|success)$/i) || [];
+      const [, matchedStatus] = /^status:(failed|success)$/i.exec(word) || [];
       if (matchedStatus) return (status = matchedStatus as TestStatus);
       subStrings.push(word);
     });

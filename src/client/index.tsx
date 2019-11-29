@@ -5,15 +5,15 @@ import { CreeveyApp } from './CreeveyApp';
 import './index.css';
 import { initCreeveyClientApi, CreeveyClientApi } from './creeveyClientApi';
 import Loader from '@skbkontur/react-ui/Loader';
-import { Test, CreeveyStatus } from 'src/types';
+import { CreeveyStatus } from '../types';
 import { treeifyTests } from './helpers';
 
 declare global {
-  const __CREEVEY_DATA__: Partial<{ [id: string]: Test }>;
+  const __CREEVEY_DATA__: CreeveyStatus['tests'];
 }
 
-function loadCreeveyData() {
-  return new Promise<Partial<{ [id: string]: Test }>>(resolve => {
+function loadCreeveyData(): Promise<CreeveyStatus['tests']> {
+  return new Promise<CreeveyStatus['tests']>(resolve => {
     const script = document.createElement('script');
     script.src = 'data.js';
     script.onload = () => resolve(__CREEVEY_DATA__);
@@ -32,12 +32,14 @@ const CreeveAppAsync = React.lazy(async () => {
   }
 
   return {
-    default: () => (
-      <CreeveyApp
-        api={creeveyApi}
-        initialState={{ isRunning: creeveyStatus.isRunning, tests: treeifyTests(creeveyStatus.tests) }}
-      />
-    ),
+    default() {
+      return (
+        <CreeveyApp
+          api={creeveyApi}
+          initialState={{ isRunning: creeveyStatus.isRunning, tests: treeifyTests(creeveyStatus.tests) }}
+        />
+      );
+    },
   };
 });
 

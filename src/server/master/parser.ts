@@ -2,12 +2,12 @@ import { createHash } from 'crypto';
 import { Test, Config, BrowserConfig } from '../../types';
 import { Loader } from '../../loader';
 
-export default async function parse(config: Config) {
+export default async function parse(config: Config): Promise<void> {
   const tests: Partial<{ [id: string]: Test }> = {};
   let suites: string[] = [];
   let testFilePath = '';
 
-  function describe(title: string, describeFn: () => void) {
+  function describe(title: string, describeFn: () => void): void {
     suites = [title, ...suites];
     describeFn();
     [, ...suites] = suites;
@@ -37,10 +37,12 @@ export default async function parse(config: Config) {
       .forEach(test => (test.skip = true));
   };
 
+  /* eslint-disable @typescript-eslint/ban-ts-ignore */
   // @ts-ignore
   global.describe = describe;
   // @ts-ignore
   global.it = it;
+  /* eslint-enable @typescript-eslint/ban-ts-ignore */
 
   if (config.testDir) {
     await new Loader(config.testRegex, filePath => {

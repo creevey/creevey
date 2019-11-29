@@ -8,7 +8,7 @@ interface CreeveyViewProps {
   rootSuite: CreeveySuite;
 }
 
-export function CreeveyView({ rootSuite }: CreeveyViewProps) {
+export function CreeveyView({ rootSuite }: CreeveyViewProps): JSX.Element {
   const [openedTest, openTest] = useState<CreeveyTest | null>(null);
 
   return (

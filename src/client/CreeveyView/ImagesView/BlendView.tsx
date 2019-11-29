@@ -2,7 +2,7 @@ import React from 'react';
 import { css } from '@emotion/core';
 import { ViewProps } from './ImagesView';
 
-export function BlendView({ actual, expect }: ViewProps) {
+export function BlendView({ actual, expect }: ViewProps): JSX.Element {
   return (
     <div
       css={css`
@@ -13,6 +13,7 @@ export function BlendView({ actual, expect }: ViewProps) {
       `}
     >
       <img
+        alt="actual"
         src={actual}
         css={css`
           position: absolute;
@@ -21,6 +22,7 @@ export function BlendView({ actual, expect }: ViewProps) {
         `}
       />
       <img
+        alt="expect"
         src={expect}
         css={css`
           vertical-align: top;

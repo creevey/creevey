@@ -3,7 +3,7 @@ import chai from 'chai';
 import chalk from 'chalk';
 import Mocha, { Suite, Context, AsyncFunc } from 'mocha';
 import { addHook } from 'pirates';
-import { Config, Images, Options, StoriesRaw, BrowserConfig } from '../../types';
+import { Config, Images, Options, BrowserConfig, CreeveyStories } from '../../types';
 import { getBrowser, switchStory } from '../../utils';
 import chaiImage from '../../chai-image';
 import { Loader } from '../../loader';
@@ -11,11 +11,13 @@ import { CreeveyReporter, TeamcityReporter } from './reporter';
 import { convertStories } from './stories';
 
 // After end of each suite mocha clean all hooks and don't allow re-run tests without full re-init
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore see issue for more info https://github.com/mochajs/mocha/issues/2783
 Suite.prototype.cleanReferences = () => {};
 
-function patchMochaInterface(suite: Suite) {
+function patchMochaInterface(suite: Suite): void {
   suite.on('pre-require', context => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
     context.it.skip = (_browsers: string[], title: string, fn?: AsyncFunc) => context.it(title, fn);
   });
@@ -28,13 +30,37 @@ addHook(() => '', {
 });
 
 // FIXME browser options hotfix
-export default async function worker(config: Config, options: Options & { browser: string }) {
-  function saveImageHandler(imageName: string, imageNumber: number, type: keyof Images) {
+export default async function worker(config: Config, options: Options & { browser: string }): Promise<void> {
+  let retries = 0;
+  let images: Partial<{ [name: string]: Partial<Images> }> = {};
+  let error: Error | {} | string | undefined | null = null;
+  let isRunning = false;
+  const testScope: string[] = [];
+  const mocha = new Mocha({
+    timeout: 30000,
+    reporter: process.env.TEAMCITY_VERSION ? TeamcityReporter : options.reporter || CreeveyReporter,
+    reporterOptions: {
+      reportDir: config.reportDir,
+      topLevelSuite: options.browser,
+      willRetry: () => retries < config.maxRetries,
+      images: () => images,
+    },
+  });
+  const browserConfig = config.browsers[options.browser] as BrowserConfig;
+  const browser = await getBrowser(config, browserConfig);
+
+  const stories: CreeveyStories = await browser.executeAsyncScript(function(
+    callback: (stories: CreeveyStories) => void,
+  ) {
+    window.__CREEVEY_GET_STORIES__(callback);
+  });
+
+  function saveImageHandler(imageName: string, imageNumber: number, type: keyof Images): void {
     const image = (images[imageName] = images[imageName] || {});
     image[type] = `${imageName}-${type}-${imageNumber}.png`;
   }
 
-  function runHandler(failures: number) {
+  function runHandler(failures: number): void {
     if (process.send) {
       if (failures > 0) {
         const isTimeout = typeof error == 'string' && error.toLowerCase().includes('timeout');
@@ -59,29 +85,6 @@ export default async function worker(config: Config, options: Options & { browse
       }
       process.send(JSON.stringify({ type: 'error', payload: { status: 'failed', images, error } }));
     }
-  });
-
-  let retries: number = 0;
-  let images: Partial<{ [name: string]: Partial<Images> }> = {};
-  let error: any = null;
-  let isRunning: boolean = false;
-  const testScope: string[] = [];
-  const mocha = new Mocha({
-    timeout: 30000,
-    reporter: process.env.TEAMCITY_VERSION ? TeamcityReporter : options.reporter || CreeveyReporter,
-    reporterOptions: {
-      reportDir: config.reportDir,
-      topLevelSuite: options.browser,
-      willRetry: () => retries < config.maxRetries,
-      images: () => images,
-    },
-  });
-  const browserConfig = config.browsers[options.browser] as BrowserConfig;
-  const browser = await getBrowser(config, browserConfig);
-  // @ts-ignore
-  const stories: StoriesRaw = await browser.executeAsyncScript(function(callback) {
-    // @ts-ignore
-    window.__CREEVEY_GET_STORIES__(callback);
   });
 
   chai.use(chaiImage(config, testScope, saveImageHandler));
@@ -116,7 +119,9 @@ export default async function worker(config: Config, options: Options & { browse
     runner.on('fail', (_test, reason) => (error = reason instanceof Error ? reason.stack || reason.message : reason));
   });
 
-  setInterval(() => browser.getTitle(), 30 * 1000);
+  setInterval(() => {
+    browser.getTitle();
+  }, 30 * 1000);
 
   console.log('[CreeveyWorker]:', `Ready ${options.browser}:${process.pid}`);
 

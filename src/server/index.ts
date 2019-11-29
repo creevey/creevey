@@ -3,7 +3,7 @@ import cluster from 'cluster';
 import { readConfig } from '../config';
 import { Options } from '../types';
 
-export default async function(options: Options) {
+export default function(options: Options): void {
   const config = readConfig(path.resolve(options.config)) || { gridUrl: options.gridUrl };
   const { browser, parser, update } = options;
 

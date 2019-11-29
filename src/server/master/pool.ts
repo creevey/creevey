@@ -8,7 +8,7 @@ export default class Pool extends EventEmitter {
   private config: BrowserConfig;
   private workers: Worker[] = [];
   private queue: { id: string; path: string[]; retries: number }[] = [];
-  private forcedStop: boolean = false;
+  private forcedStop = false;
   public get isRunning(): boolean {
     return this.workers.length !== this.freeWorkers.length;
   }
@@ -46,7 +46,7 @@ export default class Pool extends EventEmitter {
     return true;
   }
 
-  stop() {
+  stop(): void {
     // TODO Timeout
     if (!this.isRunning) {
       // TODO this.emit("stop");
@@ -57,7 +57,7 @@ export default class Pool extends EventEmitter {
     this.queue = [];
   }
 
-  process() {
+  process(): void {
     const worker = this.getFreeWorker();
     const [test] = this.queue;
 
@@ -99,7 +99,7 @@ export default class Pool extends EventEmitter {
     this.process();
   }
 
-  private sendStatus(message: { id: string; status: TestStatus; result?: TestResult }) {
+  private sendStatus(message: { id: string; status: TestStatus; result?: TestResult }): void {
     this.emit('test', message);
   }
 
@@ -107,15 +107,15 @@ export default class Pool extends EventEmitter {
     return this.freeWorkers[Math.floor(Math.random() * this.freeWorkers.length)];
   }
 
-  private get aliveWorkers() {
+  private get aliveWorkers(): Worker[] {
     return this.workers.filter(worker => !worker.exitedAfterDisconnect);
   }
 
-  private get freeWorkers() {
+  private get freeWorkers(): Worker[] {
     return this.aliveWorkers.filter(worker => !worker.isRunnning);
   }
 
-  private exitHandler(worker: Worker) {
+  private exitHandler(worker: Worker): void {
     worker.once('exit', () => {
       cluster.setupMaster({ args: ['--browser', this.browser, ...process.argv.slice(2)] });
       const newWorker = cluster.fork();

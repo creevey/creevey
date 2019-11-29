@@ -9,10 +9,10 @@ const colors: Omit<ViewProps, 'diff'> = {
 
 type ImageState = keyof typeof colors;
 
-export function SwapView(props: ViewProps) {
+export function SwapView(props: ViewProps): JSX.Element {
   const [image, setImage] = useState<ImageState>('actual');
 
-  const handleChangeView = () => setImage(image == 'actual' ? 'expect' : 'actual');
+  const handleChangeView = (): void => setImage(image == 'actual' ? 'expect' : 'actual');
 
   return (
     <label
@@ -35,6 +35,7 @@ export function SwapView(props: ViewProps) {
         onChange={handleChangeView}
       />
       <img
+        alt={image}
         src={props[image]}
         css={css`
           border: 1px solid ${colors[image]};

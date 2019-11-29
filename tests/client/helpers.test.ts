@@ -1,9 +1,9 @@
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
 import { toggleChecked } from '../../src/client/helpers';
-import { CreeveySuite } from '../../src/types';
+import { CreeveySuite, Test } from '../../src/types';
 
-function mockTest() {
+function mockTest(): Test {
   return {
     id: '',
     path: [],

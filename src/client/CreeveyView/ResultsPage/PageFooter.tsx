@@ -11,7 +11,13 @@ export interface PageFooterProps {
   onApprove: () => void;
 }
 
-export function PageFooter({ isApproved, currentRetry, retriesCount, onRetryChange, onApprove }: PageFooterProps) {
+export function PageFooter({
+  isApproved,
+  currentRetry,
+  retriesCount,
+  onRetryChange,
+  onApprove,
+}: PageFooterProps): JSX.Element {
   return (
     <div
       css={css`

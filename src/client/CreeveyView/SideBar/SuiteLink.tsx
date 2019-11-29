@@ -14,16 +14,17 @@ export interface SuiteLinkProps {
   children: ReactNode;
 }
 
-export function SuiteLink({ title, suite, children }: SuiteLinkProps) {
+export function SuiteLink({ title, suite, children }: SuiteLinkProps): JSX.Element {
   const { onTestOrSuiteToggle } = useContext(CreeveyContex);
   const [opened, setOpen] = useState(false);
   const checkboxRef = useRef<Checkbox>(null);
-  useEffect(() =>
-    suite.indeterminate ? checkboxRef.current?.setIndeterminate() : checkboxRef.current?.resetIndeterminate(),
+  useEffect(
+    () => (suite.indeterminate ? checkboxRef.current?.setIndeterminate() : checkboxRef.current?.resetIndeterminate()),
+    [suite.indeterminate],
   );
 
-  const handleCheck = (_: React.ChangeEvent, value: boolean) => onTestOrSuiteToggle(suite.path, value);
-  const handleOpen = () => setOpen(!opened);
+  const handleCheck = (_: React.ChangeEvent, value: boolean): void => onTestOrSuiteToggle(suite.path, value);
+  const handleOpen = (): void => setOpen(!opened);
 
   return (
     <>

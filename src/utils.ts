@@ -3,6 +3,7 @@ import { Context, Test, Suite } from 'mocha';
 import { Builder, By, until, WebDriver, Origin } from 'selenium-webdriver';
 import { Config, BrowserConfig, SkipOptions, isDefined, CreeveyStory } from './types';
 import { StoryContext } from '@storybook/addons';
+import { StoryDidMountCallback } from './storybook';
 
 // Need to support storybook 3.x
 let toId: Function | null = null;
@@ -30,9 +31,10 @@ function getRealIp(): Promise<string> {
   );
 }
 
-async function resetMousePosition(browser: WebDriver) {
+async function resetMousePosition(browser: WebDriver): Promise<void> {
   const isChrome = (await browser.getCapabilities()).get('browserName') == 'chrome';
   const { top, left, width, height } = await browser.executeScript(function() {
+    /* eslint-disable no-var */
     // NOTE On storybook >= 4.x already reset scroll
     window.scrollTo(0, 0);
 
@@ -43,6 +45,7 @@ async function resetMousePosition(browser: WebDriver) {
       width: bodyRect.width,
       height: bodyRect.height,
     };
+    /* eslint-enable no-var */
   });
 
   if (isChrome) {
@@ -65,7 +68,7 @@ async function resetMousePosition(browser: WebDriver) {
   }
 }
 
-async function resizeViewport(browser: WebDriver, viewport: { width: number; height: number }) {
+async function resizeViewport(browser: WebDriver, viewport: { width: number; height: number }): Promise<void> {
   const windowRect = await browser
     .manage()
     .window()
@@ -87,11 +90,9 @@ async function resizeViewport(browser: WebDriver, viewport: { width: number; hei
     });
 }
 
-async function selectStory(browser: WebDriver, kind: string, story: string) {
+async function selectStory(browser: WebDriver, kind: string, story: string): Promise<StoryContext> {
   const storyContext: StoryContext = await browser.executeAsyncScript(
-    // @ts-ignore
-    function(storyId, kind, name, callback) {
-      // @ts-ignore
+    function(storyId: string, kind: string, name: string, callback: StoryDidMountCallback) {
       window.__CREEVEY_SELECT_STORY__(storyId, kind, name, callback);
     },
     // NOTE: `toId` don't exists in storybook 3.x
@@ -102,7 +103,7 @@ async function selectStory(browser: WebDriver, kind: string, story: string) {
   return storyContext;
 }
 
-function disableAnimations(browser: WebDriver) {
+function disableAnimations(browser: WebDriver): Promise<void> {
   const disableAnimationsStyles = `
 *,
 *:hover,
@@ -116,17 +117,18 @@ function disableAnimations(browser: WebDriver) {
   transition: 0s !important;
 }
 `;
-  //@ts-ignore
-  return browser.executeScript(function(stylesheet) {
+  return browser.executeScript(function(stylesheet: string) {
+    /* eslint-disable no-var */
     var style = document.createElement('style');
     var textnode = document.createTextNode(stylesheet);
     style.setAttribute('type', 'text/css');
     style.appendChild(textnode);
     document.head.appendChild(style);
+    /* eslint-enable no-var */
   }, disableAnimationsStyles);
 }
 
-export async function getBrowser(config: Config, browserConfig: BrowserConfig) {
+export async function getBrowser(config: Config, browserConfig: BrowserConfig): Promise<WebDriver> {
   const {
     gridUrl = config.gridUrl,
     storybookUrl: address = config.storybookUrl,
@@ -135,6 +137,8 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig) {
     viewport,
     ...capabilities
   } = browserConfig;
+  void limit;
+  void testRegex;
   let realAddress = address;
   if (LOCALHOST_REGEXP.test(address)) {
     realAddress = address.replace(LOCALHOST_REGEXP, await getRealIp());
@@ -158,7 +162,7 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig) {
   return browser;
 }
 
-export async function switchStory(this: Context) {
+export async function switchStory(this: Context): Promise<StoryContext> {
   let testOrSuite: Test | Suite | undefined = this.currentTest;
 
   this.testScope.length = 0;
@@ -170,7 +174,8 @@ export async function switchStory(this: Context) {
   // `kindSuite -> storySuite -> test`
   // `kindSuite -> storyTest`
   // TODO If story or kind is undefined should throw error
-  let [, test, story, kind] = this.testScope;
+  const [, test] = this.testScope;
+  let [, , story, kind] = this.testScope;
 
   if (!kind) {
     kind = story;
@@ -183,6 +188,24 @@ export async function switchStory(this: Context) {
   this.testScope.reverse();
 
   return storyContext;
+}
+
+function deserializeRegExp(regex: string): RegExp | null {
+  const fragments = /\/(.*?)\/([a-z]*)?$/i.exec(regex);
+
+  if (!fragments) return null;
+
+  const [, pattern, flags] = fragments;
+
+  return new RegExp(pattern, flags || '');
+}
+
+function matchBy(pattern: string | string[] | RegExp | undefined, value: string): boolean {
+  return (
+    (typeof pattern == 'string' && (deserializeRegExp(pattern) || new RegExp(`^${pattern}$`)).test(value)) ||
+    (Array.isArray(pattern) && pattern.includes(value)) ||
+    !isDefined(pattern)
+  );
 }
 
 export function shouldSkip(story: CreeveyStory, browser: string, skipOptions: SkipOptions): string | boolean {
@@ -198,22 +221,4 @@ export function shouldSkip(story: CreeveyStory, browser: string, skipOptions: Sk
   const skipByStory = matchBy(stories, story.name);
 
   return skipByBrowser && skipByKind && skipByStory && reason;
-}
-
-function matchBy(pattern: string | string[] | RegExp | undefined, value: string): boolean {
-  return (
-    (typeof pattern == 'string' && (deserializeRegExp(pattern) || new RegExp(`^${pattern}$`)).test(value)) ||
-    (Array.isArray(pattern) && pattern.includes(value)) ||
-    !isDefined(pattern)
-  );
-}
-
-function deserializeRegExp(regex: string): RegExp | null {
-  const fragments = regex.match(/\/(.*?)\/([a-z]*)?$/i);
-
-  if (!fragments) return null;
-
-  const [, pattern, flags] = fragments;
-
-  return new RegExp(pattern, flags || '');
 }

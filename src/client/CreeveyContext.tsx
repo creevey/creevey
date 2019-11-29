@@ -1,5 +1,5 @@
 import React from 'react';
-import { CreeveySuite } from 'src/types';
+import { CreeveySuite, noop } from '../types';
 
 export interface CreeveyContextType {
   isRunning: boolean;
@@ -8,8 +8,6 @@ export interface CreeveyContextType {
   onTestOrSuiteToggle: (path: string[], checked: boolean) => void;
   onImageApprove: (id: string, retry: number, image: string) => void;
 }
-
-function noop() {}
 
 export const CreeveyContex = React.createContext<CreeveyContextType>({
   isRunning: false,

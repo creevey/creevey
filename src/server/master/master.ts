@@ -3,14 +3,14 @@ import { writeFileSync, copyFile, readdir } from 'fs';
 import { promisify } from 'util';
 import cluster from 'cluster';
 import mkdirp from 'mkdirp';
-import { Config, Test, isDefined } from '../../types';
+import { Config, Test, isDefined, CreeveyStatus } from '../../types';
 import Runner from './runner';
 
 const copyFileAsync = promisify(copyFile);
 const readdirAsync = promisify(readdir);
 const mkdirpAsync = promisify(mkdirp);
 
-function reportDataModule<T>(data: T) {
+function reportDataModule<T>(data: T): string {
   return `
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
@@ -22,13 +22,13 @@ function reportDataModule<T>(data: T) {
 `;
 }
 
-function loadTests(): Promise<Partial<{ [id: string]: Test }>> {
+function loadTests(): Promise<CreeveyStatus['tests']> {
   return new Promise(resolve => {
     console.log('[CreeveyRunner]:', 'Start loading tests');
     cluster.setupMaster({ args: ['--parser', ...process.argv.slice(2)] });
     const parser = cluster.fork();
     parser.once('message', message => {
-      const tests: Partial<{ [id: string]: Test }> = JSON.parse(message);
+      const tests: CreeveyStatus['tests'] = JSON.parse(message);
       console.log('[CreeveyRunner]:', 'Tests loaded');
       resolve(tests);
     });
@@ -36,16 +36,16 @@ function loadTests(): Promise<Partial<{ [id: string]: Test }>> {
 }
 
 function mergeTests(
-  tests: Partial<{ [id: string]: Test }>,
-  testsWithReports: Partial<{ [id: string]: Test }>,
-  testsFromStories: Partial<{ [id: string]: Test }>,
-) {
+  tests: CreeveyStatus['tests'],
+  testsWithReports: CreeveyStatus['tests'],
+  testsFromStories: CreeveyStatus['tests'],
+): CreeveyStatus['tests'] {
   return Object.values(testsWithReports)
     .map((test): Test | undefined => test && { ...test, skip: true })
     .concat(Object.values(testsFromStories), Object.values(tests))
     .filter(isDefined)
     .reduce(
-      (mergedTests: Partial<{ [id: string]: Test }>, test): Partial<{ [id: string]: Test }> =>
+      (mergedTests: CreeveyStatus['tests'], test): CreeveyStatus['tests'] =>
         (mergedTests = {
           ...mergedTests,
           [test.id]: {
@@ -57,10 +57,10 @@ function mergeTests(
     );
 }
 
-async function copyStatics(reportDir: string) {
+async function copyStatics(reportDir: string): Promise<void> {
   const clientDir = path.join(__dirname, '../../client');
   const files = (await readdirAsync(clientDir, { withFileTypes: true }))
-    .filter(dirent => dirent.isFile() && !/\.d\.ts$/.test(dirent.name))
+    .filter(dirent => dirent.isFile() && !dirent.name.endsWith('.d.ts'))
     .map(dirent => dirent.name);
   await mkdirpAsync(reportDir);
   for (const file of files) {
@@ -68,7 +68,7 @@ async function copyStatics(reportDir: string) {
   }
 }
 
-export default async function master(config: Config) {
+export default async function master(config: Config): Promise<Runner> {
   const reportDataPath = path.join(config.reportDir, 'data.js');
   let testsFromReport = {};
   try {
@@ -82,6 +82,8 @@ export default async function master(config: Config) {
 
   const testsFromStories = await runner.init();
   const mergedTests = mergeTests(tests, testsFromReport, testsFromStories);
+  // TODO
+  // eslint-disable-next-line require-atomic-updates
   runner.tests = mergedTests;
 
   await copyStatics(config.reportDir);

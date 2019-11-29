@@ -2,17 +2,17 @@ import React, { useState } from 'react';
 import { css } from '@emotion/core';
 import { ViewProps } from './ImagesView';
 
-export function SlideView({ actual, expect }: ViewProps) {
+export function SlideView({ actual, expect }: ViewProps): JSX.Element {
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
   const [value, setValue] = useState('0');
 
-  const handleImageLoad = (event: React.SyntheticEvent<HTMLImageElement>) => {
+  const handleImageLoad = (event: React.SyntheticEvent<HTMLImageElement>): void => {
     const { width, height } = event.currentTarget;
     setWidth(width);
     setHeight(height);
   };
-  const handleSlide = (event: React.ChangeEvent<HTMLInputElement>) => setValue(event.target.value);
+  const handleSlide = (event: React.ChangeEvent<HTMLInputElement>): void => setValue(event.target.value);
 
   return (
     <div
@@ -55,6 +55,7 @@ export function SlideView({ actual, expect }: ViewProps) {
         style={{ width: `${value}px` }}
       >
         <img
+          alt="expect"
           src={expect}
           css={css`
             border: 1px solid #419d14;
@@ -65,6 +66,7 @@ export function SlideView({ actual, expect }: ViewProps) {
         />
       </div>
       <img
+        alt="actual"
         src={actual}
         css={css`
           border: 1px solid #d9472b;

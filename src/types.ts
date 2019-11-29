@@ -124,7 +124,7 @@ export interface CreeveyStoryParams {
     selenium: typeof Selenium,
     chai: typeof Chai,
   ) => {
-    [name: string]: (this: Context) => void;
+    [name: string]: (this: Context) => Promise<void>;
   };
   __filename?: string;
   // tests: {
@@ -167,6 +167,10 @@ export interface CreeveySuite {
   checked: boolean;
   indeterminate: boolean;
   children: { [title: string]: CreeveySuite | CreeveyTest };
+}
+
+export function noop(): void {
+  /* noop */
 }
 
 export function isTest<T1, T2 extends Test>(x: T1 | T2): x is T2 {

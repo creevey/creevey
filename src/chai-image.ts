@@ -13,8 +13,6 @@ const readFileAsync = promisify(fs.readFile);
 const writeFileAsync = promisify(fs.writeFile);
 const mkdirpAsync = promisify(mkdirp);
 
-function noop() {}
-
 async function getStat(filePath: string): Promise<Stats | null> {
   try {
     return await statAsync(filePath);
@@ -30,11 +28,13 @@ async function getLastImageNumber(imageDir: string, imageName: string): Promise<
   const actualImagesRegexp = new RegExp(`${imageName}-actual-(\\d+)\\.png`);
 
   try {
-    return (await readdirAsync(imageDir))
-      .map(filename => filename.replace(actualImagesRegexp, '$1'))
-      .map(Number)
-      .filter(x => !isNaN(x))
-      .sort((a, b) => b - a)[0];
+    return (
+      (await readdirAsync(imageDir))
+        .map(filename => filename.replace(actualImagesRegexp, '$1'))
+        .map(Number)
+        .filter(x => !isNaN(x))
+        .sort((a, b) => b - a)[0] ?? 0
+    );
   } catch (_error) {
     return 0;
   }
@@ -61,6 +61,13 @@ function normalizeImageSize(image: PNG, width: number, height: number): Buffer {
     }
   }
   return normalizedImage;
+}
+
+function hasDiffPixels(diff: Buffer): boolean {
+  for (let i = 0; i < diff.length; i += 4) {
+    if (diff[i + 0] == 255 && diff[i + 1] == 0 && diff[i + 2] == 0 && diff[i + 3] == 255) return true;
+  }
+  return false;
 }
 
 function compareImages(expect: Buffer, actual: Buffer, threshold: number): { isEqual: boolean; diff: Buffer } {
@@ -90,22 +97,14 @@ function compareImages(expect: Buffer, actual: Buffer, threshold: number): { isE
   };
 }
 
-function hasDiffPixels(diff: Buffer) {
-  for (let i = 0; i < diff.length; i += 4) {
-    if (diff[i + 0] == 255 && diff[i + 1] == 0 && diff[i + 2] == 0 && diff[i + 3] == 255) return true;
-  }
-  return false;
-}
-
 // NOTE Chai don't have right types, see https://github.com/DefinitelyTyped/DefinitelyTyped/issues/29922
 export default (
   config: Config,
   context: string[],
-  onSaveImage: (imageName: string, imageNumber: number, type: keyof Images) => void = noop,
+  onSaveImage: (imageName: string, imageNumber: number, type: keyof Images) => void = () => {},
 ) =>
-  function chaiImage({ Assertion }: any, utils: Chai.ChaiUtils) {
-    utils.addMethod(Assertion.prototype, 'matchImage', async function matchImage(imageName?: string) {
-      //@ts-ignore on @types/chai@4.2.0 `utils.addMethod` contains broken typings
+  function chaiImage({ Assertion }: Chai.ChaiStatic, utils: Chai.ChaiUtils) {
+    utils.addMethod(Assertion.prototype, 'matchImage', async function matchImage(this: object, imageName?: string) {
       const actualBase64: string = utils.flag(this, 'object');
       const actual = Buffer.from(actualBase64, 'base64');
 
@@ -151,7 +150,7 @@ export default (
       throw new Error(`Expected image '${imageName}' to match ${equalBySize ? 'but was equal by size' : ''}`);
     });
 
-    utils.addMethod(Assertion.prototype, 'matchImages', async function matchImages() {
+    utils.addMethod(Assertion.prototype, 'matchImages', function matchImages() {
       // images object
       throw new Error('Not Implemented');
     });

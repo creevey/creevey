@@ -8,19 +8,15 @@ interface TestTreeProps {
   testOrSuite: CreeveySuite | CreeveyTest;
 }
 
-export class TestTree extends React.Component<TestTreeProps> {
-  render() {
-    const { testOrSuite, title } = this.props;
-
-    if (isTest(testOrSuite)) {
-      return <TestLink title={title} test={testOrSuite} />;
-    }
-    return (
-      <SuiteLink title={title} suite={testOrSuite}>
-        {Object.entries(testOrSuite.children).map(([childTitle, suite]) => (
-          <TestTree key={childTitle} title={childTitle} testOrSuite={suite} />
-        ))}
-      </SuiteLink>
-    );
+export function TestTree({ testOrSuite, title }: TestTreeProps): JSX.Element {
+  if (isTest(testOrSuite)) {
+    return <TestLink title={title} test={testOrSuite} />;
   }
+  return (
+    <SuiteLink title={title} suite={testOrSuite}>
+      {Object.entries(testOrSuite.children).map(([childTitle, suite]) => (
+        <TestTree key={childTitle} title={childTitle} testOrSuite={suite} />
+      ))}
+    </SuiteLink>
+  );
 }

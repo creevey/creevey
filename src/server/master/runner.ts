@@ -38,7 +38,7 @@ export default class Runner extends EventEmitter {
       .map(pool => pool.on('test', this.handlePoolMessage));
   }
 
-  private handlePoolMessage = (message: { id: string; status: TestStatus; result?: TestResult }) => {
+  private handlePoolMessage = (message: { id: string; status: TestStatus; result?: TestResult }): void => {
     const { id, status, result } = message;
     const test = this.tests[id];
     if (!test) return;
@@ -54,7 +54,7 @@ export default class Runner extends EventEmitter {
     this.sendUpdate({ tests: { [id]: { path: test.path, status, results: [result] } } });
   };
 
-  private handlePoolStop = () => {
+  private handlePoolStop = (): void => {
     if (!this.isRunning) {
       this.sendUpdate({ isRunning: false });
       this.emit('stop');
@@ -78,7 +78,7 @@ export default class Runner extends EventEmitter {
     return poolTests;
   }
 
-  public start(ids: string[]) {
+  public start(ids: string[]): void {
     interface TestsByBrowser {
       [browser: string]: { id: string; path: string[] }[];
     }
@@ -94,7 +94,7 @@ export default class Runner extends EventEmitter {
     this.sendUpdate({
       isRunning: true,
       tests: testsToStart.reduce(
-        (update, { id }) => ({ ...update, [id]: { path: this.tests[id]!.path, status: 'pending' } }),
+        (update, { id }) => ({ ...update, [id]: { path: this.tests[id]?.path, status: 'pending' } }),
         {},
       ),
     });
@@ -119,7 +119,7 @@ export default class Runner extends EventEmitter {
     });
   }
 
-  public stop() {
+  public stop(): void {
     if (!this.isRunning) return;
     this.browsers.forEach(browser => this.pools[browser].stop());
   }
@@ -131,7 +131,7 @@ export default class Runner extends EventEmitter {
     };
   }
 
-  public async approve({ id, retry, image }: ApprovePayload) {
+  public async approve({ id, retry, image }: ApprovePayload): Promise<void> {
     const test = this.tests[id];
     if (!test || !test.results) return;
     const result = test.results[retry];
@@ -151,7 +151,7 @@ export default class Runner extends EventEmitter {
     this.sendUpdate({ tests: { [id]: { path: test.path, approved: { [image]: retry } } } });
   }
 
-  private sendUpdate(data: CreeveyUpdate) {
+  private sendUpdate(data: CreeveyUpdate): void {
     this.emit('update', data);
   }
 }

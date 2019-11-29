@@ -1,4 +1,4 @@
-import { Response, Request, CreeveyUpdate, CreeveyStatus } from '../types';
+import { Response, Request, CreeveyUpdate, CreeveyStatus, noop } from '../types';
 
 export interface CreeveyClientApi {
   start: (ids: string[]) => void;
@@ -8,15 +8,18 @@ export interface CreeveyClientApi {
   readonly status: Promise<CreeveyStatus>;
 }
 
-function noop() {}
-
 export async function initCreeveyClientApi(): Promise<CreeveyClientApi> {
-  let clientApiResolver: Function = noop;
+  let clientApiResolver: (api: CreeveyClientApi) => void = noop;
   const updateListeners: Set<(update: CreeveyUpdate) => void> = new Set();
   let statusRequest: Promise<CreeveyStatus> | null = null;
   let statusResolver: (status: CreeveyStatus) => void = noop;
 
   const ws = new WebSocket(`ws://${window.location.host}`);
+
+  function send(request: Request): void {
+    ws.send(JSON.stringify(request));
+  }
+
   ws.addEventListener('open', () => {
     clientApiResolver({
       start(ids: string[]) {
@@ -53,10 +56,6 @@ export async function initCreeveyClientApi(): Promise<CreeveyClientApi> {
   });
 
   // TODO Reconnect
-
-  function send(request: Request) {
-    ws.send(JSON.stringify(request));
-  }
 
   return new Promise(resolve => (clientApiResolver = resolve));
 }

@@ -15,11 +15,12 @@ export const defaultConfig: Omit<Config, 'gridUrl' | 'testDir'> = {
   browsers: { chrome: true },
 };
 
-function registerCompiler(moduleDescriptor: Extension | null) {
+function registerCompiler(moduleDescriptor: Extension | null): void {
   if (moduleDescriptor) {
     if (typeof moduleDescriptor === 'string') {
       require(moduleDescriptor);
     } else if (!Array.isArray(moduleDescriptor)) {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
       moduleDescriptor.register(require(moduleDescriptor.module));
     } else {
       moduleDescriptor.find(extension => {
@@ -53,6 +54,7 @@ export function readConfig(configPath: string): Config | undefined {
     registerCompiler(extensions[ext]);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const configModule = require(configPath);
   const userConfig: Config = configModule && configModule.__esModule ? configModule.default : configModule;
   const config = { ...defaultConfig, ...userConfig };
