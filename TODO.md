@@ -139,7 +139,8 @@
 
 ## Not in first time
 
-- [ ] Husky, lint-staged
+- [x] Husky, lint-staged
+- [ ] Add `babel-plugin-typescript-to-proptypes`
 - [ ] Github Actions
 - [ ] Storybook integration
   - [ ] Support stories separators https://storybook.js.org/docs/basics/writing-stories/#story-hierarchy

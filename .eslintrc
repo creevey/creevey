@@ -1,15 +1,61 @@
 {
-  "extends": ["prettier", "airbnb", "airbnb/hooks"],
-  "plugins": ["@typescript-eslint", "react", "import", "react-hooks", "jsx-a11y"],
+  "parser": "@typescript-eslint/parser",
+  "extends": [
+    "eslint:recommended",
+    "plugin:import/recommended",
+    "plugin:import/typescript",
+    "plugin:jsx-a11y/recommended",
+    "plugin:react/recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "prettier",
+    "prettier/@typescript-eslint"
+  ],
+  "plugins": [
+    "@typescript-eslint",
+    "react",
+    "import",
+    "react-hooks",
+    "jsx-a11y"
+  ],
   "parserOptions": {
     "ecmaVersion": 2020,
     "sourceType": "module",
+    "project": "./tsconfig.json",
     "ecmaFeatures": {
       "jsx": true
+    }
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
     }
   },
   "env": {
     "browser": true,
     "node": true
-  }
+  },
+  "rules": {
+    "react-hooks/rules-of-hooks": "error", // Checks rules of Hooks
+    "react-hooks/exhaustive-deps": "warn", // Checks effect dependencies,
+    "react/prop-types": "off",
+    "@typescript-eslint/explicit-function-return-type": [
+      "warn",
+      {
+        "allowExpressions": true,
+        "allowTypedFunctionExpressions": true
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/*.stories.tsx"
+      ],
+      "rules": {
+        "@typescript-eslint/explicit-function-return-type": "off"
+      }
+    }
+  ]
 }
