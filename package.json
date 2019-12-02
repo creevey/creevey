@@ -19,7 +19,7 @@
     "lint": "npm-run-all --continue-on-error --parallel lint:*",
     "lint:tsc": "tsc --noEmit",
     "lint:eslint": "eslint --ext .js,.ts,.tsx ./",
-    "lint:prettier": "prettier --check *.{md,js,ts} ./**/*.{js,ts,tsx}",
+    "lint:prettier": "prettier --check *.{md,json,js,ts} ./**/*.{js,ts,tsx}",
     "test": "npm-run-all --parallel test:*",
     "test:unit": "mocha --opts mocha.opts",
     "test:ui": "node --require ./scripts/babel-register -- src/cli",
@@ -29,7 +29,7 @@
     "start:creevey": "wait-on -t 30000 http-get://localhost:6006/ && node --require ./scripts/babel-register -- src/cli --ui",
     "fix": "npm-run-all fix:*",
     "fix:eslint": "eslint --fix ./",
-    "fix:prettier": "prettier --write *.{md,js,ts} ./**/*.{js,ts,tsx}",
+    "fix:prettier": "prettier --write *.{md,json,js,ts} ./**/*.{js,ts,tsx}",
     "prebuild": "yarn clean && mkdir lib",
     "build": "npm-run-all --continue-on-error --parallel build:*",
     "build:types": "tsc --emitDeclarationOnly -p scripts/tsconfig.prod.json",
@@ -142,8 +142,12 @@
     }
   },
   "lint-staged": {
-    "**/*.ts?(x)": [
+    "**/*.(j|t)s?(x)": [
       "eslint --fix",
+      "prettier --write",
+      "git add"
+    ],
+    "**/*.(md|json)": [
       "prettier --write",
       "git add"
     ]
