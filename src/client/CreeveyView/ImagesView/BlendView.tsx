@@ -1,6 +1,6 @@
-import React from "react";
-import { css } from "@emotion/core";
-import { ViewProps } from "./ImagesView";
+import React from 'react';
+import { css } from '@emotion/core';
+import { ViewProps } from './ImagesView';
 
 export function BlendView({ actual, expect }: ViewProps) {
   return (

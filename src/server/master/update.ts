@@ -1,7 +1,7 @@
-import fs, { Dirent } from "fs";
-import path from "path";
-import mkdirp from "mkdirp";
-import { Config, isDefined } from "../../types";
+import fs, { Dirent } from 'fs';
+import path from 'path';
+import mkdirp from 'mkdirp';
+import { Config, isDefined } from '../../types';
 
 const actualRegex = /^(.*)-actual-(\d+)\.png$/i;
 

@@ -1,15 +1,20 @@
-import React from "react";
+import React from 'react';
+import { CreeveySuite } from 'src/types';
 
 export interface CreeveyContextType {
-  onTestResultsOpen: (path: string[]) => void;
-  onTestToogle: (path: string[], checked: boolean) => void;
+  isRunning: boolean;
+  onStop: () => void;
+  onStart: (rootSuite: CreeveySuite) => void;
+  onTestOrSuiteToggle: (path: string[], checked: boolean) => void;
   onImageApprove: (id: string, retry: number, image: string) => void;
 }
 
 function noop() {}
 
 export const CreeveyContex = React.createContext<CreeveyContextType>({
-  onTestResultsOpen: noop,
-  onTestToogle: noop,
-  onImageApprove: noop
+  isRunning: false,
+  onStop: noop,
+  onStart: noop,
+  onTestOrSuiteToggle: noop,
+  onImageApprove: noop,
 });

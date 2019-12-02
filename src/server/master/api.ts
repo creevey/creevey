@@ -1,6 +1,6 @@
-import WebSocket from "ws";
-import Runner from "./runner";
-import { Request, Response, CreeveyUpdate } from "../../types";
+import WebSocket from 'ws';
+import Runner from './runner';
+import { Request, Response, CreeveyUpdate } from '../../types';
 
 export interface CreeveyApi {
   subscribe: (wss: WebSocket.Server) => void;
@@ -18,14 +18,14 @@ function broadcast(wss: WebSocket.Server, message: Response) {
 export default function creeveyApi(runner: Runner): CreeveyApi {
   return {
     subscribe(wss: WebSocket.Server) {
-      runner.on("update", (payload: CreeveyUpdate) => {
-        broadcast(wss, { type: "update", payload });
+      runner.on('update', (payload: CreeveyUpdate) => {
+        broadcast(wss, { type: 'update', payload });
       });
     },
 
     handleMessage(ws: WebSocket, message: WebSocket.Data) {
-      if (typeof message != "string") {
-        console.log("[WebSocket]:", "unhandled message", message);
+      if (typeof message != 'string') {
+        console.log('[WebSocket]:', 'unhandled message', message);
         return;
       }
 
@@ -33,23 +33,23 @@ export default function creeveyApi(runner: Runner): CreeveyApi {
       // console.log("[WebSocket]:", "message", message);
 
       switch (command.type) {
-        case "status": {
-          ws.send(JSON.stringify({ type: "status", payload: runner.status }));
+        case 'status': {
+          ws.send(JSON.stringify({ type: 'status', payload: runner.status }));
           return;
         }
-        case "start": {
+        case 'start': {
           runner.start(command.payload);
           return;
         }
-        case "stop": {
+        case 'stop': {
           runner.stop();
           return;
         }
-        case "approve": {
+        case 'approve': {
           runner.approve(command.payload);
           return;
         }
       }
-    }
+    },
   };
 }

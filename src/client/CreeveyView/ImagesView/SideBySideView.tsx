@@ -1,6 +1,6 @@
-import React from "react";
-import { css } from "@emotion/core";
-import { ViewProps } from "./ImagesView";
+import React from 'react';
+import { css } from '@emotion/core';
+import { ViewProps } from './ImagesView';
 
 export function SideBySideView({ actual, diff, expect }: ViewProps) {
   return (

@@ -1,6 +1,6 @@
-import chalk from "chalk";
-import { Runner, reporters, MochaOptions } from "mocha";
-import { Images, isDefined } from "../../types";
+import chalk from 'chalk';
+import { Runner, reporters, MochaOptions } from 'mocha';
+import { Images, isDefined } from '../../types';
 
 export class CreeveyReporter extends reporters.Base {
   constructor(runner: Runner, options: MochaOptions) {
@@ -8,18 +8,18 @@ export class CreeveyReporter extends reporters.Base {
 
     const topLevelSuite = options.reporterOptions.topLevelSuite;
 
-    runner.on("test", test =>
-      console.log(`[${chalk.yellow("START")}:${topLevelSuite}:${process.pid}]`, chalk.cyan(test.titlePath().join("/")))
+    runner.on('test', test =>
+      console.log(`[${chalk.yellow('START')}:${topLevelSuite}:${process.pid}]`, chalk.cyan(test.titlePath().join('/'))),
     );
-    runner.on("pass", test =>
-      console.log(`[${chalk.green("PASS")}:${topLevelSuite}:${process.pid}]`, chalk.cyan(test.titlePath().join("/")))
+    runner.on('pass', test =>
+      console.log(`[${chalk.green('PASS')}:${topLevelSuite}:${process.pid}]`, chalk.cyan(test.titlePath().join('/'))),
     );
-    runner.on("fail", (test, error) =>
+    runner.on('fail', (test, error) =>
       console.log(
-        `[${chalk.red("FAIL")}:${topLevelSuite}:${process.pid}]`,
-        chalk.cyan(test.titlePath().join("/")),
-        error instanceof Error ? error.stack || error.message : error
-      )
+        `[${chalk.red('FAIL')}:${topLevelSuite}:${process.pid}]`,
+        chalk.cyan(test.titlePath().join('/')),
+        error instanceof Error ? error.stack || error.message : error,
+      ),
     );
   }
 }
@@ -37,17 +37,17 @@ export class TeamcityReporter extends reporters.Base {
       }>;
     };
 
-    runner.on("suite", suite =>
+    runner.on('suite', suite =>
       suite.root
         ? console.log(`##teamcity[testSuiteStarted name='${topLevelSuite}' flowId='${process.pid}']`)
-        : console.log(`##teamcity[testSuiteStarted name='${this.escape(suite.title)}' flowId='${process.pid}']`)
+        : console.log(`##teamcity[testSuiteStarted name='${this.escape(suite.title)}' flowId='${process.pid}']`),
     );
 
-    runner.on("test", test =>
-      console.log(`##teamcity[testStarted name='${this.escape(test.title)}' flowId='${process.pid}']`)
+    runner.on('test', test =>
+      console.log(`##teamcity[testStarted name='${this.escape(test.title)}' flowId='${process.pid}']`),
     );
 
-    runner.on("fail", (test, error) => {
+    runner.on('fail', (test, error) => {
       Object.entries(images()).forEach(([name, image]) => {
         if (!image) return;
         Object.values(image)
@@ -58,10 +58,10 @@ export class TeamcityReporter extends reporters.Base {
               `##teamcity[testMetadata testName='${this.escape(test.title)}' type='image' value='${reportDir}/${test
                 .titlePath()
                 .map(this.escape)
-                .join("/")}/${name == topLevelSuite ? fileName : `${topLevelSuite}/${fileName}`}' flowId='${
+                .join('/')}/${name == topLevelSuite ? fileName : `${topLevelSuite}/${fileName}`}' flowId='${
                 process.pid
-              }']`
-            )
+              }']`,
+            ),
           );
       });
 
@@ -71,48 +71,48 @@ export class TeamcityReporter extends reporters.Base {
         ? console.log(`##teamcity[testFinished name='${this.escape(test.title)}' flowId='${process.pid}']`)
         : console.log(
             `##teamcity[testFailed name='${this.escape(test.title)}' message='${this.escape(
-              error.message
-            )}' details='${this.escape(error.stack)}' flowId='${process.pid}']`
+              error.message,
+            )}' details='${this.escape(error.stack)}' flowId='${process.pid}']`,
           );
     });
 
-    runner.on("pending", test =>
+    runner.on('pending', test =>
       console.log(
         `##teamcity[testIgnored name='${this.escape(test.title)}' message='${this.escape(
-          typeof test.skipReason == "boolean" ? test.title : test.skipReason
-        )}' flowId='${process.pid}']`
-      )
+          typeof test.skipReason == 'boolean' ? test.title : test.skipReason,
+        )}' flowId='${process.pid}']`,
+      ),
     );
 
-    runner.on("test end", test =>
-      console.log(`##teamcity[testFinished name='${this.escape(test.title)}' flowId='${process.pid}']`)
+    runner.on('test end', test =>
+      console.log(`##teamcity[testFinished name='${this.escape(test.title)}' flowId='${process.pid}']`),
     );
 
     runner.on(
-      "suite end",
+      'suite end',
       suite =>
         suite.root ||
-        console.log(`##teamcity[testSuiteFinished name='${this.escape(suite.title)}' flowId='${process.pid}']`)
+        console.log(`##teamcity[testSuiteFinished name='${this.escape(suite.title)}' flowId='${process.pid}']`),
     );
 
-    runner.on("end", () =>
-      console.log(`##teamcity[testSuiteFinished name='${topLevelSuite}' flowId='${process.pid}']`)
+    runner.on('end', () =>
+      console.log(`##teamcity[testSuiteFinished name='${topLevelSuite}' flowId='${process.pid}']`),
     );
   }
 
   private escape(str: string) {
-    if (!str) return "";
+    if (!str) return '';
     return str
       .toString()
-      .replace(/\x1B.*?m/g, "")
-      .replace(/\|/g, "||")
-      .replace(/\n/g, "|n")
-      .replace(/\r/g, "|r")
-      .replace(/\[/g, "|[")
-      .replace(/\]/g, "|]")
-      .replace(/\u0085/g, "|x")
-      .replace(/\u2028/g, "|l")
-      .replace(/\u2029/g, "|p")
+      .replace(/\x1B.*?m/g, '')
+      .replace(/\|/g, '||')
+      .replace(/\n/g, '|n')
+      .replace(/\r/g, '|r')
+      .replace(/\[/g, '|[')
+      .replace(/\]/g, '|]')
+      .replace(/\u0085/g, '|x')
+      .replace(/\u2028/g, '|l')
+      .replace(/\u2029/g, '|p')
       .replace(/'/g, "|'");
   }
 }

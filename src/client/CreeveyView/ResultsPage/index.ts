@@ -1,0 +1,1 @@
+export { ResultsPage } from './ResultsPage';

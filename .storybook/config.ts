@@ -1,6 +1,6 @@
-import { configure, addDecorator } from "@storybook/react";
-import { withCreevey } from "../src/storybook";
+import { configure, addDecorator } from '@storybook/react';
+import { withCreevey } from '../src/storybook';
 
-addDecorator(withCreevey({ captureElement: "#root" }));
+addDecorator(withCreevey({ captureElement: '#root' }));
 
-configure(require.context("../stories", true, /\.stories\.tsx$/), module);
+configure(require.context('../stories', true, /\.stories\.tsx$/), module);

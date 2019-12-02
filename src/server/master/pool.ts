@@ -1,6 +1,6 @@
-import cluster from "cluster";
-import { EventEmitter } from "events";
-import { Worker, Config, TestResult, BrowserConfig, WorkerMessage, TestStatus, Test } from "../../types";
+import cluster from 'cluster';
+import { EventEmitter } from 'events';
+import { Worker, Config, TestResult, BrowserConfig, WorkerMessage, TestStatus, Test } from '../../types';
 
 export default class Pool extends EventEmitter {
   private maxRetries: number;
@@ -22,18 +22,18 @@ export default class Pool extends EventEmitter {
 
   init(): Promise<Partial<{ [id: string]: Test }> | undefined> {
     this.workers = Array.from({ length: this.config.limit || 1 }).map(() => {
-      cluster.setupMaster({ args: ["--browser", this.browser, ...process.argv.slice(2)] });
+      cluster.setupMaster({ args: ['--browser', this.browser, ...process.argv.slice(2)] });
       const worker = cluster.fork();
       this.exitHandler(worker);
       return worker;
     });
     // TODO handle errors
     return Promise.all(
-      this.workers.map(worker => new Promise((resolve: (value: string) => void) => worker.once("message", resolve)))
+      this.workers.map(worker => new Promise((resolve: (value: string) => void) => worker.once('message', resolve))),
     ).then(([data]) => {
       const message: WorkerMessage = JSON.parse(data);
-      if (message.type == "ready") return message.payload.tests;
-      if (message.type == "error") throw message.payload.error;
+      if (message.type == 'ready') return message.payload.tests;
+      if (message.type == 'error') throw message.payload.error;
     });
   }
 
@@ -63,7 +63,7 @@ export default class Pool extends EventEmitter {
 
     if (this.queue.length == 0 && this.workers.length === this.freeWorkers.length) {
       this.forcedStop = false;
-      this.emit("stop");
+      this.emit('stop');
       return;
     }
 
@@ -73,17 +73,17 @@ export default class Pool extends EventEmitter {
 
     this.queue.shift();
 
-    this.sendStatus({ id, status: "running" });
+    this.sendStatus({ id, status: 'running' });
 
     worker.isRunnning = true;
-    worker.once("message", data => {
+    worker.once('message', data => {
       const message: WorkerMessage = JSON.parse(data);
-      if (message.type == "ready") return;
-      if (message.type == "error") worker.kill();
+      if (message.type == 'ready') return;
+      if (message.type == 'error') worker.kill();
 
       const { payload: result } = message;
       const { status } = result;
-      const shouldRetry = status == "failed" && test.retries < this.maxRetries && !this.forcedStop;
+      const shouldRetry = status == 'failed' && test.retries < this.maxRetries && !this.forcedStop;
 
       if (shouldRetry) {
         test.retries += 1;
@@ -100,7 +100,7 @@ export default class Pool extends EventEmitter {
   }
 
   private sendStatus(message: { id: string; status: TestStatus; result?: TestResult }) {
-    this.emit("test", message);
+    this.emit('test', message);
   }
 
   private getFreeWorker(): Worker | undefined {
@@ -116,12 +116,12 @@ export default class Pool extends EventEmitter {
   }
 
   private exitHandler(worker: Worker) {
-    worker.once("exit", () => {
-      cluster.setupMaster({ args: ["--browser", this.browser, ...process.argv.slice(2)] });
+    worker.once('exit', () => {
+      cluster.setupMaster({ args: ['--browser', this.browser, ...process.argv.slice(2)] });
       const newWorker = cluster.fork();
       this.exitHandler(newWorker);
       // TODO handle errors
-      newWorker.once("message", () => {
+      newWorker.once('message', () => {
         this.workers[this.workers.indexOf(worker)] = newWorker;
         this.process();
       });

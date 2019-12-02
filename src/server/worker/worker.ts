@@ -1,30 +1,30 @@
-import "jsdom-global/register";
-import chai from "chai";
-import chalk from "chalk";
-import Mocha, { Suite, Context, AsyncFunc } from "mocha";
-import { addHook } from "pirates";
-import { Config, Images, Options, StoriesRaw, BrowserConfig } from "../../types";
-import { getBrowser, switchStory } from "../../utils";
-import chaiImage from "../../chai-image";
-import { Loader } from "../../loader";
-import { CreeveyReporter, TeamcityReporter } from "./reporter";
-import { convertStories } from "./stories";
+import 'jsdom-global/register';
+import chai from 'chai';
+import chalk from 'chalk';
+import Mocha, { Suite, Context, AsyncFunc } from 'mocha';
+import { addHook } from 'pirates';
+import { Config, Images, Options, StoriesRaw, BrowserConfig } from '../../types';
+import { getBrowser, switchStory } from '../../utils';
+import chaiImage from '../../chai-image';
+import { Loader } from '../../loader';
+import { CreeveyReporter, TeamcityReporter } from './reporter';
+import { convertStories } from './stories';
 
 // After end of each suite mocha clean all hooks and don't allow re-run tests without full re-init
 // @ts-ignore see issue for more info https://github.com/mochajs/mocha/issues/2783
 Suite.prototype.cleanReferences = () => {};
 
 function patchMochaInterface(suite: Suite) {
-  suite.on("pre-require", context => {
+  suite.on('pre-require', context => {
     // @ts-ignore
     context.it.skip = (_browsers: string[], title: string, fn?: AsyncFunc) => context.it(title, fn);
   });
 }
 
 // TODO Define other extensions
-addHook(() => "", {
-  exts: [".css", ".png"],
-  ignoreNodeModules: false
+addHook(() => '', {
+  exts: ['.css', '.png'],
+  ignoreNodeModules: false,
 });
 
 // FIXME browser options hotfix
@@ -37,12 +37,12 @@ export default async function worker(config: Config, options: Options & { browse
   function runHandler(failures: number) {
     if (process.send) {
       if (failures > 0) {
-        const isTimeout = typeof error == "string" && error.toLowerCase().includes("timeout");
+        const isTimeout = typeof error == 'string' && error.toLowerCase().includes('timeout');
         process.send(
-          JSON.stringify({ type: isTimeout ? "error" : "test", payload: { status: "failed", images, error } })
+          JSON.stringify({ type: isTimeout ? 'error' : 'test', payload: { status: 'failed', images, error } }),
         );
       } else {
-        process.send(JSON.stringify({ type: "test", payload: { status: "success", images } }));
+        process.send(JSON.stringify({ type: 'test', payload: { status: 'success', images } }));
       }
     }
     // TODO Should we move into `process.on`?
@@ -51,13 +51,13 @@ export default async function worker(config: Config, options: Options & { browse
     isRunning = false;
   }
 
-  process.on("unhandledRejection", reason => {
+  process.on('unhandledRejection', reason => {
     if (process.send) {
       error = reason instanceof Error ? reason.stack || reason.message : reason;
       if (isRunning) {
-        console.log(`[${chalk.red("FAIL")}:${options.browser}:${process.pid}]`, chalk.cyan(testScope.join("/")), error);
+        console.log(`[${chalk.red('FAIL')}:${options.browser}:${process.pid}]`, chalk.cyan(testScope.join('/')), error);
       }
-      process.send(JSON.stringify({ type: "error", payload: { status: "failed", images, error } }));
+      process.send(JSON.stringify({ type: 'error', payload: { status: 'failed', images, error } }));
     }
   });
 
@@ -73,8 +73,8 @@ export default async function worker(config: Config, options: Options & { browse
       reportDir: config.reportDir,
       topLevelSuite: options.browser,
       willRetry: () => retries < config.maxRetries,
-      images: () => images
-    }
+      images: () => images,
+    },
   });
   const browserConfig = config.browsers[options.browser] as BrowserConfig;
   const browser = await getBrowser(config, browserConfig);
@@ -100,27 +100,27 @@ export default async function worker(config: Config, options: Options & { browse
   mocha.suite.beforeEach(switchStory);
   patchMochaInterface(mocha.suite);
 
-  process.on("message", message => {
+  process.on('message', message => {
     isRunning = true;
     const test: { id: string; path: string[]; retries: number } = JSON.parse(message);
     retries = test.retries;
     const testPath = [...test.path]
       .reverse()
-      .join(" ")
-      .replace(/[|\\{}()[\]^$+*?.-]/g, "\\$&");
+      .join(' ')
+      .replace(/[|\\{}()[\]^$+*?.-]/g, '\\$&');
 
     mocha.grep(new RegExp(`^${testPath}$`));
     const runner = mocha.run(runHandler);
 
     // TODO How handle browser corruption?
-    runner.on("fail", (_test, reason) => (error = reason instanceof Error ? reason.stack || reason.message : reason));
+    runner.on('fail', (_test, reason) => (error = reason instanceof Error ? reason.stack || reason.message : reason));
   });
 
   setInterval(() => browser.getTitle(), 30 * 1000);
 
-  console.log("[CreeveyWorker]:", `Ready ${options.browser}:${process.pid}`);
+  console.log('[CreeveyWorker]:', `Ready ${options.browser}:${process.pid}`);
 
   if (process.send) {
-    process.send(JSON.stringify({ type: "ready", payload: { tests } }));
+    process.send(JSON.stringify({ type: 'ready', payload: { tests } }));
   }
 }

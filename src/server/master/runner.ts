@@ -1,8 +1,8 @@
-import path from "path";
-import { copyFile } from "fs";
-import { promisify } from "util";
-import { EventEmitter } from "events";
-import mkdirp from "mkdirp";
+import path from 'path';
+import { copyFile } from 'fs';
+import { promisify } from 'util';
+import { EventEmitter } from 'events';
+import mkdirp from 'mkdirp';
 import {
   Config,
   Test,
@@ -11,9 +11,9 @@ import {
   ApprovePayload,
   isDefined,
   CreeveyUpdate,
-  TestStatus
-} from "../../types";
-import Pool from "./pool";
+  TestStatus,
+} from '../../types';
+import Pool from './pool';
 
 const copyFileAsync = promisify(copyFile);
 const mkdirpAsync = promisify(mkdirp);
@@ -35,7 +35,7 @@ export default class Runner extends EventEmitter {
     this.browsers = Object.keys(config.browsers);
     this.browsers
       .map(browser => (this.pools[browser] = new Pool(config, browser)))
-      .map(pool => pool.on("test", this.handlePoolMessage));
+      .map(pool => pool.on('test', this.handlePoolMessage));
   }
 
   private handlePoolMessage = (message: { id: string; status: TestStatus; result?: TestResult }) => {
@@ -57,7 +57,7 @@ export default class Runner extends EventEmitter {
   private handlePoolStop = () => {
     if (!this.isRunning) {
       this.sendUpdate({ isRunning: false });
-      this.emit("stop");
+      this.emit('stop');
     }
   };
 
@@ -73,7 +73,7 @@ export default class Runner extends EventEmitter {
           .forEach(test => {
             poolTests[test.id] = test;
           });
-      })
+      }),
     );
     return poolTests;
   }
@@ -94,18 +94,18 @@ export default class Runner extends EventEmitter {
     this.sendUpdate({
       isRunning: true,
       tests: testsToStart.reduce(
-        (update, { id }) => ({ ...update, [id]: { path: this.tests[id]!.path, status: "pending" } }),
-        {}
-      )
+        (update, { id }) => ({ ...update, [id]: { path: this.tests[id]!.path, status: 'pending' } }),
+        {},
+      ),
     });
 
     const testsByBrowser: Partial<TestsByBrowser> = testsToStart.reduce((tests: TestsByBrowser, test) => {
       const { id, path } = test;
       const [browser, ...restPath] = path;
-      test.status = "pending";
+      test.status = 'pending';
       return {
         ...tests,
-        [browser]: [...(tests[browser] || []), { id, path: restPath }]
+        [browser]: [...(tests[browser] || []), { id, path: restPath }],
       };
     }, {});
 
@@ -114,7 +114,7 @@ export default class Runner extends EventEmitter {
       const tests = testsByBrowser[browser];
 
       if (tests && tests.length > 0 && pool.start(tests)) {
-        pool.once("stop", this.handlePoolStop);
+        pool.once('stop', this.handlePoolStop);
       }
     });
   }
@@ -127,7 +127,7 @@ export default class Runner extends EventEmitter {
   public get status(): CreeveyStatus {
     return {
       isRunning: this.isRunning,
-      tests: this.tests
+      tests: this.tests,
     };
   }
 
@@ -142,7 +142,7 @@ export default class Runner extends EventEmitter {
       test.approved = {};
     }
     const [browser, ...restPath] = test.path;
-    const testPath = path.join(...restPath.reverse(), image == browser ? "" : browser);
+    const testPath = path.join(...restPath.reverse(), image == browser ? '' : browser);
     const srcImagePath = path.join(this.reportDir, testPath, images.actual);
     const dstImagePath = path.join(this.screenDir, testPath, `${image}.png`);
     await mkdirpAsync(path.join(this.screenDir, testPath));
@@ -152,6 +152,6 @@ export default class Runner extends EventEmitter {
   }
 
   private sendUpdate(data: CreeveyUpdate) {
-    this.emit("update", data);
+    this.emit('update', data);
   }
 }

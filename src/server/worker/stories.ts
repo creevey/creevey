@@ -1,11 +1,11 @@
-import path from "path";
-import { PNG } from "pngjs";
-import chai, { expect } from "chai";
-import { Suite, Context, Test } from "mocha";
-import selenium, { By, WebDriver } from "selenium-webdriver";
-import { CreeveyStories, isDefined, Test as CreeveyTest, CreeveyStoryParams } from "../../types";
-import { shouldSkip } from "../../utils";
-import { createHash } from "crypto";
+import path from 'path';
+import { PNG } from 'pngjs';
+import chai, { expect } from 'chai';
+import { Suite, Context, Test } from 'mocha';
+import selenium, { By, WebDriver } from 'selenium-webdriver';
+import { CreeveyStories, isDefined, Test as CreeveyTest, CreeveyStoryParams } from '../../types';
+import { shouldSkip } from '../../utils';
+import { createHash } from 'crypto';
 
 async function hideBrowserScroll(browser: WebDriver) {
   const HideScrollStyles = `
@@ -20,9 +20,9 @@ html::-webkit-scrollbar {
 `;
   // @ts-ignore
   await browser.executeScript(function(stylesheet) {
-    var style = document.createElement("style");
+    var style = document.createElement('style');
     var textnode = document.createTextNode(stylesheet);
-    style.setAttribute("type", "text/css");
+    style.setAttribute('type', 'text/css');
     style.appendChild(textnode);
     document.head.appendChild(style);
     // @ts-ignore
@@ -48,7 +48,7 @@ html::-webkit-scrollbar {
 async function takeCompositeScreenshot(
   browser: WebDriver,
   windowSize: { width: number; height: number },
-  elementRect: DOMRect
+  elementRect: DOMRect,
 ) {
   const screens = [];
   const cols = Math.ceil(elementRect.width / windowSize.width);
@@ -63,7 +63,7 @@ async function takeCompositeScreenshot(
       const dx = Math.min(windowSize.width * col + elementRect.left, Math.max(0, elementRect.right - windowSize.width));
       const dy = Math.min(
         windowSize.height * row + elementRect.top,
-        Math.max(0, elementRect.bottom - windowSize.height)
+        Math.max(0, elementRect.bottom - windowSize.height),
       );
       await browser.executeScript(
         // @ts-ignore
@@ -71,13 +71,13 @@ async function takeCompositeScreenshot(
           window.scrollTo(x, y);
         },
         dx,
-        dy
+        dy,
       );
       screens.push(await browser.takeScreenshot());
     }
   }
 
-  const images = screens.map(s => Buffer.from(s, "base64")).map(b => PNG.sync.read(b));
+  const images = screens.map(s => Buffer.from(s, 'base64')).map(b => PNG.sync.read(b));
   const compositeImage = new PNG({ width: elementRect.width, height: elementRect.height });
 
   for (let y = 0; y < elementRect.height; y += 1) {
@@ -98,7 +98,7 @@ async function takeCompositeScreenshot(
       compositeImage.data[i + 3] = image.data[j + 3];
     }
   }
-  return PNG.sync.write(compositeImage).toString("base64");
+  return PNG.sync.write(compositeImage).toString('base64');
 }
 
 async function takeScreenshot(browser: WebDriver, captureElement?: string) {
@@ -108,7 +108,7 @@ async function takeScreenshot(browser: WebDriver, captureElement?: string) {
   const { elementRect, windowSize } = await browser.executeScript(function(selector: string) {
     return {
       elementRect: document.querySelector(selector)!.getBoundingClientRect(),
-      windowSize: { width: window.innerWidth, height: window.innerHeight }
+      windowSize: { width: window.innerWidth, height: window.innerHeight },
     };
   }, captureElement);
 
@@ -151,21 +151,21 @@ function createTest(name: string, fn: (this: Context) => void, skip: string | bo
 }
 
 function createCreeveyTest(testPath: string[], skip: string | boolean): CreeveyTest {
-  const testId = createHash("sha1")
-    .update(testPath.join("/"))
-    .digest("hex");
+  const testId = createHash('sha1')
+    .update(testPath.join('/'))
+    .digest('hex');
   return {
     id: testId,
     path: testPath,
     retries: 0,
-    skip
+    skip,
   };
 }
 
 export function convertStories(
   rootSuite: Suite,
   browserName: string,
-  stories: CreeveyStories
+  stories: CreeveyStories,
 ): Partial<{ [id: string]: CreeveyTest }> {
   const creeveyTests: { [id: string]: CreeveyTest } = {};
 
@@ -194,9 +194,9 @@ export function convertStories(
       const stories = require(path.join(process.cwd(), __filename));
       if (!stories[story.name] || !stories[story.name].story)
         throw new Error(
-          "Creevey support only `Component Story Format (CSF)` stories. For more details see https://storybook.js.org/docs/formats/component-story-format/"
+          'Creevey support only `Component Story Format (CSF)` stories. For more details see https://storybook.js.org/docs/formats/component-story-format/',
         );
-      const tests: CreeveyStoryParams["_seleniumTests"] = stories[story.name].story.parameters.creevey._seleniumTests;
+      const tests: CreeveyStoryParams['_seleniumTests'] = stories[story.name].story.parameters.creevey._seleniumTests;
 
       const storySuite = findOrCreateSuite(story.name, kindSuite);
 

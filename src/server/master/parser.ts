@@ -1,11 +1,11 @@
-import { createHash } from "crypto";
-import { Test, Config, BrowserConfig } from "../../types";
-import { Loader } from "../../loader";
+import { createHash } from 'crypto';
+import { Test, Config, BrowserConfig } from '../../types';
+import { Loader } from '../../loader';
 
 export default async function parse(config: Config) {
   const tests: Partial<{ [id: string]: Test }> = {};
   let suites: string[] = [];
-  let testFilePath = "";
+  let testFilePath = '';
 
   function describe(title: string, describeFn: () => void) {
     suites = [title, ...suites];
@@ -17,15 +17,15 @@ export default async function parse(config: Config) {
     return Object.keys(config.browsers)
       .map(browser => ({
         testPath: [browser, title, ...suites],
-        config: config.browsers[browser] as BrowserConfig
+        config: config.browsers[browser] as BrowserConfig,
       }))
       .map(({ testPath, config }) => ({
-        id: createHash("sha1")
-          .update(testPath.join("/"))
-          .digest("hex"),
+        id: createHash('sha1')
+          .update(testPath.join('/'))
+          .digest('hex'),
         path: testPath,
         retries: 0,
-        skip: Boolean(config.testRegex && !config.testRegex.test(testFilePath))
+        skip: Boolean(config.testRegex && !config.testRegex.test(testFilePath)),
       }))
       .filter(({ skip }) => !skip)
       .map(test => (tests[test.id] = test));

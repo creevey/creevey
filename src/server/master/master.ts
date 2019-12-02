@@ -1,10 +1,10 @@
-import path from "path";
-import { writeFileSync, copyFile, readdir } from "fs";
-import { promisify } from "util";
-import cluster from "cluster";
-import mkdirp from "mkdirp";
-import { Config, Test, isDefined } from "../../types";
-import Runner from "./runner";
+import path from 'path';
+import { writeFileSync, copyFile, readdir } from 'fs';
+import { promisify } from 'util';
+import cluster from 'cluster';
+import mkdirp from 'mkdirp';
+import { Config, Test, isDefined } from '../../types';
+import Runner from './runner';
 
 const copyFileAsync = promisify(copyFile);
 const readdirAsync = promisify(readdir);
@@ -24,12 +24,12 @@ function reportDataModule<T>(data: T) {
 
 function loadTests(): Promise<Partial<{ [id: string]: Test }>> {
   return new Promise(resolve => {
-    console.log("[CreeveyRunner]:", "Start loading tests");
-    cluster.setupMaster({ args: ["--parser", ...process.argv.slice(2)] });
+    console.log('[CreeveyRunner]:', 'Start loading tests');
+    cluster.setupMaster({ args: ['--parser', ...process.argv.slice(2)] });
     const parser = cluster.fork();
-    parser.once("message", message => {
+    parser.once('message', message => {
       const tests: Partial<{ [id: string]: Test }> = JSON.parse(message);
-      console.log("[CreeveyRunner]:", "Tests loaded");
+      console.log('[CreeveyRunner]:', 'Tests loaded');
       resolve(tests);
     });
   });
@@ -38,7 +38,7 @@ function loadTests(): Promise<Partial<{ [id: string]: Test }>> {
 function mergeTests(
   tests: Partial<{ [id: string]: Test }>,
   testsWithReports: Partial<{ [id: string]: Test }>,
-  testsFromStories: Partial<{ [id: string]: Test }>
+  testsFromStories: Partial<{ [id: string]: Test }>,
 ) {
   return Object.values(testsWithReports)
     .map((test): Test | undefined => test && { ...test, skip: true })
@@ -50,15 +50,15 @@ function mergeTests(
           ...mergedTests,
           [test.id]: {
             ...(mergedTests[test.id] || {}),
-            ...test
-          }
+            ...test,
+          },
         }),
-      {}
+      {},
     );
 }
 
 async function copyStatics(reportDir: string) {
-  const clientDir = path.join(__dirname, "../../client");
+  const clientDir = path.join(__dirname, '../../client');
   const files = (await readdirAsync(clientDir, { withFileTypes: true }))
     .filter(dirent => dirent.isFile() && !/\.d\.ts$/.test(dirent.name))
     .map(dirent => dirent.name);
@@ -69,7 +69,7 @@ async function copyStatics(reportDir: string) {
 }
 
 export default async function master(config: Config) {
-  const reportDataPath = path.join(config.reportDir, "data.js");
+  const reportDataPath = path.join(config.reportDir, 'data.js');
   let testsFromReport = {};
   try {
     testsFromReport = require(reportDataPath);
@@ -86,17 +86,17 @@ export default async function master(config: Config) {
 
   await copyStatics(config.reportDir);
 
-  process.on("SIGINT", () => {
+  process.on('SIGINT', () => {
     if (runner.isRunning) {
       // TODO Better handle stop
       setTimeout(() => process.exit(0), 10000);
-      runner.once("stop", () => process.exit(0));
+      runner.once('stop', () => process.exit(0));
       runner.stop();
     } else {
       process.exit(0);
     }
   });
-  process.on("exit", () => writeFileSync(reportDataPath, reportDataModule(runner.status.tests)));
+  process.on('exit', () => writeFileSync(reportDataPath, reportDataModule(runner.status.tests)));
 
   return runner;
 }

@@ -7,6 +7,7 @@ export default {
     creevey: {
       captureElement: '[data-tid="CaptureElement"]',
       skip: {
+        reason: 'Service component',
         stories: 'Component Chunk',
       },
     },
