@@ -16,7 +16,7 @@ function reportDataModule<T>(data: T) {
   if (typeof module === 'object' && module.exports) {
     module.exports = factory();
   } else {
-    root.creeveyData = factory();
+    root.__CREEVEY_DATA__ = factory();
   }
 }(this, function () { return ${JSON.stringify(data)} }));
 `;
@@ -96,7 +96,7 @@ export default async function master(config: Config) {
       process.exit(0);
     }
   });
-  process.on("exit", () => writeFileSync(reportDataPath, reportDataModule(runner.status.testsById)));
+  process.on("exit", () => writeFileSync(reportDataPath, reportDataModule(runner.status.tests)));
 
   return runner;
 }

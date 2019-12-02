@@ -7,13 +7,13 @@ import ArrowTriangleRightIcon from "@skbkontur/react-icons/ArrowTriangleRight";
 import DeleteIcon from "@skbkontur/react-icons/Delete";
 import OkIcon from "@skbkontur/react-icons/Ok";
 import ClockIcon from "@skbkontur/react-icons/Clock";
-import { isTest } from "../types";
-import { Suite, Test, CreeveyContex } from "./CreeveyContext";
+import { isTest, CreeveySuite, CreeveyTest } from "../../../types";
 import Spinner from "@skbkontur/react-ui/Spinner";
+import { CreeveyContex } from "../../CreeveyContext";
 
 interface TestTreeProps {
   title: string;
-  tests: Suite | Test;
+  tests: CreeveySuite | CreeveyTest;
 }
 
 interface TestTreeState {
@@ -104,7 +104,7 @@ export class TestTree extends React.Component<TestTreeProps, TestTreeState> {
     );
   }
 
-  renderStatus({ status }: Suite | Test) {
+  renderStatus({ status }: CreeveySuite | CreeveyTest) {
     switch (status) {
       case "failed": {
         return <DeleteIcon color="#d9472b" />;

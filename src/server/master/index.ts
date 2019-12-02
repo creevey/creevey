@@ -10,7 +10,7 @@ export default async function(config: Config, options: Options) {
   } else {
     // TODO Exit if runner don't have tests to run
     runner.once("stop", () => {
-      const isSuccess = Object.values(runner.status.testsById)
+      const isSuccess = Object.values(runner.status.tests)
         .filter(isDefined)
         .filter(({ skip }) => !skip)
         .every(({ status }) => status == "success");
@@ -18,6 +18,6 @@ export default async function(config: Config, options: Options) {
       process.exit(isSuccess ? 0 : -1);
     });
     // TODO grep
-    runner.start(Object.keys(runner.status.testsById));
+    runner.start(Object.keys(runner.status.tests));
   }
 }

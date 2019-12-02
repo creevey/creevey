@@ -1,14 +1,13 @@
-import { Suite, Test } from "./CreeveyContext";
-import { Test as ApiTest, isTest, isDefined, TestStatus } from "../types";
+import { Test as ApiTest, isTest, isDefined, TestStatus, CreeveySuite, CreeveyTest } from "../types";
 
-export function getTestsByPath(tests: Suite, path: string[]): Suite | Test {
+export function getTestsByPath(tests: CreeveySuite, path: string[]): CreeveySuite | CreeveyTest {
   return path.reduce(
-    (subTests: Suite | Test, pathToken) => (isTest(subTests) ? subTests : subTests.children[pathToken]),
+    (subTests: CreeveySuite | CreeveyTest, pathToken) => (isTest(subTests) ? subTests : subTests.children[pathToken]),
     tests
   );
 }
 
-function checkTests(tests: Suite | Test, checked: boolean): Suite | Test {
+function checkTests(tests: CreeveySuite | CreeveyTest, checked: boolean): CreeveySuite | CreeveyTest {
   if (isTest(tests)) {
     return { ...tests, checked };
   }
@@ -23,7 +22,7 @@ function checkTests(tests: Suite | Test, checked: boolean): Suite | Test {
   };
 }
 
-function updateChecked(tests: Suite): Suite {
+function updateChecked(tests: CreeveySuite): CreeveySuite {
   const children = Object.values(tests.children);
   const checkedEvery = children.every(test => test.checked);
   const checkedSome = children.some(test => test.checked);
@@ -33,7 +32,7 @@ function updateChecked(tests: Suite): Suite {
   return { ...tests, checked, indeterminate };
 }
 
-export function toogleChecked(tests: Suite, path: string[], checked: boolean): Suite {
+export function toogleChecked(tests: CreeveySuite, path: string[], checked: boolean): CreeveySuite {
   const checkedTests = checkTests(getTestsByPath(tests, path), checked);
   if (path.length == 0 && !isTest(checkedTests)) {
     return checkedTests;
@@ -53,8 +52,8 @@ export function toogleChecked(tests: Suite, path: string[], checked: boolean): S
   return updateChecked({ ...tests, children: { ...tests.children, [path[0]]: rootTests } });
 }
 
-export function treeifyTests(testsById: { [id: string]: ApiTest | undefined }): Suite {
-  function makeEmptySuiteNode(path: string[] = []): Suite {
+export function treeifyTests(testsById: { [id: string]: ApiTest | undefined }): CreeveySuite {
+  function makeEmptySuiteNode(path: string[] = []): CreeveySuite {
     return {
       path,
       skip: true,
@@ -63,7 +62,7 @@ export function treeifyTests(testsById: { [id: string]: ApiTest | undefined }): 
       children: {}
     };
   }
-  const rootSuite: Suite = makeEmptySuiteNode();
+  const rootSuite: CreeveySuite = makeEmptySuiteNode();
   Object.values(testsById).forEach(test => {
     if (!test) return;
 
@@ -87,7 +86,7 @@ export function treeifyTests(testsById: { [id: string]: ApiTest | undefined }): 
   return rootSuite;
 }
 
-export function getCheckedTests(tests: Suite | Test): Test[] {
+export function getCheckedTests(tests: CreeveySuite | CreeveyTest): CreeveyTest[] {
   if (isTest(tests)) {
     return tests.checked ? [tests] : [];
   }
@@ -95,12 +94,12 @@ export function getCheckedTests(tests: Suite | Test): Test[] {
     return [];
   }
   return Object.values(tests.children).reduce(
-    (checkedTests: Test[], subTests) => [...checkedTests, ...getCheckedTests(subTests)],
+    (checkedTests: CreeveyTest[], subTests) => [...checkedTests, ...getCheckedTests(subTests)],
     []
   );
 }
 
-export function updateTestStatus(tests: Suite, path: string[], update: Partial<ApiTest>): Suite {
+export function updateTestStatus(tests: CreeveySuite, path: string[], update: Partial<ApiTest>): CreeveySuite {
   const [title, ...restPath] = path;
   const subTests = tests.children[title];
   const newTests = { ...tests, children: { ...tests.children } };

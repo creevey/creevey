@@ -1,7 +1,7 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
 import { toogleChecked } from "../../src/client/helpers";
-import { Suite } from "../../src/client/CreeveyContext";
+import { CreeveySuite } from "../../src/types";
 
 function mockTest() {
   return {
@@ -14,14 +14,14 @@ function mockTest() {
 
 describe("toogleChecked", () => {
   it("should uncheck test", () => {
-    const tests: Suite = {
+    const tests: CreeveySuite = {
       path: [],
       skip: false,
       checked: true,
       indeterminate: false,
       children: { foo: { ...mockTest(), checked: true } }
     };
-    const expectedTests: Suite = {
+    const expectedTests: CreeveySuite = {
       path: [],
       skip: false,
       checked: false,
@@ -34,7 +34,7 @@ describe("toogleChecked", () => {
   });
 
   it("should uncheck suite", () => {
-    const tests: Suite = {
+    const tests: CreeveySuite = {
       path: [],
       skip: false,
       checked: true,
@@ -49,7 +49,7 @@ describe("toogleChecked", () => {
         }
       }
     };
-    const expectedTests: Suite = {
+    const expectedTests: CreeveySuite = {
       path: [],
       skip: false,
       checked: false,
@@ -70,7 +70,7 @@ describe("toogleChecked", () => {
   });
 
   it("should set indeterminate on uncheck test", () => {
-    const tests: Suite = {
+    const tests: CreeveySuite = {
       path: [],
       skip: false,
       checked: true,
@@ -85,7 +85,7 @@ describe("toogleChecked", () => {
         }
       }
     };
-    const expectedTests: Suite = {
+    const expectedTests: CreeveySuite = {
       path: [],
       skip: false,
       checked: true,
@@ -106,7 +106,7 @@ describe("toogleChecked", () => {
   });
 
   it("should reset indeterminate on check test", () => {
-    const tests: Suite = {
+    const tests: CreeveySuite = {
       path: [],
       skip: false,
       checked: false,
@@ -121,7 +121,7 @@ describe("toogleChecked", () => {
         }
       }
     };
-    const expectedTests: Suite = {
+    const expectedTests: CreeveySuite = {
       path: [],
       skip: false,
       checked: true,
@@ -142,7 +142,7 @@ describe("toogleChecked", () => {
   });
 
   it("should set indeterminate on uncheck suite", () => {
-    const tests: Suite = {
+    const tests: CreeveySuite = {
       path: [],
       skip: false,
       checked: true,
@@ -164,7 +164,7 @@ describe("toogleChecked", () => {
         }
       }
     };
-    const expectedTests: Suite = {
+    const expectedTests: CreeveySuite = {
       path: [],
       skip: false,
       checked: true,
@@ -192,7 +192,7 @@ describe("toogleChecked", () => {
   });
 
   it("should reset indeterminate on uncheck suite", () => {
-    const tests: Suite = {
+    const tests: CreeveySuite = {
       path: [],
       skip: false,
       checked: true,
@@ -214,7 +214,7 @@ describe("toogleChecked", () => {
         }
       }
     };
-    const expectedTests: Suite = {
+    const expectedTests: CreeveySuite = {
       path: [],
       skip: false,
       checked: false,
@@ -242,14 +242,14 @@ describe("toogleChecked", () => {
   });
 
   it("should check root suite", () => {
-    const tests: Suite = {
+    const tests: CreeveySuite = {
       path: [],
       skip: false,
       checked: false,
       indeterminate: false,
       children: { foo: { ...mockTest(), checked: false } }
     };
-    const expectedTests: Suite = {
+    const expectedTests: CreeveySuite = {
       path: [],
       skip: false,
       checked: true,

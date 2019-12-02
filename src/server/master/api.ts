@@ -4,7 +4,7 @@ import { Request, Response, CreeveyUpdate } from "../../types";
 
 export interface CreeveyApi {
   subscribe: (wss: WebSocket.Server) => void;
-  handleMessage: (message: WebSocket.Data) => void;
+  handleMessage: (ws: WebSocket, message: WebSocket.Data) => void;
 }
 
 function broadcast(wss: WebSocket.Server, message: Response) {
@@ -16,20 +16,14 @@ function broadcast(wss: WebSocket.Server, message: Response) {
 }
 
 export default function creeveyApi(runner: Runner): CreeveyApi {
-  let seq = 0;
   return {
     subscribe(wss: WebSocket.Server) {
-      wss.on("connection", ws => {
-        const message: Response = { type: "status", seq, payload: runner.status };
-        ws.send(JSON.stringify(message));
-      });
       runner.on("update", (payload: CreeveyUpdate) => {
-        seq += 1;
-        broadcast(wss, { type: "update", seq, payload });
+        broadcast(wss, { type: "update", payload });
       });
     },
 
-    handleMessage(message: WebSocket.Data) {
+    handleMessage(ws: WebSocket, message: WebSocket.Data) {
       if (typeof message != "string") {
         console.log("[WebSocket]:", "unhandled message", message);
         return;
@@ -39,6 +33,10 @@ export default function creeveyApi(runner: Runner): CreeveyApi {
       // console.log("[WebSocket]:", "message", message);
 
       switch (command.type) {
+        case "status": {
+          ws.send(JSON.stringify({ type: "status", payload: runner.status }));
+          return;
+        }
         case "start": {
           runner.start(command.payload);
           return;

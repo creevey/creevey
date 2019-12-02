@@ -98,12 +98,12 @@ export interface Test {
 
 export interface CreeveyStatus {
   isRunning: boolean;
-  testsById: Partial<{ [id: string]: Test }>;
+  tests: Partial<{ [id: string]: Test }>;
 }
 
 export interface CreeveyUpdate {
   isRunning?: boolean;
-  testsById?: Partial<{ [id: string]: Partial<Test> & { path: string[] } }>;
+  tests?: Partial<{ [id: string]: Partial<Test> & { path: string[] } }>;
 }
 
 export interface SkipOption {
@@ -149,13 +149,25 @@ export interface ApprovePayload {
 }
 
 export type Request =
+  | { type: "status" }
   | { type: "start"; payload: string[] }
   | { type: "stop" }
   | { type: "approve"; payload: ApprovePayload };
 
-export type Response =
-  | { type: "status"; seq: number; payload: CreeveyStatus }
-  | { type: "update"; seq: number; payload: CreeveyUpdate };
+export type Response = { type: "status"; payload: CreeveyStatus } | { type: "update"; payload: CreeveyUpdate };
+
+export interface CreeveyTest extends Test {
+  checked: boolean;
+}
+
+export interface CreeveySuite {
+  path: string[];
+  skip: boolean;
+  status?: TestStatus;
+  checked: boolean;
+  indeterminate: boolean;
+  children: { [title: string]: CreeveySuite | CreeveyTest };
+}
 
 export function isTest<T1, T2 extends Test>(x: T1 | T2): x is T2 {
   return "id" in x && "path" in x && "retries" in x && Array.isArray(x.path) && typeof x.id == "string";

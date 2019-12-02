@@ -3,7 +3,7 @@ import Chai from "chai";
 import Mocha from "mocha";
 import Selenium from "selenium-webdriver";
 
-import { BlendView, SideBySideView, SlideView, SwapView } from "../src/client/ImagesView";
+import { BlendView, SideBySideView, SlideView, SwapView } from "../src/client/CreeveyAppView/ImagesView";
 
 import octocatExpect from "./fixtures/octocat-expect.png";
 import octocatDiff from "./fixtures/octocat-diff.png";

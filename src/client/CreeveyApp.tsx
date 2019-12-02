@@ -1,35 +1,40 @@
 import React from "react";
-import { css } from "@emotion/core";
-import TopBar from "@skbkontur/react-ui/TopBar";
-import Logotype from "@skbkontur/react-ui/Logotype";
 import Loader from "@skbkontur/react-ui/Loader";
-import Spinner from "@skbkontur/react-ui/Spinner";
-import { CreeveyStatus, Response, Request, isTest, Test as ApiTest, CreeveyUpdate, isDefined } from "../types";
-import { TestTree } from "./TestTree";
-import { CreeveyContex, Suite, Test } from "./CreeveyContext";
+import {
+  CreeveyStatus,
+  Response,
+  Request,
+  isTest,
+  CreeveyUpdate,
+  isDefined,
+  CreeveySuite,
+  CreeveyTest
+} from "../types";
+import { CreeveyContex } from "./CreeveyContext";
 import { toogleChecked, treeifyTests, getCheckedTests, updateTestStatus, getTestsByPath } from "./helpers";
-import { TestResultsView } from "./TestResultsView";
+import { CreeveyAppView } from "./CreeveyAppView/CreeveyAppView";
+import { CreeveyClientApi } from "./creeveyClientApi";
 
-declare global {
-  const creeveyData: Partial<{ [id: string]: ApiTest }>;
+export interface CreeveyAppProps {
+  api?: CreeveyClientApi;
+  initialStatus: CreeveyStatus;
 }
 
 interface CreeveyAppState {
-  tests: Suite | null;
+  tests: CreeveySuite | null;
   isRunning: boolean;
   openedTestPath: string[] | null;
 }
 
-export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
+export class CreeveyApp extends React.Component<CreeveyAppProps, CreeveyAppState> {
   state: CreeveyAppState = {
     tests: null,
     isRunning: false,
     openedTestPath: null
   };
   private ws?: WebSocket;
-  private seq: number = 0;
 
-  constructor(props: {}) {
+  constructor(props: CreeveyAppProps) {
     super(props);
 
     if (window.location.host) {
@@ -42,8 +47,8 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
     }
   }
   render() {
-    const { tests } = this.state;
     const openedTest = this.getOpenedTest();
+
     return (
       <CreeveyContex.Provider
         value={{
@@ -52,48 +57,32 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
           onImageApprove: this.handleImageApprove
         }}
       >
-        <TopBar>
-          <TopBar.Start>
-            <TopBar.Item>
-              <Logotype locale={{ prefix: "c", suffix: "lin" }} suffix="creevey" />
-            </TopBar.Item>
-            {this.state.isRunning ? (
-              <TopBar.Item onClick={this.stop}>
-                <Spinner type="mini" caption="Running" />
-              </TopBar.Item>
-            ) : (
-              <TopBar.Item onClick={this.start}>Start</TopBar.Item>
-            )}
-          </TopBar.Start>
-        </TopBar>
-        {tests ? (
-          <div
-            css={css`
-              margin-left: 10px;
-            `}
-          >
-            <TestTree title="<Root>" tests={tests} />
-          </div>
+        {this.state.tests ? (
+          <CreeveyAppView
+            isRunning={this.state.isRunning}
+            title="<Root>"
+            tests={this.state.tests}
+            onImageApprove={this.handleImageApprove}
+            start={this.start}
+            stop={this.stop}
+            openedTest={openedTest}
+          />
         ) : (
           <Loader type="big" active />
-        )}
-        {openedTest && openedTest.results && (
-          <TestResultsView test={openedTest} onClose={this.handleTestResultsClose} />
         )}
       </CreeveyContex.Provider>
     );
   }
 
   handleCreeveyData = () => {
-    Object.values(creeveyData)
+    Object.values(__CREEVEY_DATA__)
       .filter(isDefined)
       .forEach(test => (test.path = this.splitLastPathToken(test.path)));
     this.setState({
-      tests: treeifyTests(creeveyData)
+      tests: treeifyTests(__CREEVEY_DATA__)
     });
   };
 
-  handleTestResultsClose = () => this.setState({ openedTestPath: null });
   handleTestResultsOpen = (path: string[]) => {
     this.setState(state => {
       if (!this.state.tests) return state;
@@ -112,26 +101,26 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
 
   handleImageApprove = (id: string, retry: number, image: string) => this.approve(id, retry, image);
 
-  handleStatus = ({ isRunning, testsById }: CreeveyStatus) => {
-    Object.values(testsById)
+  handleStatus = ({ isRunning, tests }: CreeveyStatus) => {
+    Object.values(tests)
       .filter(isDefined)
       .forEach(test => (test.path = this.splitLastPathToken(test.path)));
     this.setState({
-      tests: treeifyTests(testsById),
+      tests: treeifyTests(tests),
       isRunning
     });
   };
 
-  handleUpdate = ({ isRunning, testsById }: CreeveyUpdate) => {
+  handleUpdate = ({ isRunning, tests }: CreeveyUpdate) => {
     if (isDefined(isRunning)) {
       this.setState({ isRunning });
     }
-    if (isDefined(testsById)) {
+    if (isDefined(tests)) {
       this.setState(state => {
         if (!state.tests) return state;
         return {
           ...state,
-          tests: Object.values(testsById).reduce((tests, test) => {
+          tests: Object.values(tests).reduce((tests, test) => {
             if (!test) return tests;
             return updateTestStatus(tests, this.splitLastPathToken(test.path).reverse(), test);
           }, state.tests)
@@ -153,9 +142,10 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
     }
     this.ws = new WebSocket(`ws://${window.location.host}`);
     this.ws.addEventListener("message", this.handleMessage);
+    this.ws.addEventListener('open', () => this.send({ type: 'status'}))
   }
 
-  private getOpenedTest(): Test | undefined {
+  private getOpenedTest(): CreeveyTest | undefined {
     const { tests, openedTestPath } = this.state;
     if (!tests || !openedTestPath) return;
     const testOrSuite = getTestsByPath(tests, openedTestPath);
@@ -166,17 +156,11 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
     const data: Response = JSON.parse(message.data);
     switch (data.type) {
       case "status": {
-        this.seq = data.seq;
         this.handleStatus(data.payload);
         return;
       }
       case "update": {
-        this.seq += 1;
-        if (this.seq != data.seq) {
-          this.connect();
-        } else {
-          this.handleUpdate(data.payload);
-        }
+        this.handleUpdate(data.payload);
         return;
       }
     }
@@ -188,13 +172,11 @@ export class CreeveyApp extends React.Component<{}, CreeveyAppState> {
     this.ws.send(JSON.stringify(command));
   }
 
-  private start = () => {
-    if (!this.state.tests) return;
-
-    this.send({ type: "start", payload: getCheckedTests(this.state.tests).map(test => test.id) });
+  public start = (tests: CreeveySuite) => {
+    this.send({ type: "start", payload: getCheckedTests(tests).map(test => test.id) });
   };
 
-  private stop = () => {
+  public stop = () => {
     this.send({ type: "stop" });
   };
 
