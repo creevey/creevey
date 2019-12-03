@@ -3,7 +3,7 @@ import { CreeveyUpdate, CreeveySuite, isDefined } from '../types';
 import { CreeveyClientApi } from './creeveyClientApi';
 import { useImmer } from 'use-immer';
 import { CreeveyView } from './CreeveyView';
-import { getCheckedTests, updateTestStatus, splitLastPathToken, toggleChecked } from './helpers';
+import { getCheckedTests, updateTestStatus, splitLastPathToken, checkSuite, openSuite } from './helpers';
 import { CreeveyContex } from './CreeveyContext';
 
 export interface CreeveyAppProps {
@@ -33,9 +33,14 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
     [api, updateTests],
   );
 
-  const handleTestOrSuiteToggle = (path: string[], checked: boolean): void => {
+  const handleSuiteOpen = (path: string[], opened: boolean): void => {
     updateTests(draft => {
-      toggleChecked(draft, path, checked);
+      openSuite(draft, path, opened);
+    });
+  };
+  const handleSuiteToggle = (path: string[], checked: boolean): void => {
+    updateTests(draft => {
+      checkSuite(draft, path, checked);
     });
   };
   const handleImageApprove = (id: string, retry: number, image: string): void => {
@@ -57,8 +62,9 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
         isRunning,
         onStart: handleStart,
         onStop: handleStop,
+        onSuiteOpen: handleSuiteOpen,
+        onSuiteToggle: handleSuiteToggle,
         onImageApprove: handleImageApprove,
-        onTestOrSuiteToggle: handleTestOrSuiteToggle,
       }}
     >
       <CreeveyView rootSuite={tests} />

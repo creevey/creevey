@@ -9,6 +9,7 @@ function makeEmptySuiteNode(path: string[] = []): CreeveySuite {
   return {
     path,
     skip: true,
+    opened: false,
     checked: true,
     indeterminate: false,
     children: {},
@@ -32,7 +33,7 @@ function calcStatus(oldStatus?: TestStatus, newStatus?: TestStatus): TestStatus 
   return oldStatus;
 }
 
-export function getSuiteOrTestByPath(suite: CreeveySuite, path: string[]): CreeveySuite | CreeveyTest {
+export function getSuiteByPath(suite: CreeveySuite, path: string[]): CreeveySuite | CreeveyTest {
   return path.reduce(
     (suiteOrTest: CreeveySuite | CreeveyTest, pathToken) =>
       isTest(suiteOrTest) ? suiteOrTest : suiteOrTest.children[pathToken],
@@ -41,7 +42,7 @@ export function getSuiteOrTestByPath(suite: CreeveySuite, path: string[]): Creev
 }
 
 export function getTestByPath(suite: CreeveySuite, path: string[]): CreeveyTest | null {
-  const test = getSuiteOrTestByPath(suite, path);
+  const test = getSuiteByPath(suite, path);
   return isTest(test) ? test : null;
 }
 
@@ -65,14 +66,14 @@ function updateChecked(suite: CreeveySuite): void {
   suite.indeterminate = indeterminate;
 }
 
-export function toggleChecked(suite: CreeveySuite, path: string[], checked: boolean): void {
-  checkTests(getSuiteOrTestByPath(suite, path), checked);
+export function checkSuite(suite: CreeveySuite, path: string[], checked: boolean): void {
+  checkTests(getSuiteByPath(suite, path), checked);
 
   path
     .slice(0, -1)
     .map((_, index, tokens) => tokens.slice(0, tokens.length - index))
     .forEach(parentPath => {
-      const parentSuite = getSuiteOrTestByPath(suite, parentPath);
+      const parentSuite = getSuiteByPath(suite, parentPath);
       if (isTest(parentSuite)) return;
       updateChecked(parentSuite);
     });
@@ -83,6 +84,7 @@ export function toggleChecked(suite: CreeveySuite, path: string[], checked: bool
 export function treeifyTests(testsById: { [id: string]: ApiTest | undefined }): CreeveySuite {
   const rootSuite: CreeveySuite = makeEmptySuiteNode();
 
+  rootSuite.opened = true;
   Object.values(testsById).forEach(test => {
     if (!test) return;
 
@@ -168,4 +170,18 @@ export function filterTests(suite: CreeveySuite, filter: CreeveyViewFilter): Cre
   });
 
   return filteredSuite;
+}
+
+export function openSuite(suite: CreeveySuite, path: string[], opened: boolean): void {
+  let subSuite: CreeveySuite | CreeveyTest = suite;
+  path.find(token => (isTest(subSuite) ? true : void (subSuite = subSuite.children[token])));
+  if (!isTest(subSuite)) subSuite.opened = opened;
+}
+
+export function flattenSuite(suite: CreeveySuite): Array<{ title: string; suite: CreeveySuite | CreeveyTest }> {
+  if (!suite.opened) return [];
+  return Object.entries(suite.children).flatMap(([title, subSuite]) => [
+    { title, suite: subSuite },
+    ...(isTest(subSuite) ? [] : flattenSuite(subSuite)),
+  ]);
 }

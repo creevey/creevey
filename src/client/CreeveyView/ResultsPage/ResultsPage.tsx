@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { css } from '@emotion/core';
 import ScrollContainer from '@skbkontur/react-ui/ScrollContainer';
 import { CreeveyContex } from '../../CreeveyContext';
@@ -7,7 +7,6 @@ import { PageHeader } from './PageHeader';
 import { ViewMode } from '../ImagesView/ImagesView';
 import { TestResult } from '../../../types';
 import { PageFooter } from './PageFooter';
-import { useState } from '@storybook/addons';
 
 interface TestResultsProps {
   id: string;

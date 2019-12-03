@@ -1,6 +1,5 @@
 import React, { useContext } from 'react';
 import { css } from '@emotion/core';
-import Gapped from '@skbkontur/react-ui/Gapped';
 import Checkbox from '@skbkontur/react-ui/Checkbox';
 import Button from '@skbkontur/react-ui/Button';
 import { CreeveyTest } from '../../../types';
@@ -14,29 +13,31 @@ export interface TestLinkProps {
 }
 
 export function TestLink({ title, test }: TestLinkProps): JSX.Element {
-  const { onTestOrSuiteToggle } = useContext(CreeveyContex);
+  const { onSuiteToggle } = useContext(CreeveyContex);
   const { onOpenTest } = useContext(SideBarContext);
 
-  const emptyResults = !test.results || test.results.length == 0;
+  const emptyResults = (test?.results?.length ?? 0) == 0;
 
-  const handleCheck = (_: React.ChangeEvent, value: boolean): void => onTestOrSuiteToggle(test.path, value);
+  const handleCheck = (_: React.ChangeEvent, value: boolean): void => onSuiteToggle(test.path, value);
   const handleOpen = (): void => onOpenTest(test);
 
   return (
-    <div
-      css={css`
-        margin-left: 20px;
-      `}
-    >
-      <Gapped gap={5}>
-        <Gapped gap={5}>
-          <Checkbox checked={test.skip ? false : test.checked} disabled={Boolean(test.skip)} onChange={handleCheck} />
-          <Button use="link" disabled={emptyResults} onClick={handleOpen}>
-            {title}
-          </Button>
-        </Gapped>
-        <TestStatusIcon status={test.status} />
-      </Gapped>
-    </div>
+    <Button width="100%" align="left" onClick={handleOpen} disabled={emptyResults}>
+      <TestStatusIcon status={test.status} />
+      <span
+        css={css`
+          padding-left: 16px;
+        `}
+      >
+        <Checkbox checked={test.skip ? false : test.checked} disabled={Boolean(test.skip)} onChange={handleCheck} />
+      </span>
+      <span
+        css={css`
+          padding-left: ${(test.path.length + 4) * 8}px;
+        `}
+      >
+        {title}
+      </span>
+    </Button>
   );
 }

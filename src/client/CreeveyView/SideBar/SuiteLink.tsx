@@ -1,65 +1,62 @@
-import React, { ReactNode, useRef, useContext, useState, useEffect } from 'react';
+import React, { useRef, useContext, useEffect } from 'react';
 import { css } from '@emotion/core';
-import Gapped from '@skbkontur/react-ui/Gapped';
 import ArrowTriangleRightIcon from '@skbkontur/react-icons/ArrowTriangleRight';
+import ArrowTriangleDownIcon from '@skbkontur/react-icons/ArrowTriangleDown';
 import Checkbox from '@skbkontur/react-ui/Checkbox';
 import Button from '@skbkontur/react-ui/Button';
 import { TestStatusIcon } from './TestStatusIcon';
-import { CreeveySuite } from '../../../types';
+import { CreeveySuite, isTest } from '../../../types';
 import { CreeveyContex } from '../../CreeveyContext';
 
 export interface SuiteLinkProps {
   title: string;
   suite: CreeveySuite;
-  children: ReactNode;
 }
 
-export function SuiteLink({ title, suite, children }: SuiteLinkProps): JSX.Element {
-  const { onTestOrSuiteToggle } = useContext(CreeveyContex);
-  const [opened, setOpen] = useState(false);
+export function SuiteLink({ title, suite }: SuiteLinkProps): JSX.Element {
+  const { onSuiteOpen, onSuiteToggle } = useContext(CreeveyContex);
   const checkboxRef = useRef<Checkbox>(null);
   useEffect(
     () => (suite.indeterminate ? checkboxRef.current?.setIndeterminate() : checkboxRef.current?.resetIndeterminate()),
     [suite.indeterminate],
   );
 
-  const handleCheck = (_: React.ChangeEvent, value: boolean): void => onTestOrSuiteToggle(suite.path, value);
-  const handleOpen = (): void => setOpen(!opened);
+  const handleCheck = (_: React.ChangeEvent, value: boolean): void => onSuiteToggle(suite.path, value);
+  const handleOpen = (): void => onSuiteOpen(suite.path, !suite.opened);
 
   return (
-    <>
-      <Gapped gap={5}>
-        <span
-          css={css`
-            display: inline-block;
-            cursor: pointer;
-            transform: ${opened ? 'rotate(45deg)' : ''};
-          `}
-        >
-          <ArrowTriangleRightIcon onClick={handleOpen} />
-        </span>
-        <Gapped gap={5}>
-          <Checkbox
-            ref={checkboxRef}
-            checked={suite.skip ? false : suite.checked}
-            disabled={Boolean(suite.skip)}
-            onChange={handleCheck}
-          />
-          <Button use="link" onClick={handleOpen}>
-            {title}
-          </Button>
-        </Gapped>
-        <TestStatusIcon status={suite.status} />
-      </Gapped>
-      {opened && (
-        <div
-          css={css`
-            margin-left: 20px;
-          `}
-        >
-          {children}
-        </div>
-      )}
-    </>
+    <Button width="100%" align="left" onClick={handleOpen}>
+      <TestStatusIcon status={suite.status} />
+      <span
+        css={css`
+          padding-left: 16px;
+        `}
+      >
+        <Checkbox
+          ref={checkboxRef}
+          checked={suite.skip ? false : suite.checked}
+          disabled={Boolean(suite.skip)}
+          onChange={handleCheck}
+        />
+      </span>
+      <span
+        css={css`
+          padding-left: ${Math.max(16, (suite.path.length + 1) * 8)}px;
+        `}
+      >
+        {isTest(suite) ||
+          (Boolean(suite.path.length) && (
+            <span
+              css={css`
+                padding-right: 8px;
+                display: inline-block;
+              `}
+            >
+              {suite.opened ? <ArrowTriangleDownIcon /> : <ArrowTriangleRightIcon />}
+            </span>
+          ))}
+        {title}
+      </span>
+    </Button>
   );
 }

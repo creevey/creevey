@@ -15,7 +15,6 @@ export function CreeveyView({ rootSuite }: CreeveyViewProps): JSX.Element {
     <div
       css={css`
         display: flex;
-        flex-flow: column no-wrap;
       `}
     >
       <SideBar rootSuite={rootSuite} onOpenTest={openTest} />

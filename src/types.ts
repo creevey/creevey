@@ -164,6 +164,7 @@ export interface CreeveySuite {
   path: string[];
   skip: boolean;
   status?: TestStatus;
+  opened: boolean;
   checked: boolean;
   indeterminate: boolean;
   children: { [title: string]: CreeveySuite | CreeveyTest };

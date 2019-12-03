@@ -1,4 +1,5 @@
 import React from 'react';
+import { css } from '@emotion/core';
 import DeleteIcon from '@skbkontur/react-icons/Delete';
 import OkIcon from '@skbkontur/react-icons/Ok';
 import ClockIcon from '@skbkontur/react-icons/Clock';
@@ -18,13 +19,30 @@ export function TestStatusIcon({ status }: TestStatusIconProps): JSX.Element | n
       return <OkIcon color="#419d14" />;
     }
     case 'running': {
-      return <Spinner type="mini" caption="" dimmed />;
+      return (
+        <span
+          // NOTE Compensate spinner width
+          // https://github.com/skbkontur/retail-ui/issues/1782
+          css={css`
+            margin-left: -0.0714285714285714em;
+            margin-right: -0.0714285714285714em;
+          `}
+        >
+          <Spinner type="mini" caption="" />
+        </span>
+      );
     }
     case 'pending': {
       return <ClockIcon color="#a0a0a0" />;
     }
     default: {
-      return null;
+      return (
+        <span
+          css={css`
+            padding: 7px;
+          `}
+        />
+      );
     }
   }
 }

@@ -1,8 +1,8 @@
 import React, { useContext } from 'react';
+import { css } from '@emotion/core';
 import Spinner from '@skbkontur/react-ui/Spinner';
 import Button from '@skbkontur/react-ui/Button';
 import Input from '@skbkontur/react-ui/Input';
-import { css } from '@emotion/core';
 import SearchIcon from '@skbkontur/react-icons/Search';
 import { CreeveyContex } from '../../CreeveyContext';
 
@@ -18,11 +18,7 @@ export function SideBarHeader({ onStop, onStart, onFilterChange }: SideBarHeader
   const handleFilterChange = (_: React.ChangeEvent, value: string): void => onFilterChange(value);
 
   return (
-    <div
-      css={css`
-        padding: 24px;
-      `}
-    >
+    <>
       <div
         css={css`
           padding-right: 56px;
@@ -37,9 +33,9 @@ export function SideBarHeader({ onStop, onStart, onFilterChange }: SideBarHeader
               font-size: 24px;
             `}
           >
-            colin.creavey
+            colin.creevey
           </div>
-          текстовочки
+          {/* TODO текстовочки */}
         </div>
         <div
           css={css`
@@ -47,8 +43,8 @@ export function SideBarHeader({ onStop, onStart, onFilterChange }: SideBarHeader
           `}
         >
           {isRunning ? (
-            <Button use="primary" size="medium" width={100} onClick={onStop}>
-              <Spinner type="mini" /> Running
+            <Button use="default" arrow size="medium" width={100} onClick={onStop}>
+              <Spinner type="mini" caption="" /> Running
             </Button>
           ) : (
             <Button use="primary" arrow size="medium" width={100} onClick={onStart}>
@@ -59,7 +55,8 @@ export function SideBarHeader({ onStop, onStart, onFilterChange }: SideBarHeader
       </div>
       <div
         css={css`
-          margin-top: 24px;
+          margin-top: 36px;
+          margin-bottom: 24px;
         `}
       >
         <Input
@@ -70,6 +67,6 @@ export function SideBarHeader({ onStop, onStart, onFilterChange }: SideBarHeader
           onChange={handleFilterChange}
         />
       </div>
-    </div>
+    </>
   );
 }
