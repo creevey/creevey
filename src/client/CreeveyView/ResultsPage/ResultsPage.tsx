@@ -28,7 +28,7 @@ export function ResultsPage({ id, path, results = [], approved = {} }: TestResul
   // path => [kind, story, test, browser]
   const browser = path.slice(-1)[0];
   const result = results[retry - 1];
-  const image = result?.images?.[imageName];
+  const image = result.images?.[imageName];
   const isApproved = approved[imageName] == retry - 1 || (result && result.status == 'success');
   const imagesUrl = window.location.host ? `/report/${path.slice(0, -1).join('/')}` : path.slice(0, -1).join('/');
   const url = encodeURI(imageName == browser ? imagesUrl : `${imagesUrl}/${browser}`);
@@ -41,9 +41,13 @@ export function ResultsPage({ id, path, results = [], approved = {} }: TestResul
       css={css`
         width: 100%;
         height: 100vh;
+        display: flex;
+        flex-direction: column;
       `}
     >
       <PageHeader
+        title={path}
+        errorMessage={result.error}
         imageName={imageName}
         imageNames={imageNames}
         showViewModes={hasDiffAndExpect}
@@ -52,15 +56,14 @@ export function ResultsPage({ id, path, results = [], approved = {} }: TestResul
         onImageChange={setImageName}
       />
       <div
-        // TODO Styles
         css={css`
-          height: calc(100vh - ${hasDiffAndExpect ? 145 : 110}px);
+          background: #eee;
+          height: 100%;
         `}
       >
         {image ? (
           <ScrollContainer>
             <ImagesView
-              imageName={imageName}
               url={url}
               actual={image.actual}
               diff={image.diff}
@@ -70,7 +73,14 @@ export function ResultsPage({ id, path, results = [], approved = {} }: TestResul
             />
           </ScrollContainer>
         ) : (
-          `Image ${imageName} not found`
+          <div
+            css={css`
+              height: 100%;
+              align-items: center;
+              justify-content: center;
+              display: flex;
+            `}
+          >{`Image ${imageName ?? ''} not found`}</div>
         )}
       </div>
       <PageFooter

@@ -74,6 +74,7 @@ export function SideBar({ rootSuite, openedTest, onOpenTest }: SideBarProps): JS
           box-shadow: 0 0 5px #aaa;
           height: 100vh;
           flex: none;
+          z-index: 1;
         `}
       >
         <ScrollContainer>

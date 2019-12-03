@@ -14,7 +14,6 @@ export interface ViewProps {
 export type ViewMode = 'side-by-side' | 'swap' | 'slide' | 'blend';
 
 interface ImagesViewProps {
-  imageName: string;
   url: string;
   actual: string;
   diff?: string;

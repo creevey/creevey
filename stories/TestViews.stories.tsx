@@ -20,7 +20,7 @@ const DIAG_LENGTH = (2 * CHUNK_SIZE ** 2) ** (1 / 2);
 export const ComponentChunk: FunctionComponent = props => (
   <div
     css={css`
-      background-color: #a5d6a7;
+      background-color: #a5a6a7;
       background-image: linear-gradient(
           45deg,
           rgba(0, 0, 0, 0) ${DIAG_LENGTH / 2 - 0.5}px,

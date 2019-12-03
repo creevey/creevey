@@ -127,12 +127,13 @@
   - [ ] `creevey-selenium`
 - [ ] Allow assert multiple images in one test (chai toMatchImages())
 - [ ] Rework UI
-  - [ ] Improve UI performance on initial load
+  - [x] Improve UI performance on initial load
   - [ ] Show removed tests results, mark these as removed
   - [ ] Allow hide skipped tests in UI
-  - [ ] Put tests tree into side page, that hide on small screens
-  - [ ] Output test result view into main page block
+  - [x] Put tests tree into side page
+  - [x] Output test result view into main page block
   - [ ] Add bottom padding into test tree
+  - [ ] Output error message multiline
 - [ ] Write about differences with other tools
 - [ ] Add unit tests
 - [ ] Add logger lib

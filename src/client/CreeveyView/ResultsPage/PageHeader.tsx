@@ -1,5 +1,6 @@
 import React from 'react';
 import { css } from '@emotion/core';
+import DeleteIcon from '@skbkontur/react-icons/Delete';
 import Button from '@skbkontur/react-ui/Button';
 import Tabs from '@skbkontur/react-ui/Tabs';
 import { ViewMode } from '../ImagesView/ImagesView';
@@ -7,6 +8,8 @@ import { ViewMode } from '../ImagesView/ImagesView';
 const modes: ViewMode[] = ['side-by-side', 'swap', 'slide', 'blend'];
 
 interface PageHeaderProps {
+  title: string[];
+  errorMessage?: string;
   imageNames: string[];
   imageName: string;
   showViewModes: boolean;
@@ -16,6 +19,8 @@ interface PageHeaderProps {
 }
 
 export function PageHeader({
+  title,
+  errorMessage,
   imageNames: images,
   imageName: currentImage,
   showViewModes,
@@ -27,19 +32,70 @@ export function PageHeader({
     onViewModeChange(mode as ViewMode);
 
   return (
-    <>
-      <div
+    <div
+      css={css`
+        padding-top: 40px;
+        padding-left: 44px;
+        padding-right: 44px;
+      `}
+    >
+      <h1
         css={css`
-          padding: 5px 20px;
+          font-weight: 600;
+          margin: 0;
         `}
       >
-        {images.map(name => (
-          <Button key={name} use="link" onClick={() => onImageChange(name)} disabled={name === currentImage}>
-            {name}
-          </Button>
-        ))}
-      </div>
-      {showViewModes && (
+        {title
+          .flatMap(token => [
+            token,
+            <span
+              key={token}
+              css={css`
+                padding: 0 8px;
+                color: #a0a0a0;
+              `}
+            >
+              /
+            </span>,
+          ])
+          .slice(0, -1)}
+      </h1>
+      {errorMessage && (
+        <div
+          css={css`
+            margin-top: 8px;
+            padding: 8px;
+            background: #ffd6d6;
+            color: #ce0014;
+            border-radius: 2px;
+            display: flex;
+          `}
+        >
+          <DeleteIcon />{' '}
+          <span
+            css={css`
+              margin-left: 4px;
+            `}
+          >
+            {errorMessage}
+          </span>
+        </div>
+      )}
+      {images.length > 1 ? (
+        <div
+          css={css`
+            margin-top: 32px;
+            padding: 5px 20px;
+          `}
+        >
+          {images.map(name => (
+            <Button key={name} use="link" onClick={() => onImageChange(name)} disabled={name === currentImage}>
+              {name}
+            </Button>
+          ))}
+        </div>
+      ) : null}
+      {showViewModes ? (
         <Tabs value={viewMode} onChange={handleViewModeChange}>
           {modes.map(mode => (
             <Tabs.Tab key={mode} id={mode}>
@@ -47,7 +103,13 @@ export function PageHeader({
             </Tabs.Tab>
           ))}
         </Tabs>
+      ) : (
+        <div
+          css={css`
+            margin-top: 48px;
+          `}
+        />
       )}
-    </>
+    </div>
   );
 }

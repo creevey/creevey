@@ -22,8 +22,7 @@ export function PageFooter({
     <div
       css={css`
         display: flex;
-        flex-flow: column no-wrap;
-        padding: 15px 20px;
+        padding: 24px 32px 16px;
         justify-content: space-between;
       `}
     >

@@ -27,14 +27,14 @@ export function SideBarHeader({ onStop, onStart, onFilterChange }: SideBarHeader
         `}
       >
         <div>
-          <div
+          <h2
             css={css`
-              font-family: Segoe UI;
-              font-size: 24px;
+              font-weight: normal;
+              margin: 0;
             `}
           >
             colin.creevey
-          </div>
+          </h2>
           {/* TODO текстовочки */}
         </div>
         <div
