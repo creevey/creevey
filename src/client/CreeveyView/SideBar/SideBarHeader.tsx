@@ -5,16 +5,17 @@ import Button from '@skbkontur/react-ui/Button';
 import Input from '@skbkontur/react-ui/Input';
 import SearchIcon from '@skbkontur/react-icons/Search';
 import { CreeveyContex } from '../../CreeveyContext';
+import { TestsStatus, TestsStatusProps } from './TestsStatus';
 
 interface SideBarHeaderProps {
+  testsStatus: TestsStatusProps;
   onStart: () => void;
   onStop: () => void;
   onFilterChange: (rawFilter: string) => void;
 }
 
-export function SideBarHeader({ onStop, onStart, onFilterChange }: SideBarHeaderProps): JSX.Element {
+export function SideBarHeader({ testsStatus, onStop, onStart, onFilterChange }: SideBarHeaderProps): JSX.Element {
   const { isRunning } = useContext(CreeveyContex);
-
   const handleFilterChange = (_: React.ChangeEvent, value: string): void => onFilterChange(value);
 
   return (
@@ -35,7 +36,7 @@ export function SideBarHeader({ onStop, onStart, onFilterChange }: SideBarHeader
           >
             colin.creevey
           </h2>
-          {/* TODO текстовочки */}
+          <TestsStatus {...testsStatus} />
         </div>
         <div
           css={css`

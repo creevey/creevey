@@ -185,3 +185,27 @@ export function flattenSuite(suite: CreeveySuite): Array<{ title: string; suite:
     ...(isTest(subSuite) ? [] : flattenSuite(subSuite)),
   ]);
 }
+
+export function countTestsStatus(
+  suite: CreeveySuite,
+): { successCount: number; failedCount: number; skippedCount: number; pendingCount: number } {
+  let successCount = 0;
+  let failedCount = 0;
+  let skippedCount = 0;
+  let pendingCount = 0;
+
+  const cases: Array<CreeveySuite | CreeveyTest> = Object.values(suite.children);
+  let suiteOrTest;
+  while ((suiteOrTest = cases.pop())) {
+    if (isTest(suiteOrTest)) {
+      if (suiteOrTest.skip) skippedCount++;
+      if (suiteOrTest.status === 'success') successCount++;
+      if (suiteOrTest.status === 'failed') failedCount++;
+      if (suiteOrTest.status === 'pending') pendingCount++;
+    } else {
+      Object.values(suiteOrTest.children).forEach(child => cases.push(child));
+    }
+  }
+
+  return { successCount, failedCount, skippedCount, pendingCount: pendingCount };
+}

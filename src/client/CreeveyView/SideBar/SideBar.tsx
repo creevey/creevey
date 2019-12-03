@@ -4,7 +4,7 @@ import ScrollContainer from '@skbkontur/react-ui/ScrollContainer';
 import { ThemeProvider } from '@skbkontur/react-ui/ThemeProvider';
 import { SideBarHeader } from './SideBarHeader';
 import { CreeveySuite, TestStatus, CreeveyTest, noop, isTest } from '../../../types';
-import { filterTests, CreeveyViewFilter, flattenSuite } from '../../helpers';
+import { filterTests, CreeveyViewFilter, flattenSuite, countTestsStatus } from '../../helpers';
 import { CreeveyContex } from '../../CreeveyContext';
 import { SuiteLink } from './SuiteLink';
 import { TestLink } from './TestLink';
@@ -47,6 +47,7 @@ export function SideBar({ rootSuite, openedTest, onOpenTest }: SideBarProps): JS
   const [filter, setFilter] = useState<CreeveyViewFilter>({ status: null, subStrings: [] });
 
   const suite = useMemo(() => filterTests(rootSuite, filter), [rootSuite, filter]);
+  const testsStatus = useMemo(() => countTestsStatus(suite), [suite]);
   const suiteList = flattenSuite(suite);
 
   const handleStart = (): void => onStart(suite);
@@ -83,7 +84,12 @@ export function SideBar({ rootSuite, openedTest, onOpenTest }: SideBarProps): JS
               padding: 24px 32px 0px;
             `}
           >
-            <SideBarHeader onFilterChange={handleFilterChange} onStart={handleStart} onStop={onStop} />
+            <SideBarHeader
+              testsStatus={testsStatus}
+              onFilterChange={handleFilterChange}
+              onStart={handleStart}
+              onStop={onStop}
+            />
           </div>
           <ThemeProvider value={SUITE_LINK_THEME}>
             <div
