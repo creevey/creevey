@@ -7,16 +7,17 @@ import Spinner from '@skbkontur/react-ui/Spinner';
 import { TestStatus } from '../../../types';
 
 export interface TestStatusIconProps {
+  inverted?: boolean;
   status?: TestStatus;
 }
 
-export function TestStatusIcon({ status }: TestStatusIconProps): JSX.Element | null {
+export function TestStatusIcon({ inverted, status }: TestStatusIconProps): JSX.Element | null {
   switch (status) {
     case 'failed': {
-      return <DeleteIcon color="#d9472b" />;
+      return <DeleteIcon color={inverted ? '#fff' : '#d9472b'} />;
     }
     case 'success': {
-      return <OkIcon color="#419d14" />;
+      return <OkIcon color={inverted ? '#fff' : '#419d14'} />;
     }
     case 'running': {
       return (
@@ -28,12 +29,12 @@ export function TestStatusIcon({ status }: TestStatusIconProps): JSX.Element | n
             margin-right: -0.0714285714285714em;
           `}
         >
-          <Spinner type="mini" caption="" />
+          <Spinner type="mini" caption="" dimmed={inverted} />
         </span>
       );
     }
     case 'pending': {
-      return <ClockIcon color="#a0a0a0" />;
+      return <ClockIcon color={inverted ? '#fff' : '#a0a0a0'} />;
     }
     default: {
       return (

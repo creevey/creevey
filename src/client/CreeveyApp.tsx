@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { CreeveyUpdate, CreeveySuite, isDefined } from '../types';
-import { CreeveyClientApi } from './creeveyClientApi';
+import { css } from '@emotion/core';
 import { useImmer } from 'use-immer';
-import { CreeveyView } from './CreeveyView';
+import { CreeveyUpdate, CreeveySuite, isDefined, CreeveyTest } from '../types';
+import { CreeveyClientApi } from './creeveyClientApi';
 import { getCheckedTests, updateTestStatus, splitLastPathToken, checkSuite, openSuite } from './helpers';
 import { CreeveyContex } from './CreeveyContext';
+import { SideBar } from './CreeveyView/SideBar';
+import { ResultsPage } from './CreeveyView/ResultsPage';
 
 export interface CreeveyAppProps {
   api?: CreeveyClientApi;
@@ -17,6 +19,7 @@ export interface CreeveyAppProps {
 export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element {
   const [tests, updateTests] = useImmer(initialState.tests);
   const [isRunning, setIsRunning] = useState(initialState.isRunning);
+  const [openedTest, openTest] = useState<CreeveyTest | null>(null);
 
   // TODO unsubscribe
   useEffect(
@@ -43,18 +46,9 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
       checkSuite(draft, path, checked);
     });
   };
-  const handleImageApprove = (id: string, retry: number, image: string): void => {
-    if (!api) return;
-    api.approve(id, retry, image);
-  };
-  const handleStart = (tests: CreeveySuite): void => {
-    if (!api) return;
-    api.start(getCheckedTests(tests).map(test => test.id));
-  };
-  const handleStop = (): void => {
-    if (!api) return;
-    api.stop();
-  };
+  const handleImageApprove = (id: string, retry: number, image: string): void => api?.approve(id, retry, image);
+  const handleStart = (tests: CreeveySuite): void => api?.start(getCheckedTests(tests).map(test => test.id));
+  const handleStop = (): void => api?.stop();
 
   return (
     <CreeveyContex.Provider
@@ -67,7 +61,21 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
         onImageApprove: handleImageApprove,
       }}
     >
-      <CreeveyView rootSuite={tests} />
+      <div
+        css={css`
+          display: flex;
+        `}
+      >
+        <SideBar rootSuite={tests} openedTest={openedTest} onOpenTest={openTest} />
+        {openedTest && (
+          <ResultsPage
+            id={openedTest.id}
+            path={openedTest.path}
+            results={openedTest.results}
+            approved={openedTest.approved}
+          />
+        )}
+      </div>
     </CreeveyContex.Provider>
   );
 }

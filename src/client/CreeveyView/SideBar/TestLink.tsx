@@ -9,10 +9,11 @@ import { SideBarContext } from './SideBar';
 
 export interface TestLinkProps {
   title: string;
+  opened: boolean;
   test: CreeveyTest;
 }
 
-export function TestLink({ title, test }: TestLinkProps): JSX.Element {
+export function TestLink({ title, opened, test }: TestLinkProps): JSX.Element {
   const { onSuiteToggle } = useContext(CreeveyContex);
   const { onOpenTest } = useContext(SideBarContext);
 
@@ -22,8 +23,8 @@ export function TestLink({ title, test }: TestLinkProps): JSX.Element {
   const handleOpen = (): void => onOpenTest(test);
 
   return (
-    <Button width="100%" align="left" onClick={handleOpen} disabled={emptyResults}>
-      <TestStatusIcon status={test.status} />
+    <Button width="100%" align="left" checked={opened} disabled={emptyResults} onClick={handleOpen}>
+      <TestStatusIcon inverted={opened} status={test.status} />
       <span
         css={css`
           padding-left: 16px;

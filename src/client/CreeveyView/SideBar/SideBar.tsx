@@ -10,6 +10,7 @@ import { SuiteLink } from './SuiteLink';
 import { TestLink } from './TestLink';
 
 const SUITE_LINK_THEME = {
+  btnCheckedBg: '#1D85D0',
   btnDisabledBg: '#fff',
   btnDefaultBgStart: '#fff',
   btnDefaultBgEnd: '#fff',
@@ -20,6 +21,7 @@ const SUITE_LINK_THEME = {
   btnDefaultActiveBgStart: '#e5e5e5',
   btnDefaultActiveBgEnd: '#e5e5e5',
   btnDefaultActiveBg: '#e5e5e5',
+  btnCheckedShadow: 'none',
   btnDisabledShadow: 'none',
   btnDefaultShadow: 'none',
   btnDefaultHoverShadow: 'none',
@@ -27,6 +29,7 @@ const SUITE_LINK_THEME = {
   btnSmallBorderRadius: '0px',
   btnWrapPadding: '0px',
   btnPaddingXSmall: '36px',
+  spinnerDimmedColor: '#fff',
 };
 
 export const SideBarContext = createContext<{ onOpenTest: (test: CreeveyTest) => void }>({
@@ -35,10 +38,11 @@ export const SideBarContext = createContext<{ onOpenTest: (test: CreeveyTest) =>
 
 export interface SideBarProps {
   rootSuite: CreeveySuite;
+  openedTest: CreeveyTest | null;
   onOpenTest: (test: CreeveyTest) => void;
 }
 
-export function SideBar({ rootSuite, onOpenTest }: SideBarProps): JSX.Element {
+export function SideBar({ rootSuite, openedTest, onOpenTest }: SideBarProps): JSX.Element {
   const { onStart, onStop } = useContext(CreeveyContex);
   const [filter, setFilter] = useState<CreeveyViewFilter>({ status: null, subStrings: [] });
 
@@ -90,9 +94,9 @@ export function SideBar({ rootSuite, onOpenTest }: SideBarProps): JSX.Element {
             </div>
             {suiteList.map(({ title, suite }) =>
               isTest(suite) ? (
-                <TestLink key={title} title={title} test={suite} />
+                <TestLink key={suite.path.join('/')} title={title} opened={suite == openedTest} test={suite} />
               ) : (
-                <SuiteLink key={title} title={title} suite={suite} />
+                <SuiteLink key={suite.path.join('/')} title={title} suite={suite} />
               ),
             )}
           </ThemeProvider>
