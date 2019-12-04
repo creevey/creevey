@@ -1,6 +1,5 @@
 import React, { useContext, useState } from 'react';
 import { css } from '@emotion/core';
-import ScrollContainer from '@skbkontur/react-ui/ScrollContainer';
 import { CreeveyContex } from '../../CreeveyContext';
 import { ImagesView } from '../ImagesView';
 import { PageHeader } from './PageHeader';
@@ -32,7 +31,7 @@ export function ResultsPage({ id, path, results = [], approved = {} }: TestResul
   const isApproved = approved[imageName] == retry - 1 || (result && result.status == 'success');
   const imagesUrl = window.location.host ? `/report/${path.slice(0, -1).join('/')}` : path.slice(0, -1).join('/');
   const url = encodeURI(imageName == browser ? imagesUrl : `${imagesUrl}/${browser}`);
-  const hasDiffAndExpect = Boolean(image?.diff && image.expect);
+  const hasDiffAndExpect = !isApproved && Boolean(image?.diff && image.expect);
 
   const handleApprove = (): void => onImageApprove(id, retry - 1, imageName);
 
@@ -40,7 +39,6 @@ export function ResultsPage({ id, path, results = [], approved = {} }: TestResul
     <div
       css={css`
         width: 100%;
-        height: 100vh;
         display: flex;
         flex-direction: column;
       `}
@@ -62,16 +60,14 @@ export function ResultsPage({ id, path, results = [], approved = {} }: TestResul
         `}
       >
         {image ? (
-          <ScrollContainer>
-            <ImagesView
-              url={url}
-              actual={image.actual}
-              diff={image.diff}
-              expect={image.expect}
-              approved={isApproved}
-              mode={viewMode}
-            />
-          </ScrollContainer>
+          <ImagesView
+            url={url}
+            actual={image.actual}
+            diff={image.diff}
+            expect={image.expect}
+            isApproved={isApproved}
+            mode={viewMode}
+          />
         ) : (
           <div
             css={css`
@@ -83,13 +79,21 @@ export function ResultsPage({ id, path, results = [], approved = {} }: TestResul
           >{`Image ${imageName ?? ''} not found`}</div>
         )}
       </div>
-      <PageFooter
-        isApproved={isApproved}
-        currentRetry={retry}
-        retriesCount={results.length}
-        onRetryChange={setRetry}
-        onApprove={handleApprove}
-      />
+      <div
+        css={css`
+          position: sticky;
+          bottom: 0;
+          z-index: 1;
+        `}
+      >
+        <PageFooter
+          isApproved={isApproved}
+          currentRetry={retry}
+          retriesCount={results.length}
+          onRetryChange={setRetry}
+          onApprove={handleApprove}
+        />
+      </div>
     </div>
   );
 }

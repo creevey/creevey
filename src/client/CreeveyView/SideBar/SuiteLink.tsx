@@ -5,7 +5,7 @@ import ArrowTriangleDownIcon from '@skbkontur/react-icons/ArrowTriangleDown';
 import Checkbox from '@skbkontur/react-ui/Checkbox';
 import Button from '@skbkontur/react-ui/Button';
 import { TestStatusIcon } from './TestStatusIcon';
-import { CreeveySuite, isTest } from '../../../types';
+import { CreeveySuite, isTest, noop } from '../../../types';
 import { CreeveyContex } from '../../CreeveyContext';
 
 export interface SuiteLinkProps {
@@ -25,7 +25,7 @@ export function SuiteLink({ title, suite }: SuiteLinkProps): JSX.Element {
   const handleOpen = (): void => onSuiteOpen(suite.path, !suite.opened);
 
   return (
-    <Button width="100%" align="left" onClick={handleOpen}>
+    <Button width="100%" align="left" onClick={suite.path.length ? handleOpen : noop}>
       <TestStatusIcon status={suite.status} />
       <span
         css={css`

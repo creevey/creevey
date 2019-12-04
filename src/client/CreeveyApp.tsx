@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { css } from '@emotion/core';
 import { useImmer } from 'use-immer';
-import { CreeveyUpdate, CreeveySuite, isDefined, CreeveyTest } from '../types';
+import { CreeveyUpdate, CreeveySuite, isDefined } from '../types';
 import { CreeveyClientApi } from './creeveyClientApi';
-import { getCheckedTests, updateTestStatus, splitLastPathToken, checkSuite, openSuite } from './helpers';
+import { getCheckedTests, updateTestStatus, splitLastPathToken, checkSuite, openSuite, getTestByPath } from './helpers';
 import { CreeveyContex } from './CreeveyContext';
 import { SideBar } from './CreeveyView/SideBar';
 import { ResultsPage } from './CreeveyView/ResultsPage';
@@ -19,7 +19,8 @@ export interface CreeveyAppProps {
 export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element {
   const [tests, updateTests] = useImmer(initialState.tests);
   const [isRunning, setIsRunning] = useState(initialState.isRunning);
-  const [openedTest, openTest] = useState<CreeveyTest | null>(null);
+  const [openedTestPath, openTest] = useState<string[]>([]);
+  const openedTest = getTestByPath(tests, openedTestPath);
 
   // TODO unsubscribe
   useEffect(

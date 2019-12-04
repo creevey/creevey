@@ -6,9 +6,8 @@ export function BlendView({ actual, expect }: ViewProps): JSX.Element {
   return (
     <div
       css={css`
-        display: inline-block;
+        margin: 20px;
         position: relative;
-        margin: 20px 0;
         filter: invert(100%);
       `}
     >
@@ -19,6 +18,8 @@ export function BlendView({ actual, expect }: ViewProps): JSX.Element {
           position: absolute;
           border: 1px solid #419d14;
           max-width: 100%;
+          top: 0;
+          left: 0;
         `}
       />
       <img

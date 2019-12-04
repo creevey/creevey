@@ -34,9 +34,7 @@ export function PageHeader({
   return (
     <div
       css={css`
-        padding-top: 40px;
-        padding-left: 44px;
-        padding-right: 44px;
+        margin: 24px 44px 0;
       `}
     >
       <h1
@@ -71,14 +69,15 @@ export function PageHeader({
             display: flex;
           `}
         >
-          <DeleteIcon />{' '}
-          <span
+          <DeleteIcon />
+          <pre
             css={css`
-              margin-left: 4px;
+              margin: 0 4px;
+              line-height: 22px;
             `}
           >
             {errorMessage}
-          </span>
+          </pre>
         </div>
       )}
       {images.length > 1 ? (

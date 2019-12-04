@@ -31,14 +31,14 @@ const SUITE_LINK_THEME = {
   spinnerDimmedColor: '#fff',
 };
 
-export const SideBarContext = createContext<{ onOpenTest: (test: CreeveyTest) => void }>({
+export const SideBarContext = createContext<{ onOpenTest: (path: string[]) => void }>({
   onOpenTest: noop,
 });
 
 export interface SideBarProps {
   rootSuite: CreeveySuite;
   openedTest: CreeveyTest | null;
-  onOpenTest: (test: CreeveyTest) => void;
+  onOpenTest: (path: string[]) => void;
 }
 
 export function SideBar({ rootSuite, openedTest, onOpenTest }: SideBarProps): JSX.Element {
@@ -133,7 +133,7 @@ export function SideBar({ rootSuite, openedTest, onOpenTest }: SideBarProps): JS
             </div>
             {suiteList.map(({ title, suite }) =>
               isTest(suite) ? (
-                <TestLink key={suite.path.join('/')} title={title} opened={suite == openedTest} test={suite} />
+                <TestLink key={suite.path.join('/')} title={title} opened={suite.id == openedTest?.id} test={suite} />
               ) : (
                 <SuiteLink key={suite.path.join('/')} title={title} suite={suite} />
               ),

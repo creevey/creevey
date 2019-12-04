@@ -24,6 +24,7 @@ export function PageFooter({
         display: flex;
         padding: 24px 32px 16px;
         justify-content: space-between;
+        background: #fff;
       `}
     >
       <Paging activePage={currentRetry} onPageChange={onRetryChange} pagesCount={retriesCount} />

@@ -102,6 +102,7 @@
 
 ## First priority
 
+- [ ] Slide story don't work correclty, must be fixed
 - [x] Better error message about open storybook page
 - [x] Exit if worker got `UnhandledPromiseRejectionWarning`
 - [x] Serialize skip regexp
@@ -133,10 +134,10 @@
   - [x] Put tests tree into side page
   - [x] Output test result view into main page block
   - [ ] Add bottom padding into test tree
-  - [ ] Output error message multiline
+  - [x] Output error message multiline
+  - [ ] Allow switch between 1:1 and fit image views
 - [ ] Write about differences with other tools
 - [ ] Add unit tests
-- [ ] Add logger lib
 
 ## Not in first time
 
@@ -156,6 +157,7 @@
 - [ ] Support mocha options for workers
 - [ ] Allow define mocha hooks
 - [ ] Programmic API
+- [ ] Add logger lib
 
 ## Far future
 

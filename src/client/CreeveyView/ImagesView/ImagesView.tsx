@@ -18,7 +18,7 @@ interface ImagesViewProps {
   actual: string;
   diff?: string;
   expect?: string;
-  approved: boolean;
+  isApproved: boolean;
   mode: ViewMode;
 }
 
@@ -29,19 +29,29 @@ const views: { [mode in ViewMode]: FunctionComponent<ViewProps> } = {
   blend: BlendView,
 };
 
-export function ImagesView({ url, actual, diff, expect, approved, mode }: ImagesViewProps): JSX.Element {
+export function ImagesView({ url, actual, diff, expect, isApproved, mode }: ImagesViewProps): JSX.Element {
   const ViewComponent = views[mode];
 
   return (
     <div
       css={css`
         background: #eee;
+        height: 100%;
+        display: flex;
         text-align: center;
-        padding: 20px;
+        align-items: center;
+        justify-content: center;
       `}
     >
-      {approved ? (
-        <a href={`${url}/${actual}`} target="_blank" rel="noopener noreferrer">
+      {isApproved ? (
+        <a
+          css={css`
+            margin: 20px;
+          `}
+          href={`${url}/${actual}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <img
             alt="actual"
             src={`${url}/${actual}`}
@@ -56,13 +66,19 @@ export function ImagesView({ url, actual, diff, expect, approved, mode }: Images
           {diff && expect ? (
             <ViewComponent actual={`${url}/${actual}`} diff={`${url}/${diff}`} expect={`${url}/${expect}`} />
           ) : (
-            <a href={`${url}/${actual}`} target="_blank" rel="noopener noreferrer">
+            <a
+              css={css`
+                margin: 20px;
+              `}
+              href={`${url}/${actual}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <img
                 alt="actual"
                 src={`${url}/${actual}`}
                 css={css`
                   border: 1px solid #419d14;
-                  margin-bottom: 20px;
                   max-width: 100%;
                 `}
               />

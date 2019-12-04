@@ -20,7 +20,7 @@ export function TestLink({ title, opened, test }: TestLinkProps): JSX.Element {
   const emptyResults = (test?.results?.length ?? 0) == 0;
 
   const handleCheck = (_: React.ChangeEvent, value: boolean): void => onSuiteToggle(test.path, value);
-  const handleOpen = (): void => onOpenTest(test);
+  const handleOpen = (): void => onOpenTest(test.path);
 
   return (
     <Button width="100%" align="left" checked={opened} disabled={emptyResults} onClick={handleOpen}>

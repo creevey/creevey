@@ -17,9 +17,8 @@ export function SwapView(props: ViewProps): JSX.Element {
   return (
     <label
       css={css`
-        display: inline-block;
         cursor: pointer;
-        margin: 20px 0;
+        margin: 20px;
       `}
     >
       <input
@@ -29,7 +28,7 @@ export function SwapView(props: ViewProps): JSX.Element {
           width: 0;
           height: 0;
           z-index: -1;
-          -webkit-appearance: none;
+          appearance: none;
         `}
         type="checkbox"
         onChange={handleChangeView}
