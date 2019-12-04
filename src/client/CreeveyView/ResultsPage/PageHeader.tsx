@@ -1,13 +1,16 @@
 import React from 'react';
 import { css } from '@emotion/core';
 import DeleteIcon from '@skbkontur/react-icons/Delete';
-import Button from '@skbkontur/react-ui/Button';
 import Tabs from '@skbkontur/react-ui/Tabs';
 import { ViewMode } from '../ImagesView/ImagesView';
+import { TestResult } from '../../../types';
+import { ImageSwap } from './ImageSwap';
 
 const modes: ViewMode[] = ['side-by-side', 'swap', 'slide', 'blend'];
 
 interface PageHeaderProps {
+  url: string;
+  result: TestResult;
   title: string[];
   errorMessage?: string;
   imageNames: string[];
@@ -19,6 +22,8 @@ interface PageHeaderProps {
 }
 
 export function PageHeader({
+  url,
+  result,
   title,
   errorMessage,
   imageNames: images,
@@ -83,14 +88,18 @@ export function PageHeader({
       {images.length > 1 ? (
         <div
           css={css`
+            display: flex;
             margin-top: 32px;
-            padding: 5px 20px;
           `}
         >
           {images.map(name => (
-            <Button key={name} use="link" onClick={() => onImageChange(name)} disabled={name === currentImage}>
-              {name}
-            </Button>
+            <ImageSwap
+              key={name}
+              url={url}
+              isActual={name === currentImage}
+              onClick={() => onImageChange(name)}
+              imageName={result.images?.[name]?.actual}
+            />
           ))}
         </div>
       ) : null}

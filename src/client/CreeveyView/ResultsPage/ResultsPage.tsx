@@ -44,6 +44,8 @@ export function ResultsPage({ id, path, results = [], approved = {} }: TestResul
       `}
     >
       <PageHeader
+        url={url}
+        result={result}
         title={path}
         errorMessage={result.error}
         imageName={imageName}
