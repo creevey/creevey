@@ -1,6 +1,5 @@
 import React, { useState, createContext, useContext, useMemo } from 'react';
 import { css } from '@emotion/core';
-import ScrollContainer from '@skbkontur/react-ui/ScrollContainer';
 import { ThemeProvider } from '@skbkontur/react-ui/ThemeProvider';
 import { SideBarHeader } from './SideBarHeader';
 import { CreeveySuite, TestStatus, CreeveyTest, noop, isTest } from '../../../types';
@@ -75,26 +74,57 @@ export function SideBar({ rootSuite, openedTest, onOpenTest }: SideBarProps): JS
           box-shadow: 0 0 5px #aaa;
           height: 100vh;
           flex: none;
-          z-index: 1;
+          z-index: 1000;
+          overflow-y: auto;
+          position: sticky;
+          top: 0;
+          left: 0;
         `}
       >
-        <ScrollContainer>
+        <div
+          css={css`
+            padding: 24px 32px 8px;
+            background: #fff;
+            height: 150px;
+            z-index: 3;
+            position: sticky;
+            top: 0;
+          `}
+        >
+          <SideBarHeader
+            testsStatus={testsStatus}
+            onFilterChange={handleFilterChange}
+            onStart={handleStart}
+            onStop={onStop}
+          />
+        </div>
+        <div
+          css={css`
+            position: sticky;
+            top: 180px;
+            box-shadow: 0 0 5px 2.5px #aaa;
+            z-index: 1;
+          `}
+        />
+        <div
+          css={css`
+            position: relative;
+          `}
+        >
           <div
             css={css`
-              padding: 24px 32px 0px;
+              position: absolute;
+              height: 8px;
+              width: 100%;
+              z-index: 2;
+              background: #fff;
             `}
-          >
-            <SideBarHeader
-              testsStatus={testsStatus}
-              onFilterChange={handleFilterChange}
-              onStart={handleStart}
-              onStop={onStop}
-            />
-          </div>
+          />
           <ThemeProvider value={SUITE_LINK_THEME}>
             <div
               css={css`
                 margin-bottom: 30px;
+                padding-top: 8px;
               `}
             >
               <SuiteLink title="Select all" suite={rootSuite} />
@@ -107,7 +137,7 @@ export function SideBar({ rootSuite, openedTest, onOpenTest }: SideBarProps): JS
               ),
             )}
           </ThemeProvider>
-        </ScrollContainer>
+        </div>
       </div>
     </SideBarContext.Provider>
   );
