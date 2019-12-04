@@ -22,9 +22,7 @@ export function SideBarHeader({ testsStatus, onStop, onStart, onFilterChange }: 
     <>
       <div
         css={css`
-          padding-right: 56px;
           display: flex;
-          justify-content: space-between;
         `}
       >
         <div>

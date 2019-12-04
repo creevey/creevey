@@ -22,10 +22,11 @@ export function TestsStatus({
   removedCount,
 }: TestsStatusProps): JSX.Element {
   return (
-    <span
+    <div
       css={css`
         font-size: 14px;
         line-height: 22px;
+        width: 230px;
       `}
     >
       {pendingCount > 0 && (
@@ -63,6 +64,6 @@ export function TestsStatus({
       <span>
         <TrashIcon /> {removedCount}
       </span>
-    </span>
+    </div>
   );
 }
