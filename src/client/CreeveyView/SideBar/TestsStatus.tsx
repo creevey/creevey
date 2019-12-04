@@ -1,6 +1,7 @@
 import React from 'react';
 import { css } from '@emotion/core';
 import OkIcon from '@skbkontur/react-icons/Ok';
+import ClockIcon from '@skbkontur/react-icons/Clock';
 import DeleteIcon from '@skbkontur/react-icons/Delete';
 import PauseIcon from '@skbkontur/react-icons/Pause';
 import TrashIcon from '@skbkontur/react-icons/Trash';
@@ -8,82 +9,60 @@ import TrashIcon from '@skbkontur/react-icons/Trash';
 export interface TestsStatusProps {
   successCount: number;
   failedCount: number;
-  // Не уверен, что именно это подразумевалось
   pendingCount: number;
   skippedCount: number;
+  removedCount: number;
 }
 
-const Separator = () => (
-  <span
-    css={css`
-      margin: 0 5px;
-    `}
-  >
-    /
-  </span>
-);
-
-export function TestsStatus({ successCount, failedCount, skippedCount, pendingCount }: TestsStatusProps): JSX.Element {
+export function TestsStatus({
+  successCount,
+  failedCount,
+  pendingCount,
+  skippedCount,
+  removedCount,
+}: TestsStatusProps): JSX.Element {
   return (
-    <div
+    <span
       css={css`
-        display: flex;
-        flex-flow: row nowrap;
         font-size: 14px;
-        line-heightL 22px;
+        line-height: 22px;
       `}
     >
-      <div
+      {pendingCount > 0 && (
+        <>
+          <span
+            css={css`
+              color: #a0a0a0;
+            `}
+          >
+            <ClockIcon /> {pendingCount}
+          </span>
+          {' / '}
+        </>
+      )}
+      <span
         css={css`
           color: #228007;
         `}
       >
-        <OkIcon />
-        <span
-          css={css`
-            margin-left: 3px;
-          `}
-        >
-          {successCount}
-        </span>
-      </div>
-      <Separator />
-      <div
+        <OkIcon /> {successCount}
+      </span>
+      {' / '}
+      <span
         css={css`
           color: #ce0014;
         `}
       >
-        <DeleteIcon />
-        <span
-          css={css`
-            margin-left: 3px;
-          `}
-        >
-          {failedCount}
-        </span>
-      </div>
-      <Separator />
-      <div>
-        <PauseIcon />
-        <span
-          css={css`
-            margin-left: 3px;
-          `}
-        >
-          {pendingCount}
-        </span>
-      </div>
-      <Separator />
-      <div>
-        <TrashIcon />
-        <span
-          css={css`
-            margin-left: 3px;
-          `}
-        >
-          {skippedCount}
-        </span>
-      </div>
-    </div>
+        <DeleteIcon /> {failedCount}
+      </span>
+      {' / '}
+      <span>
+        <PauseIcon /> {skippedCount}
+      </span>
+      {' / '}
+      <span>
+        <TrashIcon /> {removedCount}
+      </span>
+    </span>
   );
 }

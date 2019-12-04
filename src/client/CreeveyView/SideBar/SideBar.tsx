@@ -1,4 +1,4 @@
-import React, { useState, createContext, useContext, useMemo } from 'react';
+import React, { useState, createContext, useContext } from 'react';
 import { css } from '@emotion/core';
 import { ThemeProvider } from '@skbkontur/react-ui/ThemeProvider';
 import { SideBarHeader } from './SideBarHeader';
@@ -45,8 +45,9 @@ export function SideBar({ rootSuite, openedTest, onOpenTest }: SideBarProps): JS
   const { onStart, onStop } = useContext(CreeveyContex);
   const [filter, setFilter] = useState<CreeveyViewFilter>({ status: null, subStrings: [] });
 
-  const suite = useMemo(() => filterTests(rootSuite, filter), [rootSuite, filter]);
-  const testsStatus = useMemo(() => countTestsStatus(suite), [suite]);
+  // TODO Maybe need to do flatten first?
+  const suite = filterTests(rootSuite, filter);
+  const testsStatus = countTestsStatus(rootSuite);
   const suiteList = flattenSuite(suite);
 
   const handleStart = (): void => onStart(suite);
@@ -120,6 +121,7 @@ export function SideBar({ rootSuite, openedTest, onOpenTest }: SideBarProps): JS
               background: #fff;
             `}
           />
+          {/* TODO Output message where nothing found */}
           <ThemeProvider value={SUITE_LINK_THEME}>
             <div
               css={css`

@@ -1,4 +1,5 @@
 import { Test as ApiTest, isTest, isDefined, TestStatus, CreeveySuite, CreeveyTest } from '../types';
+import { TestsStatusProps } from './CreeveyView/SideBar/TestsStatus';
 
 export interface CreeveyViewFilter {
   status: TestStatus | null;
@@ -153,7 +154,6 @@ export function filterTests(suite: CreeveySuite, filter: CreeveyViewFilter): Cre
   if (!status && !subStrings.length) return suite;
   const filteredSuite: CreeveySuite = { ...suite, children: {} };
 
-  // TODO Status
   Object.entries(suite.children).forEach(([title, suiteOrTest]) => {
     if (suiteOrTest.skip) return;
     if (subStrings.some(subString => title.toLowerCase().includes(subString)) && !status) {
@@ -186,13 +186,13 @@ export function flattenSuite(suite: CreeveySuite): Array<{ title: string; suite:
   ]);
 }
 
-export function countTestsStatus(
-  suite: CreeveySuite,
-): { successCount: number; failedCount: number; skippedCount: number; pendingCount: number } {
+export function countTestsStatus(suite: CreeveySuite): TestsStatusProps {
   let successCount = 0;
   let failedCount = 0;
   let skippedCount = 0;
   let pendingCount = 0;
+  // TODO Add removed flag into suite object
+  const removedCount = 0;
 
   const cases: Array<CreeveySuite | CreeveyTest> = Object.values(suite.children);
   let suiteOrTest;
@@ -203,9 +203,9 @@ export function countTestsStatus(
       if (suiteOrTest.status === 'failed') failedCount++;
       if (suiteOrTest.status === 'pending') pendingCount++;
     } else {
-      Object.values(suiteOrTest.children).forEach(child => cases.push(child));
+      cases.push(...Object.values(suiteOrTest.children));
     }
   }
 
-  return { successCount, failedCount, skippedCount, pendingCount: pendingCount };
+  return { successCount, failedCount, skippedCount, pendingCount, removedCount };
 }
