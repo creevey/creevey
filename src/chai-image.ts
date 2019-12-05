@@ -5,7 +5,7 @@ import { PNG } from 'pngjs';
 import pixelmatch from 'pixelmatch';
 import mkdirp from 'mkdirp';
 
-import { Config, Images } from './types';
+import { Config, Images, noop } from './types';
 
 const statAsync = promisify(fs.stat);
 const readdirAsync = promisify(fs.readdir);
@@ -101,7 +101,7 @@ function compareImages(expect: Buffer, actual: Buffer, threshold: number): { isE
 export default (
   config: Config,
   context: string[],
-  onSaveImage: (imageName: string, imageNumber: number, type: keyof Images) => void = () => {},
+  onSaveImage: (imageName: string, imageNumber: number, type: keyof Images) => void = noop,
 ) =>
   function chaiImage({ Assertion }: Chai.ChaiStatic, utils: Chai.ChaiUtils) {
     utils.addMethod(Assertion.prototype, 'matchImage', async function matchImage(this: object, imageName?: string) {

@@ -6,9 +6,12 @@
     {
       "type": "npm",
       "script": "lint:eslint",
-      "problemMatcher": [
-        "$eslint-stylish"
-      ]
+      "problemMatcher": ["$eslint-stylish"]
+    },
+    {
+      "type": "npm",
+      "script": "lint:tsc",
+      "problemMatcher": ["$tsc"]
     }
   ]
 }

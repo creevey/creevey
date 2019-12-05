@@ -170,6 +170,8 @@ export interface CreeveySuite {
   children: { [title: string]: CreeveySuite | CreeveyTest };
 }
 
+export type ImagesViewMode = 'side-by-side' | 'swap' | 'slide' | 'blend';
+
 export function noop(): void {
   /* noop */
 }

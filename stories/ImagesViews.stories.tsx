@@ -3,7 +3,8 @@ import Chai from 'chai';
 import Mocha from 'mocha';
 import Selenium from 'selenium-webdriver';
 
-import { BlendView, SideBySideView, SlideView, SwapView } from '../src/client/CreeveyView/ImagesView';
+import { ImagesView as ImagesViewBase } from '../src/client/CreeveyView/ImagesView';
+import { ImagesViewMode } from '../src/types';
 
 import octocatExpect from './fixtures/octocat-expect.png';
 import octocatDiff from './fixtures/octocat-diff.png';
@@ -19,11 +20,19 @@ export default {
   },
 };
 
-// TODO Replace on ImagesView component
-export const Blend = () => <BlendView expect={octocatExpect} diff={octocatDiff} actual={octocatActual} />;
-export const SideBySide = () => <SideBySideView expect={octocatExpect} diff={octocatDiff} actual={octocatActual} />;
-export const Slide = () => <SlideView expect={octocatExpect} diff={octocatDiff} actual={octocatActual} />;
-export const Swap = () => <SwapView expect={octocatExpect} diff={octocatDiff} actual={octocatActual} />;
+const ImagesView = (mode: ImagesViewMode) => (
+  <ImagesViewBase
+    image={{ expect: octocatExpect, diff: octocatDiff, actual: octocatActual }}
+    url=""
+    canApprove
+    mode={mode}
+  />
+);
+
+export const SideBySide = () => ImagesView('side-by-side');
+export const Swap = () => ImagesView('swap');
+export const Slide = () => ImagesView('slide');
+export const Blend = () => ImagesView('blend');
 
 Slide.story = {
   parameters: {

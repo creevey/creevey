@@ -80,6 +80,7 @@ export function SideBar({ rootSuite, openedTest, onOpenTest }: SideBarProps): JS
           position: sticky;
           top: 0;
           left: 0;
+          background: #fff;
         `}
       >
         <div

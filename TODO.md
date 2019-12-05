@@ -102,10 +102,12 @@
 
 ## First priority
 
-- [ ] Slide story don't work correclty, must be fixed
+- [ ] Correctly resize images in views using correct proportions (smaller image should shrink if larger shrink too, max-width/max-height doesn't work)
+- [ ] Allow assert multiple images in one test (chai toMatchImages())
+- [ ] Regenerate fixture images
+- [x] Slide story don't work correclty, must be fixed
 - [ ] Show icons for skiped tests
 - [ ] Allow check/uncheck tests without results
-- [ ] Stop propagation on test checkbox link
 - [x] Better error message about open storybook page
 - [x] Exit if worker got `UnhandledPromiseRejectionWarning`
 - [x] Serialize skip regexp
@@ -129,7 +131,6 @@
   - [ ] `creevey-ui`
   - [ ] `creevey-album` (storybook decorator and integration)
   - [ ] `creevey-selenium`
-- [ ] Allow assert multiple images in one test (chai toMatchImages())
 - [ ] Rework UI
   - [x] Improve UI performance on initial load
   - [ ] Show removed tests results, mark these as removed

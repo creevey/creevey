@@ -4,7 +4,7 @@ import { SideBySideView } from './SideBySideView';
 import { SwapView } from './SwapView';
 import { SlideView } from './SlideView';
 import { BlendView } from './BlendView';
-import { Images } from '../../../types';
+import { Images, ImagesViewMode } from '../../../types';
 
 export interface ViewProps {
   actual: string;
@@ -12,16 +12,14 @@ export interface ViewProps {
   expect: string;
 }
 
-export type ViewMode = 'side-by-side' | 'swap' | 'slide' | 'blend';
-
 interface ImagesViewProps {
   url: string;
   image: Images;
   canApprove: boolean;
-  mode: ViewMode;
+  mode: ImagesViewMode;
 }
 
-const views: { [mode in ViewMode]: FunctionComponent<ViewProps> } = {
+const views: { [mode in ImagesViewMode]: FunctionComponent<ViewProps> } = {
   'side-by-side': SideBySideView,
   swap: SwapView,
   slide: SlideView,

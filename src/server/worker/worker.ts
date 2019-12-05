@@ -3,7 +3,7 @@ import chai from 'chai';
 import chalk from 'chalk';
 import Mocha, { Suite, Context, AsyncFunc } from 'mocha';
 import { addHook } from 'pirates';
-import { Config, Images, Options, BrowserConfig, CreeveyStories } from '../../types';
+import { Config, Images, Options, BrowserConfig, CreeveyStories, noop } from '../../types';
 import { getBrowser, switchStory } from '../../utils';
 import chaiImage from '../../chai-image';
 import { Loader } from '../../loader';
@@ -13,7 +13,7 @@ import { convertStories } from './stories';
 // After end of each suite mocha clean all hooks and don't allow re-run tests without full re-init
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore see issue for more info https://github.com/mochajs/mocha/issues/2783
-Suite.prototype.cleanReferences = () => {};
+Suite.prototype.cleanReferences = noop;
 
 function patchMochaInterface(suite: Suite): void {
   suite.on('pre-require', context => {

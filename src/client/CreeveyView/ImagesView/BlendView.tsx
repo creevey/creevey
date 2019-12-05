@@ -2,34 +2,64 @@ import React from 'react';
 import { css } from '@emotion/core';
 import { ViewProps } from './ImagesView';
 
-export function BlendView({ actual, expect }: ViewProps): JSX.Element {
+export function BlendView({ actual, diff, expect }: ViewProps): JSX.Element {
   return (
     <div
       css={css`
         margin: 20px;
         position: relative;
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-start;
         filter: invert(100%);
       `}
     >
-      <img
-        alt="actual"
-        src={actual}
+      <div
         css={css`
           position: absolute;
-          border: 1px solid #419d14;
-          max-width: 100%;
-          top: 0;
-          left: 0;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: flex-start;
+          justify-content: flex-start;
         `}
-      />
-      <img
-        alt="expect"
-        src={expect}
+      >
+        <img
+          alt="actual"
+          src={actual}
+          css={css`
+            border: 1px solid #419d14;
+            max-width: 100%;
+          `}
+        />
+      </div>
+      <div
         css={css`
-          vertical-align: top;
-          border: 1px solid #d9472b;
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: flex-start;
+          justify-content: flex-start;
+        `}
+      >
+        <img
+          alt="expect"
+          src={expect}
+          css={css`
+            border: 1px solid #d9472b;
+            max-width: 100%;
+            mix-blend-mode: difference;
+          `}
+        />
+      </div>
+      <img
+        alt="diff"
+        src={diff}
+        css={css`
           max-width: 100%;
-          mix-blend-mode: difference;
+          opacity: 0;
+          border: 1px solid transparent;
         `}
       />
     </div>

@@ -3,8 +3,7 @@ import { css } from '@emotion/core';
 import { CreeveyContex } from '../../CreeveyContext';
 import { ImagesView } from '../ImagesView';
 import { PageHeader } from './PageHeader';
-import { ViewMode } from '../ImagesView/ImagesView';
-import { TestResult } from '../../../types';
+import { TestResult, ImagesViewMode } from '../../../types';
 import { PageFooter } from './PageFooter';
 import { getImageUrl } from '../../helpers';
 
@@ -20,7 +19,7 @@ export function ResultsPage({ id, path, results = [], approved = {} }: TestResul
   const [retry, setRetry] = useState(results.length);
   const result = results[retry - 1];
   const [imageName, setImageName] = useState(Object.keys(result.images ?? {})[0] ?? '');
-  const [viewMode, setViewMode] = useState<ViewMode>('side-by-side');
+  const [viewMode, setViewMode] = useState<ImagesViewMode>('side-by-side');
 
   const url = getImageUrl(path, imageName);
   const image = result.images?.[imageName];

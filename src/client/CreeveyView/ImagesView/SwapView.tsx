@@ -15,32 +15,54 @@ export function SwapView(props: ViewProps): JSX.Element {
   const handleChangeView = (): void => setImage(image == 'actual' ? 'expect' : 'actual');
 
   return (
-    <label
+    <div
       css={css`
-        cursor: pointer;
+        position: relative;
         margin: 20px;
       `}
     >
-      <input
+      <label
         css={css`
-          display: inline-block;
           position: absolute;
-          width: 0;
-          height: 0;
-          z-index: -1;
-          appearance: none;
+          display: flex;
+          align-items: flex-start;
+          justify-content: flex-start;
+          cursor: pointer;
+          width: 100%;
+          height: 100%;
+          z-index: 1;
         `}
-        type="checkbox"
-        onChange={handleChangeView}
-      />
+      >
+        <input
+          css={css`
+            display: inline-block;
+            position: absolute;
+            width: 0;
+            height: 0;
+            z-index: -1;
+            appearance: none;
+          `}
+          type="checkbox"
+          onChange={handleChangeView}
+        />
+        <img
+          alt={image}
+          src={props[image]}
+          css={css`
+            border: 1px solid ${colors[image]};
+            max-width: 100%;
+          `}
+        />
+      </label>
       <img
-        alt={image}
-        src={props[image]}
+        alt="diff"
+        src={props.diff}
         css={css`
-          border: 1px solid ${colors[image]};
           max-width: 100%;
+          opacity: 0;
+          border: 1px solid transparent;
         `}
       />
-    </label>
+    </div>
   );
 }

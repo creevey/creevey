@@ -3,12 +3,11 @@ import { css } from '@emotion/core';
 import { ThemeProvider } from '@skbkontur/react-ui/ThemeProvider';
 import DeleteIcon from '@skbkontur/react-icons/Delete';
 import Tabs from '@skbkontur/react-ui/Tabs';
-import { ViewMode } from '../ImagesView/ImagesView';
-import { Images } from '../../../types';
+import { Images, ImagesViewMode } from '../../../types';
 import { ImagePreview } from './ImagePreview';
 import { getImageUrl } from '../../helpers';
 
-const modes: ViewMode[] = ['side-by-side', 'swap', 'slide', 'blend'];
+const modes: ImagesViewMode[] = ['side-by-side', 'swap', 'slide', 'blend'];
 
 const IMAGE_PREVIEW_THEME = {
   btnCheckedBg: '#fff',
@@ -39,7 +38,7 @@ interface PageHeaderProps {
   errorMessage?: string;
   showViewModes: boolean;
   onImageChange: (name: string) => void;
-  onViewModeChange: (viewMode: ViewMode) => void;
+  onViewModeChange: (viewMode: ImagesViewMode) => void;
 }
 
 export function PageHeader({
@@ -52,11 +51,11 @@ export function PageHeader({
 }: PageHeaderProps): JSX.Element {
   const imageEntires = Object.entries(images) as [string, Images][];
   const [imageName, setImageName] = useState((imageEntires[0] ?? [])[0] ?? '');
-  const [viewMode, setViewMode] = useState<ViewMode>('side-by-side');
+  const [viewMode, setViewMode] = useState<ImagesViewMode>('side-by-side');
 
   const handleImageChange = (name: string): void => (setImageName(name), onImageChange(name));
   const handleViewModeChange = (_: { target: { value: string } }, mode: string): void => (
-    setViewMode(mode as ViewMode), onViewModeChange(mode as ViewMode)
+    setViewMode(mode as ImagesViewMode), onViewModeChange(mode as ImagesViewMode)
   );
 
   return (
