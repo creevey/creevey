@@ -1,23 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { css } from '@emotion/core';
 import Button from '@skbkontur/react-ui/Button';
 import Paging from '@skbkontur/react-ui/Paging';
 
 export interface PageFooterProps {
-  isApproved: boolean;
-  currentRetry: number;
+  canApprove: boolean;
   retriesCount: number;
   onRetryChange: (retry: number) => void;
   onApprove: () => void;
 }
 
-export function PageFooter({
-  isApproved,
-  currentRetry,
-  retriesCount,
-  onRetryChange,
-  onApprove,
-}: PageFooterProps): JSX.Element {
+export function PageFooter({ canApprove, retriesCount, onRetryChange, onApprove }: PageFooterProps): JSX.Element {
+  const [retry, setRetry] = useState(retriesCount);
+
+  const handlePageChange = (page: number): void => (setRetry(page), onRetryChange(page));
+
   return (
     <div
       css={css`
@@ -27,13 +24,13 @@ export function PageFooter({
         background: #fff;
       `}
     >
-      <Paging activePage={currentRetry} onPageChange={onRetryChange} pagesCount={retriesCount} />
+      <Paging activePage={retry} onPageChange={handlePageChange} pagesCount={retriesCount} />
       <div>
-        {isApproved ? null : (
+        {canApprove ? (
           <Button use="primary" onClick={onApprove} width="100px">
             {'Approve'}
           </Button>
-        )}
+        ) : null}
       </div>
     </div>
   );

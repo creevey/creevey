@@ -103,6 +103,9 @@
 ## First priority
 
 - [ ] Slide story don't work correclty, must be fixed
+- [ ] Show icons for skiped tests
+- [ ] Allow check/uncheck tests without results
+- [ ] Stop propagation on test checkbox link
 - [x] Better error message about open storybook page
 - [x] Exit if worker got `UnhandledPromiseRejectionWarning`
 - [x] Serialize skip regexp

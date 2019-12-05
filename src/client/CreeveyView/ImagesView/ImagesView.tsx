@@ -4,6 +4,7 @@ import { SideBySideView } from './SideBySideView';
 import { SwapView } from './SwapView';
 import { SlideView } from './SlideView';
 import { BlendView } from './BlendView';
+import { Images } from '../../../types';
 
 export interface ViewProps {
   actual: string;
@@ -15,10 +16,8 @@ export type ViewMode = 'side-by-side' | 'swap' | 'slide' | 'blend';
 
 interface ImagesViewProps {
   url: string;
-  actual: string;
-  diff?: string;
-  expect?: string;
-  isApproved: boolean;
+  image: Images;
+  canApprove: boolean;
   mode: ViewMode;
 }
 
@@ -29,8 +28,10 @@ const views: { [mode in ViewMode]: FunctionComponent<ViewProps> } = {
   blend: BlendView,
 };
 
-export function ImagesView({ url, actual, diff, expect, isApproved, mode }: ImagesViewProps): JSX.Element {
+export function ImagesView({ url, image, canApprove, mode }: ImagesViewProps): JSX.Element {
   const ViewComponent = views[mode];
+
+  const { actual, diff, expect } = image;
 
   return (
     <div
@@ -43,7 +44,9 @@ export function ImagesView({ url, actual, diff, expect, isApproved, mode }: Imag
         justify-content: center;
       `}
     >
-      {isApproved ? (
+      {canApprove && diff && expect ? (
+        <ViewComponent actual={`${url}/${actual}`} diff={`${url}/${diff}`} expect={`${url}/${expect}`} />
+      ) : (
         <a
           css={css`
             margin: 20px;
@@ -61,30 +64,6 @@ export function ImagesView({ url, actual, diff, expect, isApproved, mode }: Imag
             `}
           />
         </a>
-      ) : (
-        <>
-          {diff && expect ? (
-            <ViewComponent actual={`${url}/${actual}`} diff={`${url}/${diff}`} expect={`${url}/${expect}`} />
-          ) : (
-            <a
-              css={css`
-                margin: 20px;
-              `}
-              href={`${url}/${actual}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <img
-                alt="actual"
-                src={`${url}/${actual}`}
-                css={css`
-                  border: 1px solid #419d14;
-                  max-width: 100%;
-                `}
-              />
-            </a>
-          )}
-        </>
       )}
     </div>
   );

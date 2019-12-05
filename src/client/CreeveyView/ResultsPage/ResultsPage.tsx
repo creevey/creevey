@@ -6,6 +6,7 @@ import { PageHeader } from './PageHeader';
 import { ViewMode } from '../ImagesView/ImagesView';
 import { TestResult } from '../../../types';
 import { PageFooter } from './PageFooter';
+import { getImageUrl } from '../../helpers';
 
 interface TestResultsProps {
   id: string;
@@ -14,24 +15,17 @@ interface TestResultsProps {
   approved?: Partial<{ [image: string]: number }>;
 }
 
-// TODO should better handle offline mode
 export function ResultsPage({ id, path, results = [], approved = {} }: TestResultsProps): JSX.Element {
-  const imageNames = Object.keys(results[results.length - 1]?.images ?? {});
-  const initialImageName = imageNames[0];
-
   const { onImageApprove } = useContext(CreeveyContex);
   const [retry, setRetry] = useState(results.length);
-  const [imageName, setImageName] = useState(initialImageName);
+  const result = results[retry - 1];
+  const [imageName, setImageName] = useState(Object.keys(result.images ?? {})[0] ?? '');
   const [viewMode, setViewMode] = useState<ViewMode>('side-by-side');
 
-  // path => [kind, story, test, browser]
-  const browser = path.slice(-1)[0];
-  const result = results[retry - 1];
+  const url = getImageUrl(path, imageName);
   const image = result.images?.[imageName];
-  const isApproved = approved[imageName] == retry - 1 || (result && result.status == 'success');
-  const imagesUrl = window.location.host ? `/report/${path.slice(0, -1).join('/')}` : path.slice(0, -1).join('/');
-  const url = encodeURI(imageName == browser ? imagesUrl : `${imagesUrl}/${browser}`);
-  const hasDiffAndExpect = !isApproved && Boolean(image?.diff && image.expect);
+  const canApprove = Boolean(image && approved[imageName] != retry - 1 && result.status != 'success');
+  const hasDiffAndExpect = canApprove && Boolean(image?.diff && image.expect);
 
   const handleApprove = (): void => onImageApprove(id, retry - 1, imageName);
 
@@ -44,14 +38,10 @@ export function ResultsPage({ id, path, results = [], approved = {} }: TestResul
       `}
     >
       <PageHeader
-        url={url}
-        result={result}
         title={path}
+        images={result.images}
         errorMessage={result.error}
-        imageName={imageName}
-        imageNames={imageNames}
         showViewModes={hasDiffAndExpect}
-        viewMode={viewMode}
         onViewModeChange={setViewMode}
         onImageChange={setImageName}
       />
@@ -62,14 +52,7 @@ export function ResultsPage({ id, path, results = [], approved = {} }: TestResul
         `}
       >
         {image ? (
-          <ImagesView
-            url={url}
-            actual={image.actual}
-            diff={image.diff}
-            expect={image.expect}
-            isApproved={isApproved}
-            mode={viewMode}
-          />
+          <ImagesView url={url} image={image} canApprove={canApprove} mode={viewMode} />
         ) : (
           <div
             css={css`
@@ -78,7 +61,7 @@ export function ResultsPage({ id, path, results = [], approved = {} }: TestResul
               justify-content: center;
               display: flex;
             `}
-          >{`Image ${imageName ?? ''} not found`}</div>
+          >{`Image ${imageName} not found`}</div>
         )}
       </div>
       <div
@@ -89,8 +72,7 @@ export function ResultsPage({ id, path, results = [], approved = {} }: TestResul
         `}
       >
         <PageFooter
-          isApproved={isApproved}
-          currentRetry={retry}
+          canApprove={canApprove}
           retriesCount={results.length}
           onRetryChange={setRetry}
           onApprove={handleApprove}

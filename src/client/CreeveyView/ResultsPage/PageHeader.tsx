@@ -1,40 +1,63 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { css } from '@emotion/core';
+import { ThemeProvider } from '@skbkontur/react-ui/ThemeProvider';
 import DeleteIcon from '@skbkontur/react-icons/Delete';
 import Tabs from '@skbkontur/react-ui/Tabs';
 import { ViewMode } from '../ImagesView/ImagesView';
-import { TestResult } from '../../../types';
-import { ImageSwap } from './ImageSwap';
+import { Images } from '../../../types';
+import { ImagePreview } from './ImagePreview';
+import { getImageUrl } from '../../helpers';
 
 const modes: ViewMode[] = ['side-by-side', 'swap', 'slide', 'blend'];
 
+const IMAGE_PREVIEW_THEME = {
+  btnCheckedBg: '#fff',
+  btnDefaultBgStart: '#fff',
+  btnDefaultBgEnd: '#fff',
+  btnDefaultBg: '#fff',
+  btnDefaultHoverBgStart: '#fff',
+  btnDefaultHoverBgEnd: '#fff',
+  btnDefaultHoverBg: '#fff',
+  btnDefaultActiveBgStart: '#fff',
+  btnDefaultActiveBgEnd: '#fff',
+  btnDefaultActiveBg: '#fff',
+  btnCheckedShadow: '0 0 0 2px #3072C4',
+  btnDefaultShadow: '0 0 0 1px #A0A0A0',
+  btnDefaultHoverShadow: '0 0 0 1px #cdcdcd',
+  btnDefaultActiveShadow: '0 0 0 1px #e1e1e1',
+  btnPaddingXSmall: '0px',
+  btnPaddingYSmall: '0px',
+  controlHeightSmall: '64px',
+  btnHeightShift: '0px',
+};
+
 interface PageHeaderProps {
-  url: string;
-  result: TestResult;
   title: string[];
+  images?: Partial<{
+    [name: string]: Images;
+  }>;
   errorMessage?: string;
-  imageNames: string[];
-  imageName: string;
   showViewModes: boolean;
-  viewMode: ViewMode;
-  onImageChange: (imageName: string) => void;
+  onImageChange: (name: string) => void;
   onViewModeChange: (viewMode: ViewMode) => void;
 }
 
 export function PageHeader({
-  url,
-  result,
   title,
+  images = {},
   errorMessage,
-  imageNames: images,
-  imageName: currentImage,
   showViewModes,
-  viewMode,
   onImageChange,
   onViewModeChange,
 }: PageHeaderProps): JSX.Element {
-  const handleViewModeChange = (_: { target: { value: string } }, mode: string): void =>
-    onViewModeChange(mode as ViewMode);
+  const imageEntires = Object.entries(images) as [string, Images][];
+  const [imageName, setImageName] = useState((imageEntires[0] ?? [])[0] ?? '');
+  const [viewMode, setViewMode] = useState<ViewMode>('side-by-side');
+
+  const handleImageChange = (name: string): void => (setImageName(name), onImageChange(name));
+  const handleViewModeChange = (_: { target: { value: string } }, mode: string): void => (
+    setViewMode(mode as ViewMode), onViewModeChange(mode as ViewMode)
+  );
 
   return (
     <div
@@ -85,22 +108,30 @@ export function PageHeader({
           </pre>
         </div>
       )}
-      {images.length > 1 ? (
+      {imageEntires.length > 1 ? (
         <div
           css={css`
             display: flex;
             margin-top: 32px;
           `}
         >
-          {images.map(name => (
-            <ImageSwap
-              key={name}
-              url={url}
-              isActual={name === currentImage}
-              onClick={() => onImageChange(name)}
-              imageName={result.images?.[name]?.actual}
-            />
-          ))}
+          <ThemeProvider value={IMAGE_PREVIEW_THEME}>
+            {imageEntires.map(([name, image]: [string, Images]) => (
+              <span
+                key={name}
+                css={css`
+                  margin-left: 16px;
+                `}
+              >
+                <ImagePreview
+                  imageName={name}
+                  url={`${getImageUrl(title, name)}/${image.actual}`}
+                  isActive={name === imageName}
+                  onClick={handleImageChange}
+                />
+              </span>
+            ))}
+          </ThemeProvider>
         </div>
       ) : null}
       {showViewModes ? (

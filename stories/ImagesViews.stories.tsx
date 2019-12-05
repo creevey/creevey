@@ -19,6 +19,7 @@ export default {
   },
 };
 
+// TODO Replace on ImagesView component
 export const Blend = () => <BlendView expect={octocatExpect} diff={octocatDiff} actual={octocatActual} />;
 export const SideBySide = () => <SideBySideView expect={octocatExpect} diff={octocatDiff} actual={octocatActual} />;
 export const Slide = () => <SlideView expect={octocatExpect} diff={octocatDiff} actual={octocatActual} />;
@@ -29,19 +30,20 @@ Slide.story = {
     creevey: {
       _seleniumTests({ By }: typeof Selenium, { expect }: typeof Chai) {
         return {
-          async idle(this: Mocha.Context) {
-            const element = await this.browser.findElement(By.css('#root'));
-            await expect(await element.takeScreenshot()).to.matchImage();
-          },
           async click(this: Mocha.Context) {
             const element = await this.browser.findElement(By.css('#root'));
+
+            const idle = await element.takeScreenshot();
 
             await this.browser
               .actions({ bridge: true })
               .click(element)
               .perform();
 
-            await expect(await element.takeScreenshot()).to.matchImage();
+            const click = await element.takeScreenshot();
+
+            // TODO toMatchImages
+            await Promise.all([expect(idle).to.matchImage('idle'), expect(click).to.matchImage('click')]);
           },
         };
       },
