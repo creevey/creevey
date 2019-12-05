@@ -103,6 +103,8 @@
 ## First priority
 
 - [ ] Correctly resize images in views using correct proportions (smaller image should shrink if larger shrink too, max-width/max-height doesn't work)
+- [ ] Tests on images view components with various scenarios (same/diff sizes, less/bigger viewport)
+- [ ] Write stories on new components
 - [ ] Allow assert multiple images in one test (chai toMatchImages())
 - [ ] Regenerate fixture images
 - [x] Slide story don't work correclty, must be fixed
