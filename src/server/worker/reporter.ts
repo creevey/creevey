@@ -52,15 +52,21 @@ export class TeamcityReporter extends reporters.Base {
         if (!image) return;
         Object.values(image)
           .filter(isDefined)
-          .forEach(fileName =>
-            // TODO output by report directory path
-            console.log(
-              `##teamcity[testMetadata testName='${this.escape(test.title)}' type='image' value='${reportDir}/${test
+          .map(
+            fileName =>
+              `${test
                 .titlePath()
                 .map(this.escape)
-                .join('/')}/${name == topLevelSuite ? fileName : `${topLevelSuite}/${fileName}`}' flowId='${
-                process.pid
-              }']`,
+                .join('/')}/${name == topLevelSuite ? fileName : `${topLevelSuite}/${fileName}`}`,
+          )
+          .forEach(
+            filePath => (
+              console.log(`##teamcity[publishArtifacts '${reportDir}/${filePath} => report/${filePath}'`),
+              console.log(
+                `##teamcity[testMetadata testName='${this.escape(
+                  test.title,
+                )}' type='image' value='${filePath}' flowId='${process.pid}']`,
+              )
             ),
           );
       });
