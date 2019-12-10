@@ -5,7 +5,7 @@ import ArrowTriangleDownIcon from '@skbkontur/react-icons/ArrowTriangleDown';
 import Checkbox from '@skbkontur/react-ui/Checkbox';
 import Button from '@skbkontur/react-ui/Button';
 import { TestStatusIcon } from './TestStatusIcon';
-import { CreeveySuite, isTest, noop } from '../../../types';
+import { CreeveySuite, isTest } from '../../../types';
 import { CreeveyContex } from '../../CreeveyContext';
 
 export interface SuiteLinkProps {
@@ -21,15 +21,46 @@ export function SuiteLink({ title, suite }: SuiteLinkProps): JSX.Element {
     [suite.indeterminate],
   );
 
+  const isRootSuite = suite.path.length == 0;
+
   const handleCheck = (_: React.ChangeEvent, value: boolean): void => onSuiteToggle(suite.path, value);
-  const handleOpen = (): void => onSuiteOpen(suite.path, !suite.opened);
+  const handleOpen = (): void => void (isRootSuite || onSuiteOpen(suite.path, !suite.opened));
 
   return (
-    <Button width="100%" align="left" onClick={suite.path.length ? handleOpen : noop}>
-      <TestStatusIcon status={suite.status} />
-      <span
+    <div
+      css={css`
+        position: relative;
+        &:hover {
+          background: #e5e5e5;
+        }
+      `}
+    >
+      <Button width="100%" align="left" onClick={handleOpen}>
+        <TestStatusIcon status={suite.status} skip={suite.skip} />
+        <span
+          css={css`
+            padding-left: ${Math.max(48, (suite.path.length + 5) * 8)}px;
+          `}
+        >
+          {isTest(suite) ||
+            (Boolean(suite.path.length) && (
+              <span
+                css={css`
+                  padding-right: 8px;
+                  display: inline-block;
+                `}
+              >
+                {suite.opened ? <ArrowTriangleDownIcon /> : <ArrowTriangleRightIcon />}
+              </span>
+            ))}
+          {title}
+        </span>
+      </Button>
+      <div
         css={css`
-          padding-left: 16px;
+          position: absolute;
+          left: 66px;
+          top: 6px;
         `}
       >
         <Checkbox
@@ -38,25 +69,7 @@ export function SuiteLink({ title, suite }: SuiteLinkProps): JSX.Element {
           disabled={Boolean(suite.skip)}
           onChange={handleCheck}
         />
-      </span>
-      <span
-        css={css`
-          padding-left: ${Math.max(16, (suite.path.length + 1) * 8)}px;
-        `}
-      >
-        {isTest(suite) ||
-          (Boolean(suite.path.length) && (
-            <span
-              css={css`
-                padding-right: 8px;
-                display: inline-block;
-              `}
-            >
-              {suite.opened ? <ArrowTriangleDownIcon /> : <ArrowTriangleRightIcon />}
-            </span>
-          ))}
-        {title}
-      </span>
-    </Button>
+      </div>
+    </div>
   );
 }

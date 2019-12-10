@@ -23,22 +23,34 @@ export function TestLink({ title, opened, test }: TestLinkProps): JSX.Element {
   const handleOpen = (): void => onOpenTest(test.path);
 
   return (
-    <Button width="100%" align="left" checked={opened} disabled={emptyResults} onClick={handleOpen}>
-      <TestStatusIcon inverted={opened} status={test.status} />
-      <span
+    <div
+      css={css`
+        position: relative;
+
+        ${emptyResults ? '' : '&:hover { background: #e5e5e5; }'}
+      `}
+    >
+      <Button width="100%" align="left" checked={opened} disabled={emptyResults} onClick={handleOpen}>
+        <TestStatusIcon inverted={opened} status={test.status} skip={test.skip} />
+        <span
+          css={css`
+            padding-left: ${(test.path.length + 8) * 8}px;
+          `}
+        >
+          {title}
+        </span>
+      </Button>
+      {/* NOTE Little hack to allow click on checkbox and don't trigger Button click */}
+      {/* We can use other approache, but checkbox has vertical-align: top */}
+      <div
         css={css`
-          padding-left: 16px;
+          position: absolute;
+          left: 66px;
+          top: 6px;
         `}
       >
         <Checkbox checked={test.skip ? false : test.checked} disabled={Boolean(test.skip)} onChange={handleCheck} />
-      </span>
-      <span
-        css={css`
-          padding-left: ${(test.path.length + 4) * 8}px;
-        `}
-      >
-        {title}
-      </span>
-    </Button>
+      </div>
+    </div>
   );
 }
