@@ -27,6 +27,7 @@ export function SlideView({ actual, diff, expect }: ViewProps): JSX.Element {
           position: absolute;
           cursor: ew-resize;
           background: none;
+          box-shadow: none;
           outline: none;
           height: 100%;
           width: 100%;
@@ -38,29 +39,32 @@ export function SlideView({ actual, diff, expect }: ViewProps): JSX.Element {
             height: 100%;
           }
           &::-webkit-slider-thumb {
+            box-shadow: 0 0 0 0.5px #888;
+            height: 100%;
+            width: 0px;
+            appearance: none;
+          }
+
+          &::-moz-focus-outer {
+            border: 0;
+          }
+          &::-moz-range-track {
+            height: 0;
+          }
+          &::-moz-range-thumb {
+            border: none;
+            box-shadow: 0 0 0 0.5px #888;
+            height: 100%;
+            width: 0px;
+          }
+          /* &::-ms-thumb {
             border: none;
             background: none;
             box-shadow: 0 0 0 0.5px #888;
             height: 100%;
             width: 0px;
             appearance: none;
-          }
-          &::-moz-range-thumb {
-            border: none;
-            background: none;
-            box-shadow: 0 0 0 0.5px #888;
-            height: ${100}px;
-            width: 0px;
-            appearance: none;
-          }
-          &::-ms-thumb {
-            border: none;
-            background: none;
-            box-shadow: 0 0 0 0.5px #888;
-            height: ${100}px;
-            width: 0px;
-            appearance: none;
-          }
+          } */
         `}
         min={0}
         max={100}
