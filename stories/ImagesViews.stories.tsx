@@ -14,7 +14,7 @@ export default {
   title: 'ImagesViews',
   parameters: {
     creevey: {
-      skip: { in: ['firefox', 'ie11'], reason: 'Only Chrome is supporter' },
+      skip: { in: 'ie11', reason: 'Internet Explorer is not supported yet' },
       __filename,
     },
   },

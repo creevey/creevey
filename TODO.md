@@ -147,6 +147,7 @@
 
 ## Not in first time
 
+- [ ] Add note about skip option and story/kind name case convention
 - [x] Husky, lint-staged
 - [ ] Add `babel-plugin-typescript-to-proptypes`
 - [ ] Lint sort imports

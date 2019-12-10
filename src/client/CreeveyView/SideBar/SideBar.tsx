@@ -83,23 +83,12 @@ export function SideBar({ rootSuite, openedTest, onOpenTest }: SideBarProps): JS
           background: #fff;
         `}
       >
-        <div
-          css={css`
-            padding: 24px 32px 8px;
-            background: #fff;
-            height: 150px;
-            z-index: 3;
-            position: sticky;
-            top: 0;
-          `}
-        >
-          <SideBarHeader
-            testsStatus={testsStatus}
-            onFilterChange={handleFilterChange}
-            onStart={handleStart}
-            onStop={onStop}
-          />
-        </div>
+        <SideBarHeader
+          testsStatus={testsStatus}
+          onFilterChange={handleFilterChange}
+          onStart={handleStart}
+          onStop={onStop}
+        />
         <div
           css={css`
             position: sticky;

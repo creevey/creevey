@@ -19,7 +19,16 @@ export function SideBarHeader({ testsStatus, onStop, onStart, onFilterChange }: 
   const handleFilterChange = (_: React.ChangeEvent, value: string): void => onFilterChange(value);
 
   return (
-    <>
+    <div
+      css={css`
+        padding: 24px 32px 8px;
+        background: #fff;
+        height: 150px;
+        z-index: 3;
+        position: sticky;
+        top: 0;
+      `}
+    >
       <div
         css={css`
           display: flex;
@@ -66,6 +75,6 @@ export function SideBarHeader({ testsStatus, onStop, onStart, onFilterChange }: 
           onChange={handleFilterChange}
         />
       </div>
-    </>
+    </div>
   );
 }
