@@ -97,35 +97,32 @@
   - [x] Reset mouse position
   - [x] Support sotrybook 3.x-5.x
 - [x] Allow Composite images
+- [x] Slide story don't work correclty, must be fixed
+- [x] Better error message about open storybook page
+- [x] Exit if worker got `UnhandledPromiseRejectionWarning`
+- [x] Serialize skip regexp
+- [x] Husky, lint-staged
+- [x] Rework UI
+
+  - [x] Improve UI performance on initial load
+  - [x] Put tests tree into side page
+  - [x] Output test result view into main page block
+  - [x] Output error message multiline
+  - [x] Show icons for skiped tests
+  - [x] Allow check/uncheck tests without results
 
   </details>
 
 ## First priority
 
-- [ ] Correctly resize images in views using correct proportions (smaller image should shrink if larger shrink too, max-width/max-height doesn't work)
-- [ ] Tests on images view components with various scenarios (same/diff sizes, less/bigger viewport)
-- [ ] Write stories on new components
 - [ ] Allow assert multiple images in one test (chai toMatchImages())
-- [ ] Regenerate fixture images
-- [x] Slide story don't work correclty, must be fixed
-- [ ] Show icons for skiped tests
-- [ ] Allow check/uncheck tests without results
-- [x] Better error message about open storybook page
-- [x] Exit if worker got `UnhandledPromiseRejectionWarning`
-- [x] Serialize skip regexp
-- [ ] Skip tests inside story
 - [ ] Storybook integration
   - [x] Simplify generated tests tree acording by stories/tests/images
+  - [ ] Move Creevey config inside storybook config
+  - [ ] Use require.context from storybook config or strorybook event to get tests (without \_\_filename usage)
   - [ ] Note about support only Component Story Format (CSF)
-- [ ] Bugs
-  - [ ] Fix check/uncheck with skipped tests in UI
-  - [ ] Firefox double click if clicks in different tests
-  - [ ] Reconnect on `WebDriverError: Session timed out or not found`
-  - [ ] Mocha worker `Possible EventEmitter memory leak detected. 11 error listeners added`
-  - [ ] Not properly work with CRA (need to install ts-node or @babel/register)
-- [ ] Improve CLI
-  - [ ] Output cli help
-  - [ ] Add grep/kind/story option
+  - [ ] Add note about skip option and story/kind name case convention
+  - [ ] Add screencast with Creevey UI
 - [ ] Transform to monorepo
   - [ ] `chai-image`
   - [ ] `jest-image`
@@ -133,22 +130,31 @@
   - [ ] `creevey-ui`
   - [ ] `creevey-album` (storybook decorator and integration)
   - [ ] `creevey-selenium`
-- [ ] Rework UI
-  - [x] Improve UI performance on initial load
-  - [ ] Show removed tests results, mark these as removed
-  - [ ] Allow hide skipped tests in UI
-  - [x] Put tests tree into side page
-  - [x] Output test result view into main page block
-  - [ ] Add bottom padding into test tree
-  - [x] Output error message multiline
-  - [ ] Allow switch between 1:1 and fit image views
-- [ ] Write about differences with other tools
-- [ ] Add unit tests
+- [ ] Use jest intead of mocha/chai
 
 ## Not in first time
 
-- [ ] Add note about skip option and story/kind name case convention
-- [x] Husky, lint-staged
+- [ ] Correctly resize images in views using correct proportions (smaller image should shrink if larger shrink too, max-width/max-height doesn't work)
+- [ ] Tests on images view components with various scenarios (same/diff sizes, less/bigger viewport)
+- [ ] Write stories on new components
+  - [x] SideBar
+  - [ ] ResultPageHeader
+- [ ] Allow skip tests inside story
+- [ ] Bugs
+  - [ ] Firefox double click if clicks in different tests
+  - [ ] Reconnect on `WebDriverError: Session timed out or not found`
+  - [ ] Mocha worker `Possible EventEmitter memory leak detected. 11 error listeners added`
+  - [ ] Not properly work with CRA (need to install ts-node or @babel/register)
+- [ ] Improve CLI
+  - [ ] Output cli help
+  - [ ] Add grep/kind/story option
+- [ ] Rework UI
+  - [ ] Show removed tests results, mark these as removed
+  - [ ] Allow hide skipped tests in UI
+  - [ ] Add bottom padding into test tree
+  - [ ] Allow switch between 1:1 and fit image views
+- [ ] Write about differences with other tools
+- [ ] Add unit tests
 - [ ] Add `babel-plugin-typescript-to-proptypes`
 - [ ] Lint sort imports
 - [ ] Github Actions
@@ -158,7 +164,6 @@
 - [ ] Rewrite to use `worker_threads` instead of `cluster` to allow use shared memory
 - [ ] Use https://github.com/gidztech/jest-puppeteer-docker
 - [ ] Allow use custom API (wd/wdio/puppeter/etc)
-- [ ] Allow use creevey without storybook
 - [ ] HotReload tests files without restart
 - [ ] Handle error on mocha hooks
 - [ ] Support mocha options for workers
@@ -168,6 +173,7 @@
 
 ## Far future
 
+- [ ] Allow use creevey without storybook
 - [ ] Storybook integration
   - [ ] Render tests UI as a part of storybook UI
   - [ ] Framework agnostic decorator
