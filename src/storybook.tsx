@@ -18,12 +18,13 @@ declare global {
 
 function serializeSkip(skip: SkipOption): SkipOption {
   const { reason } = skip;
-  let { in: browsers, stories } = skip;
+  let { in: browsers, kinds, stories } = skip;
 
   if (browsers instanceof RegExp) browsers = browsers.toString();
+  if (kinds instanceof RegExp) kinds = kinds.toString();
   if (stories instanceof RegExp) stories = stories.toString();
 
-  return { reason, in: browsers, stories };
+  return { reason, in: browsers, kinds, stories };
 }
 
 function serializeStory(story: StoryInput | StoryContext): CreeveyStory {
