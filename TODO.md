@@ -117,7 +117,7 @@
 
 - [ ] Bugs
   - [ ] Update incorrect work with new struct direcotry
-  - [ ] Reset button nowrap style
+  - [x] Reset button nowrap style
 - [ ] Allow assert multiple images in one test (chai toMatchImages())
 - [ ] Storybook integration
   - [x] Simplify generated tests tree acording by stories/tests/images

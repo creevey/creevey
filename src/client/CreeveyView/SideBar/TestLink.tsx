@@ -35,6 +35,7 @@ export function TestLink({ title, opened, test }: TestLinkProps): JSX.Element {
         <span
           css={css`
             padding-left: ${(test.path.length + 8) * 8}px;
+            white-space: normal;
           `}
         >
           {title}

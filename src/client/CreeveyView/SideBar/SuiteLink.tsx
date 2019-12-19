@@ -40,6 +40,7 @@ export function SuiteLink({ title, suite }: SuiteLinkProps): JSX.Element {
         <span
           css={css`
             padding-left: ${Math.max(48, (suite.path.length + 5) * 8)}px;
+            white-space: normal;
           `}
         >
           {isTest(suite) ||

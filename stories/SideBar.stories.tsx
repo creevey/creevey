@@ -19,6 +19,13 @@ const simpleTests: CreeveyStatus['tests'] = {
   2: { id: '2', path: ['hasResult', 'simple', 'root'], skip: false, retries: 0, results: [{ status: 'success' }] },
   3: { id: '3', path: ['skipped', 'simple', 'root'], skip: true, retries: 0 },
   4: { id: '4', path: ['empty', 'skipped', 'root'], skip: true, retries: 0 },
+  5: {
+    id: '5',
+    path: ['Storybook’s Component Story Format (CSF) is the recommended way to write stories', 'simple', 'root'],
+    skip: false,
+    retries: 0,
+    results: [{ status: 'success' }],
+  },
 };
 const statusTests: CreeveyStatus['tests'] = {
   5: { id: '5', path: ['success', 'success', 'root'], skip: false, retries: 0, status: 'success' },

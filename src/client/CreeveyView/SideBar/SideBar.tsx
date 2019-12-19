@@ -29,6 +29,7 @@ const SUITE_LINK_THEME = {
   btnWrapPadding: '0px',
   btnPaddingXSmall: '36px',
   spinnerDimmedColor: '#fff',
+  controlHeightSmall: 'auto',
 };
 
 export const SideBarContext = createContext<{ onOpenTest: (path: string[]) => void }>({
