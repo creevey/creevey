@@ -118,6 +118,7 @@
 - [ ] Bugs
   - [ ] Update incorrect work with new struct direcotry
   - [x] Reset button nowrap style
+  - [x] Skip by browser regexp don't work (webdriver serialization)
 - [ ] Allow assert multiple images in one test (chai toMatchImages())
 - [ ] Storybook integration
   - [x] Simplify generated tests tree acording by stories/tests/images

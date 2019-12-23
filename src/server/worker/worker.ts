@@ -25,7 +25,7 @@ function patchMochaInterface(suite: Suite): void {
 
 // TODO Define other extensions
 addHook(() => '', {
-  exts: ['.css', '.png'],
+  exts: ['.less', '.css', '.png'],
   ignoreNodeModules: false,
 });
 
@@ -49,11 +49,11 @@ export default async function worker(config: Config, options: Options & { browse
   const browserConfig = config.browsers[options.browser] as BrowserConfig;
   const browser = await getBrowser(config, browserConfig);
 
-  const stories: CreeveyStories = await browser.executeAsyncScript(function(
-    callback: (stories: CreeveyStories) => void,
-  ) {
-    window.__CREEVEY_GET_STORIES__(callback);
-  });
+  const stories: CreeveyStories = JSON.parse(
+    await browser.executeAsyncScript(function(callback: (stories: string) => void) {
+      window.__CREEVEY_GET_STORIES__(callback);
+    }),
+  );
 
   function saveImageHandler(imageName: string, imageNumber: number, type: keyof Images): void {
     const image = (images[imageName] = images[imageName] || {});

@@ -11,7 +11,7 @@ window.EventSource = NativeEventSource || EventSourcePolyfill;
 
 declare global {
   interface Window {
-    __CREEVEY_GET_STORIES__: (callback: (stories: CreeveyStories) => void) => void;
+    __CREEVEY_GET_STORIES__: (callback: (stories: string) => void) => void;
     __CREEVEY_SELECT_STORY__: (storyId: string, kind: string, name: string, callback: StoryDidMountCallback) => void;
   }
 }
@@ -88,7 +88,7 @@ export function withCreevey(parameters: CreeveyStoryParams = {}): MakeDecoratorR
     });
   });
 
-  window.__CREEVEY_GET_STORIES__ = callback => callback(stories);
+  window.__CREEVEY_GET_STORIES__ = callback => callback(JSON.stringify(stories));
   window.__CREEVEY_SELECT_STORY__ = selectStory;
 
   return makeDecorator({
@@ -134,7 +134,7 @@ export function withCreeveyOld(parameters: CreeveyStoryParams = {}): MakeDecorat
       });
     });
 
-    callback(stories);
+    callback(JSON.stringify(stories));
   };
 
   window.__CREEVEY_SELECT_STORY__ = selectStory;
