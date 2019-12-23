@@ -3,6 +3,7 @@ import { PNG } from 'pngjs';
 import chai, { expect } from 'chai';
 import { Suite, Context, Test } from 'mocha';
 import selenium, { By, WebDriver } from 'selenium-webdriver';
+import { storyNameFromExport } from '@storybook/router';
 import { CreeveyStories, isDefined, Test as CreeveyTest, CreeveyStoryParams } from '../../types';
 import { shouldSkip } from '../../utils';
 import { createHash } from 'crypto';
@@ -199,12 +200,13 @@ export function convertStories(
       const stories = require(path.join(process.cwd(), __filename)) as {
         [story: string]: undefined | { story?: { parameters?: { creevey?: CreeveyStoryParams } } };
       };
-      if (!stories[story.name] || !stories[story.name]?.story)
+      const storyName = Object.getOwnPropertyNames(stories).find(name => storyNameFromExport(name) == story.name);
+      if (!storyName || !stories[storyName] || !stories[storyName]?.story)
         throw new Error(
           'Creevey support only `Component Story Format (CSF)` stories. For more details see https://storybook.js.org/docs/formats/component-story-format/',
         );
       const tests: CreeveyStoryParams['_seleniumTests'] =
-        stories[story.name]?.story?.parameters?.creevey?._seleniumTests ?? (() => ({}));
+        stories[storyName]?.story?.parameters?.creevey?._seleniumTests ?? (() => ({}));
 
       const storySuite = findOrCreateSuite(story.name, kindSuite);
 
