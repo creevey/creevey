@@ -1,4 +1,4 @@
-import React, { useState, createContext, useContext } from 'react';
+import React, { useState, createContext, useContext, useEffect } from 'react';
 import { css } from '@emotion/core';
 import { ThemeProvider } from '@skbkontur/react-ui/ThemeProvider';
 import { SideBarHeader } from './SideBarHeader';
@@ -42,8 +42,65 @@ export interface SideBarProps {
   onOpenTest: (path: string[]) => void;
 }
 
+interface ChangeTestCortege {
+  test: CreeveyTest | undefined;
+  parents: CreeveySuite[];
+}
+
+const getNextTest = (suite: CreeveySuite, openedTest: CreeveyTest | null): ChangeTestCortege => {
+  let boundaryTest = openedTest;
+  const parents: CreeveySuite[] = [];
+
+  const findNextTest = (suite: CreeveySuite): CreeveyTest | undefined => {
+    parents.unshift(suite);
+    for (const suiteOrTest of Object.values(suite.children)) {
+      if (isTest(suiteOrTest)) {
+        if (suiteOrTest.status === 'failed' || (suiteOrTest.status === 'success' && !boundaryTest)) {
+          return suiteOrTest;
+        }
+        if (boundaryTest && suiteOrTest.id === boundaryTest.id) {
+          boundaryTest = null;
+        }
+      } else {
+        const nextTest = findNextTest(suiteOrTest);
+        if (nextTest) {
+          return nextTest;
+        }
+      }
+    }
+  };
+
+  return { test: findNextTest(suite), parents };
+};
+
+const getPrevTest = (suite: CreeveySuite, openedTest: CreeveyTest | null): ChangeTestCortege => {
+  let boundaryTest = openedTest;
+  const parents: CreeveySuite[] = [];
+
+  const findPrevTest = (suite: CreeveySuite): CreeveyTest | undefined => {
+    parents.unshift(suite);
+    for (const suiteOrTest of Object.values(suite.children).reverse()) {
+      if (isTest(suiteOrTest)) {
+        if (suiteOrTest.status === 'failed' || (suiteOrTest.status === 'success' && !boundaryTest)) {
+          return suiteOrTest;
+        }
+        if (boundaryTest && suiteOrTest.id === boundaryTest.id) {
+          boundaryTest = null;
+        }
+      } else {
+        const prevTest = findPrevTest(suiteOrTest);
+        if (prevTest) {
+          return prevTest;
+        }
+      }
+    }
+  };
+
+  return { test: findPrevTest(suite), parents };
+};
+
 export function SideBar({ rootSuite, openedTest, onOpenTest }: SideBarProps): JSX.Element {
-  const { onStart, onStop } = useContext(CreeveyContex);
+  const { onStart, onStop, onSuiteOpen } = useContext(CreeveyContex);
   const [filter, setFilter] = useState<CreeveyViewFilter>({ status: null, subStrings: [] });
 
   // TODO Maybe need to do flatten first?
@@ -67,6 +124,34 @@ export function SideBar({ rootSuite, openedTest, onOpenTest }: SideBarProps): JS
     });
     setFilter({ status, subStrings });
   };
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'ArrowLeft' && event.ctrlKey) {
+        const { test: prevTest, parents } = getPrevTest(suite, openedTest);
+        if (prevTest) {
+          parents.forEach(suite => onSuiteOpen(suite.path, true));
+          onOpenTest(prevTest.path);
+        }
+      }
+
+      if (event.key === 'ArrowRight' && event.ctrlKey) {
+        console.log('goToNext');
+        const { test: nextTest, parents } = getNextTest(suite, openedTest);
+        console.log(nextTest);
+        if (nextTest) {
+          parents.forEach(suite => onSuiteOpen(suite.path, true));
+          onOpenTest(nextTest.path);
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown, false);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown, false);
+    };
+  }, [suite, openedTest, onOpenTest, onSuiteOpen]);
 
   return (
     <SideBarContext.Provider value={{ onOpenTest }}>
