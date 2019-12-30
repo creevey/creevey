@@ -49,6 +49,8 @@ export interface Options {
   browser?: string;
   reporter?: string;
   gridUrl?: string;
+  screenDir?: string;
+  reportDir?: string;
 }
 
 export interface Worker extends ClusterWorker {

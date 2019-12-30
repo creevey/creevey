@@ -1,16 +1,11 @@
 import path from 'path';
 import cluster from 'cluster';
 import { readConfig } from '../config';
-import { Options } from '../types';
+import { Options, Config } from '../types';
 
 export default function(options: Options): void {
-  const config = readConfig(path.resolve(options.config)) || { gridUrl: options.gridUrl };
+  const config: Config = readConfig(path.resolve(options.config), options);
   const { browser, parser, update } = options;
-
-  if (!config.gridUrl) {
-    console.log('Please specify `gridUrl`');
-    process.exit(-1);
-  }
 
   // TODO output error if parse && ui
   switch (true) {
