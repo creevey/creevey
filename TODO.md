@@ -103,24 +103,23 @@
 - [x] Serialize skip regexp
 - [x] Husky, lint-staged
 - [x] Rework UI
-
   - [x] Improve UI performance on initial load
   - [x] Put tests tree into side page
   - [x] Output test result view into main page block
   - [x] Output error message multiline
   - [x] Show icons for skiped tests
   - [x] Allow check/uncheck tests without results
+- [x] Update incorrect work with new struct direcotry
+- [x] Reset button nowrap style
+- [x] Skip by browser regexp don't work (webdriver serialization)
+- [x] Convert storycase to export name
 
   </details>
 
 ## First priority
 
 - [ ] Bugs
-  - [ ] Update incorrect work with new struct direcotry
   - [ ] On Teamcity cli exits with -1 code without any output
-  - [x] Reset button nowrap style
-  - [x] Skip by browser regexp don't work (webdriver serialization)
-  - [x] Convert storycase to export name
 - [ ] Allow assert multiple images in one test (chai toMatchImages())
 - [ ] Storybook integration
   - [x] Simplify generated tests tree acording by stories/tests/images

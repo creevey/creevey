@@ -6,19 +6,19 @@ import { Config, isDefined } from '../../types';
 const actualRegex = /^(.*)-actual-(\d+)\.png$/i;
 
 function approve(dirents: Dirent[], srcPath: string, dstPath: string): void {
-  const [lastIamge] = dirents
+  dirents
     .filter(dirent => dirent.isFile())
     .map(dirent => actualRegex.exec(dirent.name))
     .filter(isDefined)
-    .map(([fileName, imageName, retry]) => [retry, fileName, imageName])
-    .sort(([a], [b]) => Number(b) - Number(a));
-
-  if (!lastIamge) return;
-
-  const [, fileName, imageName] = lastIamge;
-
-  mkdirp.sync(dstPath);
-  fs.copyFileSync(path.join(srcPath, fileName), path.join(dstPath, `${imageName}.png`));
+    .reduce(
+      (images, [, imageName, retry]) =>
+        Number(retry) > (images.get(imageName) ?? -1) ? images.set(imageName, Number(retry)) : images,
+      new Map<string, number>(),
+    )
+    .forEach((retry, imageName) => {
+      mkdirp.sync(dstPath);
+      fs.copyFileSync(path.join(srcPath, `${imageName}-actual-${retry}.png`), path.join(dstPath, `${imageName}.png`));
+    });
 }
 
 function traverse(srcPath: string, dstPath: string): void {
