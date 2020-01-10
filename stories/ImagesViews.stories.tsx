@@ -15,7 +15,6 @@ export default {
   parameters: {
     creevey: {
       skip: { in: 'ie11', reason: 'Internet Explorer is not supported yet' },
-      __filename,
     },
   },
 };

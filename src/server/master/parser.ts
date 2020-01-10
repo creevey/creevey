@@ -1,8 +1,7 @@
 import { createHash } from 'crypto';
 import { Test, Config, BrowserConfig } from '../../types';
-import { Loader } from '../../loader';
 
-export default async function parse(config: Config): Promise<void> {
+export default function parse(config: Config): void {
   const tests: Partial<{ [id: string]: Test }> = {};
   let suites: string[] = [];
   let testFilePath = '';
@@ -45,10 +44,10 @@ export default async function parse(config: Config): Promise<void> {
   /* eslint-enable @typescript-eslint/ban-ts-ignore */
 
   if (config.testDir) {
-    await new Loader(config.testRegex, filePath => {
-      testFilePath = filePath;
-      require(filePath);
-    }).loadTests(config.testDir);
+    require
+      .context(config.testDir, true, config.testRegex)
+      .keys()
+      .forEach(filePath => require((testFilePath = filePath)));
   }
 
   if (process.send) {

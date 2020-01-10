@@ -47,7 +47,7 @@ export function TestLink({ title, opened, test }: TestLinkProps): JSX.Element {
         css={css`
           position: absolute;
           left: 66px;
-          top: 6px;
+          top: 4px;
         `}
       >
         <Checkbox checked={test.skip ? false : test.checked} disabled={Boolean(test.skip)} onChange={handleCheck} />

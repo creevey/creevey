@@ -85,7 +85,6 @@
     "@storybook/react": "^5.2.8",
     "@types/html-webpack-plugin": "^3.2.1",
     "@types/interpret": "^1.1.1",
-    "@types/jsdom-global": "^3.0.1",
     "@types/koa": "^2.11.0",
     "@types/koa-mount": "^4.0.0",
     "@types/koa-static": "^4.0.1",

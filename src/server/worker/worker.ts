@@ -1,14 +1,12 @@
-import 'jsdom-global/register';
 import chai from 'chai';
 import chalk from 'chalk';
 import Mocha, { Suite, Context, AsyncFunc } from 'mocha';
-import { addHook } from 'pirates';
-import { Config, Images, Options, BrowserConfig, CreeveyStories, noop } from '../../types';
+import { Config, Images, Options, BrowserConfig, noop } from '../../types';
 import { getBrowser, switchStory } from '../../utils';
 import chaiImage from '../../chai-image';
-import { Loader } from '../../loader';
+import { loadStories } from '../../stories';
 import { CreeveyReporter, TeamcityReporter } from './reporter';
-import { convertStories } from './stories';
+import { addTestsFromStories } from './helpers';
 
 // After end of each suite mocha clean all hooks and don't allow re-run tests without full re-init
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
@@ -22,12 +20,6 @@ function patchMochaInterface(suite: Suite): void {
     context.it.skip = (_browsers: string[], title: string, fn?: AsyncFunc) => context.it(title, fn);
   });
 }
-
-// TODO Define other extensions
-addHook(() => '', {
-  exts: ['.less', '.css', '.png'],
-  ignoreNodeModules: false,
-});
 
 // FIXME browser options hotfix
 export default async function worker(config: Config, options: Options & { browser: string }): Promise<void> {
@@ -48,12 +40,6 @@ export default async function worker(config: Config, options: Options & { browse
   });
   const browserConfig = config.browsers[options.browser] as BrowserConfig;
   const browser = await getBrowser(config, browserConfig);
-
-  const stories: CreeveyStories = JSON.parse(
-    await browser.executeAsyncScript(function(callback: (stories: string) => void) {
-      window.__CREEVEY_GET_STORIES__(callback);
-    }),
-  );
 
   function saveImageHandler(imageName: string, imageNumber: number, type: keyof Images): void {
     const image = (images[imageName] = images[imageName] || {});
@@ -89,9 +75,13 @@ export default async function worker(config: Config, options: Options & { browse
 
   chai.use(chaiImage(config, testScope, saveImageHandler));
 
-  if (config.testDir) await new Loader(config.testRegex, filePath => mocha.addFile(filePath)).loadTests(config.testDir);
+  if (config.testDir)
+    require
+      .context(config.testDir, true, config.testRegex)
+      .keys()
+      .forEach(filePath => mocha.addFile(filePath));
 
-  const tests = convertStories(mocha.suite, options.browser, stories);
+  addTestsFromStories(mocha.suite, options.browser, await loadStories(config.storybookDir));
 
   mocha.suite.beforeAll(function(this: Context) {
     this.config = config;
@@ -126,6 +116,6 @@ export default async function worker(config: Config, options: Options & { browse
   console.log('[CreeveyWorker]:', `Ready ${options.browser}:${process.pid}`);
 
   if (process.send) {
-    process.send(JSON.stringify({ type: 'ready', payload: { tests } }));
+    process.send(JSON.stringify({ type: 'ready' }));
   }
 }

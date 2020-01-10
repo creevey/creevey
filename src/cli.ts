@@ -3,6 +3,9 @@
 import minimist from 'minimist';
 import creevey from './server';
 import { Options } from './types';
+import { registerRequireContext } from './utils';
+
+registerRequireContext();
 
 process.on('unhandledRejection', reason => {
   console.log('unhandledRejection', reason);

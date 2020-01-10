@@ -61,7 +61,7 @@ export function SuiteLink({ title, suite }: SuiteLinkProps): JSX.Element {
         css={css`
           position: absolute;
           left: 66px;
-          top: 6px;
+          top: 4px;
         `}
       >
         <Checkbox

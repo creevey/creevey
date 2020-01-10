@@ -1,9 +1,13 @@
 import https from 'https';
+import fs, { Dirent } from 'fs';
+import path from 'path';
 import { Context, Test, Suite } from 'mocha';
 import { Builder, By, until, WebDriver, Origin } from 'selenium-webdriver';
 import { Config, BrowserConfig, SkipOptions, isDefined, CreeveyStory } from './types';
-import { StoryContext } from '@storybook/addons';
-import { StoryDidMountCallback } from './storybook';
+import { Extension, extensions } from 'interpret';
+
+type PlatformFS = typeof fs;
+type PlatformPath = typeof path;
 
 // Need to support storybook 3.x
 let toId: Function | null = null;
@@ -90,9 +94,9 @@ async function resizeViewport(browser: WebDriver, viewport: { width: number; hei
     });
 }
 
-async function selectStory(browser: WebDriver, kind: string, story: string): Promise<StoryContext> {
-  const storyContext: StoryContext = await browser.executeAsyncScript(
-    function(storyId: string, kind: string, name: string, callback: StoryDidMountCallback) {
+function selectStory(browser: WebDriver, kind: string, story: string): Promise<void> {
+  return browser.executeAsyncScript(
+    function(storyId: string, kind: string, name: string, callback: Function) {
       window.__CREEVEY_SELECT_STORY__(storyId, kind, name, callback);
     },
     // NOTE: `toId` don't exists in storybook 3.x
@@ -100,7 +104,6 @@ async function selectStory(browser: WebDriver, kind: string, story: string): Pro
     kind,
     story,
   );
-  return storyContext;
 }
 
 function disableAnimations(browser: WebDriver): Promise<void> {
@@ -162,7 +165,7 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
   return browser;
 }
 
-export async function switchStory(this: Context): Promise<StoryContext> {
+export async function switchStory(this: Context): Promise<void> {
   let testOrSuite: Test | Suite | undefined = this.currentTest;
 
   this.testScope.length = 0;
@@ -183,27 +186,16 @@ export async function switchStory(this: Context): Promise<StoryContext> {
   }
 
   await resetMousePosition(this.browser);
-  const storyContext = await selectStory(this.browser, kind, story);
+  await selectStory(this.browser, kind, story);
 
   this.testScope.reverse();
-
-  return storyContext;
-}
-
-function deserializeRegExp(regex: string): RegExp | null {
-  const fragments = /\/(.*?)\/([a-z]*)?$/i.exec(regex);
-
-  if (!fragments) return null;
-
-  const [, pattern, flags] = fragments;
-
-  return new RegExp(pattern, flags || '');
 }
 
 function matchBy(pattern: string | string[] | RegExp | undefined, value: string): boolean {
   return (
-    (typeof pattern == 'string' && (deserializeRegExp(pattern) || new RegExp(`^${pattern}$`)).test(value)) ||
+    (typeof pattern == 'string' && pattern == value) ||
     (Array.isArray(pattern) && pattern.includes(value)) ||
+    (pattern instanceof RegExp && pattern.test(value)) ||
     !isDefined(pattern)
   );
 }
@@ -221,4 +213,88 @@ export function shouldSkip(story: CreeveyStory, browser: string, skipOptions: Sk
   const skipByStory = matchBy(stories, story.name);
 
   return skipByBrowser && skipByKind && skipByStory && reason;
+}
+
+export function registerRequireContext(): void {
+  function requireContext(rootPath: string, deep?: boolean, filter?: RegExp): __WebpackModuleApi.RequireContext {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const fs: PlatformFS = require('fs');
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const path: PlatformPath = require('path');
+
+    const ids: string[] = [];
+    let contextPath: string;
+    // Relative path
+    if (rootPath.startsWith('.')) contextPath = path.join(__dirname, rootPath);
+    // Module path
+    else if (!path.isAbsolute(rootPath)) contextPath = require.resolve(rootPath);
+    // Absolute path
+    else contextPath = rootPath;
+    const traverse = (dirPath: string): void => {
+      fs.readdirSync(dirPath, { withFileTypes: true }).forEach((dirent: Dirent) => {
+        const filename = dirent.name;
+
+        if (dirent.isDirectory() && deep) return traverse(path.join(dirPath, filename));
+        if (dirent.isFile() && (filter?.test(filename) ?? true)) return ids.push(path.join(dirPath, filename));
+      });
+    };
+
+    traverse(contextPath);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const context = (id: string): any => require(id);
+    context.id = contextPath;
+    context.keys = () => ids;
+    context.resolve = (id: string) => id;
+
+    return context;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+  // @ts-ignore
+  const { wrap } = module.constructor;
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+  // @ts-ignore
+  module.constructor.wrap = function(script: string) {
+    return wrap(
+      `require.context = ${requireContext.toString()};
+      ${script}`,
+    );
+  };
+}
+
+function registerCompiler(moduleDescriptor: Extension | null): void {
+  if (moduleDescriptor) {
+    if (typeof moduleDescriptor === 'string') {
+      require(moduleDescriptor);
+    } else if (!Array.isArray(moduleDescriptor)) {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      moduleDescriptor.register(require(moduleDescriptor.module));
+    } else {
+      moduleDescriptor.find(extension => {
+        try {
+          registerCompiler(extension);
+          return true;
+        } catch (e) {
+          // do nothing
+        }
+      });
+    }
+  }
+}
+
+export function requireConfig<T>(configPath: string): T {
+  try {
+    require(configPath);
+  } catch (e) {
+    let ext = path.extname(configPath);
+    if (ext == '.config') {
+      ext = Object.keys(extensions).find(key => fs.existsSync(`${configPath}${key}`)) || ext;
+    }
+    registerCompiler(extensions[ext]);
+  }
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const configModule = require(configPath);
+  return configModule && configModule.__esModule ? configModule.default : configModule;
 }

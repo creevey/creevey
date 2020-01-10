@@ -29,13 +29,10 @@ export interface Config {
   testDir?: string;
   screenDir: string;
   reportDir: string;
+  storybookDir: string;
   maxRetries: number;
   threshold: number;
   browsers: { [key: string]: Browser };
-  hooks?: {
-    beforeAll: (this: Context) => void;
-    beforeEach: (this: Context) => void;
-  };
 }
 
 export type CreeveyConfig = Config | Partial<Omit<Config, 'gridUrl'>>;
@@ -58,10 +55,7 @@ export interface Worker extends ClusterWorker {
 }
 
 export type WorkerMessage =
-  | {
-      type: 'ready';
-      payload: { tests: Partial<{ [id: string]: Test }> };
-    }
+  | { type: 'ready' }
   | {
       type: 'error';
       payload: { status: 'failed'; error: string };
@@ -128,10 +122,6 @@ export interface CreeveyStoryParams {
   ) => {
     [name: string]: (this: Context) => Promise<void>;
   };
-  __filename?: string;
-  // tests: {
-  //   [name: string]: (creeveyAPI: CreeveyTestAPI) => void;
-  // };
 }
 
 export type CreeveyStory = {

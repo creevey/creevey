@@ -19,7 +19,7 @@ Pretty easy visual testing with magic
 import { addDecorator } from '@storybook/react';
 import { withCreevey } from 'creevey';
 
-addDecorator(withCreevey());
+addDecorator(withCreevey({ captureElement: '#root' }));
 
 /* ... */
 ```
@@ -33,6 +33,7 @@ import { CreeveyConfig } from 'creevey';
 const config: CreeveyConfig = {
   gridUrl: '<gridUrl>/wd/hub',
   storybookUrl: 'http://localhost:6006',
+  storybookDir: path.join(__dirname, '.storybook'),
   screenDir: path.join(__dirname, 'images'),
   reportDir: path.join(__dirname, 'report'),
   threshold: 0.1,
@@ -42,7 +43,7 @@ const config: CreeveyConfig = {
     ff: 'firefox',
     ie11: {
       browserName: 'internet explorer',
-      gridUrl: '<gridUrl>/wd/hub',
+      gridUrl: '<anotherGridUrl>/wd/hub',
       limit: 2,
       /* capabilities */
     },
@@ -65,6 +66,8 @@ export default config;
 - `--ui` — Start web server
 - `--update` — Approve all images from `report` directory
 - `--port` — Specify port for web server. Default `3000`
+- `--reportDir` — Path where reports will be stored
+- `--screenDir` — Path where reference images are located
 
 ## `withCreevey` decorator parameters
 
@@ -75,35 +78,48 @@ You can specify storybook parameters for `withCreevey` decorator:
 addDecorator(withCreevey({
   captureElement: '#root',
   skip: /* see examples below */,
-  tests: /* TODO */
 }));
+```
 
+```tsx
 // For new `Component Story Format` (CSF) https://storybook.js.org/docs/formats/component-story-format/
 // Kind-level parameters work for all stories inside
 export default {
-  title: "Views",
+  title: 'Views',
   parameters: {
-    creevey: { /* ... */ }
-  }
+    creevey: {
+      /* ... */
+    },
+  },
 };
 
 // Story-level parameters work only for that story
 export const simple = () => <MyComponent />;
 simple.story = {
   parameters: {
-    creevey: { /* ... */ }
-  }
+    creevey: {
+      /* ... */
+    },
+  },
 };
-
-// For Old `StoriesOf` API (Storybook version < 5.2)
-storiesOf('Views', module)
-  .addParameters({ creevey: { /* ... */ } }) // Kind-level
-  .add('simple', () => <MyComponent />, { creevey: { /* ... */ } }); // Story-level
-
-// For Storybook version < 4.0 you can use global parameters only
 ```
 
-NOTE: Parameters for story will be merged with parameters from higher levels
+```tsx
+// For Old `StoriesOf` API (Storybook version < 5.2)
+storiesOf('Views', module)
+  .addParameters({
+    creevey: {
+      /* ... */
+    },
+  }) // Kind-level
+  .add('simple', () => <MyComponent />, {
+    creevey: {
+      /* ... */
+    },
+  }); // Story-level
+```
+
+NOTE: Parameters for story will be deep-merged with parameters from higher levels.
 
 ## `skip` option examples:
 
@@ -123,6 +139,8 @@ NOTE: Parameters for story will be merged with parameters from higher levels
   - `skip: { stories: ['simple', 'special'] }`
   - `skip: { stories: /.*large$/ }`
 - Multiple skip options: `skip: [{ /* ... */ }]`
+
+NOTE: If you try to skip stories by story name, the storybook name format will be used (For more info see [storybook-export-vs-name-handling](https://storybook.js.org/docs/formats/component-story-format/#storybook-export-vs-name-handling))
 
 ## FAQ
 

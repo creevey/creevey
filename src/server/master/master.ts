@@ -4,6 +4,7 @@ import { promisify } from 'util';
 import cluster from 'cluster';
 import mkdirp from 'mkdirp';
 import { Config, Test, isDefined, CreeveyStatus } from '../../types';
+import { loadStories, convertStories } from '../../stories';
 import Runner from './runner';
 
 const copyFileAsync = promisify(copyFile);
@@ -33,6 +34,14 @@ function loadTests(): Promise<CreeveyStatus['tests']> {
       resolve(tests);
     });
   });
+}
+
+async function loadTestsFromStories(storybookDir: string, browsers: string[]): Promise<CreeveyStatus['tests']> {
+  const tests = convertStories(browsers, await loadStories(storybookDir));
+  Object.values(tests)
+    .filter(isDefined)
+    .forEach(test => Reflect.deleteProperty(test, 'fn'));
+  return tests;
 }
 
 function mergeTests(
@@ -77,15 +86,12 @@ export default async function master(config: Config): Promise<Runner> {
     // Ignore error
   }
   const tests = config.testDir ? await loadTests() : {};
-
-  const runner = new Runner(config);
-
-  const testsFromStories = await runner.init();
+  const testsFromStories = await loadTestsFromStories(config.storybookDir, Object.keys(config.browsers));
   const mergedTests = mergeTests(tests, testsFromReport, testsFromStories);
-  // TODO
-  // eslint-disable-next-line require-atomic-updates
-  runner.tests = mergedTests;
 
+  const runner = new Runner(config, mergedTests);
+
+  await runner.init();
   await copyStatics(config.reportDir);
 
   process.on('SIGINT', () => {

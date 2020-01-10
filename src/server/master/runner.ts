@@ -3,16 +3,7 @@ import { copyFile } from 'fs';
 import { promisify } from 'util';
 import { EventEmitter } from 'events';
 import mkdirp from 'mkdirp';
-import {
-  Config,
-  Test,
-  CreeveyStatus,
-  TestResult,
-  ApprovePayload,
-  isDefined,
-  CreeveyUpdate,
-  TestStatus,
-} from '../../types';
+import { Config, CreeveyStatus, TestResult, ApprovePayload, isDefined, CreeveyUpdate, TestStatus } from '../../types';
 import Pool from './pool';
 
 const copyFileAsync = promisify(copyFile);
@@ -21,15 +12,16 @@ const mkdirpAsync = promisify(mkdirp);
 export default class Runner extends EventEmitter {
   private screenDir: string;
   private reportDir: string;
-  public tests: Partial<{ [id: string]: Test }> = {};
+  private tests: CreeveyStatus['tests'];
   private browsers: string[];
   private pools: { [browser: string]: Pool } = {};
   public get isRunning(): boolean {
     return Object.values(this.pools).some(pool => pool.isRunning);
   }
-  constructor(config: Config) {
+  constructor(config: Config, tests: CreeveyStatus['tests']) {
     super();
 
+    this.tests = tests;
     this.screenDir = config.screenDir;
     this.reportDir = config.reportDir;
     this.browsers = Object.keys(config.browsers);
@@ -61,21 +53,8 @@ export default class Runner extends EventEmitter {
     }
   };
 
-  public async init(): Promise<Partial<{ [id: string]: Test }>> {
-    // TODO init return array of stories for every browser. Convert stories to tests, merge with tests
-    const poolTests: Partial<{ [id: string]: Test }> = {};
-    await Promise.all(
-      Object.values(this.pools).map(async pool => {
-        const tests = await pool.init();
-        if (!tests) return;
-        Object.values(tests)
-          .filter(isDefined)
-          .forEach(test => {
-            poolTests[test.id] = test;
-          });
-      }),
-    );
-    return poolTests;
+  public async init(): Promise<void> {
+    await Promise.all(Object.values(this.pools).map(pool => pool.init()));
   }
 
   public start(ids: string[]): void {

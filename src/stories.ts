@@ -1,12 +1,15 @@
 import path from 'path';
+import { createHash } from 'crypto';
 import { PNG } from 'pngjs';
 import chai, { expect } from 'chai';
-import { Suite, Context, Test } from 'mocha';
+import { Context } from 'mocha';
+import { addHook } from 'pirates';
+import createChannel from '@storybook/channel-postmessage';
+import addons from '@storybook/addons';
+import { logger } from '@storybook/client-logger';
 import selenium, { By, WebDriver } from 'selenium-webdriver';
-import { storyNameFromExport } from '@storybook/router';
-import { CreeveyStories, isDefined, Test as CreeveyTest, CreeveyStoryParams } from '../../types';
-import { shouldSkip } from '../../utils';
-import { createHash } from 'crypto';
+import { isDefined, Test, CreeveyStoryParams, StoriesRaw, noop } from './types';
+import { shouldSkip, requireConfig } from './utils';
 
 declare global {
   interface Window {
@@ -137,30 +140,17 @@ function storyTestFabric(captureElement?: string) {
   };
 }
 
-function findOrCreateSuite(name: string, parent: Suite): Suite {
-  const suite = parent.suites.find(({ title }) => title == name) || new Suite(name, parent.ctx);
-  if (!suite.parent) {
-    suite.parent = parent;
-    parent.addSuite(suite);
-  }
-  return suite;
-}
-
-function createTest(name: string, fn: (this: Context) => Promise<void>, skip: string | boolean): Test {
-  const test = new Test(name, skip ? undefined : fn);
-  test.pending = Boolean(skip);
-  // NOTE Can't define skip reason in mocha https://github.com/mochajs/mocha/issues/2026
-  test.skipReason = skip;
-
-  return test;
-}
-
-function createCreeveyTest(testPath: string[], skip: string | boolean): CreeveyTest {
+function createCreeveyTest(
+  testPath: string[],
+  testFn: (this: Context) => Promise<void>,
+  skip: string | boolean,
+): Test & { fn: (this: Context) => Promise<void> } {
   const testId = createHash('sha1')
     .update(testPath.join('/'))
     .digest('hex');
   return {
     id: testId,
+    fn: testFn,
     path: testPath,
     retries: 0,
     skip,
@@ -168,55 +158,75 @@ function createCreeveyTest(testPath: string[], skip: string | boolean): CreeveyT
 }
 
 export function convertStories(
-  rootSuite: Suite,
-  browserName: string,
-  stories: CreeveyStories,
-): Partial<{ [id: string]: CreeveyTest }> {
-  const creeveyTests: { [id: string]: CreeveyTest } = {};
+  browsers: string[],
+  stories: StoriesRaw,
+): Partial<{ [id: string]: Test & { fn: (this: Context) => Promise<void> } }> {
+  const creeveyTests: { [id: string]: Test & { fn: (this: Context) => Promise<void> } } = {};
 
   Object.values(stories)
     .filter(isDefined)
     .forEach(story => {
-      const { skip, captureElement, __filename } = story.params || {};
-      const skipReason = skip ? shouldSkip(story, browserName, skip) : false;
-      const kindSuite = findOrCreateSuite(story.kind, rootSuite);
+      browsers.forEach(browserName => {
+        const { skip, captureElement, _seleniumTests }: CreeveyStoryParams = story.parameters.creevey ?? {};
+        const skipReason = skip ? shouldSkip(story, browserName, skip) : false;
 
-      // typeof tests === "undefined" => rootSuite -> kindSuite -> storyTest -> [browsers.png]
-      // typeof tests === "function"  => rootSuite -> kindSuite -> storyTest -> browser -> [images.png]
-      // typeof tests === "object"    => rootSuite -> kindSuite -> storySuite -> test -> [browsers.png]
-      // typeof tests === "object"    => rootSuite -> kindSuite -> storySuite -> test -> browser -> [images.png]
+        // typeof tests === "undefined" => rootSuite -> kindSuite -> storyTest -> [browsers.png]
+        // typeof tests === "function"  => rootSuite -> kindSuite -> storyTest -> browser -> [images.png]
+        // typeof tests === "object"    => rootSuite -> kindSuite -> storySuite -> test -> [browsers.png]
+        // typeof tests === "object"    => rootSuite -> kindSuite -> storySuite -> test -> browser -> [images.png]
 
-      if (!__filename) {
-        const test = createCreeveyTest([browserName, story.name, story.kind], skipReason);
-        creeveyTests[test.id] = test;
-        kindSuite.addTest(createTest(story.name, storyTestFabric(captureElement), skipReason));
-        return;
-      }
+        if (!_seleniumTests) {
+          const test = createCreeveyTest(
+            [browserName, story.name, story.kind],
+            storyTestFabric(captureElement),
+            skipReason,
+          );
+          creeveyTests[test.id] = test;
+          return;
+        }
 
-      // TODO register css/less/scss/png/jpg/woff/ttf/etc require extensions
-
-      // NOTE Only Component Story Format (CSF) is support
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const stories = require(path.join(process.cwd(), __filename)) as {
-        [story: string]: undefined | { story?: { parameters?: { creevey?: CreeveyStoryParams } } };
-      };
-      const storyName = Object.getOwnPropertyNames(stories).find(name => storyNameFromExport(name) == story.name);
-      if (!storyName || !stories[storyName] || !stories[storyName]?.story)
-        throw new Error(
-          'Creevey support only `Component Story Format (CSF)` stories. For more details see https://storybook.js.org/docs/formats/component-story-format/',
-        );
-      const tests: CreeveyStoryParams['_seleniumTests'] =
-        stories[storyName]?.story?.parameters?.creevey?._seleniumTests ?? (() => ({}));
-
-      const storySuite = findOrCreateSuite(story.name, kindSuite);
-
-      Object.entries(tests(selenium, chai)).forEach(([testName, testFn]) => {
-        const test = createCreeveyTest([browserName, testName, story.name, story.kind], skipReason);
-        creeveyTests[test.id] = test;
-
-        storySuite.addTest(createTest(testName, testFn, skipReason));
+        Object.entries(_seleniumTests(selenium, chai)).forEach(([testName, testFn]) => {
+          const test = createCreeveyTest([browserName, testName, story.name, story.kind], testFn, skipReason);
+          creeveyTests[test.id] = test;
+        });
       });
     });
 
   return creeveyTests;
+}
+
+export function loadStories(storybookDir: string): Promise<StoriesRaw> {
+  require('jsdom-global/register');
+
+  // TODO register css/less/scss/png/jpg/woff/ttf/etc require extensions
+  addHook(() => '', {
+    exts: ['.less', '.css', '.png'],
+    ignoreNodeModules: false,
+  });
+
+  // NOTE Cutoff `jsdom` part from userAgent, because storybook check enviroment and create events channel if runs in browser
+  // https://github.com/storybookjs/storybook/blob/v5.2.8/lib/core/src/client/preview/start.js#L98
+  // Example: "Mozilla/5.0 (linux) AppleWebKit/537.36 (KHTML, like Gecko) jsdom/15.2.1"
+  Object.defineProperty(window.navigator, 'userAgent', {
+    value: window.navigator.userAgent.replace(/jsdom\/(\d+\.?)+/, '').trim(),
+  });
+
+  // NOTE Disable storybook debug output due issue https://github.com/storybookjs/storybook/issues/8461
+  const { debug } = logger;
+  logger.debug = noop;
+
+  const storybookPath = path.join(storybookDir, 'config');
+  const channel = createChannel({ page: 'preview' });
+  const storiesPromise = new Promise<StoriesRaw>(resolve => {
+    channel.once('setStories', (data: { stories: StoriesRaw }) => {
+      resolve(data.stories);
+
+      setTimeout(() => (logger.debug = debug), 100);
+    });
+  });
+
+  addons.setChannel(channel);
+  requireConfig(storybookPath);
+
+  return storiesPromise;
 }
