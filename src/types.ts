@@ -23,8 +23,6 @@ export type Browser = boolean | string | BrowserConfig;
 export interface Config {
   gridUrl: string;
   storybookUrl: string;
-  testRegex: RegExp;
-  testDir?: string;
   screenDir: string;
   reportDir: string;
   storybookDir: string;
@@ -38,7 +36,6 @@ export type CreeveyConfig = Config | Partial<Omit<Config, 'gridUrl'>>;
 export interface Options {
   config: string;
   port: number;
-  parser: boolean;
   ui: boolean;
   update: boolean;
   browser?: string;

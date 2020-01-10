@@ -3,9 +3,8 @@ import path from 'path';
 import { Config, Browser, BrowserConfig, Options } from './types';
 import { requireConfig } from './utils';
 
-export const defaultConfig: Omit<Config, 'gridUrl' | 'testDir'> = {
+export const defaultConfig: Omit<Config, 'gridUrl'> = {
   storybookUrl: 'http://localhost:6006',
-  testRegex: /\.(t|j)s$/,
   screenDir: path.resolve('images'),
   reportDir: path.resolve('report'),
   storybookDir: path.resolve('.storybook'),

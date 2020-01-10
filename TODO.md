@@ -120,7 +120,7 @@
 
 - [ ] Bugs
   - [ ] On Teamcity cli exits with -1 code without any output
-- [ ] Allow assert multiple images in one test (chai toMatchImages())
+- [x] Allow assert multiple images in one test (chai toMatchImages())
 - [x] Remove Loader, use require.context
 - [ ] Storybook integration
   - [x] Simplify generated tests tree acording by stories/tests/images
@@ -143,7 +143,7 @@
 
 ## Not in first time
 
-- [ ] Remove tests parser ability, support only storybook
+- [x] Remove tests parser ability, support only storybook
 - [ ] Correctly resize images in views using correct proportions (smaller image should shrink if larger shrink too, max-width/max-height doesn't work)
 - [ ] Tests on images view components with various scenarios (same/diff sizes, less/bigger viewport)
 - [ ] Optimize stories load process (use tree-shaking or simply don't import other stuff like react, components and other browser libs/styles/images/fonts)

@@ -1,7 +1,6 @@
 import path from 'path';
 import { writeFileSync, copyFile, readdir } from 'fs';
 import { promisify } from 'util';
-import cluster from 'cluster';
 import mkdirp from 'mkdirp';
 import { Config, Test, isDefined, CreeveyStatus } from '../../types';
 import { loadStories, convertStories } from '../../stories';
@@ -23,19 +22,6 @@ function reportDataModule<T>(data: T): string {
 `;
 }
 
-function loadTests(): Promise<CreeveyStatus['tests']> {
-  return new Promise(resolve => {
-    console.log('[CreeveyRunner]:', 'Start loading tests');
-    cluster.setupMaster({ args: ['--parser', ...process.argv.slice(2)] });
-    const parser = cluster.fork();
-    parser.once('message', message => {
-      const tests: CreeveyStatus['tests'] = JSON.parse(message);
-      console.log('[CreeveyRunner]:', 'Tests loaded');
-      resolve(tests);
-    });
-  });
-}
-
 async function loadTestsFromStories(storybookDir: string, browsers: string[]): Promise<CreeveyStatus['tests']> {
   const tests = convertStories(browsers, await loadStories(storybookDir));
   Object.values(tests)
@@ -45,13 +31,12 @@ async function loadTestsFromStories(storybookDir: string, browsers: string[]): P
 }
 
 function mergeTests(
-  tests: CreeveyStatus['tests'],
   testsWithReports: CreeveyStatus['tests'],
   testsFromStories: CreeveyStatus['tests'],
 ): CreeveyStatus['tests'] {
   return Object.values(testsWithReports)
     .map((test): Test | undefined => test && { ...test, skip: true })
-    .concat(Object.values(testsFromStories), Object.values(tests))
+    .concat(Object.values(testsFromStories))
     .filter(isDefined)
     .reduce(
       (mergedTests: CreeveyStatus['tests'], test): CreeveyStatus['tests'] =>
@@ -85,9 +70,8 @@ export default async function master(config: Config): Promise<Runner> {
   } catch (error) {
     // Ignore error
   }
-  const tests = config.testDir ? await loadTests() : {};
   const testsFromStories = await loadTestsFromStories(config.storybookDir, Object.keys(config.browsers));
-  const mergedTests = mergeTests(tests, testsFromReport, testsFromStories);
+  const mergedTests = mergeTests(testsFromReport, testsFromStories);
 
   const runner = new Runner(config, mergedTests);
 

@@ -3,19 +3,12 @@ import fs, { Dirent } from 'fs';
 import path from 'path';
 import { Context, Test, Suite } from 'mocha';
 import { Builder, By, until, WebDriver, Origin } from 'selenium-webdriver';
-import { Config, BrowserConfig, SkipOptions, isDefined } from './types';
 import { Extension, extensions } from 'interpret';
+import { toId } from '@storybook/router';
+import { Config, BrowserConfig, SkipOptions, isDefined } from './types';
 
 type PlatformFS = typeof fs;
 type PlatformPath = typeof path;
-
-// Need to support storybook 3.x
-let toId: Function | null = null;
-try {
-  ({ toId } = require('@storybook/router'));
-} catch (_) {
-  /* ignore */
-}
 
 const LOCALHOST_REGEXP = /(localhost|127\.0\.0\.1)/;
 
@@ -99,8 +92,7 @@ function selectStory(browser: WebDriver, kind: string, story: string): Promise<v
     function(storyId: string, kind: string, name: string, callback: Function) {
       window.__CREEVEY_SELECT_STORY__(storyId, kind, name, callback);
     },
-    // NOTE: `toId` don't exists in storybook 3.x
-    toId ? toId(kind, story) : `${kind}--${story}`.toLowerCase(),
+    toId(kind, story),
     kind,
     story,
   );

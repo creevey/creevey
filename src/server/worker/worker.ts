@@ -75,12 +75,6 @@ export default async function worker(config: Config, options: Options & { browse
 
   chai.use(chaiImage(config, testScope, saveImageHandler));
 
-  if (config.testDir)
-    require
-      .context(config.testDir, true, config.testRegex)
-      .keys()
-      .forEach(filePath => mocha.addFile(filePath));
-
   addTestsFromStories(mocha.suite, options.browser, await loadStories(config.storybookDir));
 
   mocha.suite.beforeAll(function(this: Context) {
