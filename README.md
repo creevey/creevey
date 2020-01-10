@@ -75,10 +75,17 @@ You can specify storybook parameters for `withCreevey` decorator:
 
 ```tsx
 // Global parameters can be defined in storybook config
-addDecorator(withCreevey({
-  captureElement: '#root',
-  skip: /* see examples below */,
-}));
+addDecorator(
+  withCreevey({
+    captureElement: '#root',
+    tests: {
+      /* see examples below */
+    },
+    skip: {
+      /* see examples below */
+    },
+  }),
+);
 ```
 
 ```tsx
@@ -120,6 +127,35 @@ storiesOf('Views', module)
 ```
 
 NOTE: Parameters for story will be deep-merged with parameters from higher levels.
+
+## `tests` option examples:
+
+`tests` option is a plain object where key used as test name and value is a test function.
+Under the hood of `creevey` is used `mocha+chai` and for `chai` additionaly defined `matchImage` assertion.
+
+```tsx
+import { expect } from 'chai';
+
+export default { title: 'MyComponent' };
+
+export const Simple = () => <MyComponent />;
+Simple.story = {
+  parameters: {
+    creevey: {
+      async click(this: { broser: WebDriver }) {
+        const element = await this.browser.findElement(By.css('#root'));
+
+        await this.browser
+          .actions({ bridge: true })
+          .click(element)
+          .perform();
+
+        await expect(await element.takeScreenshot()).to.matchImage('clicked component');
+      },
+    },
+  },
+};
+```
 
 ## `skip` option examples:
 

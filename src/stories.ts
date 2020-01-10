@@ -1,14 +1,14 @@
 import path from 'path';
 import { createHash } from 'crypto';
 import { PNG } from 'pngjs';
-import chai, { expect } from 'chai';
+import { expect } from 'chai';
 import { Context } from 'mocha';
 import { addHook } from 'pirates';
 import createChannel from '@storybook/channel-postmessage';
 import addons from '@storybook/addons';
 import { logger } from '@storybook/client-logger';
-import selenium, { By, WebDriver } from 'selenium-webdriver';
-import { isDefined, Test, CreeveyStoryParams, StoriesRaw, noop } from './types';
+import { By, WebDriver } from 'selenium-webdriver';
+import { isDefined, Test, CreeveyStoryParams, StoriesRaw, noop, SkipOptions } from './types';
 import { shouldSkip, requireConfig } from './utils';
 
 declare global {
@@ -141,19 +141,27 @@ function storyTestFabric(captureElement?: string) {
 }
 
 function createCreeveyTest(
-  testPath: string[],
-  testFn: (this: Context) => Promise<void>,
-  skip: string | boolean,
+  meta: {
+    browser: string;
+    kind: string;
+    story: string;
+    test?: string;
+  },
+  fn: (this: Context) => Promise<void>,
+  skipOptions?: SkipOptions,
 ): Test & { fn: (this: Context) => Promise<void> } {
-  const testId = createHash('sha1')
-    .update(testPath.join('/'))
+  const { browser, kind, story, test } = meta;
+  const path = [browser, test, story, kind].filter(isDefined);
+  const skip = skipOptions ? shouldSkip(meta, skipOptions) : false;
+  const id = createHash('sha1')
+    .update(path.join('/'))
     .digest('hex');
   return {
-    id: testId,
-    fn: testFn,
-    path: testPath,
-    retries: 0,
+    id,
+    fn,
     skip,
+    path,
+    retries: 0,
   };
 }
 
@@ -167,26 +175,22 @@ export function convertStories(
     .filter(isDefined)
     .forEach(story => {
       browsers.forEach(browserName => {
-        const { skip, captureElement, _seleniumTests }: CreeveyStoryParams = story.parameters.creevey ?? {};
-        const skipReason = skip ? shouldSkip(story, browserName, skip) : false;
+        const { captureElement, tests, skip }: CreeveyStoryParams = story.parameters.creevey ?? {};
+        const meta = { browser: browserName, story: story.name, kind: story.kind };
 
         // typeof tests === "undefined" => rootSuite -> kindSuite -> storyTest -> [browsers.png]
         // typeof tests === "function"  => rootSuite -> kindSuite -> storyTest -> browser -> [images.png]
         // typeof tests === "object"    => rootSuite -> kindSuite -> storySuite -> test -> [browsers.png]
         // typeof tests === "object"    => rootSuite -> kindSuite -> storySuite -> test -> browser -> [images.png]
 
-        if (!_seleniumTests) {
-          const test = createCreeveyTest(
-            [browserName, story.name, story.kind],
-            storyTestFabric(captureElement),
-            skipReason,
-          );
+        if (!tests) {
+          const test = createCreeveyTest(meta, storyTestFabric(captureElement), skip);
           creeveyTests[test.id] = test;
           return;
         }
 
-        Object.entries(_seleniumTests(selenium, chai)).forEach(([testName, testFn]) => {
-          const test = createCreeveyTest([browserName, testName, story.name, story.kind], testFn, skipReason);
+        Object.entries(tests).forEach(([testName, testFn]) => {
+          const test = createCreeveyTest({ ...meta, test: testName }, testFn, skip);
           creeveyTests[test.id] = test;
         });
       });

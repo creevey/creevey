@@ -1,7 +1,6 @@
 import React from 'react';
-import Chai from 'chai';
-import Mocha from 'mocha';
-import Selenium from 'selenium-webdriver';
+import { expect } from 'chai';
+import { By, WebDriver } from 'selenium-webdriver';
 
 import { ImagesView as ImagesViewBase } from '../src/client/CreeveyView/ImagesView';
 import { ImagesViewMode } from '../src/types';
@@ -36,24 +35,22 @@ export const Blend = () => ImagesView('blend');
 Slide.story = {
   parameters: {
     creevey: {
-      _seleniumTests({ By }: typeof Selenium, { expect }: typeof Chai) {
-        return {
-          async click(this: Mocha.Context) {
-            const element = await this.browser.findElement(By.css('#root'));
+      tests: {
+        async click(this: { browser: WebDriver }) {
+          const element = await this.browser.findElement(By.css('#root'));
 
-            const idle = await element.takeScreenshot();
+          const idle = await element.takeScreenshot();
 
-            await this.browser
-              .actions({ bridge: true })
-              .click(element)
-              .perform();
+          await this.browser
+            .actions({ bridge: true })
+            .click(element)
+            .perform();
 
-            const click = await element.takeScreenshot();
+          const click = await element.takeScreenshot();
 
-            // TODO toMatchImages
-            await Promise.all([expect(idle).to.matchImage('idle'), expect(click).to.matchImage('click')]);
-          },
-        };
+          // TODO toMatchImages
+          await Promise.all([expect(idle).to.matchImage('idle'), expect(click).to.matchImage('click')]);
+        },
       },
     },
   },

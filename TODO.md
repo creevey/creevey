@@ -129,13 +129,16 @@
   - [ ] Record screencast with Creevey UI
   - [ ] Use new Storybook 5.3 declarative config https://medium.com/storybookjs/declarative-storybook-configuration-49912f77b78
 - [ ] Transform to monorepo
-  - [ ] `chai-image`
-  - [ ] `jest-image`
   - [ ] `creevey`
   - [ ] `creevey-ui`
-  - [ ] `creevey-album` (storybook decorator and integration)
+  - [ ] `creevey-jest`
+  - [ ] `creevey-mocha`
   - [ ] `creevey-selenium`
-- [ ] Use jest intead of mocha/chai
+- [ ] Support third-party test runners
+  - [ ] Use jest intead of mocha/chai
+  - [ ] define in config runner property
+  - [ ] Add `creevey-jest` and `creevey-mocha` packages, that implement API for creevey and define types for chai/jest
+  - [ ] Initiate runner inside worker
 - [ ] Add authors
 
 ## Not in first time

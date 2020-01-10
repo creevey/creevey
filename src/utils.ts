@@ -3,7 +3,7 @@ import fs, { Dirent } from 'fs';
 import path from 'path';
 import { Context, Test, Suite } from 'mocha';
 import { Builder, By, until, WebDriver, Origin } from 'selenium-webdriver';
-import { Config, BrowserConfig, SkipOptions, isDefined, CreeveyStory } from './types';
+import { Config, BrowserConfig, SkipOptions, isDefined } from './types';
 import { Extension, extensions } from 'interpret';
 
 type PlatformFS = typeof fs;
@@ -200,19 +200,29 @@ function matchBy(pattern: string | string[] | RegExp | undefined, value: string)
   );
 }
 
-export function shouldSkip(story: CreeveyStory, browser: string, skipOptions: SkipOptions): string | boolean {
+export function shouldSkip(
+  meta: {
+    browser: string;
+    kind: string;
+    story: string;
+    test?: string;
+  },
+  skipOptions: SkipOptions,
+): string | boolean {
   if (typeof skipOptions == 'string') {
     return skipOptions;
   }
   if (Array.isArray(skipOptions)) {
-    return skipOptions.map(skipOption => shouldSkip(story, browser, skipOption)).find(Boolean) || false;
+    return skipOptions.map(skipOption => shouldSkip(meta, skipOption)).find(Boolean) || false;
   }
-  const { in: browsers, stories, kinds, reason = true } = skipOptions;
+  const { in: browsers, kinds, stories, tests, reason = true } = skipOptions;
+  const { browser, kind, story, test } = meta;
   const skipByBrowser = matchBy(browsers, browser);
-  const skipByKind = matchBy(kinds, story.kind);
-  const skipByStory = matchBy(stories, story.name);
+  const skipByKind = matchBy(kinds, kind);
+  const skipByStory = matchBy(stories, story);
+  const skipByTest = !isDefined(test) || matchBy(tests, test);
 
-  return skipByBrowser && skipByKind && skipByStory && reason;
+  return skipByBrowser && skipByKind && skipByStory && skipByTest && reason;
 }
 
 export function registerRequireContext(): void {
