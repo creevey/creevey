@@ -6,6 +6,6 @@ declare namespace Chai {
 
   interface Assertion {
     matchImage: (filename?: string) => Promise<void>;
-    // TODO matchImages: () => Promise<void>;
+    matchImages: () => Promise<void>;
   }
 }

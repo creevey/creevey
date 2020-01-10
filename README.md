@@ -143,7 +143,7 @@ Simple.story = {
   parameters: {
     creevey: {
       async click(this: { broser: WebDriver }) {
-        const element = await this.browser.findElement(By.css('#root'));
+        const element = await this.browser.findElement({ css: '#root' });
 
         await this.browser
           .actions({ bridge: true })

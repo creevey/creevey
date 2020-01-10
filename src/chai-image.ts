@@ -104,10 +104,7 @@ export default (
   onSaveImage: (imageName: string, imageNumber: number, type: keyof Images) => void = noop,
 ) =>
   function chaiImage({ Assertion }: Chai.ChaiStatic, utils: Chai.ChaiUtils) {
-    utils.addMethod(Assertion.prototype, 'matchImage', async function matchImage(this: object, imageName?: string) {
-      const actualBase64: string = utils.flag(this, 'object');
-      const actual = Buffer.from(actualBase64, 'base64');
-
+    async function assertImage(actual: Buffer, imageName?: string): Promise<void> {
       // context => [kind, story, test, browser]
       // rootSuite -> kindSuite -> storyTest -> [browsers.png]
       // rootSuite -> kindSuite -> storySuite -> test -> [browsers.png]
@@ -148,10 +145,20 @@ export default (
 
       // NOTE В случае, если имеющие одинаковый размер картинки не будут отличаться по содержимому, то код можно упростить
       throw new Error(`Expected image '${imageName}' to match ${equalBySize ? 'but was equal by size' : ''}`);
+    }
+
+    utils.addMethod(Assertion.prototype, 'matchImage', async function matchImage(this: object, imageName?: string) {
+      const actualBase64: string = utils.flag(this, 'object');
+      const actual = Buffer.from(actualBase64, 'base64');
+
+      await assertImage(actual, imageName);
     });
 
-    utils.addMethod(Assertion.prototype, 'matchImages', function matchImages() {
-      // images object
-      throw new Error('Not Implemented');
+    utils.addMethod(Assertion.prototype, 'matchImages', async function matchImages(this: object) {
+      await Promise.all(
+        Object.entries<string>(utils.flag(this, 'object')).map(([imageName, imageBase64]) =>
+          assertImage(Buffer.from(imageBase64, 'base64'), imageName),
+        ),
+      );
     });
   };

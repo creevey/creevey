@@ -1,6 +1,6 @@
 import React from 'react';
 import { expect } from 'chai';
-import { By, WebDriver } from 'selenium-webdriver';
+import { WebDriver } from 'selenium-webdriver';
 
 import { ImagesView as ImagesViewBase } from '../src/client/CreeveyView/ImagesView';
 import { ImagesViewMode } from '../src/types';
@@ -37,7 +37,7 @@ Slide.story = {
     creevey: {
       tests: {
         async click(this: { browser: WebDriver }) {
-          const element = await this.browser.findElement(By.css('#root'));
+          const element = await this.browser.findElement({ css: '#root' });
 
           const idle = await element.takeScreenshot();
 
@@ -48,8 +48,7 @@ Slide.story = {
 
           const click = await element.takeScreenshot();
 
-          // TODO toMatchImages
-          await Promise.all([expect(idle).to.matchImage('idle'), expect(click).to.matchImage('click')]);
+          await expect({ idle, click }).to.matchImages();
         },
       },
     },
