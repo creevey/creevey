@@ -96,6 +96,9 @@
   - [x] Update to Storybook@5.x
   - [x] Reset mouse position
   - [x] Support sotrybook 3.x-5.x
+  - [x] Simplify generated tests tree acording by stories/tests/images
+  - [x] Use require.context from storybook config or strorybook event to get tests (without \_\_filename usage)
+  - [x] Add note about skip option and story/kind name case convention
 - [x] Allow Composite images
 - [x] Slide story don't work correclty, must be fixed
 - [x] Better error message about open storybook page
@@ -113,6 +116,9 @@
 - [x] Reset button nowrap style
 - [x] Skip by browser regexp don't work (webdriver serialization)
 - [x] Convert storycase to export name
+- [x] Allow assert multiple images in one test (chai toMatchImages())
+- [x] Remove Loader, use require.context
+- [x] Remove tests parser ability, support only storybook
 
   </details>
 
@@ -120,14 +126,6 @@
 
 - [ ] Bugs
   - [ ] On Teamcity cli exits with -1 code without any output
-- [x] Allow assert multiple images in one test (chai toMatchImages())
-- [x] Remove Loader, use require.context
-- [ ] Storybook integration
-  - [x] Simplify generated tests tree acording by stories/tests/images
-  - [x] Use require.context from storybook config or strorybook event to get tests (without \_\_filename usage)
-  - [x] Add note about skip option and story/kind name case convention
-  - [ ] Record screencast with Creevey UI
-  - [ ] Use new Storybook 5.3 declarative config https://medium.com/storybookjs/declarative-storybook-configuration-49912f77b78
 - [ ] Transform to monorepo
   - [ ] `creevey`
   - [ ] `creevey-ui`
@@ -143,7 +141,6 @@
 
 ## Not in first time
 
-- [x] Remove tests parser ability, support only storybook
 - [ ] Correctly resize images in views using correct proportions (smaller image should shrink if larger shrink too, max-width/max-height doesn't work)
 - [ ] Tests on images view components with various scenarios (same/diff sizes, less/bigger viewport)
 - [ ] Optimize stories load process (use tree-shaking or simply don't import other stuff like react, components and other browser libs/styles/images/fonts)
@@ -172,7 +169,9 @@
 - [ ] Storybook integration
   - [ ] Support stories separators https://storybook.js.org/docs/basics/writing-stories/#story-hierarchy
   - [ ] Support stories name convention https://storybook.js.org/docs/formats/component-story-format/#storybook-export-vs-name-handling
+  - [ ] Use new Storybook 5.3 declarative config https://medium.com/storybookjs/declarative-storybook-configuration-49912f77b78
   - [ ] Optimize stories require process
+  - [ ] Record screencast with Creevey UI
 - [ ] Rewrite to use `worker_threads` instead of `cluster` to allow use shared memory
 - [ ] Use https://github.com/gidztech/jest-puppeteer-docker
 - [ ] Allow use custom API (wd/wdio/puppeter/etc)
