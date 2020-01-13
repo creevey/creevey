@@ -64,8 +64,12 @@ async function takeCompositeScreenshot(
   const rows = Math.ceil(elementRect.height / windowSize.height);
   const isFitHorizontally = windowSize.width >= elementRect.width + elementRect.left;
   const isFitVertically = windowSize.height >= elementRect.height + elementRect.top;
-  const xOffset = isFitHorizontally ? elementRect.left : Math.max(0, cols * windowSize.width - elementRect.width);
-  const yOffset = isFitVertically ? elementRect.top : Math.max(0, rows * windowSize.height - elementRect.height);
+  const xOffset = Math.round(
+    isFitHorizontally ? elementRect.left : Math.max(0, cols * windowSize.width - elementRect.width),
+  );
+  const yOffset = Math.round(
+    isFitVertically ? elementRect.top : Math.max(0, rows * windowSize.height - elementRect.height),
+  );
 
   for (let row = 0; row < rows; row += 1) {
     for (let col = 0; col < cols; col += 1) {
@@ -86,15 +90,15 @@ async function takeCompositeScreenshot(
   }
 
   const images = screens.map(s => Buffer.from(s, 'base64')).map(b => PNG.sync.read(b));
-  const compositeImage = new PNG({ width: elementRect.width, height: elementRect.height });
+  const compositeImage = new PNG({ width: Math.round(elementRect.width), height: Math.round(elementRect.height) });
 
-  for (let y = 0; y < elementRect.height; y += 1) {
-    for (let x = 0; x < elementRect.width; x += 1) {
+  for (let y = 0; y < compositeImage.height; y += 1) {
+    for (let x = 0; x < compositeImage.width; x += 1) {
       const col = Math.floor(x / windowSize.width);
       const row = Math.floor(y / windowSize.height);
       const isLastCol = cols - col == 1;
       const isLastRow = rows - row == 1;
-      const i = (y * elementRect.width + x) * 4;
+      const i = (y * compositeImage.width + x) * 4;
       const j =
         ((y % windowSize.height) * windowSize.width + (x % windowSize.width)) * 4 +
         (isLastRow ? yOffset * windowSize.width * 4 : 0) +
