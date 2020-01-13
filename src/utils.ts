@@ -291,7 +291,7 @@ export function requireConfig<T>(configPath: string): T {
     require(configPath);
   } catch (e) {
     let ext = path.extname(configPath);
-    if (ext == '.config') {
+    if (!ext || ext == '.config') {
       ext = Object.keys(extensions).find(key => fs.existsSync(`${configPath}${key}`)) || ext;
     }
     registerCompiler(extensions[ext]);

@@ -141,8 +141,9 @@
 
 ## Not in first time
 
+- [ ] Add liftoff https://github.com/js-cli/js-liftoff
 - [ ] Correctly resize images in views using correct proportions (smaller image should shrink if larger shrink too, max-width/max-height doesn't work)
-- [ ] Tests on images view components with various scenarios (same/diff sizes, less/bigger viewport)
+- [ ] Tests on images view components with various scenarios (same/diff sizes, less/bigger viewport, elements with width/height not integer size)
 - [ ] Optimize stories load process (use tree-shaking or simply don't import other stuff like react, components and other browser libs/styles/images/fonts)
 - [ ] Write stories on new components
   - [x] SideBar
