@@ -208,7 +208,7 @@ export function loadStories(storybookDir: string): Promise<StoriesRaw> {
 
   // TODO register css/less/scss/png/jpg/woff/ttf/etc require extensions
   addHook(() => '', {
-    exts: ['.less', '.css', '.png'],
+    exts: ['.less', '.css', '.png', '.svg'],
     ignoreNodeModules: false,
   });
 

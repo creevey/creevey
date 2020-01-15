@@ -27,19 +27,6 @@ export default async function worker(config: Config, options: Options & { browse
   let images: Partial<{ [name: string]: Partial<Images> }> = {};
   let error: Error | {} | string | undefined | null = null;
   let isRunning = false;
-  const testScope: string[] = [];
-  const mocha = new Mocha({
-    timeout: 30000,
-    reporter: process.env.TEAMCITY_VERSION ? TeamcityReporter : options.reporter || CreeveyReporter,
-    reporterOptions: {
-      reportDir: config.reportDir,
-      topLevelSuite: options.browser,
-      willRetry: () => retries < config.maxRetries,
-      images: () => images,
-    },
-  });
-  const browserConfig = config.browsers[options.browser] as BrowserConfig;
-  const browser = await getBrowser(config, browserConfig);
 
   function saveImageHandler(imageName: string, imageNumber: number, type: keyof Images): void {
     const image = (images[imageName] = images[imageName] || {});
@@ -63,6 +50,24 @@ export default async function worker(config: Config, options: Options & { browse
     isRunning = false;
   }
 
+  const testScope: string[] = [];
+  const mocha = new Mocha({
+    timeout: 30000,
+    reporter: process.env.TEAMCITY_VERSION ? TeamcityReporter : options.reporter || CreeveyReporter,
+    reporterOptions: {
+      reportDir: config.reportDir,
+      topLevelSuite: options.browser,
+      willRetry: () => retries < config.maxRetries,
+      images: () => images,
+    },
+  });
+
+  chai.use(chaiImage(config, testScope, saveImageHandler));
+  addTestsFromStories(mocha.suite, options.browser, await loadStories(config.storybookDir));
+
+  const browserConfig = config.browsers[options.browser] as BrowserConfig;
+  const browser = await getBrowser(config, browserConfig);
+
   process.on('unhandledRejection', reason => {
     if (process.send) {
       error = reason instanceof Error ? reason.stack || reason.message : reason;
@@ -72,10 +77,6 @@ export default async function worker(config: Config, options: Options & { browse
       process.send(JSON.stringify({ type: 'error', payload: { status: 'failed', images, error } }));
     }
   });
-
-  chai.use(chaiImage(config, testScope, saveImageHandler));
-
-  addTestsFromStories(mocha.suite, options.browser, await loadStories(config.storybookDir));
 
   mocha.suite.beforeAll(function(this: Context) {
     this.config = config;

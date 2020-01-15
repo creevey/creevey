@@ -18,7 +18,5 @@ export default async ({ config }: { config: Configuration }) => {
     }),
   );
 
-  config.node = { __filename: true };
-
   return config;
 };
