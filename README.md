@@ -170,10 +170,14 @@ Simple.story = {
   - `skip: { kinds: 'Button' }`
   - `skip: { kinds: ['Button', 'Input'] }`
   - `skip: { kinds: /.*Modal$/ }`
-- Skip specific stories for all browsers:
+- Skip all tests in specific stories:
   - `skip: { stories: 'simple' }`
   - `skip: { stories: ['simple', 'special'] }`
   - `skip: { stories: /.*large$/ }`
+- Skip specific tests:
+  - `skip: { tests: 'click' }`
+  - `skip: { tests: ['hover', 'click'] }`
+  - `skip: { tests: /^press.*$/ }`
 - Multiple skip options: `skip: [{ /* ... */ }]`
 
 NOTE: If you try to skip stories by story name, the storybook name format will be used (For more info see [storybook-export-vs-name-handling](https://storybook.js.org/docs/formats/component-story-format/#storybook-export-vs-name-handling))

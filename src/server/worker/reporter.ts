@@ -6,7 +6,9 @@ export class CreeveyReporter extends reporters.Base {
   constructor(runner: Runner, options: MochaOptions) {
     super(runner);
 
-    const topLevelSuite = options.reporterOptions.topLevelSuite;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    //@ts-ignore Should update @types/mocha for new major release https://github.com/mochajs/mocha/releases/tag/v7.0.0
+    const topLevelSuite = options.reporterOption.topLevelSuite;
 
     runner.on('test', test =>
       console.log(`[${chalk.yellow('START')}:${topLevelSuite}:${process.pid}]`, chalk.cyan(test.titlePath().join('/'))),
@@ -28,8 +30,12 @@ export class TeamcityReporter extends reporters.Base {
   constructor(runner: Runner, options: MochaOptions) {
     super(runner);
 
-    const topLevelSuite = this.escape(options.reporterOptions.topLevelSuite);
-    const { reportDir, willRetry, images } = options.reporterOptions as {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    //@ts-ignore Should update @types/mocha for new major release https://github.com/mochajs/mocha/releases/tag/v7.0.0
+    const topLevelSuite = this.escape(options.reporterOption.topLevelSuite);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    //@ts-ignore Should update @types/mocha for new major release https://github.com/mochajs/mocha/releases/tag/v7.0.0
+    const { reportDir, willRetry, images } = options.reporterOption as {
       reportDir: string;
       willRetry: () => boolean;
       images: () => Partial<{

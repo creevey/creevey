@@ -119,11 +119,16 @@
 - [x] Allow assert multiple images in one test (chai toMatchImages())
 - [x] Remove Loader, use require.context
 - [x] Remove tests parser ability, support only storybook
+- [x] ~~Add `babel-plugin-typescript-to-proptypes`~~ Seems this plugin doesn't do so much
+- [x] Allow skip tests inside story
+- [x] ~~Not properly work with CRA (need to install ts-node or @babel/register)~~ Add notes in readme
+- [x] ~~Lint sort imports~~
 
   </details>
 
 ## First priority
 
+- [ ] Storybook support 5.3 declarative config https://github.com/storybookjs/storybook/blob/next/MIGRATION.md#from-version-52x-to-53x
 - [ ] Bugs
   - [ ] On Teamcity cli exits with -1 code without any output
 - [ ] Transform to monorepo
@@ -141,6 +146,7 @@
 
 ## Not in first time
 
+- [ ] Load stories in separate thread/context/puppeteer. For last option tests should be writen on new API that use websockets
 - [ ] Register hook on all possible extensions and try to register compilers while require stories or deps
 - [ ] Add liftoff https://github.com/js-cli/js-liftoff
 - [ ] Correctly resize images in views using correct proportions (smaller image should shrink if larger shrink too, max-width/max-height doesn't work)
@@ -149,12 +155,10 @@
 - [ ] Write stories on new components
   - [x] SideBar
   - [ ] ResultPageHeader
-- [ ] Allow skip tests inside story
 - [ ] Bugs
   - [ ] Firefox double click if clicks in different tests
   - [ ] Reconnect on `WebDriverError: Session timed out or not found`
   - [ ] Mocha worker `Possible EventEmitter memory leak detected. 11 error listeners added`
-  - [ ] Not properly work with CRA (need to install ts-node or @babel/register)
 - [ ] Improve CLI
   - [ ] Output cli help
   - [ ] Add grep/kind/story option
@@ -165,13 +169,11 @@
   - [ ] Allow switch between 1:1 and fit image views
 - [ ] Write about differences with other tools
 - [ ] Add unit tests
-- [ ] Add `babel-plugin-typescript-to-proptypes`
-- [ ] Lint sort imports
 - [ ] Github Actions
+  - [ ] Allow run ui tests in cli by `yarn test:ui`
 - [ ] Storybook integration
   - [ ] Support stories separators https://storybook.js.org/docs/basics/writing-stories/#story-hierarchy
   - [ ] Support stories name convention https://storybook.js.org/docs/formats/component-story-format/#storybook-export-vs-name-handling
-  - [ ] Use new Storybook 5.3 declarative config https://medium.com/storybookjs/declarative-storybook-configuration-49912f77b78
   - [ ] Optimize stories require process (tree-shaking or something else)
   - [ ] Record screencast with Creevey UI
 - [ ] Rewrite to use `worker_threads` instead of `cluster` to allow use shared memory

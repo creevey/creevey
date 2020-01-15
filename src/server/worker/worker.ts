@@ -1,6 +1,6 @@
 import chai from 'chai';
 import chalk from 'chalk';
-import Mocha, { Suite, Context, AsyncFunc } from 'mocha';
+import Mocha, { Suite, Context, AsyncFunc, MochaOptions } from 'mocha';
 import { Config, Images, Options, BrowserConfig, noop } from '../../types';
 import { getBrowser, switchStory } from '../../utils';
 import chaiImage from '../../chai-image';
@@ -51,16 +51,19 @@ export default async function worker(config: Config, options: Options & { browse
   }
 
   const testScope: string[] = [];
-  const mocha = new Mocha({
+  const mochaOptions: MochaOptions = {
     timeout: 30000,
     reporter: process.env.TEAMCITY_VERSION ? TeamcityReporter : options.reporter || CreeveyReporter,
-    reporterOptions: {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    //@ts-ignore Should update @types/mocha for new major release https://github.com/mochajs/mocha/releases/tag/v7.0.0
+    reporterOption: {
       reportDir: config.reportDir,
       topLevelSuite: options.browser,
       willRetry: () => retries < config.maxRetries,
       images: () => images,
     },
-  });
+  };
+  const mocha = new Mocha(mochaOptions);
 
   chai.use(chaiImage(config, testScope, saveImageHandler));
   addTestsFromStories(mocha.suite, options.browser, await loadStories(config.storybookDir));
