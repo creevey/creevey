@@ -188,6 +188,6 @@ NOTE: If you try to skip stories by story name, the storybook name format will b
 
 CRA don't have `@babel/register` nor `ts-node` in deps, that used to load TypeScript modules in runtime. So you need to install one of those packages explicitly
 
-### Get `SyntaxError: Cannot use import statement outside a module` while loading storybook config
+### Get `SyntaxError: ...` while loading storybook config
 
 I try to figure out what transpiler I should register to load storybook config and stories in your project, but I can't cover all cases. So, if you stuck with this issue, please specify correct require hooks and options on top of creevey config.

@@ -46,7 +46,6 @@
   },
   "dependencies": {
     "@types/chai": "^4.2.7",
-    "@types/mocha": "^5.2.7",
     "chai": "^4.2.0",
     "chalk": "^3.0.0",
     "event-source-polyfill": "^1.0.12",
@@ -88,6 +87,7 @@
     "@types/koa-static": "^4.0.1",
     "@types/minimist": "^1.2.0",
     "@types/mkdirp": "^0.5.2",
+    "@types/mocha": "^5.2.7",
     "@types/node": "^12.12.22",
     "@types/pixelmatch": "^5.0.0",
     "@types/pngjs": "^3.4.0",
