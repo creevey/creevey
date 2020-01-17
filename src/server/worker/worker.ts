@@ -66,7 +66,11 @@ export default async function worker(config: Config, options: Options & { browse
   const mocha = new Mocha(mochaOptions);
 
   chai.use(chaiImage(config, testScope, saveImageHandler));
-  addTestsFromStories(mocha.suite, options.browser, await loadStories(config.storybookDir));
+  addTestsFromStories(
+    mocha.suite,
+    options.browser,
+    await loadStories(config.storybookDir, config.enableFastStoriesLoading),
+  );
 
   const browserConfig = config.browsers[options.browser] as BrowserConfig;
   const browser = await getBrowser(config, browserConfig);

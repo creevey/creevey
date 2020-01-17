@@ -8,6 +8,7 @@ export const defaultConfig: Omit<Config, 'gridUrl'> = {
   screenDir: path.resolve('images'),
   reportDir: path.resolve('report'),
   storybookDir: path.resolve('.storybook'),
+  enableFastStoriesLoading: false,
   maxRetries: 0,
   threshold: 0,
   browsers: { chrome: true },

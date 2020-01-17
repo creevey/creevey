@@ -26,6 +26,7 @@ export interface Config {
   screenDir: string;
   reportDir: string;
   storybookDir: string;
+  enableFastStoriesLoading: boolean;
   maxRetries: number;
   threshold: number;
   browsers: { [key: string]: Browser };

@@ -2,7 +2,7 @@ import path from 'path';
 import { writeFileSync, copyFile, readdir } from 'fs';
 import { promisify } from 'util';
 import mkdirp from 'mkdirp';
-import { Config, Test, isDefined, CreeveyStatus } from '../../types';
+import { Config, Test, isDefined, CreeveyStatus, StoriesRaw } from '../../types';
 import { loadStories, convertStories } from '../../stories';
 import Runner from './runner';
 
@@ -22,8 +22,8 @@ function reportDataModule<T>(data: T): string {
 `;
 }
 
-async function loadTestsFromStories(storybookDir: string, browsers: string[]): Promise<CreeveyStatus['tests']> {
-  const tests = convertStories(browsers, await loadStories(storybookDir));
+function loadTestsFromStories(stories: StoriesRaw, browsers: string[]): CreeveyStatus['tests'] {
+  const tests = convertStories(browsers, stories);
   Object.values(tests)
     .filter(isDefined)
     .forEach(test => Reflect.deleteProperty(test, 'fn'));
@@ -70,7 +70,8 @@ export default async function master(config: Config): Promise<Runner> {
   } catch (error) {
     // Ignore error
   }
-  const testsFromStories = await loadTestsFromStories(config.storybookDir, Object.keys(config.browsers));
+  const stories = await loadStories(config.storybookDir, config.enableFastStoriesLoading);
+  const testsFromStories = loadTestsFromStories(stories, Object.keys(config.browsers));
   const mergedTests = mergeTests(testsFromReport, testsFromStories);
 
   const runner = new Runner(config, mergedTests);

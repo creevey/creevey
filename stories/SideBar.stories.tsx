@@ -7,11 +7,13 @@ import { SideBarHeader } from '../src/client/CreeveyView/SideBar/SideBarHeader';
 import { treeifyTests } from '../src/client/helpers';
 import { noop, CreeveySuite, CreeveyStatus, isDefined, isTest } from '../src/types';
 
-function openSuites(suite: CreeveySuite): void {
+function openSuites(suite: CreeveySuite): CreeveySuite {
   suite.opened = true;
   Object.values(suite.children)
     .filter(isDefined)
     .forEach(suite => isTest(suite) || openSuites(suite));
+
+  return suite;
 }
 
 const simpleTests: CreeveyStatus['tests'] = {
@@ -40,11 +42,6 @@ const statusTests: CreeveyStatus['tests'] = {
   11: { id: '11', path: ['running', 'running', 'root'], skip: false, retries: 0, status: 'running' },
   12: { id: '12', path: ['pending', 'running', 'root'], skip: false, retries: 0, status: 'pending' },
 };
-const simpleSuite: CreeveySuite = treeifyTests(simpleTests);
-const statusSuite: CreeveySuite = treeifyTests(statusTests);
-
-openSuites(simpleSuite);
-openSuites(statusSuite);
 
 const headerDecorator = (storyFn: StoryFn<ReactNode>) => (
   <div
@@ -100,7 +97,11 @@ export const HeaderRunning = () => (
 );
 HeaderRunning.story = { decorators: [headerDecorator] };
 
-export const SimpleSideBar = () => <SideBar rootSuite={simpleSuite} openedTest={null} onOpenTest={noop} />;
-export const StatusSideBar = () => <SideBar rootSuite={statusSuite} openedTest={null} onOpenTest={noop} />;
+export const SimpleSideBar = () => (
+  <SideBar rootSuite={openSuites(treeifyTests(simpleTests))} openedTest={null} onOpenTest={noop} />
+);
+export const StatusSideBar = () => (
+  <SideBar rootSuite={openSuites(treeifyTests(statusTests))} openedTest={null} onOpenTest={noop} />
+);
 
 // TODO Hover tests

@@ -34,6 +34,7 @@ const config: CreeveyConfig = {
   gridUrl: '<gridUrl>/wd/hub',
   storybookUrl: 'http://localhost:6006',
   storybookDir: path.join(__dirname, '.storybook'),
+  enableFastStoriesLoading: false, // See notes below
   screenDir: path.join(__dirname, 'images'),
   reportDir: path.join(__dirname, 'report'),
   threshold: 0.1,
@@ -57,6 +58,8 @@ const config: CreeveyConfig = {
 
 export default config;
 ```
+
+NOTE: By default Creevey load stories with all dependency modules recursively. But for running tests mostly of them is not needed, Creevey uses only stories meta data, like story name/kind and parameters. Load all modules may significantly increase initialization time, so you can speed it up by using `enableFastStoriesLoading` flag. But bear in mind, your stories should have no side-effects. This flag skip to load all modules except stories/config and some modules from node_modules.
 
 ## Creevey CLI options
 
