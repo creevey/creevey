@@ -287,12 +287,11 @@ function registerCompiler(moduleDescriptor: Extension | null): void {
 }
 
 export function requireConfig<T>(configPath: string): T {
-  // TODO Better handle load storybook config
-  // If some config deps modules are failed we will throw error
-  // Else try to load compiler
   try {
     require(configPath);
-  } catch (e) {
+  } catch (error) {
+    if (!(error instanceof SyntaxError)) throw error;
+
     let ext = path.extname(configPath);
     if (!ext || ext == '.config') {
       ext = Object.keys(extensions).find(key => fs.existsSync(`${configPath}${key}`)) || ext;

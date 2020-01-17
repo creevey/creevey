@@ -11,8 +11,6 @@ import { By, WebDriver } from 'selenium-webdriver';
 import { isDefined, Test, CreeveyStoryParams, StoriesRaw, noop, SkipOptions } from './types';
 import { shouldSkip, requireConfig } from './utils';
 
-type PlatformPath = typeof path;
-
 declare global {
   interface Window {
     __CREEVEY_RESTORE_SCROLL__?: () => void;
@@ -242,26 +240,19 @@ export function loadStories(storybookDir: string, enableFastStoriesLoading: bool
   const { wrap } = module.constructor;
 
   if (enableFastStoriesLoading) {
-    // TODO Improve
-    // storybook config - pass
-    // module with parent storybook config - pass
-    // node_modules with @storybook - pass
-    // node_modules with parent node_modules - pass
-
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
     module.constructor.wrap = function(script: string) {
       // TODO Add AST analyzer, to implement tree-shaking
       return wrap(
         `const shouldSkip = !(${function(storybookPath: string) {
-          // eslint-disable-next-line @typescript-eslint/no-var-requires
-          const path: PlatformPath = require('path');
           const { filename: parentFilename } = require.cache[__filename].parent ?? {};
 
           return (
-            __filename.replace(path.extname(__filename), '') == storybookPath ||
-            __filename.includes('node_modules') ||
-            (parentFilename && parentFilename.replace(path.extname(parentFilename), '') == storybookPath)
+            __filename.includes(storybookPath) ||
+            parentFilename?.includes(storybookPath) ||
+            (__filename.includes('node_modules') &&
+              (__filename.includes('@storybook') || parentFilename?.includes('node_modules')))
           );
         }.toString()})("${storybookPath}");
 
