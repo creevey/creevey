@@ -123,14 +123,13 @@
 - [x] Allow skip tests inside story
 - [x] ~~Not properly work with CRA (need to install ts-node or @babel/register)~~ Add notes in readme
 - [x] ~~Lint sort imports~~
+- [x] ~~Allow define mocha hooks~~
 
   </details>
 
 ## First priority
 
-- [ ] Storybook support 5.3 declarative config https://github.com/storybookjs/storybook/blob/next/MIGRATION.md#from-version-52x-to-53x
-- [ ] Bugs
-  - [ ] On Teamcity cli exits with -1 code without any output
+- [ ] Add description for types properties, like config/decorator/etc
 - [ ] Transform to monorepo
   - [ ] `creevey`
   - [ ] `creevey-ui`
@@ -143,10 +142,14 @@
   - [ ] Add `creevey-jest` and `creevey-mocha` packages, that implement API for creevey and define types for chai/jest
   - [ ] Initiate runner inside worker
 - [ ] Add authors
+- [ ] Support run tests inside docker
+- [ ] Puppeteer use https://github.com/gidztech/jest-puppeteer-docker
+- [ ] Selenium
 
 ## Not in first time
 
-- [ ] Load stories in separate thread/context/puppeteer. For last option tests should be writen on new API that use websockets
+- [ ] Always save images even if test with matchImages failed
+- [ ] Load stories in separate thread/context/puppeteer. For last option tests should be writen on new API that use websockets, need to think how debug it
 - [ ] Register hook on all possible extensions and try to register compilers while require stories or deps
 - [ ] Add liftoff https://github.com/js-cli/js-liftoff
 - [ ] Correctly resize images in views using correct proportions (smaller image should shrink if larger shrink too, max-width/max-height doesn't work)
@@ -159,6 +162,7 @@
   - [ ] Firefox double click if clicks in different tests
   - [ ] Reconnect on `WebDriverError: Session timed out or not found`
   - [ ] Mocha worker `Possible EventEmitter memory leak detected. 11 error listeners added`
+  - [ ] On Teamcity cli exits with -1 code without any output
 - [ ] Improve CLI
   - [ ] Output cli help
   - [ ] Add grep/kind/story option
@@ -176,13 +180,13 @@
   - [ ] Support stories name convention https://storybook.js.org/docs/formats/component-story-format/#storybook-export-vs-name-handling
   - [ ] Optimize stories require process (tree-shaking or something else)
   - [ ] Record screencast with Creevey UI
+  - [ ] Storybook support 5.3 declarative config https://github.com/storybookjs/storybook/blob/next/MIGRATION.md#from-version-52x-to-53x
+- [ ] Support Angular/Vue stories
 - [ ] Rewrite to use `worker_threads` instead of `cluster` to allow use shared memory
-- [ ] Use https://github.com/gidztech/jest-puppeteer-docker
 - [ ] Allow use custom API (wd/wdio/puppeter/etc)
 - [ ] HotReload tests files without restart
 - [ ] Handle error on mocha hooks
 - [ ] Support mocha options for workers
-- [ ] Allow define mocha hooks
 - [ ] Programmic API
 - [ ] Add logger lib
 

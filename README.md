@@ -37,7 +37,7 @@ const config: CreeveyConfig = {
   enableFastStoriesLoading: false, // See notes below
   screenDir: path.join(__dirname, 'images'),
   reportDir: path.join(__dirname, 'report'),
-  threshold: 0.1,
+  diffOptions: { threshold: 0.1 },
   maxRetries: 2,
   browsers: {
     chrome: true,

@@ -10,7 +10,7 @@ export const defaultConfig: Omit<Config, 'gridUrl'> = {
   storybookDir: path.resolve('.storybook'),
   enableFastStoriesLoading: false,
   maxRetries: 0,
-  threshold: 0,
+  diffOptions: { threshold: 0, includeAA: true },
   browsers: { chrome: true },
 };
 

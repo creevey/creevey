@@ -1,6 +1,20 @@
 import { API as StorybookAPI } from '@storybook/api';
 import { Worker as ClusterWorker } from 'cluster';
 import { WebDriver } from 'selenium-webdriver';
+import Pixelmatch from 'pixelmatch';
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+export type DiffOptions = typeof Pixelmatch extends (
+  x1: any,
+  x2: any,
+  x3: any,
+  x4: any,
+  x5: any,
+  options?: infer T,
+) => void
+  ? T
+  : never;
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 export type StoriesRaw = StorybookAPI extends { setStories: (stories: infer SS) => void } ? SS : never;
 
@@ -28,7 +42,11 @@ export interface Config {
   storybookDir: string;
   enableFastStoriesLoading: boolean;
   maxRetries: number;
-  threshold: number;
+  /**
+   * Define pixelmatch diff options
+   * @default { threshold: 0, includeAA: true }
+   */
+  diffOptions: DiffOptions;
   browsers: { [key: string]: Browser };
 }
 
