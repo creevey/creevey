@@ -130,6 +130,8 @@
 ## First priority
 
 - [ ] Add description for types properties, like config/decorator/etc
+- [ ] Don't output skipped tests
+- [ ] Don't output tests without status if filtering by status
 - [ ] Transform to monorepo
   - [ ] `creevey`
   - [ ] `creevey-ui`
