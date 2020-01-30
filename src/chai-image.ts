@@ -1,44 +1,7 @@
-import { promisify } from 'util';
-import fs, { Stats } from 'fs';
-import path from 'path';
 import { PNG } from 'pngjs';
 import pixelmatch from 'pixelmatch';
-import mkdirp from 'mkdirp';
 
-import { Config, Images, DiffOptions, noop } from './types';
-
-const statAsync = promisify(fs.stat);
-const readdirAsync = promisify(fs.readdir);
-const readFileAsync = promisify(fs.readFile);
-const writeFileAsync = promisify(fs.writeFile);
-const mkdirpAsync = promisify(mkdirp);
-
-async function getStat(filePath: string): Promise<Stats | null> {
-  try {
-    return await statAsync(filePath);
-  } catch (error) {
-    if (error.code === 'ENOENT') {
-      return null;
-    }
-    throw error;
-  }
-}
-
-async function getLastImageNumber(imageDir: string, imageName: string): Promise<number> {
-  const actualImagesRegexp = new RegExp(`${imageName}-actual-(\\d+)\\.png`);
-
-  try {
-    return (
-      (await readdirAsync(imageDir))
-        .map(filename => filename.replace(actualImagesRegexp, '$1'))
-        .map(Number)
-        .filter(x => !isNaN(x))
-        .sort((a, b) => b - a)[0] ?? 0
-    );
-  } catch (_error) {
-    return 0;
-  }
-}
+import { DiffOptions, noop } from './types';
 
 function normalizeImageSize(image: PNG, width: number, height: number): Buffer {
   const normalizedImage = new Buffer(4 * width * height);
@@ -97,58 +60,52 @@ function compareImages(expect: Buffer, actual: Buffer, diffOptions: DiffOptions)
   };
 }
 
-export default (
-  config: Config,
-  context: string[],
-  onSaveImage: (imageName: string, imageNumber: number, type: keyof Images) => void = noop,
-) =>
-  function chaiImage({ Assertion }: Chai.ChaiStatic, utils: Chai.ChaiUtils) {
+export default function(
+  getExpected: (
+    imageName?: string,
+  ) => Promise<
+    { expected: Buffer | null; onCompare: (actual: Buffer, expect?: Buffer, diff?: Buffer) => void } | Buffer | null
+  >,
+  diffOptions: DiffOptions,
+) {
+  return function chaiImage({ Assertion }: Chai.ChaiStatic, utils: Chai.ChaiUtils) {
     async function assertImage(actual: Buffer, imageName?: string): Promise<void> {
-      // context => [kind, story, test, browser]
-      // rootSuite -> kindSuite -> storyTest -> [browsers.png]
-      // rootSuite -> kindSuite -> storySuite -> test -> [browsers.png]
-      if (!imageName) imageName = context.pop() as string;
+      let onCompare: (actual: Buffer, expect?: Buffer, diff?: Buffer) => void = noop;
+      let expected = await getExpected(imageName);
+      if (!(expected instanceof Buffer) && expected != null) ({ expected, onCompare } = expected);
 
-      const reportImageDir = path.join(config.reportDir, ...context);
-      const imageNumber = (await getLastImageNumber(reportImageDir, imageName)) + 1;
+      if (expected == null) {
+        onCompare(actual);
+        throw new Error(imageName ? `Expected image '${imageName}' does not exists` : 'Expected image does not exists');
+      }
 
-      await mkdirpAsync(reportImageDir);
-      await writeFileAsync(path.join(reportImageDir, `${imageName}-actual-${imageNumber}.png`), actual);
-      onSaveImage(imageName, imageNumber, 'actual');
+      if (actual.equals(expected)) return onCompare(actual);
 
-      const expectImageDir = path.join(config.screenDir, ...context);
-      const expectImageStat = await getStat(path.join(expectImageDir, `${imageName}.png`));
+      const { isEqual, diff } = compareImages(expected, actual, diffOptions);
 
-      if (!expectImageStat) throw new Error(`Expected image '${imageName}' does not exists`);
+      if (isEqual) return onCompare(actual);
 
-      const expect = await readFileAsync(path.join(expectImageDir, `${imageName}.png`));
+      onCompare(actual, expected, diff);
 
-      if (actual.equals(expect)) return;
-
-      const { isEqual, diff } = compareImages(expect, actual, config.diffOptions);
-
-      if (isEqual) return;
-
-      await writeFileAsync(path.join(reportImageDir, `${imageName}-expect-${imageNumber}.png`), expect);
-      onSaveImage(imageName, imageNumber, 'expect');
-      await writeFileAsync(path.join(reportImageDir, `${imageName}-diff-${imageNumber}.png`), diff);
-      onSaveImage(imageName, imageNumber, 'diff');
-
-      throw new Error(`Expected image '${imageName}' to match`);
+      // TODO rewrite message
+      throw new Error(imageName ? `Expected image '${imageName}' to match` : 'Expected image to match');
     }
 
     utils.addMethod(Assertion.prototype, 'matchImage', async function matchImage(this: object, imageName?: string) {
-      const actualBase64: string = utils.flag(this, 'object');
-      const actual = Buffer.from(actualBase64, 'base64');
+      const actual: string | Buffer = utils.flag(this, 'object');
 
-      await assertImage(actual, imageName);
+      await assertImage(typeof actual == 'string' ? Buffer.from(actual, 'base64') : actual, imageName);
     });
 
     utils.addMethod(Assertion.prototype, 'matchImages', async function matchImages(this: object) {
       await Promise.all(
-        Object.entries<string>(utils.flag(this, 'object')).map(([imageName, imageBase64]) =>
-          assertImage(Buffer.from(imageBase64, 'base64'), imageName),
+        Object.entries<string | Buffer>(utils.flag(this, 'object')).map(([imageName, imageOrBase64]) =>
+          assertImage(
+            typeof imageOrBase64 == 'string' ? Buffer.from(imageOrBase64, 'base64') : imageOrBase64,
+            imageName,
+          ),
         ),
       );
     });
   };
+}
