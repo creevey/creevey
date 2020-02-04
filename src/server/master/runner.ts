@@ -1,13 +1,12 @@
 import path from 'path';
-import { copyFile } from 'fs';
+import { copyFile, mkdir } from 'fs';
 import { promisify } from 'util';
 import { EventEmitter } from 'events';
-import mkdirp from 'mkdirp';
 import { Config, CreeveyStatus, TestResult, ApprovePayload, isDefined, CreeveyUpdate, TestStatus } from '../../types';
 import Pool from './pool';
 
 const copyFileAsync = promisify(copyFile);
-const mkdirpAsync = promisify(mkdirp);
+const mkdirAsync = promisify(mkdir);
 
 export default class Runner extends EventEmitter {
   private screenDir: string;
@@ -124,7 +123,7 @@ export default class Runner extends EventEmitter {
     const testPath = path.join(...restPath.reverse(), image == browser ? '' : browser);
     const srcImagePath = path.join(this.reportDir, testPath, images.actual);
     const dstImagePath = path.join(this.screenDir, testPath, `${image}.png`);
-    await mkdirpAsync(path.join(this.screenDir, testPath));
+    await mkdirAsync(path.join(this.screenDir, testPath), { recursive: true });
     await copyFileAsync(srcImagePath, dstImagePath);
     test.approved[image] = retry;
     this.sendUpdate({ tests: { [id]: { path: test.path, approved: { [image]: retry } } } });

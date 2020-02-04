@@ -32,9 +32,9 @@ html::-webkit-scrollbar {
   await browser.executeScript(function(stylesheet: string) {
     /* eslint-disable no-var */
     var style = document.createElement('style');
-    var textnode = document.createTextNode(stylesheet);
+    var textNode = document.createTextNode(stylesheet);
     style.setAttribute('type', 'text/css');
-    style.appendChild(textnode);
+    style.appendChild(textNode);
     document.head.appendChild(style);
 
     window.__CREEVEY_RESTORE_SCROLL__ = function() {

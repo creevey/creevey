@@ -1,6 +1,5 @@
-import fs, { Dirent } from 'fs';
+import fs, { Dirent, mkdirSync } from 'fs';
 import path from 'path';
-import mkdirp from 'mkdirp';
 import { Config, isDefined } from '../../types';
 
 const actualRegex = /^(.*)-actual-(\d+)\.png$/i;
@@ -16,7 +15,7 @@ function approve(dirents: Dirent[], srcPath: string, dstPath: string): void {
       new Map<string, number>(),
     )
     .forEach((retry, imageName) => {
-      mkdirp.sync(dstPath);
+      mkdirSync(dstPath, { recursive: true });
       fs.copyFileSync(path.join(srcPath, `${imageName}-actual-${retry}.png`), path.join(dstPath, `${imageName}.png`));
     });
 }

@@ -1,14 +1,13 @@
 import path from 'path';
-import { writeFileSync, copyFile, readdir } from 'fs';
+import { writeFileSync, copyFile, readdir, mkdir } from 'fs';
 import { promisify } from 'util';
-import mkdirp from 'mkdirp';
 import { Config, Test, isDefined, CreeveyStatus, StoriesRaw } from '../../types';
 import { loadStories, convertStories } from '../../stories';
 import Runner from './runner';
 
 const copyFileAsync = promisify(copyFile);
 const readdirAsync = promisify(readdir);
-const mkdirpAsync = promisify(mkdirp);
+const mkdirAsync = promisify(mkdir);
 
 function reportDataModule<T>(data: T): string {
   return `
@@ -56,7 +55,7 @@ async function copyStatics(reportDir: string): Promise<void> {
   const files = (await readdirAsync(clientDir, { withFileTypes: true }))
     .filter(dirent => dirent.isFile() && !dirent.name.endsWith('.d.ts'))
     .map(dirent => dirent.name);
-  await mkdirpAsync(reportDir);
+  await mkdirAsync(reportDir, { recursive: true });
   for (const file of files) {
     await copyFileAsync(path.join(clientDir, file), path.join(reportDir, file));
   }

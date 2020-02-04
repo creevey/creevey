@@ -1,7 +1,6 @@
 import { promisify } from 'util';
 import fs, { Stats } from 'fs';
 import path from 'path';
-import mkdirp from 'mkdirp';
 import chai from 'chai';
 import chalk from 'chalk';
 import Mocha, { Suite, Context, AsyncFunc, MochaOptions } from 'mocha';
@@ -16,7 +15,7 @@ const statAsync = promisify(fs.stat);
 const readdirAsync = promisify(fs.readdir);
 const readFileAsync = promisify(fs.readFile);
 const writeFileAsync = promisify(fs.writeFile);
-const mkdirpAsync = promisify(mkdirp);
+const mkdirAsync = promisify(fs.mkdir);
 
 async function getStat(filePath: string): Promise<Stats | null> {
   try {
@@ -98,7 +97,7 @@ export default async function worker(config: Config, options: Options & { browse
     const imageNumber = (await getLastImageNumber(reportImageDir, imageName)) + 1;
     const onCompare = async (actual: Buffer, expect?: Buffer, diff?: Buffer): Promise<void> => {
       image.actual = `${imageName}-actual-${imageNumber}.png`;
-      await mkdirpAsync(reportImageDir);
+      await mkdirAsync(reportImageDir, { recursive: true });
       await writeFileAsync(path.join(reportImageDir, image.actual), actual);
 
       if (!diff || !expect) return;
