@@ -38,8 +38,20 @@ export default async function worker(config: Config, options: Options & { browse
       images: () => images,
     },
   });
+  if (config.testDir)
+    require
+      .context(config.testDir, true, config.testRegex)
+      .keys()
+      .forEach(filePath => mocha.addFile(filePath));
+
+  addTestsFromStories(mocha.suite, options.browser, await loadStories(config.storybookDir));
+
   const browserConfig = config.browsers[options.browser] as BrowserConfig;
   const browser = await getBrowser(config, browserConfig);
+
+  setInterval(() => {
+    browser.getTitle();
+  }, 10 * 1000);
 
   function saveImageHandler(imageName: string, imageNumber: number, type: keyof Images): void {
     const image = (images[imageName] = images[imageName] || {});
@@ -75,14 +87,6 @@ export default async function worker(config: Config, options: Options & { browse
 
   chai.use(chaiImage(config, testScope, saveImageHandler));
 
-  if (config.testDir)
-    require
-      .context(config.testDir, true, config.testRegex)
-      .keys()
-      .forEach(filePath => mocha.addFile(filePath));
-
-  addTestsFromStories(mocha.suite, options.browser, await loadStories(config.storybookDir));
-
   mocha.suite.beforeAll(function(this: Context) {
     this.config = config;
     this.browser = browser;
@@ -108,10 +112,6 @@ export default async function worker(config: Config, options: Options & { browse
     // TODO How handle browser corruption?
     runner.on('fail', (_test, reason) => (error = reason instanceof Error ? reason.stack || reason.message : reason));
   });
-
-  setInterval(() => {
-    browser.getTitle();
-  }, 30 * 1000);
 
   console.log('[CreeveyWorker]:', `Ready ${options.browser}:${process.pid}`);
 
