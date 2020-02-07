@@ -1,6 +1,6 @@
 import cluster from 'cluster';
 import { EventEmitter } from 'events';
-import { Worker, Config, TestResult, BrowserConfig, WorkerMessage, TestStatus, Test } from '../../types';
+import { BrowserConfig, Config, Test, TestResult, TestStatus, Worker, WorkerMessage } from '../../types';
 
 export default class Pool extends EventEmitter {
   private maxRetries: number;
@@ -75,7 +75,7 @@ export default class Pool extends EventEmitter {
 
     this.sendStatus({ id, status: 'running' });
 
-    worker.isRunnning = true;
+    worker.isRunning = true;
     worker.once('message', data => {
       const message: WorkerMessage = JSON.parse(data);
       if (message.type == 'ready') return;
@@ -90,7 +90,7 @@ export default class Pool extends EventEmitter {
         this.queue.push(test);
       }
 
-      worker.isRunnning = false;
+      worker.isRunning = false;
 
       this.sendStatus({ id, status, result });
       this.process();
@@ -112,7 +112,7 @@ export default class Pool extends EventEmitter {
   }
 
   private get freeWorkers(): Worker[] {
-    return this.aliveWorkers.filter(worker => !worker.isRunnning);
+    return this.aliveWorkers.filter(worker => !worker.isRunning);
   }
 
   private exitHandler(worker: Worker): void {
