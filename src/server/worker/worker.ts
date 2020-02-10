@@ -1,9 +1,9 @@
 import 'jsdom-global/register';
 import chai from 'chai';
 import chalk from 'chalk';
-import Mocha, { Suite, Context, AsyncFunc } from 'mocha';
+import Mocha, { AsyncFunc, Context, Suite } from 'mocha';
 import { addHook } from 'pirates';
-import { Config, Images, Options, BrowserConfig, CreeveyStories, noop } from '../../types';
+import { BrowserConfig, Config, CreeveyStories, Images, noop, Options } from '../../types';
 import { getBrowser, switchStory } from '../../utils';
 import chaiImage from '../../chai-image';
 import { Loader } from '../../loader';
@@ -34,7 +34,6 @@ export default async function worker(config: Config, options: Options & { browse
   let retries = 0;
   let images: Partial<{ [name: string]: Partial<Images> }> = {};
   let error: Error | {} | string | undefined | null = null;
-  let isRunning = false;
   const testScope: string[] = [];
   const mocha = new Mocha({
     timeout: 30000,
@@ -52,8 +51,10 @@ export default async function worker(config: Config, options: Options & { browse
   const browserConfig = config.browsers[options.browser] as BrowserConfig;
   const browser = await getBrowser(config, browserConfig);
 
-  setInterval(() => {
-    browser.getTitle();
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  setInterval(async () => {
+    const url = await browser.getCurrentUrl();
+    console.log(chalk`[{blue WORKER}{grey :${options.browser}:${process.pid}}] {grey current url} ${url}`);
   }, 10 * 1000);
 
   const stories: CreeveyStories = JSON.parse(
@@ -83,18 +84,7 @@ export default async function worker(config: Config, options: Options & { browse
     // TODO Should we move into `process.on`?
     images = {};
     error = null;
-    isRunning = false;
   }
-
-  process.on('unhandledRejection', reason => {
-    if (process.send) {
-      error = reason instanceof Error ? reason.stack || reason.message : reason;
-      if (isRunning) {
-        console.log(`[${chalk.red('FAIL')}:${options.browser}:${process.pid}]`, chalk.cyan(testScope.join('/')), error);
-      }
-      process.send(JSON.stringify({ type: 'error', payload: { status: 'failed', images, error } }));
-    }
-  });
 
   chai.use(chaiImage(config, testScope, saveImageHandler));
 
@@ -109,7 +99,6 @@ export default async function worker(config: Config, options: Options & { browse
   patchMochaInterface(mocha.suite);
 
   process.on('message', message => {
-    isRunning = true;
     const test: { id: string; path: string[]; retries: number } = JSON.parse(message);
     retries = test.retries;
     const testPath = [...test.path]
