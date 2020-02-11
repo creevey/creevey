@@ -23,7 +23,8 @@ function normalizeBrowserConfig(name: string, config: Browser): BrowserConfig {
 export function readConfig(configPath: string, options: Options): Config {
   const userConfig: typeof defaultConfig & Partial<Pick<Config, 'gridUrl'>> = { ...defaultConfig };
 
-  if (fs.existsSync(require.resolve(configPath))) {
+  const { dir: configDir, base: configFile } = path.parse(configPath);
+  if (fs.readdirSync(configDir).find(filename => filename.startsWith(configFile))) {
     Object.assign(userConfig, requireConfig<Config>(configPath));
   }
 

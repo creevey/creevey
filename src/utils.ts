@@ -3,7 +3,7 @@ import fs, { Dirent } from 'fs';
 import path from 'path';
 import { Context, Test, Suite } from 'mocha';
 import { Builder, By, until, WebDriver, Origin } from 'selenium-webdriver';
-import { Extension, extensions } from 'interpret';
+import { Extension, jsVariants, ExtensionDescriptor, Hook } from 'interpret';
 import { toId } from '@storybook/router';
 import { Config, BrowserConfig, SkipOptions, isDefined } from './types';
 
@@ -11,6 +11,24 @@ type PlatformFS = typeof fs;
 type PlatformPath = typeof path;
 
 const LOCALHOST_REGEXP = /(localhost|127\.0\.0\.1)/;
+
+// NOTE Patch @babel/register hook due issue https://github.com/gulpjs/interpret/issues/61
+['.ts', '.tsx'].forEach((patchExtension: string) => {
+  const moduleDescriptor = jsVariants[patchExtension];
+  if (Array.isArray(moduleDescriptor)) {
+    const babelCompiler = moduleDescriptor.find(
+      (ext): ext is ExtensionDescriptor => typeof ext == 'object' && ext.module == '@babel/register',
+    );
+    if (!babelCompiler) return;
+    const oldRegister = babelCompiler.register;
+    babelCompiler.register = function(hook) {
+      oldRegister((options =>
+        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+        // @ts-ignore
+        hook({ ...options, extensions: ['.ts', '.tsx'] })) as Hook);
+    };
+  }
+});
 
 function getRealIp(): Promise<string> {
   return new Promise((resolve, reject) =>
@@ -287,17 +305,22 @@ function registerCompiler(moduleDescriptor: Extension | null): void {
 }
 
 export function requireConfig<T>(configPath: string): T {
+  let ext = path.extname(configPath);
+  if (!ext || ext == '.config') {
+    ext = Object.keys(jsVariants).find(key => fs.existsSync(`${configPath}${key}`)) || ext;
+    configPath += ext;
+  }
   try {
     require(configPath);
   } catch (error) {
-    if (!(error instanceof SyntaxError)) throw error;
-
-    let ext = path.extname(configPath);
-    if (!ext || ext == '.config') {
-      ext = Object.keys(extensions).find(key => fs.existsSync(`${configPath}${key}`)) || ext;
+    const childModules = require.cache[__filename].children;
+    // NOTE If config load failed then the module of config can't have child modules
+    if (childModules.find(child => child.filename == configPath)?.children.length != 0) {
+      throw error;
     }
-    registerCompiler(extensions[ext]);
+    registerCompiler(jsVariants[ext]);
   }
+
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const configModule = require(configPath);
   return configModule && configModule.__esModule ? configModule.default : configModule;
