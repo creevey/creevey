@@ -65,7 +65,7 @@ export interface Options {
 }
 
 export interface Worker extends ClusterWorker {
-  isRunnning?: boolean;
+  isRunning?: boolean;
 }
 
 export type WorkerMessage =

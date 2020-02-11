@@ -62,7 +62,6 @@ export default async function worker(config: Config, options: Options & { browse
   let retries = 0;
   let images: Partial<{ [name: string]: Partial<Images> }> = {};
   let error: Error | {} | string | undefined | null = null;
-  let isRunning = false;
   const testScope: string[] = [];
 
   function runHandler(failures: number): void {
@@ -79,7 +78,6 @@ export default async function worker(config: Config, options: Options & { browse
     // TODO Should we move into `process.on`?
     images = {};
     error = null;
-    isRunning = false;
   }
 
   async function getExpected(
@@ -143,15 +141,13 @@ export default async function worker(config: Config, options: Options & { browse
   const browserConfig = config.browsers[options.browser] as BrowserConfig;
   const browser = await getBrowser(config, browserConfig);
 
-  process.on('unhandledRejection', reason => {
-    if (process.send) {
-      error = reason instanceof Error ? reason.stack || reason.message : reason;
-      if (isRunning) {
-        console.log(`[${chalk.red('FAIL')}:${options.browser}:${process.pid}]`, chalk.cyan(testScope.join('/')), error);
-      }
-      process.send(JSON.stringify({ type: 'error', payload: { status: 'failed', images, error } }));
-    }
-  });
+  setInterval(() => {
+    browser
+      .getCurrentUrl()
+      .then(url =>
+        console.log(chalk`[{blue WORKER}{grey :${options.browser}:${process.pid}}] {grey current url} ${url}`),
+      );
+  }, 10 * 1000);
 
   mocha.suite.beforeAll(function(this: Context) {
     this.config = config;
@@ -164,7 +160,6 @@ export default async function worker(config: Config, options: Options & { browse
   patchMochaInterface(mocha.suite);
 
   process.on('message', message => {
-    isRunning = true;
     const test: { id: string; path: string[]; retries: number } = JSON.parse(message);
     retries = test.retries;
     const testPath = [...test.path]
@@ -178,10 +173,6 @@ export default async function worker(config: Config, options: Options & { browse
     // TODO How handle browser corruption?
     runner.on('fail', (_test, reason) => (error = reason instanceof Error ? reason.stack || reason.message : reason));
   });
-
-  setInterval(() => {
-    browser.getTitle();
-  }, 30 * 1000);
 
   console.log('[CreeveyWorker]:', `Ready ${options.browser}:${process.pid}`);
 

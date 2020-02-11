@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import minimist from 'minimist';
+import chalk from 'chalk';
 import creevey from './server';
 import { Options } from './types';
 import { registerRequireContext } from './utils';
@@ -8,7 +9,12 @@ import { registerRequireContext } from './utils';
 registerRequireContext();
 
 process.on('unhandledRejection', reason => {
-  console.log('unhandledRejection', reason);
+  if (process.send) {
+    const error = reason instanceof Error ? reason.stack || reason.message : reason;
+    console.log(chalk`[{red FAIL}{grey :${process.pid}}]`, error);
+    process.send(JSON.stringify({ type: 'error', payload: { status: 'failed', error } }));
+  }
+
   process.exit(-1);
 });
 
