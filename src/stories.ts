@@ -206,9 +206,9 @@ export function convertStories(
 export function loadStories(storybookDir: string, enableFastStoriesLoading: boolean): Promise<StoriesRaw> {
   require('jsdom-global/register');
 
-  // TODO register css/less/scss/png/jpg/woff/ttf/etc require extensions
+  // TODO register scss/jpg/etc require extensions
   addHook(() => '', {
-    exts: ['.less', '.css', '.png', '.svg'],
+    exts: ['.less', '.css', '.png', '.svg', '.eot', '.woff', '.woff2'],
     ignoreNodeModules: false,
   });
 
@@ -220,7 +220,6 @@ export function loadStories(storybookDir: string, enableFastStoriesLoading: bool
   });
 
   // NOTE Disable storybook debug output due issue https://github.com/storybookjs/storybook/issues/8461
-  const { debug } = logger;
   logger.debug = noop;
 
   const storybookPath = path.join(storybookDir, 'config');
@@ -228,8 +227,6 @@ export function loadStories(storybookDir: string, enableFastStoriesLoading: bool
   const storiesPromise = new Promise<StoriesRaw>(resolve => {
     channel.once('setStories', (data: { stories: StoriesRaw }) => {
       resolve(data.stories);
-
-      setTimeout(() => (logger.debug = debug), 100);
     });
   });
 
@@ -254,7 +251,7 @@ export function loadStories(storybookDir: string, enableFastStoriesLoading: bool
             (__filename.includes('node_modules') &&
               (__filename.includes('@storybook') || parentFilename?.includes('node_modules')))
           );
-        }.toString()})("${storybookPath}");
+        }.toString()})(${JSON.stringify(storybookPath)});
 
       if (shouldSkip) return module.exports = {};
 
