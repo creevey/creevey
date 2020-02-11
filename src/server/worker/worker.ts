@@ -90,10 +90,11 @@ export default async function worker(config: Config, options: Options & { browse
     // context => [kind, story, test, browser]
     // rootSuite -> kindSuite -> storyTest -> [browsers.png]
     // rootSuite -> kindSuite -> storySuite -> test -> [browsers.png]
-    if (!imageName) imageName = testScope.pop() as string;
+    const testPath = [...testScope];
+    if (!imageName) imageName = testPath.pop() as string;
 
     const image = (images[imageName] = images[imageName] || {});
-    const reportImageDir = path.join(config.reportDir, ...testScope);
+    const reportImageDir = path.join(config.reportDir, ...testPath);
     const imageNumber = (await getLastImageNumber(reportImageDir, imageName)) + 1;
     const onCompare = async (actual: Buffer, expect?: Buffer, diff?: Buffer): Promise<void> => {
       image.actual = `${imageName}-actual-${imageNumber}.png`;
@@ -108,7 +109,7 @@ export default async function worker(config: Config, options: Options & { browse
       await writeFileAsync(path.join(reportImageDir, image.diff), diff);
     };
 
-    const expectImageDir = path.join(config.screenDir, ...testScope);
+    const expectImageDir = path.join(config.screenDir, ...testPath);
     const expectImageStat = await getStat(path.join(expectImageDir, `${imageName}.png`));
     if (!expectImageStat) return { expected: null, onCompare };
 
