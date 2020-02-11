@@ -156,11 +156,11 @@ export function filterTests(suite: CreeveySuite, filter: CreeveyViewFilter): Cre
 
   Object.entries(suite.children).forEach(([title, suiteOrTest]) => {
     if (suiteOrTest.skip) return;
-    if (subStrings.some(subString => title.toLowerCase().includes(subString)) && !status) {
+    if (!status && subStrings.some(subString => title.toLowerCase().includes(subString))) {
       filteredSuite.children[title] = suiteOrTest;
     } else if (isTest(suiteOrTest)) {
-      const testStatus = suiteOrTest.results?.slice(-1)[0].status;
-      if (!testStatus || testStatus == status) filteredSuite.children[title] = suiteOrTest;
+      if (['pending', 'running', status].includes(suiteOrTest.status ?? null))
+        filteredSuite.children[title] = suiteOrTest;
     } else {
       const filteredSubSuite = filterTests(suiteOrTest, filter);
       if (Object.keys(filteredSubSuite.children).length == 0) return;
