@@ -19,12 +19,16 @@ function createTest(name: string, fn: (this: Context) => Promise<void>, skip: st
   return test;
 }
 
-export function addTestsFromStories(rootSuite: Suite, browserName: string, stories: StoriesRaw): void {
-  Object.values(convertStories([browserName], stories))
+export function addTestsFromStories(rootSuite: Suite, browserName: string, rawStories: StoriesRaw): void {
+  const { tests, fns, stories } = convertStories([browserName], rawStories);
+
+  Object.values(tests)
     .filter(isDefined)
     .forEach(test => {
       const [, testName, ...suitePath] = test.path;
       const suite = suitePath.reduceRight((subSuite, suiteName) => findOrCreateSuite(suiteName, subSuite), rootSuite);
-      suite.addTest(createTest(testName, test.fn, test.skip));
+      const mochaTest = createTest(testName, fns[test.id], test.skip);
+      suite.addTest(mochaTest);
+      mochaTest.ctx = Object.setPrototypeOf({ story: stories[test.id] }, suite.ctx);
     });
 }

@@ -8,7 +8,7 @@ import createChannel from '@storybook/channel-postmessage';
 import addons from '@storybook/addons';
 import { logger } from '@storybook/client-logger';
 import { By, WebDriver } from 'selenium-webdriver';
-import { isDefined, Test, CreeveyStoryParams, StoriesRaw, noop, SkipOptions } from './types';
+import { isDefined, Test, CreeveyStoryParams, StoriesRaw, noop, SkipOptions, StoryInput } from './types';
 import { shouldSkip, requireConfig } from './utils';
 
 declare global {
@@ -149,20 +149,18 @@ function createCreeveyTest(
     browser: string;
     kind: string;
     story: string;
-    test?: string;
   },
-  fn: (this: Context) => Promise<void>,
   skipOptions?: SkipOptions,
-): Test & { fn: (this: Context) => Promise<void> } {
-  const { browser, kind, story, test } = meta;
-  const path = [browser, test, story, kind].filter(isDefined);
+  testName?: string,
+): Test {
+  const { browser, kind, story } = meta;
+  const path = [browser, testName, story, kind].filter(isDefined);
   const skip = skipOptions ? shouldSkip(meta, skipOptions) : false;
   const id = createHash('sha1')
     .update(path.join('/'))
     .digest('hex');
   return {
     id,
-    fn,
     skip,
     path,
     retries: 0,
@@ -171,15 +169,21 @@ function createCreeveyTest(
 
 export function convertStories(
   browsers: string[],
-  stories: StoriesRaw,
-): Partial<{ [id: string]: Test & { fn: (this: Context) => Promise<void> } }> {
-  const creeveyTests: { [id: string]: Test & { fn: (this: Context) => Promise<void> } } = {};
+  rawStories: StoriesRaw,
+): {
+  tests: Partial<{ [testId: string]: Test }>;
+  fns: { [testId: string]: (this: Context) => Promise<void> };
+  stories: { [testId: string]: StoryInput };
+} {
+  const tests: { [testId: string]: Test } = {};
+  const fns: { [testId: string]: (this: Context) => Promise<void> } = {};
+  const stories: { [testId: string]: StoryInput } = {};
 
-  Object.values(stories)
+  Object.values(rawStories)
     .filter(isDefined)
     .forEach(story => {
       browsers.forEach(browserName => {
-        const { captureElement, tests, skip }: CreeveyStoryParams = story.parameters.creevey ?? {};
+        const { captureElement, tests: storyTests, skip }: CreeveyStoryParams = story.parameters.creevey ?? {};
         const meta = { browser: browserName, story: story.name, kind: story.kind };
 
         // typeof tests === "undefined" => rootSuite -> kindSuite -> storyTest -> [browsers.png]
@@ -187,20 +191,24 @@ export function convertStories(
         // typeof tests === "object"    => rootSuite -> kindSuite -> storySuite -> test -> [browsers.png]
         // typeof tests === "object"    => rootSuite -> kindSuite -> storySuite -> test -> browser -> [images.png]
 
-        if (!tests) {
-          const test = createCreeveyTest(meta, storyTestFabric(captureElement), skip);
-          creeveyTests[test.id] = test;
+        if (!storyTests) {
+          const test = createCreeveyTest(meta, skip);
+          tests[test.id] = test;
+          fns[test.id] = storyTestFabric(captureElement);
+          stories[test.id] = story;
           return;
         }
 
-        Object.entries(tests).forEach(([testName, testFn]) => {
-          const test = createCreeveyTest({ ...meta, test: testName }, testFn, skip);
-          creeveyTests[test.id] = test;
+        Object.entries(storyTests).forEach(([testName, testFn]) => {
+          const test = createCreeveyTest(meta, skip, testName);
+          tests[test.id] = test;
+          fns[test.id] = testFn;
+          stories[test.id] = story;
         });
       });
     });
 
-  return creeveyTests;
+  return { tests, fns, stories };
 }
 
 export function loadStories(storybookDir: string, enableFastStoriesLoading: boolean): Promise<StoriesRaw> {

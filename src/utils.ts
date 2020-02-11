@@ -4,8 +4,7 @@ import path from 'path';
 import { Context, Test, Suite } from 'mocha';
 import { Builder, By, until, WebDriver, Origin } from 'selenium-webdriver';
 import { Extension, jsVariants, ExtensionDescriptor, Hook } from 'interpret';
-import { toId } from '@storybook/router';
-import { Config, BrowserConfig, SkipOptions, isDefined } from './types';
+import { Config, BrowserConfig, SkipOptions, isDefined, StoryInput } from './types';
 
 type PlatformFS = typeof fs;
 type PlatformPath = typeof path;
@@ -105,12 +104,12 @@ async function resizeViewport(browser: WebDriver, viewport: { width: number; hei
     });
 }
 
-function selectStory(browser: WebDriver, kind: string, story: string): Promise<void> {
+function selectStory(browser: WebDriver, storyId: string, kind: string, story: string): Promise<void> {
   return browser.executeAsyncScript(
     function(storyId: string, kind: string, name: string, callback: Function) {
       window.__CREEVEY_SELECT_STORY__(storyId, kind, name, callback);
     },
-    toId(kind, story),
+    storyId,
     kind,
     story,
   );
@@ -178,25 +177,20 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
 export async function switchStory(this: Context): Promise<void> {
   let testOrSuite: Test | Suite | undefined = this.currentTest;
 
+  if (!testOrSuite) throw new Error("Can't switch story, because test context doesn't have 'currentTest' field");
+
   this.testScope.length = 0;
   this.testScope.push(this.browserName);
-  while (testOrSuite && testOrSuite.title) {
+  while (testOrSuite?.title) {
     this.testScope.push(testOrSuite.title);
     testOrSuite = testOrSuite.parent;
   }
-  // `kindSuite -> storySuite -> test`
-  // `kindSuite -> storyTest`
-  // TODO If story or kind is undefined should throw error
-  const [, test] = this.testScope;
-  let [, , story, kind] = this.testScope;
+  const story: StoryInput | undefined = this.currentTest?.ctx?.story;
 
-  if (!kind) {
-    kind = story;
-    story = test;
-  }
+  if (!story) throw new Error(`Current test '${this.testScope.join('/')}' context doesn't have 'story' field`);
 
   await resetMousePosition(this.browser);
-  await selectStory(this.browser, kind, story);
+  await selectStory(this.browser, story.id, story.kind, story.name);
 
   this.testScope.reverse();
 }

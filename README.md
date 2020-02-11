@@ -137,7 +137,9 @@ NOTE: Parameters for story will be deep-merged with parameters from higher level
 Under the hood of `creevey` is used `mocha+chai` and for `chai` additionaly defined `matchImage` assertion.
 
 ```tsx
+import React from 'react';
 import { expect } from 'chai';
+import { WebDriver } from 'selenium-webdriver';
 
 export default { title: 'MyComponent' };
 

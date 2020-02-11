@@ -22,10 +22,7 @@ function reportDataModule<T>(data: T): string {
 }
 
 function loadTestsFromStories(stories: StoriesRaw, browsers: string[]): CreeveyStatus['tests'] {
-  const tests = convertStories(browsers, stories);
-  Object.values(tests)
-    .filter(isDefined)
-    .forEach(test => Reflect.deleteProperty(test, 'fn'));
+  const { tests } = convertStories(browsers, stories);
   return tests;
 }
 

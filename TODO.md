@@ -6,7 +6,7 @@
 - [x] Test types
 - [x] Add binary
 - [x] Subscribe on workers ready
-- [x] Parallel (need prebuild? worker-farm?)
+- [x] Parallel (need pre-build? worker-farm?)
   - [x] Custom server runner
   - [x] Patch mocha runner with cluster
 - [x] Allow customize hooks to non-storybook env
@@ -42,7 +42,7 @@
   - [x] allow start/stop
   - [x] comm with API by test id
   - [x] approve images
-  - [x] Offile mode, load report data
+  - [x] Offline mode, load report data
   - [x] Output test error message
   - [x] output reported images
   - [x] better images view like github does
@@ -50,7 +50,7 @@
     - [x] BlendView
   - [x] switch images by hotkeys
   - [x] output test status (pending)
-  - [x] update/recalc suite status
+  - [x] update/re-calc suite status
   - [x] use classnames (emotion)
   - [x] ApprovedRetry
   - [x] Fix incorrect output new images
@@ -60,7 +60,7 @@
   - [x] Allow view fullscale images
   - [x] Invert expect/actual color
   - [x] Better output test error message
-- [x] Test grep regexp dont work with parenthesis
+- [x] Test grep regexp don't work with parenthesis
 - [x] Don't respect skip flag from report json
 - [x] Browser resolution option
 - [x] Fix TeamCity reporter `<unknown test name>`
@@ -81,8 +81,8 @@
 - [x] Fix skip/unskip tests between run without delete report dir
 - [x] Allow clean approved images
 - [x] Generate runtime tests based on stories
-- [x] Reload IE page on start (don't handle storybook hotreload)
-- [x] Allow leave reason comment for skiped tests
+- [x] Reload IE page on start (don't handle storybook hot-reload)
+- [x] Allow leave reason comment for skipped tests
 - [x] Update args readme (config, parser, ...)
 - [x] Add cli arguments
   - [x] config
@@ -95,12 +95,12 @@
 - [x] Storybook integration
   - [x] Update to Storybook@5.x
   - [x] Reset mouse position
-  - [x] Support sotrybook 3.x-5.x
-  - [x] Simplify generated tests tree acording by stories/tests/images
-  - [x] Use require.context from storybook config or strorybook event to get tests (without \_\_filename usage)
+  - [x] Support storybook 3.x-5.x
+  - [x] Simplify generated tests tree according by stories/tests/images
+  - [x] Use require.context from storybook config or storybook event to get tests (without \_\_filename usage)
   - [x] Add note about skip option and story/kind name case convention
 - [x] Allow Composite images
-- [x] Slide story don't work correclty, must be fixed
+- [x] Slide story don't work correctly, must be fixed
 - [x] Better error message about open storybook page
 - [x] Exit if worker got `UnhandledPromiseRejectionWarning`
 - [x] Serialize skip regexp
@@ -110,9 +110,9 @@
   - [x] Put tests tree into side page
   - [x] Output test result view into main page block
   - [x] Output error message multiline
-  - [x] Show icons for skiped tests
+  - [x] Show icons for skipped tests
   - [x] Allow check/uncheck tests without results
-- [x] Update incorrect work with new struct direcotry
+- [x] Update incorrect work with new structure directory
 - [x] Reset button nowrap style
 - [x] Skip by browser regexp don't work (webdriver serialization)
 - [x] Convert storycase to export name
@@ -124,6 +124,9 @@
 - [x] ~~Not properly work with CRA (need to install ts-node or @babel/register)~~ Add notes in readme
 - [x] ~~Lint sort imports~~
 - [x] ~~Allow define mocha hooks~~
+- [x] Optimize stories load process (don't import other stuff like react, components and other browser libs/styles/images/fonts)
+- [x] Don't output tests without status if filtering by status
+- [x] Patch @babel/register hook to allow use '.ts' along side with '.tsx' extensions
 
   </details>
 
@@ -131,7 +134,9 @@
 
 - [ ] Add description for types properties, like config/decorator/etc
 - [ ] Don't output skipped tests
-- [ ] Don't output tests without status if filtering by status
+- [ ] Optimize stories loading:
+  - [ ] Use proxy to handle side-effects
+  - [ ] Profile tests loading process (maybe we don't need workers at all)
 - [ ] Transform to monorepo
   - [ ] `creevey`
   - [ ] `creevey-ui`
@@ -139,24 +144,23 @@
   - [ ] `creevey-mocha`
   - [ ] `creevey-selenium`
 - [ ] Support third-party test runners
-  - [ ] Use jest intead of mocha/chai
+  - [ ] Use jest instead of mocha/chai
   - [ ] define in config runner property
   - [ ] Add `creevey-jest` and `creevey-mocha` packages, that implement API for creevey and define types for chai/jest
   - [ ] Initiate runner inside worker
 - [ ] Add authors
 - [ ] Support run tests inside docker
-- [ ] Puppeteer use https://github.com/gidztech/jest-puppeteer-docker
-- [ ] Selenium
+  - [ ] Puppeteer use https://github.com/gidztech/jest-puppeteer-docker
+  - [ ] Selenium
 
 ## Not in first time
 
+- [ ] Don't reset scroll on swap images
+- [ ] Support config in ES Modules
 - [ ] Always save images even if test with matchImages failed
-- [ ] Load stories in separate thread/context/puppeteer. For last option tests should be writen on new API that use websockets, need to think how debug it
-- [ ] Register hook on all possible extensions and try to register compilers while require stories or deps
 - [ ] Add liftoff https://github.com/js-cli/js-liftoff
 - [ ] Correctly resize images in views using correct proportions (smaller image should shrink if larger shrink too, max-width/max-height doesn't work)
 - [ ] Tests on images view components with various scenarios (same/diff sizes, less/bigger viewport, elements with width/height not integer size)
-- [ ] Optimize stories load process (use tree-shaking or simply don't import other stuff like react, components and other browser libs/styles/images/fonts)
 - [ ] Write stories on new components
   - [x] SideBar
   - [ ] ResultPageHeader
