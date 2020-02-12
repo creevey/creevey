@@ -9,12 +9,13 @@ import { registerRequireContext } from './utils';
 registerRequireContext();
 
 process.on('unhandledRejection', reason => {
+  const error = reason instanceof Error ? reason.stack || reason.message : reason;
+
+  console.log(chalk`[{red FAIL}{grey :${process.pid}}]`, error);
+
   if (process.send) {
-    const error = reason instanceof Error ? reason.stack || reason.message : reason;
-    console.log(chalk`[{red FAIL}{grey :${process.pid}}]`, error);
     process.send(JSON.stringify({ type: 'error', payload: { status: 'failed', error } }));
   }
-
   process.exit(-1);
 });
 

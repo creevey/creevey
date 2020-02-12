@@ -136,10 +136,11 @@
 - [ ] Don't output skipped tests
 - [ ] Optimize stories loading:
   - [ ] Use proxy to handle side-effects
-  - [ ] Profile tests loading process (maybe we don't need workers at all)
 - [ ] Transform to monorepo
+  - [ ] `chai-images`
   - [ ] `creevey`
   - [ ] `creevey-ui`
+  - [ ] `creevey-react`
   - [ ] `creevey-jest`
   - [ ] `creevey-mocha`
   - [ ] `creevey-selenium`
@@ -155,6 +156,7 @@
 
 ## Not in first time
 
+- [ ] Profile tests loading process (maybe we don't need workers at all)
 - [ ] Don't reset scroll on swap images
 - [ ] Support config in ES Modules
 - [ ] Always save images even if test with matchImages failed
