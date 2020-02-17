@@ -134,6 +134,8 @@
 
 - [ ] Add description for types properties, like config/decorator/etc
 - [ ] Don't output skipped tests
+- [ ] Add `didCatch` method to storybook decorator. Handle errors while switch stories
+- [ ] Allow define custom extensions to ignore it while story loading process
 - [ ] Optimize stories loading:
   - [ ] Use proxy to handle side-effects
 - [ ] Transform to monorepo
