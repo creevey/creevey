@@ -5,6 +5,7 @@ import ClockIcon from '@skbkontur/react-icons/Clock';
 import DeleteIcon from '@skbkontur/react-icons/Delete';
 import PauseIcon from '@skbkontur/react-icons/Pause';
 import TrashIcon from '@skbkontur/react-icons/Trash';
+import Button from '@skbkontur/react-ui/Button';
 
 export interface TestsStatusProps {
   successCount: number;
@@ -12,6 +13,7 @@ export interface TestsStatusProps {
   pendingCount: number;
   skippedCount: number;
   removedCount: number;
+  onClick: (value: string) => void;
 }
 
 export function TestsStatus({
@@ -20,7 +22,11 @@ export function TestsStatus({
   pendingCount,
   skippedCount,
   removedCount,
+  onClick,
 }: TestsStatusProps): JSX.Element {
+  const handleClick = (status: string): void => {
+    onClick(`status:${status}`);
+  };
   return (
     <div
       css={css`
@@ -30,7 +36,7 @@ export function TestsStatus({
       `}
     >
       {pendingCount > 0 && (
-        <>
+        <Button use="link" narrow onClick={() => handleClick('pending')}>
           <span
             css={css`
               color: #a0a0a0;
@@ -38,32 +44,40 @@ export function TestsStatus({
           >
             <ClockIcon /> {pendingCount}
           </span>
-          {' / '}
-        </>
+        </Button>
       )}
-      <span
-        css={css`
-          color: #228007;
-        `}
-      >
-        <OkIcon /> {successCount}
-      </span>
       {' / '}
-      <span
-        css={css`
-          color: #ce0014;
-        `}
-      >
-        <DeleteIcon /> {failedCount}
-      </span>
+      <Button use="link" narrow onClick={() => handleClick('success')}>
+        <span
+          css={css`
+            color: #228007;
+          `}
+        >
+          <OkIcon /> {successCount}
+        </span>
+      </Button>
       {' / '}
-      <span>
-        <PauseIcon /> {skippedCount}
-      </span>
+      <Button use="link" narrow onClick={() => handleClick('failed')}>
+        <span
+          css={css`
+            color: #ce0014;
+          `}
+        >
+          <DeleteIcon /> {failedCount}
+        </span>
+      </Button>
       {' / '}
-      <span>
-        <TrashIcon /> {removedCount}
-      </span>
+      <Button use="link" narrow onClick={() => handleClick('skipped')}>
+        <span>
+          <PauseIcon /> {skippedCount}
+        </span>
+      </Button>
+      {' / '}
+      <Button use="link" narrow onClick={() => handleClick('null')}>
+        <span>
+          <TrashIcon /> {removedCount}
+        </span>
+      </Button>
     </div>
   );
 }

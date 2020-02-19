@@ -43,7 +43,7 @@ export function SideBarHeader({ testsStatus, onStop, onStart, onFilterChange }: 
           >
             colin.creevey
           </h2>
-          <TestsStatus {...testsStatus} />
+          <TestsStatus {...testsStatus} onClick={onFilterChange} />
         </div>
         <div
           css={css`
