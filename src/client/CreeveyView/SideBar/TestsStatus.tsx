@@ -36,17 +36,19 @@ export function TestsStatus({
       `}
     >
       {pendingCount > 0 && (
-        <Button use="link" narrow onClick={() => handleClick('pending')}>
-          <span
-            css={css`
-              color: #a0a0a0;
-            `}
-          >
-            <ClockIcon /> {pendingCount}
-          </span>
-        </Button>
+        <>
+          <Button use="link" narrow onClick={() => handleClick('pending')}>
+            <span
+              css={css`
+                color: #a0a0a0;
+              `}
+            >
+              <ClockIcon /> {pendingCount}
+            </span>
+          </Button>
+          {' / '}
+        </>
       )}
-      {' / '}
       <Button use="link" narrow onClick={() => handleClick('success')}>
         <span
           css={css`
@@ -68,13 +70,21 @@ export function TestsStatus({
       </Button>
       {' / '}
       <Button use="link" narrow onClick={() => handleClick('skipped')}>
-        <span>
+        <span
+          css={css`
+            color: #000000;
+          `}
+        >
           <PauseIcon /> {skippedCount}
         </span>
       </Button>
       {' / '}
       <Button use="link" narrow onClick={() => handleClick('null')}>
-        <span>
+        <span
+          css={css`
+            color: #000000;
+          `}
+        >
           <TrashIcon /> {removedCount}
         </span>
       </Button>
