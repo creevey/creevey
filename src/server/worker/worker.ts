@@ -83,7 +83,9 @@ export default async function worker(config: Config, options: Options & { browse
   async function getExpected(
     imageName?: string,
   ): Promise<
-    { expected: Buffer | null; onCompare: (actual: Buffer, expect?: Buffer, diff?: Buffer) => void } | Buffer | null
+    | { expected: Buffer | null; onCompare: (actual: Buffer, expect?: Buffer, diff?: Buffer) => Promise<void> }
+    | Buffer
+    | null
   > {
     // context => [kind, story, test, browser]
     // rootSuite -> kindSuite -> storyTest -> [browsers.png]

@@ -1,7 +1,7 @@
 import { PNG } from 'pngjs';
 import pixelmatch from 'pixelmatch';
 
-import { DiffOptions, noop } from './types';
+import { DiffOptions, asyncNoop } from './types';
 
 function normalizeImageSize(image: PNG, width: number, height: number): Buffer {
   const normalizedImage = new Buffer(4 * width * height);
@@ -64,28 +64,30 @@ export default function(
   getExpected: (
     imageName?: string,
   ) => Promise<
-    { expected: Buffer | null; onCompare: (actual: Buffer, expect?: Buffer, diff?: Buffer) => void } | Buffer | null
+    | { expected: Buffer | null; onCompare: (actual: Buffer, expect?: Buffer, diff?: Buffer) => Promise<void> }
+    | Buffer
+    | null
   >,
   diffOptions: DiffOptions,
 ) {
   return function chaiImage({ Assertion }: Chai.ChaiStatic, utils: Chai.ChaiUtils) {
     async function assertImage(actual: Buffer, imageName?: string): Promise<void> {
-      let onCompare: (actual: Buffer, expect?: Buffer, diff?: Buffer) => void = noop;
+      let onCompare: (actual: Buffer, expect?: Buffer, diff?: Buffer) => Promise<void> = asyncNoop;
       let expected = await getExpected(imageName);
       if (!(expected instanceof Buffer) && expected != null) ({ expected, onCompare } = expected);
 
       if (expected == null) {
-        onCompare(actual);
+        await onCompare(actual);
         throw new Error(imageName ? `Expected image '${imageName}' does not exists` : 'Expected image does not exists');
       }
 
-      if (actual.equals(expected)) return onCompare(actual);
+      if (actual.equals(expected)) return await onCompare(actual);
 
       const { isEqual, diff } = compareImages(expected, actual, diffOptions);
 
-      if (isEqual) return onCompare(actual);
+      if (isEqual) return await onCompare(actual);
 
-      onCompare(actual, expected, diff);
+      await onCompare(actual, expected, diff);
 
       // TODO rewrite message
       throw new Error(imageName ? `Expected image '${imageName}' to match` : 'Expected image to match');
