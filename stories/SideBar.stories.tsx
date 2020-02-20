@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import { StoryFn } from '@storybook/addons';
 import { css } from '@emotion/core';
-import { CreeveyContex } from '../src/client/CreeveyContext';
+import { CreeveyContext } from '../src/client/CreeveyContext';
 import { SideBar } from '../src/client/CreeveyView/SideBar';
 import { SideBarHeader } from '../src/client/CreeveyView/SideBar/SideBarHeader';
 import { treeifyTests } from '../src/client/helpers';
@@ -69,6 +69,7 @@ export default {
 export const HeaderStopped = () => (
   <SideBarHeader
     testsStatus={{ pendingCount: 0, successCount: 1, failedCount: 2, skippedCount: 3, removedCount: 4 }}
+    filter={{ status: null, subStrings: [] }}
     onFilterChange={noop}
     onStart={noop}
     onStop={noop}
@@ -77,7 +78,7 @@ export const HeaderStopped = () => (
 HeaderStopped.story = { decorators: [headerDecorator] };
 
 export const HeaderRunning = () => (
-  <CreeveyContex.Provider
+  <CreeveyContext.Provider
     value={{
       isRunning: true,
       onStart: noop,
@@ -89,11 +90,12 @@ export const HeaderRunning = () => (
   >
     <SideBarHeader
       testsStatus={{ pendingCount: 1, successCount: 2, failedCount: 3, skippedCount: 4, removedCount: 5 }}
+      filter={{ status: null, subStrings: [] }}
       onFilterChange={noop}
       onStart={noop}
       onStop={noop}
     />
-  </CreeveyContex.Provider>
+  </CreeveyContext.Provider>
 );
 HeaderRunning.story = { decorators: [headerDecorator] };
 

@@ -10,7 +10,7 @@ export interface CreeveyContextType {
   onImageApprove: (id: string, retry: number, image: string) => void;
 }
 
-export const CreeveyContex = React.createContext<CreeveyContextType>({
+export const CreeveyContext = React.createContext<CreeveyContextType>({
   isRunning: false,
   onStop: noop,
   onStart: noop,

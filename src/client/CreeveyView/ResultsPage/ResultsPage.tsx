@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { css } from '@emotion/core';
-import { CreeveyContex } from '../../CreeveyContext';
+import { CreeveyContext } from '../../CreeveyContext';
 import { ImagesView } from '../ImagesView';
 import { PageHeader } from './PageHeader';
 import { TestResult, ImagesViewMode } from '../../../types';
@@ -15,7 +15,7 @@ interface TestResultsProps {
 }
 
 export function ResultsPage({ id, path, results = [], approved = {} }: TestResultsProps): JSX.Element {
-  const { onImageApprove } = useContext(CreeveyContex);
+  const { onImageApprove } = useContext(CreeveyContext);
   const [retry, setRetry] = useState(results.length);
   const result = results[retry - 1];
   const [imageName, setImageName] = useState(Object.keys(result.images ?? {})[0] ?? '');

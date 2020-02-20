@@ -4,7 +4,7 @@ import { useImmer } from 'use-immer';
 import { CreeveyUpdate, CreeveySuite, isDefined } from '../types';
 import { CreeveyClientApi } from './creeveyClientApi';
 import { getCheckedTests, updateTestStatus, splitLastPathToken, checkSuite, openSuite, getTestByPath } from './helpers';
-import { CreeveyContex } from './CreeveyContext';
+import { CreeveyContext } from './CreeveyContext';
 import { SideBar } from './CreeveyView/SideBar';
 import { ResultsPage } from './CreeveyView/ResultsPage';
 
@@ -52,7 +52,7 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
   const handleStop = (): void => api?.stop();
 
   return (
-    <CreeveyContex.Provider
+    <CreeveyContext.Provider
       value={{
         isRunning,
         onStart: handleStart,
@@ -78,6 +78,6 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
           />
         )}
       </div>
-    </CreeveyContex.Provider>
+    </CreeveyContext.Provider>
   );
 }

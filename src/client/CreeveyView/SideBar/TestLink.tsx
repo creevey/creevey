@@ -4,7 +4,7 @@ import Checkbox from '@skbkontur/react-ui/Checkbox';
 import Button from '@skbkontur/react-ui/Button';
 import { CreeveyTest } from '../../../types';
 import { TestStatusIcon } from './TestStatusIcon';
-import { CreeveyContex } from '../../CreeveyContext';
+import { CreeveyContext } from '../../CreeveyContext';
 import { SideBarContext } from './SideBar';
 
 export interface TestLinkProps {
@@ -14,7 +14,7 @@ export interface TestLinkProps {
 }
 
 export function TestLink({ title, opened, test }: TestLinkProps): JSX.Element {
-  const { onSuiteToggle } = useContext(CreeveyContex);
+  const { onSuiteToggle } = useContext(CreeveyContext);
   const { onOpenTest } = useContext(SideBarContext);
 
   const emptyResults = (test?.results?.length ?? 0) == 0;
@@ -42,7 +42,7 @@ export function TestLink({ title, opened, test }: TestLinkProps): JSX.Element {
         </span>
       </Button>
       {/* NOTE Little hack to allow click on checkbox and don't trigger Button click */}
-      {/* We can use other approache, but checkbox has vertical-align: top */}
+      {/* We can use other approach, but checkbox has vertical-align: top */}
       <div
         css={css`
           position: absolute;

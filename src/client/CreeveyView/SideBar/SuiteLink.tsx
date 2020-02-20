@@ -6,7 +6,7 @@ import Checkbox from '@skbkontur/react-ui/Checkbox';
 import Button from '@skbkontur/react-ui/Button';
 import { TestStatusIcon } from './TestStatusIcon';
 import { CreeveySuite, isTest } from '../../../types';
-import { CreeveyContex } from '../../CreeveyContext';
+import { CreeveyContext } from '../../CreeveyContext';
 
 export interface SuiteLinkProps {
   title: string;
@@ -14,7 +14,7 @@ export interface SuiteLinkProps {
 }
 
 export function SuiteLink({ title, suite }: SuiteLinkProps): JSX.Element {
-  const { onSuiteOpen, onSuiteToggle } = useContext(CreeveyContex);
+  const { onSuiteOpen, onSuiteToggle } = useContext(CreeveyContext);
   const checkboxRef = useRef<Checkbox>(null);
   useEffect(
     () => (suite.indeterminate ? checkboxRef.current?.setIndeterminate() : checkboxRef.current?.resetIndeterminate()),

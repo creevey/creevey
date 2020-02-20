@@ -4,19 +4,20 @@ import Spinner from '@skbkontur/react-ui/Spinner';
 import Button from '@skbkontur/react-ui/Button';
 import Input from '@skbkontur/react-ui/Input';
 import SearchIcon from '@skbkontur/react-icons/Search';
-import { CreeveyContex } from '../../CreeveyContext';
+import { CreeveyContext } from '../../CreeveyContext';
 import { TestsStatus, TestsStatusProps } from './TestsStatus';
 import { TestStatus } from '../../../types';
 import { CreeveyViewFilter } from '../../../client/helpers';
 
 interface SideBarHeaderProps {
-  testsStatus: TestsStatusProps;
+  testsStatus: Omit<TestsStatusProps, 'onClickByStatus'>;
   onStart: () => void;
   onStop: () => void;
+  filter: CreeveyViewFilter;
   onFilterChange: (value: CreeveyViewFilter) => void;
 }
 
-const parceStringForFilter = (value: string): CreeveyViewFilter => {
+const parseStringForFilter = (value: string): CreeveyViewFilter => {
   let status: TestStatus | null = null;
   const subStrings: string[] = [];
   const tokens = value
@@ -25,7 +26,7 @@ const parceStringForFilter = (value: string): CreeveyViewFilter => {
     .map(word => word.toLowerCase());
 
   tokens.forEach(word => {
-    const [, matchedStatus] = /^status:(failed|success|pending|running|null)$/i.exec(word) || [];
+    const [, matchedStatus] = /^status:(failed|success|pending)$/i.exec(word) || [];
     if (matchedStatus) return (status = matchedStatus as TestStatus);
     subStrings.push(word);
   });
@@ -33,28 +34,29 @@ const parceStringForFilter = (value: string): CreeveyViewFilter => {
   return { status, subStrings };
 };
 
-export function SideBarHeader({ testsStatus, onStop, onStart, onFilterChange }: SideBarHeaderProps): JSX.Element {
-  const { isRunning } = useContext(CreeveyContex);
+export function SideBarHeader({
+  testsStatus,
+  onStop,
+  onStart,
+  filter,
+  onFilterChange,
+}: SideBarHeaderProps): JSX.Element {
+  const { isRunning } = useContext(CreeveyContext);
   const [filterInput, setFilterInput] = useState('');
 
-  const handleClickFilterChange = (value: string): void => {
-    const currentValue = parceStringForFilter(value);
-    const oldValue = parceStringForFilter(filterInput);
-
-    if (currentValue.status === oldValue.status) {
-      onFilterChange({ status: null, subStrings: oldValue.subStrings });
-      setFilterInput(oldValue.subStrings.join(' '));
+  const handleClickByStatus = (status: TestStatus): void => {
+    if (status === filter.status) {
+      setFilterInput(filter.subStrings.join(' '));
+      onFilterChange({ status: null, subStrings: filter.subStrings });
     } else {
-      onFilterChange({ status: currentValue.status, subStrings: oldValue.subStrings });
-      setFilterInput(oldValue.subStrings.join(' ') + ' status:' + currentValue.status);
+      setFilterInput(filter.subStrings.join(' ') + ' status:' + status);
+      onFilterChange({ status, subStrings: filter.subStrings });
     }
   };
 
   const handleInputFilterChange = (_: React.ChangeEvent | null, value: string): void => {
-    const currentValue = parceStringForFilter(value);
-
-    onFilterChange({ status: currentValue.status, subStrings: currentValue.subStrings });
     setFilterInput(value);
+    onFilterChange(parseStringForFilter(value));
   };
 
   return (
@@ -82,7 +84,7 @@ export function SideBarHeader({ testsStatus, onStop, onStart, onFilterChange }: 
           >
             colin.creevey
           </h2>
-          <TestsStatus {...testsStatus} onClick={handleClickFilterChange} />
+          <TestsStatus {...testsStatus} onClickByStatus={handleClickByStatus} />
         </div>
         <div
           css={css`

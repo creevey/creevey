@@ -132,6 +132,8 @@
 
 ## First priority
 
+- [ ] Can't use `By` and `Key` helpers from `selenium-webdriver` in tests, because webpack try to build bundle with `selenium-webdriver`
+- [x] Chai used as deps, but in stories should imported explicitly. Add chai to peerdeps
 - [ ] Add description for types properties, like config/decorator/etc
 - [ ] Don't output skipped tests
 - [ ] Add `didCatch` method to storybook decorator. Handle errors while switch stories

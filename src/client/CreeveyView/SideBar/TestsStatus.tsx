@@ -6,7 +6,8 @@ import DeleteIcon from '@skbkontur/react-icons/Delete';
 import PauseIcon from '@skbkontur/react-icons/Pause';
 import TrashIcon from '@skbkontur/react-icons/Trash';
 import Button from '@skbkontur/react-ui/Button';
-import ThemeProvider from '@skbkontur/react-ui/ThemeProvider';
+import { ThemeProvider } from '@skbkontur/react-ui/ThemeProvider';
+import { TestStatus } from '../../../types';
 
 export interface TestsStatusProps {
   successCount: number;
@@ -14,7 +15,7 @@ export interface TestsStatusProps {
   pendingCount: number;
   skippedCount: number;
   removedCount: number;
-  onClick: (value: string) => void;
+  onClickByStatus: (value: TestStatus) => void;
 }
 
 export function TestsStatus({
@@ -23,11 +24,8 @@ export function TestsStatus({
   pendingCount,
   skippedCount,
   removedCount,
-  onClick,
+  onClickByStatus,
 }: TestsStatusProps): JSX.Element {
-  const handleClick = (status: string): void => {
-    onClick(`status:${status}`);
-  };
   return (
     <ThemeProvider value={{ linkHoverTextDecoration: 'none' }}>
       <div
@@ -39,7 +37,7 @@ export function TestsStatus({
       >
         {pendingCount > 0 && (
           <>
-            <Button use="link" narrow onClick={() => handleClick('pending')}>
+            <Button use="link" narrow onClick={() => onClickByStatus('pending')}>
               <span
                 css={css`
                   color: #a0a0a0;
@@ -51,7 +49,7 @@ export function TestsStatus({
             {' / '}
           </>
         )}
-        <Button use="link" narrow onClick={() => handleClick('success')}>
+        <Button use="link" narrow onClick={() => onClickByStatus('success')}>
           <span
             css={css`
               color: #228007;
@@ -61,7 +59,7 @@ export function TestsStatus({
           </span>
         </Button>
         {' / '}
-        <Button use="link" narrow onClick={() => handleClick('failed')}>
+        <Button use="link" narrow onClick={() => onClickByStatus('failed')}>
           <span
             css={css`
               color: #ce0014;
@@ -71,25 +69,13 @@ export function TestsStatus({
           </span>
         </Button>
         {' / '}
-        <Button use="link" narrow onClick={() => handleClick('skipped')}>
-          <span
-            css={css`
-              color: #000000;
-            `}
-          >
-            <PauseIcon /> {skippedCount}
-          </span>
-        </Button>
+        <span>
+          <PauseIcon /> {skippedCount}
+        </span>
         {' / '}
-        <Button use="link" narrow onClick={() => handleClick('null')}>
-          <span
-            css={css`
-              color: #000000;
-            `}
-          >
-            <TrashIcon /> {removedCount}
-          </span>
-        </Button>
+        <span>
+          <TrashIcon /> {removedCount}
+        </span>
       </div>
     </ThemeProvider>
   );

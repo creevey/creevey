@@ -2,9 +2,9 @@ import React, { useState, createContext, useContext } from 'react';
 import { css } from '@emotion/core';
 import { ThemeProvider } from '@skbkontur/react-ui/ThemeProvider';
 import { SideBarHeader } from './SideBarHeader';
-import { CreeveySuite, TestStatus, CreeveyTest, noop, isTest } from '../../../types';
+import { CreeveySuite, CreeveyTest, noop, isTest } from '../../../types';
 import { filterTests, CreeveyViewFilter, flattenSuite, countTestsStatus } from '../../helpers';
-import { CreeveyContex } from '../../CreeveyContext';
+import { CreeveyContext } from '../../CreeveyContext';
 import { SuiteLink } from './SuiteLink';
 import { TestLink } from './TestLink';
 
@@ -43,7 +43,7 @@ export interface SideBarProps {
 }
 
 export function SideBar({ rootSuite, openedTest, onOpenTest }: SideBarProps): JSX.Element {
-  const { onStart, onStop } = useContext(CreeveyContex);
+  const { onStart, onStop } = useContext(CreeveyContext);
   const [filter, setFilter] = useState<CreeveyViewFilter>({ status: null, subStrings: [] });
 
   // TODO Maybe need to do flatten first?
@@ -69,7 +69,13 @@ export function SideBar({ rootSuite, openedTest, onOpenTest }: SideBarProps): JS
           background: #fff;
         `}
       >
-        <SideBarHeader testsStatus={testsStatus} onFilterChange={setFilter} onStart={handleStart} onStop={onStop} />
+        <SideBarHeader
+          testsStatus={testsStatus}
+          filter={filter}
+          onFilterChange={setFilter}
+          onStart={handleStart}
+          onStop={onStop}
+        />
         <div
           css={css`
             position: sticky;
