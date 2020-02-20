@@ -216,7 +216,30 @@ export function loadStories(storybookDir: string, enableFastStoriesLoading: bool
 
   // TODO register scss/jpg/etc require extensions
   addHook(() => '', {
-    exts: ['.jpg', '.jpeg', '.png', '.gif', '.eot', '.otf', '.webp', '.svg', '.ttf', '.woff', '.woff2', '.mp4', '.webm', '.wav', '.mp3', '.m4a', '.aac', '.oga', '.less', '.css', '.styl', '.sass'],
+    exts: [
+      '.jpg',
+      '.jpeg',
+      '.png',
+      '.gif',
+      '.eot',
+      '.otf',
+      '.webp',
+      '.svg',
+      '.ttf',
+      '.woff',
+      '.woff2',
+      '.mp4',
+      '.webm',
+      '.wav',
+      '.mp3',
+      '.m4a',
+      '.aac',
+      '.oga',
+      '.less',
+      '.css',
+      '.styl',
+      '.sass',
+    ],
     ignoreNodeModules: false,
   });
 

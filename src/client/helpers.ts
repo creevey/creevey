@@ -186,7 +186,7 @@ export function flattenSuite(suite: CreeveySuite): Array<{ title: string; suite:
   ]);
 }
 
-export function countTestsStatus(suite: CreeveySuite): TestsStatusProps {
+export function countTestsStatus(suite: CreeveySuite): Omit<TestsStatusProps, 'onClickByStatus'> {
   let successCount = 0;
   let failedCount = 0;
   let skippedCount = 0;
