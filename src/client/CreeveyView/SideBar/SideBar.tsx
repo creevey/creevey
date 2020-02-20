@@ -52,21 +52,6 @@ export function SideBar({ rootSuite, openedTest, onOpenTest }: SideBarProps): JS
   const suiteList = flattenSuite(suite);
 
   const handleStart = (): void => onStart(suite);
-  const handleFilterChange = (rawFilter: string): void => {
-    let status: TestStatus | null = null;
-    const subStrings: string[] = [];
-    const tokens = rawFilter
-      .split(' ')
-      .filter(Boolean)
-      .map(word => word.toLowerCase());
-
-    tokens.forEach(word => {
-      const [, matchedStatus] = /^status:(failed|success)$/i.exec(word) || [];
-      if (matchedStatus) return (status = matchedStatus as TestStatus);
-      subStrings.push(word);
-    });
-    setFilter({ status, subStrings });
-  };
 
   return (
     <SideBarContext.Provider value={{ onOpenTest }}>
@@ -84,12 +69,7 @@ export function SideBar({ rootSuite, openedTest, onOpenTest }: SideBarProps): JS
           background: #fff;
         `}
       >
-        <SideBarHeader
-          testsStatus={testsStatus}
-          onFilterChange={handleFilterChange}
-          onStart={handleStart}
-          onStop={onStop}
-        />
+        <SideBarHeader testsStatus={testsStatus} onFilterChange={setFilter} onStart={handleStart} onStop={onStop} />
         <div
           css={css`
             position: sticky;
