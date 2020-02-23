@@ -214,7 +214,6 @@ export function convertStories(
 export function loadStories(storybookDir: string, enableFastStoriesLoading: boolean): Promise<StoriesRaw> {
   require('jsdom-global/register');
 
-  // TODO register scss/jpg/etc require extensions
   addHook(() => '', {
     exts: [
       '.jpg',
@@ -223,22 +222,14 @@ export function loadStories(storybookDir: string, enableFastStoriesLoading: bool
       '.gif',
       '.eot',
       '.otf',
-      '.webp',
       '.svg',
       '.ttf',
       '.woff',
       '.woff2',
-      '.mp4',
-      '.webm',
-      '.wav',
-      '.mp3',
-      '.m4a',
-      '.aac',
-      '.oga',
-      '.less',
       '.css',
-      '.styl',
+      '.less',
       '.sass',
+      '.styl',
     ],
     ignoreNodeModules: false,
   });

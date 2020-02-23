@@ -35,18 +35,45 @@ export type BrowserConfig = Capabilities & {
 export type Browser = boolean | string | BrowserConfig;
 
 export interface Config {
+  /**
+   * Url to Selenium grid hub or standalone selenium instance
+   */
   gridUrl: string;
+  /**
+   * Url where storybook hosted on
+   * @default http://localhost:6006
+   */
   storybookUrl: string;
+  /**
+   * Absolute path to directory with reference images
+   * @default path.join(process.cwd(), './images')
+   */
   screenDir: string;
+  /**
+   * Absolute path where test reports and diff images would be saved
+   * @default path.join(process.cwd(), './report')
+   */
   reportDir: string;
+  /**
+   * Absolute path to storybook config directory
+   * @default path.join(process.cwd(), './.storybook')
+   */
   storybookDir: string;
   enableFastStoriesLoading: boolean;
+  /**
+   * How much test would be retried
+   * @default 0
+   */
   maxRetries: number;
   /**
    * Define pixelmatch diff options
    * @default { threshold: 0, includeAA: true }
    */
   diffOptions: DiffOptions;
+  /**
+   * Browser capabilities
+   * @default { chrome: true }
+   */
   browsers: { [key: string]: Browser };
 }
 

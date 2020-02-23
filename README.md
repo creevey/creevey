@@ -140,6 +140,7 @@ Under the hood of `creevey` is used `mocha+chai` and for `chai` additionaly defi
 import React from 'react';
 import { expect } from 'chai';
 import { WebDriver } from 'selenium-webdriver';
+import { By } from 'selenium-webdriver/lib/by';
 
 export default { title: 'MyComponent' };
 
@@ -148,7 +149,7 @@ Simple.story = {
   parameters: {
     creevey: {
       async click(this: { broser: WebDriver }) {
-        const element = await this.browser.findElement({ css: '#root' });
+        const element = await this.browser.findElement(By.css('#root'));
 
         await this.browser
           .actions({ bridge: true })
