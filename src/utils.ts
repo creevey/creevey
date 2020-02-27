@@ -132,9 +132,9 @@ function disableAnimations(browser: WebDriver): Promise<void> {
   return browser.executeScript(function(stylesheet: string) {
     /* eslint-disable no-var */
     var style = document.createElement('style');
-    var textnode = document.createTextNode(stylesheet);
+    var textNode = document.createTextNode(stylesheet);
     style.setAttribute('type', 'text/css');
-    style.appendChild(textnode);
+    style.appendChild(textNode);
     document.head.appendChild(style);
     /* eslint-enable no-var */
   }, disableAnimationsStyles);
@@ -167,7 +167,7 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
     await browser.get(`${realAddress}/iframe.html`);
     await browser.wait(until.elementLocated(By.css('#root')), 10000);
   } catch (_) {
-    throw new Error(`Cann't load storybook root page by URL ${realAddress}/iframe.html`);
+    throw new Error(`Can't load storybook root page by URL ${realAddress}/iframe.html`);
   }
   await disableAnimations(browser);
 

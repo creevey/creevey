@@ -1,4 +1,5 @@
 *.tgz
+.github
 .babelrc
 .storybook
 .gitattributes

@@ -154,6 +154,7 @@
   - [ ] Add `creevey-jest` and `creevey-mocha` packages, that implement API for creevey and define types for chai/jest
   - [ ] Initiate runner inside worker
 - [ ] Add authors
+- [ ] Allow define custom localhost resolver in config
 - [ ] Support run tests inside docker
   - [ ] Puppeteer use https://github.com/gidztech/jest-puppeteer-docker
   - [ ] Selenium

@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
 import { NativeEventSource, EventSourcePolyfill } from 'event-source-polyfill';
+import Events from '@storybook/core-events';
 import addons, { makeDecorator, StoryContext, MakeDecoratorResult } from '@storybook/addons';
 import { addParameters } from '@storybook/react';
 import { CreeveyStoryParams, CreeveyStory, noop } from './types';
@@ -41,8 +42,8 @@ export function withCreevey(parameters: CreeveyStoryParams = {}): MakeDecoratorR
   function selectStory(storyId: string, kind: string, name: string, callback: Function): void {
     storyDidMountCallback = callback;
     // NOTE Hack to trigger force re-render same story
-    addons.getChannel().emit('setCurrentStory', { storyId: true, name, kind });
-    setTimeout(() => addons.getChannel().emit('setCurrentStory', { storyId, name, kind }), 100);
+    addons.getChannel().emit(Events.SET_CURRENT_STORY, { storyId: true, name, kind });
+    setTimeout(() => addons.getChannel().emit(Events.SET_CURRENT_STORY, { storyId, name, kind }), 100);
   }
 
   addParameters({ creevey: parameters });
