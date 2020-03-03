@@ -205,10 +205,6 @@ export function noop(): void {
   /* noop */
 }
 
-export async function asyncNoop(): Promise<void> {
-  /* noop */
-}
-
 export function isTest<T1, T2 extends Test>(x: T1 | T2): x is T2 {
   return 'id' in x && 'path' in x && 'retries' in x && Array.isArray(x.path) && typeof x.id == 'string';
 }

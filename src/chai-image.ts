@@ -1,7 +1,7 @@
 import { PNG } from 'pngjs';
 import pixelmatch from 'pixelmatch';
 
-import { DiffOptions, asyncNoop } from './types';
+import { DiffOptions } from './types';
 
 function normalizeImageSize(image: PNG, width: number, height: number): Buffer {
   const normalizedImage = new Buffer(4 * width * height);
@@ -72,7 +72,7 @@ export default function(
 ) {
   return function chaiImage({ Assertion }: Chai.ChaiStatic, utils: Chai.ChaiUtils) {
     async function assertImage(actual: Buffer, imageName?: string): Promise<void> {
-      let onCompare: (actual: Buffer, expect?: Buffer, diff?: Buffer) => Promise<void> = asyncNoop;
+      let onCompare: (actual: Buffer, expect?: Buffer, diff?: Buffer) => Promise<void> = () => Promise.resolve();
       let expected = await getExpected(imageName);
       if (!(expected instanceof Buffer) && expected != null) ({ expected, onCompare } = expected);
 
