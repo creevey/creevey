@@ -3,7 +3,6 @@ import { createHash } from 'crypto';
 import { PNG } from 'pngjs';
 import { expect } from 'chai';
 import { Context } from 'mocha';
-import { addHook } from 'pirates';
 import createChannel from '@storybook/channel-postmessage';
 import addons from '@storybook/addons';
 import { logger } from '@storybook/client-logger';
@@ -213,26 +212,6 @@ export function convertStories(
 
 export function loadStories(storybookDir: string, enableFastStoriesLoading: boolean): Promise<StoriesRaw> {
   require('jsdom-global/register');
-
-  addHook(() => '', {
-    exts: [
-      '.jpg',
-      '.jpeg',
-      '.png',
-      '.gif',
-      '.eot',
-      '.otf',
-      '.svg',
-      '.ttf',
-      '.woff',
-      '.woff2',
-      '.css',
-      '.less',
-      '.sass',
-      '.styl',
-    ],
-    ignoreNodeModules: false,
-  });
 
   // NOTE Cutoff `jsdom` part from userAgent, because storybook check enviroment and create events channel if runs in browser
   // https://github.com/storybookjs/storybook/blob/v5.2.8/lib/core/src/client/preview/start.js#L98

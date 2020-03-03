@@ -2,11 +2,32 @@
 
 import minimist from 'minimist';
 import chalk from 'chalk';
+import { addHook } from 'pirates';
 import creevey from './server';
 import { Options } from './types';
 import { registerRequireContext } from './utils';
 
 registerRequireContext();
+
+addHook(() => '', {
+  exts: [
+    '.jpg',
+    '.jpeg',
+    '.png',
+    '.gif',
+    '.eot',
+    '.otf',
+    '.svg',
+    '.ttf',
+    '.woff',
+    '.woff2',
+    '.css',
+    '.less',
+    '.sass',
+    '.styl',
+  ],
+  ignoreNodeModules: false,
+});
 
 process.on('unhandledRejection', reason => {
   const error = reason instanceof Error ? reason.stack || reason.message : reason;
