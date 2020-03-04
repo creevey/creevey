@@ -9,6 +9,8 @@ import Button from '@skbkontur/react-ui/Button';
 import { ThemeProvider } from '@skbkontur/react-ui/ThemeProvider';
 import { TestStatus } from '../../../types';
 
+const StatusButtonsTheme = { linkHoverTextDecoration: 'none' };
+
 export interface TestsStatusProps {
   successCount: number;
   failedCount: number;
@@ -27,7 +29,7 @@ export function TestsStatus({
   onClickByStatus,
 }: TestsStatusProps): JSX.Element {
   return (
-    <ThemeProvider value={{ linkHoverTextDecoration: 'none' }}>
+    <ThemeProvider value={StatusButtonsTheme}>
       <div
         css={css`
           font-size: 14px;

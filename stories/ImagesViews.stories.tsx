@@ -1,7 +1,6 @@
 import React from 'react';
 import { expect } from 'chai';
 import { WebDriver } from 'selenium-webdriver';
-import { By } from 'selenium-webdriver/lib/by';
 
 import { ImagesView as ImagesViewBase } from '../src/client/CreeveyView/ImagesView';
 import { ImagesViewMode } from '../src/types';
@@ -38,7 +37,7 @@ Slide.story = {
     creevey: {
       tests: {
         async click(this: { browser: WebDriver }) {
-          const element = await this.browser.findElement(By.css('#root'));
+          const element = await this.browser.findElement({ css: '#root' });
 
           const idle = await element.takeScreenshot();
 

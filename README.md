@@ -15,7 +15,7 @@ Pretty easy visual testing with magic
 [Using Decorators](https://storybook.js.org/docs/basics/writing-stories/#using-decorators)
 
 ```ts
-// .storybook/config.js
+// .storybook/preview.js or .storybook/config.js
 import { addDecorator } from '@storybook/react';
 import { withCreevey } from 'creevey';
 
@@ -134,13 +134,12 @@ NOTE: Parameters for story will be deep-merged with parameters from higher level
 ## `tests` option examples:
 
 `tests` option is a plain object where key used as test name and value is a test function.
-Under the hood of `creevey` is used `mocha+chai` and for `chai` additionaly defined `matchImage` assertion.
+Under the hood of `creevey` is used `mocha+chai` and for `chai` additionally defined `matchImage` assertion.
 
 ```tsx
 import React from 'react';
 import { expect } from 'chai';
 import { WebDriver } from 'selenium-webdriver';
-import { By } from 'selenium-webdriver/lib/by';
 
 export default { title: 'MyComponent' };
 
@@ -148,8 +147,8 @@ export const Simple = () => <MyComponent />;
 Simple.story = {
   parameters: {
     creevey: {
-      async click(this: { broser: WebDriver }) {
-        const element = await this.browser.findElement(By.css('#root'));
+      async click(this: { browser: WebDriver }) {
+        const element = await this.browser.findElement({ css: '#root' });
 
         await this.browser
           .actions({ bridge: true })
