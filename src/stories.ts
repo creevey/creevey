@@ -158,12 +158,7 @@ function createCreeveyTest(
   const id = createHash('sha1')
     .update(path.join('/'))
     .digest('hex');
-  return {
-    id,
-    skip,
-    path,
-    retries: 0,
-  };
+  return { id, skip, path };
 }
 
 export function convertStories(

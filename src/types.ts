@@ -127,7 +127,7 @@ export interface Test {
   // NOTE example: [browser, test, story, kind],
   path: string[];
   skip: boolean | string;
-  retries: number;
+  retries?: number;
   status?: TestStatus;
   results?: TestResult[];
   approved?: Partial<{ [image: string]: number }>;

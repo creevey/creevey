@@ -17,30 +17,29 @@ function openSuites(suite: CreeveySuite): CreeveySuite {
 }
 
 const simpleTests: CreeveyStatus['tests'] = {
-  1: { id: '1', path: ['empty', 'simple', 'root'], skip: false, retries: 0 },
-  2: { id: '2', path: ['hasResult', 'simple', 'root'], skip: false, retries: 0, results: [{ status: 'success' }] },
-  3: { id: '3', path: ['skipped', 'simple', 'root'], skip: true, retries: 0 },
-  4: { id: '4', path: ['empty', 'skipped', 'root'], skip: true, retries: 0 },
+  1: { id: '1', path: ['empty', 'simple', 'root'], skip: false },
+  2: { id: '2', path: ['hasResult', 'simple', 'root'], skip: false, results: [{ status: 'success' }] },
+  3: { id: '3', path: ['skipped', 'simple', 'root'], skip: true },
+  4: { id: '4', path: ['empty', 'skipped', 'root'], skip: true },
   5: {
     id: '5',
     path: ['Storybook’s Component Story Format (CSF) is the recommended way to write stories', 'simple', 'root'],
     skip: false,
-    retries: 0,
     results: [{ status: 'success' }],
   },
 };
 const statusTests: CreeveyStatus['tests'] = {
-  5: { id: '5', path: ['success', 'success', 'root'], skip: false, retries: 0, status: 'success' },
-  6: { id: '6', path: ['empty', 'success', 'root'], skip: false, retries: 0 },
+  5: { id: '5', path: ['success', 'success', 'root'], skip: false, status: 'success' },
+  6: { id: '6', path: ['empty', 'success', 'root'], skip: false },
 
-  7: { id: '7', path: ['failed', 'failed', 'root'], skip: false, retries: 0, status: 'failed' },
-  8: { id: '8', path: ['success', 'failed', 'root'], skip: false, retries: 0, status: 'success' },
+  7: { id: '7', path: ['failed', 'failed', 'root'], skip: false, status: 'failed' },
+  8: { id: '8', path: ['success', 'failed', 'root'], skip: false, status: 'success' },
 
-  9: { id: '9', path: ['pending', 'pending', 'root'], skip: false, retries: 0, status: 'pending' },
-  10: { id: '10', path: ['failed', 'pending', 'root'], skip: false, retries: 0, status: 'failed' },
+  9: { id: '9', path: ['pending', 'pending', 'root'], skip: false, status: 'pending' },
+  10: { id: '10', path: ['failed', 'pending', 'root'], skip: false, status: 'failed' },
 
-  11: { id: '11', path: ['running', 'running', 'root'], skip: false, retries: 0, status: 'running' },
-  12: { id: '12', path: ['pending', 'running', 'root'], skip: false, retries: 0, status: 'pending' },
+  11: { id: '11', path: ['running', 'running', 'root'], skip: false, status: 'running' },
+  12: { id: '12', path: ['pending', 'running', 'root'], skip: false, status: 'pending' },
 };
 
 const headerDecorator = (storyFn: StoryFn<ReactNode>) => (

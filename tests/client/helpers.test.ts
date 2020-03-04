@@ -7,7 +7,6 @@ function mockTest(): Test {
   return {
     id: '',
     path: [],
-    retries: 0,
     skip: false,
   };
 }
