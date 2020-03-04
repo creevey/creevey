@@ -2,6 +2,7 @@ import { API as StorybookAPI } from '@storybook/api';
 import { Worker as ClusterWorker } from 'cluster';
 import { WebDriver } from 'selenium-webdriver';
 import Pixelmatch from 'pixelmatch';
+import { Context } from 'mocha';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type DiffOptions = typeof Pixelmatch extends (
@@ -112,7 +113,7 @@ export interface Images {
   diff?: string;
 }
 
-export type TestStatus = 'pending' | 'running' | 'failed' | 'success';
+export type TestStatus = 'unknown' | 'pending' | 'running' | 'failed' | 'success';
 
 export interface TestResult {
   status: 'failed' | 'success';
@@ -133,6 +134,11 @@ export interface Test {
   approved?: Partial<{ [image: string]: number }>;
 }
 
+export interface ServerTest extends Test {
+  story: StoryInput;
+  fn: (this: Context) => Promise<void>;
+}
+
 export interface CreeveyStatus {
   isRunning: boolean;
   tests: Partial<{ [id: string]: Test }>;
@@ -141,6 +147,7 @@ export interface CreeveyStatus {
 export interface CreeveyUpdate {
   isRunning?: boolean;
   tests?: Partial<{ [id: string]: Partial<Test> & { path: string[] } }>;
+  removedTests?: string[][];
 }
 
 export interface SkipOption {
@@ -196,7 +203,7 @@ export interface CreeveySuite {
   opened: boolean;
   checked: boolean;
   indeterminate: boolean;
-  children: { [title: string]: CreeveySuite | CreeveyTest };
+  children: Partial<{ [title: string]: CreeveySuite | CreeveyTest }>;
 }
 
 export type ImagesViewMode = 'side-by-side' | 'swap' | 'slide' | 'blend';
@@ -205,10 +212,18 @@ export function noop(): void {
   /* noop */
 }
 
-export function isTest<T1, T2 extends Test>(x: T1 | T2): x is T2 {
-  return 'id' in x && 'path' in x && 'retries' in x && Array.isArray(x.path) && typeof x.id == 'string';
-}
-
 export function isDefined<T>(value: T | null | undefined): value is T {
   return value !== null && value !== undefined;
+}
+
+export function isTest<T1, T2 extends Test>(x?: T1 | T2): x is T2 {
+  return isDefined(x) && 'id' in x && 'path' in x && Array.isArray(x.path) && typeof x.id == 'string';
+}
+
+export function isObject(x: unknown): x is object {
+  return typeof x == 'object' && x != null;
+}
+
+export function isString(x: unknown): x is string {
+  return typeof x == 'string';
 }

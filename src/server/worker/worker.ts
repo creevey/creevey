@@ -7,7 +7,6 @@ import Mocha, { Suite, Context, AsyncFunc, MochaOptions } from 'mocha';
 import { Config, Images, Options, BrowserConfig, noop } from '../../types';
 import { getBrowser, switchStory } from '../../utils';
 import chaiImage from '../../chai-image';
-import { loadStories } from '../../stories';
 import { CreeveyReporter, TeamcityReporter } from './reporter';
 import { addTestsFromStories } from './helpers';
 
@@ -134,11 +133,8 @@ export default async function worker(config: Config, options: Options & { browse
 
   // TODO Move to beforeAll
   chai.use(chaiImage(getExpected, config.diffOptions));
-  addTestsFromStories(
-    mocha.suite,
-    options.browser,
-    await loadStories(config.storybookDir, config.enableFastStoriesLoading),
-  );
+
+  await addTestsFromStories(mocha.suite, options.browser, config);
 
   const browserConfig = config.browsers[options.browser] as BrowserConfig;
   const browser = await getBrowser(config, browserConfig);

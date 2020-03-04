@@ -132,9 +132,11 @@
 
 ## First priority
 
+- [x] HotReload tests files without restart
 - [x] **has workaround** Can't use `By` and `Key` helpers from `selenium-webdriver` in tests, because webpack try to build bundle with `selenium-webdriver`
 - [x] Chai used as deps, but in stories should imported explicitly. Add chai to peerdeps
 - [x] Add description for types properties, like config/decorator/etc
+- [x] Init pirates before any compiler (fix error with ts-node (allowJs: true) and pirates order)
 - [ ] Don't output skipped tests
 - [ ] Add `didCatch` method to storybook decorator. Handle errors while switch stories
 - [ ] Allow define custom extensions to ignore it while story loading process
@@ -158,6 +160,14 @@
 - [ ] Support run tests inside docker
   - [ ] Puppeteer use https://github.com/gidztech/jest-puppeteer-docker
   - [ ] Selenium
+- [ ] Storybook Integration
+  - [x] Storybook support 5.3 declarative config https://github.com/storybookjs/storybook/blob/next/MIGRATION.md#from-version-52x-to-53x
+  - [x] Support stories name convention https://storybook.js.org/docs/formats/component-story-format/#storybook-export-vs-name-handling
+  - [ ] Framework agnostic decorator
+  - [ ] Support declarative 6.0 decorators format, like this https://github.com/storybookjs/storybook/tree/master/addons/knobs/src/preset
+  - [ ] Manually create ClientApi instance, if it doesn't exists
+  - [ ] Support Angular/Vue stories
+  - [ ] Framework agnostic decorator
 
 ## Not in first time
 
@@ -187,17 +197,14 @@
 - [ ] Write about differences with other tools
 - [ ] Add unit tests
 - [ ] Github Actions
+  - [x] Add linting job
   - [ ] Allow run ui tests in cli by `yarn test:ui`
 - [ ] Storybook integration
   - [ ] Support stories separators https://storybook.js.org/docs/basics/writing-stories/#story-hierarchy
-  - [ ] Support stories name convention https://storybook.js.org/docs/formats/component-story-format/#storybook-export-vs-name-handling
   - [ ] Optimize stories require process (tree-shaking or something else)
   - [ ] Record screencast with Creevey UI
-  - [ ] Storybook support 5.3 declarative config https://github.com/storybookjs/storybook/blob/next/MIGRATION.md#from-version-52x-to-53x
-- [ ] Support Angular/Vue stories
 - [ ] Rewrite to use `worker_threads` instead of `cluster` to allow use shared memory
 - [ ] Allow use custom API (wd/wdio/puppeter/etc)
-- [ ] HotReload tests files without restart
 - [ ] Handle error on mocha hooks
 - [ ] Support mocha options for workers
 - [ ] Programmic API
@@ -205,10 +212,8 @@
 
 ## Far future
 
-- [ ] Allow use creevey without storybook
 - [ ] Storybook integration
   - [ ] Render tests UI as a part of storybook UI
-  - [ ] Framework agnostic decorator
 
 ## Maybe Never
 
@@ -218,3 +223,4 @@
   - [ ] cwd and require conflict each other
   - [ ] mocha opts and mocha bin is not prefect support
 - [ ] Use own runner instead of mocha
+- [ ] Allow use creevey without storybook

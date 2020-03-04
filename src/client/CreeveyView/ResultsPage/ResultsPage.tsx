@@ -17,7 +17,7 @@ interface TestResultsProps {
 export function ResultsPage({ id, path, results = [], approved = {} }: TestResultsProps): JSX.Element {
   const { onImageApprove } = useContext(CreeveyContext);
   const [retry, setRetry] = useState(results.length);
-  const result = results[retry - 1];
+  const result = results[retry - 1] ?? {};
   const [imageName, setImageName] = useState(Object.keys(result.images ?? {})[0] ?? '');
   const [viewMode, setViewMode] = useState<ImagesViewMode>('side-by-side');
 

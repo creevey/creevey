@@ -3,7 +3,15 @@ import { css } from '@emotion/core';
 import { useImmer } from 'use-immer';
 import { CreeveyUpdate, CreeveySuite, isDefined } from '../types';
 import { CreeveyClientApi } from './creeveyClientApi';
-import { getCheckedTests, updateTestStatus, splitLastPathToken, checkSuite, openSuite, getTestByPath } from './helpers';
+import {
+  getCheckedTests,
+  updateTestStatus,
+  splitLastPathToken,
+  checkSuite,
+  openSuite,
+  getTestByPath,
+  removeTests,
+} from './helpers';
 import { CreeveyContext } from './CreeveyContext';
 import { SideBar } from './CreeveyView/SideBar';
 import { ResultsPage } from './CreeveyView/ResultsPage';
@@ -21,17 +29,19 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
   const [isRunning, setIsRunning] = useState(initialState.isRunning);
   const [openedTestPath, openTest] = useState<string[]>([]);
   const openedTest = getTestByPath(tests, openedTestPath);
+  if (openedTestPath.length > 0 && !isDefined(openedTest)) openTest([]);
 
   // TODO unsubscribe
   useEffect(
     () =>
-      api?.onUpdate(({ isRunning, tests }: CreeveyUpdate) => {
+      api?.onUpdate(({ isRunning, tests, removedTests = [] }: CreeveyUpdate) => {
         if (isDefined(isRunning)) setIsRunning(isRunning);
         if (isDefined(tests))
           updateTests(draft => {
             Object.values(tests).forEach(
-              test => test && updateTestStatus(draft, splitLastPathToken(test.path).reverse(), test),
+              test => test && updateTestStatus(draft, [...splitLastPathToken(test.path).reverse()], test),
             );
+            removedTests.forEach(testPath => removeTests(draft, splitLastPathToken(testPath).reverse()));
           });
       }),
     [api, updateTests],

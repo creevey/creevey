@@ -4,6 +4,7 @@ import { CreeveyConfig } from './src/types';
 const config: CreeveyConfig = {
   gridUrl: 'http://screen:shot@grid.testkontur.ru/wd/hub',
   screenDir: path.join(__dirname, 'stories', 'images'),
+  enableFastStoriesLoading: true,
   browsers: {
     chrome: {
       browserName: 'chrome',

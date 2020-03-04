@@ -2,7 +2,16 @@ import path from 'path';
 import { copyFile, mkdir } from 'fs';
 import { promisify } from 'util';
 import { EventEmitter } from 'events';
-import { Config, CreeveyStatus, TestResult, ApprovePayload, isDefined, CreeveyUpdate, TestStatus } from '../../types';
+import {
+  Config,
+  CreeveyStatus,
+  TestResult,
+  ApprovePayload,
+  isDefined,
+  CreeveyUpdate,
+  TestStatus,
+  ServerTest,
+} from '../../types';
 import Pool from './pool';
 
 const copyFileAsync = promisify(copyFile);
@@ -11,16 +20,14 @@ const mkdirAsync = promisify(mkdir);
 export default class Runner extends EventEmitter {
   private screenDir: string;
   private reportDir: string;
-  private tests: CreeveyStatus['tests'];
   private browsers: string[];
   private pools: { [browser: string]: Pool } = {};
   public get isRunning(): boolean {
     return Object.values(this.pools).some(pool => pool.isRunning);
   }
-  constructor(config: Config, tests: CreeveyStatus['tests']) {
+  constructor(config: Config, private tests: Partial<{ [id: string]: ServerTest }>) {
     super();
 
-    this.tests = tests;
     this.screenDir = config.screenDir;
     this.reportDir = config.reportDir;
     this.browsers = Object.keys(config.browsers);
@@ -54,6 +61,33 @@ export default class Runner extends EventEmitter {
 
   public async init(): Promise<void> {
     await Promise.all(Object.values(this.pools).map(pool => pool.init()));
+  }
+
+  public updateTests(testsDiff: Partial<{ [id: string]: ServerTest }>): void {
+    const tests: CreeveyStatus['tests'] = {};
+    const removedTests: string[][] = [];
+    Object.entries(testsDiff).forEach(([id, newTest]) => {
+      const oldTest = this.tests[id];
+      if (newTest) {
+        if (oldTest) {
+          this.tests[id] = {
+            ...newTest,
+            status: 'unknown',
+            retries: oldTest.retries,
+            results: oldTest.results,
+            approved: oldTest.approved,
+          };
+        } else this.tests[id] = newTest;
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { story, fn, ...restTest } = newTest;
+        tests[id] = { ...restTest, status: 'unknown' };
+      } else {
+        if (oldTest) removedTests.push(oldTest.path);
+        delete this.tests[id];
+      }
+    });
+    this.sendUpdate({ tests, removedTests });
   }
 
   public start(ids: string[]): void {
@@ -103,9 +137,14 @@ export default class Runner extends EventEmitter {
   }
 
   public get status(): CreeveyStatus {
+    const tests: CreeveyStatus['tests'] = {};
+    Object.values(this.tests)
+      .filter(isDefined)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      .forEach(({ story, fn, ...test }) => (tests[test.id] = test));
     return {
       isRunning: this.isRunning,
-      tests: this.tests,
+      tests,
     };
   }
 

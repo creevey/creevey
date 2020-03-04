@@ -1,8 +1,8 @@
 import path from 'path';
 import { writeFileSync, copyFile, readdir, mkdir } from 'fs';
 import { promisify } from 'util';
-import { Config, Test, isDefined, CreeveyStatus, StoriesRaw } from '../../types';
-import { loadStories, convertStories } from '../../stories';
+import { Config, Test, isDefined, ServerTest } from '../../types';
+import { loadTestsFromStories } from '../../stories';
 import Runner from './runner';
 
 const copyFileAsync = promisify(copyFile);
@@ -21,30 +21,21 @@ function reportDataModule<T>(data: T): string {
 `;
 }
 
-function loadTestsFromStories(stories: StoriesRaw, browsers: string[]): CreeveyStatus['tests'] {
-  const { tests } = convertStories(browsers, stories);
-  return tests;
-}
-
 function mergeTests(
-  testsWithReports: CreeveyStatus['tests'],
-  testsFromStories: CreeveyStatus['tests'],
-): CreeveyStatus['tests'] {
-  return Object.values(testsWithReports)
-    .map((test): Test | undefined => test && { ...test, skip: true })
-    .concat(Object.values(testsFromStories))
+  testsWithReports: Partial<{ [id: string]: Test }>,
+  testsFromStories: Partial<{ [id: string]: ServerTest }>,
+): Partial<{ [id: string]: ServerTest }> {
+  Object.values(testsFromStories)
     .filter(isDefined)
-    .reduce(
-      (mergedTests: CreeveyStatus['tests'], test): CreeveyStatus['tests'] =>
-        (mergedTests = {
-          ...mergedTests,
-          [test.id]: {
-            ...(mergedTests[test.id] || {}),
-            ...test,
-          },
-        }),
-      {},
-    );
+    .forEach(test => {
+      const testWithReport = testsWithReports[test.id];
+      if (!testWithReport) return;
+      test.retries = testWithReport.retries;
+      test.status = testWithReport.status;
+      test.results = testWithReport.results;
+      test.approved = testWithReport.approved;
+    });
+  return testsFromStories;
 }
 
 async function copyStatics(reportDir: string): Promise<void> {
@@ -59,6 +50,7 @@ async function copyStatics(reportDir: string): Promise<void> {
 }
 
 export default async function master(config: Config): Promise<Runner> {
+  const runner = new Runner(config, {});
   const reportDataPath = path.join(config.reportDir, 'data.js');
   let testsFromReport = {};
   try {
@@ -66,11 +58,11 @@ export default async function master(config: Config): Promise<Runner> {
   } catch (error) {
     // Ignore error
   }
-  const stories = await loadStories(config.storybookDir, config.enableFastStoriesLoading);
-  const testsFromStories = loadTestsFromStories(stories, Object.keys(config.browsers));
-  const mergedTests = mergeTests(testsFromReport, testsFromStories);
+  const tests = await loadTestsFromStories(config, Object.keys(config.browsers), testsDiff =>
+    runner.updateTests(testsDiff),
+  );
 
-  const runner = new Runner(config, mergedTests);
+  runner.updateTests(mergeTests(testsFromReport, tests));
 
   await runner.init();
   await copyStatics(config.reportDir);

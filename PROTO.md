@@ -22,3 +22,14 @@ export function withCreevey(additionalConfig) {
 
 export default config
 ```
+
+Framework agnostic PoC
+forceReRender dont work cause bug.
+
+So, rough plan is:
+subscribe once `storyMissing`
+emit `setCurrentStory` with don't existed storyId
+subscribe once `storyRendered`
+emit `setCurrentStory` with target storyId
+
+Optional subscribe storyError or something
