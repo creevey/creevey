@@ -6,6 +6,14 @@ export interface CreeveyViewFilter {
   subStrings: string[];
 }
 
+const statusUpdatesMap: Map<TestStatus | undefined, RegExp> = new Map([
+  [undefined, /(unknown|success|failed|pending|running)/],
+  ['unknown', /(success|failed|pending|running)/],
+  ['success', /(failed|pending|running)/],
+  ['failed', /(pending|running)/],
+  ['pending', /running/],
+]);
+
 function makeEmptySuiteNode(path: string[] = []): CreeveySuite {
   return {
     path,
@@ -24,15 +32,7 @@ export function splitLastPathToken(path: string[]): string[] {
 }
 
 function calcStatus(oldStatus?: TestStatus, newStatus?: TestStatus): TestStatus | undefined {
-  if (
-    !oldStatus ||
-    oldStatus == 'unknown' ||
-    (oldStatus == 'success' && newStatus != 'success') ||
-    (oldStatus == 'failed' && newStatus != 'failed' && newStatus != 'success') ||
-    (oldStatus == 'pending' && newStatus != 'pending' && newStatus != 'failed' && newStatus != 'success')
-  )
-    return newStatus || oldStatus;
-  return oldStatus;
+  return newStatus && statusUpdatesMap.get(oldStatus)?.test(newStatus) ? newStatus : oldStatus;
 }
 
 export function getSuiteByPath(suite: CreeveySuite, path: string[]): CreeveySuite | CreeveyTest | undefined {

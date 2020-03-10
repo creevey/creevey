@@ -31,7 +31,7 @@ function mergeTests(
       const testWithReport = testsWithReports[test.id];
       if (!testWithReport) return;
       test.retries = testWithReport.retries;
-      test.status = testWithReport.status;
+      if (testWithReport.status == 'success' || testWithReport.status == 'failed') test.status = testWithReport.status;
       test.results = testWithReport.results;
       test.approved = testWithReport.approved;
     });

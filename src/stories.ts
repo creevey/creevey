@@ -237,17 +237,18 @@ function optimizeStoriesLoading(storybookDir: string): void {
   module.constructor.wrap = function(script: string) {
     // TODO Add AST analyzer, to implement tree-shaking
     return wrap(
-      `const shouldSkip = !(${function(storybookDir: string, loaderPath: string) {
+      `const shouldSkip = !(${function(storybookDir: string) {
         const { filename: parentFilename } = require.cache[__filename].parent ?? {};
 
         return (
           __filename.includes(storybookDir) ||
           __filename.includes('@storybook') ||
+          __filename.includes('creevey') ||
           parentFilename?.includes('node_modules') ||
-          parentFilename?.includes(loaderPath) ||
+          parentFilename?.includes('creevey') ||
           (parentFilename?.includes(storybookDir) && !__filename.includes('node_modules'))
         );
-      }.toString()})(${JSON.stringify(storybookDir)}, ${JSON.stringify(__filename.split('creevey')[1])});
+      }.toString()})(${JSON.stringify(storybookDir)});
 
       if (shouldSkip) return module.exports = {};
 

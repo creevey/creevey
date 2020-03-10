@@ -43,12 +43,11 @@
   },
   "peerDependencies": {
     "@storybook/react": "4.* || 5.*",
+    "chai": "4.*",
     "selenium-webdriver": "^4.0.0-alpha.5"
   },
   "dependencies": {
     "@storybook/csf": "^0.0.1",
-    "@types/chai": "^4.2.9",
-    "chai": "^4.2.0",
     "chalk": "^3.0.0",
     "chokidar": "^3.3.1",
     "event-source-polyfill": "^1.0.12",
@@ -80,6 +79,7 @@
     "@skbkontur/react-icons": "^3.2.1",
     "@skbkontur/react-ui": "1.9.0",
     "@storybook/react": "^5.3.14",
+    "@types/chai": "^4.2.9",
     "@types/glob-base": "^0.3.0",
     "@types/html-webpack-plugin": "^3.2.2",
     "@types/interpret": "^1.1.1",
@@ -102,6 +102,7 @@
     "@typescript-eslint/eslint-plugin": "^2.21.0",
     "@typescript-eslint/parser": "^2.21.0",
     "babel-loader": "^8.0.6",
+    "chai": "^4.2.0",
     "cross-env": "^7.0.0",
     "css-loader": "^3.4.2",
     "cz-conventional-changelog": "3.1.0",

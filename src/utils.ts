@@ -9,7 +9,8 @@ import { Config, BrowserConfig, SkipOptions, isDefined, StoryInput } from './typ
 type PlatformFS = typeof fs;
 type PlatformPath = typeof path;
 
-const LOCALHOST_REGEXP = /(localhost|127\.0\.0\.1)/;
+const LOCALHOST_REGEXP = /(localhost|127\.0\.0\.1)/gi;
+const TESTKONTUR_REGEXP = /testkontur/gi;
 
 // NOTE Patch @babel/register hook due issue https://github.com/gulpjs/interpret/issues/61
 ['.ts', '.tsx'].forEach((patchExtension: string) => {
@@ -152,7 +153,7 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
   void limit;
   void testRegex;
   let realAddress = address;
-  if (LOCALHOST_REGEXP.test(address)) {
+  if (LOCALHOST_REGEXP.test(address) && TESTKONTUR_REGEXP.test(gridUrl)) {
     realAddress = address.replace(LOCALHOST_REGEXP, await getRealIp());
   }
   const browser = await new Builder()
@@ -239,7 +240,7 @@ export function registerRequireContext(): void {
     const ids: string[] = [];
     let contextPath: string;
     // Relative path
-    if (rootPath.startsWith('.')) contextPath = path.join(__dirname, rootPath);
+    if (rootPath.startsWith('.')) contextPath = path.resolve(__dirname, rootPath);
     // Module path
     else if (!path.isAbsolute(rootPath)) contextPath = require.resolve(rootPath);
     // Absolute path
@@ -247,9 +248,10 @@ export function registerRequireContext(): void {
     const traverse = (dirPath: string): void => {
       fs.readdirSync(dirPath, { withFileTypes: true }).forEach((dirent: Dirent) => {
         const filename = dirent.name;
+        const filePath = path.join(dirPath, filename);
 
-        if (dirent.isDirectory() && deep) return traverse(path.join(dirPath, filename));
-        if (dirent.isFile() && (filter?.test(filename) ?? true)) return ids.push(path.join(dirPath, filename));
+        if (dirent.isDirectory() && deep) return traverse(filePath);
+        if (dirent.isFile() && (filter?.test(filePath) ?? true)) return ids.push(filePath);
       });
     };
 

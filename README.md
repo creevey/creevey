@@ -147,15 +147,17 @@ export const Simple = () => <MyComponent />;
 Simple.story = {
   parameters: {
     creevey: {
-      async click(this: { browser: WebDriver }) {
-        const element = await this.browser.findElement({ css: '#root' });
+      tests: {
+        async click(this: { browser: WebDriver }) {
+          const element = await this.browser.findElement({ css: '#root' });
 
-        await this.browser
-          .actions({ bridge: true })
-          .click(element)
-          .perform();
+          await this.browser
+            .actions({ bridge: true })
+            .click(element)
+            .perform();
 
-        await expect(await element.takeScreenshot()).to.matchImage('clicked component');
+          await expect(await element.takeScreenshot()).to.matchImage('clicked component');
+        },
       },
     },
   },
