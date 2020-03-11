@@ -226,7 +226,6 @@ function initStorybookEnvironment(): void {
   logger.debug = noop;
 }
 
-// TODO handle new format configs
 function optimizeStoriesLoading(storybookDir: string): void {
   // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
   // @ts-ignore
@@ -235,7 +234,6 @@ function optimizeStoriesLoading(storybookDir: string): void {
   // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
   // @ts-ignore
   module.constructor.wrap = function(script: string) {
-    // TODO Add AST analyzer, to implement tree-shaking
     return wrap(
       `const shouldSkip = !(${function(storybookDir: string) {
         const { filename: parentFilename } = require.cache[__filename].parent ?? {};
@@ -250,7 +248,19 @@ function optimizeStoriesLoading(storybookDir: string): void {
         );
       }.toString()})(${JSON.stringify(storybookDir)});
 
-      if (shouldSkip) return module.exports = {};
+      if (shouldSkip) return module.exports = (${function() {
+        const proxy: Function = new Proxy(
+          function() {
+            /* noop */
+          },
+          {
+            apply: () => proxy,
+            construct: () => proxy,
+            get: () => proxy,
+          },
+        );
+        return proxy;
+      }.toString()})();
 
       ${script}`,
     );
