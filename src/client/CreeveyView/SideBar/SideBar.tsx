@@ -87,6 +87,7 @@ export function SideBar({ rootSuite, openedTest, onOpenTest }: SideBarProps): JS
         <div
           css={css`
             position: relative;
+            padding-bottom: 40px;
           `}
         >
           <div
