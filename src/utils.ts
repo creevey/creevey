@@ -25,7 +25,7 @@ const TESTKONTUR_REGEXP = /testkontur/gi;
       oldRegister((options =>
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
-        hook({ ...options, extensions: ['.ts', '.tsx'] })) as Hook);
+        hook({ ...options, extensions: ['.es6', '.es', '.jsx', '.js', '.mjs', '.ts', '.tsx'] })) as Hook);
     };
   }
 });
