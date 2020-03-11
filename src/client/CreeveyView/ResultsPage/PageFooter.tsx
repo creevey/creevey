@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { css } from '@emotion/core';
-import Button from '@skbkontur/react-ui/Button';
-import Paging from '@skbkontur/react-ui/Paging';
+import { Button, Paging } from '@skbkontur/react-ui';
 
 export interface PageFooterProps {
   canApprove: boolean;

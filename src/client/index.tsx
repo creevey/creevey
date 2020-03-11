@@ -1,10 +1,10 @@
 import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom';
+import { Loader } from '@skbkontur/react-ui';
 import { CreeveyApp } from './CreeveyApp';
 
 import './index.css';
 import { initCreeveyClientApi, CreeveyClientApi } from './creeveyClientApi';
-import Loader from '@skbkontur/react-ui/Loader';
 import { CreeveyStatus } from '../types';
 import { treeifyTests } from './helpers';
 

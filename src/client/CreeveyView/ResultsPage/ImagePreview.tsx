@@ -1,7 +1,6 @@
 import React from 'react';
 import { css } from '@emotion/core';
-import Button from '@skbkontur/react-ui/Button';
-import Hint from '@skbkontur/react-ui/Hint';
+import { Button, Hint } from '@skbkontur/react-ui';
 
 const IMG_SIZE = 64;
 const DIAG_LENGTH = (2 * (IMG_SIZE - 8) ** 2) ** (1 / 2);

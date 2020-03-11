@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 import { css } from '@emotion/core';
-import { ThemeProvider } from '@skbkontur/react-ui/ThemeProvider';
+import { ThemeContext, Tabs, ThemeFactory } from '@skbkontur/react-ui';
 import DeleteIcon from '@skbkontur/react-icons/Delete';
-import Tabs from '@skbkontur/react-ui/Tabs';
 import { Images, ImagesViewMode } from '../../../types';
 import { ImagePreview } from './ImagePreview';
 import { getImageUrl } from '../../helpers';
 
 const modes: ImagesViewMode[] = ['side-by-side', 'swap', 'slide', 'blend'];
 
-const IMAGE_PREVIEW_THEME = {
+const IMAGE_PREVIEW_THEME = ThemeFactory.create({
   btnCheckedBg: '#fff',
   btnDefaultBgStart: '#fff',
   btnDefaultBgEnd: '#fff',
@@ -28,7 +27,7 @@ const IMAGE_PREVIEW_THEME = {
   btnPaddingYSmall: '0px',
   controlHeightSmall: '64px',
   btnHeightShift: '0px',
-};
+});
 
 interface PageHeaderProps {
   title: string[];
@@ -54,7 +53,7 @@ export function PageHeader({
   const [viewMode, setViewMode] = useState<ImagesViewMode>('side-by-side');
 
   const handleImageChange = (name: string): void => (setImageName(name), onImageChange(name));
-  const handleViewModeChange = (_: { target: { value: string } }, mode: string): void => (
+  const handleViewModeChange = (mode: string): void => (
     setViewMode(mode as ImagesViewMode), onViewModeChange(mode as ImagesViewMode)
   );
 
@@ -114,7 +113,7 @@ export function PageHeader({
             margin-top: 32px;
           `}
         >
-          <ThemeProvider value={IMAGE_PREVIEW_THEME}>
+          <ThemeContext.Provider value={IMAGE_PREVIEW_THEME}>
             {imageEntires.map(([name, image]: [string, Images]) => (
               <span
                 key={name}
@@ -130,11 +129,11 @@ export function PageHeader({
                 />
               </span>
             ))}
-          </ThemeProvider>
+          </ThemeContext.Provider>
         </div>
       ) : null}
       {showViewModes ? (
-        <Tabs value={viewMode} onChange={handleViewModeChange}>
+        <Tabs value={viewMode} onValueChange={handleViewModeChange}>
           {modes.map(mode => (
             <Tabs.Tab key={mode} id={mode}>
               {mode}

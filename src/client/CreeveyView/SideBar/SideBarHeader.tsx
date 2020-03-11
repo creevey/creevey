@@ -1,8 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { css } from '@emotion/core';
-import Spinner from '@skbkontur/react-ui/Spinner';
-import Button from '@skbkontur/react-ui/Button';
-import Input from '@skbkontur/react-ui/Input';
+import { Button, Spinner, Input } from '@skbkontur/react-ui';
 import SearchIcon from '@skbkontur/react-icons/Search';
 import { CreeveyContext } from '../../CreeveyContext';
 import { TestsStatus, TestsStatusProps } from './TestsStatus';
@@ -54,7 +52,7 @@ export function SideBarHeader({
     }
   };
 
-  const handleInputFilterChange = (_: React.ChangeEvent | null, value: string): void => {
+  const handleInputFilterChange = (value: string): void => {
     setFilterInput(value);
     onFilterChange(parseStringForFilter(value));
   };
@@ -113,7 +111,7 @@ export function SideBarHeader({
           placeholder="search by status or substring"
           size="medium"
           rightIcon={<SearchIcon />}
-          onChange={handleInputFilterChange}
+          onValueChange={handleInputFilterChange}
           value={filterInput}
         />
       </div>

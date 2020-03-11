@@ -1,9 +1,8 @@
 import React, { useRef, useContext, useEffect } from 'react';
 import { css } from '@emotion/core';
+import { Button, Checkbox } from '@skbkontur/react-ui';
 import ArrowTriangleRightIcon from '@skbkontur/react-icons/ArrowTriangleRight';
 import ArrowTriangleDownIcon from '@skbkontur/react-icons/ArrowTriangleDown';
-import Checkbox from '@skbkontur/react-ui/Checkbox';
-import Button from '@skbkontur/react-ui/Button';
 import { TestStatusIcon } from './TestStatusIcon';
 import { CreeveySuite, isTest } from '../../../types';
 import { CreeveyContext } from '../../CreeveyContext';
@@ -23,7 +22,7 @@ export function SuiteLink({ title, suite }: SuiteLinkProps): JSX.Element {
 
   const isRootSuite = suite.path.length == 0;
 
-  const handleCheck = (_: React.ChangeEvent, value: boolean): void => onSuiteToggle(suite.path, value);
+  const handleCheck = (value: boolean): void => onSuiteToggle(suite.path, value);
   const handleOpen = (): void => void (isRootSuite || onSuiteOpen(suite.path, !suite.opened));
 
   return (
@@ -68,7 +67,7 @@ export function SuiteLink({ title, suite }: SuiteLinkProps): JSX.Element {
           ref={checkboxRef}
           checked={suite.skip ? false : suite.checked}
           disabled={Boolean(suite.skip)}
-          onChange={handleCheck}
+          onValueChange={handleCheck}
         />
       </div>
     </div>

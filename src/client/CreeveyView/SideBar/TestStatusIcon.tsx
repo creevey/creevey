@@ -4,7 +4,7 @@ import DeleteIcon from '@skbkontur/react-icons/Delete';
 import OkIcon from '@skbkontur/react-icons/Ok';
 import ClockIcon from '@skbkontur/react-icons/Clock';
 import PauseIcon from '@skbkontur/react-icons/Pause';
-import Spinner from '@skbkontur/react-ui/Spinner';
+import { Spinner } from '@skbkontur/react-ui';
 import { TestStatus } from '../../../types';
 
 export interface TestStatusIconProps {
@@ -22,18 +22,7 @@ export function TestStatusIcon({ inverted, status, skip }: TestStatusIconProps):
       return <OkIcon color={inverted ? '#fff' : '#419d14'} />;
     }
     case 'running': {
-      return (
-        <span
-          // NOTE Compensate spinner width
-          // https://github.com/skbkontur/retail-ui/issues/1782
-          css={css`
-            margin-left: -0.0714285714285714em;
-            margin-right: -0.0714285714285714em;
-          `}
-        >
-          <Spinner type="mini" caption="" dimmed={inverted} />
-        </span>
-      );
+      return <Spinner type="mini" caption="" dimmed={inverted} />;
     }
     case 'pending': {
       return <ClockIcon color={inverted ? '#fff' : '#a0a0a0'} />;

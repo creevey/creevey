@@ -1,6 +1,6 @@
 import React, { useState, createContext, useContext } from 'react';
 import { css } from '@emotion/core';
-import { ThemeProvider } from '@skbkontur/react-ui/ThemeProvider';
+import { ThemeContext, ThemeFactory } from '@skbkontur/react-ui';
 import { SideBarHeader } from './SideBarHeader';
 import { CreeveySuite, CreeveyTest, noop, isTest } from '../../../types';
 import { filterTests, CreeveyViewFilter, flattenSuite, countTestsStatus } from '../../helpers';
@@ -8,7 +8,7 @@ import { CreeveyContext } from '../../CreeveyContext';
 import { SuiteLink } from './SuiteLink';
 import { TestLink } from './TestLink';
 
-const SUITE_LINK_THEME = {
+const SUITE_LINK_THEME = ThemeFactory.create({
   btnCheckedBg: '#1D85D0',
   btnDisabledBg: 'none',
   btnDefaultBgStart: 'none',
@@ -30,7 +30,7 @@ const SUITE_LINK_THEME = {
   btnPaddingXSmall: '36px',
   spinnerDimmedColor: '#fff',
   controlHeightSmall: 'auto',
-};
+});
 
 export const SideBarContext = createContext<{ onOpenTest: (path: string[]) => void }>({
   onOpenTest: noop,
@@ -100,7 +100,7 @@ export function SideBar({ rootSuite, openedTest, onOpenTest }: SideBarProps): JS
             `}
           />
           {/* TODO Output message where nothing found */}
-          <ThemeProvider value={SUITE_LINK_THEME}>
+          <ThemeContext.Provider value={SUITE_LINK_THEME}>
             <div
               css={css`
                 margin-bottom: 30px;
@@ -116,7 +116,7 @@ export function SideBar({ rootSuite, openedTest, onOpenTest }: SideBarProps): JS
                 <SuiteLink key={suite.path.join('/')} title={title} suite={suite} />
               ),
             )}
-          </ThemeProvider>
+          </ThemeContext.Provider>
         </div>
       </div>
     </SideBarContext.Provider>

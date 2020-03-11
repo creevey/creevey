@@ -5,11 +5,10 @@ import ClockIcon from '@skbkontur/react-icons/Clock';
 import DeleteIcon from '@skbkontur/react-icons/Delete';
 import PauseIcon from '@skbkontur/react-icons/Pause';
 import TrashIcon from '@skbkontur/react-icons/Trash';
-import Button from '@skbkontur/react-ui/Button';
-import { ThemeProvider } from '@skbkontur/react-ui/ThemeProvider';
+import { Button, ThemeContext, ThemeFactory } from '@skbkontur/react-ui';
 import { TestStatus } from '../../../types';
 
-const StatusButtonsTheme = { linkHoverTextDecoration: 'none' };
+const StatusButtonsTheme = ThemeFactory.create({ linkHoverTextDecoration: 'none' });
 
 export interface TestsStatusProps {
   successCount: number;
@@ -29,7 +28,7 @@ export function TestsStatus({
   onClickByStatus,
 }: TestsStatusProps): JSX.Element {
   return (
-    <ThemeProvider value={StatusButtonsTheme}>
+    <ThemeContext.Provider value={StatusButtonsTheme}>
       <div
         css={css`
           font-size: 14px;
@@ -79,6 +78,6 @@ export function TestsStatus({
           <TrashIcon /> {removedCount}
         </span>
       </div>
-    </ThemeProvider>
+    </ThemeContext.Provider>
   );
 }
