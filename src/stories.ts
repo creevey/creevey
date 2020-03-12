@@ -2,7 +2,6 @@ import { readdirSync } from 'fs';
 import path from 'path';
 import { createHash } from 'crypto';
 import { PNG } from 'pngjs';
-import { expect } from 'chai';
 import { Context } from 'mocha';
 import globBase from 'glob-base';
 import { makeRe } from 'micromatch';
@@ -158,7 +157,7 @@ async function takeScreenshot(browser: WebDriver, captureElement?: string): Prom
 function storyTestFabric(captureElement?: string) {
   return async function storyTest(this: Context) {
     const screenshot = await takeScreenshot(this.browser, captureElement);
-    await expect(screenshot).to.matchImage();
+    await this.expect(screenshot).to.matchImage();
   };
 }
 

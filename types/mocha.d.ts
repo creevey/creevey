@@ -3,35 +3,14 @@ declare namespace Mocha {
   interface Context {
     config: import('creevey').Config;
     browser: import('selenium-webdriver').WebDriver;
+    keys: import('selenium-webdriver/lib/input').IKey;
+    expect: Chai.ExpectStatic;
+    takeScreenshot:
+      | import('selenium-webdriver').WebDriver['takeScreenshot']
+      | import('selenium-webdriver').WebElement['takeScreenshot'];
+    readonly captureElement?: import('selenium-webdriver').WebElementPromise;
     browserName: string;
     testScope: string[];
-  }
-
-  interface SuiteFunction {
-    (title: string, fn: (this: Suite) => void): Suite | Suite[];
-    only: ExclusiveSuiteFunction;
-    skip: PendingSuiteFunction;
-  }
-
-  interface ExclusiveSuiteFunction {
-    (browsers: string[], title: string, fn: (this: Suite) => void): Suite | Suite[];
-  }
-
-  interface PendingSuiteFunction {
-    (browsers: string[], title: string, fn: (this: Suite) => void): Suite | Suite[];
-  }
-
-  interface TestFunction {
-    only: ExclusiveTestFunction;
-    skip: PendingTestFunction;
-  }
-
-  interface ExclusiveTestFunction {
-    (browsers: string[], title: string, fn?: AsyncFunc): Test;
-  }
-
-  interface PendingTestFunction {
-    (browsers: string[], title: string, fn?: AsyncFunc): Test;
   }
 
   interface Test {

@@ -3,21 +3,13 @@ import { css } from '@emotion/core';
 
 export default {
   title: 'TestViews',
-  parameters: {
-    creevey: {
-      captureElement: '[data-tid="CaptureElement"]',
-      skip: {
-        reason: 'Service component',
-        stories: 'Component Chunk',
-      },
-    },
-  },
+  parameters: { creevey: { captureElement: '[data-tid="CaptureElement"]' } },
 };
 
 const CHUNK_SIZE = 250;
 const DIAG_LENGTH = (2 * CHUNK_SIZE ** 2) ** (1 / 2);
 
-export const ComponentChunk: FunctionComponent = props => (
+const ComponentChunk: FunctionComponent = props => (
   <div
     css={css`
       background-color: #a5d6a7;

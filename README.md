@@ -138,25 +138,23 @@ Under the hood of `creevey` is used `mocha+chai` and for `chai` additionally def
 
 ```tsx
 import React from 'react';
-import { expect } from 'chai';
-import { WebDriver } from 'selenium-webdriver';
+import { CSFStory } from 'creevey';
 
 export default { title: 'MyComponent' };
 
-export const Simple = () => <MyComponent />;
+export const Simple: CSFStory<JSX.Element> = () => <MyComponent />;
 Simple.story = {
   parameters: {
     creevey: {
+      captureElement: '#root',
       tests: {
-        async click(this: { browser: WebDriver }) {
-          const element = await this.browser.findElement({ css: '#root' });
-
+        async click() {
           await this.browser
             .actions({ bridge: true })
-            .click(element)
+            .click(this.captureElement)
             .perform();
 
-          await expect(await element.takeScreenshot()).to.matchImage('clicked component');
+          await this.expect(await this.takeScreenshot()).to.matchImage('clicked component');
         },
       },
     },

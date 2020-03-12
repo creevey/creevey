@@ -1,6 +1,8 @@
 import { API as StorybookAPI } from '@storybook/api';
+import { DecoratorFunction } from '@storybook/addons';
+import { IKey } from 'selenium-webdriver/lib/input';
 import { Worker as ClusterWorker } from 'cluster';
-import { WebDriver } from 'selenium-webdriver';
+import { WebDriver, WebElementPromise, WebElement } from 'selenium-webdriver';
 import Pixelmatch from 'pixelmatch';
 import { Context } from 'mocha';
 
@@ -20,6 +22,28 @@ export type DiffOptions = typeof Pixelmatch extends (
 export type StoriesRaw = StorybookAPI extends { setStories: (stories: infer SS) => void } ? SS : never;
 
 export type StoryInput = StoriesRaw extends { [id: string]: infer S } ? S : never;
+
+export interface StoryMeta<StoryFnReturnType = unknown> {
+  title: string;
+  component?: unknown;
+  decorators?: DecoratorFunction<StoryFnReturnType>[];
+  parameters?: {
+    creevey?: CreeveyStoryParams;
+    [name: string]: unknown;
+  };
+}
+
+export interface CSFStory<StoryFnReturnType = unknown> {
+  (): StoryFnReturnType;
+  story?: {
+    name?: string;
+    decorators?: DecoratorFunction<StoryFnReturnType>[];
+    parameters?: {
+      creevey?: CreeveyStoryParams;
+      [name: string]: unknown;
+    };
+  };
+}
 
 export interface Capabilities {
   browserName: string;
@@ -165,7 +189,14 @@ export interface CreeveyStoryParams {
   captureElement?: string;
   skip?: SkipOptions;
   tests?: {
-    [name: string]: (this: { browser: WebDriver }) => Promise<void>;
+    // TODO Define browserName, story
+    [name: string]: (this: {
+      browser: WebDriver;
+      keys: IKey;
+      expect: Chai.ExpectStatic;
+      takeScreenshot: WebDriver['takeScreenshot'] | WebElement['takeScreenshot'];
+      readonly captureElement?: WebElementPromise;
+    }) => Promise<void>;
   };
 }
 

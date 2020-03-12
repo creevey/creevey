@@ -193,6 +193,21 @@ export async function switchStory(this: Context): Promise<void> {
   await resetMousePosition(this.browser);
   await selectStory(this.browser, story.id, story.kind, story.name);
 
+  const { captureElement } = story.parameters.creevey ?? {};
+
+  if (captureElement)
+    Object.defineProperty(this, 'captureElement', {
+      enumerable: true,
+      configurable: true,
+      get() {
+        return this.browser.findElement(By.css(captureElement));
+      },
+    });
+  else Reflect.deleteProperty(this, 'captureElement');
+
+  this.takeScreenshot = (optionalScroll?: boolean | undefined) =>
+    this.captureElement?.takeScreenshot(optionalScroll) ?? this.browser.takeScreenshot();
+
   this.testScope.reverse();
 }
 

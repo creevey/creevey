@@ -4,6 +4,7 @@ import path from 'path';
 import chai from 'chai';
 import chalk from 'chalk';
 import Mocha, { Suite, Context, AsyncFunc, MochaOptions } from 'mocha';
+import { Key } from 'selenium-webdriver';
 import { Config, Images, Options, BrowserConfig, noop } from '../../types';
 import { getBrowser, switchStory } from '../../utils';
 import chaiImage from '../../chai-image';
@@ -149,6 +150,8 @@ export default async function worker(config: Config, options: Options & { browse
   mocha.suite.beforeAll(function(this: Context) {
     this.config = config;
     this.browser = browser;
+    this.keys = Key;
+    this.expect = chai.expect;
     this.browserName = options.browser;
     this.testScope = testScope;
   });
