@@ -154,8 +154,9 @@ async function takeScreenshot(browser: WebDriver, captureElement?: string): Prom
   return screenshot;
 }
 
-function storyTestFabric(captureElement?: string) {
+function storyTestFabric(captureElement?: string, delay?: number) {
   return async function storyTest(this: Context) {
+    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;
     const screenshot = await takeScreenshot(this.browser, captureElement);
     await this.expect(screenshot).to.matchImage();
   };
@@ -187,7 +188,7 @@ export function convertStories(
 
   (Array.isArray(stories) ? stories : Object.values(stories)).forEach(story => {
     browsers.forEach(browserName => {
-      const { captureElement, tests: storyTests, skip }: CreeveyStoryParams = story.parameters.creevey ?? {};
+      const { captureElement, delay, tests: storyTests, skip }: CreeveyStoryParams = story.parameters.creevey ?? {};
       const meta = { browser: browserName, story: story.name, kind: story.kind };
 
       // typeof tests === "undefined" => rootSuite -> kindSuite -> storyTest -> [browsers.png]
@@ -197,7 +198,7 @@ export function convertStories(
 
       if (!storyTests) {
         const test = createCreeveyTest(meta, skip);
-        tests[test.id] = { ...test, story, fn: storyTestFabric(captureElement) };
+        tests[test.id] = { ...test, story, fn: storyTestFabric(captureElement, delay) };
         return;
       }
 

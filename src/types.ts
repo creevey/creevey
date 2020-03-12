@@ -187,6 +187,7 @@ export type SkipOptions = string | SkipOption | SkipOption[];
 
 export interface CreeveyStoryParams {
   captureElement?: string;
+  delay?: number;
   skip?: SkipOptions;
   tests?: {
     // TODO Define browserName, story
