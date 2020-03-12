@@ -226,6 +226,7 @@ function initStorybookEnvironment(): void {
   logger.debug = noop;
 }
 
+// TODO Use AST Transformation to exclude all unneeded stuff except tests and stories meta
 function optimizeStoriesLoading(storybookDir: string): void {
   // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
   // @ts-ignore

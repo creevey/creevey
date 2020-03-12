@@ -85,6 +85,7 @@ export interface Options {
   port: number;
   ui: boolean;
   update: boolean;
+  debug: boolean;
   browser?: string;
   reporter?: string;
   gridUrl?: string;

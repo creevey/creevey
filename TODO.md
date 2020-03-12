@@ -127,47 +127,41 @@
 - [x] Optimize stories load process (don't import other stuff like react, components and other browser libs/styles/images/fonts)
 - [x] Don't output tests without status if filtering by status
 - [x] Patch @babel/register hook to allow use '.ts' along side with '.tsx' extensions
-
-  </details>
-
-## First priority
-
 - [x] HotReload tests files without restart
 - [x] **has workaround** Can't use `By` and `Key` helpers from `selenium-webdriver` in tests, because webpack try to build bundle with `selenium-webdriver`
 - [x] Chai used as deps, but in stories should imported explicitly. Add chai to peerdeps
 - [x] Add description for types properties, like config/decorator/etc
 - [x] Init pirates before any compiler (fix error with ts-node (allowJs: true) and pirates order)
+
+  </details>
+
+## First priority
+
+- [ ] Storybook Integration
+  - [x] Storybook support 5.3 declarative config https://github.com/storybookjs/storybook/blob/next/MIGRATION.md#from-version-52x-to-53x
+  - [x] Support stories name convention https://storybook.js.org/docs/formats/component-story-format/#storybook-export-vs-name-handling
+  - [ ] Framework agnostic decorator
+  - [ ] Add `didCatch` method to storybook decorator. Handle errors while switch stories
+  - [ ] Support declarative 6.0 decorators format, like this https://github.com/storybookjs/storybook/tree/master/addons/knobs/src/preset
+  - [ ] Manually create ClientApi instance, if it doesn't exists
+  - [ ] Support Angular/Vue stories
+  - [ ] Framework agnostic decorator
 - [ ] Don't output skipped tests
-- [ ] Add `didCatch` method to storybook decorator. Handle errors while switch stories
 - [ ] Allow define custom extensions to ignore it while story loading process
 - [ ] Optimize stories loading:
-  - [ ] Use proxy to handle side-effects
+  - [x] Use proxy to handle side-effects
+  - [ ] AST transformation to exclude all source code except stories meta and tests (support only CSF)
 - [ ] Transform to monorepo
   - [ ] `chai-images`
   - [ ] `creevey`
   - [ ] `creevey-ui`
-  - [ ] `creevey-react`
-  - [ ] `creevey-jest`
-  - [ ] `creevey-mocha`
   - [ ] `creevey-selenium`
-- [ ] Support third-party test runners
-  - [ ] Use jest instead of mocha/chai
-  - [ ] define in config runner property
-  - [ ] Add `creevey-jest` and `creevey-mocha` packages, that implement API for creevey and define types for chai/jest
-  - [ ] Initiate runner inside worker
+  - [ ] `creevey-storybook-addon`
 - [ ] Add authors
 - [ ] Allow define custom localhost resolver in config
 - [ ] Support run tests inside docker
   - [ ] Puppeteer use https://github.com/gidztech/jest-puppeteer-docker
   - [ ] Selenium
-- [ ] Storybook Integration
-  - [x] Storybook support 5.3 declarative config https://github.com/storybookjs/storybook/blob/next/MIGRATION.md#from-version-52x-to-53x
-  - [x] Support stories name convention https://storybook.js.org/docs/formats/component-story-format/#storybook-export-vs-name-handling
-  - [ ] Framework agnostic decorator
-  - [ ] Support declarative 6.0 decorators format, like this https://github.com/storybookjs/storybook/tree/master/addons/knobs/src/preset
-  - [ ] Manually create ClientApi instance, if it doesn't exists
-  - [ ] Support Angular/Vue stories
-  - [ ] Framework agnostic decorator
 
 ## Not in first time
 
@@ -178,6 +172,7 @@
 - [ ] Add liftoff https://github.com/js-cli/js-liftoff
 - [ ] Correctly resize images in views using correct proportions (smaller image should shrink if larger shrink too, max-width/max-height doesn't work)
 - [ ] Tests on images view components with various scenarios (same/diff sizes, less/bigger viewport, elements with width/height not integer size)
+- [ ] Don't apply scrollbar hiding styles in composite images
 - [ ] Write stories on new components
   - [x] SideBar
   - [ ] ResultPageHeader
@@ -224,3 +219,4 @@
   - [ ] mocha opts and mocha bin is not prefect support
 - [ ] Use own runner instead of mocha
 - [ ] Allow use creevey without storybook
+- [ ] Support third-party test runners

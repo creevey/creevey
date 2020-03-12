@@ -140,11 +140,10 @@ export default async function worker(config: Config, options: Options & { browse
   const browser = await getBrowser(config, browserConfig);
 
   setInterval(() => {
-    browser
-      .getCurrentUrl()
-      .then(url =>
-        console.log(chalk`[{blue WORKER}{grey :${options.browser}:${process.pid}}] {grey current url} ${url}`),
-      );
+    browser.getCurrentUrl().then(url => {
+      if (options.debug)
+        console.log(chalk`[{blue WORKER}{grey :${options.browser}:${process.pid}}] {grey current url} ${url}`);
+    });
   }, 10 * 1000);
 
   mocha.suite.beforeAll(function(this: Context) {
