@@ -222,9 +222,9 @@ export function shouldSkip(
     browser: string;
     kind: string;
     story: string;
-    test?: string;
   },
   skipOptions: SkipOptions,
+  test?: string,
 ): string | boolean {
   if (typeof skipOptions == 'string') {
     return skipOptions;
@@ -233,7 +233,7 @@ export function shouldSkip(
     return skipOptions.map(skipOption => shouldSkip(meta, skipOption)).find(Boolean) || false;
   }
   const { in: browsers, kinds, stories, tests, reason = true } = skipOptions;
-  const { browser, kind, story, test } = meta;
+  const { browser, kind, story } = meta;
   const skipByBrowser = matchBy(browsers, browser);
   const skipByKind = matchBy(kinds, kind);
   const skipByStory = matchBy(stories, story);

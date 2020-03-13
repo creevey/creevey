@@ -173,7 +173,7 @@ function createCreeveyTest(
 ): Test {
   const { browser, kind, story } = meta;
   const path = [browser, testName, story, kind].filter(isDefined);
-  const skip = skipOptions ? shouldSkip(meta, skipOptions) : false;
+  const skip = skipOptions ? shouldSkip(meta, skipOptions, testName) : false;
   const id = createHash('sha1')
     .update(path.join('/'))
     .digest('hex');
