@@ -1,11 +1,17 @@
 import https from 'https';
 import fs from 'fs';
 import path from 'path';
+import { PNG } from 'pngjs';
 import { Context, Test, Suite } from 'mocha';
 import { Builder, By, until, WebDriver, Origin } from 'selenium-webdriver';
 import { Extension, jsVariants, ExtensionDescriptor, Hook } from 'interpret';
 import { Config, BrowserConfig, SkipOptions, isDefined, StoryInput } from './types';
-import { takeScreenshot } from './stories';
+
+declare global {
+  interface Window {
+    __CREEVEY_RESTORE_SCROLL__?: () => void;
+  }
+}
 
 const LOCALHOST_REGEXP = /(localhost|127\.0\.0\.1)/gi;
 const TESTKONTUR_REGEXP = /testkontur/gi;
@@ -103,17 +109,6 @@ async function resizeViewport(browser: WebDriver, viewport: { width: number; hei
     });
 }
 
-function selectStory(browser: WebDriver, storyId: string, kind: string, story: string): Promise<void> {
-  return browser.executeAsyncScript(
-    function(storyId: string, kind: string, name: string, callback: Function) {
-      window.__CREEVEY_SELECT_STORY__(storyId, kind, name, callback);
-    },
-    storyId,
-    kind,
-    story,
-  );
-}
-
 function disableAnimations(browser: WebDriver): Promise<void> {
   const disableAnimationsStyles = `
 *,
@@ -137,6 +132,137 @@ function disableAnimations(browser: WebDriver): Promise<void> {
     document.head.appendChild(style);
     /* eslint-enable no-var */
   }, disableAnimationsStyles);
+}
+
+async function hideBrowserScroll(browser: WebDriver): Promise<() => Promise<void>> {
+  const HideScrollStyles = `
+html {
+  overflow: -moz-scrollbars-none !important;
+  -ms-overflow-style: none !important;
+}
+html::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+}
+`;
+
+  await browser.executeScript(function(stylesheet: string) {
+    /* eslint-disable no-var */
+    var style = document.createElement('style');
+    var textNode = document.createTextNode(stylesheet);
+    style.setAttribute('type', 'text/css');
+    style.appendChild(textNode);
+    document.head.appendChild(style);
+
+    window.__CREEVEY_RESTORE_SCROLL__ = function() {
+      if (document.head.contains(style)) {
+        document.head.removeChild(style);
+      }
+      delete window.__CREEVEY_RESTORE_SCROLL__;
+    };
+    /* eslint-enable no-var */
+  }, HideScrollStyles);
+
+  return () =>
+    browser.executeScript(function() {
+      if (window.__CREEVEY_RESTORE_SCROLL__) {
+        window.__CREEVEY_RESTORE_SCROLL__();
+      }
+    });
+}
+
+async function takeCompositeScreenshot(
+  browser: WebDriver,
+  windowSize: { width: number; height: number },
+  elementRect: DOMRect,
+): Promise<string> {
+  const screens = [];
+  const cols = Math.ceil(elementRect.width / windowSize.width);
+  const rows = Math.ceil(elementRect.height / windowSize.height);
+  const isFitHorizontally = windowSize.width >= elementRect.width + elementRect.left;
+  const isFitVertically = windowSize.height >= elementRect.height + elementRect.top;
+  const xOffset = Math.round(
+    isFitHorizontally ? elementRect.left : Math.max(0, cols * windowSize.width - elementRect.width),
+  );
+  const yOffset = Math.round(
+    isFitVertically ? elementRect.top : Math.max(0, rows * windowSize.height - elementRect.height),
+  );
+
+  for (let row = 0; row < rows; row += 1) {
+    for (let col = 0; col < cols; col += 1) {
+      const dx = Math.min(windowSize.width * col + elementRect.left, Math.max(0, elementRect.right - windowSize.width));
+      const dy = Math.min(
+        windowSize.height * row + elementRect.top,
+        Math.max(0, elementRect.bottom - windowSize.height),
+      );
+      await browser.executeScript(
+        function(x: number, y: number) {
+          window.scrollTo(x, y);
+        },
+        dx,
+        dy,
+      );
+      screens.push(await browser.takeScreenshot());
+    }
+  }
+
+  const images = screens.map(s => Buffer.from(s, 'base64')).map(b => PNG.sync.read(b));
+  const compositeImage = new PNG({ width: Math.round(elementRect.width), height: Math.round(elementRect.height) });
+
+  for (let y = 0; y < compositeImage.height; y += 1) {
+    for (let x = 0; x < compositeImage.width; x += 1) {
+      const col = Math.floor(x / windowSize.width);
+      const row = Math.floor(y / windowSize.height);
+      const isLastCol = cols - col == 1;
+      const isLastRow = rows - row == 1;
+      const i = (y * compositeImage.width + x) * 4;
+      const j =
+        ((y % windowSize.height) * windowSize.width + (x % windowSize.width)) * 4 +
+        (isLastRow ? yOffset * windowSize.width * 4 : 0) +
+        (isLastCol ? xOffset * 4 : 0);
+      const image = images[row * cols + col];
+      compositeImage.data[i + 0] = image.data[j + 0];
+      compositeImage.data[i + 1] = image.data[j + 1];
+      compositeImage.data[i + 2] = image.data[j + 2];
+      compositeImage.data[i + 3] = image.data[j + 3];
+    }
+  }
+  return PNG.sync.write(compositeImage).toString('base64');
+}
+
+async function takeScreenshot(browser: WebDriver, captureElement?: string | null): Promise<string> {
+  if (!captureElement) return browser.takeScreenshot();
+
+  const restoreScroll = await hideBrowserScroll(browser);
+  const { elementRect, windowSize } = await browser.executeScript(function(selector: string) {
+    return {
+      elementRect: document.querySelector(selector)?.getBoundingClientRect(),
+      windowSize: { width: window.innerWidth, height: window.innerHeight },
+    };
+  }, captureElement);
+
+  const isFitIntoViewport =
+    elementRect.width + elementRect.left <= windowSize.width &&
+    elementRect.height + elementRect.top <= windowSize.height;
+
+  const screenshot = await (isFitIntoViewport
+    ? browser.findElement(By.css(captureElement)).takeScreenshot()
+    : takeCompositeScreenshot(browser, windowSize, elementRect));
+
+  await restoreScroll();
+
+  return screenshot;
+}
+
+function selectStory(browser: WebDriver, storyId: string, kind: string, story: string): Promise<void> {
+  return browser.executeAsyncScript(
+    function(storyId: string, kind: string, name: string, callback: Function) {
+      window.__CREEVEY_SELECT_STORY__(storyId, kind, name, callback);
+    },
+    storyId,
+    kind,
+    story,
+  );
 }
 
 export async function getBrowser(config: Config, browserConfig: BrowserConfig): Promise<WebDriver> {

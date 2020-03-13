@@ -2,7 +2,7 @@ import { API as StorybookAPI } from '@storybook/api';
 import { DecoratorFunction } from '@storybook/addons';
 import { IKey } from 'selenium-webdriver/lib/input';
 import { Worker as ClusterWorker } from 'cluster';
-import { WebDriver, WebElementPromise, WebElement } from 'selenium-webdriver';
+import { WebDriver, WebElementPromise } from 'selenium-webdriver';
 import Pixelmatch from 'pixelmatch';
 import { Context } from 'mocha';
 
@@ -195,7 +195,7 @@ export interface CreeveyStoryParams {
       browser: WebDriver;
       keys: IKey;
       expect: Chai.ExpectStatic;
-      takeScreenshot: WebDriver['takeScreenshot'] | WebElement['takeScreenshot'];
+      takeScreenshot: () => Promise<string>;
       readonly captureElement?: WebElementPromise;
     }) => Promise<void>;
   };

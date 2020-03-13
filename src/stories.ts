@@ -1,7 +1,6 @@
 import { readdirSync } from 'fs';
 import path from 'path';
 import { createHash } from 'crypto';
-import { PNG } from 'pngjs';
 import { Context } from 'mocha';
 import globBase from 'glob-base';
 import { makeRe } from 'micromatch';
@@ -12,7 +11,6 @@ import { toId, storyNameFromExport, isExportStory } from '@storybook/csf';
 import { ClientApi, StoryStore } from '@storybook/client-api';
 import Events from '@storybook/core-events';
 import { logger } from '@storybook/client-logger';
-import { By, WebDriver } from 'selenium-webdriver';
 import {
   isDefined,
   Test,
@@ -28,137 +26,10 @@ import {
 } from './types';
 import { shouldSkip, requireConfig } from './utils';
 
-declare global {
-  interface Window {
-    __CREEVEY_RESTORE_SCROLL__?: () => void;
-  }
-}
-
-async function hideBrowserScroll(browser: WebDriver): Promise<() => Promise<void>> {
-  const HideScrollStyles = `
-html {
-  overflow: -moz-scrollbars-none !important;
-  -ms-overflow-style: none !important;
-}
-html::-webkit-scrollbar {
-  width: 0 !important;
-  height: 0 !important;
-}
-`;
-
-  await browser.executeScript(function(stylesheet: string) {
-    /* eslint-disable no-var */
-    var style = document.createElement('style');
-    var textNode = document.createTextNode(stylesheet);
-    style.setAttribute('type', 'text/css');
-    style.appendChild(textNode);
-    document.head.appendChild(style);
-
-    window.__CREEVEY_RESTORE_SCROLL__ = function() {
-      if (document.head.contains(style)) {
-        document.head.removeChild(style);
-      }
-      delete window.__CREEVEY_RESTORE_SCROLL__;
-    };
-    /* eslint-enable no-var */
-  }, HideScrollStyles);
-
-  return () =>
-    browser.executeScript(function() {
-      if (window.__CREEVEY_RESTORE_SCROLL__) {
-        window.__CREEVEY_RESTORE_SCROLL__();
-      }
-    });
-}
-
-async function takeCompositeScreenshot(
-  browser: WebDriver,
-  windowSize: { width: number; height: number },
-  elementRect: DOMRect,
-): Promise<string> {
-  const screens = [];
-  const cols = Math.ceil(elementRect.width / windowSize.width);
-  const rows = Math.ceil(elementRect.height / windowSize.height);
-  const isFitHorizontally = windowSize.width >= elementRect.width + elementRect.left;
-  const isFitVertically = windowSize.height >= elementRect.height + elementRect.top;
-  const xOffset = Math.round(
-    isFitHorizontally ? elementRect.left : Math.max(0, cols * windowSize.width - elementRect.width),
-  );
-  const yOffset = Math.round(
-    isFitVertically ? elementRect.top : Math.max(0, rows * windowSize.height - elementRect.height),
-  );
-
-  for (let row = 0; row < rows; row += 1) {
-    for (let col = 0; col < cols; col += 1) {
-      const dx = Math.min(windowSize.width * col + elementRect.left, Math.max(0, elementRect.right - windowSize.width));
-      const dy = Math.min(
-        windowSize.height * row + elementRect.top,
-        Math.max(0, elementRect.bottom - windowSize.height),
-      );
-      await browser.executeScript(
-        function(x: number, y: number) {
-          window.scrollTo(x, y);
-        },
-        dx,
-        dy,
-      );
-      screens.push(await browser.takeScreenshot());
-    }
-  }
-
-  const images = screens.map(s => Buffer.from(s, 'base64')).map(b => PNG.sync.read(b));
-  const compositeImage = new PNG({ width: Math.round(elementRect.width), height: Math.round(elementRect.height) });
-
-  for (let y = 0; y < compositeImage.height; y += 1) {
-    for (let x = 0; x < compositeImage.width; x += 1) {
-      const col = Math.floor(x / windowSize.width);
-      const row = Math.floor(y / windowSize.height);
-      const isLastCol = cols - col == 1;
-      const isLastRow = rows - row == 1;
-      const i = (y * compositeImage.width + x) * 4;
-      const j =
-        ((y % windowSize.height) * windowSize.width + (x % windowSize.width)) * 4 +
-        (isLastRow ? yOffset * windowSize.width * 4 : 0) +
-        (isLastCol ? xOffset * 4 : 0);
-      const image = images[row * cols + col];
-      compositeImage.data[i + 0] = image.data[j + 0];
-      compositeImage.data[i + 1] = image.data[j + 1];
-      compositeImage.data[i + 2] = image.data[j + 2];
-      compositeImage.data[i + 3] = image.data[j + 3];
-    }
-  }
-  return PNG.sync.write(compositeImage).toString('base64');
-}
-
-export async function takeScreenshot(browser: WebDriver, captureElement?: string | null): Promise<string> {
-  if (!captureElement) return browser.takeScreenshot();
-
-  const restoreScroll = await hideBrowserScroll(browser);
-  const { elementRect, windowSize } = await browser.executeScript(function(selector: string) {
-    return {
-      elementRect: document.querySelector(selector)?.getBoundingClientRect(),
-      windowSize: { width: window.innerWidth, height: window.innerHeight },
-    };
-  }, captureElement);
-
-  const isFitIntoViewport =
-    elementRect.width + elementRect.left <= windowSize.width &&
-    elementRect.height + elementRect.top <= windowSize.height;
-
-  const screenshot = await (isFitIntoViewport
-    ? browser.findElement(By.css(captureElement)).takeScreenshot()
-    : takeCompositeScreenshot(browser, windowSize, elementRect));
-
-  await restoreScroll();
-
-  return screenshot;
-}
-
-function storyTestFabric(captureElement?: string | null, delay?: number) {
+function storyTestFabric(delay?: number) {
   return async function storyTest(this: Context) {
     delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;
-    const screenshot = await takeScreenshot(this.browser, captureElement);
-    await this.expect(screenshot).to.matchImage();
+    await this.expect(await this.takeScreenshot()).to.matchImage();
   };
 }
 
@@ -188,7 +59,7 @@ export function convertStories(
 
   (Array.isArray(stories) ? stories : Object.values(stories)).forEach(story => {
     browsers.forEach(browserName => {
-      const { captureElement, delay, tests: storyTests, skip }: CreeveyStoryParams = story.parameters.creevey ?? {};
+      const { delay, tests: storyTests, skip }: CreeveyStoryParams = story.parameters.creevey ?? {};
       const meta = { browser: browserName, story: story.name, kind: story.kind };
 
       // typeof tests === "undefined" => rootSuite -> kindSuite -> storyTest -> [browsers.png]
@@ -198,7 +69,7 @@ export function convertStories(
 
       if (!storyTests) {
         const test = createCreeveyTest(meta, skip);
-        tests[test.id] = { ...test, story, fn: storyTestFabric(captureElement, delay) };
+        tests[test.id] = { ...test, story, fn: storyTestFabric(delay) };
         return;
       }
 
