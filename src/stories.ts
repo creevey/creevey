@@ -113,6 +113,7 @@ function optimizeStoriesLoading(storybookDir: string): void {
         return (
           __filename.includes(storybookDir) ||
           __filename.includes('@storybook') ||
+          __filename.includes('@babel') ||
           __filename.includes('creevey') ||
           parentFilename?.includes('node_modules') ||
           parentFilename?.includes('creevey') ||
