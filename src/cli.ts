@@ -1,50 +1,61 @@
 #!/usr/bin/env node
 
-import minimist from 'minimist';
-import chalk from 'chalk';
-import { addHook } from 'pirates';
-import creevey from './server';
-import { Options } from './types';
-import { registerRequireContext } from './utils';
+import fs, { Dirent } from 'fs';
+import path from 'path';
+
+type PlatformFS = typeof fs;
+type PlatformPath = typeof path;
+
+function registerRequireContext(): void {
+  function requireContext(rootPath: string, deep?: boolean, filter?: RegExp): __WebpackModuleApi.RequireContext {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const fs: PlatformFS = require('fs');
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const path: PlatformPath = require('path');
+
+    const ids: string[] = [];
+    let contextPath: string;
+    // Relative path
+    if (rootPath.startsWith('.')) contextPath = path.resolve(__dirname, rootPath);
+    // Module path
+    else if (!path.isAbsolute(rootPath)) contextPath = require.resolve(rootPath);
+    // Absolute path
+    else contextPath = rootPath;
+    const traverse = (dirPath: string): void => {
+      fs.readdirSync(dirPath, { withFileTypes: true }).forEach((dirent: Dirent) => {
+        const filename = dirent.name;
+        const filePath = path.join(dirPath, filename);
+
+        if (dirent.isDirectory() && deep) return traverse(filePath);
+        if (dirent.isFile() && (filter?.test(filePath) ?? true)) return ids.push(filePath);
+      });
+    };
+
+    traverse(contextPath);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const context = (id: string): any => require(id);
+    context.id = contextPath;
+    context.keys = () => ids;
+    context.resolve = (id: string) => id;
+
+    return context;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+  // @ts-ignore
+  const { wrap } = module.constructor;
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+  // @ts-ignore
+  module.constructor.wrap = function(script: string) {
+    return wrap(
+      `require.context = ${requireContext.toString()};
+      ${script}`,
+    );
+  };
+}
 
 registerRequireContext();
 
-addHook(() => '', {
-  exts: [
-    '.jpg',
-    '.jpeg',
-    '.png',
-    '.gif',
-    '.eot',
-    '.otf',
-    '.svg',
-    '.ttf',
-    '.woff',
-    '.woff2',
-    '.css',
-    '.less',
-    '.sass',
-    '.styl',
-  ],
-  ignoreNodeModules: false,
-});
-
-process.on('unhandledRejection', reason => {
-  const error = reason instanceof Error ? reason.stack || reason.message : reason;
-
-  console.log(chalk`[{red FAIL}{grey :${process.pid}}]`, error);
-
-  if (process.send) {
-    process.send(JSON.stringify({ type: 'error', payload: { status: 'failed', error } }));
-  }
-  process.exit(-1);
-});
-
-const argv = minimist<Options>(process.argv.slice(2), {
-  string: ['config', 'browser', 'reporter', 'gridUrl', 'reportDir', 'screenDir'],
-  boolean: ['debug', 'ui', 'update'],
-  default: { config: './creevey.config', ui: false, port: 3000, debug: false },
-  alias: { port: 'p', config: 'c', debug: 'd', update: 'u' },
-});
-
-creevey(argv);
+require('./creevey');
