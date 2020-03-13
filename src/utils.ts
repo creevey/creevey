@@ -356,7 +356,7 @@ export function shouldSkip(
     return skipOptions;
   }
   if (Array.isArray(skipOptions)) {
-    return skipOptions.map(skipOption => shouldSkip(meta, skipOption)).find(Boolean) || false;
+    return skipOptions.map(skipOption => shouldSkip(meta, skipOption, test)).find(Boolean) || false;
   }
   const { in: browsers, kinds, stories, tests, reason = true } = skipOptions;
   const { browser, kind, story } = meta;
