@@ -1,7 +1,7 @@
 {
   "name": "creevey",
   "description": "creevey is a tool for automated visual testing, that tightly integrated with storybook",
-  "version": "0.4.5",
+  "version": "0.4.6",
   "bin": {
     "creevey": "./lib/cli.js"
   },
@@ -46,8 +46,8 @@
     "selenium-webdriver": "^4.0.0-alpha.5"
   },
   "dependencies": {
-    "@types/chai": "^4.2.9",
     "@storybook/csf": "^0.0.1",
+    "@types/chai": "^4.2.9",
     "chai": "^4.2.0",
     "chalk": "^3.0.0",
     "chokidar": "^3.3.1",
