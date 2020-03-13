@@ -145,6 +145,7 @@
   - [ ] Support declarative 6.0 decorators format, like this https://github.com/storybookjs/storybook/tree/master/addons/knobs/src/preset
   - [ ] Manually create ClientApi instance, if it doesn't exists
 - [x] Add composite screenshot helper (this.takeScreenshot should be composite)
+- [ ] Don't apply scrollbar hiding styles in composite images
 - [ ] Don't output skipped tests
 - [ ] Allow define custom extensions to ignore it while story loading process
 - [ ] Optimize stories loading:
@@ -171,7 +172,6 @@
 - [ ] Add liftoff https://github.com/js-cli/js-liftoff
 - [ ] Correctly resize images in views using correct proportions (smaller image should shrink if larger shrink too, max-width/max-height doesn't work)
 - [ ] Tests on images view components with various scenarios (same/diff sizes, less/bigger viewport, elements with width/height not integer size)
-- [ ] Don't apply scrollbar hiding styles in composite images
 - [ ] Write stories on new components
   - [x] SideBar
   - [ ] ResultPageHeader

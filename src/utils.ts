@@ -233,7 +233,6 @@ async function takeCompositeScreenshot(
 async function takeScreenshot(browser: WebDriver, captureElement?: string | null): Promise<string> {
   if (!captureElement) return browser.takeScreenshot();
 
-  const restoreScroll = await hideBrowserScroll(browser);
   const { elementRect, windowSize } = await browser.executeScript(function(selector: string) {
     return {
       elementRect: document.querySelector(selector)?.getBoundingClientRect(),
@@ -245,12 +244,11 @@ async function takeScreenshot(browser: WebDriver, captureElement?: string | null
     elementRect.width + elementRect.left <= windowSize.width &&
     elementRect.height + elementRect.top <= windowSize.height;
 
-  const screenshot = await (isFitIntoViewport
-    ? browser.findElement(By.css(captureElement)).takeScreenshot()
-    : takeCompositeScreenshot(browser, windowSize, elementRect));
+  if (isFitIntoViewport) return browser.findElement(By.css(captureElement)).takeScreenshot();
 
+  const restoreScroll = await hideBrowserScroll(browser);
+  const screenshot = await takeCompositeScreenshot(browser, windowSize, elementRect);
   await restoreScroll();
-
   return screenshot;
 }
 
