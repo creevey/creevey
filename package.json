@@ -46,6 +46,7 @@
     "selenium-webdriver": "^4.0.0-alpha.5"
   },
   "dependencies": {
+    "@types/chai": "^4.2.9",
     "@storybook/csf": "^0.0.1",
     "chai": "^4.2.0",
     "chalk": "^3.0.0",
@@ -79,7 +80,6 @@
     "@skbkontur/react-icons": "^3.2.1",
     "@skbkontur/react-ui": "1.9.0",
     "@storybook/react": "^5.3.14",
-    "@types/chai": "^4.2.9",
     "@types/glob-base": "^0.3.0",
     "@types/html-webpack-plugin": "^3.2.2",
     "@types/interpret": "^1.1.1",

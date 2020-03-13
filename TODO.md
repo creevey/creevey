@@ -144,7 +144,7 @@
   - [ ] Add `didCatch` method to storybook decorator. Handle errors while switch stories
   - [ ] Support declarative 6.0 decorators format, like this https://github.com/storybookjs/storybook/tree/master/addons/knobs/src/preset
   - [ ] Manually create ClientApi instance, if it doesn't exists
-- [ ] Add composite screenshot helper
+- [x] Add composite screenshot helper (this.takeScreenshot should be composite)
 - [ ] Don't output skipped tests
 - [ ] Allow define custom extensions to ignore it while story loading process
 - [ ] Optimize stories loading:

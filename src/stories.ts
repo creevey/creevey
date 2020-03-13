@@ -130,7 +130,7 @@ async function takeCompositeScreenshot(
   return PNG.sync.write(compositeImage).toString('base64');
 }
 
-async function takeScreenshot(browser: WebDriver, captureElement?: string): Promise<string> {
+export async function takeScreenshot(browser: WebDriver, captureElement?: string | null): Promise<string> {
   if (!captureElement) return browser.takeScreenshot();
 
   const restoreScroll = await hideBrowserScroll(browser);
@@ -154,7 +154,7 @@ async function takeScreenshot(browser: WebDriver, captureElement?: string): Prom
   return screenshot;
 }
 
-function storyTestFabric(captureElement?: string, delay?: number) {
+function storyTestFabric(captureElement?: string | null, delay?: number) {
   return async function storyTest(this: Context) {
     delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;
     const screenshot = await takeScreenshot(this.browser, captureElement);

@@ -5,6 +5,7 @@ import { Context, Test, Suite } from 'mocha';
 import { Builder, By, until, WebDriver, Origin } from 'selenium-webdriver';
 import { Extension, jsVariants, ExtensionDescriptor, Hook } from 'interpret';
 import { Config, BrowserConfig, SkipOptions, isDefined, StoryInput } from './types';
+import { takeScreenshot } from './stories';
 
 type PlatformFS = typeof fs;
 type PlatformPath = typeof path;
@@ -205,8 +206,7 @@ export async function switchStory(this: Context): Promise<void> {
     });
   else Reflect.deleteProperty(this, 'captureElement');
 
-  this.takeScreenshot = (optionalScroll?: boolean | undefined) =>
-    this.captureElement?.takeScreenshot(optionalScroll) ?? this.browser.takeScreenshot();
+  this.takeScreenshot = () => takeScreenshot(this.browser, captureElement);
 
   this.testScope.reverse();
 }
