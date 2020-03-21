@@ -145,7 +145,7 @@
   - [ ] Support declarative 6.0 decorators format, like this https://github.com/storybookjs/storybook/tree/master/addons/knobs/src/preset
   - [ ] Manually create ClientApi instance, if it doesn't exists
 - [x] Add composite screenshot helper (this.takeScreenshot should be composite)
-- [ ] Don't apply scrollbar hiding styles in composite images
+- [x] Don't apply scrollbar hiding styles in composite images
 - [ ] Don't output skipped tests
 - [ ] Allow define custom extensions to ignore it while story loading process
 - [ ] Optimize stories loading:
@@ -165,6 +165,7 @@
 
 ## Not in first time
 
+- [ ] Improve css filter for blend view, try to reach pixelmatch output
 - [ ] Profile tests loading process (maybe we don't need workers at all)
 - [ ] Don't reset scroll on swap images
 - [ ] Support config in ES Modules

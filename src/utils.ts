@@ -161,9 +161,11 @@ async function takeCompositeScreenshot(
   elementRect: DOMRect,
 ): Promise<string> {
   const screens = [];
-  // NOTE Firefox take viewport screenshot without scrollbars
-  const isFirefox = (await browser.getCapabilities()).get('browserName') == 'firefox';
+  const browserName = (await browser.getCapabilities()).get('browserName');
+  // NOTE Firefox and Safari take viewport screenshot without scrollbars
+  const isScreenshotWithoutScrollBar = browserName == 'firefox' || browserName == 'Safari';
   const scrollBarWidth = await getScrollBarWidth(browser);
+  // NOTE Sometimes viewport has been scrolled somewhere
   const normalizedElementRect = {
     left: elementRect.left - windowRect.x,
     right: elementRect.right - windowRect.x,
@@ -213,7 +215,7 @@ async function takeCompositeScreenshot(
       const row = Math.floor(y / viewportHeight);
       const isLastCol = cols - col == 1;
       const isLastRow = rows - row == 1;
-      const scrollOffset = isFitVertically || isFirefox ? 0 : scrollBarWidth;
+      const scrollOffset = isFitVertically || isScreenshotWithoutScrollBar ? 0 : scrollBarWidth;
       const i = (y * compositeImage.width + x) * 4;
       const j =
         // NOTE compositeImage(x, y) => image(x, y)
