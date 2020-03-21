@@ -134,66 +134,64 @@ function disableAnimations(browser: WebDriver): Promise<void> {
   }, disableAnimationsStyles);
 }
 
-async function hideBrowserScroll(browser: WebDriver): Promise<() => Promise<void>> {
-  const HideScrollStyles = `
-html {
-  overflow: -moz-scrollbars-none !important;
-  -ms-overflow-style: none !important;
-}
-html::-webkit-scrollbar {
-  width: 0 !important;
-  height: 0 !important;
-}
-`;
+const getScrollBarWidth: (browser: WebDriver) => Promise<number> = (() => {
+  let scrollBarWidth: number | null = null;
 
-  await browser.executeScript(function(stylesheet: string) {
-    /* eslint-disable no-var */
-    var style = document.createElement('style');
-    var textNode = document.createTextNode(stylesheet);
-    style.setAttribute('type', 'text/css');
-    style.appendChild(textNode);
-    document.head.appendChild(style);
+  return async (browser: WebDriver): Promise<number> => {
+    if (scrollBarWidth != null) return Promise.resolve(scrollBarWidth);
+    scrollBarWidth = await browser.executeScript<number>(function() {
+      // eslint-disable-next-line no-var
+      var div = document.createElement('div');
+      div.innerHTML = 'a'; // NOTE: In IE clientWidth is 0 if this div is empty.
+      div.style.overflowY = 'scroll';
+      document.body.appendChild(div);
+      // eslint-disable-next-line no-var
+      var widthDiff = div.offsetWidth - div.clientWidth;
+      document.body.removeChild(div);
 
-    window.__CREEVEY_RESTORE_SCROLL__ = function() {
-      if (document.head.contains(style)) {
-        document.head.removeChild(style);
-      }
-      delete window.__CREEVEY_RESTORE_SCROLL__;
-    };
-    /* eslint-enable no-var */
-  }, HideScrollStyles);
-
-  return () =>
-    browser.executeScript(function() {
-      if (window.__CREEVEY_RESTORE_SCROLL__) {
-        window.__CREEVEY_RESTORE_SCROLL__();
-      }
+      return widthDiff;
     });
-}
+    return scrollBarWidth;
+  };
+})();
 
 async function takeCompositeScreenshot(
   browser: WebDriver,
-  windowSize: { width: number; height: number },
+  windowRect: { width: number; height: number; x: number; y: number },
   elementRect: DOMRect,
 ): Promise<string> {
   const screens = [];
-  const cols = Math.ceil(elementRect.width / windowSize.width);
-  const rows = Math.ceil(elementRect.height / windowSize.height);
-  const isFitHorizontally = windowSize.width >= elementRect.width + elementRect.left;
-  const isFitVertically = windowSize.height >= elementRect.height + elementRect.top;
+  // NOTE Firefox take viewport screenshot without scrollbars
+  const isFirefox = (await browser.getCapabilities()).get('browserName') == 'firefox';
+  const scrollBarWidth = await getScrollBarWidth(browser);
+  const normalizedElementRect = {
+    left: elementRect.left - windowRect.x,
+    right: elementRect.right - windowRect.x,
+    top: elementRect.top - windowRect.y,
+    bottom: elementRect.bottom - windowRect.y,
+  };
+  const isFitHorizontally = windowRect.width >= elementRect.width + normalizedElementRect.left;
+  const isFitVertically = windowRect.height >= elementRect.height + normalizedElementRect.top;
+  const viewportWidth = windowRect.width - (isFitVertically ? 0 : scrollBarWidth);
+  const viewportHeight = windowRect.height - (isFitHorizontally ? 0 : scrollBarWidth);
+  const cols = Math.ceil(elementRect.width / viewportWidth);
+  const rows = Math.ceil(elementRect.height / viewportHeight);
   const xOffset = Math.round(
-    isFitHorizontally ? elementRect.left : Math.max(0, cols * windowSize.width - elementRect.width),
+    isFitHorizontally ? normalizedElementRect.left : Math.max(0, cols * viewportWidth - elementRect.width),
   );
   const yOffset = Math.round(
-    isFitVertically ? elementRect.top : Math.max(0, rows * windowSize.height - elementRect.height),
+    isFitVertically ? normalizedElementRect.top : Math.max(0, rows * viewportHeight - elementRect.height),
   );
 
   for (let row = 0; row < rows; row += 1) {
     for (let col = 0; col < cols; col += 1) {
-      const dx = Math.min(windowSize.width * col + elementRect.left, Math.max(0, elementRect.right - windowSize.width));
+      const dx = Math.min(
+        viewportWidth * col + normalizedElementRect.left,
+        Math.max(0, normalizedElementRect.right - viewportWidth),
+      );
       const dy = Math.min(
-        windowSize.height * row + elementRect.top,
-        Math.max(0, elementRect.bottom - windowSize.height),
+        viewportHeight * row + normalizedElementRect.top,
+        Math.max(0, normalizedElementRect.bottom - viewportHeight),
       );
       await browser.executeScript(
         function(x: number, y: number) {
@@ -211,14 +209,17 @@ async function takeCompositeScreenshot(
 
   for (let y = 0; y < compositeImage.height; y += 1) {
     for (let x = 0; x < compositeImage.width; x += 1) {
-      const col = Math.floor(x / windowSize.width);
-      const row = Math.floor(y / windowSize.height);
+      const col = Math.floor(x / viewportWidth);
+      const row = Math.floor(y / viewportHeight);
       const isLastCol = cols - col == 1;
       const isLastRow = rows - row == 1;
+      const scrollOffset = isFitVertically || isFirefox ? 0 : scrollBarWidth;
       const i = (y * compositeImage.width + x) * 4;
       const j =
-        ((y % windowSize.height) * windowSize.width + (x % windowSize.width)) * 4 +
-        (isLastRow ? yOffset * windowSize.width * 4 : 0) +
+        // NOTE compositeImage(x, y) => image(x, y)
+        ((y % viewportHeight) * (viewportWidth + scrollOffset) + (x % viewportWidth)) * 4 +
+        // NOTE Offset for last row/col image
+        (isLastRow ? yOffset * (viewportWidth + scrollOffset) * 4 : 0) +
         (isLastCol ? xOffset * 4 : 0);
       const image = images[row * cols + col];
       compositeImage.data[i + 0] = image.data[j + 0];
@@ -233,23 +234,26 @@ async function takeCompositeScreenshot(
 async function takeScreenshot(browser: WebDriver, captureElement?: string | null): Promise<string> {
   if (!captureElement) return browser.takeScreenshot();
 
-  const { elementRect, windowSize } = await browser.executeScript(function(selector: string) {
+  const { elementRect, windowRect } = await browser.executeScript(function(selector: string) {
+    window.scrollTo(0, 0);
     return {
       elementRect: document.querySelector(selector)?.getBoundingClientRect(),
-      windowSize: { width: window.innerWidth, height: window.innerHeight },
+      windowRect: {
+        width: window.innerWidth,
+        height: window.innerHeight,
+        x: Math.round(window.scrollX),
+        y: Math.round(window.scrollY),
+      },
     };
   }, captureElement);
 
   const isFitIntoViewport =
-    elementRect.width + elementRect.left <= windowSize.width &&
-    elementRect.height + elementRect.top <= windowSize.height;
+    elementRect.width + elementRect.left <= windowRect.width &&
+    elementRect.height + elementRect.top <= windowRect.height;
 
   if (isFitIntoViewport) return browser.findElement(By.css(captureElement)).takeScreenshot();
 
-  const restoreScroll = await hideBrowserScroll(browser);
-  const screenshot = await takeCompositeScreenshot(browser, windowSize, elementRect);
-  await restoreScroll();
-  return screenshot;
+  return takeCompositeScreenshot(browser, windowRect, elementRect);
 }
 
 function selectStory(browser: WebDriver, storyId: string, kind: string, story: string): Promise<void> {
