@@ -30,6 +30,7 @@ export function BlendView({ actual, diff, expect }: ViewProps): JSX.Element {
           css={css`
             border: 1px solid #419d14;
             max-width: 100%;
+            filter: invert(100%);
           `}
         />
       </div>
@@ -49,6 +50,7 @@ export function BlendView({ actual, diff, expect }: ViewProps): JSX.Element {
           css={css`
             border: 1px solid #d9472b;
             max-width: 100%;
+            filter: invert(100%);
             mix-blend-mode: difference;
           `}
         />
