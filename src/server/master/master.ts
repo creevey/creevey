@@ -1,4 +1,5 @@
 import path from 'path';
+import cluster from 'cluster';
 import { writeFileSync, copyFile, readdir, mkdir } from 'fs';
 import { promisify } from 'util';
 import { Config, Test, isDefined, ServerTest } from '../../types';
@@ -70,11 +71,13 @@ export default async function master(config: Config): Promise<Runner> {
   process.on('SIGINT', () => {
     if (runner.isRunning) {
       // TODO Better handle stop
-      setTimeout(() => process.exit(0), 10000);
-      runner.once('stop', () => process.exit(0));
+      Promise.race([
+        new Promise(resolve => setTimeout(resolve, 10000)),
+        new Promise(resolve => runner.once('stop', resolve)),
+      ]).then(() => cluster.disconnect(() => process.exit(0)));
       runner.stop();
     } else {
-      process.exit(0);
+      cluster.disconnect(() => process.exit(0));
     }
   });
   process.on('exit', () => writeFileSync(reportDataPath, reportDataModule(runner.status.tests)));

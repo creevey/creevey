@@ -1,3 +1,4 @@
+import cluster from 'cluster';
 import minimist from 'minimist';
 import chalk from 'chalk';
 import { addHook } from 'pirates';
@@ -31,8 +32,9 @@ process.on('unhandledRejection', reason => {
 
   if (process.send) {
     process.send(JSON.stringify({ type: 'error', payload: { status: 'failed', error } }));
+    return;
   }
-  process.exit(-1);
+  cluster.disconnect(() => process.exit(-1));
 });
 
 const argv = minimist<Options>(process.argv.slice(2), {

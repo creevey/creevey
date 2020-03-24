@@ -78,7 +78,7 @@ export default class Pool extends EventEmitter {
     worker.once('message', data => {
       const message: WorkerMessage = JSON.parse(data);
       if (message.type == 'ready') return;
-      if (message.type == 'error') worker.kill();
+      if (message.type == 'error') worker.disconnect();
 
       const { payload: result } = message;
       const { status } = result;

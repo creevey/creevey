@@ -1,3 +1,4 @@
+import cluster from 'cluster';
 import master from './master';
 import creeveyServer from './server';
 import creeveyApi from './api';
@@ -15,7 +16,7 @@ export default async function(config: Config, options: Options): Promise<void> {
         .filter(({ skip }) => !skip)
         .every(({ status }) => status == 'success');
       // TODO output summary
-      process.exit(isSuccess ? 0 : -1);
+      cluster.disconnect(() => process.exit(isSuccess ? 0 : -1));
     });
     // TODO grep
     runner.start(Object.keys(runner.status.tests));
