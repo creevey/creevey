@@ -84,7 +84,8 @@ export function convertStories(
 }
 
 function initStorybookEnvironment(): void {
-  require('jsdom-global/register');
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  require('jsdom-global')(undefined, { url: 'http://localhost' });
 
   // NOTE Cutoff `jsdom` part from userAgent, because storybook check enviroment and create events channel if runs in browser
   // https://github.com/storybookjs/storybook/blob/v5.2.8/lib/core/src/client/preview/start.js#L98
