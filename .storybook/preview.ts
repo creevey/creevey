@@ -1,4 +1,5 @@
-import { addDecorator } from '@storybook/react';
+import { addDecorator, addParameters } from '@storybook/react';
 import { withCreevey } from '../src/storybook';
 
-addDecorator(withCreevey({ captureElement: '#root' }));
+addParameters({ creevey: { captureElement: '#root' } });
+addDecorator(withCreevey());

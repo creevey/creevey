@@ -132,6 +132,7 @@
 - [x] Chai used as deps, but in stories should imported explicitly. Add chai to peerdeps
 - [x] Add description for types properties, like config/decorator/etc
 - [x] Init pirates before any compiler (fix error with ts-node (allowJs: true) and pirates order)
+- [x] Add `delay` option for stories. To allow wait some time before real test started (right after switch story)
 
   </details>
 
@@ -177,6 +178,7 @@
   - [x] SideBar
   - [ ] ResultPageHeader
 - [ ] Bugs
+  - [ ] In multiple images tests output test error for every image
   - [ ] Firefox double click if clicks in different tests
   - [ ] Reconnect on `WebDriverError: Session timed out or not found`
   - [ ] Mocha worker `Possible EventEmitter memory leak detected. 11 error listeners added`

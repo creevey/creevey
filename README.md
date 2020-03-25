@@ -16,10 +16,11 @@ Pretty easy visual testing with magic
 
 ```ts
 // .storybook/preview.js or .storybook/config.js
-import { addDecorator } from '@storybook/react';
+import { addDecorator, addParameters } from '@storybook/react';
 import { withCreevey } from 'creevey';
 
-addDecorator(withCreevey({ captureElement: '#root' }));
+addParameters({ creevey: { captureElement: '#root' } });
+addDecorator(withCreevey());
 
 /* ... */
 ```
@@ -72,14 +73,14 @@ NOTE: By default Creevey load stories with all dependency modules recursively. B
 - `--reportDir` — Path where reports will be stored
 - `--screenDir` — Path where reference images are located
 
-## `withCreevey` decorator parameters
+## Creevey storybook parameters
 
-You can specify storybook parameters for `withCreevey` decorator:
+You can specify storybook parameters on various levels of stories:
 
 ```tsx
 // Global parameters can be defined in storybook config
-addDecorator(
-  withCreevey({
+addParameters({
+  creevey: {
     captureElement: '#root',
     tests: {
       /* see examples below */
@@ -87,8 +88,8 @@ addDecorator(
     skip: {
       /* see examples below */
     },
-  }),
-);
+  },
+});
 ```
 
 ```tsx

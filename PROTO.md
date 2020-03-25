@@ -33,3 +33,10 @@ subscribe once `storyRendered`
 emit `setCurrentStory` with target storyId
 
 Optional subscribe storyError or something
+
+- Check new framework agnostic api in repo
+- Check E2E
+  - 4.x/5.x/6.x Storybook versions
+  - Angular support
+  - Addons register
+  - Declarative configs for 6.x
