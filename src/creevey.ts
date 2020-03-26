@@ -25,7 +25,7 @@ addHook(() => '', {
   ignoreNodeModules: false,
 });
 
-process.on('unhandledRejection', reason => {
+process.on('unhandledRejection', (reason) => {
   const error = reason instanceof Error ? reason.stack || reason.message : reason;
 
   console.log(chalk`[{red FAIL}{grey :${process.pid}}]`, error);

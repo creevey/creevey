@@ -24,7 +24,7 @@ export function readConfig(configPath: string, options: Options): Config {
   const userConfig: typeof defaultConfig & Partial<Pick<Config, 'gridUrl'>> = { ...defaultConfig };
 
   const { dir: configDir, base: configFile } = path.parse(configPath);
-  if (fs.readdirSync(configDir).find(filename => filename.startsWith(configFile))) {
+  if (fs.readdirSync(configDir).find((filename) => filename.startsWith(configFile))) {
     Object.assign(userConfig, requireConfig<Config>(configPath));
   }
 

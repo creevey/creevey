@@ -37,10 +37,7 @@ Slide.story = {
         async click() {
           const idle = await this.takeScreenshot();
 
-          await this.browser
-            .actions({ bridge: true })
-            .click(this.captureElement)
-            .perform();
+          await this.browser.actions({ bridge: true }).click(this.captureElement).perform();
 
           const click = await this.takeScreenshot();
 

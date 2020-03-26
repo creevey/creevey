@@ -25,8 +25,8 @@ const TESTKONTUR_REGEXP = /testkontur/gi;
     );
     if (!babelCompiler) return;
     const oldRegister = babelCompiler.register;
-    babelCompiler.register = function(hook) {
-      oldRegister((options =>
+    babelCompiler.register = function (hook) {
+      oldRegister(((options) =>
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
         hook({ ...options, extensions: ['.es6', '.es', '.jsx', '.js', '.mjs', '.ts', '.tsx'] })) as Hook);
@@ -36,7 +36,7 @@ const TESTKONTUR_REGEXP = /testkontur/gi;
 
 function getRealIp(): Promise<string> {
   return new Promise((resolve, reject) =>
-    https.get('https://fake.testkontur.ru/ip', res => {
+    https.get('https://fake.testkontur.ru/ip', (res) => {
       if (res.statusCode !== 200) {
         return reject(new Error(`Couldn't resolve real ip for \`localhost\`. Status code: ${res.statusCode}`));
       }
@@ -44,7 +44,7 @@ function getRealIp(): Promise<string> {
       let data = '';
 
       res.setEncoding('utf8');
-      res.on('data', chunk => (data += chunk));
+      res.on('data', (chunk) => (data += chunk));
       res.on('end', () => resolve(data));
     }),
   );
@@ -52,7 +52,7 @@ function getRealIp(): Promise<string> {
 
 async function resetMousePosition(browser: WebDriver): Promise<void> {
   const isChrome = (await browser.getCapabilities()).get('browserName') == 'chrome';
-  const { top, left, width, height } = await browser.executeScript(function() {
+  const { top, left, width, height } = await browser.executeScript(function () {
     /* eslint-disable no-var */
     // NOTE On storybook >= 4.x already reset scroll
     window.scrollTo(0, 0);
@@ -80,19 +80,13 @@ async function resetMousePosition(browser: WebDriver): Promise<void> {
   } else {
     // NOTE Firefox for some reason moving by 0 x 0 move cursor in bottom left corner :sad:
     // NOTE IE don't emit move events until force window focus or connect by RDP on virtual machine
-    await browser
-      .actions()
-      .move({ origin: Origin.VIEWPORT, x: 0, y: 1 })
-      .perform();
+    await browser.actions().move({ origin: Origin.VIEWPORT, x: 0, y: 1 }).perform();
   }
 }
 
 async function resizeViewport(browser: WebDriver, viewport: { width: number; height: number }): Promise<void> {
-  const windowRect = await browser
-    .manage()
-    .window()
-    .getRect();
-  const { innerWidth, innerHeight } = await browser.executeScript(function() {
+  const windowRect = await browser.manage().window().getRect();
+  const { innerWidth, innerHeight } = await browser.executeScript(function () {
     return {
       innerWidth: window.innerWidth,
       innerHeight: window.innerHeight,
@@ -123,7 +117,7 @@ function disableAnimations(browser: WebDriver): Promise<void> {
   transition: 0s !important;
 }
 `;
-  return browser.executeScript(function(stylesheet: string) {
+  return browser.executeScript(function (stylesheet: string) {
     /* eslint-disable no-var */
     var style = document.createElement('style');
     var textNode = document.createTextNode(stylesheet);
@@ -139,7 +133,7 @@ const getScrollBarWidth: (browser: WebDriver) => Promise<number> = (() => {
 
   return async (browser: WebDriver): Promise<number> => {
     if (scrollBarWidth != null) return Promise.resolve(scrollBarWidth);
-    scrollBarWidth = await browser.executeScript<number>(function() {
+    scrollBarWidth = await browser.executeScript<number>(function () {
       // eslint-disable-next-line no-var
       var div = document.createElement('div');
       div.innerHTML = 'a'; // NOTE: In IE clientWidth is 0 if this div is empty.
@@ -196,7 +190,7 @@ async function takeCompositeScreenshot(
         Math.max(0, normalizedElementRect.bottom - viewportHeight),
       );
       await browser.executeScript(
-        function(x: number, y: number) {
+        function (x: number, y: number) {
           window.scrollTo(x, y);
         },
         dx,
@@ -206,7 +200,7 @@ async function takeCompositeScreenshot(
     }
   }
 
-  const images = screens.map(s => Buffer.from(s, 'base64')).map(b => PNG.sync.read(b));
+  const images = screens.map((s) => Buffer.from(s, 'base64')).map((b) => PNG.sync.read(b));
   const compositeImage = new PNG({ width: Math.round(elementRect.width), height: Math.round(elementRect.height) });
 
   for (let y = 0; y < compositeImage.height; y += 1) {
@@ -236,7 +230,7 @@ async function takeCompositeScreenshot(
 async function takeScreenshot(browser: WebDriver, captureElement?: string | null): Promise<string> {
   if (!captureElement) return browser.takeScreenshot();
 
-  const { elementRect, windowRect } = await browser.executeScript(function(selector: string) {
+  const { elementRect, windowRect } = await browser.executeScript(function (selector: string) {
     window.scrollTo(0, 0);
     return {
       elementRect: document.querySelector(selector)?.getBoundingClientRect(),
@@ -260,7 +254,7 @@ async function takeScreenshot(browser: WebDriver, captureElement?: string | null
 
 function selectStory(browser: WebDriver, storyId: string, kind: string, story: string): Promise<void> {
   return browser.executeAsyncScript(
-    function(storyId: string, kind: string, name: string, callback: Function) {
+    function (storyId: string, kind: string, name: string, callback: Function) {
       window.__CREEVEY_SELECT_STORY__(storyId, kind, name, callback);
     },
     storyId,
@@ -284,10 +278,7 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
   if (LOCALHOST_REGEXP.test(address) && TESTKONTUR_REGEXP.test(gridUrl)) {
     realAddress = address.replace(LOCALHOST_REGEXP, await getRealIp());
   }
-  const browser = await new Builder()
-    .usingServer(gridUrl)
-    .withCapabilities(capabilities)
-    .build();
+  const browser = await new Builder().usingServer(gridUrl).withCapabilities(capabilities).build();
 
   if (viewport) {
     await resizeViewport(browser, viewport);
@@ -360,7 +351,7 @@ export function shouldSkip(
     return skipOptions;
   }
   if (Array.isArray(skipOptions)) {
-    return skipOptions.map(skipOption => shouldSkip(meta, skipOption, test)).find(Boolean) || false;
+    return skipOptions.map((skipOption) => shouldSkip(meta, skipOption, test)).find(Boolean) || false;
   }
   const { in: browsers, kinds, stories, tests, reason = true } = skipOptions;
   const { browser, kind, story } = meta;
@@ -380,7 +371,7 @@ function registerCompiler(moduleDescriptor: Extension | null): void {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       moduleDescriptor.register(require(moduleDescriptor.module));
     } else {
-      moduleDescriptor.find(extension => {
+      moduleDescriptor.find((extension) => {
         try {
           registerCompiler(extension);
           return true;
@@ -395,7 +386,7 @@ function registerCompiler(moduleDescriptor: Extension | null): void {
 export function requireConfig<T>(configPath: string): T {
   let ext = path.extname(configPath);
   if (!ext || ext == '.config') {
-    ext = Object.keys(jsVariants).find(key => fs.existsSync(`${configPath}${key}`)) || ext;
+    ext = Object.keys(jsVariants).find((key) => fs.existsSync(`${configPath}${key}`)) || ext;
     configPath += ext;
   }
   try {
@@ -403,7 +394,7 @@ export function requireConfig<T>(configPath: string): T {
   } catch (error) {
     const childModules = require.cache[__filename].children;
     // NOTE If config load failed then the module of config can't have child modules
-    if (childModules.find(child => child.filename == configPath)?.children.length != 0) {
+    if (childModules.find((child) => child.filename == configPath)?.children.length != 0) {
       throw error;
     }
     registerCompiler(jsVariants[ext]);

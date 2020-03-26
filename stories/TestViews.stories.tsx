@@ -9,7 +9,7 @@ export default {
 const CHUNK_SIZE = 250;
 const DIAG_LENGTH = (2 * CHUNK_SIZE ** 2) ** (1 / 2);
 
-const ComponentChunk: FunctionComponent = props => (
+const ComponentChunk: FunctionComponent = (props) => (
   <div
     css={css`
       background-color: #a5d6a7;
@@ -46,7 +46,7 @@ const ComponentChunk: FunctionComponent = props => (
   </div>
 );
 
-const ChunkTiles: FunctionComponent<{ size: number; offset: number }> = props => (
+const ChunkTiles: FunctionComponent<{ size: number; offset: number }> = (props) => (
   <div
     data-tid="CaptureElement"
     css={css`

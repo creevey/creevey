@@ -48,7 +48,7 @@ function registerRequireContext(): void {
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
   // @ts-ignore
-  module.constructor.wrap = function(script: string) {
+  module.constructor.wrap = function (script: string) {
     return wrap(
       `require.context = ${requireContext.toString()};
       ${script}`,

@@ -60,7 +60,7 @@ function compareImages(expect: Buffer, actual: Buffer, diffOptions: DiffOptions)
   };
 }
 
-export default function(
+export default function (
   getExpected: (
     imageName?: string,
   ) => Promise<

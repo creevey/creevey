@@ -18,7 +18,7 @@ export function withCreevey(): MakeDecoratorResult {
 
   async function selectStory(storyId: string, kind: string, name: string, callback: Function): Promise<void> {
     if (storyId == currentStory) {
-      const storyMissingPromise = new Promise(resolve => channel.once(Events.STORY_MISSING, resolve));
+      const storyMissingPromise = new Promise((resolve) => channel.once(Events.STORY_MISSING, resolve));
       channel.emit(Events.SET_CURRENT_STORY, { storyId: true, name, kind });
       await storyMissingPromise;
     }

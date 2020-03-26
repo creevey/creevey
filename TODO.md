@@ -134,7 +134,7 @@
 - [x] Init pirates before any compiler (fix error with ts-node (allowJs: true) and pirates order)
 - [x] Add `delay` option for stories. To allow wait some time before real test started (right after switch story)
 
-  </details>
+</details>
 
 ## First priority
 

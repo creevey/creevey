@@ -28,7 +28,7 @@ import { shouldSkip, requireConfig } from './utils';
 
 function storyTestFabric(delay?: number) {
   return async function storyTest(this: Context) {
-    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;
+    delay ? await new Promise((resolve) => setTimeout(resolve, delay)) : void 0;
     await this.expect(await this.takeScreenshot()).to.matchImage();
   };
 }
@@ -45,9 +45,7 @@ function createCreeveyTest(
   const { browser, kind, story } = meta;
   const path = [browser, testName, story, kind].filter(isDefined);
   const skip = skipOptions ? shouldSkip(meta, skipOptions, testName) : false;
-  const id = createHash('sha1')
-    .update(path.join('/'))
-    .digest('hex');
+  const id = createHash('sha1').update(path.join('/')).digest('hex');
   return { id, skip, path };
 }
 
@@ -57,8 +55,8 @@ export function convertStories(
 ): Partial<{ [testId: string]: ServerTest }> {
   const tests: { [testId: string]: ServerTest } = {};
 
-  (Array.isArray(stories) ? stories : Object.values(stories)).forEach(story => {
-    browsers.forEach(browserName => {
+  (Array.isArray(stories) ? stories : Object.values(stories)).forEach((story) => {
+    browsers.forEach((browserName) => {
       const { delay, tests: storyTests, skip }: CreeveyStoryParams = story.parameters.creevey ?? {};
       const meta = { browser: browserName, story: story.name, kind: story.kind };
 
@@ -106,9 +104,9 @@ function optimizeStoriesLoading(storybookDir: string): void {
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
   // @ts-ignore
-  module.constructor.wrap = function(script: string) {
+  module.constructor.wrap = function (script: string) {
     return wrap(
-      `const shouldSkip = !(${function(storybookDir: string) {
+      `const shouldSkip = !(${function (storybookDir: string) {
         const { filename: parentFilename } = require.cache[__filename].parent ?? {};
 
         return (
@@ -122,9 +120,9 @@ function optimizeStoriesLoading(storybookDir: string): void {
         );
       }.toString()})(${JSON.stringify(storybookDir)});
 
-      if (shouldSkip) return module.exports = (${function() {
+      if (shouldSkip) return module.exports = (${function () {
         const proxy: Function = new Proxy(
-          function() {
+          function () {
             /* noop */
           },
           {
@@ -251,7 +249,7 @@ function removeOldStories(filename: string, storyStore: StoryStore, kinds?: Set<
 
   if (!kinds || kinds.size == 0) return;
   // NOTE If user has more than one file with same kind. And one that file has been changed, we remove all stories on that kind
-  kinds.forEach(kind => storyStore.removeStoryKind(kind));
+  kinds.forEach((kind) => storyStore.removeStoryKind(kind));
   storyStore.incrementRevision();
 }
 
@@ -272,7 +270,7 @@ function watchStories(storybookDir: string, stories: StoriesRaw, filesOrBlobs: s
   addons.getChannel().on(Events.SET_STORIES, (data: { stories: StoriesRaw }) => {
     kindsByFiles = mapKindsToFiles(data.stories);
 
-    Object.values(data.stories).forEach(story => storiesByFiles.get(story.parameters.fileName)?.push(story));
+    Object.values(data.stories).forEach((story) => storiesByFiles.get(story.parameters.fileName)?.push(story));
     addons.getChannel().emit('storiesUpdated', storiesByFiles);
     storiesByFiles = new Map();
   });
@@ -299,7 +297,7 @@ function loadOldStorybookConfig(storybookDir: string): void {
     watchStories(
       storybookDir,
       data.stories,
-      Array.from(new Set(Object.values(data.stories).map(story => story.parameters.fileName))),
+      Array.from(new Set(Object.values(data.stories).map((story) => story.parameters.fileName))),
     );
   });
   requireConfig(path.join(storybookDir, 'config'));
@@ -331,7 +329,7 @@ function loadNewStorybookConfigs(storybookDir: string): void {
     .map(({ path: basePath, recursive, match }) =>
       require.context(path.resolve(storybookDir, basePath), recursive, match),
     )
-    .forEach(req => req.keys().forEach(filename => loadStoriesFromFile(filename, clientApi)));
+    .forEach((req) => req.keys().forEach((filename) => loadStoriesFromFile(filename, clientApi)));
 }
 
 export function loadStorybookConfig(
@@ -339,7 +337,7 @@ export function loadStorybookConfig(
   enableFastStoriesLoading: boolean,
   storiesListener: (stories: Map<string, StoryInput[]>) => void,
 ): Promise<StoriesRaw> {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     initStorybookEnvironment();
 
     const channel = createChannel({ page: 'preview' });
@@ -351,8 +349,8 @@ export function loadStorybookConfig(
     if (enableFastStoriesLoading) optimizeStoriesLoading(storybookDir);
 
     const storybookFiles = readdirSync(storybookDir);
-    const hasOldConfig = Boolean(storybookFiles.find(filename => filename.startsWith('config')));
-    const hasNewConfig = Boolean(storybookFiles.find(filename => filename.startsWith('main')));
+    const hasOldConfig = Boolean(storybookFiles.find((filename) => filename.startsWith('config')));
+    const hasNewConfig = Boolean(storybookFiles.find((filename) => filename.startsWith('main')));
 
     if (hasOldConfig && hasNewConfig)
       throw new Error("You can't use both old and new storybook configs in the same time");
@@ -370,17 +368,17 @@ export async function loadTestsFromStories(
   applyTestsDiff: (testsDiff: Partial<{ [id: string]: ServerTest }>) => void,
 ): Promise<Partial<{ [id: string]: ServerTest }>> {
   const testIdsByFiles: Map<string, string[]> = new Map();
-  const stories = await loadStorybookConfig(config.storybookDir, config.enableFastStoriesLoading, storiesByFiles => {
+  const stories = await loadStorybookConfig(config.storybookDir, config.enableFastStoriesLoading, (storiesByFiles) => {
     const testsDiff: Partial<{ [id: string]: ServerTest }> = {};
     Array.from(storiesByFiles.entries()).forEach(([filename, stories]) => {
       const tests = convertStories(browsers, stories);
       const changed = Object.keys(tests);
-      const removed = testIdsByFiles.get(filename)?.filter(testId => !tests[testId]) ?? [];
+      const removed = testIdsByFiles.get(filename)?.filter((testId) => !tests[testId]) ?? [];
       if (changed.length == 0) testIdsByFiles.delete(filename);
       else testIdsByFiles.set(filename, changed);
 
       Object.assign(testsDiff, tests);
-      removed.forEach(testId => (testsDiff[testId] = undefined));
+      removed.forEach((testId) => (testsDiff[testId] = undefined));
     });
     applyTestsDiff(testsDiff);
   });

@@ -11,7 +11,7 @@ function openSuites(suite: CreeveySuite): CreeveySuite {
   suite.opened = true;
   Object.values(suite.children)
     .filter(isDefined)
-    .forEach(suite => isTest(suite) || openSuites(suite));
+    .forEach((suite) => isTest(suite) || openSuites(suite));
 
   return suite;
 }
