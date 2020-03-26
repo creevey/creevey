@@ -252,15 +252,16 @@ async function takeScreenshot(browser: WebDriver, captureElement?: string | null
   return takeCompositeScreenshot(browser, windowRect, elementRect);
 }
 
-function selectStory(browser: WebDriver, storyId: string, kind: string, story: string): Promise<void> {
-  return browser.executeAsyncScript(
-    function (storyId: string, kind: string, name: string, callback: Function) {
+async function selectStory(browser: WebDriver, storyId: string, kind: string, story: string): Promise<void> {
+  const errorMessage = await browser.executeAsyncScript<string | undefined>(
+    function (storyId: string, kind: string, name: string, callback: (error?: string) => void) {
       window.__CREEVEY_SELECT_STORY__(storyId, kind, name, callback);
     },
     storyId,
     kind,
     story,
   );
+  if (errorMessage) throw new Error(errorMessage);
 }
 
 export async function getBrowser(config: Config, browserConfig: BrowserConfig): Promise<WebDriver> {
