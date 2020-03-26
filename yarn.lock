@@ -1087,17 +1087,17 @@
   dependencies:
     any-observable "^0.3.0"
 
-"@skbkontur/react-icons@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@skbkontur/react-icons/-/react-icons-3.2.1.tgz#d102540406985bd6b5d5401251fc0d83e0c8a58e"
-  integrity sha512-AUTz8XijsJI9c25aU+lwZA6I84qeQUJ5TYe0wnj5uT8WgSEc9MHwMi0/hHjB73JAneNE9eQF9pKViv6eLGU4yw==
+"@skbkontur/react-icons@^4.0.3":
+  version "4.0.3"
+  resolved "https://registry.yarnpkg.com/@skbkontur/react-icons/-/react-icons-4.0.3.tgz#31e3ade8948dc95dc7dce74b5f5488d1ab26918d"
+  integrity sha512-1R7qpE7dnfoK2hc9Gz34QHrsm3JIIrKA4Y5zO7eSyVXnvvlVlQX2XgTbWPHv7FfCrVhtcw3hTz8ORKRSdh+ngg==
   dependencies:
     tslib "^1.9.2"
 
-"@skbkontur/react-ui@0.0.0-8fc80072ce":
-  version "0.0.0-8fc80072ce"
-  resolved "https://registry.yarnpkg.com/@skbkontur/react-ui/-/react-ui-0.0.0-8fc80072ce.tgz#7266f461c5d4913f56ff950bd05e1894fec83f53"
-  integrity sha512-c2P1hkkQ/g6UwIksMtxecpFHMCD6zmyhoRCEfognsERZXeLlA3IsUW8Qvzs8UzbLFhIm6ExVXgd3ZOmWhs57YA==
+"@skbkontur/react-ui@2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@skbkontur/react-ui/-/react-ui-2.0.0.tgz#60486313853be2f8827455d614f87d0d5673767e"
+  integrity sha512-tK9rgoGFrCziHXLT53GWCdqefJ9h0BlNBjtG4ymzLiNxRPA7VOlXHEhX6S3nujNngmsI7a0nO0lJlz59MpxhGQ==
   dependencies:
     "@babel/runtime" "^7.8.3"
     classnames "^2.2.6"
