@@ -23,7 +23,7 @@ export default class Runner extends EventEmitter {
   private browsers: string[];
   private pools: { [browser: string]: Pool } = {};
   public get isRunning(): boolean {
-    return Object.values(this.pools).some(pool => pool.isRunning);
+    return Object.values(this.pools).some((pool) => pool.isRunning);
   }
   constructor(config: Config, private tests: Partial<{ [id: string]: ServerTest }>) {
     super();
@@ -32,8 +32,8 @@ export default class Runner extends EventEmitter {
     this.reportDir = config.reportDir;
     this.browsers = Object.keys(config.browsers);
     this.browsers
-      .map(browser => (this.pools[browser] = new Pool(config, browser)))
-      .map(pool => pool.on('test', this.handlePoolMessage));
+      .map((browser) => (this.pools[browser] = new Pool(config, browser)))
+      .map((pool) => pool.on('test', this.handlePoolMessage));
   }
 
   private handlePoolMessage = (message: { id: string; status: TestStatus; result?: TestResult }): void => {
@@ -60,7 +60,7 @@ export default class Runner extends EventEmitter {
   };
 
   public async init(): Promise<void> {
-    await Promise.all(Object.values(this.pools).map(pool => pool.init()));
+    await Promise.all(Object.values(this.pools).map((pool) => pool.init()));
   }
 
   public updateTests(testsDiff: Partial<{ [id: string]: ServerTest }>): void {
@@ -97,9 +97,9 @@ export default class Runner extends EventEmitter {
     if (this.isRunning) return;
 
     const testsToStart = ids
-      .map(id => this.tests[id])
+      .map((id) => this.tests[id])
       .filter(isDefined)
-      .filter(test => !test.skip);
+      .filter((test) => !test.skip);
 
     if (testsToStart.length == 0) return;
 
@@ -121,7 +121,7 @@ export default class Runner extends EventEmitter {
       };
     }, {});
 
-    this.browsers.forEach(browser => {
+    this.browsers.forEach((browser) => {
       const pool = this.pools[browser];
       const tests = testsByBrowser[browser];
 
@@ -133,7 +133,7 @@ export default class Runner extends EventEmitter {
 
   public stop(): void {
     if (!this.isRunning) return;
-    this.browsers.forEach(browser => this.pools[browser].stop());
+    this.browsers.forEach((browser) => this.pools[browser].stop());
   }
 
   public get status(): CreeveyStatus {

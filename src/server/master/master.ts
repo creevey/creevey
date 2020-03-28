@@ -28,7 +28,7 @@ function mergeTests(
 ): Partial<{ [id: string]: ServerTest }> {
   Object.values(testsFromStories)
     .filter(isDefined)
-    .forEach(test => {
+    .forEach((test) => {
       const testWithReport = testsWithReports[test.id];
       if (!testWithReport) return;
       test.retries = testWithReport.retries;
@@ -42,8 +42,8 @@ function mergeTests(
 async function copyStatics(reportDir: string): Promise<void> {
   const clientDir = path.join(__dirname, '../../client');
   const files = (await readdirAsync(clientDir, { withFileTypes: true }))
-    .filter(dirent => dirent.isFile() && !dirent.name.endsWith('.d.ts'))
-    .map(dirent => dirent.name);
+    .filter((dirent) => dirent.isFile() && !dirent.name.endsWith('.d.ts'))
+    .map((dirent) => dirent.name);
   await mkdirAsync(reportDir, { recursive: true });
   for (const file of files) {
     await copyFileAsync(path.join(clientDir, file), path.join(reportDir, file));
@@ -59,7 +59,7 @@ export default async function master(config: Config): Promise<Runner> {
   } catch (error) {
     // Ignore error
   }
-  const tests = await loadTestsFromStories(config, Object.keys(config.browsers), testsDiff =>
+  const tests = await loadTestsFromStories(config, Object.keys(config.browsers), (testsDiff) =>
     runner.updateTests(testsDiff),
   );
 
@@ -72,8 +72,8 @@ export default async function master(config: Config): Promise<Runner> {
     if (runner.isRunning) {
       // TODO Better handle stop
       Promise.race([
-        new Promise(resolve => setTimeout(resolve, 10000)),
-        new Promise(resolve => runner.once('stop', resolve)),
+        new Promise((resolve) => setTimeout(resolve, 10000)),
+        new Promise((resolve) => runner.once('stop', resolve)),
       ]).then(() => cluster.disconnect(() => process.exit(0)));
       runner.stop();
     } else {

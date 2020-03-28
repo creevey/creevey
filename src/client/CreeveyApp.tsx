@@ -37,28 +37,28 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
       api?.onUpdate(({ isRunning, tests, removedTests = [] }: CreeveyUpdate) => {
         if (isDefined(isRunning)) setIsRunning(isRunning);
         if (isDefined(tests))
-          updateTests(draft => {
+          updateTests((draft) => {
             Object.values(tests).forEach(
-              test => test && updateTestStatus(draft, [...splitLastPathToken(test.path).reverse()], test),
+              (test) => test && updateTestStatus(draft, [...splitLastPathToken(test.path).reverse()], test),
             );
-            removedTests.forEach(testPath => removeTests(draft, splitLastPathToken(testPath).reverse()));
+            removedTests.forEach((testPath) => removeTests(draft, splitLastPathToken(testPath).reverse()));
           });
       }),
     [api, updateTests],
   );
 
   const handleSuiteOpen = (path: string[], opened: boolean): void => {
-    updateTests(draft => {
+    updateTests((draft) => {
       openSuite(draft, path, opened);
     });
   };
   const handleSuiteToggle = (path: string[], checked: boolean): void => {
-    updateTests(draft => {
+    updateTests((draft) => {
       checkSuite(draft, path, checked);
     });
   };
   const handleImageApprove = (id: string, retry: number, image: string): void => api?.approve(id, retry, image);
-  const handleStart = (tests: CreeveySuite): void => api?.start(getCheckedTests(tests).map(test => test.id));
+  const handleStart = (tests: CreeveySuite): void => api?.start(getCheckedTests(tests).map((test) => test.id));
   const handleStop = (): void => api?.stop();
 
   return (

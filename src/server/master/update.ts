@@ -6,8 +6,8 @@ const actualRegex = /^(.*)-actual-(\d+)\.png$/i;
 
 function approve(dirents: Dirent[], srcPath: string, dstPath: string): void {
   dirents
-    .filter(dirent => dirent.isFile())
-    .map(dirent => actualRegex.exec(dirent.name))
+    .filter((dirent) => dirent.isFile())
+    .map((dirent) => actualRegex.exec(dirent.name))
     .filter(isDefined)
     .reduce(
       (images, [, imageName, retry]) =>
@@ -24,16 +24,16 @@ function traverse(srcPath: string, dstPath: string): void {
   const dirents = fs.readdirSync(srcPath, { withFileTypes: true });
   approve(dirents, srcPath, dstPath);
   dirents
-    .filter(dirent => dirent.isDirectory())
-    .map(dirent => dirent.name)
-    .forEach(dirname => traverse(path.join(srcPath, dirname), path.join(dstPath, dirname)));
+    .filter((dirent) => dirent.isDirectory())
+    .map((dirent) => dirent.name)
+    .forEach((dirname) => traverse(path.join(srcPath, dirname), path.join(dstPath, dirname)));
 }
 
 export default function update(config: Config): void {
   const { reportDir, screenDir } = config;
 
   fs.readdirSync(reportDir, { withFileTypes: true })
-    .filter(dirent => dirent.isDirectory())
-    .map(dirent => dirent.name)
-    .forEach(dirname => traverse(path.join(reportDir, dirname), path.join(screenDir, dirname)));
+    .filter((dirent) => dirent.isDirectory())
+    .map((dirent) => dirent.name)
+    .forEach((dirname) => traverse(path.join(reportDir, dirname), path.join(screenDir, dirname)));
 }

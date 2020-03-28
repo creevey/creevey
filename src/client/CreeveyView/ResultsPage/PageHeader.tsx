@@ -70,7 +70,7 @@ export function PageHeader({
         `}
       >
         {title
-          .flatMap(token => [
+          .flatMap((token) => [
             token,
             <span
               key={token}
@@ -134,7 +134,7 @@ export function PageHeader({
       ) : null}
       {showViewModes ? (
         <Tabs value={viewMode} onValueChange={handleViewModeChange}>
-          {modes.map(mode => (
+          {modes.map((mode) => (
             <Tabs.Tab key={mode} id={mode}>
               {mode}
             </Tabs.Tab>

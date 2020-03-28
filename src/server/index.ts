@@ -3,7 +3,7 @@ import cluster from 'cluster';
 import { readConfig } from '../config';
 import { Options, Config } from '../types';
 
-export default function(options: Options): void {
+export default function (options: Options): void {
   const config: Config = readConfig(path.resolve(options.config), options);
   const { browser, update } = options;
 

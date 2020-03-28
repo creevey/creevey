@@ -31,14 +31,14 @@ function addTest(rootSuite: Suite, test: ServerTest): Test {
 function removeTestOrSuite(testOrSuite: Test | Suite): void {
   const { parent } = testOrSuite;
   if (!parent) return;
-  if (testOrSuite instanceof Test) parent.tests = parent.tests.filter(test => test != testOrSuite);
-  if (testOrSuite instanceof Suite) parent.suites = parent.suites.filter(suite => suite != testOrSuite);
+  if (testOrSuite instanceof Test) parent.tests = parent.tests.filter((test) => test != testOrSuite);
+  if (testOrSuite instanceof Suite) parent.suites = parent.suites.filter((suite) => suite != testOrSuite);
   if (parent.tests.length == 0 && parent.suites.length == 0) removeTestOrSuite(parent);
 }
 
 export async function addTestsFromStories(rootSuite: Suite, browserName: string, config: Config): Promise<void> {
   const mochaTestsById: Map<string, Test> = new Map();
-  const tests = await loadTestsFromStories(config, [browserName], testsDiff =>
+  const tests = await loadTestsFromStories(config, [browserName], (testsDiff) =>
     Object.entries(testsDiff).forEach(([id, newTest]) => {
       const oldTest = mochaTestsById.get(id);
       mochaTestsById.delete(id);
@@ -49,5 +49,5 @@ export async function addTestsFromStories(rootSuite: Suite, browserName: string,
 
   Object.values(tests)
     .filter(isDefined)
-    .forEach(test => mochaTestsById.set(test.id, addTest(rootSuite, test)));
+    .forEach((test) => mochaTestsById.set(test.id, addTest(rootSuite, test)));
 }

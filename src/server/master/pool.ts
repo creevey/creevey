@@ -29,7 +29,7 @@ export default class Pool extends EventEmitter {
     });
     // TODO handle errors
     const [data] = await Promise.all(
-      this.workers.map(worker => new Promise((resolve: (value: string) => void) => worker.once('message', resolve))),
+      this.workers.map((worker) => new Promise((resolve: (value: string) => void) => worker.once('message', resolve))),
     );
     const message: WorkerMessage = JSON.parse(data);
     if (message.type == 'ready') return;
@@ -75,7 +75,7 @@ export default class Pool extends EventEmitter {
     this.sendStatus({ id, status: 'running' });
 
     worker.isRunning = true;
-    worker.once('message', data => {
+    worker.once('message', (data) => {
       const message: WorkerMessage = JSON.parse(data);
       if (message.type == 'ready') return;
       if (message.type == 'error') worker.disconnect();
@@ -107,11 +107,11 @@ export default class Pool extends EventEmitter {
   }
 
   private get aliveWorkers(): Worker[] {
-    return this.workers.filter(worker => !worker.exitedAfterDisconnect);
+    return this.workers.filter((worker) => !worker.exitedAfterDisconnect);
   }
 
   private get freeWorkers(): Worker[] {
-    return this.aliveWorkers.filter(worker => !worker.isRunning);
+    return this.aliveWorkers.filter((worker) => !worker.isRunning);
   }
 
   private exitHandler(worker: Worker): void {

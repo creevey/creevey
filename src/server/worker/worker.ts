@@ -34,9 +34,9 @@ async function getLastImageNumber(imageDir: string, imageName: string): Promise<
   try {
     return (
       (await readdirAsync(imageDir))
-        .map(filename => filename.replace(actualImagesRegexp, '$1'))
+        .map((filename) => filename.replace(actualImagesRegexp, '$1'))
         .map(Number)
-        .filter(x => !isNaN(x))
+        .filter((x) => !isNaN(x))
         .sort((a, b) => b - a)[0] ?? 0
     );
   } catch (_error) {
@@ -50,7 +50,7 @@ async function getLastImageNumber(imageDir: string, imageName: string): Promise<
 Suite.prototype.cleanReferences = noop;
 
 function patchMochaInterface(suite: Suite): void {
-  suite.on('pre-require', context => {
+  suite.on('pre-require', (context) => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
     context.it.skip = (_browsers: string[], title: string, fn?: AsyncFunc) => context.it(title, fn);
@@ -141,13 +141,13 @@ export default async function worker(config: Config, options: Options & { browse
   const browser = await getBrowser(config, browserConfig);
 
   setInterval(() => {
-    browser.getCurrentUrl().then(url => {
+    browser.getCurrentUrl().then((url) => {
       if (options.debug)
         console.log(chalk`[{blue WORKER}{grey :${options.browser}:${process.pid}}] {grey current url} ${url}`);
     });
   }, 10 * 1000);
 
-  mocha.suite.beforeAll(function(this: Context) {
+  mocha.suite.beforeAll(function (this: Context) {
     this.config = config;
     this.browser = browser;
     this.keys = Key;
@@ -159,7 +159,7 @@ export default async function worker(config: Config, options: Options & { browse
   mocha.suite.beforeEach(switchStory);
   patchMochaInterface(mocha.suite);
 
-  process.on('message', message => {
+  process.on('message', (message) => {
     const test: { id: string; path: string[]; retries: number } = JSON.parse(message);
     retries = test.retries;
     const testPath = [...test.path]
@@ -180,7 +180,7 @@ export default async function worker(config: Config, options: Options & { browse
     process.send(JSON.stringify({ type: 'ready' }));
   }
   process.on('disconnect', () => {
-    Promise.race([new Promise(resolve => setTimeout(resolve, 10000)), browser.close()]).then(() => process.exit(0));
+    Promise.race([new Promise((resolve) => setTimeout(resolve, 10000)), browser.close()]).then(() => process.exit(0));
   });
   process.on('SIGINT', noop);
 }

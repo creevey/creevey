@@ -8,7 +8,7 @@ export interface CreeveyApi {
 }
 
 function broadcast(wss: WebSocket.Server, message: Response): void {
-  wss.clients.forEach(ws => {
+  wss.clients.forEach((ws) => {
     if (ws.readyState === WebSocket.OPEN) {
       ws.send(JSON.stringify(message));
     }

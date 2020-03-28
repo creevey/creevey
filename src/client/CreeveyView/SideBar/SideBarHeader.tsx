@@ -21,9 +21,9 @@ const parseStringForFilter = (value: string): CreeveyViewFilter => {
   const tokens = value
     .split(' ')
     .filter(Boolean)
-    .map(word => word.toLowerCase());
+    .map((word) => word.toLowerCase());
 
-  tokens.forEach(word => {
+  tokens.forEach((word) => {
     const [, matchedStatus] = /^status:(failed|success|pending)$/i.exec(word) || [];
     if (matchedStatus) return (status = matchedStatus as TestStatus);
     subStrings.push(word);

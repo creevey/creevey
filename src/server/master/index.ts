@@ -4,7 +4,7 @@ import creeveyServer from './server';
 import creeveyApi from './api';
 import { Config, Options, isDefined } from '../../types';
 
-export default async function(config: Config, options: Options): Promise<void> {
+export default async function (config: Config, options: Options): Promise<void> {
   const runner = await master(config);
   if (options.ui) {
     creeveyServer(creeveyApi(runner), config.reportDir, options.port);

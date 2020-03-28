@@ -6,11 +6,11 @@ Object.defineProperty(exports, '__esModule', {
 
 var _types = require('./types');
 
-Object.keys(_types).forEach(function(key) {
+Object.keys(_types).forEach(function (key) {
   if (key === 'default' || key === '__esModule') return;
   Object.defineProperty(exports, key, {
     enumerable: true,
-    get: function() {
+    get: function () {
       return _types[key];
     },
   });
@@ -18,11 +18,11 @@ Object.keys(_types).forEach(function(key) {
 
 var _storybook = require('./storybook');
 
-Object.keys(_storybook).forEach(function(key) {
+Object.keys(_storybook).forEach(function (key) {
   if (key === 'default' || key === '__esModule') return;
   Object.defineProperty(exports, key, {
     enumerable: true,
-    get: function() {
+    get: function () {
       return _storybook[key];
     },
   });

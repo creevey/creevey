@@ -10,10 +10,10 @@ export class CreeveyReporter extends reporters.Base {
     //@ts-ignore Should update @types/mocha for new major release https://github.com/mochajs/mocha/releases/tag/v7.0.0
     const topLevelSuite = options.reporterOption.topLevelSuite;
 
-    runner.on('test', test =>
+    runner.on('test', (test) =>
       console.log(`[${chalk.yellow('START')}:${topLevelSuite}:${process.pid}]`, chalk.cyan(test.titlePath().join('/'))),
     );
-    runner.on('pass', test =>
+    runner.on('pass', (test) =>
       console.log(`[${chalk.green('PASS')}:${topLevelSuite}:${process.pid}]`, chalk.cyan(test.titlePath().join('/'))),
     );
     runner.on('fail', (test, error) =>
@@ -43,13 +43,13 @@ export class TeamcityReporter extends reporters.Base {
       }>;
     };
 
-    runner.on('suite', suite =>
+    runner.on('suite', (suite) =>
       suite.root
         ? console.log(`##teamcity[testSuiteStarted name='${topLevelSuite}' flowId='${process.pid}']`)
         : console.log(`##teamcity[testSuiteStarted name='${this.escape(suite.title)}' flowId='${process.pid}']`),
     );
 
-    runner.on('test', test =>
+    runner.on('test', (test) =>
       console.log(`##teamcity[testStarted name='${this.escape(test.title)}' flowId='${process.pid}']`),
     );
 
@@ -64,7 +64,7 @@ export class TeamcityReporter extends reporters.Base {
         Object.values(image)
           .filter(isDefined)
           .forEach(
-            fileName => (
+            (fileName) => (
               console.log(`##teamcity[publishArtifacts '${reportDir}/${filePath}/${fileName} => report/${filePath}']`),
               console.log(
                 `##teamcity[testMetadata testName='${this.escape(
@@ -86,7 +86,7 @@ export class TeamcityReporter extends reporters.Base {
           );
     });
 
-    runner.on('pending', test =>
+    runner.on('pending', (test) =>
       console.log(
         `##teamcity[testIgnored name='${this.escape(test.title)}' message='${this.escape(
           typeof test.skipReason == 'boolean' ? test.title : test.skipReason,
@@ -94,13 +94,13 @@ export class TeamcityReporter extends reporters.Base {
       ),
     );
 
-    runner.on('test end', test =>
+    runner.on('test end', (test) =>
       console.log(`##teamcity[testFinished name='${this.escape(test.title)}' flowId='${process.pid}']`),
     );
 
     runner.on(
       'suite end',
-      suite =>
+      (suite) =>
         suite.root ||
         console.log(`##teamcity[testSuiteFinished name='${this.escape(suite.title)}' flowId='${process.pid}']`),
     );

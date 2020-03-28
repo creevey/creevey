@@ -54,18 +54,18 @@ function checkTests(suiteOrTest: CreeveySuite | CreeveyTest, checked: boolean): 
     suiteOrTest.indeterminate = false;
     Object.values(suiteOrTest.children)
       .filter(isDefined)
-      .forEach(child => checkTests(child, checked));
+      .forEach((child) => checkTests(child, checked));
   }
 }
 
 function updateChecked(suite: CreeveySuite): void {
   const children = Object.values(suite.children)
     .filter(isDefined)
-    .filter(child => !child.skip);
-  const checkedEvery = children.every(test => test.checked);
-  const checkedSome = children.some(test => test.checked);
+    .filter((child) => !child.skip);
+  const checkedEvery = children.every((test) => test.checked);
+  const checkedSome = children.some((test) => test.checked);
   const indeterminate =
-    children.some(test => (isTest(test) ? false : test.indeterminate)) || (!checkedEvery && checkedSome);
+    children.some((test) => (isTest(test) ? false : test.indeterminate)) || (!checkedEvery && checkedSome);
   const checked = indeterminate || suite.checked == checkedEvery ? suite.checked : checkedEvery;
 
   suite.checked = checked;
@@ -79,7 +79,7 @@ export function checkSuite(suite: CreeveySuite, path: string[], checked: boolean
   path
     .slice(0, -1)
     .map((_, index, tokens) => tokens.slice(0, tokens.length - index))
-    .forEach(parentPath => {
+    .forEach((parentPath) => {
       const parentSuite = getSuiteByPath(suite, parentPath);
       if (isTest(parentSuite)) return;
       if (parentSuite) updateChecked(parentSuite);
@@ -92,7 +92,7 @@ export function treeifyTests(testsById: CreeveyStatus['tests']): CreeveySuite {
   const rootSuite: CreeveySuite = makeEmptySuiteNode();
 
   rootSuite.opened = true;
-  Object.values(testsById).forEach(test => {
+  Object.values(testsById).forEach((test) => {
     if (!test) return;
 
     splitLastPathToken(test.path).reverse();
@@ -125,7 +125,7 @@ export function treeifyTests(testsById: CreeveyStatus['tests']): CreeveySuite {
 export function getCheckedTests(suite: CreeveySuite): CreeveyTest[] {
   return Object.values(suite.children)
     .filter(isDefined)
-    .flatMap(suiteOrTest => {
+    .flatMap((suiteOrTest) => {
       if (isTest(suiteOrTest)) return suiteOrTest.checked ? suiteOrTest : [];
       if (!suiteOrTest.checked && !suiteOrTest.indeterminate) return [];
 
@@ -195,7 +195,7 @@ export function filterTests(suite: CreeveySuite, filter: CreeveyViewFilter): Cre
 
   Object.entries(suite.children).forEach(([title, suiteOrTest]) => {
     if (!suiteOrTest || suiteOrTest.skip) return;
-    if (!status && subStrings.some(subString => title.toLowerCase().includes(subString))) {
+    if (!status && subStrings.some((subString) => title.toLowerCase().includes(subString))) {
       filteredSuite.children[title] = suiteOrTest;
     } else if (isTest(suiteOrTest)) {
       if (['pending', 'running', status].includes(suiteOrTest.status ?? null))
@@ -213,7 +213,7 @@ export function filterTests(suite: CreeveySuite, filter: CreeveyViewFilter): Cre
 
 export function openSuite(suite: CreeveySuite, path: string[], opened: boolean): void {
   let subSuite: CreeveySuite | CreeveyTest | undefined = suite;
-  path.find(token => (!subSuite || isTest(subSuite) ? true : void (subSuite = subSuite.children[token])));
+  path.find((token) => (!subSuite || isTest(subSuite) ? true : void (subSuite = subSuite.children[token])));
   if (subSuite && !isTest(subSuite)) subSuite.opened = opened;
 }
 

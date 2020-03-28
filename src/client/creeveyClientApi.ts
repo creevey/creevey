@@ -40,14 +40,14 @@ export async function initCreeveyClientApi(): Promise<CreeveyClientApi> {
 
         send({ type: 'status' });
 
-        return (statusRequest = new Promise<CreeveyStatus>(resolve => (statusResolver = resolve)));
+        return (statusRequest = new Promise<CreeveyStatus>((resolve) => (statusResolver = resolve)));
       },
     });
   });
   ws.addEventListener('message', (message: MessageEvent) => {
     const data: Response = JSON.parse(message.data);
 
-    if (data.type == 'update') updateListeners.forEach(fn => fn(data.payload));
+    if (data.type == 'update') updateListeners.forEach((fn) => fn(data.payload));
     if (data.type == 'status') {
       statusResolver(data.payload);
       statusResolver = noop;
@@ -57,5 +57,5 @@ export async function initCreeveyClientApi(): Promise<CreeveyClientApi> {
 
   // TODO Reconnect
 
-  return new Promise(resolve => (clientApiResolver = resolve));
+  return new Promise((resolve) => (clientApiResolver = resolve));
 }
