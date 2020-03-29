@@ -194,3 +194,17 @@ CRA don't have `@babel/register` nor `ts-node` in deps, that used to load TypeSc
 ### Get `SyntaxError: ...` while loading storybook config
 
 I try to figure out what transpiler I should register to load storybook config and stories in your project, but I can't cover all cases. So, if you stuck with this issue, please specify correct require hooks and options on top of creevey config.
+
+### How to use `Creevey` with other framework (WIP, this maybe change in future)
+
+#### Angular
+
+- Add code from below on top of `creevey` config file
+
+```js
+require('ts-node').register({
+  project: './.storybook/tsconfig.json',
+  compilerOptions: { module: 'CommonJS', allowJs: true },
+});
+require('zone.js/dist/zone-node');
+```

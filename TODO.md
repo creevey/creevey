@@ -99,6 +99,10 @@
   - [x] Simplify generated tests tree according by stories/tests/images
   - [x] Use require.context from storybook config or storybook event to get tests (without \_\_filename usage)
   - [x] Add note about skip option and story/kind name case convention
+  - [x] Storybook support 5.3 declarative config https://github.com/storybookjs/storybook/blob/next/MIGRATION.md#from-version-52x-to-53x
+  - [x] Support stories name convention https://storybook.js.org/docs/formats/component-story-format/#storybook-export-vs-name-handling
+  - [x] Framework agnostic decorator
+  - [x] Add `didCatch` method to storybook decorator. Handle errors while switch stories
 - [x] Allow Composite images
 - [x] Slide story don't work correctly, must be fixed
 - [x] Better error message about open storybook page
@@ -133,23 +137,24 @@
 - [x] Add description for types properties, like config/decorator/etc
 - [x] Init pirates before any compiler (fix error with ts-node (allowJs: true) and pirates order)
 - [x] Add `delay` option for stories. To allow wait some time before real test started (right after switch story)
+- [x] Add composite screenshot helper (this.takeScreenshot should be composite)
+- [x] Don't apply scrollbar hiding styles in composite images
+- [x] Add authors
+- [x] Handle error on mocha hooks
 
 </details>
 
 ## First priority
 
 - [ ] Storybook Integration
-  - [x] Storybook support 5.3 declarative config https://github.com/storybookjs/storybook/blob/next/MIGRATION.md#from-version-52x-to-53x
-  - [x] Support stories name convention https://storybook.js.org/docs/formats/component-story-format/#storybook-export-vs-name-handling
-  - [ ] Framework agnostic decorator
-  - [ ] Add `didCatch` method to storybook decorator. Handle errors while switch stories
-  - [ ] Support declarative 6.0 decorators format, like this https://github.com/storybookjs/storybook/tree/master/addons/knobs/src/preset
+  - [ ] Add instruction docs for various frameworks
+  - [ ] Support storybook configs with js extension (4.x and 5.2 versions)
   - [ ] Manually create ClientApi instance, if it doesn't exists
-- [x] Add composite screenshot helper (this.takeScreenshot should be composite)
-- [x] Don't apply scrollbar hiding styles in composite images
+  - [ ] Add integration tests
+  - [ ] Support declarative 6.0 decorators format, like this https://github.com/storybookjs/storybook/tree/master/addons/knobs/src/preset
 - [ ] Don't output skipped tests
 - [ ] Allow define custom extensions to ignore it while story loading process
-- [ ] Optimize stories loading:
+- [ ] Optimize stories loading
   - [x] Use proxy to handle side-effects
   - [ ] AST transformation to exclude all source code except stories meta and tests (support only CSF)
 - [ ] Transform to monorepo
@@ -158,9 +163,9 @@
   - [ ] `creevey-ui`
   - [ ] `creevey-selenium`
   - [ ] `creevey-storybook-addon`
-- [ ] Add authors
 - [ ] Allow define custom localhost resolver in config
 - [ ] Support run tests inside docker
+  - [ ] Playwright
   - [ ] Puppeteer use https://github.com/gidztech/jest-puppeteer-docker
   - [ ] Selenium
 
@@ -178,9 +183,9 @@
   - [x] SideBar
   - [ ] ResultPageHeader
 - [ ] Bugs
-  - [ ] In multiple images tests output test error for every image
+  - [ ] In multiple images tests output same test error for every image
   - [ ] Firefox double click if clicks in different tests
-  - [ ] Reconnect on `WebDriverError: Session timed out or not found`
+  - [x] Reconnect on `WebDriverError: Session timed out or not found`
   - [ ] Mocha worker `Possible EventEmitter memory leak detected. 11 error listeners added`
   - [ ] On Teamcity cli exits with -1 code without any output
 - [ ] Improve CLI
@@ -192,17 +197,14 @@
   - [ ] Add bottom padding into test tree
   - [ ] Allow switch between 1:1 and fit image views
 - [ ] Write about differences with other tools
+- [ ] Record screencast with Creevey UI
 - [ ] Add unit tests
 - [ ] Github Actions
   - [x] Add linting job
   - [ ] Allow run ui tests in cli by `yarn test:ui`
 - [ ] Storybook integration
   - [ ] Support stories separators https://storybook.js.org/docs/basics/writing-stories/#story-hierarchy
-  - [ ] Optimize stories require process (tree-shaking or something else)
-  - [ ] Record screencast with Creevey UI
 - [ ] Rewrite to use `worker_threads` instead of `cluster` to allow use shared memory
-- [ ] Allow use custom API (wd/wdio/puppeter/etc)
-- [ ] Handle error on mocha hooks
 - [ ] Support mocha options for workers
 - [ ] Programmic API
 - [ ] Add logger lib

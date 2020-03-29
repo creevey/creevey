@@ -36,6 +36,7 @@
     "build:creevey": "babel src --out-dir lib --extensions .ts,.tsx --ignore src/client",
     "build:client": "webpack --mode production",
     "postbuild": "cp scripts/dist/* lib/",
+    "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
     "prepublishOnly": "yarn build"
   },
   "engines": {
@@ -103,6 +104,7 @@
     "@typescript-eslint/eslint-plugin": "^2.25.0",
     "@typescript-eslint/parser": "^2.25.0",
     "babel-loader": "^8.1.0",
+    "conventional-changelog-cli": "^2.0.31",
     "cross-env": "^7.0.2",
     "css-loader": "^3.4.2",
     "eslint": "^6.8.0",
