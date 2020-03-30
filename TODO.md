@@ -160,14 +160,13 @@
 - [ ] Transform to monorepo
   - [ ] `chai-images`
   - [ ] `creevey`
-  - [ ] `creevey-ui`
   - [ ] `creevey-selenium`
-  - [ ] `creevey-storybook-addon`
 - [ ] Allow define custom localhost resolver in config
 - [ ] Support run tests inside docker
   - [ ] Playwright
   - [ ] Puppeteer use https://github.com/gidztech/jest-puppeteer-docker
   - [ ] Selenium
+- [ ] Add fancy readme
 
 ## Not in first time
 

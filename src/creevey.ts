@@ -19,7 +19,6 @@ addHook(() => '', {
     '.woff2',
     '.css',
     '.less',
-    '.sass',
     '.scss',
     '.styl',
   ],
