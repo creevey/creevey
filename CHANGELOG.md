@@ -1,3 +1,10 @@
+## [0.5.2](https://github.com/wKich/creevey/compare/v0.5.1...v0.5.2) (2020-03-30)
+
+### Bug Fixes
+
+- 🐛 use selenium as deps, rename storybook peerDeps package ([3e0faa3](https://github.com/wKich/creevey/commit/3e0faa39976cf30e3cd95a38bd6326c81f1078c5))
+- ignore \*.scss modules while loading stories ([075068a](https://github.com/wKich/creevey/commit/075068a9192db6c0ed18c4802144b32930433e60))
+
 ## [0.5.1](https://github.com/wKich/creevey/compare/v0.5.0...v0.5.1) (2020-03-26)
 
 ### Features
