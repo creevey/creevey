@@ -20,6 +20,7 @@ addHook(() => '', {
     '.css',
     '.less',
     '.sass',
+    '.scss',
     '.styl',
   ],
   ignoreNodeModules: false,
