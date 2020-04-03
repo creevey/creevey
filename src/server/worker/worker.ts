@@ -6,7 +6,7 @@ import chalk from 'chalk';
 import Mocha, { Suite, Context, AsyncFunc, MochaOptions } from 'mocha';
 import { Key } from 'selenium-webdriver';
 import { Config, Images, Options, BrowserConfig, noop } from '../../types';
-import { getBrowser, switchStory } from '../../utils';
+import { getBrowser, switchStory } from '../../selenium';
 import chaiImage from '../../chai-image';
 import { CreeveyReporter, TeamcityReporter } from './reporter';
 import { addTestsFromStories } from './helpers';
