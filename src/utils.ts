@@ -55,12 +55,6 @@ export function shouldSkip(
   return skipByBrowser && skipByKind && skipByStory && skipByTest && reason;
 }
 
-function loadCompilers(rootDir: string) {
-  // load ./babelrc.* or babel.config.*
-  // load ./tsconfig.json
-  // init extensions
-}
-
 function registerCompiler(moduleDescriptor: Extension | null): void {
   if (moduleDescriptor) {
     if (typeof moduleDescriptor === 'string') {
@@ -82,9 +76,6 @@ function registerCompiler(moduleDescriptor: Extension | null): void {
 }
 
 export function requireConfig<T>(configPath: string): T {
-  // const configDir = isDefined(configPath) ? path.parse(configPath).dir : process.cwd();
-  // loadCompilers(configDir)
-
   let ext = path.extname(configPath);
   if (!ext || ext == '.config') {
     ext = Object.keys(jsVariants).find((key) => fs.existsSync(`${configPath}${key}`)) || ext;
