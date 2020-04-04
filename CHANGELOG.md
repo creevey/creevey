@@ -1,3 +1,9 @@
+## [0.5.4](https://github.com/wKich/creevey/compare/v0.5.3...v0.5.4) (2020-04-04)
+
+### Bug Fixes
+
+- 🐛 remove new code that added by mistake ([f4cbf8c](https://github.com/wKich/creevey/commit/f4cbf8cbc5d327f321da3f3dbf6b11da0e14583e))
+
 ## [0.5.3](https://github.com/wKich/creevey/compare/v0.5.2...v0.5.3) (2020-04-04)
 
 ### Bug Fixes
