@@ -1,3 +1,9 @@
+## [0.5.3](https://github.com/wKich/creevey/compare/v0.5.2...v0.5.3) (2020-04-04)
+
+### Bug Fixes
+
+- 🐛 precompile decorator file for ie11 target ([f4b8742](https://github.com/wKich/creevey/commit/f4b8742a8848fd2656c6cd639ef8678e0e4f35c0))
+
 ## [0.5.2](https://github.com/wKich/creevey/compare/v0.5.1...v0.5.2) (2020-03-30)
 
 ### Bug Fixes
