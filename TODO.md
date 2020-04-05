@@ -146,6 +146,11 @@
 
 ## First priority
 
+- [ ] Add examples
+  - [ ] Angular
+  - [ ] Create React App
+  - [ ] Vue?
+- [ ] Add Docs, how to start docker and IE11 especially
 - [ ] Storybook Integration
   - [ ] Add instruction docs for various frameworks
   - [ ] Support storybook configs with js extension (4.x and 5.2 versions)
