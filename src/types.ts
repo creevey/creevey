@@ -105,7 +105,7 @@ export interface Config {
 export type CreeveyConfig = Config | Partial<Omit<Config, 'gridUrl'>>;
 
 export interface Options {
-  config: string;
+  config?: string;
   port: number;
   ui: boolean;
   update: boolean;

@@ -1,25 +1,18 @@
 import fs from 'fs';
 import path from 'path';
-import { Extension, jsVariants, ExtensionDescriptor, Hook } from 'interpret';
 import { SkipOptions, isDefined } from './types';
 
-// NOTE Patch @babel/register hook due issue https://github.com/gulpjs/interpret/issues/61
-['.ts', '.tsx'].forEach((patchExtension: string) => {
-  const moduleDescriptor = jsVariants[patchExtension];
-  if (Array.isArray(moduleDescriptor)) {
-    const babelCompiler = moduleDescriptor.find(
-      (ext): ext is ExtensionDescriptor => typeof ext == 'object' && ext.module == '@babel/register',
-    );
-    if (!babelCompiler) return;
-    const oldRegister = babelCompiler.register;
-    babelCompiler.register = function (hook) {
-      oldRegister(((options) =>
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-        // @ts-ignore
-        hook({ ...options, extensions: ['.es6', '.es', '.jsx', '.js', '.mjs', '.tsx', '.ts'] })) as Hook);
-    };
-  }
-});
+const extensions = ['.js', '.jsx', '.ts', '.tsx', '.mjs', '.es', '.es6'];
+
+const compilers = {
+  '@babel/register': () => (hook: Function) => hook({ rootMode: 'upward-optional', extensions }),
+  'ts-node': (rootDir: string) => (hook: { register: Function }) => {
+    // NOTE `dir` options are supported only from `ts-node@>=8.6`, but default angular project use older version
+    hook.register({ project: path.join(rootDir, 'tsconfig.json') });
+    // NOTE This need to support tsconfig aliases
+    require('tsconfig-paths/register').loadConfig(rootDir);
+  },
+};
 
 function matchBy(pattern: string | string[] | RegExp | undefined, value: string): boolean {
   return (
@@ -55,30 +48,21 @@ export function shouldSkip(
   return skipByBrowser && skipByKind && skipByStory && skipByTest && reason;
 }
 
-function registerCompiler(moduleDescriptor: Extension | null): void {
-  if (moduleDescriptor) {
-    if (typeof moduleDescriptor === 'string') {
-      require(moduleDescriptor);
-    } else if (!Array.isArray(moduleDescriptor)) {
+export function loadCompilers(rootDir: string): void {
+  Object.entries(compilers).forEach(([moduleName, register]) => {
+    try {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
-      moduleDescriptor.register(require(moduleDescriptor.module));
-    } else {
-      moduleDescriptor.find((extension) => {
-        try {
-          registerCompiler(extension);
-          return true;
-        } catch (e) {
-          // do nothing
-        }
-      });
+      register(rootDir)(require(moduleName));
+    } catch (error) {
+      // ignore error
     }
-  }
+  });
 }
 
 export function requireConfig<T>(configPath: string): T {
   let ext = path.extname(configPath);
   if (!ext || ext == '.config') {
-    ext = Object.keys(jsVariants).find((key) => fs.existsSync(`${configPath}${key}`)) || ext;
+    ext = extensions.find((key) => fs.existsSync(`${configPath}${key}`)) || ext;
     configPath += ext;
   }
   try {
@@ -89,7 +73,9 @@ export function requireConfig<T>(configPath: string): T {
     if (childModules.find((child) => child.filename == configPath)?.children.length != 0) {
       throw error;
     }
-    registerCompiler(jsVariants[ext]);
+    const configDir = isDefined(configPath) ? path.parse(configPath).dir : process.cwd();
+
+    loadCompilers(configDir);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-var-requires

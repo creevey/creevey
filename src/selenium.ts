@@ -29,6 +29,7 @@ function getRealIp(): Promise<string> {
   );
 }
 
+// FIXME Chrome 80 '"before each" hook: switchStory for "Viewport Fit Offset" MoveTargetOutOfBoundsError: move target out of bounds'
 async function resetMousePosition(browser: WebDriver): Promise<void> {
   const isChrome = (await browser.getCapabilities()).get('browserName') == 'chrome';
   const { top, left, width, height } = await browser.executeScript(function () {

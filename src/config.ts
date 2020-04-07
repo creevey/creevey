@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { Config, Browser, BrowserConfig, Options } from './types';
+import { Config, Browser, BrowserConfig, Options, isDefined } from './types';
 import { requireConfig } from './utils';
 
 export const defaultConfig: Omit<Config, 'gridUrl'> = {
@@ -20,13 +20,27 @@ function normalizeBrowserConfig(name: string, config: Browser): BrowserConfig {
   return config;
 }
 
-export function readConfig(configPath: string, options: Options): Config {
+function resolveConfigPath(configPath?: string): string | undefined {
+  const rootDir = process.cwd();
+  const configDir = path.resolve('.creevey');
+
+  if (isDefined(configPath)) {
+    configPath = path.resolve(configPath);
+  } else if (fs.existsSync(configDir)) {
+    configPath = path.join(configDir, 'config');
+    // TODO We already find file with extension, why not use it?
+  } else if (fs.readdirSync(rootDir).find((filename) => filename.startsWith('creevey.config'))) {
+    configPath = path.join(rootDir, 'creevey.config');
+  }
+
+  return configPath;
+}
+
+export function readConfig(options: Options): Config {
+  const configPath = resolveConfigPath(options.config);
   const userConfig: typeof defaultConfig & Partial<Pick<Config, 'gridUrl'>> = { ...defaultConfig };
 
-  const { dir: configDir, base: configFile } = path.parse(configPath);
-  if (fs.readdirSync(configDir).find((filename) => filename.startsWith(configFile))) {
-    Object.assign(userConfig, requireConfig<Config>(configPath));
-  }
+  if (isDefined(configPath)) Object.assign(userConfig, requireConfig<Config>(configPath));
 
   if (options.gridUrl) userConfig.gridUrl = options.gridUrl;
   if (options.reportDir) userConfig.reportDir = path.resolve(options.reportDir);

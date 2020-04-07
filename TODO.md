@@ -165,7 +165,7 @@
 - [ ] Transform to monorepo
   - [ ] `chai-images`
   - [ ] `creevey`
-  - [ ] `creevey-selenium`
+  - [ ] `creevey-selenium` (put gridUrl as option)
 - [ ] Allow define custom localhost resolver in config
 - [ ] Support run tests inside docker
   - [ ] Playwright

@@ -40,7 +40,7 @@ process.on('unhandledRejection', (reason) => {
 const argv = minimist<Options>(process.argv.slice(2), {
   string: ['config', 'browser', 'reporter', 'gridUrl', 'reportDir', 'screenDir'],
   boolean: ['debug', 'ui', 'update'],
-  default: { config: './creevey.config', ui: false, port: 3000, debug: false },
+  default: { ui: false, port: 3000, debug: false },
   alias: { port: 'p', config: 'c', debug: 'd', update: 'u' },
 });
 

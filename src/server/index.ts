@@ -1,10 +1,9 @@
-import path from 'path';
 import cluster from 'cluster';
 import { readConfig } from '../config';
 import { Options, Config } from '../types';
 
 export default function (options: Options): void {
-  const config: Config = readConfig(path.resolve(options.config), options);
+  const config: Config = readConfig(options);
   const { browser, update } = options;
 
   switch (true) {
