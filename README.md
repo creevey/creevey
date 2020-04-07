@@ -199,12 +199,4 @@ I try to figure out what transpiler I should register to load storybook config a
 
 #### Angular
 
-- Add code from below on top of `creevey` config file
-
-```js
-require('ts-node').register({
-  project: './.storybook/tsconfig.json',
-  compilerOptions: { module: 'CommonJS', allowJs: true },
-});
-require('zone.js/dist/zone-node');
-```
+Please see [this guide](docs/angular.md)

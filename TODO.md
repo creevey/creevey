@@ -147,12 +147,17 @@
 ## First priority
 
 - [ ] Add examples
-  - [ ] Angular
+  - [x] Angular
   - [ ] Create React App
   - [ ] Vue?
-- [ ] Add Docs, how to start docker and IE11 especially
+- [ ] Docs
+  - [ ] Add topics in top of readme
+  - [ ] Add how to start docker and IE11 especially
+  - [ ] Add instruction for various frameworks
+    - [x] Angular
+    - [ ] Create React App
+    - [ ] Vue?
 - [ ] Storybook Integration
-  - [ ] Add instruction docs for various frameworks
   - [ ] Support storybook configs with js extension (4.x and 5.2 versions)
   - [ ] Manually create ClientApi instance, if it doesn't exists
   - [ ] Add integration tests
