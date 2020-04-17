@@ -18,6 +18,7 @@ tests
 report
 scripts
 stories
+examples
 lib/stories
 lib/client/**/*
 !lib/client/**/*.js

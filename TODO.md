@@ -177,6 +177,9 @@
   - [ ] Puppeteer use https://github.com/gidztech/jest-puppeteer-docker
   - [ ] Selenium
 - [ ] Add fancy readme
+- [ ] Bugs
+  - [ ] In chrome 80 creevey sometime failed with error `MoveTargetOutOfBoundsError: move target out of bounds`
+  - [ ] For firefox composite images captured without scrollbars, but image width has scrollbar width
 
 ## Not in first time
 
@@ -184,6 +187,7 @@
 - [ ] Profile tests loading process (maybe we don't need workers at all)
 - [ ] Don't reset scroll on swap images
 - [ ] Support config in ES Modules
+- [ ] Setup NODE_ENV to 'test' on open storybook in browser
 - [ ] Always save images even if test with matchImages failed
 - [ ] Add liftoff https://github.com/js-cli/js-liftoff
 - [ ] Correctly resize images in views using correct proportions (smaller image should shrink if larger shrink too, max-width/max-height doesn't work)

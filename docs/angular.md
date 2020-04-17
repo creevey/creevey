@@ -60,5 +60,5 @@ const config: CreeveyConfig = {
   },
 };
 
-module.exports = config;
+export default config;
 ```
