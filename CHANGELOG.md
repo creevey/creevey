@@ -1,3 +1,10 @@
+## [0.5.5](https://github.com/wKich/creevey/compare/v0.5.4...v0.5.5) (2020-04-21)
+
+### Features
+
+- 🎸 add `saveReport` cli option, enabled by default ([88aa930](https://github.com/wKich/creevey/commit/88aa930dd61ce7902095a9a86cab36529b355014))
+- 🎸 support .creevey config dir ([ba1c560](https://github.com/wKich/creevey/commit/ba1c5600295e5cc655370c004cf33dee4b364615))
+
 ## [0.5.4](https://github.com/wKich/creevey/compare/v0.5.3...v0.5.4) (2020-04-04)
 
 ### Bug Fixes
