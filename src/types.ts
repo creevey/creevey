@@ -115,6 +115,7 @@ export interface Options {
   gridUrl?: string;
   screenDir?: string;
   reportDir?: string;
+  saveReport?: boolean;
 }
 
 export interface Worker extends ClusterWorker {

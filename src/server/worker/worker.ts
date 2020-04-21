@@ -80,6 +80,13 @@ export default async function worker(config: Config, options: Options & { browse
     error = null;
   }
 
+  async function saveImages(imageDir: string, images: { name: string; data: Buffer }[]): Promise<void> {
+    await mkdirAsync(imageDir, { recursive: true });
+    for (const { name, data } of images) {
+      await writeFileAsync(path.join(imageDir, name), data);
+    }
+  }
+
   async function getExpected(
     imageName?: string,
   ): Promise<
@@ -97,16 +104,19 @@ export default async function worker(config: Config, options: Options & { browse
     const reportImageDir = path.join(config.reportDir, ...testPath);
     const imageNumber = (await getLastImageNumber(reportImageDir, imageName)) + 1;
     const onCompare = async (actual: Buffer, expect?: Buffer, diff?: Buffer): Promise<void> => {
+      const reportedImages: { name: string; data: Buffer }[] = [];
       image.actual = `${imageName}-actual-${imageNumber}.png`;
-      await mkdirAsync(reportImageDir, { recursive: true });
-      await writeFileAsync(path.join(reportImageDir, image.actual), actual);
+      reportedImages.push({ name: image.actual, data: actual });
 
-      if (!diff || !expect) return;
-
-      image.expect = `${imageName}-expect-${imageNumber}.png`;
-      image.diff = `${imageName}-diff-${imageNumber}.png`;
-      await writeFileAsync(path.join(reportImageDir, image.expect), expect);
-      await writeFileAsync(path.join(reportImageDir, image.diff), diff);
+      if (diff && expect) {
+        image.expect = `${imageName}-expect-${imageNumber}.png`;
+        image.diff = `${imageName}-diff-${imageNumber}.png`;
+        reportedImages.push({ name: image.expect, data: expect });
+        reportedImages.push({ name: image.diff, data: diff });
+      }
+      if (options.saveReport) {
+        await saveImages(reportImageDir, reportedImages);
+      }
     };
 
     const expectImageDir = path.join(config.screenDir, ...testPath);
