@@ -148,14 +148,14 @@
 
 - [ ] Add examples
   - [x] Angular
-  - [ ] Create React App
+  - [x] Create React App
   - [ ] Vue?
 - [ ] Docs
   - [ ] Add topics in top of readme
   - [ ] Add how to start docker and IE11 especially
   - [ ] Add instruction for various frameworks
     - [x] Angular
-    - [ ] Create React App
+    - [x] Create React App
     - [ ] Vue?
 - [ ] Storybook Integration
   - [ ] Support storybook configs with js extension (4.x and 5.2 versions)

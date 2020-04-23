@@ -107,7 +107,7 @@ function optimizeStoriesLoading(storybookDir: string): void {
   module.constructor.wrap = function (script: string) {
     return wrap(
       `const shouldSkip = !(${function (storybookDir: string) {
-        const { filename: parentFilename } = require.cache[__filename].parent ?? {};
+        const { filename: parentFilename } = require.cache[__filename]?.parent ?? {};
 
         return (
           __filename.includes(storybookDir) ||

@@ -68,7 +68,7 @@ export function requireConfig<T>(configPath: string): T {
   try {
     require(configPath);
   } catch (error) {
-    const childModules = require.cache[__filename].children;
+    const childModules = require.cache[__filename]?.children ?? [];
     // NOTE If config load failed then the module of config can't have child modules
     if (childModules.find((child) => child.filename == configPath)?.children.length != 0) {
       throw error;
