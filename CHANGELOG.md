@@ -1,3 +1,9 @@
+## [0.5.6](https://github.com/wKich/creevey/compare/v0.5.5...v0.5.6) (2020-05-04)
+
+### Bug Fixes
+
+- 🐛 handle worker initiating error ([dc8a4f6](https://github.com/wKich/creevey/commit/dc8a4f616a19d70adcd288de7b5bce89e6e46315))
+
 ## [0.5.5](https://github.com/wKich/creevey/compare/v0.5.4...v0.5.5) (2020-04-21)
 
 ### Features
