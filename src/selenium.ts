@@ -262,14 +262,20 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
   }
   const browser = await new Builder().usingServer(gridUrl).withCapabilities(capabilities).build();
 
+  process.on('disconnect', () => {
+    Promise.race([new Promise((resolve) => setTimeout(resolve, 10000)), browser.quit()]).then(() => process.exit(0));
+  });
+
   if (viewport) {
     await resizeViewport(browser, viewport);
   }
   try {
     await browser.get(`${realAddress}/iframe.html`);
-    await browser.wait(until.elementLocated(By.css('#root')), 10000);
-  } catch (_) {
-    throw new Error(`Can't load storybook root page by URL ${realAddress}/iframe.html`);
+    await browser.wait(until.elementLocated(By.css('#root')), 30000);
+  } catch (originalError) {
+    const error = new Error(`Can't load storybook root page by URL ${realAddress}/iframe.html`);
+    if (originalError instanceof Error) error.stack = originalError.stack;
+    throw error;
   }
   await disableAnimations(browser);
 

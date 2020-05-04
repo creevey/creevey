@@ -30,6 +30,10 @@ process.on('unhandledRejection', (reason) => {
 
   console.log(chalk`[{red FAIL}{grey :${process.pid}}]`, error);
 
+  if (cluster.isWorker) {
+    process.on('disconnect', () => setTimeout(() => process.exit(0), 30000));
+  }
+
   if (process.send) {
     process.send(JSON.stringify({ type: 'error', payload: { status: 'failed', error } }));
     return;

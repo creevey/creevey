@@ -189,8 +189,5 @@ export default async function worker(config: Config, options: Options & { browse
   if (process.send) {
     process.send(JSON.stringify({ type: 'ready' }));
   }
-  process.on('disconnect', () => {
-    Promise.race([new Promise((resolve) => setTimeout(resolve, 10000)), browser.close()]).then(() => process.exit(0));
-  });
   process.on('SIGINT', noop);
 }

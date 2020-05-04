@@ -12,15 +12,14 @@ export default function (options: Options): void {
       return;
     }
     case cluster.isMaster: {
-      console.log('[CreeveyMaster]:', `Started with pid ${process.pid}`);
+      console.log('[CreeveyMaster]:', `Starting with pid ${process.pid}`);
 
       require('./master').default(config, options);
       return;
     }
     default: {
-      console.log('[CreeveyWorker]:', `Started ${browser}:${process.pid}`);
+      console.log('[CreeveyWorker]:', `Starting ${browser}:${process.pid}`);
 
-      // TODO Check browser type
       require('./worker').default(config, options);
     }
   }

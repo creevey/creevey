@@ -2,6 +2,8 @@ import cluster from 'cluster';
 import { EventEmitter } from 'events';
 import { Worker, Config, TestResult, BrowserConfig, WorkerMessage, TestStatus } from '../../types';
 
+const FORK_RETRIES = 5;
+
 export default class Pool extends EventEmitter {
   private maxRetries: number;
   private browser: string;
@@ -21,19 +23,13 @@ export default class Pool extends EventEmitter {
   }
 
   async init(): Promise<void> {
-    this.workers = Array.from({ length: this.config.limit || 1 }).map(() => {
-      cluster.setupMaster({ args: ['--browser', this.browser, ...process.argv.slice(2)] });
-      const worker = cluster.fork();
-      this.exitHandler(worker);
-      return worker;
-    });
-    // TODO handle errors
-    const [data] = await Promise.all(
-      this.workers.map((worker) => new Promise((resolve: (value: string) => void) => worker.once('message', resolve))),
+    const poolSize = this.config.limit || 1;
+    this.workers = (await Promise.all(Array.from({ length: poolSize }).map(() => this.forkWorker()))).filter(
+      (workerOrError): workerOrError is Worker => workerOrError instanceof cluster.Worker,
     );
-    const message: WorkerMessage = JSON.parse(data);
-    if (message.type == 'ready') return;
-    if (message.type == 'error') throw message.payload.error;
+    if (this.workers.length != poolSize)
+      throw new Error(`Can't instantiate workers for ${this.browser} due many errors`);
+    this.workers.forEach((worker) => this.exitHandler(worker));
   }
 
   start(tests: { id: string; path: string[] }[]): boolean {
@@ -114,16 +110,31 @@ export default class Pool extends EventEmitter {
     return this.aliveWorkers.filter((worker) => !worker.isRunning);
   }
 
+  private async forkWorker(retry = 0): Promise<Worker | { error: string }> {
+    cluster.setupMaster({ args: ['--browser', this.browser, ...process.argv.slice(2)] });
+    const worker = cluster.fork();
+    const data = await new Promise((resolve: (value: string) => void) => worker.once('message', resolve));
+    const message: WorkerMessage = JSON.parse(data);
+
+    if (message.type != 'error') return worker;
+
+    worker.disconnect();
+
+    if (retry == FORK_RETRIES) return message.payload;
+    return this.forkWorker(retry + 1);
+  }
+
   private exitHandler(worker: Worker): void {
-    worker.once('exit', () => {
-      cluster.setupMaster({ args: ['--browser', this.browser, ...process.argv.slice(2)] });
-      const newWorker = cluster.fork();
-      this.exitHandler(newWorker);
-      // TODO handle errors
-      newWorker.once('message', () => {
-        this.workers[this.workers.indexOf(worker)] = newWorker;
-        this.process();
-      });
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    worker.once('exit', async () => {
+      const workerOrError = await this.forkWorker();
+
+      if (!(workerOrError instanceof cluster.Worker))
+        throw new Error(`Can't instantiate worker for ${this.browser} due many errors`);
+
+      this.exitHandler(workerOrError);
+      this.workers[this.workers.indexOf(worker)] = workerOrError;
+      this.process();
     });
   }
 }
