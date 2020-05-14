@@ -182,6 +182,7 @@
 
 ## Second priority
 
+- [ ] Update Eslint to v7
 - [ ] Creevey as Addon PoC
 - [ ] Docs
   - [ ] Add fancy readme

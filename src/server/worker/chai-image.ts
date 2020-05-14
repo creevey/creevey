@@ -4,7 +4,7 @@ import pixelmatch from 'pixelmatch';
 import { DiffOptions } from '../../types';
 
 function normalizeImageSize(image: PNG, width: number, height: number): Buffer {
-  const normalizedImage = new Buffer(4 * width * height);
+  const normalizedImage = Buffer.alloc(4 * width * height);
 
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
