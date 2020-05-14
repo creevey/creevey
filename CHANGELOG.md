@@ -1,3 +1,14 @@
+# [0.6.0-beta.0](https://github.com/wKich/creevey/compare/v0.5.6...v0.6.0-beta.0) (2020-05-14)
+
+### Bug Fixes
+
+- 🐛 support latest selenium browser drivers ([0921aed](https://github.com/wKich/creevey/commit/0921aed898c19ddb38bd6949a6e85699dddaffd7))
+
+### Features
+
+- 🎸 add creevey-loader for webpack ([c15b32d](https://github.com/wKich/creevey/commit/c15b32ddcfbdc7fc906a6a03d27539f87e620a85))
+- 🎸 rework load stories process ([e47f806](https://github.com/wKich/creevey/commit/e47f8067b6a18d066f60196605666ed8db6fadf1))
+
 ## [0.5.6](https://github.com/wKich/creevey/compare/v0.5.5...v0.5.6) (2020-05-04)
 
 ### Bug Fixes
