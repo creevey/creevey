@@ -29,9 +29,12 @@ function getRealIp(): Promise<string> {
   );
 }
 
-// FIXME Chrome 80 '"before each" hook: switchStory for "Viewport Fit Offset" MoveTargetOutOfBoundsError: move target out of bounds'
 async function resetMousePosition(browser: WebDriver): Promise<void> {
-  const isChrome = (await browser.getCapabilities()).get('browserName') == 'chrome';
+  const browserName = (await browser.getCapabilities()).getBrowserName();
+  const [browserVersion] =
+    (await browser.getCapabilities()).getBrowserVersion()?.split('.') ??
+    (await browser.getCapabilities()).get('version')?.split('.') ??
+    [];
   const { top, left, width, height } = await browser.executeScript(function () {
     /* eslint-disable no-var */
     // NOTE On storybook >= 4.x already reset scroll
@@ -47,7 +50,8 @@ async function resetMousePosition(browser: WebDriver): Promise<void> {
     /* eslint-enable no-var */
   });
 
-  if (isChrome) {
+  // NOTE Reset mouse position to support keweb selenium grid browser versions
+  if (browserName == 'chrome' && browserVersion == '70') {
     // NOTE Bridge mode not support move mouse relative viewport
     await browser
       .actions({ bridge: true })
@@ -57,10 +61,12 @@ async function resetMousePosition(browser: WebDriver): Promise<void> {
         y: Math.ceil((-1 * height) / 2) - top,
       })
       .perform();
-  } else {
+  } else if (browserName == 'firefox' && browserVersion == '61') {
     // NOTE Firefox for some reason moving by 0 x 0 move cursor in bottom left corner :sad:
-    // NOTE IE don't emit move events until force window focus or connect by RDP on virtual machine
     await browser.actions().move({ origin: Origin.VIEWPORT, x: 0, y: 1 }).perform();
+  } else {
+    // NOTE IE don't emit move events until force window focus or connect by RDP on virtual machine
+    await browser.actions().move({ origin: Origin.VIEWPORT, x: 0, y: 0 }).perform();
   }
 }
 
@@ -129,15 +135,25 @@ const getScrollBarWidth: (browser: WebDriver) => Promise<number> = (() => {
   };
 })();
 
+// NOTE Firefox and Safari take viewport screenshot without scrollbars
+async function hasScrollBar(browser: WebDriver): Promise<boolean> {
+  const browserName = (await browser.getCapabilities()).getBrowserName();
+  const [browserVersion] = (await browser.getCapabilities()).getBrowserVersion()?.split('.') ?? [];
+
+  return (
+    browserName != 'Safari' &&
+    // NOTE This need to work with keweb selenium grid
+    !(browserName == 'firefox' && browserVersion == '61')
+  );
+}
+
 async function takeCompositeScreenshot(
   browser: WebDriver,
   windowRect: { width: number; height: number; x: number; y: number },
   elementRect: DOMRect,
 ): Promise<string> {
   const screens = [];
-  const browserName = (await browser.getCapabilities()).get('browserName');
-  // NOTE Firefox and Safari take viewport screenshot without scrollbars
-  const isScreenshotWithoutScrollBar = browserName == 'firefox' || browserName == 'Safari';
+  const isScreenshotWithoutScrollBar = !(await hasScrollBar(browser));
   const scrollBarWidth = await getScrollBarWidth(browser);
   // NOTE Sometimes viewport has been scrolled somewhere
   const normalizedElementRect = {

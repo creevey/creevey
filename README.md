@@ -150,7 +150,7 @@ Simple.story = {
       captureElement: '#root',
       tests: {
         async click() {
-          await this.browser.actions({ bridge: true }).click(this.captureElement).perform();
+          await this.browser.actions().click(this.captureElement).perform();
 
           await this.expect(await this.takeScreenshot()).to.matchImage('clicked component');
         },
