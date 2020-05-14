@@ -151,13 +151,13 @@
 ## First priority
 
 - [ ] Fix warnings
-  - [ ] [BABEL] Note: The code generator has deoptimised the styling of /home/kich/Projects/creevey/report/storybook/tmp-8207-HTp79b5JhpxQ-.js as it exceeds the max of 500KB.
+  - [x] [BABEL] Note: The code generator has deoptimised the styling of /home/kich/Projects/creevey/report/storybook/tmp-8207-HTp79b5JhpxQ-.js as it exceeds the max of 500KB.
   - [ ] Unexpected loaded state. Did you call `load` twice?
   - [ ] webpack-hot-middleware's client requires EventSource to work. You should include a polyfill if you want to support this browser: https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events#Tools
-- [ ] Remove unnecessary deps and code, for example pirates, require.context, interpret, (?)other
-- [ ] Bugs
-  - [ ] In chrome 80 creevey sometime failed with error `MoveTargetOutOfBoundsError: move target out of bounds`
-  - [ ] For firefox composite images captured without scrollbars, but image width has scrollbar width
+- [x] Remove unnecessary deps and code, for example pirates, require.context, interpret, (?)other
+- [x] Bugs
+  - [x] In chrome 80 creevey sometime failed with error `MoveTargetOutOfBoundsError: move target out of bounds`
+  - [x] For firefox composite images captured without scrollbars, but image width has scrollbar width
 - [ ] Support run tests inside docker
 - [ ] Optimize stories loading
   - [x] Use proxy to handle side-effects

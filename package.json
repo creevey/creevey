@@ -61,7 +61,6 @@
     "koa-static": "^5.0.0",
     "minimist": "^1.2.5",
     "mocha": "^7.1.1",
-    "pirates": "^4.0.1",
     "pixelmatch": "^5.2.0",
     "pngjs": "^5.0.0",
     "selenium-webdriver": "^4.0.0-alpha.7",

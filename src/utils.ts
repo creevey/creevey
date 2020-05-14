@@ -5,8 +5,9 @@ import { SkipOptions, isDefined, WebpackMessage, TestWorkerMessage } from './typ
 const extensions = ['.js', '.jsx', '.ts', '.tsx', '.mjs', '.es', '.es6'];
 
 const compilers = {
-  '@babel/register': () => (hook: Function) => hook({ rootMode: 'upward-optional', extensions }),
-  'ts-node': (rootDir: string) => (hook: { register: Function }) => {
+  '@babel/register': ({ extension }: { extension: string }) => (hook: Function) =>
+    hook({ rootMode: 'upward-optional', extensions: [extension] }),
+  'ts-node': ({ rootDir }: { rootDir: string }) => (hook: { register: Function }) => {
     // NOTE `dir` options are supported only from `ts-node@>=8.6`, but default angular project use older version
     hook.register({ project: path.join(rootDir, 'tsconfig.json') });
     // NOTE This need to support tsconfig aliases
@@ -48,11 +49,11 @@ export function shouldSkip(
   return skipByBrowser && skipByKind && skipByStory && skipByTest && reason;
 }
 
-export function loadCompilers(rootDir: string): void {
+export function loadCompilers(rootDir: string, extension: string): void {
   Object.entries(compilers).forEach(([moduleName, register]) => {
     try {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
-      register(rootDir)(require(moduleName));
+      register({ rootDir, extension })(require(moduleName));
     } catch (error) {
       // ignore error
     }
@@ -75,8 +76,7 @@ export function requireConfig<T>(configPath: string): T {
     }
     const configDir = isDefined(configPath) ? path.parse(configPath).dir : process.cwd();
 
-    // TODO unload compilers after load config
-    loadCompilers(configDir);
+    loadCompilers(configDir, ext);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-var-requires

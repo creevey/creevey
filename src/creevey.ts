@@ -1,30 +1,9 @@
 import cluster from 'cluster';
 import minimist from 'minimist';
 import chalk from 'chalk';
-import { addHook } from 'pirates';
 import creevey from './server';
 import { Options, WorkerMessage } from './types';
 import { emitMessage } from './utils';
-
-addHook(() => '', {
-  exts: [
-    '.jpg',
-    '.jpeg',
-    '.png',
-    '.gif',
-    '.eot',
-    '.otf',
-    '.svg',
-    '.ttf',
-    '.woff',
-    '.woff2',
-    '.css',
-    '.less',
-    '.scss',
-    '.styl',
-  ],
-  ignoreNodeModules: false,
-});
 
 process.on('unhandledRejection', (reason) => {
   const error = reason instanceof Error ? reason.stack ?? reason.message : (reason as string);
@@ -42,8 +21,7 @@ process.on('unhandledRejection', (reason) => {
 const argv = minimist<Options>(process.argv.slice(2), {
   string: ['browser', 'storybookBundle', 'config', 'reporter', 'gridUrl', 'reportDir', 'screenDir'],
   boolean: ['debug', 'ui', 'update', 'saveReport', 'webpack'],
-  // TODO remove unnecessary defaults
-  default: { ui: false, port: 3000, debug: false, saveReport: true },
+  default: { port: 3000, saveReport: true },
   alias: { port: 'p', config: 'c', debug: 'd', update: 'u' },
 });
 
