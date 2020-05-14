@@ -1,12 +1,13 @@
 import fs from 'fs';
 import path from 'path';
-import { SkipOptions, isDefined } from './types';
+import { SkipOptions, isDefined, WebpackMessage, TestWorkerMessage } from './types';
 
-const extensions = ['.js', '.jsx', '.ts', '.tsx', '.mjs', '.es', '.es6'];
+export const extensions = ['.js', '.jsx', '.ts', '.tsx', '.mjs', '.es', '.es6'];
 
 const compilers = {
-  '@babel/register': () => (hook: Function) => hook({ rootMode: 'upward-optional', extensions }),
-  'ts-node': (rootDir: string) => (hook: { register: Function }) => {
+  '@babel/register': ({ extension }: { extension: string }) => (hook: Function) =>
+    hook({ rootMode: 'upward-optional', extensions: [extension] }),
+  'ts-node': ({ rootDir }: { rootDir: string }) => (hook: { register: Function }) => {
     // NOTE `dir` options are supported only from `ts-node@>=8.6`, but default angular project use older version
     hook.register({ project: path.join(rootDir, 'tsconfig.json') });
     // NOTE This need to support tsconfig aliases
@@ -48,11 +49,11 @@ export function shouldSkip(
   return skipByBrowser && skipByKind && skipByStory && skipByTest && reason;
 }
 
-export function loadCompilers(rootDir: string): void {
+export function loadCompilers(rootDir: string, extension: string): void {
   Object.entries(compilers).forEach(([moduleName, register]) => {
     try {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
-      register(rootDir)(require(moduleName));
+      register({ rootDir, extension })(require(moduleName));
     } catch (error) {
       // ignore error
     }
@@ -68,17 +69,44 @@ export function requireConfig<T>(configPath: string): T {
   try {
     require(configPath);
   } catch (error) {
-    const childModules = require.cache[__filename].children;
+    const childModules = require.cache[__filename]?.children ?? [];
     // NOTE If config load failed then the module of config can't have child modules
     if (childModules.find((child) => child.filename == configPath)?.children.length != 0) {
       throw error;
     }
     const configDir = isDefined(configPath) ? path.parse(configPath).dir : process.cwd();
 
-    loadCompilers(configDir);
+    loadCompilers(configDir, ext);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const configModule = require(configPath);
   return configModule && configModule.__esModule ? configModule.default : configModule;
+}
+
+export function emitMessage<T>(message: T): boolean {
+  return (
+    process.send?.call(process, message) ??
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
+    // NOTE wrong typings `process.emit` return boolean
+    process.emit('message', message)
+  );
+}
+
+export function subscribeOn(type: 'tests', handler: (message: TestWorkerMessage) => void): void;
+export function subscribeOn(type: 'webpack', handler: (message: WebpackMessage) => void): void;
+
+export function subscribeOn(
+  type: 'tests' | 'webpack',
+  handler: ((message: TestWorkerMessage) => void) | ((message: WebpackMessage) => void),
+): void {
+  process.on('message', (message: TestWorkerMessage | WebpackMessage) => {
+    switch (true) {
+      case type == 'tests' && 'id' in message:
+        return (handler as (message: TestWorkerMessage) => void)(message as TestWorkerMessage);
+      case type == 'webpack' && 'type' in message:
+        return (handler as (message: WebpackMessage) => void)(message as WebpackMessage);
+    }
+  });
 }

@@ -22,17 +22,18 @@ export default class Runner extends EventEmitter {
   private reportDir: string;
   private browsers: string[];
   private pools: { [browser: string]: Pool } = {};
+  private tests: Partial<{ [id: string]: ServerTest }> = {};
   public get isRunning(): boolean {
     return Object.values(this.pools).some((pool) => pool.isRunning);
   }
-  constructor(config: Config, private tests: Partial<{ [id: string]: ServerTest }>) {
+  constructor(config: Config, storybookBundle: string) {
     super();
 
     this.screenDir = config.screenDir;
     this.reportDir = config.reportDir;
     this.browsers = Object.keys(config.browsers);
     this.browsers
-      .map((browser) => (this.pools[browser] = new Pool(config, browser)))
+      .map((browser) => (this.pools[browser] = new Pool(config, browser, storybookBundle)))
       .map((pool) => pool.on('test', this.handlePoolMessage));
   }
 

@@ -84,7 +84,6 @@ export interface Config {
    * @default path.join(process.cwd(), './.storybook')
    */
   storybookDir: string;
-  enableFastStoriesLoading: boolean;
   /**
    * How much test would be retried
    * @default 0
@@ -109,14 +108,25 @@ export interface Options {
   port: number;
   ui: boolean;
   update: boolean;
+  webpack: boolean;
   debug: boolean;
   browser?: string;
+  storybookBundle?: string;
   reporter?: string;
   gridUrl?: string;
   screenDir?: string;
   reportDir?: string;
   saveReport?: boolean;
 }
+
+export type TestWorkerMessage = { id: string; path: string[]; retries: number };
+
+export type WebpackMessage =
+  | { type: 'ready'; payload: { filePath: string } }
+  | { type: 'failed' }
+  | { type: 'rebuild started' }
+  | { type: 'rebuild succeeded' }
+  | { type: 'rebuild failed' };
 
 export interface Worker extends ClusterWorker {
   isRunning?: boolean;

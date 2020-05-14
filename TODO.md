@@ -116,6 +116,7 @@
   - [x] Output error message multiline
   - [x] Show icons for skipped tests
   - [x] Allow check/uncheck tests without results
+  - [x] Add bottom padding into test tree
 - [x] Update incorrect work with new structure directory
 - [x] Reset button nowrap style
 - [x] Skip by browser regexp don't work (webdriver serialization)
@@ -141,48 +142,68 @@
 - [x] Don't apply scrollbar hiding styles in composite images
 - [x] Add authors
 - [x] Handle error on mocha hooks
+- [x] Bugs
+  - [x] Reconnect on `WebDriverError: Session timed out or not found`
+  - [x] On Teamcity cli exits with -1 code without any output
 
 </details>
 
 ## First priority
 
-- [ ] Add examples
+- [ ] Fix warnings
+  - [x] [BABEL] Note: The code generator has deoptimised the styling of /home/kich/Projects/creevey/report/storybook/tmp-8207-HTp79b5JhpxQ-.js as it exceeds the max of 500KB.
+  - [ ] Unexpected loaded state. Did you call `load` twice?
+  - [x] webpack-hot-middleware's client requires EventSource to work. You should include a polyfill if you want to support this browser: https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events#Tools
+- [x] Remove unnecessary deps and code, for example pirates, require.context, interpret, (?)other
+- [x] Bugs
+  - [x] In chrome 80 creevey sometime failed with error `MoveTargetOutOfBoundsError: move target out of bounds`
+  - [x] For firefox composite images captured without scrollbars, but image width has scrollbar width
+- [ ] Support run tests inside docker
+- [ ] Optimize stories loading
+  - [x] Add debug output on fail transformation
+  - [x] Use proxy to handle side-effects
+  - [x] AST transformation to exclude all source code except stories meta and tests (support only CSF)
+  - [ ] Apply AST transformation on storybook config directory (optional)
+- [ ] Allow define custom localhost resolver in config
+- [x] Add examples
   - [x] Angular
-  - [ ] Create React App
-  - [ ] Vue?
+  - [x] Create React App
 - [ ] Docs
+  - [ ] Update Readme.md
+  - [ ] Update framework examples
   - [ ] Add topics in top of readme
+  - [x] Add instruction for various frameworks
+    - [x] Angular
+    - [x] Create React App
+- [x] Storybook Integration
+  - [x] Manually create ClientApi instance, if it doesn't exists
+  - [x] ~~Support storybook configs with js extension (4.x and 5.2 versions)~~
+- [x] ~~Allow define custom extensions to ignore it while story loading process~~
+
+## Second priority
+
+- [ ] Creevey as Addon PoC
+- [ ] Docs
+  - [ ] Add fancy readme
+  - [ ] Write about differences with other tools
+  - [ ] Record screencast with Creevey UI
   - [ ] Add how to start docker and IE11 especially
   - [ ] Add instruction for various frameworks
-    - [x] Angular
-    - [ ] Create React App
-    - [ ] Vue?
-- [ ] Storybook Integration
-  - [ ] Support storybook configs with js extension (4.x and 5.2 versions)
-  - [ ] Manually create ClientApi instance, if it doesn't exists
-  - [ ] Add integration tests
-  - [ ] Support declarative 6.0 decorators format, like this https://github.com/storybookjs/storybook/tree/master/addons/knobs/src/preset
-- [ ] Don't output skipped tests
-- [ ] Allow define custom extensions to ignore it while story loading process
-- [ ] Optimize stories loading
-  - [x] Use proxy to handle side-effects
-  - [ ] AST transformation to exclude all source code except stories meta and tests (support only CSF)
+    - [ ] Create React App Typescript
+    - [ ] Vue
+- [ ] Add Strobybook integration tests
 - [ ] Transform to monorepo
   - [ ] `chai-images`
   - [ ] `creevey`
   - [ ] `creevey-selenium` (put gridUrl as option)
-- [ ] Allow define custom localhost resolver in config
-- [ ] Support run tests inside docker
+- [ ] Support other browser automation tools
   - [ ] Playwright
-  - [ ] Puppeteer use https://github.com/gidztech/jest-puppeteer-docker
-  - [ ] Selenium
-- [ ] Add fancy readme
-- [ ] Bugs
-  - [ ] In chrome 80 creevey sometime failed with error `MoveTargetOutOfBoundsError: move target out of bounds`
-  - [ ] For firefox composite images captured without scrollbars, but image width has scrollbar width
+  - [ ] Puppeteer
 
 ## Not in first time
 
+- [ ] Correctly reload and reset tests statuses according source code file dependencies
+- [ ] Don't output skipped tests
 - [ ] Improve css filter for blend view, try to reach pixelmatch output
 - [ ] Profile tests loading process (maybe we don't need workers at all)
 - [ ] Don't reset scroll on swap images
@@ -198,25 +219,21 @@
 - [ ] Bugs
   - [ ] In multiple images tests output same test error for every image
   - [ ] Firefox double click if clicks in different tests
-  - [x] Reconnect on `WebDriverError: Session timed out or not found`
   - [ ] Mocha worker `Possible EventEmitter memory leak detected. 11 error listeners added`
-  - [ ] On Teamcity cli exits with -1 code without any output
 - [ ] Improve CLI
   - [ ] Output cli help
   - [ ] Add grep/kind/story option
 - [ ] Rework UI
   - [ ] Show removed tests results, mark these as removed
   - [ ] Allow hide skipped tests in UI
-  - [ ] Add bottom padding into test tree
   - [ ] Allow switch between 1:1 and fit image views
-- [ ] Write about differences with other tools
-- [ ] Record screencast with Creevey UI
 - [ ] Add unit tests
 - [ ] Github Actions
   - [x] Add linting job
   - [ ] Allow run ui tests in cli by `yarn test:ui`
 - [ ] Storybook integration
   - [ ] Support stories separators https://storybook.js.org/docs/basics/writing-stories/#story-hierarchy
+  - [ ] Support declarative 6.0 decorators format, like this https://github.com/storybookjs/storybook/tree/master/addons/knobs/src/preset
 - [ ] Rewrite to use `worker_threads` instead of `cluster` to allow use shared memory
 - [ ] Support mocha options for workers
 - [ ] Programmic API

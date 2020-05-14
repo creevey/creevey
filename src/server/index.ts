@@ -4,11 +4,15 @@ import { Options, Config } from '../types';
 
 export default function (options: Options): void {
   const config: Config = readConfig(options);
-  const { browser, update } = options;
+  const { browser, update, webpack } = options;
 
   switch (true) {
     case update: {
       require('./master/update').default(config);
+      return;
+    }
+    case webpack: {
+      require('./master/webpack').default(config, options);
       return;
     }
     case cluster.isMaster: {

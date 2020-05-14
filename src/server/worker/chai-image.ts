@@ -1,7 +1,7 @@
 import { PNG } from 'pngjs';
 import pixelmatch from 'pixelmatch';
 
-import { DiffOptions } from './types';
+import { DiffOptions } from '../../types';
 
 function normalizeImageSize(image: PNG, width: number, height: number): Buffer {
   const normalizedImage = new Buffer(4 * width * height);
