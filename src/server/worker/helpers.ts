@@ -1,5 +1,5 @@
 import { Suite, Context, Test } from 'mocha';
-import { isDefined, ServerTest, Config } from '../../types';
+import { isDefined, ServerTest } from '../../types';
 import { loadTestsFromStories } from '../../stories';
 
 function findOrCreateSuite(name: string, parent: Suite): Suite {
@@ -36,9 +36,13 @@ function removeTestOrSuite(testOrSuite: Test | Suite): void {
   if (parent.tests.length == 0 && parent.suites.length == 0) removeTestOrSuite(parent);
 }
 
-export async function addTestsFromStories(rootSuite: Suite, browserName: string, config: Config): Promise<void> {
+export async function addTestsFromStories(
+  rootSuite: Suite,
+  browserName: string,
+  storybookBundlePath: string,
+): Promise<void> {
   const mochaTestsById: Map<string, Test> = new Map();
-  const tests = await loadTestsFromStories(config, [browserName], (testsDiff) =>
+  const tests = await loadTestsFromStories({ browsers: [browserName], storybookBundlePath }, (testsDiff) =>
     Object.entries(testsDiff).forEach(([id, newTest]) => {
       const oldTest = mochaTestsById.get(id);
       mochaTestsById.delete(id);

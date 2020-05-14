@@ -6,6 +6,7 @@ import path from 'path';
 type PlatformFS = typeof fs;
 type PlatformPath = typeof path;
 
+// TODO Remove after migrate on webpack
 function registerRequireContext(): void {
   function requireContext(rootPath: string, deep?: boolean, filter?: RegExp): __WebpackModuleApi.RequireContext {
     // eslint-disable-next-line @typescript-eslint/no-var-requires

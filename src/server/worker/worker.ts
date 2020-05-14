@@ -5,9 +5,10 @@ import chai from 'chai';
 import chalk from 'chalk';
 import Mocha, { Suite, Context, AsyncFunc, MochaOptions } from 'mocha';
 import { Key } from 'selenium-webdriver';
-import { Config, Images, Options, BrowserConfig, noop } from '../../types';
-import { getBrowser, switchStory } from '../../selenium';
-import chaiImage from '../../chai-image';
+import { Config, Images, Options, BrowserConfig, noop, WorkerMessage, TestWorkerMessage } from '../../types';
+import { emitMessage, subscribeOn } from '../../utils';
+import chaiImage from './chai-image';
+import { getBrowser, switchStory } from './selenium';
 import { CreeveyReporter, TeamcityReporter } from './reporter';
 import { addTestsFromStories } from './helpers';
 
@@ -58,26 +59,23 @@ function patchMochaInterface(suite: Suite): void {
 }
 
 // FIXME browser options hotfix
-export default async function worker(config: Config, options: Options & { browser: string }): Promise<void> {
+export default async function worker(
+  config: Config,
+  options: Options & { browser: string; storybookBundle: string },
+): Promise<void> {
   let retries = 0;
-  let images: Partial<{ [name: string]: Partial<Images> }> = {};
-  let error: Error | {} | string | undefined | null = null;
+  let images: Partial<{ [name: string]: Images }> = {};
+  let error: string | null = null;
   const testScope: string[] = [];
 
   function runHandler(failures: number): void {
-    if (process.send) {
-      if (failures > 0) {
-        const isTimeout = typeof error == 'string' && error.toLowerCase().includes('timeout');
-        process.send(
-          JSON.stringify({ type: isTimeout ? 'error' : 'test', payload: { status: 'failed', images, error } }),
-        );
-      } else {
-        process.send(JSON.stringify({ type: 'test', payload: { status: 'success', images } }));
-      }
+    if (failures > 0 && error) {
+      const isTimeout = error.toLowerCase().includes('timeout');
+      const payload: { status: 'failed'; images: typeof images; error: string } = { status: 'failed', images, error };
+      emitMessage<WorkerMessage>(isTimeout ? { type: 'error', payload } : { type: 'test', payload });
+    } else {
+      emitMessage<WorkerMessage>({ type: 'test', payload: { status: 'success', images } });
     }
-    // TODO Should we move into `process.on`?
-    images = {};
-    error = null;
   }
 
   async function saveImages(imageDir: string, images: { name: string; data: Buffer }[]): Promise<void> {
@@ -88,7 +86,7 @@ export default async function worker(config: Config, options: Options & { browse
   }
 
   async function getExpected(
-    imageName?: string,
+    assertImageName?: string,
   ): Promise<
     | { expected: Buffer | null; onCompare: (actual: Buffer, expect?: Buffer, diff?: Buffer) => Promise<void> }
     | Buffer
@@ -98,24 +96,24 @@ export default async function worker(config: Config, options: Options & { browse
     // rootSuite -> kindSuite -> storyTest -> [browsers.png]
     // rootSuite -> kindSuite -> storySuite -> test -> [browsers.png]
     const testPath = [...testScope];
-    if (!imageName) imageName = testPath.pop() as string;
+    const imageName = assertImageName ?? (testPath.pop() as string);
 
-    const image = (images[imageName] = images[imageName] || {});
+    const imagesMeta: { name: string; data: Buffer }[] = [];
     const reportImageDir = path.join(config.reportDir, ...testPath);
     const imageNumber = (await getLastImageNumber(reportImageDir, imageName)) + 1;
+    const actualImageName = `${imageName}-actual-${imageNumber}.png`;
+    const image = (images[imageName] = images[imageName] ?? { actual: actualImageName });
     const onCompare = async (actual: Buffer, expect?: Buffer, diff?: Buffer): Promise<void> => {
-      const reportedImages: { name: string; data: Buffer }[] = [];
-      image.actual = `${imageName}-actual-${imageNumber}.png`;
-      reportedImages.push({ name: image.actual, data: actual });
+      imagesMeta.push({ name: image.actual, data: actual });
 
       if (diff && expect) {
         image.expect = `${imageName}-expect-${imageNumber}.png`;
         image.diff = `${imageName}-diff-${imageNumber}.png`;
-        reportedImages.push({ name: image.expect, data: expect });
-        reportedImages.push({ name: image.diff, data: diff });
+        imagesMeta.push({ name: image.expect, data: expect });
+        imagesMeta.push({ name: image.diff, data: diff });
       }
       if (options.saveReport) {
-        await saveImages(reportImageDir, reportedImages);
+        await saveImages(reportImageDir, imagesMeta);
       }
     };
 
@@ -142,10 +140,9 @@ export default async function worker(config: Config, options: Options & { browse
   };
   const mocha = new Mocha(mochaOptions);
 
-  // TODO Move to beforeAll
   chai.use(chaiImage(getExpected, config.diffOptions));
 
-  await addTestsFromStories(mocha.suite, options.browser, config);
+  await addTestsFromStories(mocha.suite, options.browser, options.storybookBundle);
 
   const browserConfig = config.browsers[options.browser] as BrowserConfig;
   const browser = await getBrowser(config, browserConfig);
@@ -165,29 +162,32 @@ export default async function worker(config: Config, options: Options & { browse
     this.browserName = options.browser;
     this.testScope = testScope;
   });
-  // TODO Handle story context
   mocha.suite.beforeEach(switchStory);
   patchMochaInterface(mocha.suite);
 
-  process.on('message', (message) => {
-    const test: { id: string; path: string[]; retries: number } = JSON.parse(message);
-    retries = test.retries;
+  subscribeOn('tests', (test: TestWorkerMessage) => {
     const testPath = [...test.path]
       .reverse()
       .join(' ')
       .replace(/[|\\{}()[\]^$+*?.-]/g, '\\$&');
 
+    images = {};
+    error = null;
+    retries = test.retries;
+
     mocha.grep(new RegExp(`^${testPath}$`));
     const runner = mocha.run(runHandler);
 
     // TODO How handle browser corruption?
-    runner.on('fail', (_test, reason) => (error = reason instanceof Error ? reason.stack || reason.message : reason));
+    runner.on('fail', (_test, reason) => (error = reason instanceof Error ? reason.stack ?? reason.message : reason));
   });
 
   console.log('[CreeveyWorker]:', `Ready ${options.browser}:${process.pid}`);
 
-  if (process.send) {
-    process.send(JSON.stringify({ type: 'ready' }));
-  }
+  emitMessage<WorkerMessage>({ type: 'ready' });
+
+  process.on('disconnect', () => {
+    Promise.race([new Promise((resolve) => setTimeout(resolve, 10000)), browser.close()]).then(() => process.exit(0));
+  });
   process.on('SIGINT', noop);
 }

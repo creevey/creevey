@@ -3,6 +3,7 @@ import cluster from 'cluster';
 import { Config, Test, isDefined, ServerTest } from '../../types';
 import { loadTestsFromStories } from '../../stories';
 import Runner from './runner';
+import { startWebpackCompiler } from './stories';
 
 function mergeTests(
   testsWithReports: Partial<{ [id: string]: Test }>,
@@ -22,7 +23,8 @@ function mergeTests(
 }
 
 export default async function master(config: Config): Promise<Runner> {
-  const runner = new Runner(config, {});
+  const storybookBundlePath = await startWebpackCompiler();
+  const runner = new Runner(config, storybookBundlePath);
   const reportDataPath = path.join(config.reportDir, 'data.js');
   let testsFromReport = {};
   try {
@@ -30,8 +32,10 @@ export default async function master(config: Config): Promise<Runner> {
   } catch (error) {
     // Ignore error
   }
-  const tests = await loadTestsFromStories(config, Object.keys(config.browsers), (testsDiff) =>
-    runner.updateTests(testsDiff),
+
+  const tests = await loadTestsFromStories(
+    { browsers: Object.keys(config.browsers), storybookBundlePath },
+    (testsDiff) => runner.updateTests(testsDiff),
   );
 
   runner.updateTests(mergeTests(testsFromReport, tests));

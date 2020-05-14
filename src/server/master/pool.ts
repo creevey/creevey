@@ -6,7 +6,6 @@ const FORK_RETRIES = 5;
 
 export default class Pool extends EventEmitter {
   private maxRetries: number;
-  private browser: string;
   private config: BrowserConfig;
   private workers: Worker[] = [];
   private queue: { id: string; path: string[]; retries: number }[] = [];
@@ -14,11 +13,10 @@ export default class Pool extends EventEmitter {
   public get isRunning(): boolean {
     return this.workers.length !== this.freeWorkers.length;
   }
-  constructor(config: Config, browser: string) {
+  constructor(config: Config, private browser: string, private storybookBundle: string) {
     super();
 
     this.maxRetries = config.maxRetries;
-    this.browser = browser;
     this.config = config.browsers[browser] as BrowserConfig;
   }
 
@@ -71,8 +69,7 @@ export default class Pool extends EventEmitter {
     this.sendStatus({ id, status: 'running' });
 
     worker.isRunning = true;
-    worker.once('message', (data) => {
-      const message: WorkerMessage = JSON.parse(data);
+    worker.once('message', (message: WorkerMessage) => {
       if (message.type == 'ready') return;
       if (message.type == 'error') worker.disconnect();
 
@@ -90,7 +87,7 @@ export default class Pool extends EventEmitter {
       this.sendStatus({ id, status, result });
       this.process();
     });
-    worker.send(JSON.stringify(test));
+    worker.send(test);
     this.process();
   }
 
@@ -111,7 +108,9 @@ export default class Pool extends EventEmitter {
   }
 
   private async forkWorker(retry = 0): Promise<Worker | { error: string }> {
-    cluster.setupMaster({ args: ['--browser', this.browser, ...process.argv.slice(2)] });
+    cluster.setupMaster({
+      args: ['--browser', this.browser, '--storybookBundle', this.storybookBundle, ...process.argv.slice(2)],
+    });
     const worker = cluster.fork();
     const data = await new Promise((resolve: (value: string) => void) => worker.once('message', resolve));
     const message: WorkerMessage = JSON.parse(data);

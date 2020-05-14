@@ -2,7 +2,7 @@ import https from 'https';
 import { PNG } from 'pngjs';
 import { Context, Test, Suite } from 'mocha';
 import { Builder, By, until, WebDriver, Origin } from 'selenium-webdriver';
-import { Config, BrowserConfig, StoryInput } from './types';
+import { Config, BrowserConfig, StoryInput } from '../../types';
 
 declare global {
   interface Window {
