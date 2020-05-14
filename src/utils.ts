@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { SkipOptions, isDefined, WebpackMessage, TestWorkerMessage } from './types';
 
-const extensions = ['.js', '.jsx', '.ts', '.tsx', '.mjs', '.es', '.es6'];
+export const extensions = ['.js', '.jsx', '.ts', '.tsx', '.mjs', '.es', '.es6'];
 
 const compilers = {
   '@babel/register': ({ extension }: { extension: string }) => (hook: Function) =>

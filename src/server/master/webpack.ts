@@ -1,20 +1,17 @@
 import fs, { rmdirSync } from 'fs';
 import path from 'path';
-import tmp from 'tmp';
 import webpack, { Configuration } from 'webpack';
 import nodeExternals from 'webpack-node-externals';
 import EventHooksPlugin from 'event-hooks-webpack-plugin';
-import { emitMessage } from '../../utils';
-import { Config, WebpackMessage } from '../../types';
+import { emitMessage, extensions as fallbackExtensions } from '../../utils';
+import { Config, WebpackMessage, Options } from '../../types';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
 import loadStorybookWebpackConfig from '@storybook/core/dist/server/config';
 
-tmp.setGracefulCleanup();
-
 let isInitiated = false;
-let { name: filePath } = tmp.fileSync({ postfix: '.js' });
+let filePath = 'storybook.js';
 
 // TODO Output summary of success builds
 // TODO send messages to master process
@@ -45,7 +42,7 @@ function handleWebpackBuild(error: Error, stats: webpack.Stats): void {
   return;
 }
 
-export default async function compile(config: Config): Promise<void> {
+export default async function compile(config: Config, { debug }: Options): Promise<void> {
   const storybookCorePath = require.resolve('@storybook/core');
   const [storybookParentDirectory] = storybookCorePath.split('@storybook');
   const startStorybookBinaryPath = path.join(storybookParentDirectory, '.bin/start-storybook');
@@ -55,6 +52,7 @@ export default async function compile(config: Config): Promise<void> {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const { default: storybookFrameworkOptions } = require(`@storybook/${storybookFramework}/dist/server/options`);
 
+  // TODO Move into node_modules/.cache
   const outputDir = path.join(config.reportDir, 'storybook');
   filePath = path.join(outputDir, path.basename(filePath));
 
@@ -62,7 +60,7 @@ export default async function compile(config: Config): Promise<void> {
 
   const storybookWebpackConfig: Configuration = await loadStorybookWebpackConfig({
     quiet: true,
-    configType: 'DEVELOPMENT',
+    configType: 'PRODUCTION',
     outputDir,
     cache: {},
     corePresets: [require.resolve('@storybook/core/dist/server/preview/preview-preset')],
@@ -71,15 +69,28 @@ export default async function compile(config: Config): Promise<void> {
     configDir: config.storybookDir,
   });
 
-  // TODO Plugin to dead code elimination
+  const extensions = storybookWebpackConfig.resolve?.extensions ?? fallbackExtensions;
+
   delete storybookWebpackConfig.optimization;
+  delete storybookWebpackConfig.devtool;
+  storybookWebpackConfig.mode = 'development';
   storybookWebpackConfig.target = 'node';
   storybookWebpackConfig.output = {
     ...storybookWebpackConfig.output,
     filename: path.basename(filePath),
   };
+  storybookWebpackConfig.module?.rules.unshift({
+    enforce: 'pre',
+    test: new RegExp(`\\.(${extensions.map((x) => x.slice(1))?.join('|')})$`),
+    exclude: /node_modules/,
+    use: { loader: require.resolve('./loader'), options: { debug } },
+  });
   // TODO Remove this after migrate react-ui to cjs
-  storybookWebpackConfig.externals = [nodeExternals({ whitelist: [/^@skbkontur/, /^@babel\/runtime/] })];
+  storybookWebpackConfig.externals = [
+    nodeExternals({ whitelist: [/^@skbkontur/, /^@babel\/runtime/] }),
+    // TODO Don't work well with monorepos
+    nodeExternals({ modulesDir: storybookParentDirectory }),
+  ];
   storybookWebpackConfig.plugins?.push(
     new EventHooksPlugin({
       invalid() {

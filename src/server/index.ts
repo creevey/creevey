@@ -12,7 +12,7 @@ export default function (options: Options): void {
       return;
     }
     case webpack: {
-      require('./master/webpack').default(config);
+      require('./master/webpack').default(config, options);
       return;
     }
     case cluster.isMaster: {

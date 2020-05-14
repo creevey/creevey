@@ -84,7 +84,6 @@ export interface Config {
    * @default path.join(process.cwd(), './.storybook')
    */
   storybookDir: string;
-  enableFastStoriesLoading: boolean;
   /**
    * How much test would be retried
    * @default 0

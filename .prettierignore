@@ -1,3 +1,4 @@
 lib
 report
 examples
+tests/**/*.fixtures
