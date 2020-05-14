@@ -1,5 +1,3 @@
-// TODO Disable checking for webpack-proto
-// @ts-nocheck
 import { Configuration, DefinePlugin } from 'webpack';
 
 export default async ({ config }: { config: Configuration }) => {

@@ -170,6 +170,7 @@
   - [x] Create React App
 - [ ] Docs
   - [ ] Update Readme.md
+  - [ ] Update framework examples
   - [ ] Add topics in top of readme
   - [x] Add instruction for various frameworks
     - [x] Angular

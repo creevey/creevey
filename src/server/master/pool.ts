@@ -112,8 +112,7 @@ export default class Pool extends EventEmitter {
       args: ['--browser', this.browser, '--storybookBundle', this.storybookBundle, ...process.argv.slice(2)],
     });
     const worker = cluster.fork();
-    const data = await new Promise((resolve: (value: string) => void) => worker.once('message', resolve));
-    const message: WorkerMessage = JSON.parse(data);
+    const message = await new Promise((resolve: (value: WorkerMessage) => void) => worker.once('message', resolve));
 
     if (message.type != 'error') return worker;
 
