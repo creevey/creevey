@@ -1,3 +1,9 @@
+# [0.6.0-beta.1](https://github.com/wKich/creevey/compare/v0.6.0-beta.0...v0.6.0-beta.1) (2020-05-15)
+
+### Bug Fixes
+
+- 🐛 storybook framework detection on windows ([fb68cf1](https://github.com/wKich/creevey/commit/fb68cf168a1ad5704e2be00b456015dd2780bf0e))
+
 # [0.6.0-beta.0](https://github.com/wKich/creevey/compare/v0.5.6...v0.6.0-beta.0) (2020-05-14)
 
 ### Bug Fixes
