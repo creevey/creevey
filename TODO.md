@@ -148,8 +148,10 @@
 
 </details>
 
-## First priority
+## First priority (v0.6)
 
+- [ ] Bugs
+  - [ ] Readlink don't work on windows. Need to change storybook framework detection
 - [ ] Fix warnings
   - [x] [BABEL] Note: The code generator has deoptimised the styling of /home/kich/Projects/creevey/report/storybook/tmp-8207-HTp79b5JhpxQ-.js as it exceeds the max of 500KB.
   - [ ] Unexpected loaded state. Did you call `load` twice?
@@ -158,20 +160,49 @@
 - [x] Bugs
   - [x] In chrome 80 creevey sometime failed with error `MoveTargetOutOfBoundsError: move target out of bounds`
   - [x] For firefox composite images captured without scrollbars, but image width has scrollbar width
-- [ ] Support run tests inside docker
-- [ ] Optimize stories loading
+- [x] Optimize stories loading
   - [x] Add debug output on fail transformation
   - [x] Use proxy to handle side-effects
   - [x] AST transformation to exclude all source code except stories meta and tests (support only CSF)
-  - [ ] Apply AST transformation on storybook config directory (optional)
-- [ ] Allow define custom localhost resolver in config
 - [x] Add examples
   - [x] Angular
   - [x] Create React App
 - [ ] Docs
-  - [ ] Update Readme.md
+  - [ ] Record screencast with Creevey UI
+    - Pre-requirements: Storybook ui-kit + creevey setup + approve all images + vscode with opened story
+    - Start storybook
+    - Switch terminal tab
+    - Start creevey --ui
+    - Open `http://localhost:3000`
+    - Run all tests
+    - Open one of them
+    - Open along side VSCode with that story
+    - Change a little
+    - Run that story again
+    - Show failed test in different views
+    - Approve image
+  - [ ] Update Readme.md (also describe scenarios or how to capture screenshots)
+    - badges
+    - Title with short description
+    - Logo or gif screen cast
+    - How to start and what you get
+    - How to setup selenium webdrivers locally (selenoid + docker)
+    - How to write interaction tests for stories
+    - Description about how creevey work
+    - Describe creevey CLI
+    - Describe creevey config options
+    - Describe available storybook parameters
   - [ ] Update framework examples
   - [ ] Add topics in top of readme
+    - How to Start (start storybook step)
+    - Setup Selenium Grid
+    - Write tests
+    - Creevey under the hood
+    - Configs/Options
+      - CLI Options
+      - creevey.config.ts
+      - storybook parameters
+    - Possible caveats
   - [x] Add instruction for various frameworks
     - [x] Angular
     - [x] Create React App
@@ -180,18 +211,32 @@
   - [x] ~~Support storybook configs with js extension (4.x and 5.2 versions)~~
 - [x] ~~Allow define custom extensions to ignore it while story loading process~~
 
-## Second priority
+## Second priority (v0.7)
 
 - [ ] Update Eslint to v7
-- [ ] Creevey as Addon PoC
+- [ ] Support run tests inside docker
+- [ ] Setup NODE_ENV to 'test' on open storybook in browser
+- [ ] Bugs
+  - [ ] In multiple images tests output same test error for every image
+- [ ] Features
+  - [ ] Allow define custom localhost resolver in config
+  - [ ] Add `only` option as opposite for `skip`
+  - [ ] Allow to ignore elements in capturing screenshot
+  - [ ] Allow set viewport sizes for story (use width x height as postfix for browser name in UI)
 - [ ] Docs
   - [ ] Add fancy readme
   - [ ] Write about differences with other tools
-  - [ ] Record screencast with Creevey UI
   - [ ] Add how to start docker and IE11 especially
   - [ ] Add instruction for various frameworks
     - [ ] Create React App Typescript
     - [ ] Vue
+- [ ] Apply AST transformation on storybook config directory (optional)
+- [ ] Add human readable error message if test failed with `window.__CREEVEY_SELECT_STORY__` is not a function
+
+## Third priority (vNext)
+
+- [ ] Drop storiesOf and Storybook v4.x support
+- [ ] Creevey as Addon PoC
 - [ ] Add Strobybook integration tests
 - [ ] Transform to monorepo
   - [ ] `chai-images`
@@ -209,7 +254,6 @@
 - [ ] Profile tests loading process (maybe we don't need workers at all)
 - [ ] Don't reset scroll on swap images
 - [ ] Support config in ES Modules
-- [ ] Setup NODE_ENV to 'test' on open storybook in browser
 - [ ] Always save images even if test with matchImages failed
 - [ ] Add liftoff https://github.com/js-cli/js-liftoff
 - [ ] Correctly resize images in views using correct proportions (smaller image should shrink if larger shrink too, max-width/max-height doesn't work)
@@ -218,7 +262,6 @@
   - [x] SideBar
   - [ ] ResultPageHeader
 - [ ] Bugs
-  - [ ] In multiple images tests output same test error for every image
   - [ ] Firefox double click if clicks in different tests
   - [ ] Mocha worker `Possible EventEmitter memory leak detected. 11 error listeners added`
 - [ ] Improve CLI

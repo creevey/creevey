@@ -1,4 +1,4 @@
-import fs, { rmdirSync } from 'fs';
+import { rmdirSync } from 'fs';
 import path from 'path';
 import webpack, { Configuration } from 'webpack';
 import nodeExternals from 'webpack-node-externals';
@@ -12,9 +12,35 @@ import loadStorybookWebpackConfig from '@storybook/core/dist/server/config';
 
 let isInitiated = false;
 let filePath = 'storybook.js';
+const supportedFrameworks = [
+  'react',
+  'vue',
+  'angular',
+  'marionette',
+  'mithril',
+  'marko',
+  'html',
+  'svelte',
+  'riot',
+  'ember',
+  'preact',
+  'rax',
+  'aurelia',
+  'server',
+  'web-components',
+];
+
+function tryDetectStorybookFramework(): string | undefined {
+  return supportedFrameworks.find((framework) => {
+    try {
+      return require.resolve(`@storybook/${framework}`);
+    } catch (_) {
+      return false;
+    }
+  });
+}
 
 // TODO Output summary of success builds
-// TODO send messages to master process
 function handleWebpackBuild(error: Error, stats: webpack.Stats): void {
   if (error || !stats || stats.hasErrors()) {
     emitMessage<WebpackMessage>({ type: isInitiated ? 'rebuild failed' : 'failed' });
@@ -45,9 +71,12 @@ function handleWebpackBuild(error: Error, stats: webpack.Stats): void {
 export default async function compile(config: Config, { debug }: Options): Promise<void> {
   const storybookCorePath = require.resolve('@storybook/core');
   const [storybookParentDirectory] = storybookCorePath.split('@storybook');
-  const startStorybookBinaryPath = path.join(storybookParentDirectory, '.bin/start-storybook');
-  const startStorybookRelativePath = fs.readlinkSync(startStorybookBinaryPath);
-  const [, , storybookFramework] = startStorybookRelativePath.split(path.sep);
+  const storybookFramework = tryDetectStorybookFramework();
+
+  if (!storybookFramework)
+    throw new Error(
+      "Couldn't detect used Storybook framework. Please ensure that you install `@storybook/<framework>` package",
+    );
 
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const { default: storybookFrameworkOptions } = require(`@storybook/${storybookFramework}/dist/server/options`);
