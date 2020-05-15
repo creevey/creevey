@@ -185,9 +185,5 @@ export default async function worker(
   console.log('[CreeveyWorker]:', `Ready ${options.browser}:${process.pid}`);
 
   emitMessage<WorkerMessage>({ type: 'ready' });
-
-  process.on('disconnect', () => {
-    Promise.race([new Promise((resolve) => setTimeout(resolve, 10000)), browser.close()]).then(() => process.exit(0));
-  });
   process.on('SIGINT', noop);
 }
