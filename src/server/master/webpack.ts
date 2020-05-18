@@ -85,7 +85,11 @@ export default async function compile(config: Config, { debug }: Options): Promi
   const outputDir = path.join(config.reportDir, 'storybook');
   filePath = path.join(outputDir, path.basename(filePath));
 
-  rmdirSync(outputDir, { recursive: true });
+  try {
+    rmdirSync(outputDir, { recursive: true });
+  } catch (_) {
+    /* noop */
+  }
 
   const storybookWebpackConfig: Configuration = await loadStorybookWebpackConfig({
     quiet: true,
@@ -108,15 +112,20 @@ export default async function compile(config: Config, { debug }: Options): Promi
     ...storybookWebpackConfig.output,
     filename: path.basename(filePath),
   };
+  // Exclude addons
+  // TODO Figure why it loading
+  // TODO exclude all addons from configs before loadStorybookWebpackConfig
+  storybookWebpackConfig.entry = Array.isArray(storybookWebpackConfig.entry)
+    ? storybookWebpackConfig.entry.filter((entry) => !entry.includes('@storybook/addon'))
+    : storybookWebpackConfig.entry;
   storybookWebpackConfig.module?.rules.unshift({
     enforce: 'pre',
     test: new RegExp(`\\.(${extensions.map((x) => x.slice(1))?.join('|')})$`),
     exclude: /node_modules/,
     use: { loader: require.resolve('./loader'), options: { debug } },
   });
-  // TODO Remove this after migrate react-ui to cjs
   storybookWebpackConfig.externals = [
-    nodeExternals({ whitelist: [/^@skbkontur/, /^@babel\/runtime/] }),
+    nodeExternals(),
     // TODO Don't work well with monorepos
     nodeExternals({ modulesDir: storybookParentDirectory }),
   ];
