@@ -1,10 +1,12 @@
 import cluster from 'cluster';
 import { readConfig } from '../config';
-import { Options, Config } from '../types';
+import { Options } from '../types';
 
 export default function (options: Options): void {
-  const config: Config = readConfig(options);
+  const config = readConfig(options);
   const { browser, update, webpack } = options;
+
+  if (!config) return;
 
   switch (true) {
     case update: {
@@ -12,6 +14,8 @@ export default function (options: Options): void {
       return;
     }
     case webpack: {
+      console.log('[CreeveyWebpack]:', `Starting with pid ${process.pid}`);
+
       require('./master/webpack').default(config, options);
       return;
     }

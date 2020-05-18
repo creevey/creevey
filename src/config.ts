@@ -35,7 +35,7 @@ function resolveConfigPath(configPath?: string): string | undefined {
   return configPath;
 }
 
-export function readConfig(options: Options): Config {
+export function readConfig(options: Options): Config | null {
   const configPath = resolveConfigPath(options.config);
   const userConfig: typeof defaultConfig & Partial<Pick<Config, 'gridUrl'>> = { ...defaultConfig };
 
@@ -49,7 +49,8 @@ export function readConfig(options: Options): Config {
 
   if (!gridUrl) {
     console.log('Please specify `gridUrl`');
-    process.exit(-1);
+    process.exitCode = -1;
+    return null;
   }
 
   // NOTE: Hack to pass typescript checking

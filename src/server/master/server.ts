@@ -5,6 +5,7 @@ import serve from 'koa-static';
 import mount from 'koa-mount';
 import WebSocket from 'ws';
 import { CreeveyApi } from './api';
+import { subscribeOn } from '../../utils';
 
 export default function server(api: CreeveyApi, reportDir: string, port: number): void {
   const app = new Koa();
@@ -29,4 +30,11 @@ export default function server(api: CreeveyApi, reportDir: string, port: number)
   wss.on('error', (error) => console.log('[WebSocketServer]:', error));
 
   server.listen(port, () => console.log('[CreeveyServer]:', `Started on http://localhost:${port}`));
+
+  // TODO Subscribe on shutdown, close server and websockets
+  subscribeOn('shutdown', () => {
+    console.log('[CreeveyServer]: Closing');
+    server.close();
+    wss.close();
+  });
 }

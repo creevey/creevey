@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import cluster from 'cluster';
 import { SkipOptions, isDefined, WebpackMessage, TestWorkerMessage } from './types';
 
 export const extensions = ['.js', '.jsx', '.ts', '.tsx', '.mjs', '.es', '.es6'];
@@ -96,17 +97,33 @@ export function emitMessage<T>(message: T): boolean {
 
 export function subscribeOn(type: 'tests', handler: (message: TestWorkerMessage) => void): void;
 export function subscribeOn(type: 'webpack', handler: (message: WebpackMessage) => void): void;
+export function subscribeOn(type: 'shutdown', handler: (message: 'shutdown') => void): void;
 
 export function subscribeOn(
-  type: 'tests' | 'webpack',
-  handler: ((message: TestWorkerMessage) => void) | ((message: WebpackMessage) => void),
+  type: 'tests' | 'webpack' | 'shutdown',
+  handler:
+    | ((message: TestWorkerMessage) => void)
+    | ((message: WebpackMessage) => void)
+    | ((message: 'shutdown') => void),
 ): void {
-  process.on('message', (message: TestWorkerMessage | WebpackMessage) => {
-    switch (true) {
-      case type == 'tests' && 'id' in message:
-        return (handler as (message: TestWorkerMessage) => void)(message as TestWorkerMessage);
-      case type == 'webpack' && 'type' in message:
-        return (handler as (message: WebpackMessage) => void)(message as WebpackMessage);
-    }
+  process.on('message', (message: TestWorkerMessage | WebpackMessage | 'shutdown') => {
+    if (type == 'tests' && typeof message == 'object' && 'id' in message)
+      return (handler as (message: TestWorkerMessage) => void)(message);
+    if (type == 'webpack' && typeof message == 'object' && 'type' in message)
+      return (handler as (message: WebpackMessage) => void)(message);
+    if (type == 'shutdown' && typeof message == 'string' && message == 'shutdown')
+      return (handler as (message: 'shutdown') => void)(message);
   });
+}
+
+export function shutdownWorkers(): void {
+  Object.values(cluster.workers)
+    .filter(isDefined)
+    .filter((worker) => worker.isConnected())
+    .forEach((worker) => {
+      const timeout = setTimeout(() => worker.kill(), 10000);
+      worker.send('shutdown');
+      worker.disconnect();
+      worker.on('disconnect', () => clearTimeout(timeout));
+    });
 }

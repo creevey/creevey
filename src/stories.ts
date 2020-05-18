@@ -116,6 +116,10 @@ function watchStories(): void {
   // NOTE We don't support RequireContextArgs objects to pass it into chokidar
   const watcher = chokidar.watch(Array.from(watchingFiles), { ignoreInitial: true });
 
+  subscribeOn('shutdown', () => {
+    watcher.close();
+  });
+
   watcher.on('change', (filePath) => storiesByFiles.set(`./${filePath}`, []));
   watcher.on('unlink', (filePath) => storiesByFiles.set(`./${filePath}`, []));
 

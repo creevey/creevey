@@ -1,6 +1,7 @@
 import cluster from 'cluster';
 import { EventEmitter } from 'events';
 import { Worker, Config, TestResult, BrowserConfig, WorkerMessage, TestStatus } from '../../types';
+import { subscribeOn } from '../../utils';
 
 const FORK_RETRIES = 5;
 
@@ -10,6 +11,7 @@ export default class Pool extends EventEmitter {
   private workers: Worker[] = [];
   private queue: { id: string; path: string[]; retries: number }[] = [];
   private forcedStop = false;
+  private shuttingDown = false;
   public get isRunning(): boolean {
     return this.workers.length !== this.freeWorkers.length;
   }
@@ -18,6 +20,8 @@ export default class Pool extends EventEmitter {
 
     this.maxRetries = config.maxRetries;
     this.config = config.browsers[browser] as BrowserConfig;
+
+    subscribeOn('shutdown', () => (this.shuttingDown = true));
   }
 
   async init(): Promise<void> {
@@ -71,7 +75,7 @@ export default class Pool extends EventEmitter {
     worker.isRunning = true;
     worker.once('message', (message: WorkerMessage) => {
       if (message.type == 'ready') return;
-      if (message.type == 'error') worker.disconnect();
+      if (message.type == 'error') this.gracefullyKill(worker);
 
       const { payload: result } = message;
       const { status } = result;
@@ -125,6 +129,8 @@ export default class Pool extends EventEmitter {
   private exitHandler(worker: Worker): void {
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     worker.once('exit', async () => {
+      if (this.shuttingDown) return;
+
       const workerOrError = await this.forkWorker();
 
       if (!(workerOrError instanceof cluster.Worker))
@@ -134,5 +140,12 @@ export default class Pool extends EventEmitter {
       this.workers[this.workers.indexOf(worker)] = workerOrError;
       this.process();
     });
+  }
+
+  private gracefullyKill(worker: Worker): void {
+    const timeout = setTimeout(() => worker.kill(), 10000);
+    worker.send('shutdown');
+    worker.disconnect();
+    worker.on('disconnect', () => clearTimeout(timeout));
   }
 }

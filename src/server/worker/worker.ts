@@ -147,12 +147,14 @@ export default async function worker(
   const browserConfig = config.browsers[options.browser] as BrowserConfig;
   const browser = await getBrowser(config, browserConfig);
 
-  setInterval(() => {
+  const interval = setInterval(() => {
     browser.getCurrentUrl().then((url) => {
       if (options.debug)
         console.log(chalk`[{blue WORKER}{grey :${options.browser}:${process.pid}}] {grey current url} ${url}`);
     });
   }, 10 * 1000);
+
+  subscribeOn('shutdown', () => clearInterval(interval));
 
   mocha.suite.beforeAll(function (this: Context) {
     this.config = config;

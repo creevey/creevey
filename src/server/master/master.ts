@@ -1,9 +1,9 @@
 import path from 'path';
-import cluster from 'cluster';
 import { Config, Test, isDefined, ServerTest } from '../../types';
 import { loadTestsFromStories } from '../../stories';
 import Runner from './runner';
 import { startWebpackCompiler } from './stories';
+import { shutdownWorkers, emitMessage } from '../../utils';
 
 function mergeTests(
   testsWithReports: Partial<{ [id: string]: Test }>,
@@ -48,10 +48,14 @@ export default async function master(config: Config): Promise<Runner> {
       Promise.race([
         new Promise((resolve) => setTimeout(resolve, 10000)),
         new Promise((resolve) => runner.once('stop', resolve)),
-      ]).then(() => cluster.disconnect(() => process.exit(0)));
+      ]).then(() => {
+        shutdownWorkers();
+        emitMessage<'shutdown'>('shutdown');
+      });
       runner.stop();
     } else {
-      cluster.disconnect(() => process.exit(0));
+      shutdownWorkers();
+      emitMessage<'shutdown'>('shutdown');
     }
   });
 

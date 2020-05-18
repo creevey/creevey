@@ -3,8 +3,8 @@ import path from 'path';
 import webpack, { Configuration } from 'webpack';
 import nodeExternals from 'webpack-node-externals';
 import EventHooksPlugin from 'event-hooks-webpack-plugin';
-import { emitMessage, extensions as fallbackExtensions } from '../../utils';
-import { Config, WebpackMessage, Options } from '../../types';
+import { emitMessage, extensions as fallbackExtensions, subscribeOn } from '../../utils';
+import { Config, WebpackMessage, Options, noop } from '../../types';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
@@ -129,6 +129,11 @@ export default async function compile(config: Config, { debug }: Options): Promi
   );
 
   const storybookWebpackCompiler = webpack(storybookWebpackConfig);
+  const watcher = storybookWebpackCompiler.watch({}, handleWebpackBuild);
 
-  storybookWebpackCompiler.watch({}, handleWebpackBuild);
+  subscribeOn('shutdown', () => {
+    console.log('[CreeveyWebpack]: Stop watching and shuting down');
+    watcher.close(noop);
+    process.on('exit', () => console.log('[CreeveyWebpack]: process exiting'));
+  });
 }

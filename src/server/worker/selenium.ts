@@ -3,6 +3,7 @@ import { PNG } from 'pngjs';
 import { Context, Test, Suite } from 'mocha';
 import { Builder, By, until, WebDriver, Origin } from 'selenium-webdriver';
 import { Config, BrowserConfig, StoryInput } from '../../types';
+import { subscribeOn } from '../../utils';
 
 declare global {
   interface Window {
@@ -278,8 +279,9 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
   }
   const browser = await new Builder().usingServer(gridUrl).withCapabilities(capabilities).build();
 
-  process.on('disconnect', () => {
-    Promise.race([new Promise((resolve) => setTimeout(resolve, 10000)), browser.quit()]).then(() => process.exit(0));
+  subscribeOn('shutdown', () => {
+    console.log('[CreeveyWorker]:', `Closing browser session ${process.pid}`);
+    browser.quit().then(() => console.log('[CreeveyWorker]:', `Browser session closed ${process.pid}`));
   });
 
   if (viewport) {

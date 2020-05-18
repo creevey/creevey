@@ -1,11 +1,11 @@
 import path from 'path';
 import { writeFileSync, copyFile, readdir, mkdir } from 'fs';
 import { promisify } from 'util';
-import cluster from 'cluster';
 import master from './master';
 import creeveyServer from './server';
 import creeveyApi from './api';
 import { Config, Options, isDefined } from '../../types';
+import { shutdownWorkers, emitMessage } from '../../utils';
 
 const copyFileAsync = promisify(copyFile);
 const readdirAsync = promisify(readdir);
@@ -53,7 +53,9 @@ export default async function (config: Config, options: Options): Promise<void> 
         .filter(({ skip }) => !skip)
         .every(({ status }) => status == 'success');
       // TODO output summary
-      cluster.disconnect(() => process.exit(isSuccess ? 0 : -1));
+      process.exitCode = isSuccess ? 0 : -1;
+      shutdownWorkers();
+      emitMessage<'shutdown'>('shutdown');
     });
     // TODO grep
     runner.start(Object.keys(runner.status.tests));
