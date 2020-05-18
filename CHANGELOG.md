@@ -1,3 +1,11 @@
+# [0.6.0-beta.2](https://github.com/wKich/creevey/compare/v0.6.0-beta.1...v0.6.0-beta.2) (2020-05-18)
+
+### Bug Fixes
+
+- 🐛 correct shutdown workers ([30e7066](https://github.com/wKich/creevey/commit/30e70661b2e1c6b8aab9efbdd3af541c56e719f4))
+- 🐛 correctly close browser session on SIGINT ([079b832](https://github.com/wKich/creevey/commit/079b8326f45d8b7a0de539c3ed2f105679a04534))
+- 🐛 ignore removing bundle cache directory ([6be2bd7](https://github.com/wKich/creevey/commit/6be2bd789c5b259e3351169a47f1bb932ef5de44))
+
 # [0.6.0-beta.1](https://github.com/wKich/creevey/compare/v0.6.0-beta.0...v0.6.0-beta.1) (2020-05-15)
 
 ### Bug Fixes
