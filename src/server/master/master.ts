@@ -3,7 +3,7 @@ import { Config, Test, isDefined, ServerTest } from '../../types';
 import { loadTestsFromStories } from '../../stories';
 import Runner from './runner';
 import { startWebpackCompiler } from './stories';
-import { shutdownWorkers, emitMessage } from '../../utils';
+import { shutdownWorkers } from '../../utils';
 
 function mergeTests(
   testsWithReports: Partial<{ [id: string]: Test }>,
@@ -50,12 +50,10 @@ export default async function master(config: Config): Promise<Runner> {
         new Promise((resolve) => runner.once('stop', resolve)),
       ]).then(() => {
         shutdownWorkers();
-        emitMessage<'shutdown'>('shutdown');
       });
       runner.stop();
     } else {
       shutdownWorkers();
-      emitMessage<'shutdown'>('shutdown');
     }
   });
 

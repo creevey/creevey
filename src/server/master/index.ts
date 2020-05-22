@@ -5,7 +5,7 @@ import master from './master';
 import creeveyServer from './server';
 import creeveyApi from './api';
 import { Config, Options, isDefined } from '../../types';
-import { shutdownWorkers, emitMessage } from '../../utils';
+import { shutdownWorkers } from '../../utils';
 
 const copyFileAsync = promisify(copyFile);
 const readdirAsync = promisify(readdir);
@@ -55,7 +55,6 @@ export default async function (config: Config, options: Options): Promise<void> 
       // TODO output summary
       process.exitCode = isSuccess ? 0 : -1;
       shutdownWorkers();
-      emitMessage<'shutdown'>('shutdown');
     });
     // TODO grep
     runner.start(Object.keys(runner.status.tests));

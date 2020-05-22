@@ -13,7 +13,6 @@ process.on('unhandledRejection', (reason) => {
   if (cluster.isWorker) return emitMessage<WorkerMessage>({ type: 'error', payload: { status: 'failed', error } });
   if (cluster.isMaster) {
     shutdownWorkers();
-    emitMessage<'shutdown'>('shutdown');
   }
 });
 

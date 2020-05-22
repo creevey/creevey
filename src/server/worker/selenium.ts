@@ -280,8 +280,7 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
   const browser = await new Builder().usingServer(gridUrl).withCapabilities(capabilities).build();
 
   subscribeOn('shutdown', () => {
-    console.log('[CreeveyWorker]:', `Closing browser session ${process.pid}`);
-    browser.quit().then(() => console.log('[CreeveyWorker]:', `Browser session closed ${process.pid}`));
+    browser.quit();
   });
 
   if (viewport) {

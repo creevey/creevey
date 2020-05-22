@@ -141,8 +141,6 @@ export default async function compile(config: Config, { debug }: Options): Promi
   const watcher = storybookWebpackCompiler.watch({}, handleWebpackBuild);
 
   subscribeOn('shutdown', () => {
-    console.log('[CreeveyWebpack]: Stop watching and shuting down');
     watcher.close(noop);
-    process.on('exit', () => console.log('[CreeveyWebpack]: process exiting'));
   });
 }
