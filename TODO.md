@@ -151,7 +151,13 @@
 ## First priority (v0.6)
 
 - [ ] Bugs
-  - [ ] Readlink don't work on windows. Need to change storybook framework detection
+  - [x] Readlink don't work on windows. Need to change storybook framework detection
+  - [ ] Don't handle correctly storybook render story errors
+  - [x] Restart workers output errors `NoSuchSessionError: Tried to run command without establishing a connection` and `TypeError: _cluster.default.disconnect is not a function`
+- [x] Cutoff subcomponents parameter
+- [x] Apply AST transformation on storybook config directory (cut decorators)
+- [ ] Don't load any of addons
+- [x] EPIPE Error on SIGINT :(
 - [ ] Fix warnings
   - [x] [BABEL] Note: The code generator has deoptimised the styling of /home/kich/Projects/creevey/report/storybook/tmp-8207-HTp79b5JhpxQ-.js as it exceeds the max of 500KB.
   - [ ] Unexpected loaded state. Did you call `load` twice?
@@ -168,6 +174,7 @@
   - [x] Angular
   - [x] Create React App
 - [ ] Docs
+  - [ ] Add `delay` option
   - [ ] Record screencast with Creevey UI
     - Pre-requirements: Storybook ui-kit + creevey setup + approve all images + vscode with opened story
     - Start storybook
@@ -213,6 +220,7 @@
 
 ## Second priority (v0.7)
 
+- [ ] Support mdx stories
 - [ ] Update Eslint to v7
 - [ ] Support run tests inside docker
 - [ ] Setup NODE_ENV to 'test' on open storybook in browser
@@ -230,12 +238,12 @@
   - [ ] Add instruction for various frameworks
     - [ ] Create React App Typescript
     - [ ] Vue
-- [ ] Apply AST transformation on storybook config directory (optional)
 - [ ] Add human readable error message if test failed with `window.__CREEVEY_SELECT_STORY__` is not a function
 
 ## Third priority (vNext)
 
 - [ ] Drop storiesOf and Storybook v4.x support
+  - [ ] Could we drop more entry points from webpack config? (generated entry for example)
 - [ ] Creevey as Addon PoC
 - [ ] Add Strobybook integration tests
 - [ ] Transform to monorepo

@@ -43,6 +43,12 @@ function getKindObjectNodePath<T>(path: NodePath<T>): NodePath<t.ObjectExpressio
   }
 }
 
+function removeAllPropsExcept(path: NodePath<t.ObjectExpression>, name: string): void {
+  (path.get('properties') as NodePath[])
+    .filter((propPath) => !propPath.isObjectProperty() || !t.isIdentifier(propPath.node.key, { name }))
+    .forEach((propPath) => propPath.remove());
+}
+
 function replaceStoryFnToNoop(declarations: t.VariableDeclarator[]): void {
   declarations.forEach((declarator) => (declarator.init = t.arrowFunctionExpression([], t.blockStatement([]))));
 }
@@ -100,7 +106,12 @@ function minifyStories(ast: t.File, source: string): string {
       if (!kindPath) return;
       isTransformed = true;
       getPropertyPath(kindPath, 'component')?.remove();
+      getPropertyPath(kindPath, 'subcomponents')?.remove();
       getPropertyPath(kindPath, 'decorators')?.remove();
+      const kindParametersPath = getPropertyPath(kindPath, 'parameters')?.get('value');
+      if (kindParametersPath?.isObjectExpression()) {
+        removeAllPropsExcept(kindParametersPath, 'creevey');
+      }
       defaultPath.parentPath.traverse({
         ExportNamedDeclaration(namedPath) {
           const { declaration: namedDeclaration } = namedPath.node;
@@ -109,10 +120,26 @@ function minifyStories(ast: t.File, source: string): string {
           const storyPath = getStoryObjectNodePath(namedPath, namedDeclaration.declarations);
           if (!storyPath) return;
           getPropertyPath(storyPath, 'decorators')?.remove();
+          const storyParametersPath = getPropertyPath(storyPath, 'parameters')?.get('value');
+          if (storyParametersPath?.isObjectExpression()) {
+            removeAllPropsExcept(storyParametersPath, 'creevey');
+          }
         },
       });
     },
     CallExpression(path) {
+      if (path.get('callee').isIdentifier({ name: 'addDecorator' })) {
+        isTransformed = true;
+        path.remove();
+        return;
+      }
+      if (path.get('callee').isIdentifier({ name: 'addParameters' })) {
+        const [argPath] = path.get('arguments');
+        if (!argPath || !argPath.isObjectExpression()) return;
+        isTransformed = true;
+        removeAllPropsExcept(argPath, 'creevey');
+        return;
+      }
       if (!path.get('callee').isIdentifier({ name: 'storiesOf' }) || visited.has(path)) return;
       isTransformed = true;
       visited.add(path);
