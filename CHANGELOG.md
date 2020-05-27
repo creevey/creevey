@@ -1,3 +1,9 @@
+## [0.5.7](https://github.com/wKich/creevey/compare/v0.5.6...v0.5.7) (2020-05-27)
+
+### Bug Fixes
+
+- 🐛 soft-freeze mocha version on 7.1 ([06b9574](https://github.com/wKich/creevey/commit/06b957423ca938a6fef3ed09eacd68a376b585e7))
+
 ## [0.5.6](https://github.com/wKich/creevey/compare/v0.5.5...v0.5.6) (2020-05-04)
 
 ### Bug Fixes
