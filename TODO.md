@@ -154,6 +154,7 @@
   - [x] Readlink don't work on windows. Need to change storybook framework detection
   - [ ] Don't handle correctly storybook render story errors
   - [x] Restart workers output errors `NoSuchSessionError: Tried to run command without establishing a connection` and `TypeError: _cluster.default.disconnect is not a function`
+  - [ ] Error mocha instance already disposed in vue project
 - [x] Cutoff subcomponents parameter
 - [x] Apply AST transformation on storybook config directory (cut decorators)
 - [ ] Don't load any of addons

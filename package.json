@@ -65,7 +65,7 @@
     "koa-static": "^5.0.0",
     "loader-utils": "^2.0.0",
     "minimist": "^1.2.5",
-    "mocha": "^7.1.2",
+    "mocha": "~7.1.2",
     "pixelmatch": "^5.2.0",
     "pngjs": "^5.0.0",
     "schema-utils": "^2.6.6",
