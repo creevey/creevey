@@ -1,3 +1,11 @@
+# [0.6.0-beta.3](https://github.com/wKich/creevey/compare/v0.6.0-beta.2...v0.6.0-beta.3) (2020-05-27)
+
+### Bug Fixes
+
+- 🐛 EPIPE message on exit again ([a5bb06d](https://github.com/wKich/creevey/commit/a5bb06def9bb4598ee5619ab4942936845dea44c))
+- 🐛 make loader be more aggressive ([78c3d53](https://github.com/wKich/creevey/commit/78c3d53d8439338e634349e9c7999f017ea1f10f))
+- 🐛 soft-freeze mocha version on 7.1 ([5aa3f57](https://github.com/wKich/creevey/commit/5aa3f57ea0fcf3512646a7c346b89ba4f6057767))
+
 # [0.6.0-beta.2](https://github.com/wKich/creevey/compare/v0.6.0-beta.1...v0.6.0-beta.2) (2020-05-18)
 
 ### Bug Fixes
