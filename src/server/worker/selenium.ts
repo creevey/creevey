@@ -227,7 +227,9 @@ async function takeCompositeScreenshot(
 async function takeScreenshot(browser: WebDriver, captureElement?: string | null): Promise<string> {
   if (!captureElement) return browser.takeScreenshot();
 
-  // TODO Check types
+  // NOTE Check element exist before taking screenshot
+  await browser.findElement(By.css(captureElement));
+
   const { elementRect, windowRect } = await browser.executeScript(function (selector: string) {
     window.scrollTo(0, 0);
     return {
