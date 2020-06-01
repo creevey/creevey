@@ -187,5 +187,4 @@ export default async function worker(
   console.log('[CreeveyWorker]:', `Ready ${options.browser}:${process.pid}`);
 
   emitMessage<WorkerMessage>({ type: 'ready' });
-  process.on('SIGINT', noop);
 }

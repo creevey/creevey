@@ -2,19 +2,21 @@ import cluster from 'cluster';
 import minimist from 'minimist';
 import chalk from 'chalk';
 import creevey from './server';
-import { Options, WorkerMessage } from './types';
+import { Options, WorkerMessage, noop } from './types';
 import { emitMessage, shutdownWorkers } from './utils';
 
-process.on('unhandledRejection', (reason) => {
+function shutdown(reason: unknown): void {
   const error = reason instanceof Error ? reason.stack ?? reason.message : (reason as string);
 
   console.log(chalk`[{red FAIL}{grey :${process.pid}}]`, error);
 
-  if (cluster.isWorker) return emitMessage<WorkerMessage>({ type: 'error', payload: { status: 'failed', error } });
-  if (cluster.isMaster) {
-    shutdownWorkers();
-  }
-});
+  if (cluster.isWorker) emitMessage<WorkerMessage>({ type: 'error', payload: { status: 'failed', error } });
+  if (cluster.isMaster) shutdownWorkers();
+}
+
+process.on('uncaughtException', shutdown);
+process.on('unhandledRejection', shutdown);
+process.on('SIGINT', noop);
 
 const argv = minimist<Options>(process.argv.slice(2), {
   string: ['browser', 'storybookBundle', 'config', 'reporter', 'gridUrl', 'reportDir', 'screenDir'],

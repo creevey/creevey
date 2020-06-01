@@ -151,18 +151,17 @@
 ## First priority (v0.6)
 
 - [ ] Bugs
-  - [x] Readlink don't work on windows. Need to change storybook framework detection
   - [ ] Don't handle correctly storybook render story errors
+  - [x] Readlink don't work on windows. Need to change storybook framework detection
   - [x] Restart workers output errors `NoSuchSessionError: Tried to run command without establishing a connection` and `TypeError: _cluster.default.disconnect is not a function`
-  - [ ] Error mocha instance already disposed in vue project
+- [ ] Fix warnings
+  - [ ] Unexpected loaded state. Did you call `load` twice?
+  - [x] [BABEL] Note: The code generator has deoptimised the styling of /home/kich/Projects/creevey/report/storybook/tmp-8207-HTp79b5JhpxQ-.js as it exceeds the max of 500KB.
+  - [x] webpack-hot-middleware's client requires EventSource to work. You should include a polyfill if you want to support this browser: https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events#Tools
+- [ ] Don't load any of addons
 - [x] Cutoff subcomponents parameter
 - [x] Apply AST transformation on storybook config directory (cut decorators)
-- [ ] Don't load any of addons
 - [x] EPIPE Error on SIGINT :(
-- [ ] Fix warnings
-  - [x] [BABEL] Note: The code generator has deoptimised the styling of /home/kich/Projects/creevey/report/storybook/tmp-8207-HTp79b5JhpxQ-.js as it exceeds the max of 500KB.
-  - [ ] Unexpected loaded state. Did you call `load` twice?
-  - [x] webpack-hot-middleware's client requires EventSource to work. You should include a polyfill if you want to support this browser: https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events#Tools
 - [x] Remove unnecessary deps and code, for example pirates, require.context, interpret, (?)other
 - [x] Bugs
   - [x] In chrome 80 creevey sometime failed with error `MoveTargetOutOfBoundsError: move target out of bounds`
@@ -226,6 +225,12 @@
 - [ ] Support run tests inside docker
 - [ ] Setup NODE_ENV to 'test' on open storybook in browser
 - [ ] Bugs
+  - [ ] Error mocha instance already disposed in mocha@7.2
+  - [ ] Fix taking composite screenshots with hided scrollbar
+    - Take `document.documentElement.clientWidth/Height` instead of window rect
+    - For each screenshot after scroll, take elementRect coordinates
+    - Iterate be screen images and calculate resulting x/y coordinates for composite image
+    - If image width/height greater than viewport width/height than scroll bar is captured
   - [ ] In multiple images tests output same test error for every image
 - [ ] Features
   - [ ] Allow define custom localhost resolver in config
