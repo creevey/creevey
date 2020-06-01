@@ -16,13 +16,14 @@ import {
   ServerTest,
   StoryInput,
   WebpackMessage,
+  CreeveyTestFunction,
 } from './types';
 import { shouldSkip, subscribeOn } from './utils';
 
-function storyTestFabric(delay?: number) {
+function storyTestFabric(delay?: number, testFn?: CreeveyTestFunction) {
   return async function storyTest(this: Context) {
     delay ? await new Promise((resolve) => setTimeout(resolve, delay)) : void 0;
-    await this.expect(await this.takeScreenshot()).to.matchImage();
+    await (testFn?.call(this) ?? this.expect(await this.takeScreenshot()).to.matchImage());
   };
 }
 
@@ -66,7 +67,7 @@ export function convertStories(
 
       Object.entries(storyTests).forEach(([testName, testFn]) => {
         const test = createCreeveyTest(meta, skip, testName);
-        tests[test.id] = { ...test, story, fn: testFn };
+        tests[test.id] = { ...test, story, fn: storyTestFabric(delay, testFn) };
       });
     });
   });

@@ -196,19 +196,21 @@ export interface SkipOption {
 
 export type SkipOptions = string | SkipOption | SkipOption[];
 
+export type CreeveyTestFunction = (this: {
+  browser: WebDriver;
+  keys: IKey;
+  expect: Chai.ExpectStatic;
+  takeScreenshot: () => Promise<string>;
+  readonly captureElement?: WebElementPromise;
+}) => Promise<void>;
+
 export interface CreeveyStoryParams {
   captureElement?: string | null;
   delay?: number;
   skip?: SkipOptions;
   tests?: {
     // TODO Define browserName, story
-    [name: string]: (this: {
-      browser: WebDriver;
-      keys: IKey;
-      expect: Chai.ExpectStatic;
-      takeScreenshot: () => Promise<string>;
-      readonly captureElement?: WebElementPromise;
-    }) => Promise<void>;
+    [name: string]: CreeveyTestFunction;
   };
 }
 
