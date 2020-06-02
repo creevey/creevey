@@ -1,3 +1,15 @@
+# [0.6.0-beta.4](https://github.com/wKich/creevey/compare/v0.6.0-beta.3...v0.6.0-beta.4) (2020-06-02)
+
+### Bug Fixes
+
+- 🐛 another fix to gracefully exit ([e433afd](https://github.com/wKich/creevey/commit/e433afd30b6a001c9cfcbc1d267557dd7d7f3ed3))
+- 🐛 check element before capturing screenshot ([53df80b](https://github.com/wKich/creevey/commit/53df80bb2a7c234e5f0109d0f1c8beca88ddb1e9))
+- 🐛 some small init/exit issues ([6c4d666](https://github.com/wKich/creevey/commit/6c4d666040eafdf721d17a0f40714af9a85ae109))
+
+### Features
+
+- 🎸 allow use `delay` with custom tests ([7a1ab33](https://github.com/wKich/creevey/commit/7a1ab337e52577f3fc934b5edca12638a1ea8e07))
+
 # [0.6.0-beta.3](https://github.com/wKich/creevey/compare/v0.6.0-beta.2...v0.6.0-beta.3) (2020-05-27)
 
 ### Bug Fixes
