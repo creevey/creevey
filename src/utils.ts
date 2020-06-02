@@ -109,7 +109,7 @@ export function subscribeOn(
   process.on('message', (message: TestWorkerMessage | WebpackMessage | 'shutdown') => {
     if (type == 'tests' && typeof message == 'object' && 'id' in message)
       return (handler as (message: TestWorkerMessage) => void)(message);
-    if (type == 'webpack' && typeof message == 'object' && 'type' in message)
+    if (type == 'webpack' && typeof message == 'object' && 'type' in message && typeof message.type == 'string')
       return (handler as (message: WebpackMessage) => void)(message);
     if (type == 'shutdown' && typeof message == 'string' && message == 'shutdown')
       return (handler as (message: 'shutdown') => void)(message);
