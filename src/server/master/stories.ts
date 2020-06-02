@@ -14,7 +14,9 @@ export function startWebpackCompiler(): Promise<string> {
           return resolve(message.payload.filePath);
         case 'failed':
           return reject();
-        default:
+        case 'rebuild started':
+        case 'rebuild succeeded':
+        case 'rebuild failed':
           return emitMessage<WebpackMessage>(message);
       }
     });
