@@ -1,3 +1,9 @@
+# [0.6.0-beta.5](https://github.com/wKich/creevey/compare/v0.6.0-beta.4...v0.6.0-beta.5) (2020-06-02)
+
+### Bug Fixes
+
+- 🐛 webpack compiler process send messages recursion ([4fd2afe](https://github.com/wKich/creevey/commit/4fd2afeb7e2a2254eb1638f5ca2fc836550c59dd))
+
 # [0.6.0-beta.4](https://github.com/wKich/creevey/compare/v0.6.0-beta.3...v0.6.0-beta.4) (2020-06-02)
 
 ### Bug Fixes
