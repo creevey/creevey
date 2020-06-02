@@ -1,3 +1,9 @@
+# [0.6.0-beta.6](https://github.com/wKich/creevey/compare/v0.6.0-beta.5...v0.6.0-beta.6) (2020-06-02)
+
+### Bug Fixes
+
+- 🐛 IPC messages recursion, again ([4500e92](https://github.com/wKich/creevey/commit/4500e92525307b1966be9fbce39c7bb50b18c25b))
+
 # [0.6.0-beta.5](https://github.com/wKich/creevey/compare/v0.6.0-beta.4...v0.6.0-beta.5) (2020-06-02)
 
 ### Bug Fixes
