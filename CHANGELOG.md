@@ -1,3 +1,9 @@
+# [0.6.0-beta.7](https://github.com/wKich/creevey/compare/v0.6.0-beta.6...v0.6.0-beta.7) (2020-06-02)
+
+### Bug Fixes
+
+- 🐛 webpack recursion IPC, again ([5083454](https://github.com/wKich/creevey/commit/5083454c1d330ad0abf2ac24ddeb73f1f5367f3a))
+
 # [0.6.0-beta.6](https://github.com/wKich/creevey/compare/v0.6.0-beta.5...v0.6.0-beta.6) (2020-06-02)
 
 ### Bug Fixes
