@@ -8,7 +8,9 @@ export function startWebpackCompiler(): Promise<string> {
     const webpackCompiler = cluster.fork();
 
     webpackCompiler.on('message', (message: WebpackMessage) => {
-      Object.values(cluster.workers).forEach((worker) => worker?.send(message));
+      Object.values(cluster.workers)
+        .filter((worker) => worker != webpackCompiler)
+        .forEach((worker) => worker?.send(message));
       switch (message.type) {
         case 'ready':
           return resolve(message.payload.filePath);
