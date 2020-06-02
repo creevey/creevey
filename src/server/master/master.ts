@@ -40,8 +40,6 @@ export default async function master(config: Config): Promise<Runner> {
 
   runner.updateTests(mergeTests(testsFromReport, tests));
 
-  await runner.init();
-
   process.on('SIGINT', () => {
     if (runner.isRunning) {
       // TODO Better handle stop
@@ -56,6 +54,8 @@ export default async function master(config: Config): Promise<Runner> {
       shutdownWorkers();
     }
   });
+
+  await runner.init();
 
   return runner;
 }

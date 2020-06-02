@@ -10,6 +10,7 @@ function shutdown(reason: unknown): void {
 
   console.log(chalk`[{red FAIL}{grey :${process.pid}}]`, error);
 
+  process.exitCode = -1;
   if (cluster.isWorker) emitMessage<WorkerMessage>({ type: 'error', payload: { status: 'failed', error } });
   if (cluster.isMaster) shutdownWorkers();
 }
