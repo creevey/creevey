@@ -3,7 +3,7 @@ import { Context } from 'mocha';
 import chokidar from 'chokidar';
 import { Channel } from '@storybook/channels';
 import addons from '@storybook/addons';
-import { ClientApi, StoryStore } from '@storybook/client-api';
+import { ClientApi } from '@storybook/client-api';
 import Events from '@storybook/core-events';
 import { logger } from '@storybook/client-logger';
 import {
@@ -87,6 +87,7 @@ function initStorybookEnvironment(): { clientApi: ClientApi; channel: Channel } 
   });
 
   // NOTE Disable storybook debug output due issue https://github.com/storybookjs/storybook/issues/8461
+  // TODO We could redefine loglevel using `console.setLevel(LOGLEVEL);` from `loglevel` lib. Worked only for 6.x
   // Fixed in 6.x
   logger.debug = noop;
 
@@ -103,11 +104,6 @@ function initStorybookEnvironment(): { clientApi: ClientApi; channel: Channel } 
   const { clientApi, context, channel = context.channel } = storybookCore.start(() => void 0);
 
   return { clientApi, channel };
-}
-
-function removeOldStories(storyStore: StoryStore): void {
-  new Set(storyStore.raw().map(({ kind }) => kind)).forEach((kind) => storyStore.removeStoryKind(kind));
-  storyStore.incrementRevision();
 }
 
 function watchStories(): void {
@@ -145,7 +141,7 @@ function loadStorybookBundle(
   storiesListener: (stories: Map<string, StoryInput[]>) => void,
 ): Promise<StoriesRaw> {
   return new Promise((resolve) => {
-    const { clientApi, channel } = initStorybookEnvironment();
+    const { channel } = initStorybookEnvironment();
 
     channel.once(Events.SET_STORIES, (data: { stories: StoriesRaw }) => resolve(data.stories));
     channel.on('storiesUpdated', storiesListener);
@@ -155,7 +151,6 @@ function loadStorybookBundle(
     subscribeOn('webpack', (message: WebpackMessage) => {
       if (message.type != 'rebuild succeeded') return;
 
-      removeOldStories(clientApi.store());
       delete require.cache[storybookBundlePath];
       require(storybookBundlePath);
     });

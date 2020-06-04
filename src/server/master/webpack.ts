@@ -118,6 +118,8 @@ export default async function compile(config: Config, { debug }: Options): Promi
   storybookWebpackConfig.entry = Array.isArray(storybookWebpackConfig.entry)
     ? storybookWebpackConfig.entry.filter((entry) => !entry.includes('@storybook/addon'))
     : storybookWebpackConfig.entry;
+  Array.isArray(storybookWebpackConfig.entry) &&
+    storybookWebpackConfig.entry.unshift(path.join(__dirname, 'dummy-hmr'));
   storybookWebpackConfig.module?.rules.unshift({
     enforce: 'pre',
     test: new RegExp(`\\.(${extensions.map((x) => x.slice(1))?.join('|')})$`),

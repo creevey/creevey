@@ -150,15 +150,14 @@
 
 ## First priority (v0.6)
 
-- [ ] Bugs
-  - [ ] Don't handle correctly storybook render story errors
+- [x] Bugs
+  - [x] Don't handle correctly storybook render story errors
   - [x] Readlink don't work on windows. Need to change storybook framework detection
   - [x] Restart workers output errors `NoSuchSessionError: Tried to run command without establishing a connection` and `TypeError: _cluster.default.disconnect is not a function`
-- [ ] Fix warnings
-  - [ ] Unexpected loaded state. Did you call `load` twice?
+- [x] Fix warnings
+  - [x] Unexpected loaded state. Did you call `load` twice?
   - [x] [BABEL] Note: The code generator has deoptimised the styling of /home/kich/Projects/creevey/report/storybook/tmp-8207-HTp79b5JhpxQ-.js as it exceeds the max of 500KB.
   - [x] webpack-hot-middleware's client requires EventSource to work. You should include a polyfill if you want to support this browser: https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events#Tools
-- [ ] Don't load any of addons
 - [x] Cutoff subcomponents parameter
 - [x] Apply AST transformation on storybook config directory (cut decorators)
 - [x] EPIPE Error on SIGINT :(
@@ -175,7 +174,7 @@
   - [x] Create React App
 - [ ] Docs
   - [ ] Add `delay` option
-  - [ ] Record screencast with Creevey UI
+  - [x] Record screencast with Creevey UI
     - Pre-requirements: Storybook ui-kit + creevey setup + approve all images + vscode with opened story
     - Start storybook
     - Switch terminal tab
@@ -220,6 +219,7 @@
 
 ## Second priority (v0.7)
 
+- [ ] Don't load any of addons
 - [ ] Support mdx stories
 - [ ] Update Eslint to v7
 - [ ] Support run tests inside docker
