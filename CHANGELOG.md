@@ -1,3 +1,9 @@
+# [0.6.0-beta.8](https://github.com/wKich/creevey/compare/v0.6.0-beta.7...v0.6.0-beta.8) (2020-06-04)
+
+### Bug Fixes
+
+- 🐛 output warning `Did you call 'load' twice` on reload ([1b2bbeb](https://github.com/wKich/creevey/commit/1b2bbeb8c7f8052514feab767b599b66fec3adf7))
+
 # [0.6.0-beta.7](https://github.com/wKich/creevey/compare/v0.6.0-beta.6...v0.6.0-beta.7) (2020-06-02)
 
 ### Bug Fixes
