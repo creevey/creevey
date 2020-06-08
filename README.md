@@ -16,13 +16,12 @@ Main goal of creevey take visual testing to a new level. Allow you to get fast a
 - [Write tests](#write-tests)
 - [Setup local Selenium Grid](#setup-local-selenium-grid)
 - [Use remote grid (BrowserStack/SauceLabs/etc)](#use-remote-grid-browserstacksaucelabsetc)
-- [Configs/Options](#configsoptions)
+- [Config/Options](#configoptions)
   - [Creevey config](#creevey-config)
   - [CLI Options](#cli-options)
   - [Storybook parameters](#storybook-parameters)
 - [Creevey under the hood](#creevey-under-the-hood)
 - [Future plans](#future-plans)
-- [Possible caveats](#possible-caveats)
 
 ## How to start
 
