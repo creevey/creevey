@@ -172,8 +172,9 @@
 - [x] Add examples
   - [x] Angular
   - [x] Create React App
-- [ ] Docs
-  - [ ] Add `delay` option
+- [x] Docs
+  - [ ] Update framework examples
+  - [x] Add `delay` option
   - [x] Record screencast with Creevey UI
     - Pre-requirements: Storybook ui-kit + creevey setup + approve all images + vscode with opened story
     - Start storybook
@@ -187,7 +188,7 @@
     - Run that story again
     - Show failed test in different views
     - Approve image
-  - [ ] Update Readme.md (also describe scenarios or how to capture screenshots)
+  - [x] Update Readme.md (also describe scenarios or how to capture screenshots)
     - badges
     - Title with short description
     - Logo or gif screen cast
@@ -198,8 +199,7 @@
     - Describe creevey CLI
     - Describe creevey config options
     - Describe available storybook parameters
-  - [ ] Update framework examples
-  - [ ] Add topics in top of readme
+  - [x] Add topics in top of readme
     - How to Start (start storybook step)
     - Setup Selenium Grid
     - Write tests
@@ -233,6 +233,8 @@
     - If image width/height greater than viewport width/height than scroll bar is captured
   - [ ] In multiple images tests output same test error for every image
 - [ ] Features
+  - [ ] Add `init` cli option
+  - [ ] Allow define saucelabs/browserstack-local init/dispose functions
   - [ ] Allow define custom localhost resolver in config
   - [ ] Add `only` option as opposite for `skip`
   - [ ] Allow to ignore elements in capturing screenshot

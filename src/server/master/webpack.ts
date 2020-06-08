@@ -138,6 +138,7 @@ export default async function compile(config: Config, { debug }: Options): Promi
       },
     }),
   );
+  storybookWebpackConfig.performance = false;
 
   const storybookWebpackCompiler = webpack(storybookWebpackConfig);
   const watcher = storybookWebpackCompiler.watch({}, handleWebpackBuild);
