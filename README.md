@@ -218,7 +218,7 @@ export default {
         {
           in: ['firefox', 'chrome'],
           tests: /.*hover$/,
-          reason: 'For some reason `MyComponent` hovering do not work correcly',
+          reason: 'For some reason `MyComponent` hovering do not work correctly',
         },
       ],
     },
