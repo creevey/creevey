@@ -198,3 +198,7 @@ I try to figure out what transpiler I should register to load storybook config a
 #### Angular
 
 Please see [this guide](docs/angular.md)
+
+#### Vue
+
+Please see [this guide](docs/vue.md)
