@@ -145,16 +145,11 @@
 - [x] Bugs
   - [x] Reconnect on `WebDriverError: Session timed out or not found`
   - [x] On Teamcity cli exits with -1 code without any output
-
-</details>
-
-## First priority (v0.6)
-
-- [x] Bugs
   - [x] Don't handle correctly storybook render story errors
   - [x] Readlink don't work on windows. Need to change storybook framework detection
   - [x] Restart workers output errors `NoSuchSessionError: Tried to run command without establishing a connection` and `TypeError: _cluster.default.disconnect is not a function`
-- [x] Fix warnings
+  - [x] In chrome 80 creevey sometime failed with error `MoveTargetOutOfBoundsError: move target out of bounds`
+  - [x] For firefox composite images captured without scrollbars, but image width has scrollbar width
   - [x] Unexpected loaded state. Did you call `load` twice?
   - [x] [BABEL] Note: The code generator has deoptimised the styling of /home/kich/Projects/creevey/report/storybook/tmp-8207-HTp79b5JhpxQ-.js as it exceeds the max of 500KB.
   - [x] webpack-hot-middleware's client requires EventSource to work. You should include a polyfill if you want to support this browser: https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events#Tools
@@ -162,9 +157,6 @@
 - [x] Apply AST transformation on storybook config directory (cut decorators)
 - [x] EPIPE Error on SIGINT :(
 - [x] Remove unnecessary deps and code, for example pirates, require.context, interpret, (?)other
-- [x] Bugs
-  - [x] In chrome 80 creevey sometime failed with error `MoveTargetOutOfBoundsError: move target out of bounds`
-  - [x] For firefox composite images captured without scrollbars, but image width has scrollbar width
 - [x] Optimize stories loading
   - [x] Add debug output on fail transformation
   - [x] Use proxy to handle side-effects
@@ -176,39 +168,8 @@
   - [x] Update framework examples
   - [x] Add `delay` option
   - [x] Record screencast with Creevey UI
-    - Pre-requirements: Storybook ui-kit + creevey setup + approve all images + vscode with opened story
-    - Start storybook
-    - Switch terminal tab
-    - Start creevey --ui
-    - Open `http://localhost:3000`
-    - Run all tests
-    - Open one of them
-    - Open along side VSCode with that story
-    - Change a little
-    - Run that story again
-    - Show failed test in different views
-    - Approve image
   - [x] Update Readme.md (also describe scenarios or how to capture screenshots)
-    - badges
-    - Title with short description
-    - Logo or gif screen cast
-    - How to start and what you get
-    - How to setup selenium webdrivers locally (selenoid + docker)
-    - How to write interaction tests for stories
-    - Description about how creevey work
-    - Describe creevey CLI
-    - Describe creevey config options
-    - Describe available storybook parameters
   - [x] Add topics in top of readme
-    - How to Start (start storybook step)
-    - Setup Selenium Grid
-    - Write tests
-    - Creevey under the hood
-    - Configs/Options
-      - CLI Options
-      - creevey.config.ts
-      - storybook parameters
-    - Possible caveats
   - [x] Add instruction for various frameworks
     - [x] Angular
     - [x] Create React App
@@ -217,7 +178,9 @@
   - [x] ~~Support storybook configs with js extension (4.x and 5.2 versions)~~
 - [x] ~~Allow define custom extensions to ignore it while story loading process~~
 
-## Second priority (v0.7)
+</details>
+
+## First priority (v0.7)
 
 - [ ] Add @babel/code-frame to output loader error
 - [ ] Transform to monorepo
@@ -255,7 +218,7 @@
     - [x] Vue
 - [ ] Add human readable error message if test failed with `window.__CREEVEY_SELECT_STORY__` is not a function
 
-## Third priority (vNext)
+## Second priority (vNext)
 
 - [ ] Drop storiesOf and Storybook v4.x support
   - [ ] Could we drop more entry points from webpack config? (generated entry for example)
