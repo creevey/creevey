@@ -1,3 +1,10 @@
+# [0.6.0](https://github.com/wKich/creevey/compare/v0.6.0-beta.8...v0.6.0) (2020-06-09)
+
+### Bug Fixes
+
+- 🐛 kind-of@6.0.2 vulnerability ([489783e](https://github.com/wKich/creevey/commit/489783ee489c5d4f9d0ca5de87dedb6be6e78e1e))
+- 🐛 loader: remove vars in desctructuring ([8567fd6](https://github.com/wKich/creevey/commit/8567fd60e3ba67572e45f22629f639f6f17647b3))
+
 # [0.6.0-beta.8](https://github.com/wKich/creevey/compare/v0.6.0-beta.7...v0.6.0-beta.8) (2020-06-04)
 
 ### Bug Fixes
