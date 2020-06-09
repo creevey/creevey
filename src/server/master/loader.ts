@@ -91,7 +91,7 @@ function recursivelyRemoveUnreferencedBindings(path: NodePath<t.Program>): void 
   };
   let bindings = getUnreferencedBindings();
   do {
-    bindings.forEach((binding) => binding.path.remove());
+    bindings.forEach((binding) => !binding.path.removed && binding.path.remove());
   } while ((bindings = getUnreferencedBindings()).length > 0);
 }
 
