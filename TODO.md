@@ -173,7 +173,7 @@
   - [x] Angular
   - [x] Create React App
 - [x] Docs
-  - [ ] Update framework examples
+  - [x] Update framework examples
   - [x] Add `delay` option
   - [x] Record screencast with Creevey UI
     - Pre-requirements: Storybook ui-kit + creevey setup + approve all images + vscode with opened story
@@ -219,12 +219,18 @@
 
 ## Second priority (v0.7)
 
+- [ ] Add @babel/code-frame to output loader error
+- [ ] Transform to monorepo
+  - [ ] creevey
+  - [ ] examples
+- [ ] Add bootstrap script, that build and install current version into examples
 - [ ] Don't load any of addons
 - [ ] Support mdx stories
 - [ ] Update Eslint to v7
 - [ ] Support run tests inside docker
-- [ ] Setup NODE_ENV to 'test' on open storybook in browser
+- [ ] Setup NODE_ENV to 'test'.
 - [ ] Bugs
+  - [ ] IPC_CHANNEL_CLOSED error infinity loop, could reproduce with invalid gridUrl
   - [ ] Error mocha instance already disposed in mocha@7.2
   - [ ] Fix taking composite screenshots with hided scrollbar
     - Take `document.documentElement.clientWidth/Height` instead of window rect
@@ -241,11 +247,12 @@
   - [ ] Allow set viewport sizes for story (use width x height as postfix for browser name in UI)
 - [ ] Docs
   - [ ] Add fancy readme
+  - [ ] How to deal with animations (NODE_ENV=='test')
   - [ ] Write about differences with other tools
   - [ ] Add how to start docker and IE11 especially
   - [ ] Add instruction for various frameworks
     - [ ] Create React App Typescript
-    - [ ] Vue
+    - [x] Vue
 - [ ] Add human readable error message if test failed with `window.__CREEVEY_SELECT_STORY__` is not a function
 
 ## Third priority (vNext)
@@ -254,7 +261,7 @@
   - [ ] Could we drop more entry points from webpack config? (generated entry for example)
 - [ ] Creevey as Addon PoC
 - [ ] Add Strobybook integration tests
-- [ ] Transform to monorepo
+- [ ] Split packages in monorepo
   - [ ] `chai-images`
   - [ ] `creevey`
   - [ ] `creevey-selenium` (put gridUrl as option)

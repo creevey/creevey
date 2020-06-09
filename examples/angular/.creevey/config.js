@@ -1,10 +1,8 @@
-import 'zone.js/dist/zone-node';
-import { CreeveyConfig } from 'creevey';
+require('zone.js/dist/zone-node');
 
-const config: CreeveyConfig = {
+module.exports = {
   gridUrl: 'http://localhost:4444/wd/hub',
   storybookUrl: 'http://192.168.0.101:6006',
-  enableFastStoriesLoading: true,
   browsers: {
     chrome: {
       browserName: 'chrome',
@@ -16,5 +14,3 @@ const config: CreeveyConfig = {
     },
   },
 };
-
-export default config;

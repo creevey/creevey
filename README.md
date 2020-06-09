@@ -115,7 +115,7 @@ In this example I fill some simple form and submit it. Also as you could see, I 
 
 ## Setup local Selenium Grid
 
-Creevey use Selenium Webdriver under the hood to allow run tests in various browsers. So you need to do some additional setup. In next versions Creevey wil be do it automatically. But now you need to setup Selenium Grid hub. I recommend to use [Selenoid](https://aerokube.com/selenoid/latest/) — Lightweight Golang implementation of Selenium hub, that allow you to start you own Grid in few steps
+Creevey use Selenium Webdriver under the hood to allow run tests in various browsers. So you need to do some additional setup. In next versions Creevey will be do it automatically. But now you need to setup Selenium Grid hub. I recommend to use [Selenoid](https://aerokube.com/selenoid/latest/) — Lightweight Golang implementation of Selenium hub, that allow you to start you own Grid in few steps
 
 - First of all you need to install [Docker](https://www.docker.com/)
 - Download [Selenoid Configuration Managed](http://aerokube.com/cm/latest/)

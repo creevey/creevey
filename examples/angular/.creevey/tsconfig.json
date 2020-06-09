@@ -1,7 +1,0 @@
-{
-  "extends": "../.storybook/tsconfig.json",
-  "compilerOptions": {
-    "module": "CommonJS",
-    "allowJs": true
-  }
-}

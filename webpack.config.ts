@@ -40,6 +40,7 @@ const config: Configuration = {
       },
     },
   },
+  performance: false,
 };
 
 export default config;
