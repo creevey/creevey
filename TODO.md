@@ -194,7 +194,7 @@
 - [ ] Support run tests inside docker
 - [ ] Setup NODE_ENV to 'test'.
 - [ ] Bugs
-  - [ ] IPC_CHANNEL_CLOSED error infinity loop, could reproduce with invalid gridUrl
+  - [x] IPC_CHANNEL_CLOSED error infinity loop, could reproduce with invalid gridUrl
   - [ ] Error mocha instance already disposed in mocha@7.2
   - [ ] Fix taking composite screenshots with hided scrollbar
     - Take `document.documentElement.clientWidth/Height` instead of window rect

@@ -88,6 +88,7 @@ export function requireConfig<T>(configPath: string): T {
 }
 
 export function emitMessage<T>(message: T): boolean {
+  if (cluster.isWorker && !process.connected) return false;
   return (
     process.send?.call(process, message) ??
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
