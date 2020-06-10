@@ -183,7 +183,7 @@
 ## First priority (v0.7)
 
 - [ ] Support Storybook 6.x
-- [ ] Add @babel/code-frame to output loader error
+- [x] ~~Add @babel/code-frame to output loader error~~ There is babel issue https://github.com/babel/babel/issues/8617
 - [ ] Transform to monorepo
   - [ ] creevey
   - [ ] examples

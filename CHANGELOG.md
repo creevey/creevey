@@ -1,3 +1,10 @@
+## [0.6.1](https://github.com/wKich/creevey/compare/v0.6.0...v0.6.1) (2020-06-10)
+
+### Bug Fixes
+
+- 🐛 ERR_IPC_CHANNEL_CLOSED finally ([965e6de](https://github.com/wKich/creevey/commit/965e6de21acd4d77a9971f072d40f7c42d900bab))
+- 🐛 mocha 7.2 multiple runs, remove old hacks ([0ca08be](https://github.com/wKich/creevey/commit/0ca08bebe436ebc91c0fbc501850339dea5fe0e2))
+
 # [0.6.0](https://github.com/wKich/creevey/compare/v0.6.0-beta.8...v0.6.0) (2020-06-09)
 
 ### Bug Fixes
