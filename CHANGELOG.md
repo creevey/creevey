@@ -1,3 +1,9 @@
+## [0.6.2](https://github.com/wKich/creevey/compare/v0.6.1...v0.6.2) (2020-06-10)
+
+### Bug Fixes
+
+- 🐛 disable hot-reloading without `--ui` option ([3ea0792](https://github.com/wKich/creevey/commit/3ea0792a6612a01cb62a4650414b6aa26c138665))
+
 ## [0.6.1](https://github.com/wKich/creevey/compare/v0.6.0...v0.6.1) (2020-06-10)
 
 ### Bug Fixes
