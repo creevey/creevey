@@ -182,6 +182,7 @@
 
 ## First priority (v0.7)
 
+- [ ] Support Storybook 6.x
 - [ ] Add @babel/code-frame to output loader error
 - [ ] Transform to monorepo
   - [ ] creevey
@@ -195,13 +196,13 @@
 - [ ] Setup NODE_ENV to 'test'.
 - [ ] Bugs
   - [x] IPC_CHANNEL_CLOSED error infinity loop, could reproduce with invalid gridUrl
-  - [ ] Error mocha instance already disposed in mocha@7.2
+  - [x] Error mocha instance already disposed in mocha@7.2
+  - [ ] In multiple images tests output same test error for every image
   - [ ] Fix taking composite screenshots with hided scrollbar
     - Take `document.documentElement.clientWidth/Height` instead of window rect
     - For each screenshot after scroll, take elementRect coordinates
     - Iterate be screen images and calculate resulting x/y coordinates for composite image
     - If image width/height greater than viewport width/height than scroll bar is captured
-  - [ ] In multiple images tests output same test error for every image
 - [ ] Features
   - [ ] Add `init` cli option
   - [ ] Allow define saucelabs/browserstack-local init/dispose functions
@@ -221,6 +222,7 @@
 
 ## Second priority (vNext)
 
+- [ ] Support esm/cjs builds
 - [ ] Drop storiesOf and Storybook v4.x support
   - [ ] Could we drop more entry points from webpack config? (generated entry for example)
 - [ ] Creevey as Addon PoC

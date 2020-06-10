@@ -3,9 +3,9 @@ import fs, { Stats } from 'fs';
 import path from 'path';
 import chai from 'chai';
 import chalk from 'chalk';
-import Mocha, { Suite, Context, AsyncFunc, MochaOptions } from 'mocha';
+import Mocha, { Context, MochaOptions } from 'mocha';
 import { Key } from 'selenium-webdriver';
-import { Config, Images, Options, BrowserConfig, noop, WorkerMessage, TestWorkerMessage } from '../../types';
+import { Config, Images, Options, BrowserConfig, WorkerMessage, TestWorkerMessage } from '../../types';
 import { emitMessage, subscribeOn } from '../../utils';
 import chaiImage from './chai-image';
 import { getBrowser, switchStory } from './selenium';
@@ -44,19 +44,6 @@ async function getLastImageNumber(imageDir: string, imageName: string): Promise<
   } catch (_error) {
     return 0;
   }
-}
-
-// After end of each suite mocha clean all hooks and don't allow re-run tests without full re-init
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore see issue for more info https://github.com/mochajs/mocha/issues/2783
-Suite.prototype.cleanReferences = noop;
-
-function patchMochaInterface(suite: Suite): void {
-  suite.on('pre-require', (context) => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    context.it.skip = (_browsers: string[], title: string, fn?: AsyncFunc) => context.it(title, fn);
-  });
 }
 
 // FIXME browser options hotfix
@@ -140,6 +127,10 @@ export default async function worker(
     },
   };
   const mocha = new Mocha(mochaOptions);
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  mocha.cleanReferencesAfterRun(false);
 
   chai.use(chaiImage(getExpected, config.diffOptions));
 
@@ -168,7 +159,6 @@ export default async function worker(
     this.testScope = testScope;
   });
   mocha.suite.beforeEach(switchStory);
-  patchMochaInterface(mocha.suite);
 
   subscribeOn('tests', (test: TestWorkerMessage) => {
     const testPath = [...test.path]
