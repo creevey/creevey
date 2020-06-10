@@ -42,7 +42,7 @@ const statusTests: CreeveyStatus['tests'] = {
   12: { id: '12', path: ['pending', 'running', 'root'], skip: false, status: 'pending' },
 };
 
-const headerDecorator = (storyFn: StoryFn<ReactNode>) => (
+const headerDecorator = (storyFn: StoryFn<ReactNode>): JSX.Element => (
   <div
     css={css`
       width: 440px;
@@ -65,7 +65,7 @@ export default {
   },
 };
 
-export const HeaderStopped = () => (
+export const HeaderStopped = (): JSX.Element => (
   <SideBarHeader
     testsStatus={{ pendingCount: 0, successCount: 1, failedCount: 2, skippedCount: 3, removedCount: 4 }}
     filter={{ status: null, subStrings: [] }}
@@ -76,7 +76,7 @@ export const HeaderStopped = () => (
 );
 HeaderStopped.story = { decorators: [headerDecorator] };
 
-export const HeaderRunning = () => (
+export const HeaderRunning = (): JSX.Element => (
   <CreeveyContext.Provider
     value={{
       isRunning: true,
@@ -98,10 +98,10 @@ export const HeaderRunning = () => (
 );
 HeaderRunning.story = { decorators: [headerDecorator] };
 
-export const SimpleSideBar = () => (
+export const SimpleSideBar = (): JSX.Element => (
   <SideBar rootSuite={openSuites(treeifyTests(simpleTests))} openedTest={null} onOpenTest={noop} />
 );
-export const StatusSideBar = () => (
+export const StatusSideBar = (): JSX.Element => (
   <SideBar rootSuite={openSuites(treeifyTests(statusTests))} openedTest={null} onOpenTest={noop} />
 );
 

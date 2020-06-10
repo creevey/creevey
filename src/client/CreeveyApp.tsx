@@ -80,7 +80,7 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
         <SideBar rootSuite={tests} openedTest={openedTest} onOpenTest={openTest} />
         {openedTest && (
           <ResultsPage
-            key={openedTest.id + openedTest.results?.length}
+            key={`${openedTest.id}_${openedTest.results?.length ?? 0}`}
             id={openedTest.id}
             path={openedTest.path}
             results={openedTest.results}

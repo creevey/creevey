@@ -186,10 +186,11 @@
 - [ ] Transform to monorepo
   - [ ] creevey
   - [ ] examples
-- [ ] Add bootstrap script, that build and install current version into examples
+- [ ] Store creevey storybook bundle in cache dir using find-cache-dir pkg
+- [ ] Add bootstrap script, that build and install current version into examples or use monorepo
 - [ ] Don't load any of addons
 - [ ] Support mdx stories
-- [ ] Update Eslint to v7
+- [x] Update Eslint to v7
 - [ ] Support run tests inside docker
 - [ ] Setup NODE_ENV to 'test'.
 - [ ] Bugs

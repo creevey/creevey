@@ -10,7 +10,7 @@ export interface CreeveyClientApi {
 
 export async function initCreeveyClientApi(): Promise<CreeveyClientApi> {
   let clientApiResolver: (api: CreeveyClientApi) => void = noop;
-  const updateListeners: Set<(update: CreeveyUpdate) => void> = new Set();
+  const updateListeners = new Set<(update: CreeveyUpdate) => void>();
   let statusRequest: Promise<CreeveyStatus> | null = null;
   let statusResolver: (status: CreeveyStatus) => void = noop;
 
@@ -45,7 +45,7 @@ export async function initCreeveyClientApi(): Promise<CreeveyClientApi> {
     });
   });
   ws.addEventListener('message', (message: MessageEvent) => {
-    const data: Response = JSON.parse(message.data);
+    const data = JSON.parse(message.data) as Response;
 
     if (data.type == 'update') updateListeners.forEach((fn) => fn(data.payload));
     if (data.type == 'status') {

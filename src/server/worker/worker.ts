@@ -22,6 +22,7 @@ async function getStat(filePath: string): Promise<Stats | null> {
   try {
     return await statAsync(filePath);
   } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (error.code === 'ENOENT') {
       return null;
     }
@@ -46,13 +47,13 @@ async function getLastImageNumber(imageDir: string, imageName: string): Promise<
 }
 
 // After end of each suite mocha clean all hooks and don't allow re-run tests without full re-init
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore see issue for more info https://github.com/mochajs/mocha/issues/2783
 Suite.prototype.cleanReferences = noop;
 
 function patchMochaInterface(suite: Suite): void {
   suite.on('pre-require', (context) => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     context.it.skip = (_browsers: string[], title: string, fn?: AsyncFunc) => context.it(title, fn);
   });
@@ -128,10 +129,10 @@ export default async function worker(
 
   const mochaOptions: MochaOptions = {
     timeout: 30000,
-    reporter: process.env.TEAMCITY_VERSION ? TeamcityReporter : options.reporter || CreeveyReporter,
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    //@ts-ignore Should update @types/mocha for new major release https://github.com/mochajs/mocha/releases/tag/v7.0.0
-    reporterOption: {
+    reporter: (process.env.TEAMCITY_VERSION ? TeamcityReporter : options.reporter || CreeveyReporter) as
+      | string
+      | ReporterConstructor,
+    reporterOptions: {
       reportDir: config.reportDir,
       topLevelSuite: options.browser,
       willRetry: () => retries < config.maxRetries,
@@ -147,12 +148,14 @@ export default async function worker(
   const browserConfig = config.browsers[options.browser] as BrowserConfig;
   const browser = await getBrowser(config, browserConfig);
 
-  const interval = setInterval(() => {
-    browser.getCurrentUrl().then((url) => {
-      if (options.debug)
-        console.log(chalk`[{blue WORKER}{grey :${options.browser}:${process.pid}}] {grey current url} ${url}`);
-    });
-  }, 10 * 1000);
+  const interval = setInterval(
+    () =>
+      void browser.getCurrentUrl().then((url) => {
+        if (options.debug)
+          console.log(chalk`[{blue WORKER}{grey :${options.browser}:${process.pid}}] {grey current url} ${url}`);
+      }),
+    10 * 1000,
+  );
 
   subscribeOn('shutdown', () => clearInterval(interval));
 
@@ -181,7 +184,11 @@ export default async function worker(
     const runner = mocha.run(runHandler);
 
     // TODO How handle browser corruption?
-    runner.on('fail', (_test, reason) => (error = reason instanceof Error ? reason.stack ?? reason.message : reason));
+    runner.on(
+      'fail',
+      (_test, reason: unknown) =>
+        (error = reason instanceof Error ? reason.stack ?? reason.message : (reason as string)),
+    );
   });
 
   console.log('[CreeveyWorker]:', `Ready ${options.browser}:${process.pid}`);

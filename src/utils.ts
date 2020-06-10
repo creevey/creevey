@@ -6,12 +6,13 @@ import { SkipOptions, isDefined, WebpackMessage, TestWorkerMessage } from './typ
 export const extensions = ['.js', '.jsx', '.ts', '.tsx', '.mjs', '.es', '.es6'];
 
 const compilers = {
-  '@babel/register': ({ extension }: { extension: string }) => (hook: Function) =>
+  '@babel/register': ({ extension }: { extension: string }) => (hook: (...args: unknown[]) => void) =>
     hook({ rootMode: 'upward-optional', extensions: [extension] }),
-  'ts-node': ({ rootDir }: { rootDir: string }) => (hook: { register: Function }) => {
+  'ts-node': ({ rootDir }: { rootDir: string }) => (hook: { register: (...args: unknown[]) => void }) => {
     // NOTE `dir` options are supported only from `ts-node@>=8.6`, but default angular project use older version
     hook.register({ project: path.join(rootDir, 'tsconfig.json') });
     // NOTE This need to support tsconfig aliases
+    // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
     require('tsconfig-paths/register').loadConfig(rootDir);
   },
 };
@@ -80,15 +81,16 @@ export function requireConfig<T>(configPath: string): T {
     loadCompilers(configDir, ext);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment
   const configModule = require(configPath);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
   return configModule && configModule.__esModule ? configModule.default : configModule;
 }
 
 export function emitMessage<T>(message: T): boolean {
   return (
     process.send?.call(process, message) ??
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     // NOTE wrong typings `process.emit` return boolean
     process.emit('message', message)

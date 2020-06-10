@@ -2,13 +2,22 @@ import chalk from 'chalk';
 import { Runner, reporters, MochaOptions } from 'mocha';
 import { Images, isDefined } from '../../types';
 
+interface ReporterOptions {
+  reportDir: string;
+  topLevelSuite: string;
+  willRetry: () => boolean;
+  images: () => Partial<{
+    [name: string]: Partial<Images>;
+  }>;
+}
+
+type PatchedMochaOptions = Omit<MochaOptions, 'reporterOptions'> & { reporterOptions: ReporterOptions };
+
 export class CreeveyReporter extends reporters.Base {
-  constructor(runner: Runner, options: MochaOptions) {
+  constructor(runner: Runner, options: PatchedMochaOptions) {
     super(runner);
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    //@ts-ignore Should update @types/mocha for new major release https://github.com/mochajs/mocha/releases/tag/v7.0.0
-    const topLevelSuite = options.reporterOption.topLevelSuite;
+    const { topLevelSuite } = options.reporterOptions;
 
     runner.on('test', (test) =>
       console.log(`[${chalk.yellow('START')}:${topLevelSuite}:${process.pid}]`, chalk.cyan(test.titlePath().join('/'))),
@@ -27,21 +36,11 @@ export class CreeveyReporter extends reporters.Base {
 }
 
 export class TeamcityReporter extends reporters.Base {
-  constructor(runner: Runner, options: MochaOptions) {
+  constructor(runner: Runner, options: PatchedMochaOptions) {
     super(runner);
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    //@ts-ignore Should update @types/mocha for new major release https://github.com/mochajs/mocha/releases/tag/v7.0.0
-    const topLevelSuite = this.escape(options.reporterOption.topLevelSuite);
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    //@ts-ignore Should update @types/mocha for new major release https://github.com/mochajs/mocha/releases/tag/v7.0.0
-    const { reportDir, willRetry, images } = options.reporterOption as {
-      reportDir: string;
-      willRetry: () => boolean;
-      images: () => Partial<{
-        [name: string]: Partial<Images>;
-      }>;
-    };
+    const topLevelSuite = this.escape(options.reporterOptions.topLevelSuite);
+    const { reportDir, willRetry, images } = options.reporterOptions;
 
     runner.on('suite', (suite) =>
       suite.root
@@ -53,7 +52,7 @@ export class TeamcityReporter extends reporters.Base {
       console.log(`##teamcity[testStarted name='${this.escape(test.title)}' flowId='${process.pid}']`),
     );
 
-    runner.on('fail', (test, error) => {
+    runner.on('fail', (test, error: Error) => {
       Object.entries(images()).forEach(([name, image]) => {
         if (!image) return;
         const filePath = test
@@ -82,7 +81,7 @@ export class TeamcityReporter extends reporters.Base {
         : console.log(
             `##teamcity[testFailed name='${this.escape(test.title)}' message='${this.escape(
               error.message,
-            )}' details='${this.escape(error.stack)}' flowId='${process.pid}']`,
+            )}' details='${this.escape(error.stack ?? '')}' flowId='${process.pid}']`,
           );
     });
 

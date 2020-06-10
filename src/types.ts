@@ -266,7 +266,7 @@ export function isTest<T1, T2 extends Test>(x?: T1 | T2): x is T2 {
   return isDefined(x) && 'id' in x && 'path' in x && Array.isArray(x.path) && typeof x.id == 'string';
 }
 
-export function isObject(x: unknown): x is object {
+export function isObject(x: unknown): x is Record<string, unknown> {
   return typeof x == 'object' && x != null;
 }
 

@@ -26,4 +26,4 @@ const argv = minimist<Options>(process.argv.slice(2), {
   alias: { port: 'p', config: 'c', debug: 'd', update: 'u' },
 });
 
-creevey(argv);
+void creevey(argv);

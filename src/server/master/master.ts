@@ -28,7 +28,7 @@ export default async function master(config: Config): Promise<Runner> {
   const reportDataPath = path.join(config.reportDir, 'data.js');
   let testsFromReport = {};
   try {
-    testsFromReport = require(reportDataPath);
+    testsFromReport = (await import(reportDataPath)) as Partial<{ [id: string]: Test }>;
   } catch (error) {
     // Ignore error
   }
@@ -43,7 +43,7 @@ export default async function master(config: Config): Promise<Runner> {
   process.on('SIGINT', () => {
     if (runner.isRunning) {
       // TODO Better handle stop
-      Promise.race([
+      void Promise.race([
         new Promise((resolve) => setTimeout(resolve, 10000)),
         new Promise((resolve) => runner.once('stop', resolve)),
       ]).then(() => {

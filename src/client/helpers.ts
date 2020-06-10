@@ -6,7 +6,7 @@ export interface CreeveyViewFilter {
   subStrings: string[];
 }
 
-const statusUpdatesMap: Map<TestStatus | undefined, RegExp> = new Map([
+const statusUpdatesMap = new Map<TestStatus | undefined, RegExp>([
   [undefined, /(unknown|success|failed|pending|running)/],
   ['unknown', /(success|failed|pending|running)/],
   ['success', /(failed|pending|running)/],

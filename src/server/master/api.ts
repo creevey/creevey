@@ -27,8 +27,7 @@ export default function creeveyApi(runner: Runner): CreeveyApi {
         return;
       }
 
-      const command: Request = JSON.parse(message);
-      // console.log("[WebSocket]:", "message", message);
+      const command = JSON.parse(message) as Request;
 
       switch (command.type) {
         case 'status': {
@@ -44,7 +43,7 @@ export default function creeveyApi(runner: Runner): CreeveyApi {
           return;
         }
         case 'approve': {
-          runner.approve(command.payload);
+          void runner.approve(command.payload);
           return;
         }
       }

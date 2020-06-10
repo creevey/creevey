@@ -24,7 +24,7 @@ function addTest(rootSuite: Suite, test: ServerTest): Test {
   const suite = suitePath.reduceRight((subSuite, suiteName) => findOrCreateSuite(suiteName, subSuite), rootSuite);
   const mochaTest = createTest(testName, test.fn, test.skip);
   suite.addTest(mochaTest);
-  mochaTest.ctx = Object.setPrototypeOf({ id: test.id, story: test.story }, suite.ctx);
+  mochaTest.ctx = Object.setPrototypeOf({ id: test.id, story: test.story }, suite.ctx) as Context;
   return mochaTest;
 }
 
@@ -41,7 +41,7 @@ export async function addTestsFromStories(
   browserName: string,
   storybookBundlePath: string,
 ): Promise<void> {
-  const mochaTestsById: Map<string, Test> = new Map();
+  const mochaTestsById = new Map<string, Test>();
   const tests = await loadTestsFromStories({ browsers: [browserName], storybookBundlePath }, (testsDiff) =>
     Object.entries(testsDiff).forEach(([id, newTest]) => {
       const oldTest = mochaTestsById.get(id);

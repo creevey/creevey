@@ -3,6 +3,8 @@ import path from 'path';
 import { Config, Browser, BrowserConfig, Options, isDefined } from './types';
 import { requireConfig } from './utils';
 
+export const defaultBrowser = 'chrome';
+
 export const defaultConfig: Omit<Config, 'gridUrl'> = {
   storybookUrl: 'http://localhost:6006',
   screenDir: path.resolve('images'),
@@ -10,7 +12,7 @@ export const defaultConfig: Omit<Config, 'gridUrl'> = {
   storybookDir: path.resolve('.storybook'),
   maxRetries: 0,
   diffOptions: { threshold: 0, includeAA: true },
-  browsers: { chrome: true },
+  browsers: { [defaultBrowser]: true },
 };
 
 function normalizeBrowserConfig(name: string, config: Browser): BrowserConfig {

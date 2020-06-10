@@ -1,12 +1,14 @@
 import Events from '@storybook/core-events';
 import { addons, MakeDecoratorResult, makeDecorator } from '@storybook/addons';
+import { isObject } from './types';
 
 if (typeof process != 'object' || typeof process.version != 'string') {
   // NOTE If you don't use babel-polyfill or any other polyfills that add EventSource for IE11
   // You don't get hot reload in IE11. So put polyfill for that to better UX
   // Don't load in nodejs environment
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment
   const { NativeEventSource, EventSourcePolyfill } = require('event-source-polyfill');
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   window.EventSource = NativeEventSource || EventSourcePolyfill;
 }
 
@@ -67,7 +69,11 @@ export function withCreevey(): MakeDecoratorResult {
       // NOTE Event `STORY_THREW_EXCEPTION` triggered only in react and vue frameworks and return Error instance
       // NOTE Event `STORY_ERRORED` return error-like object without `name` field
       const errorMessage =
-        reason instanceof Error ? reason.stack || reason.message : `${reason.message}\n    ${reason.stack}`;
+        reason instanceof Error
+          ? reason.stack ?? reason.message
+          : isObject(reason)
+          ? `${reason.message as string}\n    ${reason.stack as string}`
+          : (reason as string);
       callback(errorMessage);
     }
   }
@@ -77,6 +83,7 @@ export function withCreevey(): MakeDecoratorResult {
   return makeDecorator({
     name: 'withCreevey',
     parameterName: 'creevey',
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     wrapper: (getStory, context) => getStory(context),
   });
 }

@@ -16,7 +16,7 @@ export default {
   },
 };
 
-const ImagesView = (mode: ImagesViewMode) => (
+const ImagesView = (mode: ImagesViewMode): JSX.Element => (
   <ImagesViewBase
     image={{ expect: octocatExpect, diff: octocatDiff, actual: octocatActual }}
     url=""
@@ -25,10 +25,10 @@ const ImagesView = (mode: ImagesViewMode) => (
   />
 );
 
-export const SideBySide = () => ImagesView('side-by-side');
-export const Swap = () => ImagesView('swap');
+export const SideBySide = (): JSX.Element => ImagesView('side-by-side');
+export const Swap = (): JSX.Element => ImagesView('swap');
 export const Slide: CSFStory<JSX.Element> = () => ImagesView('slide');
-export const Blend = () => ImagesView('blend');
+export const Blend = (): JSX.Element => ImagesView('blend');
 
 Slide.story = {
   parameters: {

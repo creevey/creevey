@@ -2,7 +2,7 @@ import https from 'https';
 import { PNG } from 'pngjs';
 import { Context, Test, Suite } from 'mocha';
 import { Builder, By, until, WebDriver, Origin } from 'selenium-webdriver';
-import { Config, BrowserConfig, StoryInput } from '../../types';
+import { Config, BrowserConfig, StoryInput, CreeveyStoryParams, noop } from '../../types';
 import { subscribeOn } from '../../utils';
 
 declare global {
@@ -18,7 +18,9 @@ function getRealIp(): Promise<string> {
   return new Promise((resolve, reject) =>
     https.get('https://fake.testkontur.ru/ip', (res) => {
       if (res.statusCode !== 200) {
-        return reject(new Error(`Couldn't resolve real ip for \`localhost\`. Status code: ${res.statusCode}`));
+        return reject(
+          new Error(`Couldn't resolve real ip for \`localhost\`. Status code: ${res.statusCode ?? 'UNKNOWN'}`),
+        );
       }
 
       let data = '';
@@ -34,21 +36,14 @@ async function resetMousePosition(browser: WebDriver): Promise<void> {
   const browserName = (await browser.getCapabilities()).getBrowserName();
   const [browserVersion] =
     (await browser.getCapabilities()).getBrowserVersion()?.split('.') ??
-    (await browser.getCapabilities()).get('version')?.split('.') ??
+    ((await browser.getCapabilities()).get('version') as string | undefined)?.split('.') ??
     [];
-  const { top, left, width, height } = await browser.executeScript(function () {
-    /* eslint-disable no-var */
+  const { top, left, width, height } = await browser.executeScript<DOMRect>(function () {
     // NOTE On storybook >= 4.x already reset scroll
+    // TODO Check this on new storybook
     window.scrollTo(0, 0);
 
-    var bodyRect = document.body.getBoundingClientRect();
-    return {
-      top: bodyRect.top,
-      left: bodyRect.left,
-      width: bodyRect.width,
-      height: bodyRect.height,
-    };
-    /* eslint-enable no-var */
+    return document.body.getBoundingClientRect();
   });
 
   // NOTE Reset mouse position to support keweb selenium grid browser versions
@@ -73,12 +68,14 @@ async function resetMousePosition(browser: WebDriver): Promise<void> {
 
 async function resizeViewport(browser: WebDriver, viewport: { width: number; height: number }): Promise<void> {
   const windowRect = await browser.manage().window().getRect();
-  const { innerWidth, innerHeight } = await browser.executeScript(function () {
-    return {
-      innerWidth: window.innerWidth,
-      innerHeight: window.innerHeight,
-    };
-  });
+  const { innerWidth, innerHeight } = await browser.executeScript<{ innerWidth: number; innerHeight: number }>(
+    function () {
+      return {
+        innerWidth: window.innerWidth,
+        innerHeight: window.innerHeight,
+      };
+    },
+  );
   const dWidth = windowRect.width - innerWidth;
   const dHeight = windowRect.height - innerHeight;
   await browser
@@ -227,10 +224,10 @@ async function takeCompositeScreenshot(
 async function takeScreenshot(browser: WebDriver, captureElement?: string | null): Promise<string> {
   if (!captureElement) return browser.takeScreenshot();
 
-  // NOTE Check element exist before taking screenshot
-  await browser.findElement(By.css(captureElement));
-
-  const { elementRect, windowRect } = await browser.executeScript(function (selector: string) {
+  const { elementRect, windowRect } = await browser.executeScript<{
+    elementRect?: DOMRect;
+    windowRect: { width: number; height: number; x: number; y: number };
+  }>(function (selector: string) {
     window.scrollTo(0, 0);
     return {
       elementRect: document.querySelector(selector)?.getBoundingClientRect(),
@@ -242,6 +239,8 @@ async function takeScreenshot(browser: WebDriver, captureElement?: string | null
       },
     };
   }, captureElement);
+
+  if (!elementRect) throw new Error(`Couldn't find element with selector: '${captureElement}'`);
 
   const isFitIntoViewport =
     elementRect.width + elementRect.left <= windowRect.width &&
@@ -281,9 +280,7 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
   }
   const browser = await new Builder().usingServer(gridUrl).withCapabilities(capabilities).build();
 
-  subscribeOn('shutdown', () => {
-    browser.quit();
-  });
+  subscribeOn('shutdown', () => void browser.quit().catch(noop));
 
   if (viewport) {
     await resizeViewport(browser, viewport);
@@ -312,22 +309,20 @@ export async function switchStory(this: Context): Promise<void> {
     this.testScope.push(testOrSuite.title);
     testOrSuite = testOrSuite.parent;
   }
-  const story: StoryInput | undefined = this.currentTest?.ctx?.story;
+  const story = this.currentTest?.ctx?.story as StoryInput | undefined;
 
   if (!story) throw new Error(`Current test '${this.testScope.join('/')}' context doesn't have 'story' field`);
 
   await resetMousePosition(this.browser);
   await selectStory(this.browser, story.id, story.kind, story.name);
 
-  const { captureElement } = story.parameters.creevey ?? {};
+  const { captureElement } = (story.parameters.creevey ?? {}) as CreeveyStoryParams;
 
   if (captureElement)
     Object.defineProperty(this, 'captureElement', {
       enumerable: true,
       configurable: true,
-      get() {
-        return this.browser.findElement(By.css(captureElement));
-      },
+      get: () => this.browser.findElement(By.css(captureElement)),
     });
   else Reflect.deleteProperty(this, 'captureElement');
 

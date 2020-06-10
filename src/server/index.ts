@@ -1,34 +1,34 @@
 import cluster from 'cluster';
-import { readConfig } from '../config';
+import { readConfig, defaultBrowser } from '../config';
 import { Options } from '../types';
 
-export default function (options: Options): void {
+export default async function (options: Options): Promise<void> {
   const config = readConfig(options);
-  const { browser, update, webpack } = options;
+  const { browser = defaultBrowser, storybookBundle, update, webpack } = options;
 
   if (!config) return;
 
   switch (true) {
     case update: {
-      require('./master/update').default(config);
-      return;
+      return (await import('./master/update')).default(config);
     }
     case webpack: {
       console.log('[CreeveyWebpack]:', `Starting with pid ${process.pid}`);
 
-      require('./master/webpack').default(config, options);
-      return;
+      return (await import('./master/webpack')).default(config, options);
     }
     case cluster.isMaster: {
       console.log('[CreeveyMaster]:', `Starting with pid ${process.pid}`);
 
-      require('./master').default(config, options);
-      return;
+      return (await import('./master')).default(config, options);
     }
     default: {
+      // TODO remove this after update use `find-cache-dir`
+      if (!storybookBundle) throw new Error('Something went wrong');
+
       console.log('[CreeveyWorker]:', `Starting ${browser}:${process.pid}`);
 
-      require('./worker').default(config, options);
+      return (await import('./worker')).default(config, { ...options, browser, storybookBundle });
     }
   }
 }

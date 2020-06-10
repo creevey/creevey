@@ -6,7 +6,7 @@ import EventHooksPlugin from 'event-hooks-webpack-plugin';
 import { emitMessage, extensions as fallbackExtensions, subscribeOn } from '../../utils';
 import { Config, WebpackMessage, Options, noop } from '../../types';
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import loadStorybookWebpackConfig from '@storybook/core/dist/server/config';
 
@@ -78,10 +78,11 @@ export default async function compile(config: Config, { debug }: Options): Promi
       "Couldn't detect used Storybook framework. Please ensure that you install `@storybook/<framework>` package",
     );
 
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { default: storybookFrameworkOptions } = require(`@storybook/${storybookFramework}/dist/server/options`);
+  const { default: storybookFrameworkOptions } = (await import(
+    `@storybook/${storybookFramework}/dist/server/options`
+  )) as { default: Record<string, unknown> };
 
-  // TODO Move into node_modules/.cache
+  // TODO Move into node_modules/.cache use find-cache-dir
   const outputDir = path.join(config.reportDir, 'storybook');
   filePath = path.join(outputDir, path.basename(filePath));
 
@@ -91,7 +92,8 @@ export default async function compile(config: Config, { debug }: Options): Promi
     /* noop */
   }
 
-  const storybookWebpackConfig: Configuration = await loadStorybookWebpackConfig({
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  const storybookWebpackConfig = (await loadStorybookWebpackConfig({
     quiet: true,
     configType: 'PRODUCTION',
     outputDir,
@@ -100,7 +102,7 @@ export default async function compile(config: Config, { debug }: Options): Promi
     overridePresets: [require.resolve('@storybook/core/dist/server/preview/custom-webpack-preset')],
     ...storybookFrameworkOptions,
     configDir: config.storybookDir,
-  });
+  })) as Configuration;
 
   const extensions = storybookWebpackConfig.resolve?.extensions ?? fallbackExtensions;
 

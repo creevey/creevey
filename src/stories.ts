@@ -51,7 +51,7 @@ export function convertStories(
 
   (Array.isArray(stories) ? stories : Object.values(stories)).forEach((story) => {
     browsers.forEach((browserName) => {
-      const { delay, tests: storyTests, skip }: CreeveyStoryParams = story.parameters.creevey ?? {};
+      const { delay, tests: storyTests, skip } = (story.parameters.creevey ?? {}) as CreeveyStoryParams;
       const meta = { browser: browserName, story: story.name, kind: story.kind };
 
       // typeof tests === "undefined" => rootSuite -> kindSuite -> storyTest -> [browsers.png]
@@ -76,7 +76,7 @@ export function convertStories(
 }
 
 function initStorybookEnvironment(): { clientApi: ClientApi; channel: Channel } {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
   require('jsdom-global')(undefined, { url: 'http://localhost' });
 
   // NOTE Cutoff `jsdom` part from userAgent, because storybook check enviroment and create events channel if runs in browser
@@ -91,7 +91,7 @@ function initStorybookEnvironment(): { clientApi: ClientApi; channel: Channel } 
   // Fixed in 6.x
   logger.debug = noop;
 
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment
   const { default: storybookCore } = require('@storybook/core');
 
   // TODO Storybook 6.x change value returned by `start` method
@@ -101,28 +101,29 @@ function initStorybookEnvironment(): { clientApi: ClientApi; channel: Channel } 
    * 5.x
    * return { configure, clientApi, configApi, context: { channel, ... }, forceReRender };
    */
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment
   const { clientApi, context, channel = context.channel } = storybookCore.start(() => void 0);
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   return { clientApi, channel };
 }
 
 function watchStories(): void {
-  const watchingFiles: Set<string> = new Set();
-  let storiesByFiles: Map<string, StoryInput[]> = new Map();
+  const watchingFiles = new Set<string>();
+  let storiesByFiles = new Map<string, StoryInput[]>();
 
   // NOTE We don't support RequireContextArgs objects to pass it into chokidar
   const watcher = chokidar.watch(Array.from(watchingFiles), { ignoreInitial: true });
 
-  subscribeOn('shutdown', () => {
-    watcher.close();
-  });
+  subscribeOn('shutdown', () => void watcher.close());
 
   watcher.on('change', (filePath) => storiesByFiles.set(`./${filePath}`, []));
   watcher.on('unlink', (filePath) => storiesByFiles.set(`./${filePath}`, []));
 
   // NOTE Update kinds after file with stories was changed
   addons.getChannel().on(Events.SET_STORIES, (data: { stories: StoriesRaw }) => {
-    const files = new Set(Object.values(data.stories).map((story) => story.parameters.fileName));
+    // TODO Fix after 6.x, maybe
+    const files = new Set(Object.values(data.stories).map((story) => story.parameters.fileName as string));
     const addedFiles = Array.from(files).filter((filePath) => !watchingFiles.has(filePath));
     const removedFiles = Array.from(watchingFiles).filter((filePath) => !files.has(filePath));
     watcher.add(addedFiles);
@@ -132,7 +133,7 @@ function watchStories(): void {
 
     Object.values(data.stories).forEach((story) => storiesByFiles.get(story.parameters.fileName)?.push(story));
     addons.getChannel().emit('storiesUpdated', storiesByFiles);
-    storiesByFiles = new Map();
+    storiesByFiles = new Map<string, StoryInput[]>();
   });
 }
 
@@ -163,7 +164,7 @@ export async function loadTestsFromStories(
   { browsers, storybookBundlePath }: { browsers: string[]; storybookBundlePath: string },
   applyTestsDiff: (testsDiff: Partial<{ [id: string]: ServerTest }>) => void,
 ): Promise<Partial<{ [id: string]: ServerTest }>> {
-  const testIdsByFiles: Map<string, string[]> = new Map();
+  const testIdsByFiles = new Map<string, string[]>();
   const stories = await loadStorybookBundle(storybookBundlePath, (storiesByFiles) => {
     const testsDiff: Partial<{ [id: string]: ServerTest }> = {};
     Array.from(storiesByFiles.entries()).forEach(([filename, stories]) => {

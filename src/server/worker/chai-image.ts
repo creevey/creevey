@@ -70,7 +70,7 @@ export default function (
   >,
   diffOptions: DiffOptions,
 ) {
-  return function chaiImage({ Assertion }: Chai.ChaiStatic, utils: Chai.ChaiUtils) {
+  return function chaiImage({ Assertion }: Chai.ChaiStatic, utils: Chai.ChaiUtils): void {
     async function assertImage(actual: Buffer, imageName?: string): Promise<void> {
       let onCompare: (actual: Buffer, expect?: Buffer, diff?: Buffer) => Promise<void> = () => Promise.resolve();
       let expected = await getExpected(imageName);
@@ -93,13 +93,16 @@ export default function (
       throw new Error(imageName ? `Expected image '${imageName}' to match` : 'Expected image to match');
     }
 
-    utils.addMethod(Assertion.prototype, 'matchImage', async function matchImage(this: object, imageName?: string) {
-      const actual: string | Buffer = utils.flag(this, 'object');
+    utils.addMethod(Assertion.prototype, 'matchImage', async function matchImage(
+      this: Record<string, unknown>,
+      imageName?: string,
+    ) {
+      const actual = utils.flag(this, 'object') as string | Buffer;
 
       await assertImage(typeof actual == 'string' ? Buffer.from(actual, 'base64') : actual, imageName);
     });
 
-    utils.addMethod(Assertion.prototype, 'matchImages', async function matchImages(this: object) {
+    utils.addMethod(Assertion.prototype, 'matchImages', async function matchImages(this: Record<string, unknown>) {
       await Promise.all(
         Object.entries<string | Buffer>(utils.flag(this, 'object')).map(([imageName, imageOrBase64]) =>
           assertImage(

@@ -79,9 +79,10 @@ function getStoryObjectNodePath<T>(
 
 function recursivelyRemoveUnreferencedBindings(path: NodePath<t.Program>): void {
   const getUnreferencedBindings = (): Binding[] => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     // NOTE I don't know what this method do, but it allow get correct bindings
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     path.scope.crawl();
     return Object.values(path.scope.bindings).filter(
       (binding) =>
@@ -114,7 +115,7 @@ function minifyStories(ast: t.File, source: string): string {
       }
       defaultPath.parentPath.traverse({
         ExportNamedDeclaration(namedPath) {
-          const { declaration: namedDeclaration } = namedPath.node;
+          const namedDeclaration = namedPath.node.declaration as t.Node;
           if (!t.isVariableDeclaration(namedDeclaration)) return;
           replaceStoryFnToNoop(namedDeclaration.declarations);
           const storyPath = getStoryObjectNodePath(namedPath, namedDeclaration.declarations);
@@ -193,8 +194,10 @@ const schema: JSONSchema7 = {
   },
 };
 
+const defaultOptions = { debug: false };
+
 export default function (this: loader.LoaderContext | void, source: string): string {
-  const options = this ? getOptions(this) : { debug: false };
+  const options = this ? getOptions(this) || defaultOptions : defaultOptions;
   validateOptions(schema, options, { name: 'Creevey Stories Loader' });
   const { ast, done } = tryParse(source, options);
 

@@ -62,7 +62,7 @@ const ChunkTiles: FunctionComponent<{ size: number; offset: number }> = (props) 
   </div>
 );
 
-export const ViewportFit = () => <ChunkTiles size={2} offset={0} />;
-export const Overflow = () => <ChunkTiles size={6} offset={0} />;
-export const ViewportFitOffset = () => <ChunkTiles size={2} offset={4} />;
-export const OverflowOffset = () => <ChunkTiles size={6} offset={4} />;
+export const ViewportFit = (): JSX.Element => <ChunkTiles size={2} offset={0} />;
+export const Overflow = (): JSX.Element => <ChunkTiles size={6} offset={0} />;
+export const ViewportFitOffset = (): JSX.Element => <ChunkTiles size={2} offset={4} />;
+export const OverflowOffset = (): JSX.Element => <ChunkTiles size={6} offset={4} />;
