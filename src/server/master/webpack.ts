@@ -68,7 +68,7 @@ function handleWebpackBuild(error: Error, stats: webpack.Stats): void {
   return;
 }
 
-export default async function compile(config: Config, { debug }: Options): Promise<void> {
+export default async function compile(config: Config, { debug, ui }: Options): Promise<void> {
   const storybookCorePath = require.resolve('@storybook/core');
   const [storybookParentDirectory] = storybookCorePath.split('@storybook');
   const storybookFramework = tryDetectStorybookFramework();
@@ -143,9 +143,13 @@ export default async function compile(config: Config, { debug }: Options): Promi
   storybookWebpackConfig.performance = false;
 
   const storybookWebpackCompiler = webpack(storybookWebpackConfig);
-  const watcher = storybookWebpackCompiler.watch({}, handleWebpackBuild);
+  if (ui) {
+    const watcher = storybookWebpackCompiler.watch({}, handleWebpackBuild);
 
-  subscribeOn('shutdown', () => {
-    watcher.close(noop);
-  });
+    subscribeOn('shutdown', () => {
+      watcher.close(noop);
+    });
+  } else {
+    storybookWebpackCompiler.run(handleWebpackBuild);
+  }
 }

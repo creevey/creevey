@@ -138,7 +138,13 @@ function watchStories(): void {
 }
 
 function loadStorybookBundle(
-  storybookBundlePath: string,
+  {
+    bundlePath,
+    watch,
+  }: {
+    bundlePath: string;
+    watch: boolean;
+  },
   storiesListener: (stories: Map<string, StoryInput[]>) => void,
 ): Promise<StoriesRaw> {
   return new Promise((resolve) => {
@@ -147,25 +153,27 @@ function loadStorybookBundle(
     channel.once(Events.SET_STORIES, (data: { stories: StoriesRaw }) => resolve(data.stories));
     channel.on('storiesUpdated', storiesListener);
 
-    watchStories();
+    if (watch) {
+      watchStories();
 
-    subscribeOn('webpack', (message: WebpackMessage) => {
-      if (message.type != 'rebuild succeeded') return;
+      subscribeOn('webpack', (message: WebpackMessage) => {
+        if (message.type != 'rebuild succeeded') return;
 
-      delete require.cache[storybookBundlePath];
-      require(storybookBundlePath);
-    });
+        delete require.cache[bundlePath];
+        require(bundlePath);
+      });
+    }
 
-    require(storybookBundlePath);
+    require(bundlePath);
   });
 }
 
 export async function loadTestsFromStories(
-  { browsers, storybookBundlePath }: { browsers: string[]; storybookBundlePath: string },
+  { browsers, storybookBundlePath, watch }: { browsers: string[]; storybookBundlePath: string; watch: boolean },
   applyTestsDiff: (testsDiff: Partial<{ [id: string]: ServerTest }>) => void,
 ): Promise<Partial<{ [id: string]: ServerTest }>> {
   const testIdsByFiles = new Map<string, string[]>();
-  const stories = await loadStorybookBundle(storybookBundlePath, (storiesByFiles) => {
+  const stories = await loadStorybookBundle({ bundlePath: storybookBundlePath, watch }, (storiesByFiles) => {
     const testsDiff: Partial<{ [id: string]: ServerTest }> = {};
     Array.from(storiesByFiles.entries()).forEach(([filename, stories]) => {
       const tests = convertStories(browsers, stories);

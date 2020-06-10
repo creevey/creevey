@@ -35,7 +35,7 @@ function reportDataModule<T>(data: T): string {
 }
 
 export default async function (config: Config, options: Options): Promise<void> {
-  const runner = await master(config);
+  const runner = await master(config, options.ui);
 
   if (options.saveReport) {
     const reportDataPath = path.join(config.reportDir, 'data.js');

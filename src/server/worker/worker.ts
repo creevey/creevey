@@ -134,7 +134,11 @@ export default async function worker(
 
   chai.use(chaiImage(getExpected, config.diffOptions));
 
-  await addTestsFromStories(mocha.suite, options.browser, options.storybookBundle);
+  await addTestsFromStories(mocha.suite, {
+    browser: options.browser,
+    storybookBundlePath: options.storybookBundle,
+    watch: options.ui,
+  });
 
   const browserConfig = config.browsers[options.browser] as BrowserConfig;
   const browser = await getBrowser(config, browserConfig);
