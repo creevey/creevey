@@ -1,3 +1,4 @@
+import path from 'path';
 import { createHash } from 'crypto';
 import { Context } from 'mocha';
 import chokidar from 'chokidar';
@@ -19,6 +20,7 @@ import {
   CreeveyTestFunction,
 } from './types';
 import { shouldSkip, subscribeOn } from './utils';
+import { readFileSync } from 'fs';
 
 function storyTestFabric(delay?: number, testFn?: CreeveyTestFunction) {
   return async function storyTest(this: Context) {
@@ -108,32 +110,59 @@ function initStorybookEnvironment(): { clientApi: ClientApi; channel: Channel } 
   return { clientApi, channel };
 }
 
-function watchStories(): void {
-  const watchingFiles = new Set<string>();
-  let storiesByFiles = new Map<string, StoryInput[]>();
+function watchStories(filesListPath: string): void {
+  const watchingFiles = new Set(JSON.parse(readFileSync(filesListPath, { encoding: 'utf-8' })) as string[]);
+  const changedFiles = new Set<string>();
+  let previousStoryFiles = new Set<string>();
 
-  // NOTE We don't support RequireContextArgs objects to pass it into chokidar
-  const watcher = chokidar.watch(Array.from(watchingFiles), { ignoreInitial: true });
+  const watcher = chokidar.watch([...watchingFiles, filesListPath], { ignoreInitial: true });
 
   subscribeOn('shutdown', () => void watcher.close());
 
-  watcher.on('change', (filePath) => storiesByFiles.set(`./${filePath}`, []));
-  watcher.on('unlink', (filePath) => storiesByFiles.set(`./${filePath}`, []));
+  watcher.on('change', (filePath) => {
+    if (filePath === filesListPath) {
+      const files = new Set(JSON.parse(readFileSync(filesListPath, { encoding: 'utf-8' })) as string[]);
+      const addedFiles = Array.from(files).filter((filePath) => !watchingFiles.has(filePath));
+      const removedFiles = Array.from(watchingFiles).filter((filePath) => !files.has(filePath));
+      watcher.add(addedFiles);
+      addedFiles.forEach((filePath) => watchingFiles.add(filePath));
+      watcher.unwatch(removedFiles);
+      removedFiles.forEach((filePath) => watchingFiles.delete(filePath));
+    } else {
+      changedFiles.add(filePath);
+    }
+  });
+  watcher.on('unlink', (filePath) => {
+    if (filePath !== filesListPath) {
+      changedFiles.add(filePath);
+    }
+  });
 
   // NOTE Update kinds after file with stories was changed
   addons.getChannel().on(Events.SET_STORIES, (data: { stories: StoriesRaw }) => {
-    // TODO Fix after 6.x, maybe
-    const files = new Set(Object.values(data.stories).map((story) => story.parameters.fileName as string));
-    const addedFiles = Array.from(files).filter((filePath) => !watchingFiles.has(filePath));
-    const removedFiles = Array.from(watchingFiles).filter((filePath) => !files.has(filePath));
-    watcher.add(addedFiles);
-    addedFiles.forEach((filePath) => watchingFiles.add(filePath));
-    watcher.unwatch(removedFiles);
-    removedFiles.forEach((filePath) => watchingFiles.delete(filePath));
+    const storiesByFiles = new Map<string, StoryInput[]>();
+    const storyFiles = new Set<string>();
+    const changed = Array.from(changedFiles);
 
-    Object.values(data.stories).forEach((story) => storiesByFiles.get(story.parameters.fileName)?.push(story));
+    Object.values(data.stories).forEach((story) => {
+      // TODO Fix `filename` -> `fileName` parameter after 6.x, maybe
+      const fileName = story.parameters.fileName as string;
+      const absolutePath = changed.find((absolutePath) => absolutePath.endsWith(path.normalize(fileName)));
+
+      // TODO Stories are not removing because of lack dummy-hmr
+      storyFiles.add(fileName);
+      previousStoryFiles.delete(fileName);
+
+      if (absolutePath) {
+        if (!storiesByFiles.has(fileName)) storiesByFiles.set(fileName, []);
+        storiesByFiles.get(fileName)?.push(story);
+      }
+      // TODO Add debug output if path not found
+    });
+    previousStoryFiles.forEach((fileName) => storiesByFiles.set(fileName, []));
+    previousStoryFiles = storyFiles;
+    changedFiles.clear();
     addons.getChannel().emit('storiesUpdated', storiesByFiles);
-    storiesByFiles = new Map<string, StoryInput[]>();
   });
 }
 
@@ -154,7 +183,7 @@ function loadStorybookBundle(
     channel.on('storiesUpdated', storiesListener);
 
     if (watch) {
-      watchStories();
+      watchStories(path.join(path.dirname(bundlePath), 'files.json'));
 
       subscribeOn('webpack', (message: WebpackMessage) => {
         if (message.type != 'rebuild succeeded') return;
@@ -193,6 +222,7 @@ export async function loadTestsFromStories(
   Object.values(tests)
     .filter(isDefined)
     .forEach(({ id, story: { parameters: { fileName } } }) =>
+      // TODO Don't use filename as a key, due possible collisions if two require.context with same structure of modules are defined
       testIdsByFiles.set(fileName, [...(testIdsByFiles.get(fileName) ?? []), id]),
     );
 

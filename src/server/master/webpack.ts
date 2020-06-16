@@ -1,4 +1,4 @@
-import { rmdirSync } from 'fs';
+import { rmdirSync, writeFileSync } from 'fs';
 import path from 'path';
 import webpack, { Configuration } from 'webpack';
 import nodeExternals from 'webpack-node-externals';
@@ -57,6 +57,15 @@ function handleWebpackBuild(error: Error, stats: webpack.Stats): void {
     }
   }
   stats.toJson().warnings.forEach((e) => console.warn(e));
+
+  const storyFiles =
+    stats
+      .toJson()
+      .modules?.map((x) => x.identifier.split('!').slice(-1)[0])
+      .filter((x) => path.isAbsolute(x) && !x.includes('node_modules')) ?? [];
+
+  // TODO Rewrite in cache-dir feature
+  writeFileSync(path.join(path.dirname(filePath), 'files.json'), JSON.stringify(storyFiles));
 
   if (!isInitiated) {
     isInitiated = true;

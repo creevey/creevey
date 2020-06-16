@@ -9,8 +9,8 @@ describe('loader', () => {
 
   Array.from(new Set(fs.readdirSync(fixtures).map((filename) => filename.split('.')[0])))
     .map((testName) => {
-      const input = fs.readFileSync(path.join(fixtures, `${testName}.input.tsx`), 'utf-8');
-      const output = fs.readFileSync(path.join(fixtures, `${testName}.output.tsx`), 'utf-8');
+      const input = fs.readFileSync(path.join(fixtures, `${testName}.input.tsx`), { encoding: 'utf-8' });
+      const output = fs.readFileSync(path.join(fixtures, `${testName}.output.tsx`), { encoding: 'utf-8' });
 
       return { testName, input, output };
     })
