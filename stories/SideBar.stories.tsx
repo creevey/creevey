@@ -98,6 +98,18 @@ export const HeaderRunning = (): JSX.Element => (
 );
 HeaderRunning.story = { decorators: [headerDecorator] };
 
+export const HeaderDisabled = (): JSX.Element => (
+  <SideBarHeader
+    testsStatus={{ pendingCount: 0, successCount: 1, failedCount: 2, skippedCount: 3, removedCount: 4 }}
+    filter={{ status: null, subStrings: [] }}
+    onFilterChange={noop}
+    onStart={noop}
+    onStop={noop}
+    canStart={false}
+  />
+);
+HeaderDisabled.story = { decorators: [headerDecorator] };
+
 export const SimpleSideBar = (): JSX.Element => (
   <SideBar rootSuite={openSuites(treeifyTests(simpleTests))} openedTest={null} onOpenTest={noop} />
 );

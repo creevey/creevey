@@ -3,7 +3,7 @@ import { css } from '@emotion/core';
 import { ThemeContext, ThemeFactory } from '@skbkontur/react-ui';
 import { SideBarHeader } from './SideBarHeader';
 import { CreeveySuite, CreeveyTest, noop, isTest } from '../../../types';
-import { filterTests, CreeveyViewFilter, flattenSuite, countTestsStatus } from '../../helpers';
+import { filterTests, CreeveyViewFilter, flattenSuite, countTestsStatus, getCheckedTests } from '../../helpers';
 import { CreeveyContext } from '../../CreeveyContext';
 import { SuiteLink } from './SuiteLink';
 import { TestLink } from './TestLink';
@@ -50,6 +50,7 @@ export function SideBar({ rootSuite, openedTest, onOpenTest }: SideBarProps): JS
   const suite = filterTests(rootSuite, filter);
   const testsStatus = countTestsStatus(rootSuite);
   const suiteList = flattenSuite(suite);
+  const countCheckedTests = getCheckedTests(rootSuite).length;
 
   const handleStart = (): void => onStart(suite);
 
@@ -75,6 +76,7 @@ export function SideBar({ rootSuite, openedTest, onOpenTest }: SideBarProps): JS
           onFilterChange={setFilter}
           onStart={handleStart}
           onStop={onStop}
+          canStart={countCheckedTests !== 0}
         />
         <div
           css={css`

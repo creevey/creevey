@@ -13,6 +13,7 @@ interface SideBarHeaderProps {
   onStop: () => void;
   filter: CreeveyViewFilter;
   onFilterChange: (value: CreeveyViewFilter) => void;
+  canStart?: boolean;
 }
 
 const parseStringForFilter = (value: string): CreeveyViewFilter => {
@@ -38,6 +39,7 @@ export function SideBarHeader({
   onStart,
   filter,
   onFilterChange,
+  canStart,
 }: SideBarHeaderProps): JSX.Element {
   const { isRunning } = useContext(CreeveyContext);
   const [filterInput, setFilterInput] = useState('');
@@ -94,7 +96,7 @@ export function SideBarHeader({
               <Spinner type="mini" caption="" /> Running
             </Button>
           ) : (
-            <Button use="primary" arrow size="medium" width={100} onClick={onStart}>
+            <Button use="primary" arrow size="medium" width={100} onClick={onStart} disabled={!canStart}>
               Start
             </Button>
           )}
