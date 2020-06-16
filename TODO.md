@@ -197,6 +197,7 @@
 - [ ] Bugs
   - [x] IPC_CHANNEL_CLOSED error infinity loop, could reproduce with invalid gridUrl
   - [x] Error mocha instance already disposed in mocha@7.2
+  - [ ] Tests not removing in hot-reloading process
   - [ ] In multiple images tests output same test error for every image
   - [ ] Fix taking composite screenshots with hided scrollbar
     - Take `document.documentElement.clientWidth/Height` instead of window rect

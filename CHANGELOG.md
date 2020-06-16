@@ -1,3 +1,9 @@
+## [0.6.3](https://github.com/wKich/creevey/compare/v0.6.2...v0.6.3) (2020-06-16)
+
+### Bug Fixes
+
+- 🐛 test reloading dont work well ([3049dfd](https://github.com/wKich/creevey/commit/3049dfdcda6bc7ae2c85fb6afbfa89cb0f8a1aeb))
+
 ## [0.6.2](https://github.com/wKich/creevey/compare/v0.6.1...v0.6.2) (2020-06-10)
 
 ### Bug Fixes
