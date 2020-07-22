@@ -121,6 +121,7 @@ function watchStories(filesListPath: string): void {
 
   watcher.on('change', (filePath) => {
     if (filePath === filesListPath) {
+      // TODO [FAIL:12711] SyntaxError: Unexpected end of JSON input
       const files = new Set(JSON.parse(readFileSync(filesListPath, { encoding: 'utf-8' })) as string[]);
       const addedFiles = Array.from(files).filter((filePath) => !watchingFiles.has(filePath));
       const removedFiles = Array.from(watchingFiles).filter((filePath) => !files.has(filePath));

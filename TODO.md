@@ -180,12 +180,21 @@
 
 </details>
 
+## (v0.6.x)
+
+- [x] Install core-js and regenerator runtime as deps, to fix storybook deps issue, where storybook require own core-js, but module path for bundle resolve incorrect
+- [ ] Fix match story and absolute path to file with that story (fix hot-reloading issue in CRA)
+
 ## First priority (v0.7)
 
 - [ ] Support Storybook 6.x
 - [x] ~~Add @babel/code-frame to output loader error~~ There is babel issue https://github.com/babel/babel/issues/8617
 - [ ] Transform to monorepo
   - [ ] creevey
+  - [ ] chai-images
+  - [ ] creevey-selenium
+  - [ ] creevey-docker
+  - [ ] creevey-storybook
   - [ ] examples
 - [ ] Store creevey storybook bundle in cache dir using find-cache-dir pkg
 - [ ] Add bootstrap script, that build and install current version into examples or use monorepo
