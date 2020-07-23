@@ -62,7 +62,7 @@ function handleWebpackBuild(error: Error, stats: webpack.Stats): void {
     stats
       .toJson()
       .modules?.map((x) => x.identifier.split('!').slice(-1)[0])
-      .filter((x) => path.isAbsolute(x) && !x.includes('node_modules')) ?? [];
+      .filter((x) => path.isAbsolute(x) && !x.includes('node_modules') && /^([a-z]:|\/)/i.test(x)) ?? [];
 
   // TODO Rewrite in cache-dir feature
   writeFileSync(path.join(path.dirname(filePath), 'files.json'), JSON.stringify(storyFiles));
