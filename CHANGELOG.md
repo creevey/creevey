@@ -1,3 +1,17 @@
+## [0.6.4](https://github.com/wKich/creevey/compare/v0.6.3...v0.6.4) (2020-07-27)
+
+### Bug Fixes
+
+- 🐛 hot-reloading issue, add readme notes ([5497b71](https://github.com/wKich/creevey/commit/5497b710053285a4f0b4cad075427b2ee7287be2))
+- 🐛 react example loadash vulnerability ([e188d1d](https://github.com/wKich/creevey/commit/e188d1d4e43ddd4df0a00de54f37d61f3e2aecc0))
+- 🐛 storybook bundle depends on core-js, regenerator-runtime ([ce596b9](https://github.com/wKich/creevey/commit/ce596b91665d74f68b0442d767d8e81a48e034c0))
+- 🐛 watch stories on windows ([ce599cc](https://github.com/wKich/creevey/commit/ce599ccc0e9eaa31e01987297e1f5c6a899a56ac))
+
+### Features
+
+- 🎸 add disabled state to start button ([260193a](https://github.com/wKich/creevey/commit/260193a49f67e500db771688aae95e2fc1e4694b))
+- 🎸 Save view mode ([ea461cc](https://github.com/wKich/creevey/commit/ea461ccb26c5888a1dff54077cac264f2ae4ab27))
+
 ## [0.6.3](https://github.com/wKich/creevey/compare/v0.6.2...v0.6.3) (2020-06-16)
 
 ### Bug Fixes
