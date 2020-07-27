@@ -32,6 +32,11 @@ export function SuiteLink({ title, suite }: SuiteLinkProps): JSX.Element {
         &:hover {
           background: #e5e5e5;
         }
+
+        /* NOTE: Fix issue of react-ui with fixed height */
+        & button {
+          height: initial !important;
+        }
       `}
     >
       <Button width="100%" align="left" onClick={handleOpen}>

@@ -27,6 +27,11 @@ export function TestLink({ title, opened, test }: TestLinkProps): JSX.Element {
         position: relative;
 
         ${emptyResults ? '' : '&:hover { background: #e5e5e5; }'}
+
+        /* NOTE: Fix issue of react-ui with fixed height */
+        & button {
+          height: initial !important;
+        }
       `}
     >
       <Button width="100%" align="left" checked={opened} disabled={emptyResults} onClick={handleOpen}>
