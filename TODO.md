@@ -183,7 +183,8 @@
 ## (v0.6.x)
 
 - [x] Install core-js and regenerator runtime as deps, to fix storybook deps issue, where storybook require own core-js, but module path for bundle resolve incorrect
-- [ ] Fix match story and absolute path to file with that story (fix hot-reloading issue in CRA)
+- [x] Fix match story and absolute path to file with that story (fix hot-reloading issue in CRA)
+  - [x] Add note about storybook version
 
 ## First priority (v0.7)
 
@@ -206,6 +207,7 @@
 - [ ] Bugs
   - [x] IPC_CHANNEL_CLOSED error infinity loop, could reproduce with invalid gridUrl
   - [x] Error mocha instance already disposed in mocha@7.2
+  - [ ] Don't end all worker processes, especially if worker has errors
   - [ ] Tests not removing in hot-reloading process
   - [ ] In multiple images tests output same test error for every image
   - [ ] Fix taking composite screenshots with hided scrollbar

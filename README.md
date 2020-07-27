@@ -22,6 +22,7 @@ Main goal of creevey take visual testing to a new level. Allow you to get fast a
   - [Storybook parameters](#storybook-parameters)
 - [Creevey under the hood](#creevey-under-the-hood)
 - [Future plans](#future-plans)
+- [Known issues](#known-issues)
 
 ## How to start
 
@@ -277,3 +278,7 @@ Multiple process configuration used to run each browser instance in separate nod
 - Add `docker` support that allow start test without specifying `gridUrl` and setup `selenoid` locally.
 - Allow use different webdrivers not only `selenium`, but also `puppeteer` or `playwright`.
 - Integrate Creevey UI into Storybook UI and start it with storybook.
+
+## Known issues
+
+- Hot reloading don't work very well. Creevey watching for changes story files and to decide that files needs to be watched it get from `fileName` parameter saved by storybook for each story. And this `fileName` in some cases contains relative path not from root project directory. So Creevey couldn't resolve that path to absolute one. Possible solutions, try to store stories in root project directory like in this repo. Or you could update storybook to 6.x
