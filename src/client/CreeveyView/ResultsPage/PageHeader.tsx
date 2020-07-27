@@ -6,7 +6,7 @@ import { Images, ImagesViewMode } from '../../../types';
 import { ImagePreview } from './ImagePreview';
 import { getImageUrl } from '../../helpers';
 
-const modes: ImagesViewMode[] = ['side-by-side', 'swap', 'slide', 'blend'];
+export const viewModes: ImagesViewMode[] = ['side-by-side', 'swap', 'slide', 'blend'];
 
 const IMAGE_PREVIEW_THEME = ThemeFactory.create({
   btnCheckedBg: '#fff',
@@ -36,6 +36,7 @@ interface PageHeaderProps {
   }>;
   errorMessage?: string;
   showViewModes: boolean;
+  viewMode: ImagesViewMode;
   onImageChange: (name: string) => void;
   onViewModeChange: (viewMode: ImagesViewMode) => void;
 }
@@ -45,17 +46,15 @@ export function PageHeader({
   images = {},
   errorMessage,
   showViewModes,
+  viewMode,
   onImageChange,
   onViewModeChange,
 }: PageHeaderProps): JSX.Element {
   const imageEntires = Object.entries(images) as [string, Images][];
   const [imageName, setImageName] = useState((imageEntires[0] ?? [])[0] ?? '');
-  const [viewMode, setViewMode] = useState<ImagesViewMode>('side-by-side');
 
   const handleImageChange = (name: string): void => (setImageName(name), onImageChange(name));
-  const handleViewModeChange = (mode: string): void => (
-    setViewMode(mode as ImagesViewMode), onViewModeChange(mode as ImagesViewMode)
-  );
+  const handleViewModeChange = (mode: string): void => onViewModeChange(mode as ImagesViewMode);
 
   return (
     <div
@@ -134,7 +133,7 @@ export function PageHeader({
       ) : null}
       {showViewModes ? (
         <Tabs value={viewMode} onValueChange={handleViewModeChange}>
-          {modes.map((mode) => (
+          {viewModes.map((mode) => (
             <Tabs.Tab key={mode} id={mode}>
               {mode}
             </Tabs.Tab>
