@@ -116,9 +116,7 @@ export default async function worker(
 
   const mochaOptions: MochaOptions = {
     timeout: 30000,
-    reporter: (process.env.TEAMCITY_VERSION ? TeamcityReporter : options.reporter || CreeveyReporter) as
-      | string
-      | ReporterConstructor,
+    reporter: process.env.TEAMCITY_VERSION ? TeamcityReporter : options.reporter || CreeveyReporter,
     reporterOptions: {
       reportDir: config.reportDir,
       topLevelSuite: options.browser,

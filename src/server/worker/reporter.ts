@@ -11,13 +11,11 @@ interface ReporterOptions {
   }>;
 }
 
-type PatchedMochaOptions = Omit<MochaOptions, 'reporterOptions'> & { reporterOptions: ReporterOptions };
-
 export class CreeveyReporter extends reporters.Base {
-  constructor(runner: Runner, options: PatchedMochaOptions) {
+  constructor(runner: Runner, options: MochaOptions) {
     super(runner);
 
-    const { topLevelSuite } = options.reporterOptions;
+    const { topLevelSuite } = options.reporterOptions as ReporterOptions;
 
     runner.on('test', (test) =>
       console.log(`[${chalk.yellow('START')}:${topLevelSuite}:${process.pid}]`, chalk.cyan(test.titlePath().join('/'))),
@@ -36,11 +34,11 @@ export class CreeveyReporter extends reporters.Base {
 }
 
 export class TeamcityReporter extends reporters.Base {
-  constructor(runner: Runner, options: PatchedMochaOptions) {
+  constructor(runner: Runner, options: MochaOptions) {
     super(runner);
 
-    const topLevelSuite = this.escape(options.reporterOptions.topLevelSuite);
-    const { reportDir, willRetry, images } = options.reporterOptions;
+    const topLevelSuite = this.escape((options.reporterOptions as ReporterOptions).topLevelSuite);
+    const { reportDir, willRetry, images } = options.reporterOptions as ReporterOptions;
 
     runner.on('suite', (suite) =>
       suite.root
