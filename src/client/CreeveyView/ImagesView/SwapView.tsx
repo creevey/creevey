@@ -17,34 +17,25 @@ export function SwapView(props: ViewProps): JSX.Element {
   return (
     <div
       css={css`
-        position: relative;
         margin: 20px;
       `}
     >
-      <label
+      <button
         css={css`
-          position: absolute;
-          display: flex;
-          align-items: flex-start;
-          justify-content: flex-start;
-          cursor: pointer;
           width: 100%;
           height: 100%;
+          appearance: none;
+          background: none;
+          color: inherit;
+          border: none;
+          padding: 0;
+          font: inherit;
+          cursor: pointer;
+          outline: inherit;
           z-index: 1;
         `}
+        onClick={handleChangeView}
       >
-        <input
-          css={css`
-            display: inline-block;
-            position: absolute;
-            width: 0;
-            height: 0;
-            z-index: -1;
-            appearance: none;
-          `}
-          type="checkbox"
-          onChange={handleChangeView}
-        />
         <img
           alt={image}
           src={props[image]}
@@ -53,7 +44,7 @@ export function SwapView(props: ViewProps): JSX.Element {
             max-width: 100%;
           `}
         />
-      </label>
+      </button>
       <img
         alt="diff"
         src={props.diff}
