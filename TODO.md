@@ -188,7 +188,7 @@
 
 ## First priority (v0.7)
 
-- [ ] Support Storybook 6.x
+- [x] Support Storybook 6.x
 - [x] ~~Add @babel/code-frame to output loader error~~ There is babel issue https://github.com/babel/babel/issues/8617
 - [ ] Transform to monorepo
   - [ ] creevey
@@ -204,6 +204,7 @@
 - [x] Update Eslint to v7
 - [ ] Support run tests inside docker
 - [ ] Setup NODE_ENV to 'test'.
+- [ ] Simplify hot-reloading logic, for v6.x fixed removing tests issue
 - [ ] Bugs
   - [x] IPC_CHANNEL_CLOSED error infinity loop, could reproduce with invalid gridUrl
   - [x] Error mocha instance already disposed in mocha@7.2

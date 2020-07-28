@@ -137,6 +137,7 @@ export default async function compile(config: Config, { debug, ui }: Options): P
     exclude: /node_modules/,
     use: { loader: require.resolve('./loader'), options: { debug } },
   });
+  // TODO Storybook v6.x do not exclude modules very well
   storybookWebpackConfig.externals = [
     nodeExternals(),
     // TODO Don't work well with monorepos

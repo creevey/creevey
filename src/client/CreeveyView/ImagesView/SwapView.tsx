@@ -18,10 +18,12 @@ export function SwapView(props: ViewProps): JSX.Element {
     <div
       css={css`
         margin: 20px;
+        position: relative;
       `}
     >
       <button
         css={css`
+          position: absolute;
           width: 100%;
           height: 100%;
           appearance: none;
@@ -31,7 +33,7 @@ export function SwapView(props: ViewProps): JSX.Element {
           padding: 0;
           font: inherit;
           cursor: pointer;
-          outline: inherit;
+          outline: none;
           z-index: 1;
         `}
         onClick={handleChangeView}
