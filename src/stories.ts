@@ -18,9 +18,11 @@ import {
   StoryInput,
   WebpackMessage,
   CreeveyTestFunction,
+  SetStoriesData,
 } from './types';
-import { shouldSkip, subscribeOn } from './utils';
+import { shouldSkip, subscribeOn, isStorybookVersionLessThan } from './utils';
 import { readFileSync } from 'fs';
+import { mergeWith } from 'lodash';
 
 function storyTestFabric(delay?: number, testFn?: CreeveyTestFunction) {
   return async function storyTest(this: Context) {
@@ -88,15 +90,15 @@ function initStorybookEnvironment(): { clientApi: ClientApi; channel: Channel } 
     value: window.navigator.userAgent.replace(/jsdom\/(\d+\.?)+/, '').trim(),
   });
 
-  // NOTE Disable storybook debug output due issue https://github.com/storybookjs/storybook/issues/8461
-  // TODO We could redefine loglevel using `console.setLevel(LOGLEVEL);` from `loglevel` lib. Worked only for 6.x
-  // Fixed in 6.x
-  logger.debug = noop;
+  if (isStorybookVersionLessThan(6)) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    logger.debug = noop;
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment
   const { default: storybookCore } = require('@storybook/core');
 
-  // TODO Storybook 6.x change value returned by `start` method
   /*
    * 6.x
    * return { configure, clientApi, configApi, channel, forceReRender };
@@ -111,6 +113,7 @@ function initStorybookEnvironment(): { clientApi: ClientApi; channel: Channel } 
 }
 
 function watchStories(filesListPath: string): void {
+  // TODO Simplify watch for 6.x
   const watchingFiles = new Set(JSON.parse(readFileSync(filesListPath, { encoding: 'utf-8' })) as string[]);
   const changedFiles = new Set<string>();
   let previousStoryFiles = new Set<string>();
@@ -140,14 +143,15 @@ function watchStories(filesListPath: string): void {
   });
 
   // NOTE Update kinds after file with stories was changed
-  addons.getChannel().on(Events.SET_STORIES, (data: { stories: StoriesRaw }) => {
+  addons.getChannel().on(Events.SET_STORIES, (data: SetStoriesData) => {
     const storiesByFiles = new Map<string, StoryInput[]>();
     const storyFiles = new Set<string>();
     const changed = Array.from(changedFiles);
 
-    Object.values(data.stories).forEach((story) => {
-      // TODO Fix `filename` -> `fileName` parameter after 6.x, maybe
-      const fileName = story.parameters.fileName as string;
+    const stories = isStorybookVersionLessThan(6) ? data.stories : flatStories(data);
+
+    Object.values(stories).forEach((story) => {
+      const { fileName } = story.parameters;
       const absolutePath = changed.find((absolutePath) => absolutePath.endsWith(path.normalize(fileName)));
 
       // TODO Stories are not removing because of lack dummy-hmr
@@ -167,6 +171,21 @@ function watchStories(filesListPath: string): void {
   });
 }
 
+function flatStories({ globalParameters, kindParameters, stories }: SetStoriesData): StoriesRaw {
+  Object.values(stories).forEach((story) => {
+    // NOTE: Copy-paste merge parameters from storybook
+    story.parameters = mergeWith(
+      {},
+      globalParameters,
+      kindParameters[story.kind],
+      story.parameters,
+      (_: unknown, srcValue: unknown) => (Array.isArray(srcValue) ? (srcValue as unknown[]) : undefined),
+    );
+  });
+
+  return stories;
+}
+
 function loadStorybookBundle(
   {
     bundlePath,
@@ -180,7 +199,13 @@ function loadStorybookBundle(
   return new Promise((resolve) => {
     const { channel } = initStorybookEnvironment();
 
-    channel.once(Events.SET_STORIES, (data: { stories: StoriesRaw }) => resolve(data.stories));
+    channel.once(Events.SET_STORIES, (data: SetStoriesData) => {
+      if (isStorybookVersionLessThan(6)) {
+        resolve(data.stories);
+      } else {
+        resolve(flatStories(data));
+      }
+    });
     channel.on('storiesUpdated', storiesListener);
 
     if (watch) {

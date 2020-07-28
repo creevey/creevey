@@ -134,3 +134,19 @@ export function shutdownWorkers(): void {
       }),
   );
 }
+
+export function getStorybookVersion(): string {
+  const [storybookParentDirectory] = require.resolve('@storybook/core').split('@storybook');
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const { version } = require(path.join(storybookParentDirectory, '@storybook', 'core', 'package.json')) as {
+    version: string;
+  };
+
+  return version;
+}
+
+export function isStorybookVersionLessThan(version: number): boolean {
+  const [storybookVersion] = getStorybookVersion().split('.');
+
+  return Number(storybookVersion) < version;
+}

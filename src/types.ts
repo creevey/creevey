@@ -19,6 +19,12 @@ export type DiffOptions = typeof Pixelmatch extends (
   : never;
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
+export type SetStoriesData = {
+  globalParameters: { creevey?: CreeveyStoryParams };
+  kindParameters: Partial<{ [kind: string]: { fileName: string; creevey?: CreeveyStoryParams } }>;
+  stories: StoriesRaw;
+};
+
 export type StoriesRaw = StorybookAPI extends { setStories: (stories: infer SS) => void } ? SS : never;
 
 export type StoryInput = StoriesRaw extends { [id: string]: infer S } ? S : never;
@@ -35,6 +41,13 @@ export interface StoryMeta<StoryFnReturnType = unknown> {
 
 export interface CSFStory<StoryFnReturnType = unknown> {
   (): StoryFnReturnType;
+  /**
+   * @deprecated
+   * CSF .story annotations deprecated; annotate story functions directly:
+   * - StoryFn.story.name => StoryFn.storyName
+   * - StoryFn.story.(parameters|decorators) => StoryFn.(parameters|decorators)
+   * See https://github.com/storybookjs/storybook/blob/next/MIGRATION.md#hoisted-csf-annotations for details and codemod.
+   */
   story?: {
     name?: string;
     decorators?: DecoratorFunction<StoryFnReturnType>[];
@@ -42,6 +55,12 @@ export interface CSFStory<StoryFnReturnType = unknown> {
       creevey?: CreeveyStoryParams;
       [name: string]: unknown;
     };
+  };
+  storyName?: string;
+  decorators?: DecoratorFunction<StoryFnReturnType>[];
+  parameters?: {
+    creevey?: CreeveyStoryParams;
+    [name: string]: unknown;
   };
 }
 

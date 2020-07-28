@@ -26,4 +26,8 @@ const argv = minimist<Options>(process.argv.slice(2), {
   alias: { port: 'p', config: 'c', debug: 'd', update: 'u' },
 });
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+global.LOGLEVEL = argv.debug ? 'debug' : 'warn';
+
 void creevey(argv);

@@ -74,7 +74,7 @@ export const HeaderStopped = (): JSX.Element => (
     onStop={noop}
   />
 );
-HeaderStopped.story = { decorators: [headerDecorator] };
+HeaderStopped.decorators = [headerDecorator];
 
 export const HeaderRunning = (): JSX.Element => (
   <CreeveyContext.Provider
@@ -96,7 +96,7 @@ export const HeaderRunning = (): JSX.Element => (
     />
   </CreeveyContext.Provider>
 );
-HeaderRunning.story = { decorators: [headerDecorator] };
+HeaderRunning.decorators = [headerDecorator];
 
 export const HeaderDisabled = (): JSX.Element => (
   <SideBarHeader
@@ -108,7 +108,7 @@ export const HeaderDisabled = (): JSX.Element => (
     canStart={false}
   />
 );
-HeaderDisabled.story = { decorators: [headerDecorator] };
+HeaderDisabled.decorators = [headerDecorator];
 
 export const SimpleSideBar = (): JSX.Element => (
   <SideBar rootSuite={openSuites(treeifyTests(simpleTests))} openedTest={null} onOpenTest={noop} />

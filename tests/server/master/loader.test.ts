@@ -32,9 +32,10 @@ describe('loader', () => {
   - function expression (export const Text = TextButton)
   - with reexport (export Text from './TextButton')
   - with export specifiers (export { Button, Input })
-  - with multiple export declarations (export const Text = () => {}, Input = () => {})
+  x with multiple export declarations (export const Text = () => {}, Input = () => {})
   - declaration with destructuring (export const { Text } = stories)
   - with story fabric ??
+  x default export without declaration (const Kind = {}; export default Kind;)
 
 - StoriesOf
   - story decorator + params

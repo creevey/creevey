@@ -30,19 +30,17 @@ export const Swap = (): JSX.Element => ImagesView('swap');
 export const Slide: CSFStory<JSX.Element> = () => ImagesView('slide');
 export const Blend = (): JSX.Element => ImagesView('blend');
 
-Slide.story = {
-  parameters: {
-    creevey: {
-      tests: {
-        async click() {
-          const idle = await this.takeScreenshot();
+Slide.parameters = {
+  creevey: {
+    tests: {
+      async click() {
+        const idle = await this.takeScreenshot();
 
-          await this.browser.actions().click(this.captureElement).perform();
+        await this.browser.actions().click(this.captureElement).perform();
 
-          const click = await this.takeScreenshot();
+        const click = await this.takeScreenshot();
 
-          await this.expect({ idle, click }).to.matchImages();
-        },
+        await this.expect({ idle, click }).to.matchImages();
       },
     },
   },

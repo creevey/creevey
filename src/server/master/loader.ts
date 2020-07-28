@@ -6,6 +6,8 @@ import traverse, { NodePath, Binding } from '@babel/traverse';
 import generate from '@babel/generator';
 import * as t from '@babel/types';
 import { loader } from 'webpack';
+import { isStorybookVersionLessThan } from '../../utils';
+import { isDefined } from '../../types';
 
 function tryParse(source: string, options: OptionObject): { ast?: t.File; done: boolean } {
   try {
@@ -53,28 +55,65 @@ function replaceStoryFnToNoop(declarations: t.VariableDeclarator[]): void {
   declarations.forEach((declarator) => (declarator.init = t.arrowFunctionExpression([], t.blockStatement([]))));
 }
 
-function getStoryObjectNodePath<T>(
+function getAssignmentFromRefsByProp(
+  referencePaths: NodePath<t.Node>[],
+  propName: string,
+): NodePath<t.AssignmentExpression>[] {
+  return referencePaths
+    ?.filter(
+      (refPath) =>
+        refPath.parentPath.isMemberExpression() && t.isIdentifier(refPath.parentPath.node.property, { name: propName }),
+    )
+    .map((refPath) => {
+      const assignmentPath = refPath.parentPath.parentPath;
+      if (!assignmentPath?.isAssignmentExpression()) return;
+
+      return assignmentPath;
+    })
+    .filter(isDefined);
+}
+
+function getStoryFnPropertyAssignmentPaths<T>(
   path: NodePath<T>,
   declarations: t.VariableDeclarator[],
-): NodePath<t.ObjectExpression> | undefined {
-  let storyObjectPath: NodePath<t.ObjectExpression> | undefined;
-
-  declarations
+): Array<{
+  story?: NodePath<t.AssignmentExpression>[];
+  decorators?: NodePath<t.AssignmentExpression>[];
+  parameters?: NodePath<t.AssignmentExpression>[];
+}> {
+  return declarations
     .map(({ id }) => id)
-    .some((id) => {
+    .map((id) => {
       if (!t.isIdentifier(id)) return;
       const { referencePaths } = path.scope.getBinding(id.name) ?? {};
-      const assignmentPath = referencePaths?.find(
-        (refPath) =>
-          refPath.parentPath.isMemberExpression() &&
-          t.isIdentifier(refPath.parentPath.node.property, { name: 'story' }),
-      )?.parentPath.parentPath;
-      if (!assignmentPath?.isAssignmentExpression()) return;
-      const rightPath = assignmentPath.get('right') as NodePath;
-      if (!rightPath?.isObjectExpression()) return;
-      return (storyObjectPath = rightPath);
-    });
-  return storyObjectPath;
+
+      if (!referencePaths) return;
+
+      const propAssigns: {
+        story?: NodePath<t.AssignmentExpression>[];
+        decorators?: NodePath<t.AssignmentExpression>[];
+        parameters?: NodePath<t.AssignmentExpression>[];
+      } = { story: getAssignmentFromRefsByProp(referencePaths, 'story') };
+
+      if (!isStorybookVersionLessThan(6)) {
+        propAssigns.decorators = getAssignmentFromRefsByProp(referencePaths, 'decorators');
+        propAssigns.parameters = getAssignmentFromRefsByProp(referencePaths, 'parameters');
+      }
+
+      return propAssigns;
+    })
+    .filter(isDefined);
+}
+
+function cleanUpStoryProps(storyPropAssign: NodePath<t.AssignmentExpression>): void {
+  const rightPath = storyPropAssign.get('right') as NodePath;
+  if (!rightPath?.isObjectExpression()) return;
+
+  getPropertyPath(rightPath, 'decorators')?.remove();
+  const storyParametersPath = getPropertyPath(rightPath, 'parameters')?.get('value');
+  if (storyParametersPath?.isObjectExpression()) {
+    removeAllPropsExcept(storyParametersPath, 'creevey');
+  }
 }
 
 function recursivelyRemoveUnreferencedBindings(path: NodePath<t.Program>): void {
@@ -118,13 +157,16 @@ function minifyStories(ast: t.File, source: string): string {
           const namedDeclaration = namedPath.node.declaration as t.Node;
           if (!t.isVariableDeclaration(namedDeclaration)) return;
           replaceStoryFnToNoop(namedDeclaration.declarations);
-          const storyPath = getStoryObjectNodePath(namedPath, namedDeclaration.declarations);
-          if (!storyPath) return;
-          getPropertyPath(storyPath, 'decorators')?.remove();
-          const storyParametersPath = getPropertyPath(storyPath, 'parameters')?.get('value');
-          if (storyParametersPath?.isObjectExpression()) {
-            removeAllPropsExcept(storyParametersPath, 'creevey');
-          }
+          const storyFnPropAssigns = getStoryFnPropertyAssignmentPaths(namedPath, namedDeclaration.declarations);
+          storyFnPropAssigns.forEach((propsAssign) => {
+            propsAssign.story?.forEach(cleanUpStoryProps);
+            propsAssign.decorators?.forEach((decoratorsPath) => decoratorsPath.remove());
+            propsAssign.parameters?.forEach((parametersPath) => {
+              const rightPath = parametersPath.get('right') as NodePath;
+              if (!rightPath?.isObjectExpression()) return;
+              removeAllPropsExcept(rightPath, 'creevey');
+            });
+          });
         },
       });
     },

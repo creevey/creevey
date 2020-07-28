@@ -1,7 +1,18 @@
+// @ts-nocheck
 
 
-const kind = { title: 'Button' };
 
-export default kind;
+
+
+
+
+
+const Kind = {
+  title: 'Button' };
+
+
+
+
+export default Kind;
 
 export const Text = () => {};
