@@ -25,7 +25,7 @@ const IMAGE_PREVIEW_THEME = ThemeFactory.create({
   btnDefaultActiveShadow: '0 0 0 1px #e1e1e1',
   btnPaddingXSmall: '0px',
   btnPaddingYSmall: '0px',
-  controlHeightSmall: '64px',
+  btnLineHeightSmall: '64px',
   btnHeightShift: '0px',
 });
 
