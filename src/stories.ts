@@ -1,4 +1,3 @@
-import path from 'path';
 import { createHash } from 'crypto';
 import { Context } from 'mocha';
 import chokidar from 'chokidar';
@@ -21,7 +20,6 @@ import {
   SetStoriesData,
 } from './types';
 import { shouldSkip, subscribeOn, isStorybookVersionLessThan } from './utils';
-import { readFileSync } from 'fs';
 import { mergeWith } from 'lodash';
 
 function storyTestFabric(delay?: number, testFn?: CreeveyTestFunction) {
@@ -112,62 +110,34 @@ function initStorybookEnvironment(): { clientApi: ClientApi; channel: Channel } 
   return { clientApi, channel };
 }
 
-function watchStories(filesListPath: string): void {
-  // TODO Simplify watch for 6.x
-  const watchingFiles = new Set(JSON.parse(readFileSync(filesListPath, { encoding: 'utf-8' })) as string[]);
-  const changedFiles = new Set<string>();
-  let previousStoryFiles = new Set<string>();
+function watchStories(): void {
+  const watchingFiles = new Set<string>();
+  let storiesByFiles = new Map<string, StoryInput[]>();
 
-  const watcher = chokidar.watch([...watchingFiles, filesListPath], { ignoreInitial: true });
+  const watcher = chokidar.watch(Array.from(watchingFiles), { ignoreInitial: true });
 
   subscribeOn('shutdown', () => void watcher.close());
 
-  watcher.on('change', (filePath) => {
-    if (filePath === filesListPath) {
-      // TODO [FAIL:12711] SyntaxError: Unexpected end of JSON input
-      const files = new Set(JSON.parse(readFileSync(filesListPath, { encoding: 'utf-8' })) as string[]);
-      const addedFiles = Array.from(files).filter((filePath) => !watchingFiles.has(filePath));
-      const removedFiles = Array.from(watchingFiles).filter((filePath) => !files.has(filePath));
-      watcher.add(addedFiles);
-      addedFiles.forEach((filePath) => watchingFiles.add(filePath));
-      watcher.unwatch(removedFiles);
-      removedFiles.forEach((filePath) => watchingFiles.delete(filePath));
-    } else {
-      changedFiles.add(filePath);
-    }
-  });
-  watcher.on('unlink', (filePath) => {
-    if (filePath !== filesListPath) {
-      changedFiles.add(filePath);
-    }
-  });
+  // TODO Check if it works on windows with back slashes
+  watcher.on('change', (filePath) => storiesByFiles.set(`./${filePath}`, []));
+  watcher.on('unlink', (filePath) => storiesByFiles.set(`./${filePath}`, []));
 
-  // NOTE Update kinds after file with stories was changed
   addons.getChannel().on(Events.SET_STORIES, (data: SetStoriesData) => {
-    const storiesByFiles = new Map<string, StoryInput[]>();
-    const storyFiles = new Set<string>();
-    const changed = Array.from(changedFiles);
-
     const stories = isStorybookVersionLessThan(6) ? data.stories : flatStories(data);
-
-    Object.values(stories).forEach((story) => {
-      const { fileName } = story.parameters;
-      const absolutePath = changed.find((absolutePath) => absolutePath.endsWith(path.normalize(fileName)));
-
-      // TODO Stories are not removing because of lack dummy-hmr
-      storyFiles.add(fileName);
-      previousStoryFiles.delete(fileName);
-
-      if (absolutePath) {
-        if (!storiesByFiles.has(fileName)) storiesByFiles.set(fileName, []);
-        storiesByFiles.get(fileName)?.push(story);
-      }
-      // TODO Add debug output if path not found
+    const files = new Set(Object.values(stories).map((story) => story.parameters.fileName));
+    const addedFiles = Array.from(files).filter((filePath) => !watchingFiles.has(filePath));
+    const removedFiles = Array.from(watchingFiles).filter((filePath) => !files.has(filePath));
+    watcher.add(addedFiles);
+    addedFiles.forEach((filePath) => {
+      watchingFiles.add(filePath);
+      storiesByFiles.set(filePath, []);
     });
-    previousStoryFiles.forEach((fileName) => storiesByFiles.set(fileName, []));
-    previousStoryFiles = storyFiles;
-    changedFiles.clear();
+    watcher.unwatch(removedFiles);
+    removedFiles.forEach((filePath) => watchingFiles.delete(filePath));
+
+    Object.values(stories).forEach((story) => storiesByFiles.get(story.parameters.fileName)?.push(story));
     addons.getChannel().emit('storiesUpdated', storiesByFiles);
+    storiesByFiles = new Map<string, StoryInput[]>();
   });
 }
 
@@ -209,10 +179,14 @@ function loadStorybookBundle(
     channel.on('storiesUpdated', storiesListener);
 
     if (watch) {
-      watchStories(path.join(path.dirname(bundlePath), 'files.json'));
+      watchStories();
 
       subscribeOn('webpack', (message: WebpackMessage) => {
         if (message.type != 'rebuild succeeded') return;
+
+        Object.values(global.__CREEVEY_HMR_DATA__)
+          .filter(({ callback }) => callback)
+          .forEach(({ data, callback }) => callback(data));
 
         delete require.cache[bundlePath];
         require(bundlePath);

@@ -190,6 +190,9 @@
 
 - [x] Support Storybook 6.x
 - [x] ~~Add @babel/code-frame to output loader error~~ There is babel issue https://github.com/babel/babel/issues/8617
+- [ ] Store creevey storybook bundle in cache dir using find-cache-dir pkg
+- [ ] Cleanup nodejs storybook bundle
+- [ ] Support mdx stories
 - [ ] Transform to monorepo
   - [ ] creevey
   - [ ] chai-images
@@ -197,19 +200,17 @@
   - [ ] creevey-docker
   - [ ] creevey-storybook
   - [ ] examples
-- [ ] Store creevey storybook bundle in cache dir using find-cache-dir pkg
 - [ ] Add bootstrap script, that build and install current version into examples or use monorepo
 - [ ] Don't load any of addons
-- [ ] Support mdx stories
-- [x] Update Eslint to v7
-- [ ] Support run tests inside docker
 - [ ] Setup NODE_ENV to 'test'.
-- [ ] Simplify hot-reloading logic, for v6.x fixed removing tests issue
+- [ ] Add Storybook integration tests
+- [x] Update Eslint to v7
+- [x] Simplify hot-reloading logic, for v6.x fixed removing tests issue
 - [ ] Bugs
   - [x] IPC_CHANNEL_CLOSED error infinity loop, could reproduce with invalid gridUrl
   - [x] Error mocha instance already disposed in mocha@7.2
+  - [x] Tests not removing in hot-reloading process
   - [ ] Don't end all worker processes, especially if worker has errors
-  - [ ] Tests not removing in hot-reloading process
   - [ ] In multiple images tests output same test error for every image
   - [ ] Fix taking composite screenshots with hided scrollbar
     - Take `document.documentElement.clientWidth/Height` instead of window rect
@@ -217,6 +218,7 @@
     - Iterate be screen images and calculate resulting x/y coordinates for composite image
     - If image width/height greater than viewport width/height than scroll bar is captured
 - [ ] Features
+  - [ ] Support run tests inside docker
   - [ ] Add `init` cli option
   - [ ] Allow define saucelabs/browserstack-local init/dispose functions
   - [ ] Allow define custom localhost resolver in config
