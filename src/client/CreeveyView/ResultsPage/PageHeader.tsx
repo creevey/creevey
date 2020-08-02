@@ -34,7 +34,7 @@ interface PageHeaderProps {
   images?: Partial<{
     [name: string]: Images;
   }>;
-  errorMessage?: string;
+  errorMessage?: string | null;
   showViewModes: boolean;
   viewMode: ImagesViewMode;
   onImageChange: (name: string) => void;
@@ -83,7 +83,7 @@ export function PageHeader({
           ])
           .slice(0, -1)}
       </h1>
-      {errorMessage && (
+      {(images[imageName]?.error || errorMessage) && (
         <div
           css={css`
             margin-top: 8px;
@@ -101,7 +101,7 @@ export function PageHeader({
               line-height: 22px;
             `}
           >
-            {errorMessage}
+            {images[imageName]?.error || errorMessage}
           </pre>
         </div>
       )}

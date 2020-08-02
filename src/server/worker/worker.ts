@@ -7,7 +7,7 @@ import Mocha, { Context, MochaOptions } from 'mocha';
 import { Key } from 'selenium-webdriver';
 import { Config, Images, Options, BrowserConfig, WorkerMessage, TestWorkerMessage } from '../../types';
 import { emitMessage, subscribeOn } from '../../utils';
-import chaiImage from './chai-image';
+import chaiImage, { ImagesError } from './chai-image';
 import { getBrowser, switchStory } from './selenium';
 import { CreeveyReporter, TeamcityReporter } from './reporter';
 import { addTestsFromStories } from './helpers';
@@ -57,9 +57,13 @@ export default async function worker(
   const testScope: string[] = [];
 
   function runHandler(failures: number): void {
-    if (failures > 0 && error) {
-      const isTimeout = error.toLowerCase().includes('timeout');
-      const payload: { status: 'failed'; images: typeof images; error: string } = { status: 'failed', images, error };
+    if (failures > 0 && (error || Object.values(images).some((image) => image?.error != null))) {
+      const isTimeout = hasTimeout(error) || Object.values(images).some((image) => hasTimeout(image?.error));
+      const payload: { status: 'failed'; images: typeof images; error: string | null } = {
+        status: 'failed',
+        images,
+        error,
+      };
       emitMessage<WorkerMessage>(isTimeout ? { type: 'error', payload } : { type: 'test', payload });
     } else {
       emitMessage<WorkerMessage>({ type: 'test', payload: { status: 'success', images } });
@@ -176,14 +180,30 @@ export default async function worker(
     const runner = mocha.run(runHandler);
 
     // TODO How handle browser corruption?
-    runner.on(
-      'fail',
-      (_test, reason: unknown) =>
-        (error = reason instanceof Error ? reason.stack ?? reason.message : (reason as string)),
-    );
+    runner.on('fail', (_test, reason: unknown) => {
+      if (reason instanceof Error) {
+        const testError = reason as ImagesError;
+        if (testError.images != null) {
+          Object.keys(testError.images).forEach((imageName) => {
+            const image = images[imageName];
+            if (image != null) {
+              image.error = testError.images[imageName];
+            }
+          });
+        } else {
+          error = reason.stack ?? reason.message;
+        }
+      } else {
+        error = reason as string;
+      }
+    });
   });
 
   console.log('[CreeveyWorker]:', `Ready ${options.browser}:${process.pid}`);
 
   emitMessage<WorkerMessage>({ type: 'ready' });
+}
+
+function hasTimeout(str: string | null | undefined): boolean {
+  return str != null && str.toLowerCase().includes('timeout');
 }

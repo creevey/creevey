@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import { Runner, reporters, MochaOptions } from 'mocha';
 import { Images, isDefined } from '../../types';
+import { ImagesError } from './chai-image';
 
 interface ReporterOptions {
   reportDir: string;
@@ -23,13 +24,18 @@ export class CreeveyReporter extends reporters.Base {
     runner.on('pass', (test) =>
       console.log(`[${chalk.green('PASS')}:${topLevelSuite}:${process.pid}]`, chalk.cyan(test.titlePath().join('/'))),
     );
-    runner.on('fail', (test, error) =>
+    runner.on('fail', (test, error) => {
       console.log(
         `[${chalk.red('FAIL')}:${topLevelSuite}:${process.pid}]`,
         chalk.cyan(test.titlePath().join('/')),
-        error instanceof Error ? error.stack || error.message : error,
-      ),
-    );
+        '\n  ',
+        getErrors(
+          error,
+          (error, imageName) => `${chalk.bold(imageName)}:${error}`,
+          (error) => `${error.stack ?? error.message}`,
+        ).join('\n  '),
+      );
+    });
   }
 }
 
@@ -58,22 +64,21 @@ export class TeamcityReporter extends reporters.Base {
           .concat(name == topLevelSuite ? [] : [topLevelSuite])
           .map(this.escape)
           .join('/');
-        Object.values(image)
-          .filter(isDefined)
-          .forEach(
-            (fileName) => (
-              console.log(`##teamcity[publishArtifacts '${reportDir}/${filePath}/${fileName} => report/${filePath}']`),
-              console.log(
-                `##teamcity[testMetadata testName='${this.escape(
-                  test.title,
-                )}' type='image' value='report/${filePath}/${fileName}' flowId='${process.pid}']`,
-              )
-            ),
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { error, ...rest } = image;
+        (Object.values(rest) as Array<string | undefined>).filter(isDefined).forEach((fileName) => {
+          console.log(`##teamcity[publishArtifacts '${reportDir}/${filePath}/${fileName} => report/${filePath}']`);
+          console.log(
+            `##teamcity[testMetadata testName='${this.escape(
+              test.title,
+            )}' type='image' value='report/${filePath}/${fileName}' flowId='${process.pid}']`,
           );
+        });
       });
 
       // Output failed test as passed due TC don't support retry mechanic
       // https://teamcity-support.jetbrains.com/hc/en-us/community/posts/207216829-Count-test-as-successful-if-at-least-one-try-is-successful?page=1#community_comment_207394125
+
       willRetry()
         ? console.log(`##teamcity[testFinished name='${this.escape(test.title)}' flowId='${process.pid}']`)
         : console.log(
@@ -125,4 +130,25 @@ export class TeamcityReporter extends reporters.Base {
         .replace(/'/g, "|'")
     );
   };
+}
+
+function getErrors(
+  error: unknown,
+  imageErrorToString: (error: string, imageName: string) => string,
+  errorToString: (error: Error) => string,
+): string[] {
+  const errors = [];
+  if (error instanceof Error) {
+    const testError = error as ImagesError;
+    if (testError.images != null) {
+      Object.keys(testError.images).forEach((imageName) => {
+        errors.push(imageErrorToString(testError.images[imageName] ?? '', imageName));
+      });
+    } else {
+      errors.push(errorToString(error));
+    }
+  } else {
+    errors.push(error as string);
+  }
+  return errors;
 }

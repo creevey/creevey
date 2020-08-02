@@ -98,19 +98,40 @@ export default function (
       imageName?: string,
     ) {
       const actual = utils.flag(this, 'object') as string | Buffer;
-
-      await assertImage(typeof actual == 'string' ? Buffer.from(actual, 'base64') : actual, imageName);
+      try {
+        await assertImage(typeof actual == 'string' ? Buffer.from(actual, 'base64') : actual, imageName);
+      } catch (err) {
+        throw imageName && err instanceof Error ? createImageError({ [imageName]: err.stack }) : err;
+      }
     });
 
     utils.addMethod(Assertion.prototype, 'matchImages', async function matchImages(this: Record<string, unknown>) {
+      const errors = {};
       await Promise.all(
-        Object.entries<string | Buffer>(utils.flag(this, 'object')).map(([imageName, imageOrBase64]) =>
-          assertImage(
-            typeof imageOrBase64 == 'string' ? Buffer.from(imageOrBase64, 'base64') : imageOrBase64,
-            imageName,
-          ),
-        ),
+        Object.entries<string | Buffer>(utils.flag(this, 'object')).map(async ([imageName, imageOrBase64]) => {
+          try {
+            await assertImage(
+              typeof imageOrBase64 == 'string' ? Buffer.from(imageOrBase64, 'base64') : imageOrBase64,
+              imageName,
+            );
+          } catch (err) {
+            Object.assign(errors, { [imageName]: (err as Error).stack });
+          }
+        }),
       );
+      if (Object.keys(errors).length > 0) {
+        throw createImageError(errors);
+      }
     });
   };
+}
+
+function createImageError(imageErrors: Partial<{ [name: string]: string }>): ImagesError {
+  const error = new Error() as ImagesError;
+  error.images = imageErrors;
+  return error;
+}
+
+export interface ImagesError extends Error {
+  images: Partial<{ [name: string]: string }>;
 }

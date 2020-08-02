@@ -155,7 +155,7 @@ export type WorkerMessage =
   | { type: 'ready' }
   | {
       type: 'error';
-      payload: { status: 'failed'; error: string };
+      payload: { status: 'failed'; error: string | null };
     }
   | {
       type: 'test';
@@ -166,6 +166,7 @@ export interface Images {
   actual: string;
   expect?: string;
   diff?: string;
+  error?: string;
 }
 
 export type TestStatus = 'unknown' | 'pending' | 'running' | 'failed' | 'success';
@@ -175,7 +176,7 @@ export interface TestResult {
   // TODO Remove checks `name == browser` in TestResultsView
   // images?: Partial<{ [name: string]: Images }> | Images;
   images?: Partial<{ [name: string]: Images }>;
-  error?: string;
+  error?: string | null;
 }
 
 export interface Test {
