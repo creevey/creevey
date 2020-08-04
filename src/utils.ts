@@ -121,18 +121,15 @@ export function subscribeOn(
 
 export function shutdownWorkers(): void {
   emitMessage<'shutdown'>('shutdown');
-  // NOTE Some workers exit on SIGINT, we need to wait a little to kill the remaining
-  setTimeout(() =>
-    Object.values(cluster.workers)
-      .filter(isDefined)
-      .filter((worker) => worker.isConnected())
-      .forEach((worker) => {
-        const timeout = setTimeout(() => worker.kill(), 10000);
-        worker.on('disconnect', () => clearTimeout(timeout));
-        worker.send('shutdown');
-        worker.disconnect();
-      }),
-  );
+  Object.values(cluster.workers)
+    .filter(isDefined)
+    .filter((worker) => worker.isConnected())
+    .forEach((worker) => {
+      const timeout = setTimeout(() => worker.kill(), 10000);
+      worker.on('exit', () => clearTimeout(timeout));
+      worker.send('shutdown');
+      worker.disconnect();
+    });
 }
 
 export function getStorybookVersion(): string {

@@ -141,6 +141,8 @@ export default async function worker(
   const browserConfig = config.browsers[options.browser] as BrowserConfig;
   const browser = await getBrowser(config, browserConfig);
 
+  if (browser == null) return;
+
   const interval = setInterval(
     () =>
       void browser.getCurrentUrl().then((url) => {

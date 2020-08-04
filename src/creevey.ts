@@ -2,7 +2,7 @@ import cluster from 'cluster';
 import minimist from 'minimist';
 import chalk from 'chalk';
 import creevey from './server';
-import { Options, WorkerMessage, noop } from './types';
+import { Options, WorkerMessage } from './types';
 import { emitMessage, shutdownWorkers } from './utils';
 
 function shutdown(reason: unknown): void {
@@ -17,7 +17,6 @@ function shutdown(reason: unknown): void {
 
 process.on('uncaughtException', shutdown);
 process.on('unhandledRejection', shutdown);
-process.on('SIGINT', noop);
 
 const argv = minimist<Options>(process.argv.slice(2), {
   string: ['browser', 'storybookBundle', 'config', 'reporter', 'gridUrl', 'reportDir', 'screenDir'],

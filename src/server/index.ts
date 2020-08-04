@@ -1,6 +1,6 @@
 import cluster from 'cluster';
 import { readConfig, defaultBrowser } from '../config';
-import { Options } from '../types';
+import { Options, noop } from '../types';
 
 export default async function (options: Options): Promise<void> {
   const config = readConfig(options);
@@ -27,6 +27,8 @@ export default async function (options: Options): Promise<void> {
       if (!storybookBundle) throw new Error('Something went wrong');
 
       console.log('[CreeveyWorker]:', `Starting ${browser}:${process.pid}`);
+
+      process.on('SIGINT', noop);
 
       return (await import('./worker')).default(config, { ...options, browser, storybookBundle });
     }

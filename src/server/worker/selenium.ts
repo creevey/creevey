@@ -263,7 +263,14 @@ async function selectStory(browser: WebDriver, storyId: string, kind: string, st
   if (errorMessage) throw new Error(errorMessage);
 }
 
-export async function getBrowser(config: Config, browserConfig: BrowserConfig): Promise<WebDriver> {
+// TODO move to utils
+async function runSequence(seq: Array<() => unknown>, predicate: () => boolean): Promise<void> {
+  for (const fn of seq) {
+    if (predicate()) await fn();
+  }
+}
+
+export async function getBrowser(config: Config, browserConfig: BrowserConfig): Promise<WebDriver | null> {
   const {
     gridUrl = config.gridUrl,
     storybookUrl: address = config.storybookUrl,
@@ -275,25 +282,39 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
   void limit;
   void testRegex;
   let realAddress = address;
+  let browser: WebDriver | null = null;
+  let shuttingDown = false;
   if (LOCALHOST_REGEXP.test(address) && TESTKONTUR_REGEXP.test(gridUrl)) {
     realAddress = address.replace(LOCALHOST_REGEXP, await getRealIp());
   }
-  const browser = await new Builder().usingServer(gridUrl).withCapabilities(capabilities).build();
 
-  subscribeOn('shutdown', () => void browser.quit().catch(noop));
+  subscribeOn('shutdown', () => {
+    shuttingDown = true;
+    browser?.quit().catch(noop);
+    browser = null;
+  });
 
-  if (viewport) {
-    await resizeViewport(browser, viewport);
-  }
   try {
-    await browser.get(`${realAddress}/iframe.html`);
-    await browser.wait(until.elementLocated(By.css('#root')), 30000);
+    browser = await new Builder().usingServer(gridUrl).withCapabilities(capabilities).build();
+
+    await runSequence(
+      [
+        () => viewport && browser && resizeViewport(browser, viewport),
+        () => browser?.get(`${realAddress}/iframe.html`),
+        () => browser?.wait(until.elementLocated(By.css('#root')), 30000),
+        () => browser && disableAnimations(browser),
+      ],
+      () => !shuttingDown,
+    );
   } catch (originalError) {
+    if (shuttingDown) {
+      browser?.quit().catch(noop);
+      return null;
+    }
     const error = new Error(`Can't load storybook root page by URL ${realAddress}/iframe.html`);
     if (originalError instanceof Error) error.stack = originalError.stack;
     throw error;
   }
-  await disableAnimations(browser);
 
   return browser;
 }

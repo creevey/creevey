@@ -120,7 +120,7 @@ export default class Pool extends EventEmitter {
 
     if (message.type != 'error') return worker;
 
-    worker.disconnect();
+    this.gracefullyKill(worker);
 
     if (retry == FORK_RETRIES) return message.payload;
     return this.forkWorker(retry + 1);
@@ -144,7 +144,7 @@ export default class Pool extends EventEmitter {
 
   private gracefullyKill(worker: Worker): void {
     const timeout = setTimeout(() => worker.kill(), 10000);
-    worker.on('disconnect', () => clearTimeout(timeout));
+    worker.on('exit', () => clearTimeout(timeout));
     worker.send('shutdown');
     worker.disconnect();
   }
