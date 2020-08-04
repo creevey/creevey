@@ -1,3 +1,15 @@
+# [0.7.0-beta.0](https://github.com/wKich/creevey/compare/v0.6.4...v0.7.0-beta.0) (2020-08-04)
+
+### Bug Fixes
+
+- 🐛 gracefully end worker processes ([e2d2548](https://github.com/wKich/creevey/commit/e2d254882ca8fa993d20725dd3132c6069f185f5))
+- 🐛 remove scroll when change image in swap mode ([7ccc42c](https://github.com/wKich/creevey/commit/7ccc42cc36b3d1fef5964fcc60e40899b6d995fc))
+- 🐛 tests hot reloading ([b96bfa9](https://github.com/wKich/creevey/commit/b96bfa9e9509d67dd685ee30c26b37b96eb20289))
+
+### Features
+
+- 🎸 support storybook v6.x ([9bb7397](https://github.com/wKich/creevey/commit/9bb7397b3e0dbc88f7f212aab4ee807ae25e8d64))
+
 ## [0.6.4](https://github.com/wKich/creevey/compare/v0.6.3...v0.6.4) (2020-07-27)
 
 ### Bug Fixes
