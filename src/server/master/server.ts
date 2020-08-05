@@ -31,9 +31,7 @@ export default function server(api: CreeveyApi, reportDir: string, port: number)
 
   server.listen(port, () => console.log('[CreeveyServer]:', `Started on http://localhost:${port}`));
 
-  // TODO Subscribe on shutdown, close server and websockets
   subscribeOn('shutdown', () => {
-    console.log('[CreeveyServer]: Closing');
     server.close();
     wss.close();
   });

@@ -2,8 +2,8 @@ import path from 'path';
 import { CreeveyConfig } from './src/types';
 
 const config: CreeveyConfig = {
-  gridUrl: 'http://192.168.0.106:4444/wd/hub',
-  storybookUrl: 'http://192.168.248.32:6006',
+  gridUrl: 'http://localhost:4444/wd/hub',
+  storybookUrl: 'http://192.168.0.101:6006',
   screenDir: path.join(__dirname, 'stories', 'images'),
   browsers: {
     chrome: {

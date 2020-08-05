@@ -210,7 +210,7 @@
   - [x] IPC_CHANNEL_CLOSED error infinity loop, could reproduce with invalid gridUrl
   - [x] Error mocha instance already disposed in mocha@7.2
   - [x] Tests not removing in hot-reloading process
-  - [ ] Don't end all worker processes, especially if worker has errors
+  - [x] Don't end all worker processes, especially if worker has errors
   - [ ] In multiple images tests output same test error for every image
   - [ ] Fix taking composite screenshots with hided scrollbar
     - Take `document.documentElement.clientWidth/Height` instead of window rect
@@ -241,11 +241,6 @@
 - [ ] Drop storiesOf and Storybook v4.x support
   - [ ] Could we drop more entry points from webpack config? (generated entry for example)
 - [ ] Creevey as Addon PoC
-- [ ] Add Strobybook integration tests
-- [ ] Split packages in monorepo
-  - [ ] `chai-images`
-  - [ ] `creevey`
-  - [ ] `creevey-selenium` (put gridUrl as option)
 - [ ] Support other browser automation tools
   - [ ] Playwright
   - [ ] Puppeteer
@@ -257,7 +252,6 @@
 - [ ] Improve css filter for blend view, try to reach pixelmatch output
 - [ ] Profile tests loading process (maybe we don't need workers at all)
 - [ ] Don't reset scroll on swap images
-- [ ] Support config in ES Modules
 - [ ] Always save images even if test with matchImages failed
 - [ ] Add liftoff https://github.com/js-cli/js-liftoff
 - [ ] Correctly resize images in views using correct proportions (smaller image should shrink if larger shrink too, max-width/max-height doesn't work)
@@ -280,7 +274,7 @@
   - [x] Add linting job
   - [ ] Allow run ui tests in cli by `yarn test:ui`
 - [ ] Storybook integration
-  - [ ] Support stories separators https://storybook.js.org/docs/basics/writing-stories/#story-hierarchy
+  - [x] ~~Support stories separators https://storybook.js.org/docs/basics/writing-stories/#story-hierarchy~~
   - [ ] Support declarative 6.0 decorators format, like this https://github.com/storybookjs/storybook/tree/master/addons/knobs/src/preset
 - [ ] Rewrite to use `worker_threads` instead of `cluster` to allow use shared memory
 - [ ] Support mocha options for workers
