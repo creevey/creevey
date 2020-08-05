@@ -35,6 +35,12 @@ function reportDataModule<T>(data: T): string {
 }
 
 export default async function (config: Config, options: Options): Promise<void> {
+  if (config.hooks.after) {
+    process.on('beforeExit', config.hooks.after);
+  }
+  if (config.hooks.before) {
+    await config.hooks.before();
+  }
   const runner = await master(config, options.ui);
 
   if (options.saveReport) {

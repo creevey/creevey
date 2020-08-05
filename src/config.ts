@@ -13,6 +13,7 @@ export const defaultConfig: Omit<Config, 'gridUrl'> = {
   maxRetries: 0,
   diffOptions: { threshold: 0, includeAA: true },
   browsers: { [defaultBrowser]: true },
+  hooks: {},
 };
 
 function normalizeBrowserConfig(name: string, config: Browser): BrowserConfig {

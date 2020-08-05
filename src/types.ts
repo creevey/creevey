@@ -78,6 +78,11 @@ export type BrowserConfig = Capabilities & {
 
 export type Browser = boolean | string | BrowserConfig;
 
+export interface HookConfig {
+  before?: () => unknown;
+  after?: () => unknown;
+}
+
 export interface Config {
   /**
    * Url to Selenium grid hub or standalone selenium instance
@@ -118,6 +123,9 @@ export interface Config {
    * @default { chrome: true }
    */
   browsers: { [key: string]: Browser };
+  /**
+   */
+  hooks: HookConfig;
 }
 
 export type CreeveyConfig = Config | Partial<Omit<Config, 'gridUrl'>>;
