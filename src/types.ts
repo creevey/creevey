@@ -187,6 +187,10 @@ export interface TestResult {
   error?: string | null;
 }
 
+export interface ImagesError extends Error {
+  images: string | Partial<{ [name: string]: string }>;
+}
+
 export interface Test {
   id: string;
   // NOTE example: [browser, test, story, kind],
@@ -300,4 +304,8 @@ export function isObject(x: unknown): x is Record<string, unknown> {
 
 export function isString(x: unknown): x is string {
   return typeof x == 'string';
+}
+
+export function isImageError(error: unknown): error is ImagesError {
+  return error instanceof Error && 'images' in error;
 }

@@ -211,7 +211,7 @@
   - [x] Error mocha instance already disposed in mocha@7.2
   - [x] Tests not removing in hot-reloading process
   - [x] Don't end all worker processes, especially if worker has errors
-  - [ ] In multiple images tests output same test error for every image
+  - [x] In multiple images tests output same test error for every image
   - [ ] Fix taking composite screenshots with hided scrollbar
     - Take `document.documentElement.clientWidth/Height` instead of window rect
     - For each screenshot after scroll, take elementRect coordinates
@@ -220,7 +220,7 @@
 - [ ] Features
   - [ ] Support run tests inside docker
   - [ ] Add `init` cli option
-  - [ ] Allow define saucelabs/browserstack-local init/dispose functions
+  - [x] Allow define saucelabs/browserstack-local init/dispose functions
   - [ ] Allow define custom localhost resolver in config
   - [ ] Add `only` option as opposite for `skip`
   - [ ] Allow to ignore elements in capturing screenshot

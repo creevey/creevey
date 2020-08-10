@@ -1,7 +1,7 @@
 import { PNG } from 'pngjs';
 import pixelmatch from 'pixelmatch';
 
-import { DiffOptions } from '../../types';
+import { DiffOptions, ImagesError } from '../../types';
 
 function normalizeImageSize(image: PNG, width: number, height: number): Buffer {
   const normalizedImage = Buffer.alloc(4 * width * height);
@@ -71,14 +71,14 @@ export default function (
   diffOptions: DiffOptions,
 ) {
   return function chaiImage({ Assertion }: Chai.ChaiStatic, utils: Chai.ChaiUtils): void {
-    async function assertImage(actual: Buffer, imageName?: string): Promise<void> {
+    async function assertImage(actual: Buffer, imageName?: string): Promise<string | void> {
       let onCompare: (actual: Buffer, expect?: Buffer, diff?: Buffer) => Promise<void> = () => Promise.resolve();
       let expected = await getExpected(imageName);
       if (!(expected instanceof Buffer) && expected != null) ({ expected, onCompare } = expected);
 
       if (expected == null) {
         await onCompare(actual);
-        throw new Error(imageName ? `Expected image '${imageName}' does not exists` : 'Expected image does not exists');
+        return imageName ? `Expected image '${imageName}' does not exists` : 'Expected image does not exists';
       }
 
       if (actual.equals(expected)) return await onCompare(actual);
@@ -89,8 +89,7 @@ export default function (
 
       await onCompare(actual, expected, diff);
 
-      // TODO rewrite message
-      throw new Error(imageName ? `Expected image '${imageName}' to match` : 'Expected image to match');
+      return imageName ? `Expected image '${imageName}' to match` : 'Expected image to match';
     }
 
     utils.addMethod(Assertion.prototype, 'matchImage', async function matchImage(
@@ -98,24 +97,30 @@ export default function (
       imageName?: string,
     ) {
       const actual = utils.flag(this, 'object') as string | Buffer;
-      try {
-        await assertImage(typeof actual == 'string' ? Buffer.from(actual, 'base64') : actual, imageName);
-      } catch (err) {
-        throw imageName && err instanceof Error ? createImageError({ [imageName]: err.stack }) : err;
+      const errorMessage = await assertImage(
+        typeof actual == 'string' ? Buffer.from(actual, 'base64') : actual,
+        imageName,
+      );
+      if (errorMessage) {
+        throw createImageError(imageName ? { [imageName]: errorMessage } : errorMessage);
       }
     });
 
     utils.addMethod(Assertion.prototype, 'matchImages', async function matchImages(this: Record<string, unknown>) {
-      const errors = {};
+      const errors: { [imageName: string]: string } = {};
       await Promise.all(
         Object.entries<string | Buffer>(utils.flag(this, 'object')).map(async ([imageName, imageOrBase64]) => {
+          let errorMessage: string | void;
           try {
-            await assertImage(
+            errorMessage = await assertImage(
               typeof imageOrBase64 == 'string' ? Buffer.from(imageOrBase64, 'base64') : imageOrBase64,
               imageName,
             );
-          } catch (err) {
-            Object.assign(errors, { [imageName]: (err as Error).stack });
+          } catch (error) {
+            errorMessage = (error as Error).stack;
+          }
+          if (errorMessage) {
+            errors[imageName] = errorMessage;
           }
         }),
       );
@@ -126,12 +131,8 @@ export default function (
   };
 }
 
-function createImageError(imageErrors: Partial<{ [name: string]: string }>): ImagesError {
-  const error = new Error() as ImagesError;
+function createImageError(imageErrors: string | Partial<{ [name: string]: string }>): ImagesError {
+  const error = new Error('Expected image to match') as ImagesError;
   error.images = imageErrors;
   return error;
-}
-
-export interface ImagesError extends Error {
-  images: Partial<{ [name: string]: string }>;
 }

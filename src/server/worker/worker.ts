@@ -5,9 +5,9 @@ import chai from 'chai';
 import chalk from 'chalk';
 import Mocha, { Context, MochaOptions } from 'mocha';
 import { Key } from 'selenium-webdriver';
-import { Config, Images, Options, BrowserConfig, WorkerMessage, TestWorkerMessage } from '../../types';
+import { Config, Images, Options, BrowserConfig, WorkerMessage, TestWorkerMessage, isImageError } from '../../types';
 import { emitMessage, subscribeOn } from '../../utils';
-import chaiImage, { ImagesError } from './chai-image';
+import chaiImage from './chai-image';
 import { getBrowser, switchStory } from './selenium';
 import { CreeveyReporter, TeamcityReporter } from './reporter';
 import { addTestsFromStories } from './helpers';
@@ -183,20 +183,19 @@ export default async function worker(
 
     // TODO How handle browser corruption?
     runner.on('fail', (_test, reason: unknown) => {
-      if (reason instanceof Error) {
-        const testError = reason as ImagesError;
-        if (testError.images != null) {
-          Object.keys(testError.images).forEach((imageName) => {
-            const image = images[imageName];
-            if (image != null) {
-              image.error = testError.images[imageName];
-            }
-          });
-        } else {
-          error = reason.stack ?? reason.message;
-        }
-      } else {
+      if (!(reason instanceof Error)) {
         error = reason as string;
+      } else if (!isImageError(reason)) {
+        error = reason.stack ?? reason.message;
+      } else if (typeof reason.images == 'string') {
+        const image = images[testScope.slice(-1)[0]];
+        if (image) image.error = reason.images;
+      } else {
+        const imageErrors = reason.images;
+        Object.keys(imageErrors).forEach((imageName) => {
+          const image = images[imageName];
+          if (image) image.error = imageErrors[imageName];
+        });
       }
     });
   });

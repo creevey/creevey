@@ -1,7 +1,6 @@
 import chalk from 'chalk';
 import { Runner, reporters, MochaOptions } from 'mocha';
-import { Images, isDefined } from '../../types';
-import { ImagesError } from './chai-image';
+import { Images, isDefined, isImageError } from '../../types';
 
 interface ReporterOptions {
   reportDir: string;
@@ -31,7 +30,7 @@ export class CreeveyReporter extends reporters.Base {
         '\n  ',
         getErrors(
           error,
-          (error, imageName) => `${chalk.bold(imageName)}:${error}`,
+          (error, imageName) => `${chalk.bold(imageName ?? topLevelSuite)}:${error}`,
           (error) => `${error.stack ?? error.message}`,
         ).join('\n  '),
       );
@@ -134,21 +133,22 @@ export class TeamcityReporter extends reporters.Base {
 
 function getErrors(
   error: unknown,
-  imageErrorToString: (error: string, imageName: string) => string,
+  imageErrorToString: (error: string, imageName?: string) => string,
   errorToString: (error: Error) => string,
 ): string[] {
   const errors = [];
-  if (error instanceof Error) {
-    const testError = error as ImagesError;
-    if (testError.images != null) {
-      Object.keys(testError.images).forEach((imageName) => {
-        errors.push(imageErrorToString(testError.images[imageName] ?? '', imageName));
-      });
-    } else {
-      errors.push(errorToString(error));
-    }
-  } else {
+  if (!(error instanceof Error)) {
     errors.push(error as string);
+  } else if (!isImageError(error)) {
+    errors.push(errorToString(error));
+  } else if (typeof error.images == 'string') {
+    errors.push(imageErrorToString(error.images));
+  } else {
+    const imageErrors = error.images;
+    Object.keys(imageErrors).forEach((imageName) => {
+      errors.push(imageErrorToString(imageErrors[imageName] ?? '', imageName));
+    });
   }
+
   return errors;
 }
