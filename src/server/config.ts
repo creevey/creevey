@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { Config, Browser, BrowserConfig, Options, isDefined } from './types';
+import { Config, Browser, BrowserConfig, Options, isDefined } from '../types';
 import { requireConfig } from './utils';
 
 export const defaultBrowser = 'chrome';

@@ -3,7 +3,7 @@ import { PNG } from 'pngjs';
 import { Context, Test, Suite } from 'mocha';
 import { Builder, By, until, WebDriver, Origin } from 'selenium-webdriver';
 import { Config, BrowserConfig, StoryInput, CreeveyStoryParams, noop } from '../../types';
-import { subscribeOn } from '../../utils';
+import { subscribeOn } from '../utils';
 
 declare global {
   interface Window {

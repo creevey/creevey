@@ -1,7 +1,7 @@
 import cluster from 'cluster';
 import { EventEmitter } from 'events';
 import { Worker, Config, TestResult, BrowserConfig, WorkerMessage, TestStatus } from '../../types';
-import { subscribeOn } from '../../utils';
+import { subscribeOn } from '../utils';
 
 const FORK_RETRIES = 5;
 

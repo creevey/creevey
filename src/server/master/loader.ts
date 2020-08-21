@@ -6,7 +6,7 @@ import traverse, { NodePath, Binding } from '@babel/traverse';
 import generate from '@babel/generator';
 import * as t from '@babel/types';
 import { loader } from 'webpack';
-import { isStorybookVersionLessThan } from '../../utils';
+import { isStorybookVersionLessThan } from '../utils';
 import { isDefined } from '../../types';
 
 function tryParse(source: string, options: OptionObject): { ast?: t.File; done: boolean } {

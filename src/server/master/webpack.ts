@@ -3,7 +3,7 @@ import path from 'path';
 import webpack, { Configuration } from 'webpack';
 import nodeExternals from 'webpack-node-externals';
 import EventHooksPlugin from 'event-hooks-webpack-plugin';
-import { emitMessage, extensions as fallbackExtensions, subscribeOn } from '../../utils';
+import { emitMessage, extensions as fallbackExtensions, subscribeOn } from '../utils';
 import { Config, WebpackMessage, Options, noop } from '../../types';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment

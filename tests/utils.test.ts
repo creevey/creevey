@@ -1,6 +1,6 @@
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
-import { shouldSkip } from '../src/utils';
+import { shouldSkip } from '../src/server/utils';
 
 describe('shouldSkip', () => {
   describe('kinds', () => {

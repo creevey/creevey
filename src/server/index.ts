@@ -1,5 +1,5 @@
 import cluster from 'cluster';
-import { readConfig, defaultBrowser } from '../config';
+import { readConfig, defaultBrowser } from './config';
 import { Options, noop } from '../types';
 
 export default async function (options: Options): Promise<void> {

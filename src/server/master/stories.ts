@@ -1,6 +1,6 @@
 import cluster from 'cluster';
 import { WebpackMessage } from '../../types';
-import { emitMessage } from '../../utils';
+import { emitMessage } from '../utils';
 
 export function startWebpackCompiler(): Promise<string> {
   return new Promise((resolve, reject) => {

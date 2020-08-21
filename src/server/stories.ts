@@ -18,7 +18,7 @@ import {
   WebpackMessage,
   CreeveyTestFunction,
   SetStoriesData,
-} from './types';
+} from '../types';
 import { shouldSkip, subscribeOn, isStorybookVersionLessThan } from './utils';
 import { mergeWith } from 'lodash';
 

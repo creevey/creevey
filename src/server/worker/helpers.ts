@@ -1,6 +1,6 @@
 import { Suite, Context, Test } from 'mocha';
 import { isDefined, ServerTest } from '../../types';
-import { loadTestsFromStories } from '../../stories';
+import { loadTestsFromStories } from '../stories';
 
 function findOrCreateSuite(name: string, parent: Suite): Suite {
   const suite = parent.suites.find(({ title }) => title == name) || new Suite(name, parent.ctx);

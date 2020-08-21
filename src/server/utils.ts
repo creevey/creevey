@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import cluster from 'cluster';
-import { SkipOptions, isDefined, WebpackMessage, TestWorkerMessage } from './types';
+import { SkipOptions, isDefined, WebpackMessage, TestWorkerMessage } from '../types';
 
 export const extensions = ['.js', '.jsx', '.ts', '.tsx', '.mjs', '.es', '.es6'];
 

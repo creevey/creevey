@@ -5,7 +5,7 @@ import master from './master';
 import creeveyServer from './server';
 import creeveyApi from './api';
 import { Config, Options, isDefined } from '../../types';
-import { shutdownWorkers } from '../../utils';
+import { shutdownWorkers } from '../utils';
 
 const copyFileAsync = promisify(copyFile);
 const readdirAsync = promisify(readdir);

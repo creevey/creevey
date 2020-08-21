@@ -3,7 +3,7 @@ import minimist from 'minimist';
 import chalk from 'chalk';
 import creevey from './server';
 import { Options, WorkerMessage } from './types';
-import { emitMessage, shutdownWorkers } from './utils';
+import { emitMessage, shutdownWorkers } from './server/utils';
 
 function shutdown(reason: unknown): void {
   const error = reason instanceof Error ? reason.stack ?? reason.message : (reason as string);
