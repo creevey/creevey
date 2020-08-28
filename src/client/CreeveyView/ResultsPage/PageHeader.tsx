@@ -37,6 +37,7 @@ interface PageHeaderProps {
   errorMessage?: string | null;
   showViewModes: boolean;
   viewMode: ImagesViewMode;
+  showError?: boolean;
   onImageChange: (name: string) => void;
   onViewModeChange: (viewMode: ImagesViewMode) => void;
 }
@@ -47,6 +48,7 @@ export function PageHeader({
   errorMessage,
   showViewModes,
   viewMode,
+  showError,
   onImageChange,
   onViewModeChange,
 }: PageHeaderProps): JSX.Element {
@@ -55,6 +57,7 @@ export function PageHeader({
 
   const handleImageChange = (name: string): void => (setImageName(name), onImageChange(name));
   const handleViewModeChange = (mode: string): void => onViewModeChange(mode as ImagesViewMode);
+  const error = showError ? images[imageName]?.error || errorMessage : null;
 
   return (
     <div
@@ -83,7 +86,7 @@ export function PageHeader({
           ])
           .slice(0, -1)}
       </h1>
-      {(images[imageName]?.error || errorMessage) && (
+      {error && (
         <div
           css={css`
             margin-top: 8px;
@@ -101,7 +104,7 @@ export function PageHeader({
               line-height: 22px;
             `}
           >
-            {images[imageName]?.error || errorMessage}
+            {error}
           </pre>
         </div>
       )}

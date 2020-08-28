@@ -50,6 +50,7 @@ export function ResultsPage({ id, path, results = [], approved = {} }: TestResul
       <PageHeader
         title={path}
         images={result.images}
+        showError={canApprove}
         errorMessage={result.error}
         showViewModes={hasDiffAndExpect}
         viewMode={viewMode}
