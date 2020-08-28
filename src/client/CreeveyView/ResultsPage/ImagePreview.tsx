@@ -10,14 +10,15 @@ interface ImageSwapProps {
   isActive: boolean;
   onClick: (imageName: string) => void;
   imageName: string;
+  error?: boolean;
 }
 
-export function ImagePreview({ isActive, onClick, imageName, url }: ImageSwapProps): JSX.Element {
+export function ImagePreview({ isActive, onClick, imageName, url, error }: ImageSwapProps): JSX.Element {
   const handleClick = (): void => onClick(imageName);
 
   return (
     <Hint text={imageName}>
-      <Button checked={isActive} onClick={handleClick}>
+      <Button checked={isActive} onClick={handleClick} error={error && !isActive}>
         <span
           css={css`
             display: flex;

@@ -32,6 +32,14 @@ export function ResultsPage({ id, path, results = [], approved = {} }: TestResul
   const image = result.images?.[imageName];
   const canApprove = Boolean(image && approved[imageName] != retry - 1 && result.status != 'success');
   const hasDiffAndExpect = canApprove && Boolean(image?.diff && image.expect);
+  const imagesWithError = result.images
+    ? Object.keys(result.images).filter(
+        (imageName) =>
+          result.status != 'success' &&
+          approved[imageName] != retry - 1 &&
+          (result.images || {})[imageName]?.error != null,
+      )
+    : [];
 
   const handleApprove = (): void => onImageApprove(id, retry - 1, imageName);
   const handleChangeViewMode = (mode: ImagesViewMode): void => {
@@ -50,12 +58,12 @@ export function ResultsPage({ id, path, results = [], approved = {} }: TestResul
       <PageHeader
         title={path}
         images={result.images}
-        showError={canApprove}
         errorMessage={result.error}
         showViewModes={hasDiffAndExpect}
         viewMode={viewMode}
         onViewModeChange={handleChangeViewMode}
         onImageChange={setImageName}
+        imagesWithError={imagesWithError}
       />
       <div
         css={css`
