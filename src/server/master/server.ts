@@ -5,7 +5,7 @@ import serve from 'koa-static';
 import mount from 'koa-mount';
 import WebSocket from 'ws';
 import { CreeveyApi } from './api';
-import { subscribeOn } from '../utils';
+import { subscribeOn } from '../messages';
 
 export default function server(api: CreeveyApi, reportDir: string, port: number): void {
   const app = new Koa();

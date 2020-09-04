@@ -3,7 +3,7 @@ import { PNG } from 'pngjs';
 import { Context, Test, Suite } from 'mocha';
 import { Builder, By, until, WebDriver, Origin } from 'selenium-webdriver';
 import { Config, BrowserConfig, StoryInput, CreeveyStoryParams, noop } from '../../types';
-import { subscribeOn } from '../utils';
+import { subscribeOn } from '../messages';
 
 declare global {
   interface Window {
@@ -275,12 +275,10 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
     gridUrl = config.gridUrl,
     storybookUrl: address = config.storybookUrl,
     limit,
-    testRegex,
     viewport,
     ...capabilities
   } = browserConfig;
   void limit;
-  void testRegex;
   let realAddress = address;
   let browser: WebDriver | null = null;
   let shuttingDown = false;

@@ -212,12 +212,14 @@
   - [x] Tests not removing in hot-reloading process
   - [x] Don't end all worker processes, especially if worker has errors
   - [x] In multiple images tests output same test error for every image
+  - [ ] Data from report sometimes not loading
   - [ ] Fix taking composite screenshots with hided scrollbar
     - Take `document.documentElement.clientWidth/Height` instead of window rect
     - For each screenshot after scroll, take elementRect coordinates
     - Iterate be screen images and calculate resulting x/y coordinates for composite image
     - If image width/height greater than viewport width/height than scroll bar is captured
 - [ ] Features
+  - [ ] Easy way to ignore stories/kinds from UI
   - [ ] Support run tests inside docker
   - [ ] Add `init` cli option
   - [x] Allow define saucelabs/browserstack-local init/dispose functions

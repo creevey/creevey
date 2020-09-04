@@ -2,13 +2,13 @@ import { rmdirSync } from 'fs';
 import path from 'path';
 import webpack, { Configuration } from 'webpack';
 import nodeExternals from 'webpack-node-externals';
-import EventHooksPlugin from 'event-hooks-webpack-plugin';
-import { emitMessage, extensions as fallbackExtensions, subscribeOn } from '../utils';
-import { Config, WebpackMessage, Options, noop } from '../../types';
+import { extensions as fallbackExtensions } from '../utils';
+import { Config, Options, noop } from '../../types';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import loadStorybookWebpackConfig from '@storybook/core/dist/server/config';
+import { emitWebpackMessage, subscribeOn } from '../messages';
 
 let isInitiated = false;
 let filePath = 'storybook.js';
@@ -41,9 +41,10 @@ function tryDetectStorybookFramework(): string | undefined {
 }
 
 // TODO Output summary of success builds
+// TODO Don't fail on failed build
 function handleWebpackBuild(error: Error, stats: webpack.Stats): void {
   if (error || !stats || stats.hasErrors()) {
-    emitMessage<WebpackMessage>({ type: isInitiated ? 'rebuild failed' : 'failed' });
+    emitWebpackMessage({ type: isInitiated ? 'rebuild failed' : 'fail' });
     console.error('=> Failed to build the preview'); // TODO Change message
 
     if (error) return console.error(error.message);
@@ -60,9 +61,9 @@ function handleWebpackBuild(error: Error, stats: webpack.Stats): void {
 
   if (!isInitiated) {
     isInitiated = true;
-    emitMessage<WebpackMessage>({ type: 'ready', payload: { filePath } });
+    emitWebpackMessage({ type: 'success', payload: { filePath } });
   } else {
-    emitMessage<WebpackMessage>({ type: 'rebuild succeeded' });
+    emitWebpackMessage({ type: 'rebuild succeeded' });
   }
 
   return;
@@ -134,22 +135,13 @@ export default async function compile(config: Config, { debug, ui }: Options): P
     // TODO Don't work well with monorepos
     nodeExternals({ modulesDir: storybookParentDirectory }),
   ];
-  storybookWebpackConfig.plugins?.push(
-    new EventHooksPlugin({
-      invalid() {
-        emitMessage<WebpackMessage>({ type: 'rebuild started' });
-      },
-    }),
-  );
   storybookWebpackConfig.performance = false;
 
   const storybookWebpackCompiler = webpack(storybookWebpackConfig);
   if (ui) {
     const watcher = storybookWebpackCompiler.watch({}, handleWebpackBuild);
 
-    subscribeOn('shutdown', () => {
-      watcher.close(noop);
-    });
+    subscribeOn('shutdown', () => watcher.close(noop));
   } else {
     storybookWebpackCompiler.run(handleWebpackBuild);
   }

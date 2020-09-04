@@ -1,7 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 import cluster from 'cluster';
-import { SkipOptions, isDefined, WebpackMessage, TestWorkerMessage } from '../types';
+import { SkipOptions, isDefined } from '../types';
+import { emitShutdownMessage, sendShutdownMessage } from './messages';
 
 export const extensions = ['.js', '.jsx', '.ts', '.tsx', '.mjs', '.es', '.es6'];
 
@@ -87,47 +88,15 @@ export function requireConfig<T>(configPath: string): T {
   return configModule && configModule.__esModule ? configModule.default : configModule;
 }
 
-export function emitMessage<T>(message: T): boolean {
-  if (cluster.isWorker && !process.connected) return false;
-  return (
-    process.send?.call(process, message) ??
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    // NOTE wrong typings `process.emit` return boolean
-    process.emit('message', message)
-  );
-}
-
-export function subscribeOn(type: 'tests', handler: (message: TestWorkerMessage) => void): void;
-export function subscribeOn(type: 'webpack', handler: (message: WebpackMessage) => void): void;
-export function subscribeOn(type: 'shutdown', handler: (message: 'shutdown') => void): void;
-
-export function subscribeOn(
-  type: 'tests' | 'webpack' | 'shutdown',
-  handler:
-    | ((message: TestWorkerMessage) => void)
-    | ((message: WebpackMessage) => void)
-    | ((message: 'shutdown') => void),
-): void {
-  process.on('message', (message: TestWorkerMessage | WebpackMessage | 'shutdown') => {
-    if (type == 'tests' && typeof message == 'object' && 'id' in message)
-      return (handler as (message: TestWorkerMessage) => void)(message);
-    if (type == 'webpack' && typeof message == 'object' && 'type' in message && typeof message.type == 'string')
-      return (handler as (message: WebpackMessage) => void)(message);
-    if (type == 'shutdown' && typeof message == 'string' && message == 'shutdown')
-      return (handler as (message: 'shutdown') => void)(message);
-  });
-}
-
 export function shutdownWorkers(): void {
-  emitMessage<'shutdown'>('shutdown');
+  emitShutdownMessage();
   Object.values(cluster.workers)
     .filter(isDefined)
     .filter((worker) => worker.isConnected())
     .forEach((worker) => {
       const timeout = setTimeout(() => worker.kill(), 10000);
       worker.on('exit', () => clearTimeout(timeout));
-      worker.send('shutdown');
+      sendShutdownMessage(worker);
       worker.disconnect();
     });
 }

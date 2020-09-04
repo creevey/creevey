@@ -72,7 +72,6 @@ export type BrowserConfig = Capabilities & {
   limit?: number;
   gridUrl?: string;
   storybookUrl?: string;
-  testRegex?: RegExp;
   viewport?: { width: number; height: number };
 };
 
@@ -124,6 +123,7 @@ export interface Config {
    */
   browsers: { [key: string]: Browser };
   /**
+   * Hooks that allow run custom script before and after creevey start
    */
   hooks: HookConfig;
 }
@@ -146,29 +146,41 @@ export interface Options {
   saveReport?: boolean;
 }
 
-export type TestWorkerMessage = { id: string; path: string[]; retries: number };
+export type WorkerMessage = { type: 'ready'; payload?: never } | { type: 'error'; payload: { error: string } };
+
+export type TestMessage =
+  | { type: 'start'; payload: { id: string; path: string[]; retries: number } }
+  | { type: 'end'; payload: TestResult };
 
 export type WebpackMessage =
-  | { type: 'ready'; payload: { filePath: string } }
-  | { type: 'failed' }
-  | { type: 'rebuild started' }
-  | { type: 'rebuild succeeded' }
-  | { type: 'rebuild failed' };
+  | { type: 'success'; payload: { filePath: string } }
+  | { type: 'fail'; payload?: never }
+  | { type: 'rebuild succeeded'; payload?: never }
+  | { type: 'rebuild failed'; payload?: never };
+
+export type DockerMessage =
+  | { type: 'start'; payload: { browser: string; pid: number } }
+  | { type: 'success'; payload: { gridUrl: string } }
+  | { type: 'fail'; payload?: never };
+
+export type ShutdownMessage = unknown;
+
+export type ProcessMessage =
+  | (WorkerMessage & { scope: 'worker' })
+  | (TestMessage & { scope: 'test' })
+  | (WebpackMessage & { scope: 'webpack' })
+  | (DockerMessage & { scope: 'docker' })
+  | (ShutdownMessage & { scope: 'shutdown' });
+
+export type WorkerHandler = (message: WorkerMessage) => void;
+export type TestHandler = (message: TestMessage) => void;
+export type WebpackHandler = (message: WebpackMessage) => void;
+export type DockerHandler = (message: DockerMessage) => void;
+export type ShutdownHandler = (message: ShutdownMessage) => void;
 
 export interface Worker extends ClusterWorker {
   isRunning?: boolean;
 }
-
-export type WorkerMessage =
-  | { type: 'ready' }
-  | {
-      type: 'error';
-      payload: { status: 'failed'; error: string | null };
-    }
-  | {
-      type: 'test';
-      payload: TestResult;
-    };
 
 export interface Images {
   actual: string;
@@ -184,7 +196,7 @@ export interface TestResult {
   // TODO Remove checks `name == browser` in TestResultsView
   // images?: Partial<{ [name: string]: Images }> | Images;
   images?: Partial<{ [name: string]: Images }>;
-  error?: string | null;
+  error?: string;
 }
 
 export interface ImagesError extends Error {
@@ -308,4 +320,20 @@ export function isString(x: unknown): x is string {
 
 export function isImageError(error: unknown): error is ImagesError {
   return error instanceof Error && 'images' in error;
+}
+
+export function isProcessMessage(message: unknown): message is ProcessMessage {
+  return isObject(message) && 'scope' in message;
+}
+
+export function isWorkerMessage(message: unknown): message is WorkerMessage {
+  return isProcessMessage(message) && message.scope == 'worker';
+}
+
+export function isTestMessage(message: unknown): message is TestMessage {
+  return isProcessMessage(message) && message.scope == 'test';
+}
+
+export function isWebpackMessage(message: unknown): message is WebpackMessage {
+  return isProcessMessage(message) && message.scope == 'webpack';
 }

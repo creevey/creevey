@@ -2,8 +2,9 @@ import cluster from 'cluster';
 import minimist from 'minimist';
 import chalk from 'chalk';
 import creevey from './server';
-import { Options, WorkerMessage } from './types';
-import { emitMessage, shutdownWorkers } from './server/utils';
+import { Options } from './types';
+import { emitWorkerMessage } from './server/messages';
+import { shutdownWorkers } from './server/utils';
 
 function shutdown(reason: unknown): void {
   const error = reason instanceof Error ? reason.stack ?? reason.message : (reason as string);
@@ -11,7 +12,7 @@ function shutdown(reason: unknown): void {
   console.log(chalk`[{red FAIL}{grey :${process.pid}}]`, error);
 
   process.exitCode = -1;
-  if (cluster.isWorker) emitMessage<WorkerMessage>({ type: 'error', payload: { status: 'failed', error } });
+  if (cluster.isWorker) emitWorkerMessage({ type: 'error', payload: { error } });
   if (cluster.isMaster) shutdownWorkers();
 }
 

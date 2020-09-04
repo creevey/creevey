@@ -5,8 +5,8 @@ import chai from 'chai';
 import chalk from 'chalk';
 import Mocha, { Context, MochaOptions } from 'mocha';
 import { Key } from 'selenium-webdriver';
-import { Config, Images, Options, BrowserConfig, WorkerMessage, TestWorkerMessage, isImageError } from '../../types';
-import { emitMessage, subscribeOn } from '../utils';
+import { Config, Images, Options, BrowserConfig, TestMessage, isImageError } from '../../types';
+import { subscribeOn, emitTestMessage, emitWorkerMessage } from '../messages';
 import chaiImage from './chai-image';
 import { getBrowser, switchStory } from './selenium';
 import { CreeveyReporter, TeamcityReporter } from './reporter';
@@ -53,20 +53,22 @@ export default async function worker(
 ): Promise<void> {
   let retries = 0;
   let images: Partial<{ [name: string]: Images }> = {};
-  let error: string | null = null;
+  let error: string | undefined = undefined;
   const testScope: string[] = [];
 
   function runHandler(failures: number): void {
     if (failures > 0 && (error || Object.values(images).some((image) => image?.error != null))) {
       const isTimeout = hasTimeout(error) || Object.values(images).some((image) => hasTimeout(image?.error));
-      const payload: { status: 'failed'; images: typeof images; error: string | null } = {
+      const payload: { status: 'failed'; images: typeof images; error?: string } = {
         status: 'failed',
         images,
         error,
       };
-      emitMessage<WorkerMessage>(isTimeout ? { type: 'error', payload } : { type: 'test', payload });
+      isTimeout
+        ? emitWorkerMessage({ type: 'error', payload: { error: error ?? 'Unknown error' } })
+        : emitTestMessage({ type: 'end', payload });
     } else {
-      emitMessage<WorkerMessage>({ type: 'test', payload: { status: 'success', images } });
+      emitTestMessage({ type: 'end', payload: { status: 'success', images } });
     }
   }
 
@@ -168,14 +170,16 @@ export default async function worker(
   });
   mocha.suite.beforeEach(switchStory);
 
-  subscribeOn('tests', (test: TestWorkerMessage) => {
+  subscribeOn('test', (message: TestMessage) => {
+    if (message.type != 'start') return;
+    const test = message.payload;
     const testPath = [...test.path]
       .reverse()
       .join(' ')
       .replace(/[|\\{}()[\]^$+*?.-]/g, '\\$&');
 
     images = {};
-    error = null;
+    error = undefined;
     retries = test.retries;
 
     mocha.grep(new RegExp(`^${testPath}$`));
@@ -202,7 +206,7 @@ export default async function worker(
 
   console.log('[CreeveyWorker]:', `Ready ${options.browser}:${process.pid}`);
 
-  emitMessage<WorkerMessage>({ type: 'ready' });
+  emitWorkerMessage({ type: 'ready' });
 }
 
 function hasTimeout(str: string | null | undefined): boolean {

@@ -1,15 +1,26 @@
 import cluster from 'cluster';
 import { EventEmitter } from 'events';
-import { Worker, Config, TestResult, BrowserConfig, WorkerMessage, TestStatus } from '../../types';
-import { subscribeOn } from '../utils';
+import {
+  Worker,
+  Config,
+  TestResult,
+  BrowserConfig,
+  WorkerMessage,
+  TestStatus,
+  isWorkerMessage,
+  isTestMessage,
+} from '../../types';
+import { subscribeOn, sendTestMessage, sendShutdownMessage } from '../messages';
 
 const FORK_RETRIES = 5;
+
+type WorkerTest = { id: string; path: string[]; retries: number };
 
 export default class Pool extends EventEmitter {
   private maxRetries: number;
   private config: BrowserConfig;
   private workers: Worker[] = [];
-  private queue: { id: string; path: string[]; retries: number }[] = [];
+  private queue: WorkerTest[] = [];
   private forcedStop = false;
   private shuttingDown = false;
   public get isRunning(): boolean {
@@ -66,32 +77,17 @@ export default class Pool extends EventEmitter {
 
     if (!worker || !test) return;
 
+    worker.isRunning = true;
+
     const { id } = test;
 
     this.queue.shift();
-
     this.sendStatus({ id, status: 'running' });
 
-    worker.isRunning = true;
-    worker.once('message', (message: WorkerMessage) => {
-      if (message.type == 'ready') return;
-      if (message.type == 'error') this.gracefullyKill(worker);
+    this.subscribe(worker, test);
 
-      const { payload: result } = message;
-      const { status } = result;
-      const shouldRetry = status == 'failed' && test.retries < this.maxRetries && !this.forcedStop;
+    sendTestMessage(worker, { type: 'start', payload: test });
 
-      if (shouldRetry) {
-        test.retries += 1;
-        this.queue.push(test);
-      }
-
-      worker.isRunning = false;
-
-      this.sendStatus({ id, status, result });
-      this.process();
-    });
-    worker.send(test);
     this.process();
   }
 
@@ -116,7 +112,14 @@ export default class Pool extends EventEmitter {
       args: ['--browser', this.browser, '--storybookBundle', this.storybookBundle, ...process.argv.slice(2)],
     });
     const worker = cluster.fork();
-    const message = await new Promise((resolve: (value: WorkerMessage) => void) => worker.once('message', resolve));
+    const message = await new Promise((resolve: (value: WorkerMessage) => void) => {
+      const readyHandler = (message: unknown): void => {
+        if (!isWorkerMessage(message)) return;
+        worker.off('message', readyHandler);
+        resolve(message);
+      };
+      worker.on('message', readyHandler);
+    });
 
     if (message.type != 'error') return worker;
 
@@ -145,7 +148,40 @@ export default class Pool extends EventEmitter {
   private gracefullyKill(worker: Worker): void {
     const timeout = setTimeout(() => worker.kill(), 10000);
     worker.on('exit', () => clearTimeout(timeout));
-    worker.send('shutdown');
+    sendShutdownMessage(worker);
     worker.disconnect();
+  }
+
+  private shouldRetry(test: WorkerTest): boolean {
+    return test.retries < this.maxRetries && !this.forcedStop;
+  }
+
+  private subscribe(worker: Worker, test: WorkerTest): void {
+    worker.once('message', (message: unknown) => {
+      if (!isWorkerMessage(message) && !isTestMessage(message)) return;
+      if (message.type != 'end' && message.type != 'error') return;
+
+      let result = null;
+
+      if (message.type == 'error') {
+        this.gracefullyKill(worker);
+
+        result = { status: 'failed', ...(message.payload as { error: string }) } as TestResult;
+      } else {
+        result = message.payload as TestResult;
+      }
+
+      const shouldRetry = result.status == 'failed' && this.shouldRetry(test);
+
+      if (shouldRetry) {
+        test.retries += 1;
+        this.queue.push(test);
+      }
+
+      worker.isRunning = false;
+
+      this.sendStatus({ id: test.id, status: result.status, result });
+      this.process();
+    });
   }
 }

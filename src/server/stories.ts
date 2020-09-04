@@ -19,8 +19,9 @@ import {
   CreeveyTestFunction,
   SetStoriesData,
 } from '../types';
-import { shouldSkip, subscribeOn, isStorybookVersionLessThan } from './utils';
+import { shouldSkip, isStorybookVersionLessThan } from './utils';
 import { mergeWith } from 'lodash';
+import { subscribeOn } from './messages';
 
 function storyTestFabric(delay?: number, testFn?: CreeveyTestFunction) {
   return async function storyTest(this: Context) {
