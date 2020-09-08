@@ -1,3 +1,16 @@
+# [0.7.0-beta.1](https://github.com/wKich/creevey/compare/v0.7.0-beta.0...v0.7.0-beta.1) (2020-09-08)
+
+### Bug Fixes
+
+- 🐛 collect all errors ([66146d7](https://github.com/wKich/creevey/commit/66146d7372f46b71055ad7e64f945463b1a21184))
+- 🐛 don't show error if image has been approved ([6b74e1d](https://github.com/wKich/creevey/commit/6b74e1d42d8d2297e5187670f9e05be337e20348))
+- 🐛 image preview height ([afe125d](https://github.com/wKich/creevey/commit/afe125d535be85bc899eaa03683924c3c0c5a856))
+
+### Features
+
+- 🎸 add before/after hooks ([32bc397](https://github.com/wKich/creevey/commit/32bc397e2c0e37d947df9d34a62aa356aa88ad41))
+- 🎸 show error images in imagePreview ([5d2037a](https://github.com/wKich/creevey/commit/5d2037aa86a8a700a6a82e88f980eed5fba873a9))
+
 # [0.7.0-beta.0](https://github.com/wKich/creevey/compare/v0.6.4...v0.7.0-beta.0) (2020-08-04)
 
 ### Bug Fixes
