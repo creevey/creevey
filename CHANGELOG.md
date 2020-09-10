@@ -1,3 +1,9 @@
+# [0.7.0-beta.2](https://github.com/wKich/creevey/compare/v0.7.0-beta.1...v0.7.0-beta.2) (2020-09-10)
+
+### Bug Fixes
+
+- 🐛 exit master process with after hook ([e90adfb](https://github.com/wKich/creevey/commit/e90adfb603a5b48a0e085843df03b074923201d5))
+
 # [0.7.0-beta.1](https://github.com/wKich/creevey/compare/v0.7.0-beta.0...v0.7.0-beta.1) (2020-09-08)
 
 ### Bug Fixes
