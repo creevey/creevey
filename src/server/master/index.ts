@@ -36,7 +36,12 @@ function reportDataModule<T>(data: T): string {
 
 export default async function (config: Config, options: Options): Promise<void> {
   if (config.hooks.after) {
-    process.on('beforeExit', config.hooks.after);
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    process.on('beforeExit', async () => {
+      await config.hooks.after?.();
+      // eslint-disable-next-line no-process-exit
+      process.exit();
+    });
   }
   if (config.hooks.before) {
     await config.hooks.before();
