@@ -2,6 +2,7 @@ import { Configuration, DefinePlugin } from 'webpack';
 
 export default {
   stories: ['../stories/**/*.stories.tsx'],
+  addons: ['./register.js'],
   webpackFinal(config: Configuration) {
     config.resolve.extensions = ['.tsx', '.ts', '.jsx', '.js'];
 
