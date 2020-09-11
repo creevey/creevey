@@ -14,9 +14,9 @@ interface TestResultsProps {
   approved?: Partial<{ [image: string]: number }>;
 }
 
-const VIEW_MODE_KEY = 'Creevey_view_mode';
+export const VIEW_MODE_KEY = 'Creevey_view_mode';
 
-const getViewMode = (): ImagesViewMode => {
+export const getViewMode = (): ImagesViewMode => {
   const item = localStorage.getItem(VIEW_MODE_KEY);
   return item && viewModes.includes(item as ImagesViewMode) ? (item as ImagesViewMode) : 'side-by-side';
 };

@@ -15,7 +15,8 @@
     "typeRoots": ["./types", "./node_modules/@types"],
     "paths": {
       "creevey": ["src"]
-    }
+    },
+    "skipLibCheck": true
   },
   "exclude": ["./report", "./lib", "./scripts/dist", "./examples", "./tests/**/*.fixtures"]
 }
