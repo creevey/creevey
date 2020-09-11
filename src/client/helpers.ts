@@ -251,7 +251,9 @@ export function countTestsStatus(suite: CreeveySuite): Omit<TestsStatusProps, 'o
 export function getImageUrl(path: string[], imageName: string): string {
   // path => [kind, story, test, browser]
   const browser = path.slice(-1)[0];
-  const imagesUrl = window.location.host ? `/report/${path.slice(0, -1).join('/')}` : path.slice(0, -1).join('/');
+  const imagesUrl = window.location.host
+    ? `http://localhost:3000/report/${path.slice(0, -1).join('/')}`
+    : path.slice(0, -1).join('/');
 
   return encodeURI(imageName == browser ? imagesUrl : `${imagesUrl}/${browser}`);
 }

@@ -14,7 +14,7 @@ export async function initCreeveyClientApi(): Promise<CreeveyClientApi> {
   let statusRequest: Promise<CreeveyStatus> | null = null;
   let statusResolver: (status: CreeveyStatus) => void = noop;
 
-  const ws = new WebSocket(`ws://${window.location.host}`);
+  const ws = new WebSocket(`ws://${window.location.hostname}:3000`);
 
   function send(request: Request): void {
     ws.send(JSON.stringify(request));
