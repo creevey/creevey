@@ -142,7 +142,7 @@ export default class Runner extends EventEmitter {
     Object.values(this.tests)
       .filter(isDefined)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .forEach(({ story, fn, ...test }) => (tests[test.id] = test));
+      .forEach(({ story, fn, ...test }) => (tests[test.id] = { ...test, storyId: story.id }));
     return {
       isRunning: this.isRunning,
       tests,
