@@ -66,6 +66,7 @@ export interface CSFStory<StoryFnReturnType = unknown> {
 
 export interface Capabilities {
   browserName: string;
+  version?: string;
 }
 
 export type BrowserConfig = Capabilities & {
@@ -82,7 +83,13 @@ export interface HookConfig {
   after?: () => unknown;
 }
 
+// TODO Allow specify custom docker images
 export interface Config {
+  /**
+   * Allow creevey run browsers in docker containers.
+   * By setting this flag, creevey will ignore `gridUrl` option
+   */
+  useDocker: boolean;
   /**
    * Url to Selenium grid hub or standalone selenium instance
    */
@@ -128,7 +135,7 @@ export interface Config {
   hooks: HookConfig;
 }
 
-export type CreeveyConfig = Config | Partial<Omit<Config, 'gridUrl'>>;
+export type CreeveyConfig = Partial<Config>;
 
 export interface Options {
   config?: string;
@@ -160,8 +167,8 @@ export type WebpackMessage =
 
 export type DockerMessage =
   | { type: 'start'; payload: { browser: string; pid: number } }
-  | { type: 'success'; payload: { gridUrl: string } }
-  | { type: 'fail'; payload?: never };
+  | { type: 'success'; payload: { gridUrl: string; storybookUrl: string } }
+  | { type: 'fail'; payload: { error: string } };
 
 export type ShutdownMessage = unknown;
 
@@ -336,4 +343,8 @@ export function isTestMessage(message: unknown): message is TestMessage {
 
 export function isWebpackMessage(message: unknown): message is WebpackMessage {
   return isProcessMessage(message) && message.scope == 'webpack';
+}
+
+export function isDockerMessage(message: unknown): message is DockerMessage {
+  return isProcessMessage(message) && message.scope == 'docker';
 }

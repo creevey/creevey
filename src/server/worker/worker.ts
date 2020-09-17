@@ -172,6 +172,9 @@ export default async function worker(
 
   subscribeOn('test', (message: TestMessage) => {
     if (message.type != 'start') return;
+
+    emitWorkerMessage({ type: 'error', payload: { error: error ?? 'Unknown error' } });
+
     const test = message.payload;
     const testPath = [...test.path]
       .reverse()
