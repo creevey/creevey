@@ -172,6 +172,7 @@ export default async function worker(
 
   subscribeOn('test', (message: TestMessage) => {
     if (message.type != 'start') return;
+
     const test = message.payload;
     const testPath = [...test.path]
       .reverse()

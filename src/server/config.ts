@@ -6,6 +6,7 @@ import { requireConfig } from './utils';
 export const defaultBrowser = 'chrome';
 
 export const defaultConfig: Omit<Config, 'gridUrl'> = {
+  useDocker: false,
   storybookUrl: 'http://localhost:6006',
   screenDir: path.resolve('images'),
   reportDir: path.resolve('report'),
@@ -38,7 +39,7 @@ function resolveConfigPath(configPath?: string): string | undefined {
   return configPath;
 }
 
-export function readConfig(options: Options): Config | null {
+export async function readConfig(options: Options): Promise<Config | null> {
   const configPath = resolveConfigPath(options.config);
   const userConfig: typeof defaultConfig & Partial<Pick<Config, 'gridUrl'>> = { ...defaultConfig };
 
@@ -48,20 +49,27 @@ export function readConfig(options: Options): Config | null {
   if (options.reportDir) userConfig.reportDir = path.resolve(options.reportDir);
   if (options.screenDir) userConfig.screenDir = path.resolve(options.screenDir);
 
-  const { gridUrl } = userConfig;
+  const { gridUrl, useDocker } = userConfig;
 
-  if (!gridUrl) {
-    console.log('Please specify `gridUrl`');
+  if (!gridUrl && !useDocker) {
+    console.log('Please specify `gridUrl` or enable `useDocker`');
     process.exitCode = -1;
     return null;
   }
 
+  // NOTE disable docker for webpack or update workers
+  if (options.webpack || options.update) userConfig.useDocker = false;
+
   // NOTE: Hack to pass typescript checking
-  const config: Config = { ...userConfig, gridUrl };
+  const config = userConfig as Config;
 
   Object.entries(config.browsers).forEach(
     ([browser, browserConfig]) => (config.browsers[browser] = normalizeBrowserConfig(browser, browserConfig)),
   );
+
+  if (config.useDocker) {
+    return (await import('./docker')).default(config, options.browser);
+  }
 
   return config;
 }

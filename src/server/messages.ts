@@ -78,6 +78,9 @@ process.on('message', handler);
 export function sendTestMessage(target: NodeJS.Process | cluster.Worker, message: TestMessage): void {
   target.send?.({ scope: 'test', ...message });
 }
+export function sendDockerMessage(target: NodeJS.Process | cluster.Worker, message: DockerMessage): void {
+  target.send?.({ scope: 'docker', ...message });
+}
 export function sendShutdownMessage(target: NodeJS.Process | cluster.Worker): void {
   target.send?.({ scope: 'shutdown' });
 }

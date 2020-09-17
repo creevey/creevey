@@ -3,7 +3,7 @@ import { readConfig, defaultBrowser } from './config';
 import { Options, noop } from '../types';
 
 export default async function (options: Options): Promise<void> {
-  const config = readConfig(options);
+  const config = await readConfig(options);
   const { browser = defaultBrowser, storybookBundle, update, webpack } = options;
 
   if (!config) return;
