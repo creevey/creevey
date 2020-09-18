@@ -1,5 +1,6 @@
 import { rmdirSync } from 'fs';
 import path from 'path';
+import findCacheDir from 'find-cache-dir';
 import webpack, { Configuration } from 'webpack';
 import nodeExternals from 'webpack-node-externals';
 import { extensions as fallbackExtensions } from '../utils';
@@ -11,7 +12,6 @@ import loadStorybookWebpackConfig from '@storybook/core/dist/server/config';
 import { emitWebpackMessage, subscribeOn } from '../messages';
 
 let isInitiated = false;
-let filePath = 'storybook.js';
 const supportedFrameworks = [
   'react',
   'vue',
@@ -61,7 +61,7 @@ function handleWebpackBuild(error: Error, stats: webpack.Stats): void {
 
   if (!isInitiated) {
     isInitiated = true;
-    emitWebpackMessage({ type: 'success', payload: { filePath } });
+    emitWebpackMessage({ type: 'success' });
   } else {
     emitWebpackMessage({ type: 'rebuild succeeded' });
   }
@@ -83,9 +83,10 @@ export default async function compile(config: Config, { debug, ui }: Options): P
     `@storybook/${storybookFramework}/dist/server/options`
   )) as { default: Record<string, unknown> };
 
-  // TODO Move into node_modules/.cache use find-cache-dir
-  const outputDir = path.join(config.reportDir, 'storybook');
-  filePath = path.join(outputDir, path.basename(filePath));
+  const outputDir = path.join(
+    (findCacheDir as (options: { name: string }) => string)({ name: 'creevey' }),
+    'storybook',
+  );
 
   try {
     rmdirSync(outputDir, { recursive: true });
@@ -113,7 +114,7 @@ export default async function compile(config: Config, { debug, ui }: Options): P
   storybookWebpackConfig.target = 'node';
   storybookWebpackConfig.output = {
     ...storybookWebpackConfig.output,
-    filename: path.basename(filePath),
+    filename: 'main.js',
   };
   // Exclude addons
   // TODO Figure why it loading

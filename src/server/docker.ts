@@ -1,10 +1,16 @@
+import path from 'path';
 import cluster, { isMaster } from 'cluster';
-import getPort from 'get-port';
 import Docker, { Container } from 'dockerode';
 import { Config, BrowserConfig, isDockerMessage, noop } from '../types';
 import { defaultBrowser } from './config';
 import { subscribeOn, emitDockerMessage, sendDockerMessage } from './messages';
 import { Writable } from 'stream';
+import { mkdir, writeFile } from 'fs';
+import { promisify } from 'util';
+import findCacheDir from 'find-cache-dir';
+
+const mkdirAsync = promisify(mkdir);
+const writeFileAsync = promisify(writeFile);
 
 const LOCALHOST_REGEXP = /(localhost|127\.0\.0\.1)/gi;
 
@@ -16,20 +22,51 @@ class DevNull extends Writable {
   }
 }
 
-async function startBrowserContainer(config: BrowserConfig): Promise<{ id: string; host: string; port: number }> {
-  // TODO Output spinner
-  const image = `selenoid/${config.browserName}:${config.version ?? 'latest'}`;
-  const port = await getPort();
+async function startSelenoidContainer(config: Config): Promise<string> {
+  const limit = Object.values(config.browsers)
+    .map((c) => (c as BrowserConfig).limit ?? 1)
+    .reduce((a, b) => a + b, 0);
 
+  const m = Object.values(config.browsers)
+    .map((c) => c as BrowserConfig)
+    .map((c) => ({
+      browserName: c.browserName,
+      version: c.version ?? 'latest',
+      config: {
+        image: `selenoid/${c.browserName}:${c.version ?? 'latest'}`,
+        port: '4444',
+        path: c.browserName == 'chrome' || c.browserName == 'opera' ? '/' : '/wd/hub',
+      },
+    }));
+
+  const selenoidConfig: {
+    [browser: string]: {
+      default: string;
+      versions: { [version: string]: { image: string; port: string; path: string } };
+    };
+  } = {};
+  m.forEach(({ browserName, version, config }) => {
+    if (!selenoidConfig[browserName]) selenoidConfig[browserName] = { default: version, versions: {} };
+    selenoidConfig[browserName].versions[version] = config;
+  });
+
+  const selenoidConfigDir = path.join(findCacheDir({ name: 'creevey' }) as string, 'selenoid');
+  await mkdirAsync(selenoidConfigDir, { recursive: true });
+  await writeFileAsync(path.join(selenoidConfigDir, 'browsers.json'), JSON.stringify(selenoidConfig));
+
+  const image = 'aerokube/selenoid:latest-release';
   await docker.pull(image);
   const hub = docker.run(
     image,
-    [],
-    new DevNull(),
+    ['-limit', String(limit)],
+    process.stdout,
     {
-      name: `${config.browserName}-${port}`,
+      name: 'selenoid',
       ExposedPorts: { '4444/tcp': {} },
-      HostConfig: { PortBindings: { '4444/tcp': [{ HostPort: String(port) }] } },
+      HostConfig: {
+        PortBindings: { '4444/tcp': [{ HostPort: '4444' }] },
+        Binds: ['/var/run/docker.sock:/var/run/docker.sock', `${selenoidConfigDir}:/etc/selenoid/:ro`],
+      },
     },
     noop,
   );
@@ -45,40 +82,28 @@ async function startBrowserContainer(config: BrowserConfig): Promise<{ id: strin
     });
     // TODO subscribe on error
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    hub.once('start', async (container: Container) => {
-      const host = (await container.inspect()).NetworkSettings.Networks.bridge.Gateway;
-      resolve({ id: container.id, host, port });
-    });
+    hub.once('start', async (container: Container) =>
+      resolve((await container.inspect()).NetworkSettings.Networks.bridge.Gateway),
+    );
   });
 }
 
-export default function (config: Config, browser = defaultBrowser): Promise<Config> {
+export default async function (config: Config, browser = defaultBrowser): Promise<Config> {
   if (isMaster) {
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    cluster.on('message', async (worker, message: unknown) => {
+    const gridHost = await startSelenoidContainer(config);
+    const gridUrl = `http://${gridHost}:4444/wd/hub`;
+
+    cluster.on('message', (worker, message: unknown) => {
       if (!isDockerMessage(message)) return;
 
       const dockerMessage = message;
       if (dockerMessage.type != 'start') return;
 
       const browserConfig = config.browsers[dockerMessage.payload.browser] as BrowserConfig;
-
-      // TODO Handle error
-      const { id, host, port } = await startBrowserContainer(browserConfig);
-
-      const gridUrl = `http://${host}:${port}/wd/hub`;
       let storybookUrl = browserConfig.storybookUrl ?? config.storybookUrl;
-
       if (LOCALHOST_REGEXP.test(storybookUrl)) {
-        storybookUrl = storybookUrl.replace(LOCALHOST_REGEXP, host);
+        storybookUrl = storybookUrl.replace(LOCALHOST_REGEXP, gridHost);
       }
-
-      // eslint-disable-next-line @typescript-eslint/no-misused-promises
-      worker.on('exit', async () => {
-        const container = docker.getContainer(id);
-        await container.stop();
-        await container.remove();
-      });
 
       sendDockerMessage(worker, {
         type: 'success',
