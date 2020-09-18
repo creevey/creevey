@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { css } from '@emotion/core';
 import { useImmer } from 'use-immer';
 import { CreeveyUpdate, CreeveySuite, isDefined } from '../types';
-import { CreeveyClientApi } from './creeveyClientApi';
+import { CreeveyClientApi } from '../utils/creeveyClientApi';
 import {
   getCheckedTests,
   updateTestStatus,
@@ -11,8 +11,8 @@ import {
   openSuite,
   getTestByPath,
   removeTests,
-} from './helpers';
-import { CreeveyContext } from './CreeveyContext';
+} from '../utils/helpers';
+import { CreeveyContext } from '../utils/CreeveyContext';
 import { SideBar } from './CreeveyView/SideBar';
 import { ResultsPage } from './CreeveyView/ResultsPage';
 

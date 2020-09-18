@@ -1,4 +1,5 @@
 import { Response, Request, CreeveyUpdate, CreeveyStatus, noop } from '../types';
+import { getConnectionUrl } from './helpers';
 
 export interface CreeveyClientApi {
   start: (ids: string[]) => void;
@@ -14,7 +15,7 @@ export async function initCreeveyClientApi(): Promise<CreeveyClientApi> {
   let statusRequest: Promise<CreeveyStatus> | null = null;
   let statusResolver: (status: CreeveyStatus) => void = noop;
 
-  const ws = new WebSocket(`ws://${window.location.host}`);
+  const ws = new WebSocket(`ws://${getConnectionUrl()}`);
 
   function send(request: Request): void {
     ws.send(JSON.stringify(request));
@@ -54,7 +55,6 @@ export async function initCreeveyClientApi(): Promise<CreeveyClientApi> {
       statusRequest = null;
     }
   });
-
   // TODO Reconnect
 
   return new Promise((resolve) => (clientApiResolver = resolve));

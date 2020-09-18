@@ -2,10 +2,10 @@ import React, { useContext, useState } from 'react';
 import { css } from '@emotion/core';
 import { Button, Spinner, Input } from '@skbkontur/react-ui';
 import SearchIcon from '@skbkontur/react-icons/Search';
-import { CreeveyContext } from '../../CreeveyContext';
+import { CreeveyContext } from '../../../utils/CreeveyContext';
 import { TestsStatus, TestsStatusProps } from './TestsStatus';
 import { TestStatus } from '../../../types';
-import { CreeveyViewFilter } from '../../../client/helpers';
+import { CreeveyViewFilter } from '../../../utils/helpers';
 
 interface SideBarHeaderProps {
   testsStatus: Omit<TestsStatusProps, 'onClickByStatus'>;

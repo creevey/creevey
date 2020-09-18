@@ -1,13 +1,14 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { CreeveyContext } from '../client/CreeveyContext';
+import { CreeveyContext } from '../utils/CreeveyContext';
 import { ImagesView } from './ImageViews/ImagesView';
 import { PageHeader } from './PageHeader/PageHeader';
 import { PageFooter } from './PageFooter/PageFooter';
 import { TestResult, ImagesViewMode } from '../types';
-import { getViewMode, VIEW_MODE_KEY } from '../client/CreeveyView/ResultsPage/ResultsPage';
-import { getImageUrl } from '../client/helpers';
+import { getImageUrl } from '../utils/helpers';
 import { styled, withTheme, Theme } from '@storybook/theming';
 import { Placeholder } from '@storybook/components';
+import { getViewMode, VIEW_MODE_KEY } from '../utils/viewMode';
+
 interface TestResultsProps {
   id: string;
   path: string[];

@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { ImagesViewMode, Images } from '../../types';
-import { getImageUrl } from '../../client/helpers';
+import { getImageUrl } from '../../utils/helpers';
 import { Icons, Tabs, Placeholder } from '@storybook/components';
 import { styled, withTheme, Theme } from '@storybook/theming';
 import { ImagePreview } from './ImagePreview';
-
-export const viewModes: ImagesViewMode[] = ['side-by-side', 'swap', 'slide', 'blend'];
+import { viewModes } from '../../utils/viewMode';
 
 interface PageHeaderProps {
   title: string[];

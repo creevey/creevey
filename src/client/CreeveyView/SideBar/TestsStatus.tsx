@@ -7,15 +7,11 @@ import PauseIcon from '@skbkontur/react-icons/Pause';
 import TrashIcon from '@skbkontur/react-icons/Trash';
 import { Button, ThemeContext, ThemeFactory } from '@skbkontur/react-ui';
 import { TestStatus } from '../../../types';
+import { CreeveyTestsStatus } from '../../../utils/helpers';
 
 const StatusButtonsTheme = ThemeFactory.create({ linkHoverTextDecoration: 'none' });
 
-export interface TestsStatusProps {
-  successCount: number;
-  failedCount: number;
-  pendingCount: number;
-  skippedCount: number;
-  removedCount: number;
+export interface TestsStatusProps extends CreeveyTestsStatus {
   onClickByStatus: (value: TestStatus) => void;
 }
 

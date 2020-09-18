@@ -1,10 +1,11 @@
 import React, { ComponentClass } from 'react';
 import { STORY_RENDERED } from '@storybook/core-events';
 import { API } from '@storybook/api';
-import { initCreeveyClientApi, CreeveyClientApi } from '../client/creeveyClientApi';
+import { initCreeveyClientApi, CreeveyClientApi } from '../utils/creeveyClientApi';
 import { Test, isDefined, CreeveyStatus, CreeveyUpdate, noop } from '../types';
 import { produce } from 'immer';
-import { CreeveyContext } from '../client/CreeveyContext';
+import { CreeveyContext } from '../utils/CreeveyContext';
+
 export interface CreeveyTestsProviderProps {
   active?: boolean;
   api: API;

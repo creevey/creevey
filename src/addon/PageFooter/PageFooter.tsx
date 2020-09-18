@@ -2,6 +2,7 @@ import React from 'react';
 import { Paging } from './Paging';
 import { styled, withTheme } from '@storybook/theming';
 import { Button } from '@storybook/components';
+
 export interface PageFooterProps {
   canApprove: boolean;
   retriesCount: number;
