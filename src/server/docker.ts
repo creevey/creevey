@@ -34,8 +34,9 @@ async function startBrowserContainer(config: BrowserConfig): Promise<{ id: strin
     noop,
   );
 
+  // TODO containers not removing :(
   return new Promise((resolve) => {
-    hub.on('container', (container: Container) => {
+    hub.once('container', (container: Container) => {
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       subscribeOn('shutdown', async () => {
         await container.stop();
