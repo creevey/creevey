@@ -3,6 +3,7 @@ import path from 'path';
 import cluster from 'cluster';
 import { SkipOptions, isDefined } from '../types';
 import { emitShutdownMessage, sendShutdownMessage } from './messages';
+import findCacheDir from 'find-cache-dir';
 
 export const extensions = ['.js', '.jsx', '.ts', '.tsx', '.mjs', '.es', '.es6'];
 
@@ -115,4 +116,8 @@ export function isStorybookVersionLessThan(version: number): boolean {
   const [storybookVersion] = getStorybookVersion().split('.');
 
   return Number(storybookVersion) < version;
+}
+
+export function getCreeveyCache(): string {
+  return findCacheDir({ name: 'creevey' }) as string;
 }

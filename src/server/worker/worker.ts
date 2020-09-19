@@ -47,10 +47,7 @@ async function getLastImageNumber(imageDir: string, imageName: string): Promise<
 }
 
 // FIXME browser options hotfix
-export default async function worker(
-  config: Config,
-  options: Options & { browser: string; storybookBundle: string },
-): Promise<void> {
+export default async function worker(config: Config, options: Options & { browser: string }): Promise<void> {
   let retries = 0;
   let images: Partial<{ [name: string]: Images }> = {};
   let error: string | undefined = undefined;
@@ -140,7 +137,6 @@ export default async function worker(
 
   await addTestsFromStories(mocha.suite, {
     browser: options.browser,
-    storybookBundlePath: options.storybookBundle,
     watch: options.ui,
   });
 

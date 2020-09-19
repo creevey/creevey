@@ -145,7 +145,6 @@ export interface Options {
   webpack: boolean;
   debug: boolean;
   browser?: string;
-  storybookBundle?: string;
   reporter?: string;
   gridUrl?: string;
   screenDir?: string;
@@ -160,7 +159,7 @@ export type TestMessage =
   | { type: 'end'; payload: TestResult };
 
 export type WebpackMessage =
-  | { type: 'success'; payload: { filePath: string } }
+  | { type: 'success'; payload?: never }
   | { type: 'fail'; payload?: never }
   | { type: 'rebuild succeeded'; payload?: never }
   | { type: 'rebuild failed'; payload?: never };
