@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { CreeveyContext } from '../utils/CreeveyContext';
+import { CreeveyContext } from './CreeveyContext';
 import { ImagesView } from './ImageViews/ImagesView';
 import { PageHeader } from './PageHeader/PageHeader';
 import { PageFooter } from './PageFooter/PageFooter';
@@ -22,7 +22,6 @@ const Wrapper = styled.div({
   width: '100%',
   display: 'flex',
   flexDirection: 'column',
-  padding: '20px',
 });
 
 const ImagesViewContainer = styled.div(({ theme }) => ({

@@ -22,7 +22,6 @@ interface PageHeaderProps {
 }
 
 const ErrorContainer = styled.div<{ background: string; color: string }>(({ background, color }) => ({
-  marginTop: '8px',
   padding: '8px',
   background: background,
   color: color,

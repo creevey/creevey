@@ -2,9 +2,9 @@ import React, { ComponentClass } from 'react';
 import { STORY_RENDERED } from '@storybook/core-events';
 import { API } from '@storybook/api';
 import { initCreeveyClientApi, CreeveyClientApi } from '../utils/creeveyClientApi';
-import { Test, isDefined, CreeveyStatus, CreeveyUpdate, noop } from '../types';
+import { Test, isDefined, CreeveyStatus, CreeveyUpdate } from '../types';
 import { produce } from 'immer';
-import { CreeveyContext } from '../utils/CreeveyContext';
+import { CreeveyContext } from './CreeveyContext';
 
 export interface CreeveyTestsProviderProps {
   active?: boolean;
@@ -14,6 +14,7 @@ export interface CreeveyTestsProviderProps {
 export interface CreeveyTestsProviderState {
   status: CreeveyStatus;
   storyId: string;
+  isRunning: boolean;
 }
 interface ChildProps extends CreeveyTestsProviderProps {
   statuses: Test[];
@@ -28,6 +29,7 @@ export function withCreeveyTests(
     state: CreeveyTestsProviderState = {
       status: { isRunning: false, tests: {} },
       storyId: '',
+      isRunning: false,
     };
     async componentDidMount(): Promise<void> {
       const { api } = this.props;
@@ -36,8 +38,10 @@ export function withCreeveyTests(
       this.setState({
         status: status,
       });
-      this.creeveyApi?.onUpdate(({ tests, removedTests = [] }: CreeveyUpdate) => {
-        // if (isDefined(isRunning)) setIsRunning(isRunning);
+      this.creeveyApi?.onUpdate(({ tests, removedTests = [], isRunning }: CreeveyUpdate) => {
+        if (isDefined(isRunning)) {
+          this.setState({ isRunning });
+        }
         if (isDefined(tests))
           this.setState(
             produce((draft: CreeveyTestsProviderState) => {
@@ -87,15 +91,15 @@ export function withCreeveyTests(
 
     handleImageApprove = (id: string, retry: number, image: string): void => this.creeveyApi?.approve(id, retry, image);
 
+    handleStart = (ids: string[]): void => this.creeveyApi?.start(ids);
+    handleStop = (): void => this.creeveyApi?.stop();
     render(): JSX.Element | null {
       return this.props.active ? (
         <CreeveyContext.Provider
           value={{
-            isRunning: this.state.status.isRunning,
-            onStart: noop,
-            onStop: noop,
-            onSuiteOpen: noop,
-            onSuiteToggle: noop,
+            isRunning: this.state.isRunning,
+            onStart: this.handleStart,
+            onStop: this.handleStop,
             onImageApprove: this.handleImageApprove,
           }}
         >
