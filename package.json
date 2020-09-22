@@ -70,6 +70,7 @@
     "lodash": "^4.17.19",
     "minimist": "^1.2.5",
     "mocha": "~8.0.1",
+    "ora": "^5.1.0",
     "pixelmatch": "^5.2.1",
     "pngjs": "^5.0.0",
     "regenerator-runtime": "^0.13.7",

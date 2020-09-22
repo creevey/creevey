@@ -68,7 +68,7 @@ export async function readConfig(options: Options): Promise<Config | null> {
   );
 
   if (config.useDocker) {
-    return (await import('./docker')).default(config, options.browser);
+    return (await import('./docker')).default(config, options);
   }
 
   return config;

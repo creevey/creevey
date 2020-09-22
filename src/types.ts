@@ -73,6 +73,11 @@ export type BrowserConfig = Capabilities & {
   limit?: number;
   gridUrl?: string;
   storybookUrl?: string;
+  /**
+   * Only make sense with enabled global `useDocker` flag
+   * @default `selenoid/${browserName}:${version}`
+   */
+  dockerImage?: string;
   viewport?: { width: number; height: number };
 };
 
@@ -83,7 +88,6 @@ export interface HookConfig {
   after?: () => unknown;
 }
 
-// TODO Allow specify custom docker images
 export interface Config {
   /**
    * Allow creevey run browsers in docker containers.

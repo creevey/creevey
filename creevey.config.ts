@@ -7,10 +7,10 @@ const config: CreeveyConfig = {
   storybookUrl: 'http://localhost:6006',
   screenDir: path.join(__dirname, 'stories', 'images'),
   browsers: {
-    // chrome: {
-    //   browserName: 'chrome',
-    //   viewport: { width: 1024, height: 720 },
-    // },
+    chrome: {
+      browserName: 'chrome',
+      viewport: { width: 1024, height: 720 },
+    },
     // ie11: {
     //   browserName: 'internet explorer',
     //   viewport: { width: 1024, height: 720 },

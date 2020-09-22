@@ -249,6 +249,9 @@
 - [ ] Features
   - [ ] Easy way to ignore stories/kinds from UI
   - [ ] Add `init` cli option
+- [ ] Improve Docker
+  - [ ] Add vnc
+  - [ ] Add video recording
 
 ## Not in first time
 
