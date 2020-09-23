@@ -4,6 +4,7 @@ import { Writable } from 'stream';
 import { mkdir, writeFile } from 'fs';
 import cluster, { isMaster } from 'cluster';
 import Docker, { Container } from 'dockerode';
+import { address } from 'ip';
 import ora from 'ora';
 import { Config, BrowserConfig, isDockerMessage, Options } from '../types';
 import { defaultBrowser } from './config';
@@ -23,7 +24,7 @@ class DevNull extends Writable {
   }
 }
 
-async function startSelenoidContainer(config: Config, debug: boolean): Promise<string> {
+async function startSelenoidContainer(config: Config, debug: boolean): Promise<void> {
   const selenoidImage = 'aerokube/selenoid:latest-release';
   const selenoidConfig: {
     [browser: string]: {
@@ -85,10 +86,7 @@ async function startSelenoidContainer(config: Config, debug: boolean): Promise<s
         await container.remove();
       });
     });
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    hub.once('start', async (container: Container) =>
-      resolve((await container.inspect()).NetworkSettings.Networks.bridge.Gateway),
-    );
+    hub.once('start', resolve);
   });
 }
 
@@ -129,8 +127,9 @@ async function pullImages(images: string[]): Promise<void> {
 
 export default async function (config: Config, { debug, browser = defaultBrowser }: Options): Promise<Config> {
   if (isMaster) {
-    const gridHost = await startSelenoidContainer(config, debug);
-    const gridUrl = `http://${gridHost}:4444/wd/hub`;
+    const gridUrl = `http://localhost:4444/wd/hub`;
+
+    await startSelenoidContainer(config, debug);
 
     cluster.on('message', (worker, message: unknown) => {
       if (!isDockerMessage(message)) return;
@@ -141,7 +140,7 @@ export default async function (config: Config, { debug, browser = defaultBrowser
       const browserConfig = config.browsers[dockerMessage.payload.browser] as BrowserConfig;
       let storybookUrl = browserConfig.storybookUrl ?? config.storybookUrl;
       if (LOCALHOST_REGEXP.test(storybookUrl)) {
-        storybookUrl = storybookUrl.replace(LOCALHOST_REGEXP, gridHost);
+        storybookUrl = storybookUrl.replace(LOCALHOST_REGEXP, address());
       }
 
       sendDockerMessage(worker, {
