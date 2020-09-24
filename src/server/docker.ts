@@ -2,12 +2,11 @@ import path from 'path';
 import { promisify } from 'util';
 import { Writable } from 'stream';
 import { mkdir, writeFile } from 'fs';
-import cluster, { isMaster } from 'cluster';
+import { isMaster } from 'cluster';
 import Docker, { Container } from 'dockerode';
 import ora from 'ora';
-import { Config, BrowserConfig, isDockerMessage, Options } from '../types';
-import { defaultBrowser } from './config';
-import { subscribeOn, emitDockerMessage, sendDockerMessage } from './messages';
+import { Config, BrowserConfig, Options } from '../types';
+import { subscribeOn } from './messages';
 import { getCreeveyCache } from './utils';
 
 const mkdirAsync = promisify(mkdir);
@@ -122,36 +121,11 @@ async function pullImages(images: string[]): Promise<void> {
   }
 }
 
-export default async function (config: Config, { debug, browser = defaultBrowser }: Options): Promise<Config> {
+export default async function (config: Config, { debug }: Options): Promise<Config> {
   if (isMaster) {
-    const gridUrl = `http://localhost:4444/wd/hub`;
-
     await startSelenoidContainer(config, debug);
-
-    cluster.on('message', (worker, message: unknown) => {
-      if (!isDockerMessage(message)) return;
-
-      const dockerMessage = message;
-      if (dockerMessage.type != 'start') return;
-
-      sendDockerMessage(worker, {
-        type: 'success',
-        payload: { gridUrl },
-      });
-    });
-    return Promise.resolve(config);
   } else {
-    return new Promise((resolve, reject) => {
-      subscribeOn('docker', (message) => {
-        if (message.type == 'success') {
-          config.gridUrl = message.payload.gridUrl;
-          resolve(config);
-        }
-        if (message.type == 'fail') {
-          reject(message.payload.error);
-        }
-      });
-      emitDockerMessage({ type: 'start', payload: { browser, pid: process.pid } });
-    });
+    config.gridUrl = 'http://localhost:4444/wd/hub';
   }
+  return config;
 }
