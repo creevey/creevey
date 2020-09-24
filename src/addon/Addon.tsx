@@ -58,7 +58,7 @@ const PanelInternal = ({ statuses }: PanelProps): JSX.Element => {
   );
 };
 
-function getEmogyByTestStatus(status: TestStatus | undefined, skip: string | boolean): string {
+export function getEmogyByTestStatus(status: TestStatus | undefined, skip: string | boolean): string {
   switch (status) {
     case 'failed': {
       return '❌';
