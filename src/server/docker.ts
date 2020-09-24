@@ -4,7 +4,6 @@ import { Writable } from 'stream';
 import { mkdir, writeFile } from 'fs';
 import cluster, { isMaster } from 'cluster';
 import Docker, { Container } from 'dockerode';
-import { address } from 'ip';
 import ora from 'ora';
 import { Config, BrowserConfig, isDockerMessage, Options } from '../types';
 import { defaultBrowser } from './config';
@@ -13,8 +12,6 @@ import { getCreeveyCache } from './utils';
 
 const mkdirAsync = promisify(mkdir);
 const writeFileAsync = promisify(writeFile);
-
-const LOCALHOST_REGEXP = /(localhost|127\.0\.0\.1)/gi;
 
 const docker = new Docker();
 
@@ -116,7 +113,7 @@ async function pullImages(images: string[]): Promise<void> {
         }
 
         function onProgress(event: { id: string; status: string; progress?: string }): void {
-          if (!/^[a-z0-9]{12}$/gi.test(event.id)) return;
+          if (!/^[a-z0-9]{12}$/i.test(event.id)) return;
 
           spinner.text = `${image}: [${event.id}] ${event.status} ${event.progress ? `${event.progress}` : ''}`;
         }
@@ -137,15 +134,9 @@ export default async function (config: Config, { debug, browser = defaultBrowser
       const dockerMessage = message;
       if (dockerMessage.type != 'start') return;
 
-      const browserConfig = config.browsers[dockerMessage.payload.browser] as BrowserConfig;
-      let storybookUrl = browserConfig.storybookUrl ?? config.storybookUrl;
-      if (LOCALHOST_REGEXP.test(storybookUrl)) {
-        storybookUrl = storybookUrl.replace(LOCALHOST_REGEXP, address());
-      }
-
       sendDockerMessage(worker, {
         type: 'success',
-        payload: { gridUrl, storybookUrl },
+        payload: { gridUrl },
       });
     });
     return Promise.resolve(config);
@@ -154,7 +145,6 @@ export default async function (config: Config, { debug, browser = defaultBrowser
       subscribeOn('docker', (message) => {
         if (message.type == 'success') {
           config.gridUrl = message.payload.gridUrl;
-          config.storybookUrl = message.payload.storybookUrl;
           resolve(config);
         }
         if (message.type == 'fail') {

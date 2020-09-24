@@ -2,8 +2,9 @@ import https from 'https';
 import { PNG } from 'pngjs';
 import { Context, Test, Suite } from 'mocha';
 import { Builder, By, until, WebDriver, Origin } from 'selenium-webdriver';
-import { Config, BrowserConfig, StoryInput, CreeveyStoryParams, noop } from '../../types';
+import { Config, BrowserConfig, StoryInput, CreeveyStoryParams, noop, isDefined } from '../../types';
 import { subscribeOn } from '../messages';
+import { networkInterfaces } from 'os';
 
 declare global {
   interface Window {
@@ -11,8 +12,8 @@ declare global {
   }
 }
 
-const LOCALHOST_REGEXP = /(localhost|127\.0\.0\.1)/gi;
-const TESTKONTUR_REGEXP = /testkontur/gi;
+const LOCALHOST_REGEXP = /(localhost|127\.0\.0\.1)/i;
+const TESTKONTUR_REGEXP = /testkontur/i;
 
 function getRealIp(): Promise<string> {
   return new Promise((resolve, reject) =>
@@ -30,6 +31,27 @@ function getRealIp(): Promise<string> {
       res.on('end', () => resolve(data));
     }),
   );
+}
+
+async function resolveStorybookUrl(browser: WebDriver, storybookUrl: string): Promise<string> {
+  if (!LOCALHOST_REGEXP.test(storybookUrl)) {
+    return storybookUrl;
+  }
+  const addresses = ([] as string[]).concat(
+    ...Object.values(networkInterfaces())
+      .filter(isDefined)
+      .map((network) => network.filter((info) => info.family == 'IPv4').map((info) => info.address)),
+  );
+  for (const ip of addresses) {
+    const resolvedUrl = storybookUrl.replace(LOCALHOST_REGEXP, ip);
+    try {
+      await browser.get(resolvedUrl);
+      return resolvedUrl;
+    } catch (error) {
+      /* noop */
+    }
+  }
+  return storybookUrl;
 }
 
 async function resetMousePosition(browser: WebDriver): Promise<void> {
@@ -298,6 +320,7 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
     await runSequence(
       [
         () => viewport && browser && resizeViewport(browser, viewport),
+        async () => browser && void (realAddress = await resolveStorybookUrl(browser, realAddress)),
         () => browser?.get(`${realAddress}/iframe.html`),
         () => browser?.wait(until.elementLocated(By.css('#root')), 30000),
         () => browser && disableAnimations(browser),

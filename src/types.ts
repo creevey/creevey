@@ -170,7 +170,7 @@ export type WebpackMessage =
 
 export type DockerMessage =
   | { type: 'start'; payload: { browser: string; pid: number } }
-  | { type: 'success'; payload: { gridUrl: string; storybookUrl: string } }
+  | { type: 'success'; payload: { gridUrl: string } }
   | { type: 'fail'; payload: { error: string } };
 
 export type ShutdownMessage = unknown;
