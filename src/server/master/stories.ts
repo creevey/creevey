@@ -2,7 +2,7 @@ import cluster from 'cluster';
 import { isWebpackMessage } from '../../types';
 import { emitWebpackMessage } from '../messages';
 
-export function startWebpackCompiler(): Promise<string> {
+export function startWebpackCompiler(): Promise<void> {
   return new Promise((resolve, reject) => {
     cluster.setupMaster({ args: ['--webpack', ...process.argv.slice(2)] });
     const webpackCompiler = cluster.fork({ NODE_ENV: 'test' });
@@ -15,7 +15,7 @@ export function startWebpackCompiler(): Promise<string> {
         .forEach((worker) => worker?.send(message));
       switch (message.type) {
         case 'success':
-          return resolve(message.payload.filePath);
+          return resolve();
         case 'fail':
           return reject();
         case 'rebuild succeeded':

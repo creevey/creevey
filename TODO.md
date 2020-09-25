@@ -219,9 +219,9 @@
     - Iterate be screen images and calculate resulting x/y coordinates for composite image
     - If image width/height greater than viewport width/height than scroll bar is captured
 - [ ] Features
-  - [ ] Easy way to ignore stories/kinds from UI
+  - [ ] Allow defined params for knobs and args to capture story with different states
+  - [ ] Output unnecessary images when creevey run from cli
   - [ ] Support run tests inside docker
-  - [ ] Add `init` cli option
   - [x] Allow define saucelabs/browserstack-local init/dispose functions
   - [ ] Allow define custom localhost resolver in config
   - [ ] Add `only` option as opposite for `skip`
@@ -246,6 +246,12 @@
 - [ ] Support other browser automation tools
   - [ ] Playwright
   - [ ] Puppeteer
+- [ ] Features
+  - [ ] Easy way to ignore stories/kinds from UI
+  - [ ] Add `init` cli option
+- [ ] Improve Docker
+  - [ ] Add vnc
+  - [ ] Add video recording
 
 ## Not in first time
 

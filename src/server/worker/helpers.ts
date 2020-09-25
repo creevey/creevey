@@ -38,10 +38,10 @@ function removeTestOrSuite(testOrSuite: Test | Suite): void {
 
 export async function addTestsFromStories(
   rootSuite: Suite,
-  { browser, storybookBundlePath, watch }: { browser: string; storybookBundlePath: string; watch: boolean },
+  { browser, watch }: { browser: string; watch: boolean },
 ): Promise<void> {
   const mochaTestsById = new Map<string, Test>();
-  const tests = await loadTestsFromStories({ browsers: [browser], storybookBundlePath, watch }, (testsDiff) =>
+  const tests = await loadTestsFromStories({ browsers: [browser], watch }, (testsDiff) =>
     Object.entries(testsDiff).forEach(([id, newTest]) => {
       const oldTest = mochaTestsById.get(id);
       mochaTestsById.delete(id);

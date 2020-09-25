@@ -66,12 +66,18 @@ export interface CSFStory<StoryFnReturnType = unknown> {
 
 export interface Capabilities {
   browserName: string;
+  version?: string;
 }
 
 export type BrowserConfig = Capabilities & {
   limit?: number;
   gridUrl?: string;
   storybookUrl?: string;
+  /**
+   * Only make sense with enabled global `useDocker` flag
+   * @default `selenoid/${browserName}:${version}`
+   */
+  dockerImage?: string;
   viewport?: { width: number; height: number };
 };
 
@@ -83,6 +89,11 @@ export interface HookConfig {
 }
 
 export interface Config {
+  /**
+   * Allow creevey run browsers in docker containers.
+   * By setting this flag, creevey will ignore `gridUrl` option
+   */
+  useDocker: boolean;
   /**
    * Url to Selenium grid hub or standalone selenium instance
    */
@@ -128,7 +139,7 @@ export interface Config {
   hooks: HookConfig;
 }
 
-export type CreeveyConfig = Config | Partial<Omit<Config, 'gridUrl'>>;
+export type CreeveyConfig = Partial<Config>;
 
 export interface Options {
   config?: string;
@@ -138,7 +149,6 @@ export interface Options {
   webpack: boolean;
   debug: boolean;
   browser?: string;
-  storybookBundle?: string;
   reporter?: string;
   gridUrl?: string;
   screenDir?: string;
@@ -153,15 +163,10 @@ export type TestMessage =
   | { type: 'end'; payload: TestResult };
 
 export type WebpackMessage =
-  | { type: 'success'; payload: { filePath: string } }
+  | { type: 'success'; payload?: never }
   | { type: 'fail'; payload?: never }
   | { type: 'rebuild succeeded'; payload?: never }
   | { type: 'rebuild failed'; payload?: never };
-
-export type DockerMessage =
-  | { type: 'start'; payload: { browser: string; pid: number } }
-  | { type: 'success'; payload: { gridUrl: string } }
-  | { type: 'fail'; payload?: never };
 
 export type ShutdownMessage = unknown;
 
@@ -169,13 +174,11 @@ export type ProcessMessage =
   | (WorkerMessage & { scope: 'worker' })
   | (TestMessage & { scope: 'test' })
   | (WebpackMessage & { scope: 'webpack' })
-  | (DockerMessage & { scope: 'docker' })
   | (ShutdownMessage & { scope: 'shutdown' });
 
 export type WorkerHandler = (message: WorkerMessage) => void;
 export type TestHandler = (message: TestMessage) => void;
 export type WebpackHandler = (message: WebpackMessage) => void;
-export type DockerHandler = (message: DockerMessage) => void;
 export type ShutdownHandler = (message: ShutdownMessage) => void;
 
 export interface Worker extends ClusterWorker {

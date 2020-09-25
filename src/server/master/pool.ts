@@ -26,7 +26,7 @@ export default class Pool extends EventEmitter {
   public get isRunning(): boolean {
     return this.workers.length !== this.freeWorkers.length;
   }
-  constructor(config: Config, private browser: string, private storybookBundle: string) {
+  constructor(config: Config, private browser: string) {
     super();
 
     this.maxRetries = config.maxRetries;
@@ -109,7 +109,7 @@ export default class Pool extends EventEmitter {
 
   private async forkWorker(retry = 0): Promise<Worker | { error: string }> {
     cluster.setupMaster({
-      args: ['--browser', this.browser, '--storybookBundle', this.storybookBundle, ...process.argv.slice(2)],
+      args: ['--browser', this.browser, ...process.argv.slice(2)],
     });
     const worker = cluster.fork();
     const message = await new Promise((resolve: (value: WorkerMessage) => void) => {
