@@ -1,3 +1,16 @@
+# [0.7.0-beta.3](https://github.com/wKich/creevey/compare/v0.7.0-beta.2...v0.7.0-beta.3) (2020-09-25)
+
+### Bug Fixes
+
+- 🐛 resolve storybook url on windows with multiple networks ([eb1dcf3](https://github.com/wKich/creevey/commit/eb1dcf3df3ef1c084165ad51e41cade2190c3935))
+- 🐛 use `find-dir-cache` to store cache in right place ([c10a951](https://github.com/wKich/creevey/commit/c10a951e6cb05c29222348922d3639de98c04544))
+- 🐛 use selenoid instead of browser images ([b187e62](https://github.com/wKich/creevey/commit/b187e62cb3ef3fe8d4e0128f293ebf693054c5d3))
+- docker network for windows/wsl ([da8b491](https://github.com/wKich/creevey/commit/da8b49172f01a6131bea505021c6ea6ff2e77561))
+
+### Features
+
+- 🎸 add support docker ([c5f7976](https://github.com/wKich/creevey/commit/c5f7976f741e3a7cf1d06615c8013475e4677809))
+
 # [0.7.0-beta.2](https://github.com/wKich/creevey/compare/v0.7.0-beta.1...v0.7.0-beta.2) (2020-09-10)
 
 ### Bug Fixes
