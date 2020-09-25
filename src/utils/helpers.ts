@@ -38,7 +38,7 @@ export function splitLastPathToken(path: string[]): string[] {
   return path.splice(path.length - 1, 1, ...path[path.length - 1].split('/').reverse()), path;
 }
 
-function calcStatus(oldStatus?: TestStatus, newStatus?: TestStatus): TestStatus | undefined {
+export function calcStatus(oldStatus?: TestStatus, newStatus?: TestStatus): TestStatus | undefined {
   return newStatus && statusUpdatesMap.get(oldStatus)?.test(newStatus) ? newStatus : oldStatus;
 }
 

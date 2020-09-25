@@ -25,7 +25,8 @@ const PanelInternal = ({ statuses }: PanelProps): JSX.Element => {
 
   const handleBrowserChange = useCallback((id) => setSelectedItem(Number(id)), []);
   const result = statuses[selectedItem];
-  const { onStart, onStop, isRunning } = useContext(CreeveyContext);
+  const { onStart, onStop } = useContext(CreeveyContext);
+  const isRunning = result?.status === 'running';
   return (
     <Fragment>
       <Tabs
@@ -45,20 +46,26 @@ const PanelInternal = ({ statuses }: PanelProps): JSX.Element => {
         }
       >
         {browsers.map((x, i) => (
-          <div key={x} id={`${i}`} title={`${x} ${getEmogyByTestStatus(result.status, result.skip)}`} />
+          <div key={x} id={`${i}`} title={`${x} ${getEmojiByTestStatus(statuses[i].status, statuses[i].skip)}`} />
         ))}
       </Tabs>
       {isRunning && <Loader size={64} />}
-      {statuses.length ? (
+      {result?.results?.length ? (
         <Wrapper isRunning={isRunning}>
-          <ResultsPage id={result.id} path={result.path} results={result.results} approved={result.approved} />
+          <ResultsPage
+            key={`${result.id}_${result.results?.length ?? 0}`}
+            id={result.id}
+            path={result.path}
+            results={result.results}
+            approved={result.approved}
+          />
         </Wrapper>
       ) : null}
     </Fragment>
   );
 };
 
-export function getEmogyByTestStatus(status: TestStatus | undefined, skip: string | boolean): string {
+export function getEmojiByTestStatus(status: TestStatus | undefined, skip: string | boolean): string {
   switch (status) {
     case 'failed': {
       return '❌';

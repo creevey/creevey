@@ -1,11 +1,12 @@
 import React, { ComponentClass } from 'react';
-import { SELECT_STORY, SET_STORIES, STORY_RENDERED } from '@storybook/core-events';
+import { SET_STORIES, STORY_RENDERED } from '@storybook/core-events';
 import { API } from '@storybook/api';
 import { initCreeveyClientApi, CreeveyClientApi } from '../utils/creeveyClientApi';
 import { Test, isDefined, CreeveyStatus, CreeveyUpdate, SetStoriesData, StoriesRaw, TestStatus } from '../types';
 import { produce } from 'immer';
 import { CreeveyContext } from './CreeveyContext';
-import { getEmogyByTestStatus } from './Addon';
+import { getEmojiByTestStatus } from './Addon';
+import { calcStatus } from '../utils/helpers';
 
 export interface CreeveyTestsProviderProps {
   active?: boolean;
@@ -71,7 +72,12 @@ export function withCreeveyTests(
                 if (isDefined(skip)) test.skip = skip;
                 if (isDefined(status)) {
                   test.status = status;
-                  story.name = this.addStatus(story.name, status, skip || false);
+                  const storyStatus = this.getStoryStatus(test.storyId || '');
+                  const oldStatus = storyStatus
+                    .map((x) => (x.id === id ? status : x.status))
+                    .reduce((oldStatus, newStatus) => calcStatus(oldStatus, newStatus), undefined);
+
+                  story.name = this.addStatus(story.name, calcStatus(oldStatus, status), skip || false);
                 }
                 if (isDefined(results)) test.results ? test.results.push(...results) : (test.results = results);
                 if (isDefined(approved)) {
@@ -87,34 +93,30 @@ export function withCreeveyTests(
       }),
         api.on(STORY_RENDERED, this.onStoryRendered);
       api.on(SET_STORIES, this.addStatusesToSidebar);
-      api.on(SELECT_STORY, this.onSelectStory);
     }
 
     componentWillUnmount(): void {
       const { api } = this.props;
       api.off(STORY_RENDERED, this.onStoryRendered);
       api.off(SET_STORIES, this.addStatusesToSidebar);
-      api.off(SELECT_STORY, this.onSelectStory);
     }
     addStatusesToSidebar = ({ stories }: SetStoriesData): void => {
       this.setState({ stories: stories });
       Object.keys(stories).forEach((storyId) => {
-        const status = this.getStoryStatus(storyId)[0];
-        stories[storyId].name = this.addStatus(stories[storyId].name, status.status, status.skip);
+        const storyStatus = this.getStoryStatus(storyId);
+        const status = storyStatus
+          .map((x) => x.status)
+          .reduce((oldStatus, newStatus) => calcStatus(oldStatus, newStatus), undefined);
+        const skip = storyStatus.every((x) => x.skip);
+        stories[storyId].name = this.addStatus(stories[storyId].name, status, skip);
       });
       void this.props.api.setStories(stories);
     };
 
     addStatus(name: string, status: TestStatus | undefined, skip: string | boolean): string {
       name = name.replace(/^(❌|✔|🟡|🕗|⏸) /, '');
-      return `${getEmogyByTestStatus(status, skip)} ${name}`;
+      return `${getEmojiByTestStatus(status, skip)} ${name}`;
     }
-
-    onSelectStory = (): void => {
-      if (this.state.isRunning) {
-        this.setState({ isRunning: false });
-      }
-    };
 
     onStoryRendered = (storyId: string): void => {
       this.setState({ storyId: storyId });
