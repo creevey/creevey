@@ -188,22 +188,18 @@
 
 ## First priority (v0.7)
 
+- [ ] Update Readme
+  - [ ] `UseDocker`
+  - [ ] `before/after` hooks
 - [x] Support Storybook 6.x
 - [x] ~~Add @babel/code-frame to output loader error~~ There is babel issue https://github.com/babel/babel/issues/8617
-- [ ] Store creevey storybook bundle in cache dir using find-cache-dir pkg
-- [ ] Cleanup nodejs storybook bundle
+- [ ] Support declarative 6.0 decorators format, like this https://github.com/storybookjs/storybook/tree/master/addons/knobs/src/preset
+- [x] Store creevey storybook bundle in cache dir using find-cache-dir pkg
 - [ ] Support mdx stories
-- [ ] Transform to monorepo
-  - [ ] creevey
-  - [ ] chai-images
-  - [ ] creevey-selenium
-  - [ ] creevey-docker
-  - [ ] creevey-storybook
-  - [ ] examples
-- [ ] Add bootstrap script, that build and install current version into examples or use monorepo
-- [ ] Don't load any of addons
+- [ ] Cleanup nodejs storybook bundle (Don't load any of addons)
 - [ ] Setup NODE_ENV to 'test'.
 - [ ] Add Storybook integration tests
+- [ ] Creevey as Addon PoC
 - [x] Update Eslint to v7
 - [x] Simplify hot-reloading logic, for v6.x fixed removing tests issue
 - [ ] Bugs
@@ -211,17 +207,22 @@
   - [x] Error mocha instance already disposed in mocha@7.2
   - [x] Tests not removing in hot-reloading process
   - [x] Don't end all worker processes, especially if worker has errors
-  - [x] In multiple images tests output same test error for every image
+  - [x] Highlight success/failed screenshot previews
+  - [ ] Sometimes selenoid container not removing
   - [ ] Data from report sometimes not loading
+  - [ ] Use native composite screenshots for browsers which support it
+  - [ ] Re-disable animations on storybook reload
+  - [ ] Don't stop rebuilding if rebuild failed due syntax error
   - [ ] Fix taking composite screenshots with hided scrollbar
     - Take `document.documentElement.clientWidth/Height` instead of window rect
     - For each screenshot after scroll, take elementRect coordinates
     - Iterate be screen images and calculate resulting x/y coordinates for composite image
     - If image width/height greater than viewport width/height than scroll bar is captured
 - [ ] Features
-  - [ ] Easy way to ignore stories/kinds from UI
-  - [ ] Support run tests inside docker
-  - [ ] Add `init` cli option
+  - [ ] Allow defined params for knobs and args to capture story with different states
+  - [ ] Add fuzzy search and highlight
+  - [ ] Output unnecessary images when creevey run from cli
+  - [x] Support run tests inside docker
   - [x] Allow define saucelabs/browserstack-local init/dispose functions
   - [ ] Allow define custom localhost resolver in config
   - [ ] Add `only` option as opposite for `skip`
@@ -242,10 +243,23 @@
 - [ ] Support esm/cjs builds
 - [ ] Drop storiesOf and Storybook v4.x support
   - [ ] Could we drop more entry points from webpack config? (generated entry for example)
-- [ ] Creevey as Addon PoC
+- [ ] Transform to monorepo
+  - [ ] creevey
+  - [ ] chai-images
+  - [ ] creevey-selenium
+  - [ ] creevey-docker
+  - [ ] creevey-storybook
+  - [ ] examples
 - [ ] Support other browser automation tools
   - [ ] Playwright
   - [ ] Puppeteer
+- [ ] Features
+  - [ ] Add bootstrap script, that build and install current version into examples or use monorepo
+  - [ ] Easy way to ignore stories/kinds from UI
+  - [ ] Add `init` cli option
+- [ ] Improve Docker
+  - [ ] Add vnc
+  - [ ] Add video recording
 
 ## Not in first time
 
@@ -275,9 +289,8 @@
 - [ ] Github Actions
   - [x] Add linting job
   - [ ] Allow run ui tests in cli by `yarn test:ui`
-- [ ] Storybook integration
+- [x] Storybook integration
   - [x] ~~Support stories separators https://storybook.js.org/docs/basics/writing-stories/#story-hierarchy~~
-  - [ ] Support declarative 6.0 decorators format, like this https://github.com/storybookjs/storybook/tree/master/addons/knobs/src/preset
 - [ ] Rewrite to use `worker_threads` instead of `cluster` to allow use shared memory
 - [ ] Support mocha options for workers
 - [ ] Programmic API

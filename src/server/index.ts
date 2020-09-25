@@ -3,8 +3,8 @@ import { readConfig, defaultBrowser } from './config';
 import { Options, noop } from '../types';
 
 export default async function (options: Options): Promise<void> {
-  const config = readConfig(options);
-  const { browser = defaultBrowser, storybookBundle, update, webpack } = options;
+  const config = await readConfig(options);
+  const { browser = defaultBrowser, update, webpack } = options;
 
   if (!config) return;
 
@@ -23,14 +23,11 @@ export default async function (options: Options): Promise<void> {
       return (await import('./master')).default(config, options);
     }
     default: {
-      // TODO remove this after update use `find-cache-dir`
-      if (!storybookBundle) throw new Error('Something went wrong');
-
       console.log('[CreeveyWorker]:', `Starting ${browser}:${process.pid}`);
 
       process.on('SIGINT', noop);
 
-      return (await import('./worker')).default(config, { ...options, browser, storybookBundle });
+      return (await import('./worker')).default(config, { ...options, browser });
     }
   }
 }

@@ -2,7 +2,8 @@ import path from 'path';
 import { CreeveyConfig } from './src/types';
 
 const config: CreeveyConfig = {
-  gridUrl: 'http://localhost:4444/wd/hub',
+  useDocker: true,
+  // gridUrl: 'http://localhost:4444/wd/hub',
   storybookUrl: 'http://localhost:6006',
   screenDir: path.join(__dirname, 'stories', 'images'),
   browsers: {

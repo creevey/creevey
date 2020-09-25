@@ -36,6 +36,7 @@ describe('loader', () => {
   - declaration with destructuring (export const { Text } = stories)
   - with story fabric ??
   x default export without declaration (const Kind = {}; export default Kind;)
+  - story args for 6.x
 
 - StoriesOf
   - story decorator + params

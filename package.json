@@ -1,7 +1,7 @@
 {
   "name": "creevey",
   "description": "creevey is a tool for automated visual testing, that tightly integrated with storybook",
-  "version": "0.7.0-beta.2",
+  "version": "0.7.0-beta.3",
   "bin": {
     "creevey": "./lib/cli.js"
   },
@@ -60,8 +60,9 @@
     "chalk": "^4.1.0",
     "chokidar": "^3.4.1",
     "core-js": "^3.6.5",
-    "event-hooks-webpack-plugin": "^2.1.7",
+    "dockerode": "^3.2.1",
     "event-source-polyfill": "^1.0.15",
+    "find-cache-dir": "^3.3.1",
     "jsdom": "^16.3.0",
     "jsdom-global": "^3.0.2",
     "koa": "^2.13.0",
@@ -71,6 +72,7 @@
     "lodash": "^4.17.19",
     "minimist": "^1.2.5",
     "mocha": "~8.0.1",
+    "ora": "^5.1.0",
     "pixelmatch": "^5.2.1",
     "pngjs": "^5.0.0",
     "regenerator-runtime": "^0.13.7",
@@ -101,7 +103,8 @@
     "@storybook/react": "^6.0.21",
     "@types/babel__generator": "^7.6.1",
     "@types/babel__traverse": "^7.0.13",
-    "@types/event-hooks-webpack-plugin": "^2.0.0",
+    "@types/dockerode": "^2.5.34",
+    "@types/find-cache-dir": "^3.2.0",
     "@types/html-webpack-plugin": "^3.2.3",
     "@types/koa": "^2.11.3",
     "@types/koa-mount": "^4.0.0",
@@ -146,7 +149,7 @@
     "style-loader": "^1.2.1",
     "typescript": "^3.9.7",
     "use-immer": "^0.4.1",
-    "wait-on": "^5.1.0",
+    "wait-on": "^5.2.0",
     "webpack": "^4.44.0",
     "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.11.0"

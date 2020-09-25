@@ -1,3 +1,4 @@
+import path from 'path';
 import { createHash } from 'crypto';
 import { Context } from 'mocha';
 import chokidar from 'chokidar';
@@ -19,7 +20,7 @@ import {
   CreeveyTestFunction,
   SetStoriesData,
 } from '../types';
-import { shouldSkip, isStorybookVersionLessThan } from './utils';
+import { shouldSkip, isStorybookVersionLessThan, getCreeveyCache } from './utils';
 import { mergeWith } from 'lodash';
 import { subscribeOn } from './messages';
 
@@ -158,15 +159,11 @@ function flatStories({ globalParameters, kindParameters, stories }: SetStoriesDa
 }
 
 function loadStorybookBundle(
-  {
-    bundlePath,
-    watch,
-  }: {
-    bundlePath: string;
-    watch: boolean;
-  },
+  watch: boolean,
   storiesListener: (stories: Map<string, StoryInput[]>) => void,
 ): Promise<StoriesRaw> {
+  const bundlePath = path.join(getCreeveyCache(), 'storybook/main.js');
+
   return new Promise((resolve) => {
     const { channel } = initStorybookEnvironment();
 
@@ -199,11 +196,11 @@ function loadStorybookBundle(
 }
 
 export async function loadTestsFromStories(
-  { browsers, storybookBundlePath, watch }: { browsers: string[]; storybookBundlePath: string; watch: boolean },
+  { browsers, watch }: { browsers: string[]; watch: boolean },
   applyTestsDiff: (testsDiff: Partial<{ [id: string]: ServerTest }>) => void,
 ): Promise<Partial<{ [id: string]: ServerTest }>> {
   const testIdsByFiles = new Map<string, string[]>();
-  const stories = await loadStorybookBundle({ bundlePath: storybookBundlePath, watch }, (storiesByFiles) => {
+  const stories = await loadStorybookBundle(watch, (storiesByFiles) => {
     const testsDiff: Partial<{ [id: string]: ServerTest }> = {};
     Array.from(storiesByFiles.entries()).forEach(([filename, stories]) => {
       const tests = convertStories(browsers, stories);

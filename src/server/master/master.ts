@@ -23,8 +23,8 @@ function mergeTests(
 }
 
 export default async function master(config: Config, watch: boolean): Promise<Runner> {
-  const storybookBundlePath = await startWebpackCompiler();
-  const runner = new Runner(config, storybookBundlePath);
+  await startWebpackCompiler();
+  const runner = new Runner(config);
   const reportDataPath = path.join(config.reportDir, 'data.js');
   let testsFromReport = {};
   try {
@@ -33,9 +33,8 @@ export default async function master(config: Config, watch: boolean): Promise<Ru
     // Ignore error
   }
 
-  const tests = await loadTestsFromStories(
-    { browsers: Object.keys(config.browsers), storybookBundlePath, watch },
-    (testsDiff) => runner.updateTests(testsDiff),
+  const tests = await loadTestsFromStories({ browsers: Object.keys(config.browsers), watch }, (testsDiff) =>
+    runner.updateTests(testsDiff),
   );
 
   runner.updateTests(mergeTests(testsFromReport, tests));
