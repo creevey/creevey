@@ -1,0 +1,25 @@
+name: tests
+on: push
+
+jobs:
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+      - name: checkout lfs
+        run: git lfs checkout
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - name: install
+        run: yarn
+      - name: unit tests
+        run: yarn test
+      - name: storybook
+        run: yarn start:storybook &
+      - name: creevey
+        run: yarn creevey
