@@ -1,3 +1,9 @@
+# [0.7.0-beta.4](https://github.com/wKich/creevey/compare/v0.7.0-beta.3...v0.7.0-beta.4) (2020-09-26)
+
+### Bug Fixes
+
+- 🐛 correctly load report from previous run ([e680e24](https://github.com/wKich/creevey/commit/e680e244728fa7347eac194c88145dec2d0b87a0))
+
 # [0.7.0-beta.3](https://github.com/wKich/creevey/compare/v0.7.0-beta.2...v0.7.0-beta.3) (2020-09-25)
 
 ### Bug Fixes
