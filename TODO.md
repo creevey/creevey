@@ -208,8 +208,8 @@
   - [x] Tests not removing in hot-reloading process
   - [x] Don't end all worker processes, especially if worker has errors
   - [x] Highlight success/failed screenshot previews
+  - [x] Data from report sometimes not loading
   - [ ] Sometimes selenoid container not removing
-  - [ ] Data from report sometimes not loading
   - [ ] Use native composite screenshots for browsers which support it
   - [ ] Re-disable animations on storybook reload
   - [ ] Don't stop rebuilding if rebuild failed due syntax error
@@ -260,6 +260,7 @@
 - [ ] Improve Docker
   - [ ] Add vnc
   - [ ] Add video recording
+  - [ ] Private docker images registry
 
 ## Not in first time
 
