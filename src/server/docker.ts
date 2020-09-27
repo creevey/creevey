@@ -57,6 +57,18 @@ async function startSelenoidContainer(config: Config, debug: boolean): Promise<v
 
   await pullImages(images);
 
+  await Promise.all(
+    (await docker.listContainers({ all: true, filters: { name: ['selenoid'] } })).map(async (info) => {
+      const container = docker.getContainer(info.Id);
+      try {
+        await container.stop();
+      } catch (_) {
+        /* noop */
+      }
+      await container.remove();
+    }),
+  );
+
   const hub = docker.run(
     selenoidImage,
     ['-limit', String(limit)],
