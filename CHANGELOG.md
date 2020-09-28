@@ -1,3 +1,18 @@
+# [0.7.0-beta.5](https://github.com/wKich/creevey/compare/v0.7.0-beta.4...v0.7.0-beta.5) (2020-09-28)
+
+### Bug Fixes
+
+- 🐛 eslint errors ([ffdc73d](https://github.com/wKich/creevey/commit/ffdc73d90f29b8452e63f0817300de7e925d0785))
+- 🐛 remove old selenoid container on start ([715f04a](https://github.com/wKich/creevey/commit/715f04a228198e5369653199f983c21eca88c194))
+- 🐛 small addon ui issues ([f055c1c](https://github.com/wKich/creevey/commit/f055c1c16394250f4aaf6db56d444a1c218ab66b))
+- 🐛 small layout fixes in addon ([0f29b12](https://github.com/wKich/creevey/commit/0f29b121bb09e9840d3251eb9fe6d25a986aa46d))
+
+### Features
+
+- 🎸 Add run button in addon ([8b3596c](https://github.com/wKich/creevey/commit/8b3596cc05ff8dcfa987f816db0b02d5097517f6))
+- 🎸 show status in sidebar ([c28c2da](https://github.com/wKich/creevey/commit/c28c2daab6726735f05ab3d30d4c4662bfb8245f))
+- 🎸 Storybook addon ([7c47c4b](https://github.com/wKich/creevey/commit/7c47c4bc4432ef55364824cee2c1b42430e02a33))
+
 # [0.7.0-beta.4](https://github.com/wKich/creevey/compare/v0.7.0-beta.3...v0.7.0-beta.4) (2020-09-26)
 
 ### Bug Fixes
