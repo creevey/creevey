@@ -213,8 +213,8 @@
   - [x] Tests not removing in hot-reloading process
   - [x] Don't end all worker processes, especially if worker has errors
   - [x] Highlight success/failed screenshot previews
-  - [x] Data from report sometimes not loading
-  - [x] Sometimes selenoid container not removing
+  - [ ] Creevey don't work with docs addon (cleanup bundle)
+  - [ ] `export const parameters = {};` in preview.js lead to error `Singleton client API not yet initialized, cannot call addParameters`
   - [ ] Use native composite screenshots for browsers which support it
   - [ ] Re-disable animations on storybook reload
   - [ ] Don't stop rebuilding if rebuild failed due syntax error
@@ -265,7 +265,12 @@
 - [ ] Improve Docker
   - [ ] Add vnc
   - [ ] Add video recording
-  - [ ] Private docker images registry
+        <<<<<<< Updated upstream
+  - [ ] # Private docker images registry
+  - [ ] Start storybook inside docker
+  - [ ] Add support private docker registers
+  - [ ] Allow define custom storybook image
+    > > > > > > > Stashed changes
 
 ## Not in first time
 
