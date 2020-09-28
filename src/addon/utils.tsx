@@ -67,17 +67,19 @@ export function withCreeveyTests(
                   return;
                 }
                 if (!update || !test) return;
-                const { skip, status, results, approved } = update;
-                const story = prevStories[test.storyId || ''];
+                const { skip, status, results, approved, storyId } = update;
                 if (isDefined(skip)) test.skip = skip;
                 if (isDefined(status)) {
                   test.status = status;
-                  const storyStatus = this.getStoryStatus(test.storyId || '');
-                  const oldStatus = storyStatus
-                    .map((x) => (x.id === id ? status : x.status))
-                    .reduce((oldStatus, newStatus) => calcStatus(oldStatus, newStatus), undefined);
+                  if (isDefined(storyId) && isDefined(prevStories[storyId])) {
+                    const story = prevStories[storyId];
+                    const storyStatus = this.getStoryStatus(storyId);
+                    const oldStatus = storyStatus
+                      .map((x) => (x.id === id ? status : x.status))
+                      .reduce((oldStatus, newStatus) => calcStatus(oldStatus, newStatus), undefined);
 
-                  story.name = this.addStatus(story.name, calcStatus(oldStatus, status), skip || false);
+                    story.name = this.addStatus(story.name, calcStatus(oldStatus, status), skip || false);
+                  }
                 }
                 if (isDefined(results)) test.results ? test.results.push(...results) : (test.results = results);
                 if (isDefined(approved)) {

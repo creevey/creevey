@@ -4,7 +4,7 @@ import { borderColors, ViewProps } from './ImagesView';
 
 const Container = styled.div({
   position: 'relative',
-  margin: '20px',
+  margin: '20px 0',
   display: 'flex',
   alignItems: 'flex-start',
   justifyContent: 'flex-start',

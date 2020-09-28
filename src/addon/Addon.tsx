@@ -4,17 +4,23 @@ import { Test, isDefined, TestStatus } from '../types';
 import { IconButton, Icons, Loader, Separator, Tabs } from '@storybook/components';
 import { ResultsPage } from './ResultsPage';
 import { CreeveyContext } from './CreeveyContext';
-import { styled } from '@storybook/theming';
+import { styled, withTheme, Theme } from '@storybook/theming';
 
 interface PanelProps {
   statuses: Test[];
 }
 
-const Wrapper = styled.div<{ isRunning: boolean }>(({ isRunning }) => ({
-  opacity: isRunning ? 0.5 : 1,
-  margin: '20px',
-  position: 'absolute',
-}));
+const Wrapper = withTheme(
+  styled.div<{ isRunning: boolean; theme: Theme }>(({ isRunning, theme }) => ({
+    opacity: isRunning ? 0.5 : 1,
+    padding: '20px',
+    paddingBottom: 0,
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    background: theme.background.content,
+  })),
+);
 
 const PanelInternal = ({ statuses }: PanelProps): JSX.Element => {
   const [selectedItem, setSelectedItem] = useState(0);
@@ -49,7 +55,7 @@ const PanelInternal = ({ statuses }: PanelProps): JSX.Element => {
           <div key={x} id={`${i}`} title={`${x} ${getEmojiByTestStatus(statuses[i].status, statuses[i].skip)}`} />
         ))}
       </Tabs>
-      {isRunning && <Loader size={64} />}
+      {isRunning && <Loader />}
       {result?.results?.length ? (
         <Wrapper isRunning={isRunning}>
           <ResultsPage

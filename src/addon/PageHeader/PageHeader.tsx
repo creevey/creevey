@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ImagesViewMode, Images } from '../../types';
 import { getImageUrl } from '../../utils/helpers';
-import { Icons, Tabs, Placeholder } from '@storybook/components';
+import { Icons, Tabs } from '@storybook/components';
 import { styled, withTheme, Theme } from '@storybook/theming';
 import { ImagePreview } from './ImagePreview';
 import { viewModes } from '../../utils/viewMode';
@@ -104,14 +104,12 @@ export function PageHeaderInternal({
           ))}
         </ImagesEntriesContainer>
       ) : null}
-      {showViewModes ? (
+      {showViewModes && (
         <Tabs selected={viewMode} actions={{ onSelect: handleViewModeChange }}>
           {viewModes.map((x) => (
             <div key={x} id={x} title={x} />
           ))}
         </Tabs>
-      ) : (
-        <Placeholder />
       )}
     </>
   );

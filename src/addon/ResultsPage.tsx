@@ -33,7 +33,6 @@ const FooterContainer = styled.div({
   position: 'sticky',
   bottom: 0,
   zIndex: 1,
-  marginLeft: '-25px',
 });
 
 export function ResultsPageInternal({
@@ -71,13 +70,6 @@ export function ResultsPageInternal({
     setViewMode(mode);
   };
 
-  if (results.length === 0) {
-    return (
-      <Wrapper>
-        <Placeholder>No test results</Placeholder>
-      </Wrapper>
-    );
-  }
   return (
     <Wrapper>
       <PageHeader
