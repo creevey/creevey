@@ -22,7 +22,7 @@ export default class Runner extends EventEmitter {
   private reportDir: string;
   private browsers: string[];
   private pools: { [browser: string]: Pool } = {};
-  private tests: Partial<{ [id: string]: ServerTest }> = {};
+  tests: Partial<{ [id: string]: ServerTest }> = {};
   public get isRunning(): boolean {
     return Object.values(this.pools).some((pool) => pool.isRunning);
   }

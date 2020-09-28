@@ -168,6 +168,10 @@ function loadStorybookBundle(
     const { channel } = initStorybookEnvironment();
 
     channel.once(Events.SET_STORIES, (data: SetStoriesData) => {
+      if (watch) {
+        watchStories();
+      }
+
       if (isStorybookVersionLessThan(6)) {
         resolve(data.stories);
       } else {
@@ -177,8 +181,6 @@ function loadStorybookBundle(
     channel.on('storiesUpdated', storiesListener);
 
     if (watch) {
-      watchStories();
-
       subscribeOn('webpack', (message: WebpackMessage) => {
         if (message.type != 'rebuild succeeded') return;
 

@@ -37,7 +37,7 @@ export default async function master(config: Config, watch: boolean): Promise<Ru
     runner.updateTests(testsDiff),
   );
 
-  runner.updateTests(mergeTests(testsFromReport, tests));
+  runner.tests = mergeTests(testsFromReport, tests);
 
   process.on('SIGINT', () => {
     if (runner.isRunning) {

@@ -6,6 +6,7 @@ import creeveyServer from './server';
 import creeveyApi from './api';
 import { Config, Options, isDefined } from '../../types';
 import { shutdownWorkers } from '../utils';
+import { subscribeOn } from '../messages';
 
 const copyFileAsync = promisify(copyFile);
 const readdirAsync = promisify(readdir);
@@ -51,7 +52,7 @@ export default async function (config: Config, options: Options): Promise<void> 
   if (options.saveReport) {
     const reportDataPath = path.join(config.reportDir, 'data.js');
     await copyStatics(config.reportDir);
-    process.on('exit', () => writeFileSync(reportDataPath, reportDataModule(runner.status.tests)));
+    subscribeOn('shutdown', () => writeFileSync(reportDataPath, reportDataModule(runner.status.tests)));
   }
 
   if (options.ui) {

@@ -16,7 +16,7 @@ function openSuites(suite: CreeveySuite): CreeveySuite {
   return suite;
 }
 
-const simpleTests: CreeveyStatus['tests'] = {
+const simpleTests: () => CreeveyStatus['tests'] = () => ({
   1: { id: '1', path: ['empty', 'simple', 'root'], skip: false },
   2: { id: '2', path: ['hasResult', 'simple', 'root'], skip: false, results: [{ status: 'success' }] },
   3: { id: '3', path: ['skipped', 'simple', 'root'], skip: true },
@@ -27,8 +27,8 @@ const simpleTests: CreeveyStatus['tests'] = {
     skip: false,
     results: [{ status: 'success' }],
   },
-};
-const statusTests: CreeveyStatus['tests'] = {
+});
+const statusTests: () => CreeveyStatus['tests'] = () => ({
   5: { id: '5', path: ['success', 'success', 'root'], skip: false, status: 'success' },
   6: { id: '6', path: ['empty', 'success', 'root'], skip: false },
 
@@ -40,7 +40,7 @@ const statusTests: CreeveyStatus['tests'] = {
 
   11: { id: '11', path: ['running', 'running', 'root'], skip: false, status: 'running' },
   12: { id: '12', path: ['pending', 'running', 'root'], skip: false, status: 'pending' },
-};
+});
 
 const headerDecorator = (storyFn: StoryFn<ReactNode>): JSX.Element => (
   <div
@@ -111,10 +111,10 @@ export const HeaderDisabled = (): JSX.Element => (
 HeaderDisabled.decorators = [headerDecorator];
 
 export const SimpleSideBar = (): JSX.Element => (
-  <SideBar rootSuite={openSuites(treeifyTests(simpleTests))} openedTest={null} onOpenTest={noop} />
+  <SideBar rootSuite={openSuites(treeifyTests(simpleTests()))} openedTest={null} onOpenTest={noop} />
 );
 export const StatusSideBar = (): JSX.Element => (
-  <SideBar rootSuite={openSuites(treeifyTests(statusTests))} openedTest={null} onOpenTest={noop} />
+  <SideBar rootSuite={openSuites(treeifyTests(statusTests()))} openedTest={null} onOpenTest={noop} />
 );
 
 // TODO Hover tests
