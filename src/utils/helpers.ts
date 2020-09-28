@@ -257,7 +257,7 @@ export function countTestsStatus(suite: CreeveySuite): CreeveyTestsStatus {
 
 export function getConnectionUrl(): string {
   return `${window.location.hostname}:${
-    typeof __creeveyPort__ != 'undefined' ? __creeveyPort__ : window.location.port
+    typeof __CREEVEY_SERVER_PORT__ != 'undefined' ? __CREEVEY_SERVER_PORT__ : window.location.port
   }`;
 }
 

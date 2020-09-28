@@ -92,8 +92,8 @@ export function withCreeveyTests(
             }),
           );
         }
-      }),
-        api.on(STORY_RENDERED, this.onStoryRendered);
+      });
+      api.on(STORY_RENDERED, this.onStoryRendered);
       api.on(SET_STORIES, this.addStatusesToSidebar);
     }
 
