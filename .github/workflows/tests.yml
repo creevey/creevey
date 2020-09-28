@@ -23,3 +23,7 @@ jobs:
         run: yarn start:storybook &
       - name: creevey
         run: yarn creevey
+      - uses: actions/upload-artifact@v2
+        with:
+          name: report
+          path: report/
