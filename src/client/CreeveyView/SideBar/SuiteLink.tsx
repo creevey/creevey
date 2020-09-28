@@ -5,7 +5,7 @@ import ArrowTriangleRightIcon from '@skbkontur/react-icons/ArrowTriangleRight';
 import ArrowTriangleDownIcon from '@skbkontur/react-icons/ArrowTriangleDown';
 import { TestStatusIcon } from './TestStatusIcon';
 import { CreeveySuite, isTest } from '../../../types';
-import { CreeveyContext } from '../../CreeveyContext';
+import { CreeveyContext } from '../../../utils/CreeveyContext';
 
 export interface SuiteLinkProps {
   title: string;

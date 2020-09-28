@@ -199,6 +199,11 @@
 - [ ] Cleanup nodejs storybook bundle (Don't load any of addons)
 - [ ] Setup NODE_ENV to 'test'.
 - [ ] Add Storybook integration tests
+  - Init projects with various frameworks
+  - Init storybook using storybook cli
+  - Add creevey config
+  - Test webpack building (include bundle size)
+  - Test stories tests in output
 - [ ] Creevey as Addon PoC
 - [x] Update Eslint to v7
 - [x] Simplify hot-reloading logic, for v6.x fixed removing tests issue

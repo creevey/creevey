@@ -3,8 +3,14 @@ import { css } from '@emotion/core';
 import { ThemeContext, ThemeFactory } from '@skbkontur/react-ui';
 import { SideBarHeader } from './SideBarHeader';
 import { CreeveySuite, CreeveyTest, noop, isTest } from '../../../types';
-import { filterTests, CreeveyViewFilter, flattenSuite, countTestsStatus, getCheckedTests } from '../../helpers';
-import { CreeveyContext } from '../../CreeveyContext';
+import {
+  filterTests,
+  CreeveyViewFilter,
+  flattenSuite,
+  countTestsStatus,
+  getCheckedTests,
+} from '../../../utils/helpers';
+import { CreeveyContext } from '../../../utils/CreeveyContext';
 import { SuiteLink } from './SuiteLink';
 import { TestLink } from './TestLink';
 

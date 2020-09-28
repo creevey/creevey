@@ -2,6 +2,12 @@ import { Configuration, DefinePlugin } from 'webpack';
 
 export default {
   stories: ['../stories/**/*.stories.tsx'],
+  addons: [
+    {
+      name: './../src/addon/preset',
+      options: { creeveyPort: 3000 },
+    },
+  ],
   webpackFinal(config: Configuration) {
     config.resolve.extensions = ['.tsx', '.ts', '.jsx', '.js'];
 

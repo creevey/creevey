@@ -1,9 +1,16 @@
 import { Test, isTest, isDefined, TestStatus, CreeveySuite, CreeveyTest, CreeveyStatus } from '../types';
-import { TestsStatusProps } from './CreeveyView/SideBar/TestsStatus';
 
 export interface CreeveyViewFilter {
   status: TestStatus | null;
   subStrings: string[];
+}
+
+export interface CreeveyTestsStatus {
+  successCount: number;
+  failedCount: number;
+  pendingCount: number;
+  skippedCount: number;
+  removedCount: number;
 }
 
 const statusUpdatesMap = new Map<TestStatus | undefined, RegExp>([
@@ -31,7 +38,7 @@ export function splitLastPathToken(path: string[]): string[] {
   return path.splice(path.length - 1, 1, ...path[path.length - 1].split('/').reverse()), path;
 }
 
-function calcStatus(oldStatus?: TestStatus, newStatus?: TestStatus): TestStatus | undefined {
+export function calcStatus(oldStatus?: TestStatus, newStatus?: TestStatus): TestStatus | undefined {
   return newStatus && statusUpdatesMap.get(oldStatus)?.test(newStatus) ? newStatus : oldStatus;
 }
 
@@ -224,7 +231,7 @@ export function flattenSuite(suite: CreeveySuite): Array<{ title: string; suite:
   );
 }
 
-export function countTestsStatus(suite: CreeveySuite): Omit<TestsStatusProps, 'onClickByStatus'> {
+export function countTestsStatus(suite: CreeveySuite): CreeveyTestsStatus {
   let successCount = 0;
   let failedCount = 0;
   let skippedCount = 0;
@@ -248,10 +255,18 @@ export function countTestsStatus(suite: CreeveySuite): Omit<TestsStatusProps, 'o
   return { successCount, failedCount, skippedCount, pendingCount, removedCount };
 }
 
+export function getConnectionUrl(): string {
+  return `${window.location.hostname}:${
+    typeof __CREEVEY_SERVER_PORT__ != 'undefined' ? __CREEVEY_SERVER_PORT__ : window.location.port
+  }`;
+}
+
 export function getImageUrl(path: string[], imageName: string): string {
   // path => [kind, story, test, browser]
   const browser = path.slice(-1)[0];
-  const imagesUrl = window.location.host ? `/report/${path.slice(0, -1).join('/')}` : path.slice(0, -1).join('/');
+  const imagesUrl = window.location.host
+    ? `http://${getConnectionUrl()}/report/${path.slice(0, -1).join('/')}`
+    : path.slice(0, -1).join('/');
 
   return encodeURI(imageName == browser ? imagesUrl : `${imagesUrl}/${browser}`);
 }

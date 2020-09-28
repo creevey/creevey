@@ -40,17 +40,19 @@ export default class Runner extends EventEmitter {
   private handlePoolMessage = (message: { id: string; status: TestStatus; result?: TestResult }): void => {
     const { id, status, result } = message;
     const test = this.tests[id];
+
     if (!test) return;
     test.status = status;
     if (!result) {
-      this.sendUpdate({ tests: { [id]: { path: test.path, status } } });
+      this.sendUpdate({ tests: { [id]: { path: test.path, status, storyId: test.story.id } } });
       return;
     }
     if (!test.results) {
       test.results = [];
     }
     test.results.push(result);
-    this.sendUpdate({ tests: { [id]: { path: test.path, status, results: [result] } } });
+
+    this.sendUpdate({ tests: { [id]: { path: test.path, status, results: [result], storyId: test.story.id } } });
   };
 
   private handlePoolStop = (): void => {
@@ -107,7 +109,10 @@ export default class Runner extends EventEmitter {
     this.sendUpdate({
       isRunning: true,
       tests: testsToStart.reduce(
-        (update, { id }) => ({ ...update, [id]: { path: this.tests[id]?.path, status: 'pending' } }),
+        (update, { id }) => ({
+          ...update,
+          [id]: { path: this.tests[id]?.path, status: 'pending', storyId: this.tests[id]?.story.id },
+        }),
         {},
       ),
     });
@@ -142,7 +147,7 @@ export default class Runner extends EventEmitter {
     Object.values(this.tests)
       .filter(isDefined)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .forEach(({ story, fn, ...test }) => (tests[test.id] = test));
+      .forEach(({ story, fn, ...test }) => (tests[test.id] = { ...test, storyId: story.id }));
     return {
       isRunning: this.isRunning,
       tests,
@@ -166,7 +171,7 @@ export default class Runner extends EventEmitter {
     await mkdirAsync(path.join(this.screenDir, testPath), { recursive: true });
     await copyFileAsync(srcImagePath, dstImagePath);
     test.approved[image] = retry;
-    this.sendUpdate({ tests: { [id]: { path: test.path, approved: { [image]: retry } } } });
+    this.sendUpdate({ tests: { [id]: { path: test.path, approved: { [image]: retry }, storyId: test.story.id } } });
   }
 
   private sendUpdate(data: CreeveyUpdate): void {

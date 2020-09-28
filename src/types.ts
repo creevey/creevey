@@ -215,6 +215,7 @@ export interface Test {
   status?: TestStatus;
   results?: TestResult[];
   approved?: Partial<{ [image: string]: number }>;
+  storyId?: string;
 }
 
 export interface ServerTest extends Test {

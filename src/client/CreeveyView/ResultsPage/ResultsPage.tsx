@@ -1,11 +1,12 @@
 import React, { useContext, useState } from 'react';
 import { css } from '@emotion/core';
-import { CreeveyContext } from '../../CreeveyContext';
+import { CreeveyContext } from '../../../utils/CreeveyContext';
 import { ImagesView } from '../ImagesView';
-import { PageHeader, viewModes } from './PageHeader';
+import { PageHeader } from './PageHeader';
 import { TestResult, ImagesViewMode } from '../../../types';
 import { PageFooter } from './PageFooter';
-import { getImageUrl } from '../../helpers';
+import { getImageUrl } from '../../../utils/helpers';
+import { getViewMode, VIEW_MODE_KEY } from '../../../utils/viewMode';
 
 interface TestResultsProps {
   id: string;
@@ -13,13 +14,6 @@ interface TestResultsProps {
   results?: TestResult[];
   approved?: Partial<{ [image: string]: number }>;
 }
-
-const VIEW_MODE_KEY = 'Creevey_view_mode';
-
-const getViewMode = (): ImagesViewMode => {
-  const item = localStorage.getItem(VIEW_MODE_KEY);
-  return item && viewModes.includes(item as ImagesViewMode) ? (item as ImagesViewMode) : 'side-by-side';
-};
 
 export function ResultsPage({ id, path, results = [], approved = {} }: TestResultsProps): JSX.Element {
   const { onImageApprove } = useContext(CreeveyContext);
