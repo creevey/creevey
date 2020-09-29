@@ -1,3 +1,9 @@
+# [0.7.0-beta.6](https://github.com/wKich/creevey/compare/v0.7.0-beta.5...v0.7.0-beta.6) (2020-09-29)
+
+### Bug Fixes
+
+- 🐛 loader handle `export default {} as Meta` ([2dcca94](https://github.com/wKich/creevey/commit/2dcca946d9f94f2e1158974c6e9a22028b49492c))
+
 # [0.7.0-beta.5](https://github.com/wKich/creevey/compare/v0.7.0-beta.4...v0.7.0-beta.5) (2020-09-28)
 
 ### Bug Fixes
