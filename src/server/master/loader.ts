@@ -9,6 +9,11 @@ import { loader } from 'webpack';
 import { isStorybookVersionLessThan } from '../utils';
 import { isDefined } from '../../types';
 
+// TODO Babel lack of some method types
+interface ExtendedNodePath<T = t.Node> extends NodePath<T> {
+  isTSAsExpression(this: NodePath<T>): this is NodePath<t.TSAsExpression>;
+}
+
 function tryParse(source: string, options: OptionObject): { ast?: t.File; done: boolean } {
   try {
     return {
@@ -34,9 +39,13 @@ function getPropertyPath(path: NodePath<t.ObjectExpression>, name: string): Node
 }
 
 function getKindObjectNodePath<T>(path: NodePath<T>): NodePath<t.ObjectExpression> | undefined {
-  if (path.isObjectExpression() && getPropertyPath(path, 'title')) {
-    return path;
+  if (path.isObjectExpression()) {
+    return getPropertyPath(path, 'title') ? path : undefined;
+  } else if ((path as ExtendedNodePath<T>).isTSAsExpression()) {
+    const pathExpression = ((path as NodePath<unknown>) as NodePath<t.TSAsExpression>).get('expression');
+    return pathExpression.isObjectExpression() && getPropertyPath(pathExpression, 'title') ? pathExpression : undefined;
   } else if (path.isIdentifier()) {
+    // TODO If kind var has `as` keyword
     const { path: bindingPath } = path.scope.getBinding(path.node.name) ?? {};
     if (!bindingPath?.isVariableDeclarator()) return;
     const initPath = bindingPath.get('init');
@@ -190,15 +199,15 @@ function minifyStories(ast: t.File, source: string): string {
       do {
         const childCallPath = callPath;
         const { parentPath: memberPath } = childCallPath;
-        const propPath = memberPath.get('property') as NodePath;
+        const propPath = memberPath.get('property');
         callPath = memberPath.parentPath;
         if (!memberPath.isMemberExpression() || !callPath.isCallExpression()) return;
-        if (propPath.isIdentifier({ name: 'add' })) {
+        if (!Array.isArray(propPath) && propPath.isIdentifier({ name: 'add' })) {
           const [, storyPath, parametersPath] = callPath.get('arguments') as NodePath[];
           storyPath.replaceWith(t.arrowFunctionExpression([], t.blockStatement([])));
           if (parametersPath?.isObjectExpression()) getPropertyPath(parametersPath, 'decorators')?.remove();
         }
-        if (propPath.isIdentifier({ name: 'addDecorator' })) {
+        if (!Array.isArray(propPath) && propPath.isIdentifier({ name: 'addDecorator' })) {
           callPath.replaceWith(childCallPath);
         }
       } while (callPath.parentPath != null);

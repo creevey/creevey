@@ -15,7 +15,7 @@ const mkdirAsync = promisify(mkdir);
 async function copyStatics(reportDir: string): Promise<void> {
   const clientDir = path.join(__dirname, '../../client');
   const files = (await readdirAsync(clientDir, { withFileTypes: true }))
-    .filter((dirent) => dirent.isFile() && !dirent.name.endsWith('.d.ts'))
+    .filter((dirent) => dirent.isFile() && !dirent.name.endsWith('.d.ts') && !dirent.name.endsWith('.tsx'))
     .map((dirent) => dirent.name);
   await mkdirAsync(reportDir, { recursive: true });
   for (const file of files) {

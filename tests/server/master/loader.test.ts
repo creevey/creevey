@@ -37,6 +37,7 @@ describe('loader', () => {
   - with story fabric ??
   x default export without declaration (const Kind = {}; export default Kind;)
   - story args for 6.x
+  x kind with `as` type cast (export default {} as Meta)
 
 - StoriesOf
   - story decorator + params
