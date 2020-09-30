@@ -3,7 +3,7 @@ import { ViewProps, borderColors } from './ImagesView';
 import { styled } from '@storybook/theming';
 
 const Container = styled.div({
-  margin: '20px 0',
+  margin: '20px',
   position: 'relative',
   display: 'flex',
   alignItems: 'flex-start',
@@ -15,6 +15,9 @@ const ImageContainer = styled.div({
   position: 'absolute',
   width: '100%',
   height: '100%',
+  display: 'flex',
+  alignItems: 'flex-start',
+  justifyContent: 'flex-start',
 });
 
 const Image = styled.img<{ borderColor: string }>(({ borderColor }) => ({

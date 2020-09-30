@@ -1,14 +1,22 @@
 import React from 'react';
 
-import { ImagesView as ImagesViewBase } from '../src/client/CreeveyView/ImagesView';
+import { ImagesView as ImagesViewBase } from '../src/addon/ImageViews';
 import { ImagesViewMode, CSFStory } from '../src/types';
 
 import octocatExpect from './fixtures/octocat-expect.png';
 import octocatDiff from './fixtures/octocat-diff.png';
 import octocatActual from './fixtures/octocat-actual.png';
+import { ensure, ThemeProvider, themes } from '@storybook/theming';
 
 export default {
   title: 'ImagesViews',
+  decorators: [
+    (Story: React.ComponentClass): JSX.Element => (
+      <ThemeProvider key="theming" theme={ensure(themes.light)}>
+        <Story />
+      </ThemeProvider>
+    ),
+  ],
   parameters: {
     creevey: {
       skip: { in: 'ie11', reason: 'Internet Explorer is not supported yet' },
