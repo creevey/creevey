@@ -176,7 +176,11 @@
 - [x] Storybook Integration
   - [x] Manually create ClientApi instance, if it doesn't exists
   - [x] ~~Support storybook configs with js extension (4.x and 5.2 versions)~~
+  - [x] ~~Support stories separators https://storybook.js.org/docs/basics/writing-stories/#story-hierarchy~~
 - [x] ~~Allow define custom extensions to ignore it while story loading process~~
+- [x] Github Actions
+  - [x] Add linting job
+  - [x] Allow run ui tests in cli by `yarn test:ui`
 
 </details>
 
@@ -204,7 +208,7 @@
   - Add creevey config
   - Test webpack building (include bundle size)
   - Test stories tests in output
-- [ ] Creevey as Addon PoC
+- [x] Creevey as Addon PoC
 - [x] Update Eslint to v7
 - [x] Simplify hot-reloading logic, for v6.x fixed removing tests issue
 - [ ] Bugs
@@ -215,24 +219,14 @@
   - [x] Highlight success/failed screenshot previews
   - [ ] Creevey don't work with docs addon (cleanup bundle)
   - [ ] `export const parameters = {};` in preview.js lead to error `Singleton client API not yet initialized, cannot call addParameters`
-  - [ ] Use native composite screenshots for browsers which support it
   - [ ] Re-disable animations on storybook reload
   - [ ] Don't stop rebuilding if rebuild failed due syntax error
-  - [ ] Fix taking composite screenshots with hided scrollbar
-    - Take `document.documentElement.clientWidth/Height` instead of window rect
-    - For each screenshot after scroll, take elementRect coordinates
-    - Iterate be screen images and calculate resulting x/y coordinates for composite image
-    - If image width/height greater than viewport width/height than scroll bar is captured
 - [ ] Features
-  - [ ] Allow defined params for knobs and args to capture story with different states
-  - [ ] Add fuzzy search and highlight
+  - [ ] Add `args` type for CSFStory
   - [ ] Output unnecessary images when creevey run from cli
   - [x] Support run tests inside docker
   - [x] Allow define saucelabs/browserstack-local init/dispose functions
-  - [ ] Allow define custom localhost resolver in config
-  - [ ] Add `only` option as opposite for `skip`
-  - [ ] Allow to ignore elements in capturing screenshot
-  - [ ] Allow set viewport sizes for story (use width x height as postfix for browser name in UI)
+  - [x] ~~Allow define custom localhost resolver in config~~ (write function for storybookUrl)
 - [ ] Docs
   - [ ] Add fancy readme
   - [ ] How to deal with animations (NODE_ENV=='test')
@@ -243,8 +237,15 @@
     - [x] Vue
 - [ ] Add human readable error message if test failed with `window.__CREEVEY_SELECT_STORY__` is not a function
 
-## Second priority (vNext)
+## Second priority (v0.8)
 
+- [ ] Bugs
+  - [ ] Use native composite screenshots for browsers which support it
+  - [ ] Fix taking composite screenshots with hidden scrollbar
+    - Take `document.documentElement.clientWidth/Height` instead of window rect
+    - For each screenshot after scroll, take elementRect coordinates
+    - Iterate be screen images and calculate resulting x/y coordinates for composite image
+    - If image width/height greater than viewport width/height than scroll bar is captured
 - [ ] Support esm/cjs builds
 - [ ] Drop storiesOf and Storybook v4.x support
   - [ ] Could we drop more entry points from webpack config? (generated entry for example)
@@ -262,15 +263,18 @@
   - [ ] Add bootstrap script, that build and install current version into examples or use monorepo
   - [ ] Easy way to ignore stories/kinds from UI
   - [ ] Add `init` cli option
+  - [ ] Allow defined params for knobs and args to capture story with different states
+  - [ ] Add fuzzy search and highlight
+  - [ ] Add `only` option as opposite for `skip`
+  - [ ] Allow to ignore elements in capturing screenshot
+  - [ ] Allow set viewport sizes for story (use width x height as postfix for browser name in UI)
 - [ ] Improve Docker
   - [ ] Add vnc
   - [ ] Add video recording
-        <<<<<<< Updated upstream
-  - [ ] # Private docker images registry
+  - [ ] Private docker images registry
   - [ ] Start storybook inside docker
   - [ ] Add support private docker registers
   - [ ] Allow define custom storybook image
-    > > > > > > > Stashed changes
 
 ## Not in first time
 
@@ -297,11 +301,6 @@
   - [ ] Allow hide skipped tests in UI
   - [ ] Allow switch between 1:1 and fit image views
 - [ ] Add unit tests
-- [ ] Github Actions
-  - [x] Add linting job
-  - [ ] Allow run ui tests in cli by `yarn test:ui`
-- [x] Storybook integration
-  - [x] ~~Support stories separators https://storybook.js.org/docs/basics/writing-stories/#story-hierarchy~~
 - [ ] Rewrite to use `worker_threads` instead of `cluster` to allow use shared memory
 - [ ] Support mocha options for workers
 - [ ] Programmic API

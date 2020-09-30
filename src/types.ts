@@ -56,6 +56,7 @@ export interface CSFStory<StoryFnReturnType = unknown> {
       [name: string]: unknown;
     };
   };
+  // TODO Add `args` prop
   storyName?: string;
   decorators?: DecoratorFunction<StoryFnReturnType>[];
   parameters?: {
