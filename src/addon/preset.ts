@@ -1,7 +1,12 @@
 import { Configuration, DefinePlugin } from 'webpack';
 
+export function config(entry: string[] = []): string[] {
+  return [...entry, require.resolve('./decorator')];
+}
+
+// TODO Check addon in project
 export function managerEntries(entry: string[] = []): string[] {
-  return [...entry, require.resolve('./../register')];
+  return [...entry, require.resolve('./register')];
 }
 
 declare global {

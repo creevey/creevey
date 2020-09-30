@@ -13,6 +13,6 @@ addons.register(ADDON_ID, (api) => {
     route: ({ storyId }) => `/${ADDON_ID}/${storyId || ''}`,
     match: ({ viewMode }) => viewMode === ADDON_ID,
     // eslint-disable-next-line react/display-name
-    render: ({ active, key }) => <Panel api={api} active={active} key={key} />,
+    render: ({ active, key }) => React.createElement(Panel, { api, active, key }),
   });
 });
