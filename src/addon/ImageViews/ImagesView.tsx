@@ -4,7 +4,7 @@ import { SwapView } from './SwapView';
 import { SlideView } from './SlideView';
 import { BlendView } from './BlendView';
 import { Images, ImagesViewMode } from './../../types';
-import { styled, Theme, withTheme } from '@storybook/theming';
+import { styled, Theme } from '@storybook/theming';
 
 export const borderColors: ViewProps = {
   actual: '#d9472b',
@@ -36,16 +36,14 @@ const views: { [mode in ImagesViewMode]: FunctionComponent<ViewProps> } = {
   blend: BlendView,
 };
 
-const Container = withTheme(
-  styled.div(({ theme }) => ({
-    background: theme.background.content,
-    height: '100%',
-    display: 'flex',
-    textAlign: 'center',
-    alignItems: 'center',
-    justifyContent: 'center',
-  })),
-);
+const Container = styled.div({
+  background: '#eee',
+  height: '100%',
+  display: 'flex',
+  textAlign: 'center',
+  alignItems: 'center',
+  justifyContent: 'center',
+});
 
 const ActualImage = styled.img({
   border: `1px solid ${borderColors.expect}`,
