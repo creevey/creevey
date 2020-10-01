@@ -7,7 +7,7 @@ import PauseIcon from '@skbkontur/react-icons/Pause';
 import TrashIcon from '@skbkontur/react-icons/Trash';
 import { Button, ThemeContext, ThemeFactory } from '@skbkontur/react-ui';
 import { TestStatus } from '../../../types';
-import { CreeveyTestsStatus } from '../../../utils/helpers';
+import { CreeveyTestsStatus } from '../../../shared/helpers';
 
 const StatusButtonsTheme = ThemeFactory.create({ linkHoverTextDecoration: 'none' });
 

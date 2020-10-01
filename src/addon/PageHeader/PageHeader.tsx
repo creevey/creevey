@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { ImagesViewMode, Images } from '../../types';
-import { getImageUrl } from '../../utils/helpers';
+import { getImageUrl } from '../../shared/helpers';
 import { Icons, Tabs } from '@storybook/components';
 import { styled, withTheme, Theme } from '@storybook/theming';
 import { ImagePreview } from './ImagePreview';
-import { viewModes } from '../../utils/viewMode';
+import { viewModes } from '../../shared/viewMode';
 
 interface PageHeaderProps {
   title: string[];

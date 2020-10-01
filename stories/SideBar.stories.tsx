@@ -1,10 +1,10 @@
 import React, { ReactNode } from 'react';
 import { StoryFn } from '@storybook/addons';
 import { css } from '@emotion/core';
-import { CreeveyContext } from '../src/utils/CreeveyContext';
+import { CreeveyContext } from '../src/shared/CreeveyContext';
 import { SideBar } from '../src/client/CreeveyView/SideBar';
 import { SideBarHeader } from '../src/client/CreeveyView/SideBar/SideBarHeader';
-import { treeifyTests } from '../src/utils/helpers';
+import { treeifyTests } from '../src/shared/helpers';
 import { noop, CreeveySuite, CreeveyStatus, isDefined, isTest } from '../src/types';
 
 function openSuites(suite: CreeveySuite): CreeveySuite {
