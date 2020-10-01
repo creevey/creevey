@@ -112,9 +112,6 @@ export default async function compile(config: Config, { debug, ui }: Options): P
     ...storybookWebpackConfig.output,
     filename: 'main.js',
   };
-  // Exclude addons
-  // TODO Figure why it loading
-  // TODO exclude all addons from configs before loadStorybookWebpackConfig
   storybookWebpackConfig.entry = Array.isArray(storybookWebpackConfig.entry)
     ? storybookWebpackConfig.entry.filter((entry) => !entry.includes('@storybook/addon'))
     : storybookWebpackConfig.entry;

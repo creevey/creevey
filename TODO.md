@@ -202,7 +202,7 @@
 - [x] Support declarative 6.0 decorators format, like this https://github.com/storybookjs/storybook/tree/master/addons/knobs/src/preset
 - [x] Store creevey storybook bundle in cache dir using find-cache-dir pkg
 - [x] Move addon ImageViews to shared and use it in client UI
-- [ ] Cleanup nodejs storybook bundle (Don't load any of addons)
+- [x] Cleanup nodejs storybook bundle (Don't load any of addons)
 - [ ] Setup NODE_ENV to 'test'.
 - [ ] Add Storybook integration tests
   - Init projects with various frameworks
@@ -219,8 +219,10 @@
   - [x] Tests not removing in hot-reloading process
   - [x] Don't end all worker processes, especially if worker has errors
   - [x] Highlight success/failed screenshot previews
-  - [ ] Creevey don't work with docs addon (cleanup bundle)
+  - [x] Creevey don't work with docs addon (cleanup bundle)
   - [x] `export const parameters = {};` in preview.js lead to error `Singleton client API not yet initialized, cannot call addParameters`
+  - [ ] Storybook addons override creevey parameters in stories (wait fix from storybook, send PR)
+  - [ ] Don't fail build with mdx stories
   - [ ] Re-disable animations on storybook reload
   - [ ] Don't stop rebuilding if rebuild failed due syntax error
 - [ ] Features
