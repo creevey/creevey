@@ -1,15 +1,25 @@
 import React, { FunctionComponent } from 'react';
-import { css } from '@emotion/core';
 import { SideBySideView } from './SideBySideView';
 import { SwapView } from './SwapView';
 import { SlideView } from './SlideView';
 import { BlendView } from './BlendView';
 import { Images, ImagesViewMode } from '../../../types';
+import { styled, Theme } from '@storybook/theming';
+
+export const borderColors: ViewProps = {
+  actual: '#d9472b',
+  expect: '#419d14',
+  diff: '#1d85d0',
+};
 
 export interface ViewProps {
   actual: string;
   diff: string;
   expect: string;
+}
+
+export interface ViewPropsWithTheme extends ViewProps {
+  theme: Theme;
 }
 
 interface ImagesViewProps {
@@ -26,43 +36,34 @@ const views: { [mode in ImagesViewMode]: FunctionComponent<ViewProps> } = {
   blend: BlendView,
 };
 
+const Container = styled.div({
+  background: '#eee',
+  height: '100%',
+  display: 'flex',
+  textAlign: 'center',
+  alignItems: 'center',
+  justifyContent: 'center',
+});
+
+const ActualImage = styled.img({
+  border: `1px solid ${borderColors.expect}`,
+  maxWidth: '100%',
+});
+
 export function ImagesView({ url, image, canApprove, mode }: ImagesViewProps): JSX.Element {
   const ViewComponent = views[mode];
 
   const { actual, diff, expect } = image;
 
   return (
-    <div
-      css={css`
-        background: #eee;
-        height: 100%;
-        display: flex;
-        text-align: center;
-        align-items: center;
-        justify-content: center;
-      `}
-    >
+    <Container>
       {canApprove && diff && expect ? (
         <ViewComponent actual={`${url}/${actual}`} diff={`${url}/${diff}`} expect={`${url}/${expect}`} />
       ) : (
-        <a
-          css={css`
-            margin: 20px;
-          `}
-          href={`${url}/${actual}`}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img
-            alt="actual"
-            src={`${url}/${actual}`}
-            css={css`
-              border: 1px solid #419d14;
-              max-width: 100%;
-            `}
-          />
+        <a href={`${url}/${actual}`} target="_blank" rel="noopener noreferrer">
+          <ActualImage alt="actual" src={`${url}/${actual}`} />
         </a>
       )}
-    </div>
+    </Container>
   );
 }
