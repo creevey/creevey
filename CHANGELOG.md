@@ -1,3 +1,9 @@
+# [0.7.0-beta.7](https://github.com/wKich/creevey/compare/v0.7.0-beta.6...v0.7.0-beta.7) (2020-10-01)
+
+### Features
+
+- 🎸 support declarative decorators format ([3e22854](https://github.com/wKich/creevey/commit/3e22854e3bbefc2bef9c4f7fde270620e9919859))
+
 # [0.7.0-beta.6](https://github.com/wKich/creevey/compare/v0.7.0-beta.5...v0.7.0-beta.6) (2020-09-29)
 
 ### Bug Fixes
