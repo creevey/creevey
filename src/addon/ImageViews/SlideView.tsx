@@ -4,7 +4,7 @@ import { borderColors, ViewProps } from './ImagesView';
 
 const Container = styled.div({
   position: 'relative',
-  margin: '20px 0',
+  margin: '20px',
   display: 'flex',
   alignItems: 'flex-start',
   justifyContent: 'flex-start',
@@ -65,6 +65,7 @@ const ImageWrapper = styled.div({
 const Image = styled.img<{ borderColor: string }>(({ borderColor }) => ({
   border: `1px solid ${borderColor}`,
   maxWidth: '100%',
+  background: '#fff',
 }));
 
 const DiffImage = styled.img({

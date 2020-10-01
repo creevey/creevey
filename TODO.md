@@ -201,6 +201,7 @@
 - [x] ~~Add @babel/code-frame to output loader error~~ There is babel issue https://github.com/babel/babel/issues/8617
 - [x] Support declarative 6.0 decorators format, like this https://github.com/storybookjs/storybook/tree/master/addons/knobs/src/preset
 - [x] Store creevey storybook bundle in cache dir using find-cache-dir pkg
+- [ ] Move addon ImageViews to shared and use it in client UI
 - [ ] Cleanup nodejs storybook bundle (Don't load any of addons)
 - [ ] Setup NODE_ENV to 'test'.
 - [ ] Add Storybook integration tests

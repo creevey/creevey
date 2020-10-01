@@ -13,14 +13,6 @@ const Container = styled.div({
 
 const ImageContainer = styled.a({
   margin: '0 10px',
-
-  '&::first-of-type': {
-    marginLeft: '20px',
-  },
-
-  '&::last-of-type': {
-    marginRight: '20px',
-  },
 });
 
 const Image = styled.img<{ borderColor: string }>(({ borderColor }) => ({
@@ -31,13 +23,19 @@ const Image = styled.img<{ borderColor: string }>(({ borderColor }) => ({
 export function SideBySideView({ actual, diff, expect }: ViewProps): JSX.Element {
   return (
     <Container>
-      <ImageContainer href={expect} target="_blank" rel="noopener noreferrer">
+      {
+        // TODO move to styles after fix https://github.com/storybookjs/storybook/issues/6998
+      }
+      <ImageContainer href={expect} target="_blank" rel="noopener noreferrer" style={{ marginLeft: '20px' }}>
         <Image borderColor={borderColors.expect} alt="expect" src={expect} />
       </ImageContainer>
       <ImageContainer href={diff} target="_blank" rel="noopener noreferrer">
         <Image borderColor={borderColors.diff} alt="diff" src={diff} />
       </ImageContainer>
-      <ImageContainer href={actual} target="_blank" rel="noopener noreferrer">
+      {
+        // TODO move to styles after fix https://github.com/storybookjs/storybook/issues/6998
+      }
+      <ImageContainer href={actual} target="_blank" rel="noopener noreferrer" style={{ marginRight: '20px' }}>
         <Image borderColor={borderColors.actual} alt="actual" src={actual} />
       </ImageContainer>
     </Container>
