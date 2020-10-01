@@ -4,7 +4,6 @@ export function config(entry: string[] = []): string[] {
   return [...entry, require.resolve('./decorator')];
 }
 
-// TODO Check addon in project
 export function managerEntries(entry: string[] = []): string[] {
   return [...entry, require.resolve('./register')];
 }

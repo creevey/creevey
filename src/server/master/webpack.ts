@@ -126,7 +126,6 @@ export default async function compile(config: Config, { debug, ui }: Options): P
     exclude: /node_modules/,
     use: { loader: require.resolve('./loader'), options: { debug } },
   });
-  // TODO Check on windows and monorepos
   storybookWebpackConfig.externals = [
     nodeExternals({ includeAbsolutePaths: true, allowlist: /webpack/ }),
     // TODO Don't work well with monorepos
