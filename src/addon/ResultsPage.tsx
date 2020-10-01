@@ -4,10 +4,10 @@ import { ImagesView } from './ImageViews/ImagesView';
 import { PageHeader } from './PageHeader/PageHeader';
 import { PageFooter } from './PageFooter/PageFooter';
 import { TestResult, ImagesViewMode } from '../types';
-import { getImageUrl } from '../utils/helpers';
+import { getImageUrl } from '../shared/helpers';
 import { styled, withTheme, Theme } from '@storybook/theming';
 import { Placeholder } from '@storybook/components';
-import { getViewMode, VIEW_MODE_KEY } from '../utils/viewMode';
+import { getViewMode, VIEW_MODE_KEY } from '../shared/viewMode';
 
 interface TestResultsProps {
   id: string;

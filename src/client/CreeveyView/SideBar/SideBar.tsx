@@ -9,8 +9,8 @@ import {
   flattenSuite,
   countTestsStatus,
   getCheckedTests,
-} from '../../../utils/helpers';
-import { CreeveyContext } from '../../../utils/CreeveyContext';
+} from '../../../shared/helpers';
+import { CreeveyContext } from '../../../shared/CreeveyContext';
 import { SuiteLink } from './SuiteLink';
 import { TestLink } from './TestLink';
 

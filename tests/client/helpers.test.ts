@@ -1,6 +1,6 @@
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
-import { checkSuite } from '../../src/utils/helpers';
+import { checkSuite } from '../../src/shared/helpers';
 import { CreeveySuite, Test } from '../../src/types';
 
 function mockTest(): Test {

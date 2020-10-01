@@ -4,8 +4,8 @@ import { ThemeContext, Tabs, ThemeFactory } from '@skbkontur/react-ui';
 import DeleteIcon from '@skbkontur/react-icons/Delete';
 import { Images, ImagesViewMode } from '../../../types';
 import { ImagePreview } from './ImagePreview';
-import { getImageUrl } from '../../../utils/helpers';
-import { viewModes } from '../../../utils/viewMode';
+import { getImageUrl } from '../../../shared/helpers';
+import { viewModes } from '../../../shared/viewMode';
 
 const IMAGE_PREVIEW_THEME = ThemeFactory.create({
   btnCheckedBg: '#fff',

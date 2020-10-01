@@ -4,9 +4,9 @@ import { Loader } from '@skbkontur/react-ui';
 import { CreeveyApp } from './CreeveyApp';
 
 import './index.css';
-import { initCreeveyClientApi, CreeveyClientApi } from '../utils/creeveyClientApi';
+import { initCreeveyClientApi, CreeveyClientApi } from '../shared/creeveyClientApi';
 import { CreeveyStatus } from '../types';
-import { treeifyTests } from '../utils/helpers';
+import { treeifyTests } from '../shared/helpers';
 
 declare global {
   const __CREEVEY_DATA__: CreeveyStatus['tests'];

@@ -1,12 +1,12 @@
 import React, { useContext, useState } from 'react';
 import { css } from '@emotion/core';
-import { CreeveyContext } from '../../../utils/CreeveyContext';
+import { CreeveyContext } from '../../../shared/CreeveyContext';
 import { ImagesView } from '../ImagesView';
 import { PageHeader } from './PageHeader';
 import { TestResult, ImagesViewMode } from '../../../types';
 import { PageFooter } from './PageFooter';
-import { getImageUrl } from '../../../utils/helpers';
-import { getViewMode, VIEW_MODE_KEY } from '../../../utils/viewMode';
+import { getImageUrl } from '../../../shared/helpers';
+import { getViewMode, VIEW_MODE_KEY } from '../../../shared/viewMode';
 
 interface TestResultsProps {
   id: string;

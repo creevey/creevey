@@ -3,7 +3,7 @@ import { css } from '@emotion/core';
 import { Button, Checkbox } from '@skbkontur/react-ui';
 import { CreeveyTest } from '../../../types';
 import { TestStatusIcon } from './TestStatusIcon';
-import { CreeveyContext } from '../../../utils/CreeveyContext';
+import { CreeveyContext } from '../../../shared/CreeveyContext';
 import { SideBarContext } from './SideBar';
 
 export interface TestLinkProps {
