@@ -195,12 +195,13 @@
 - [ ] Update Readme
   - [ ] `UseDocker`
   - [ ] `before/after` hooks
+  - [ ] creevey addon
+  - [ ] new params config, don't need decorator any more
 - [x] Support Storybook 6.x
 - [x] ~~Add @babel/code-frame to output loader error~~ There is babel issue https://github.com/babel/babel/issues/8617
-- [ ] Support declarative 6.0 decorators format, like this https://github.com/storybookjs/storybook/tree/master/addons/knobs/src/preset
+- [x] Support declarative 6.0 decorators format, like this https://github.com/storybookjs/storybook/tree/master/addons/knobs/src/preset
 - [x] Store creevey storybook bundle in cache dir using find-cache-dir pkg
 - [x] Move addon ImageViews to shared and use it in client UI
-- [ ] Support mdx stories
 - [ ] Cleanup nodejs storybook bundle (Don't load any of addons)
 - [ ] Setup NODE_ENV to 'test'.
 - [ ] Add Storybook integration tests
@@ -219,7 +220,7 @@
   - [x] Don't end all worker processes, especially if worker has errors
   - [x] Highlight success/failed screenshot previews
   - [ ] Creevey don't work with docs addon (cleanup bundle)
-  - [ ] `export const parameters = {};` in preview.js lead to error `Singleton client API not yet initialized, cannot call addParameters`
+  - [x] `export const parameters = {};` in preview.js lead to error `Singleton client API not yet initialized, cannot call addParameters`
   - [ ] Re-disable animations on storybook reload
   - [ ] Don't stop rebuilding if rebuild failed due syntax error
 - [ ] Features
@@ -248,6 +249,7 @@
     - Iterate be screen images and calculate resulting x/y coordinates for composite image
     - If image width/height greater than viewport width/height than scroll bar is captured
 - [ ] Support esm/cjs builds
+- [ ] Support mdx stories
 - [ ] Drop storiesOf and Storybook v4.x support
   - [ ] Could we drop more entry points from webpack config? (generated entry for example)
 - [ ] Transform to monorepo
