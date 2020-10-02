@@ -2,6 +2,7 @@ import React from 'react';
 
 import { Button, Icons } from '@storybook/components';
 import { noop } from '../../types';
+import { styled } from '@storybook/theming';
 
 export interface PagingProps {
   activePage: number;
@@ -11,20 +12,24 @@ export interface PagingProps {
 
 export type ItemType = number | '.' | 'forward';
 
+const StyledButton = styled(Button)({
+  'margin-left': '8px',
+});
+
 export function Paging(props: PagingProps): JSX.Element {
   const renderItem = (item: ItemType, index: number): JSX.Element => {
     switch (item) {
       case '.': {
         return (
-          <Button disabled key={`dots${index < 5 ? 'Left' : 'Right'}`}>
+          <StyledButton disabled key={`dots${index < 5 ? 'Left' : 'Right'}`}>
             {'...'}
-          </Button>
+          </StyledButton>
         );
       }
       case 'forward': {
         const disabled = props.activePage === props.pagesCount;
         return (
-          <Button
+          <StyledButton
             outline
             disabled={disabled}
             onClick={disabled ? noop : () => goToPage(props.activePage + 1)}
@@ -33,14 +38,14 @@ export function Paging(props: PagingProps): JSX.Element {
             <span>
               Next <Icons icon="arrowright" />
             </span>
-          </Button>
+          </StyledButton>
         );
       }
       default: {
         return (
-          <Button outline secondary={props.activePage === item} key={item} onClick={() => goToPage(item)}>
+          <StyledButton outline secondary={props.activePage === item} key={item} onClick={() => goToPage(item)}>
             {item}
-          </Button>
+          </StyledButton>
         );
       }
     }
@@ -52,7 +57,7 @@ export function Paging(props: PagingProps): JSX.Element {
     }
   };
 
-  return <span>{getItems(props.activePage, props.pagesCount).map(renderItem)}</span>;
+  return <div>{getItems(props.activePage, props.pagesCount).map(renderItem)}</div>;
 }
 
 function getItems(active: number, total: number): ItemType[] {
