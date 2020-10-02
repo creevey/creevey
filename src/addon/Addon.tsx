@@ -22,6 +22,13 @@ const Wrapper = withTheme(
   })),
 );
 
+const TabsWrapper = styled.div({
+  '&&': {
+    position: 'static',
+    height: 'initial',
+  },
+});
+
 const PanelInternal = ({ statuses }: PanelProps): JSX.Element => {
   const [selectedItem, setSelectedItem] = useState(0);
   const browsers = statuses
@@ -34,31 +41,35 @@ const PanelInternal = ({ statuses }: PanelProps): JSX.Element => {
   const { onStart, onStop } = useContext(CreeveyContext);
   const isRunning = result?.status === 'running';
   if (!browsers.length) {
-    return <Placeholder>Start Creevey server please</Placeholder>;
+    return (
+      <Placeholder>{`Can't connect to Creevey server by 'http://${window.location.hostname}:${__CREEVEY_SERVER_PORT__}'. Please, make sure that you start it.`}</Placeholder>
+    );
   }
 
   return (
     <Fragment>
-      <Tabs
-        selected={`${selectedItem}`}
-        actions={{ onSelect: handleBrowserChange }}
-        tools={
-          <Fragment>
-            <Separator />
-            <IconButton
-              onClick={() => {
-                isRunning ? onStop() : onStart([result.id]);
-              }}
-            >
-              <Icons icon={isRunning ? 'stop' : 'play'} />
-            </IconButton>
-          </Fragment>
-        }
-      >
-        {browsers.map((x, i) => (
-          <div key={x} id={`${i}`} title={`${x} ${getEmojiByTestStatus(statuses[i].status, statuses[i].skip)}`} />
-        ))}
-      </Tabs>
+      <TabsWrapper>
+        <Tabs
+          selected={`${selectedItem}`}
+          actions={{ onSelect: handleBrowserChange }}
+          tools={
+            <Fragment>
+              <Separator />
+              <IconButton
+                onClick={() => {
+                  isRunning ? onStop() : onStart([result.id]);
+                }}
+              >
+                <Icons icon={isRunning ? 'stop' : 'play'} />
+              </IconButton>
+            </Fragment>
+          }
+        >
+          {browsers.map((x, i) => (
+            <div key={x} id={`${i}`} title={`${x} ${getEmojiByTestStatus(statuses[i].status, statuses[i].skip)}`} />
+          ))}
+        </Tabs>
+      </TabsWrapper>
       {isRunning && <Loader />}
       {result?.results?.length ? (
         <Wrapper isRunning={isRunning}>

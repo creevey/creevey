@@ -7,11 +7,9 @@ const PANEL_ID = `${ADDON_ID}/panel`;
 
 addons.register(ADDON_ID, (api) => {
   const title = 'Creevey';
-  addons.add(PANEL_ID, {
+  addons.addPanel(PANEL_ID, {
     title,
-    type: types.TAB,
-    route: ({ storyId }) => `/${ADDON_ID}/${storyId || ''}`,
-    match: ({ viewMode }) => viewMode === ADDON_ID,
+    type: types.PANEL,
     // eslint-disable-next-line react/display-name
     render: ({ active, key }) => React.createElement(Panel, { api, active, key }),
   });
