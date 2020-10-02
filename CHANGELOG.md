@@ -1,3 +1,9 @@
+# [0.7.0-beta.10](https://github.com/wKich/creevey/compare/v0.7.0-beta.9...v0.7.0-beta.10) (2020-10-02)
+
+### Bug Fixes
+
+- 🐛 some generated modules are excluded as external ([9d8d04b](https://github.com/wKich/creevey/commit/9d8d04ba6b49a6fc216f661790931bb010284fef))
+
 # [0.7.0-beta.9](https://github.com/wKich/creevey/compare/v0.7.0-beta.8...v0.7.0-beta.9) (2020-10-02)
 
 ### Bug Fixes
