@@ -1,3 +1,9 @@
+# [0.7.0-beta.8](https://github.com/wKich/creevey/compare/v0.7.0-beta.7...v0.7.0-beta.8) (2020-10-02)
+
+### Bug Fixes
+
+- 🐛 storybook override creevey story parameters ([bd17edf](https://github.com/wKich/creevey/commit/bd17edfcbc5a7dc879c6bf08dca41fec4f207f15))
+
 # [0.7.0-beta.7](https://github.com/wKich/creevey/compare/v0.7.0-beta.6...v0.7.0-beta.7) (2020-10-01)
 
 ### Features
