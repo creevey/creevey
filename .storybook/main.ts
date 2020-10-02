@@ -12,14 +12,6 @@ export default {
     // css-loader
     config.module.rules[7].use[1].options.modules = 'global';
 
-    // TODO Embed into utils
-    // TODO Use cross-env to define test env
-    config.plugins.push(
-      new DefinePlugin({
-        'process.env.enableReactTesting': JSON.stringify(process.env.NODE_ENV == 'test'),
-      }),
-    );
-
     return config;
   },
 };
