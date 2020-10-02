@@ -1,3 +1,9 @@
+# [0.7.0-beta.9](https://github.com/wKich/creevey/compare/v0.7.0-beta.8...v0.7.0-beta.9) (2020-10-02)
+
+### Bug Fixes
+
+- 🐛 some ui markup, change placeholder message ([b3a6bd6](https://github.com/wKich/creevey/commit/b3a6bd61c1a1d1d52a92a3513545a00962aa0159))
+
 # [0.7.0-beta.8](https://github.com/wKich/creevey/compare/v0.7.0-beta.7...v0.7.0-beta.8) (2020-10-02)
 
 ### Bug Fixes
