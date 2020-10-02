@@ -142,9 +142,16 @@ export default async function compile(config: Config, { debug, ui }: Options): P
 
   // NOTE Exclude from bundle all modules from node_modules
   storybookWebpackConfig.externals = [
-    nodeExternals({ includeAbsolutePaths: true, allowlist: /webpack/ }),
+    nodeExternals({
+      includeAbsolutePaths: true,
+      allowlist: /(webpack|dummy-hmr|generated-stories-entry|generated-config-entry|generated-other-entry)/,
+    }),
     // TODO Don't work well with monorepos
-    nodeExternals({ modulesDir: storybookParentDirectory, includeAbsolutePaths: true, allowlist: /webpack/ }),
+    nodeExternals({
+      modulesDir: storybookParentDirectory,
+      includeAbsolutePaths: true,
+      allowlist: /(webpack|dummy-hmr|generated-stories-entry|generated-config-entry|generated-other-entry)/,
+    }),
   ];
 
   const storybookWebpackCompiler = webpack(storybookWebpackConfig);

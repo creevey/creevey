@@ -205,6 +205,7 @@
 - [x] Store creevey storybook bundle in cache dir using find-cache-dir pkg
 - [x] Move addon ImageViews to shared and use it in client UI
 - [x] Cleanup nodejs storybook bundle (Don't load any of addons)
+- [ ] Build addon for ie11
 - [ ] Setup NODE_ENV to 'test'.
 - [ ] Add Storybook integration tests
   - Init projects with various frameworks
@@ -276,6 +277,7 @@
   - [ ] Allow to ignore elements in capturing screenshot
   - [ ] Allow set viewport sizes for story (use width x height as postfix for browser name in UI)
   - [ ] Allow to restart tests on story changes
+  - [ ] Creevey-as-a-Service
 - [ ] Improve Docker
   - [ ] Add vnc
   - [ ] Add video recording
