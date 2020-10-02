@@ -17,7 +17,7 @@ export interface CreeveyAddonOptions {
 export function managerWebpack(config: Configuration, options: CreeveyAddonOptions): Configuration {
   config.plugins?.push(
     new DefinePlugin({
-      __CREEVEY_SERVER_PORT__: options.creeveyPort || 3000,
+      __CREEVEY_SERVER_PORT__: options.creeveyPort ?? 3000,
     }),
   );
   return config;
