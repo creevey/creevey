@@ -197,6 +197,8 @@
   - [ ] `before/after` hooks
   - [ ] creevey addon
   - [ ] new params config, don't need decorator any more
+  - [ ] update demo video
+  - [ ] update using types (`export const Slide: Story<React.ComponentProps<typeof ImagesView>> & CSFStory<JSX.Element> = () => ImagesView('slide');`)
 - [x] Support Storybook 6.x
 - [x] ~~Add @babel/code-frame to output loader error~~ There is babel issue https://github.com/babel/babel/issues/8617
 - [x] Support declarative 6.0 decorators format, like this https://github.com/storybookjs/storybook/tree/master/addons/knobs/src/preset
@@ -222,15 +224,15 @@
   - [x] Creevey don't work with docs addon (cleanup bundle)
   - [x] `export const parameters = {};` in preview.js lead to error `Singleton client API not yet initialized, cannot call addParameters`
   - [x] Storybook addons override creevey parameters in stories (wait fix from storybook, send PR)
-  - [ ] Don't fail build with mdx stories
+  - [ ] Don't fail build with mdx stories (just ignore it for now)
   - [ ] Re-disable animations on storybook reload
   - [ ] Don't stop rebuilding if rebuild failed due syntax error
 - [ ] Features
-  - [ ] Add `args` type for CSFStory
-  - [ ] Output unnecessary images when creevey run from cli
+  - [x] ~~Add `args` type for CSFStory~~ (Can't support 5.x and 6.x in same time)
   - [x] Support run tests inside docker
   - [x] Allow define saucelabs/browserstack-local init/dispose functions
   - [x] ~~Allow define custom localhost resolver in config~~ (write function for storybookUrl)
+  - [ ] Output unnecessary images when creevey run from cli
 - [ ] Docs
   - [ ] Add fancy readme
   - [ ] How to deal with animations (NODE_ENV=='test')
@@ -273,6 +275,7 @@
   - [ ] Add `only` option as opposite for `skip`
   - [ ] Allow to ignore elements in capturing screenshot
   - [ ] Allow set viewport sizes for story (use width x height as postfix for browser name in UI)
+  - [ ] Allow to restart tests on story changes
 - [ ] Improve Docker
   - [ ] Add vnc
   - [ ] Add video recording
