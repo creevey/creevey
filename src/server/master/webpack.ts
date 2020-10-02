@@ -106,29 +106,46 @@ export default async function compile(config: Config, { debug, ui }: Options): P
 
   delete storybookWebpackConfig.optimization;
   delete storybookWebpackConfig.devtool;
+  storybookWebpackConfig.performance = false;
   storybookWebpackConfig.mode = 'development';
   storybookWebpackConfig.target = 'node';
   storybookWebpackConfig.output = {
     ...storybookWebpackConfig.output,
     filename: 'main.js',
   };
+
+  // NOTE Exclude all addons
   storybookWebpackConfig.entry = Array.isArray(storybookWebpackConfig.entry)
     ? storybookWebpackConfig.entry.filter((entry) => !entry.includes('@storybook/addon'))
     : storybookWebpackConfig.entry;
+
+  // NOTE Add hack to allow stories HMR work in nodejs
   Array.isArray(storybookWebpackConfig.entry) &&
     storybookWebpackConfig.entry.unshift(path.join(__dirname, 'dummy-hmr'));
+
+  // NOTE Exclude source-loader
+  storybookWebpackConfig.module = {
+    ...storybookWebpackConfig.module,
+    rules:
+      storybookWebpackConfig.module?.rules.filter(
+        (rule) => !(typeof rule.loader == 'string' && rule.loader.includes('@storybook/source-loader')),
+      ) ?? [],
+  };
+
+  // NOTE Add creevey-loader to cut off all unnecessary code except stories meta and tests
   storybookWebpackConfig.module?.rules.unshift({
     enforce: 'pre',
     test: new RegExp(`\\.(${extensions.map((x) => x.slice(1))?.join('|')})$`),
     exclude: /node_modules/,
     use: { loader: require.resolve('./loader'), options: { debug } },
   });
+
+  // NOTE Exclude from bundle all modules from node_modules
   storybookWebpackConfig.externals = [
     nodeExternals({ includeAbsolutePaths: true, allowlist: /webpack/ }),
     // TODO Don't work well with monorepos
     nodeExternals({ modulesDir: storybookParentDirectory, includeAbsolutePaths: true, allowlist: /webpack/ }),
   ];
-  storybookWebpackConfig.performance = false;
 
   const storybookWebpackCompiler = webpack(storybookWebpackConfig);
   if (ui) {

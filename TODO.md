@@ -221,7 +221,7 @@
   - [x] Highlight success/failed screenshot previews
   - [x] Creevey don't work with docs addon (cleanup bundle)
   - [x] `export const parameters = {};` in preview.js lead to error `Singleton client API not yet initialized, cannot call addParameters`
-  - [ ] Storybook addons override creevey parameters in stories (wait fix from storybook, send PR)
+  - [x] Storybook addons override creevey parameters in stories (wait fix from storybook, send PR)
   - [ ] Don't fail build with mdx stories
   - [ ] Re-disable animations on storybook reload
   - [ ] Don't stop rebuilding if rebuild failed due syntax error
