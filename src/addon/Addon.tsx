@@ -1,7 +1,7 @@
 import React, { useState, Fragment, useCallback, useContext } from 'react';
 import { withCreeveyTests } from './utils';
 import { Test, isDefined, TestStatus } from '../types';
-import { IconButton, Icons, Loader, Separator, Tabs } from '@storybook/components';
+import { IconButton, Icons, Loader, Placeholder, Separator, Tabs } from '@storybook/components';
 import { ResultsPage } from './ResultsPage';
 import { CreeveyContext } from './CreeveyContext';
 import { styled, withTheme, Theme } from '@storybook/theming';
@@ -33,6 +33,10 @@ const PanelInternal = ({ statuses }: PanelProps): JSX.Element => {
   const result = statuses[selectedItem];
   const { onStart, onStop } = useContext(CreeveyContext);
   const isRunning = result?.status === 'running';
+  if (!browsers.length) {
+    return <Placeholder>Start Creevey server please</Placeholder>;
+  }
+
   return (
     <Fragment>
       <Tabs
