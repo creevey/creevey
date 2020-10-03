@@ -16,7 +16,7 @@ Object.keys(_types).forEach(function (key) {
   });
 });
 
-var _decorator = require('./addon/decorator');
+var _decorator = require('./client/addon/decorator');
 
 Object.keys(_decorator).forEach(function (key) {
   if (key === 'default' || key === '__esModule') return;

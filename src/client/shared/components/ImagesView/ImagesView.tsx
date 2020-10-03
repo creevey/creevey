@@ -3,7 +3,7 @@ import { SideBySideView } from './SideBySideView';
 import { SwapView } from './SwapView';
 import { SlideView } from './SlideView';
 import { BlendView } from './BlendView';
-import { Images, ImagesViewMode } from '../../../types';
+import { Images, ImagesViewMode } from '../../../../types';
 import { styled, Theme } from '@storybook/theming';
 
 export const borderColors: ViewProps = {

@@ -1,4 +1,4 @@
-import { Test, isTest, isDefined, TestStatus, CreeveySuite, CreeveyTest, CreeveyStatus } from '../types';
+import { Test, isTest, isDefined, TestStatus, CreeveySuite, CreeveyTest, CreeveyStatus } from '../../types';
 
 export interface CreeveyViewFilter {
   status: TestStatus | null;

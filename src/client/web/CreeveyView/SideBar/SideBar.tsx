@@ -2,7 +2,7 @@ import React, { useState, createContext, useContext } from 'react';
 import { css } from '@emotion/core';
 import { ThemeContext, ThemeFactory } from '@skbkontur/react-ui';
 import { SideBarHeader } from './SideBarHeader';
-import { CreeveySuite, CreeveyTest, noop, isTest } from '../../../types';
+import { CreeveySuite, CreeveyTest, noop, isTest } from '../../../../types';
 import {
   filterTests,
   CreeveyViewFilter,

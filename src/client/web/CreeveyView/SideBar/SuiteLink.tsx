@@ -4,7 +4,7 @@ import { Button, Checkbox } from '@skbkontur/react-ui';
 import ArrowTriangleRightIcon from '@skbkontur/react-icons/ArrowTriangleRight';
 import ArrowTriangleDownIcon from '@skbkontur/react-icons/ArrowTriangleDown';
 import { TestStatusIcon } from './TestStatusIcon';
-import { CreeveySuite, isTest } from '../../../types';
+import { CreeveySuite, isTest } from '../../../../types';
 import { CreeveyContext } from '../../../shared/CreeveyContext';
 
 export interface SuiteLinkProps {

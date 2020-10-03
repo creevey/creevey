@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { css } from '@emotion/core';
 import { Button, Checkbox } from '@skbkontur/react-ui';
-import { CreeveyTest } from '../../../types';
+import { CreeveyTest } from '../../../../types';
 import { TestStatusIcon } from './TestStatusIcon';
 import { CreeveyContext } from '../../../shared/CreeveyContext';
 import { SideBarContext } from './SideBar';

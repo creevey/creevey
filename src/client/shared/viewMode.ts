@@ -1,4 +1,4 @@
-import { ImagesViewMode } from '../types';
+import { ImagesViewMode } from '../../types';
 
 export const VIEW_MODE_KEY = 'Creevey_view_mode';
 

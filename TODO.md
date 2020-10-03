@@ -199,14 +199,21 @@
   - [ ] new params config, don't need decorator any more
   - [ ] update demo video
   - [ ] update using types (`export const Slide: Story<React.ComponentProps<typeof ImagesView>> & CSFStory<JSX.Element> = () => ImagesView('slide');`)
+  - [ ] How to deal with animations (NODE_ENV=='test')
+  - [ ] Write about differences with other tools
+  - [ ] Add how to start docker and IE11 especially
+  - [ ] Add instruction for various frameworks
+    - [ ] Create React App Typescript
+    - [x] Vue
 - [x] Support Storybook 6.x
 - [x] ~~Add @babel/code-frame to output loader error~~ There is babel issue https://github.com/babel/babel/issues/8617
 - [x] Support declarative 6.0 decorators format, like this https://github.com/storybookjs/storybook/tree/master/addons/knobs/src/preset
 - [x] Store creevey storybook bundle in cache dir using find-cache-dir pkg
 - [x] Move addon ImageViews to shared and use it in client UI
 - [x] Cleanup nodejs storybook bundle (Don't load any of addons)
-- [ ] Build addon for ie11
+- [x] Build addon for ie11
 - [ ] Setup NODE_ENV to 'test'.
+- [ ] Add human readable error message if test failed with `window.__CREEVEY_SELECT_STORY__` is not a function
 - [ ] Add Storybook integration tests
   - Init projects with various frameworks
   - Init storybook using storybook cli
@@ -234,15 +241,6 @@
   - [x] Allow define saucelabs/browserstack-local init/dispose functions
   - [x] ~~Allow define custom localhost resolver in config~~ (write function for storybookUrl)
   - [ ] Output unnecessary images when creevey run from cli
-- [ ] Docs
-  - [ ] Add fancy readme
-  - [ ] How to deal with animations (NODE_ENV=='test')
-  - [ ] Write about differences with other tools
-  - [ ] Add how to start docker and IE11 especially
-  - [ ] Add instruction for various frameworks
-    - [ ] Create React App Typescript
-    - [x] Vue
-- [ ] Add human readable error message if test failed with `window.__CREEVEY_SELECT_STORY__` is not a function
 
 ## Second priority (v0.8)
 

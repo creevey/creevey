@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { css } from '@emotion/core';
 import { ThemeContext, Tabs, ThemeFactory } from '@skbkontur/react-ui';
 import DeleteIcon from '@skbkontur/react-icons/Delete';
-import { Images, ImagesViewMode } from '../../../types';
+import { Images, ImagesViewMode } from '../../../../types';
 import { ImagePreview } from './ImagePreview';
 import { getImageUrl } from '../../../shared/helpers';
 import { viewModes } from '../../../shared/viewMode';

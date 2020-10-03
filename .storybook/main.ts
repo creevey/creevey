@@ -2,7 +2,7 @@ import { Configuration, DefinePlugin } from 'webpack';
 
 export default {
   stories: ['../stories/**/*.stories.tsx'],
-  addons: ['@storybook/addon-essentials', './../src/addon/preset'],
+  addons: ['@storybook/addon-essentials', './../src/client/addon/preset'],
   webpackFinal(config: Configuration) {
     config.resolve.extensions = ['.tsx', '.ts', '.jsx', '.js'];
 

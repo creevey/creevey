@@ -4,7 +4,7 @@ module.exports = {
   plugins: ['@babel/plugin-proposal-class-properties'],
   overrides: [
     {
-      test: './src/addon/decorator.ts',
+      test: './src/client',
       presets: [['@babel/preset-env', { targets: { ie: '11' } }]],
     },
   ],

@@ -1,3 +1,3 @@
 /// <reference types="../types/chai" />
 export * from './types';
-export * from './addon/decorator';
+export * from './client/addon/decorator';

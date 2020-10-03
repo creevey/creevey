@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { css } from '@emotion/core';
 import { useImmer } from 'use-immer';
-import { CreeveyUpdate, CreeveySuite, isDefined } from '../types';
+import { CreeveyUpdate, CreeveySuite, isDefined } from '../../types';
 import { CreeveyClientApi } from '../shared/creeveyClientApi';
 import {
   getCheckedTests,

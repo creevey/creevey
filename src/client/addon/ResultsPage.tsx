@@ -3,7 +3,7 @@ import { CreeveyContext } from './CreeveyContext';
 import { ImagesView } from '../shared/components/ImagesView/ImagesView';
 import { PageHeader } from './PageHeader/PageHeader';
 import { PageFooter } from './PageFooter/PageFooter';
-import { TestResult, ImagesViewMode } from '../types';
+import { TestResult, ImagesViewMode } from '../../types';
 import { getImageUrl } from '../shared/helpers';
 import { styled, withTheme, Theme } from '@storybook/theming';
 import { Placeholder } from '@storybook/components';

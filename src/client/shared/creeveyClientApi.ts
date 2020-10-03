@@ -1,4 +1,4 @@
-import { Response, Request, CreeveyUpdate, CreeveyStatus, noop } from '../types';
+import { Response, Request, CreeveyUpdate, CreeveyStatus, noop } from '../../types';
 import { getConnectionUrl } from './helpers';
 
 export interface CreeveyClientApi {

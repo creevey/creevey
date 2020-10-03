@@ -2,7 +2,7 @@ import React, { ComponentClass } from 'react';
 import { SET_STORIES, STORY_RENDERED } from '@storybook/core-events';
 import { API } from '@storybook/api';
 import { initCreeveyClientApi, CreeveyClientApi } from '../shared/creeveyClientApi';
-import { Test, isDefined, CreeveyStatus, CreeveyUpdate, SetStoriesData, StoriesRaw, TestStatus } from '../types';
+import { Test, isDefined, CreeveyStatus, CreeveyUpdate, SetStoriesData, StoriesRaw, TestStatus } from '../../types';
 import { produce } from 'immer';
 import { CreeveyContext } from './CreeveyContext';
 import { getEmojiByTestStatus } from './Addon';

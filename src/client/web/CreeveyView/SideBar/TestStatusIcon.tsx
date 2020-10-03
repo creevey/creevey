@@ -5,7 +5,7 @@ import OkIcon from '@skbkontur/react-icons/Ok';
 import ClockIcon from '@skbkontur/react-icons/Clock';
 import PauseIcon from '@skbkontur/react-icons/Pause';
 import { Spinner } from '@skbkontur/react-ui';
-import { TestStatus } from '../../../types';
+import { TestStatus } from '../../../../types';
 
 export interface TestStatusIconProps {
   inverted?: boolean;

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { ImagesView as ImagesViewBase } from '../src/shared/components/ImagesView';
+import { ImagesView as ImagesViewBase } from '../src/client/shared/components/ImagesView';
 import { ImagesViewMode, CSFStory } from '../src/types';
 
 import octocatExpect from './fixtures/octocat-expect.png';

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Button, Icons } from '@storybook/components';
-import { noop } from '../../types';
+import { noop } from '../../../types';
 import { styled } from '@storybook/theming';
 
 export interface PagingProps {

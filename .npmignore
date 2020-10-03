@@ -20,10 +20,10 @@ scripts
 stories
 examples
 lib/stories
-lib/client/**/*
-!lib/client/**/*.js
-!lib/client/**/*.eot
-!lib/client/**/*.png
-!lib/client/**/*.html
-!lib/client/**/*.woff
-!lib/client/**/*.woff2
+lib/client/web/**/*
+!lib/client/web/**/*.js
+!lib/client/web/**/*.eot
+!lib/client/web/**/*.png
+!lib/client/web/**/*.html
+!lib/client/web/**/*.woff
+!lib/client/web/**/*.woff2

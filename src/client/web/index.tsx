@@ -5,7 +5,7 @@ import { CreeveyApp } from './CreeveyApp';
 
 import './index.css';
 import { initCreeveyClientApi, CreeveyClientApi } from '../shared/creeveyClientApi';
-import { CreeveyStatus } from '../types';
+import { CreeveyStatus } from '../../types';
 import { treeifyTests } from '../shared/helpers';
 
 declare global {

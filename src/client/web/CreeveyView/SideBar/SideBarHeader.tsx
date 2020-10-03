@@ -4,7 +4,7 @@ import { Button, Spinner, Input } from '@skbkontur/react-ui';
 import SearchIcon from '@skbkontur/react-icons/Search';
 import { CreeveyContext } from '../../../shared/CreeveyContext';
 import { TestsStatus, TestsStatusProps } from './TestsStatus';
-import { TestStatus } from '../../../types';
+import { TestStatus } from '../../../../types';
 import { CreeveyViewFilter } from '../../../shared/helpers';
 
 interface SideBarHeaderProps {

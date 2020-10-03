@@ -1,6 +1,6 @@
 import React, { useState, Fragment, useCallback, useContext } from 'react';
 import { withCreeveyTests } from './utils';
-import { Test, isDefined, TestStatus } from '../types';
+import { Test, isDefined, TestStatus } from '../../types';
 import { IconButton, Icons, Loader, Placeholder, Separator, Tabs } from '@storybook/components';
 import { ResultsPage } from './ResultsPage';
 import { CreeveyContext } from './CreeveyContext';

@@ -33,7 +33,7 @@
     "prebuild": "yarn clean && mkdir lib",
     "build": "run-p --continue-on-error build:*",
     "build:types": "tsc --emitDeclarationOnly -p scripts/tsconfig.prod.json",
-    "build:creevey": "babel src --out-dir lib --extensions .ts,.tsx --ignore src/client",
+    "build:creevey": "babel src --out-dir lib --extensions .ts,.tsx --ignore src/client/web",
     "build:client": "webpack --mode production",
     "postbuild": "cp scripts/dist/* lib/",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",

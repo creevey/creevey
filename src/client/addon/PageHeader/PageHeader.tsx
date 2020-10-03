@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ImagesViewMode, Images } from '../../types';
+import { ImagesViewMode, Images } from '../../../types';
 import { getImageUrl } from '../../shared/helpers';
 import { Icons, Tabs } from '@storybook/components';
 import { styled, withTheme, Theme } from '@storybook/theming';

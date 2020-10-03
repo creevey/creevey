@@ -3,7 +3,7 @@ import { css } from '@emotion/core';
 import { CreeveyContext } from '../../../shared/CreeveyContext';
 import { ImagesView } from '../../../shared/components/ImagesView';
 import { PageHeader } from './PageHeader';
-import { TestResult, ImagesViewMode } from '../../../types';
+import { TestResult, ImagesViewMode } from '../../../../types';
 import { PageFooter } from './PageFooter';
 import { getImageUrl } from '../../../shared/helpers';
 import { getViewMode, VIEW_MODE_KEY } from '../../../shared/viewMode';

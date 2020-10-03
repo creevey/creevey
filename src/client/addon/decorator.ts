@@ -1,6 +1,6 @@
 import Events from '@storybook/core-events';
 import { addons, MakeDecoratorResult, makeDecorator } from '@storybook/addons';
-import { isObject } from '../types';
+import { isObject } from '../../types';
 
 if (typeof process != 'object' || typeof process.version != 'string') {
   // NOTE If you don't use babel-polyfill or any other polyfills that add EventSource for IE11

@@ -3,8 +3,8 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { Configuration } from 'webpack';
 
 const config: Configuration = {
-  entry: './src/client/index.tsx',
-  output: { path: path.join(__dirname, './lib/client') },
+  entry: './src/client/web/index.tsx',
+  output: { path: path.join(__dirname, './lib/client/web') },
   module: {
     rules: [
       {
@@ -30,7 +30,7 @@ const config: Configuration = {
   resolve: {
     extensions: ['.tsx', '.ts', '.jsx', '.js'],
   },
-  plugins: [new HtmlWebpackPlugin({ template: './src/client/index.html' })],
+  plugins: [new HtmlWebpackPlugin({ template: './src/client/web/index.html' })],
   devServer: {
     port: 8000,
     proxy: {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { noop } from '../types';
+import { noop } from '../../types';
 
 export interface CreeveyContextType {
   isRunning: boolean;

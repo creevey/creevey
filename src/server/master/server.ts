@@ -13,7 +13,7 @@ export default function server(api: CreeveyApi, reportDir: string, port: number)
   const server = http.createServer(app.callback());
   const wss = new WebSocket.Server({ server });
 
-  app.use(serve(path.join(__dirname, '../../client')));
+  app.use(serve(path.join(__dirname, '../../client/web')));
   app.use(mount('/report', serve(reportDir)));
 
   api.subscribe(wss);
