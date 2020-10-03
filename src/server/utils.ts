@@ -121,3 +121,9 @@ export function isStorybookVersionLessThan(version: number): boolean {
 export function getCreeveyCache(): string {
   return findCacheDir({ name: 'creevey' }) as string;
 }
+
+export async function runSequence(seq: Array<() => unknown>, predicate: () => boolean): Promise<void> {
+  for (const fn of seq) {
+    if (predicate()) await fn();
+  }
+}

@@ -5,6 +5,7 @@ import { Builder, By, until, WebDriver, Origin } from 'selenium-webdriver';
 import { Config, BrowserConfig, StoryInput, CreeveyStoryParams, noop, isDefined } from '../../types';
 import { subscribeOn } from '../messages';
 import { networkInterfaces } from 'os';
+import { runSequence } from '../utils';
 
 declare global {
   interface Window {
@@ -276,6 +277,11 @@ async function takeScreenshot(browser: WebDriver, captureElement?: string | null
 async function selectStory(browser: WebDriver, storyId: string, kind: string, story: string): Promise<void> {
   const errorMessage = await browser.executeAsyncScript<string | undefined>(
     function (storyId: string, kind: string, name: string, callback: (error?: string) => void) {
+      if (typeof window.__CREEVEY_SELECT_STORY__ == 'undefined') {
+        return callback(
+          "Creevey can't switch story. This may happened if forget to add `creevey` addon to your storybook config, or storybook not loaded in browser due syntax error.",
+        );
+      }
       window.__CREEVEY_SELECT_STORY__(storyId, kind, name, callback);
     },
     storyId,
@@ -283,13 +289,6 @@ async function selectStory(browser: WebDriver, storyId: string, kind: string, st
     story,
   );
   if (errorMessage) throw new Error(errorMessage);
-}
-
-// TODO move to utils
-async function runSequence(seq: Array<() => unknown>, predicate: () => boolean): Promise<void> {
-  for (const fn of seq) {
-    if (predicate()) await fn();
-  }
 }
 
 export async function getBrowser(config: Config, browserConfig: BrowserConfig): Promise<WebDriver | null> {

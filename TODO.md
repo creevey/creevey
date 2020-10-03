@@ -199,7 +199,6 @@
   - [ ] new params config, don't need decorator any more
   - [ ] update demo video
   - [ ] update using types (`export const Slide: Story<React.ComponentProps<typeof ImagesView>> & CSFStory<JSX.Element> = () => ImagesView('slide');`)
-  - [ ] How to deal with animations (NODE_ENV=='test')
   - [ ] Write about differences with other tools
   - [ ] Add how to start docker and IE11 especially
   - [ ] Add instruction for various frameworks
@@ -212,8 +211,7 @@
 - [x] Move addon ImageViews to shared and use it in client UI
 - [x] Cleanup nodejs storybook bundle (Don't load any of addons)
 - [x] Build addon for ie11
-- [ ] Setup NODE_ENV to 'test'.
-- [ ] Add human readable error message if test failed with `window.__CREEVEY_SELECT_STORY__` is not a function
+- [x] Add human readable error message if test failed with `window.__CREEVEY_SELECT_STORY__` is not a function
 - [ ] Add Storybook integration tests
   - Init projects with various frameworks
   - Init storybook using storybook cli
@@ -244,6 +242,8 @@
 
 ## Second priority (v0.8)
 
+- [ ] Update Readme
+  - [ ] How to deal with animations (NODE_ENV=='test')
 - [ ] Bugs
   - [ ] Use native composite screenshots for browsers which support it
   - [ ] Fix taking composite screenshots with hidden scrollbar
@@ -251,6 +251,7 @@
     - For each screenshot after scroll, take elementRect coordinates
     - Iterate be screen images and calculate resulting x/y coordinates for composite image
     - If image width/height greater than viewport width/height than scroll bar is captured
+- [ ] Setup NODE_ENV to 'test'. (Think, how to test it)
 - [ ] Support esm/cjs builds
 - [ ] Support mdx stories
 - [ ] Drop storiesOf and Storybook v4.x support
