@@ -65,13 +65,13 @@ export function convertStories(
 
       if (!storyTests) {
         const test = createCreeveyTest(meta, skip);
-        tests[test.id] = { ...test, story, fn: storyTestFabric(delay) };
+        tests[test.id] = { ...test, storyId: story.id, story, fn: storyTestFabric(delay) };
         return;
       }
 
       Object.entries(storyTests).forEach(([testName, testFn]) => {
         const test = createCreeveyTest(meta, skip, testName);
-        tests[test.id] = { ...test, story, fn: storyTestFabric(delay, testFn) };
+        tests[test.id] = { ...test, storyId: story.id, story, fn: storyTestFabric(delay, testFn) };
       });
     });
   });
