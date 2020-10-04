@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { ImagesViewMode, Images } from '../../../types';
-import { getImageUrl } from '../../shared/helpers';
+import { ImagesViewMode, Images } from '../../../../types';
+import { getImageUrl } from '../../helpers';
 import { Icons, Tabs } from '@storybook/components';
 import { styled, withTheme, Theme } from '@storybook/theming';
 import { ImagePreview } from './ImagePreview';
-import { viewModes } from '../../shared/viewMode';
+import { viewModes } from '../../viewMode';
 
 interface PageHeaderProps {
   title: string[];
@@ -16,42 +16,51 @@ interface PageHeaderProps {
   showTitle?: boolean;
   viewMode: ImagesViewMode;
   imagesWithError?: string[];
-  theme: Theme;
   onImageChange: (name: string) => void;
   onViewModeChange: (viewMode: ImagesViewMode) => void;
 }
 
-const ErrorContainer = styled.div<{ background: string; color: string }>(({ background, color }) => ({
-  padding: '8px',
-  background: background,
-  color: color,
-  borderRadius: '2px',
-  display: 'flex',
+const Container = styled.div({
+  margin: '24px 44px 0',
+});
 
-  '& svg': {
-    marginRight: 10,
-    width: 16,
-    height: 16,
-  },
+const ErrorContainer = withTheme(
+  styled.div<{ theme: Theme }>(({ theme }) => ({
+    marginTop: '8px',
+    padding: '8px',
+    background: theme.background.negative,
+    color: theme.color.negative,
+    borderRadius: '2px',
+    display: 'flex',
+    alignItems: 'baseline',
 
-  '& pre': {
-    margin: '0 4px',
-    padding: 0,
-    lineHeight: '19px',
-  },
-}));
+    '& svg': {
+      margin: '0 5px',
+      width: 8,
+      height: 8,
+    },
 
-const HeaderDivider = styled.span<{ color?: string }>(({ color }) => ({
-  padding: '0 8px',
-  color: color,
-}));
+    '& pre': {
+      margin: '0 4px',
+      padding: 0,
+      lineHeight: '22px',
+    },
+  })),
+);
+
+const HeaderDivider = withTheme(
+  styled.span<{ theme: Theme }>(({ theme }) => ({
+    padding: '0 8px',
+    color: theme.color.mediumdark,
+  })),
+);
 
 const ImagesEntriesContainer = styled.div({
   display: 'flex',
-  margin: '32px 0',
+  margin: '16px 0 8px',
 });
 
-export function PageHeaderInternal({
+export function PageHeader({
   title,
   images = {},
   errorMessage,
@@ -59,7 +68,6 @@ export function PageHeaderInternal({
   showTitle,
   viewMode,
   imagesWithError = [],
-  theme,
   onImageChange,
   onViewModeChange,
 }: PageHeaderProps): JSX.Element {
@@ -68,25 +76,18 @@ export function PageHeaderInternal({
 
   const handleImageChange = (name: string): void => (setImageName(name), onImageChange(name));
   const handleViewModeChange = (mode: string): void => onViewModeChange(mode as ImagesViewMode);
-  const error = imagesWithError.includes(imageName) ? images[imageName]?.error || errorMessage : null;
+  const error = errorMessage || imagesWithError.includes(imageName) ? images[imageName]?.error || errorMessage : null;
 
   return (
-    <>
+    <Container>
       {showTitle && (
-        <h1>
-          {title
-            .flatMap((token) => [
-              token,
-              <HeaderDivider key={token} color={theme.color.mediumdark}>
-                /
-              </HeaderDivider>,
-            ])
-            .slice(0, -1)}
+        <h1 style={{ margin: 0 }}>
+          {title.flatMap((token) => [token, <HeaderDivider key={token}>/</HeaderDivider>]).slice(0, -1)}
         </h1>
       )}
       {error && (
-        <ErrorContainer background={theme.background.negative} color={theme.color.negative}>
-          <Icons icon="cross" />
+        <ErrorContainer>
+          <Icons icon="closeAlt" />
           <pre>{error}</pre>
         </ErrorContainer>
       )}
@@ -111,8 +112,6 @@ export function PageHeaderInternal({
           ))}
         </Tabs>
       )}
-    </>
+    </Container>
   );
 }
-
-export const PageHeader = withTheme(PageHeaderInternal);

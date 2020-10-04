@@ -31,12 +31,11 @@ const Button = styled.button<{ borderColor?: string }>(({ borderColor }) => ({
 }));
 
 const Image = withTheme(
-  styled.img<{ isActive: boolean; backgroundColor: string }>(({ isActive, backgroundColor }) => ({
+  styled.img<{ hasBorder?: boolean; backgroundColor: string }>(({ hasBorder, backgroundColor }) => ({
     maxHeight: `${IMG_SIZE}px`,
     width: `${IMG_SIZE}px`,
     overflow: 'hidden',
-    transform: isActive ? 'translateY(-1px)' : undefined,
-    '&:active': { transform: `translateY(${isActive ? '1px' : '-1px'})` },
+    transform: hasBorder ? 'translateY(2px)' : undefined,
 
     '&::before': {
       content: "' '",
@@ -72,7 +71,7 @@ export const ImagePreview = withTheme(
         onClick={handleClick}
         borderColor={isActive ? theme.barSelectedColor : error ? theme.color.negative : undefined}
       >
-        <Image isActive={isActive} src={url} alt={imageName} backgroundColor={theme.background.content} />
+        <Image hasBorder={isActive || error} src={url} alt={imageName} backgroundColor={theme.background.content} />
       </Button>
     );
   },

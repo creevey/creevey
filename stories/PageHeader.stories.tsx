@@ -1,13 +1,22 @@
 import React from 'react';
-import { PageHeader } from '../src/client/CreeveyView/ResultsPage/PageHeader';
+import { PageHeader } from '../src/client/shared/components/PageHeader/PageHeader';
 import { noop } from '../src';
+import { ThemeProvider, ensure, themes } from '@storybook/theming';
 
 export default {
   title: 'PageHeader',
+  decorators: [
+    (Story: React.ComponentClass): JSX.Element => (
+      <ThemeProvider theme={ensure(themes.light)}>
+        <Story />
+      </ThemeProvider>
+    ),
+  ],
 };
 
 export const Simple = (): JSX.Element => (
   <PageHeader
+    showTitle
     title={['chrome', 'title', '1']}
     showViewModes
     viewMode={'side-by-side'}
@@ -18,6 +27,7 @@ export const Simple = (): JSX.Element => (
 
 export const WithError = (): JSX.Element => (
   <PageHeader
+    showTitle
     title={['chrome', 'title', '2']}
     errorMessage={'errorMessage'}
     showViewModes={false}
@@ -28,6 +38,7 @@ export const WithError = (): JSX.Element => (
 );
 export const WithImagePreview = (): JSX.Element => (
   <PageHeader
+    showTitle
     title={['chrome', 'title', '3']}
     showViewModes={false}
     viewMode={'swap'}
