@@ -1,13 +1,13 @@
 import path from 'path';
 import { promisify } from 'util';
 import { Writable } from 'stream';
-import { mkdir, writeFile } from 'fs';
-import { isMaster } from 'cluster';
+import { mkdir, writeFile, readFileSync, existsSync } from 'fs';
+import cluster, { isMaster } from 'cluster';
 import Docker, { Container } from 'dockerode';
 import ora from 'ora';
-import { Config, BrowserConfig, Options } from '../types';
-import { subscribeOn } from './messages';
-import { getCreeveyCache } from './utils';
+import { Config, BrowserConfig, Options, isDockerMessage } from '../types';
+import { subscribeOn, sendDockerMessage, emitDockerMessage } from './messages';
+import { getCreeveyCache, LOCALHOST_REGEXP } from './utils';
 
 const mkdirAsync = promisify(mkdir);
 const writeFileAsync = promisify(writeFile);
@@ -20,7 +20,10 @@ class DevNull extends Writable {
   }
 }
 
-async function startSelenoidContainer(config: Config, debug: boolean): Promise<void> {
+// https://tuhrig.de/how-to-know-you-are-inside-a-docker-container/
+const isInsideDocker = existsSync('/proc/1/cgroup') && /docker/.test(readFileSync('/proc/1/cgroup', 'utf8'));
+
+async function startSelenoidContainer(config: Config, debug: boolean): Promise<string> {
   const selenoidImage = 'aerokube/selenoid:latest-release';
   const selenoidConfig: {
     [browser: string]: {
@@ -90,11 +93,19 @@ async function startSelenoidContainer(config: Config, debug: boolean): Promise<v
     hub.once('container', (container: Container) => {
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       subscribeOn('shutdown', async () => {
-        await container.stop();
-        await container.remove();
+        try {
+          await container.stop();
+          await container.remove();
+        } catch (error) {
+          /* noop */
+        }
       });
     });
-    hub.once('start', resolve);
+    hub.once(
+      'start',
+      (container: Container) =>
+        void container.inspect().then((info) => resolve(info.NetworkSettings.Networks.bridge.IPAddress)),
+    );
   });
 }
 
@@ -135,9 +146,30 @@ async function pullImages(images: string[]): Promise<void> {
 
 export default async function (config: Config, { debug }: Options): Promise<Config> {
   if (isMaster) {
-    await startSelenoidContainer(config, debug);
+    const selenoidHost = await startSelenoidContainer(config, debug);
+    let gridUrl = 'http://localhost:4444/wd/hub';
+    gridUrl = isInsideDocker ? gridUrl.replace(LOCALHOST_REGEXP, selenoidHost) : gridUrl;
+    cluster.on('message', (worker, message: unknown) => {
+      if (!isDockerMessage(message)) return;
+
+      const dockerMessage = message;
+      if (dockerMessage.type != 'start') return;
+
+      sendDockerMessage(worker, {
+        type: 'success',
+        payload: { gridUrl },
+      });
+    });
+    return config;
   } else {
-    config.gridUrl = 'http://localhost:4444/wd/hub';
+    return new Promise((resolve) => {
+      subscribeOn('docker', (message) => {
+        if (message.type == 'success') {
+          config.gridUrl = message.payload.gridUrl;
+          resolve(config);
+        }
+      });
+      emitDockerMessage({ type: 'start' });
+    });
   }
-  return config;
 }

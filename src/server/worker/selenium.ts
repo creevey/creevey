@@ -5,7 +5,7 @@ import { Builder, By, until, WebDriver, Origin } from 'selenium-webdriver';
 import { Config, BrowserConfig, StoryInput, CreeveyStoryParams, noop, isDefined } from '../../types';
 import { subscribeOn } from '../messages';
 import { networkInterfaces } from 'os';
-import { runSequence } from '../utils';
+import { runSequence, LOCALHOST_REGEXP } from '../utils';
 
 declare global {
   interface Window {
@@ -13,7 +13,6 @@ declare global {
   }
 }
 
-const LOCALHOST_REGEXP = /(localhost|127\.0\.0\.1)/i;
 const TESTKONTUR_REGEXP = /testkontur/i;
 
 function getRealIp(): Promise<string> {

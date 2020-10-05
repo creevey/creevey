@@ -169,17 +169,21 @@ export type WebpackMessage =
   | { type: 'rebuild succeeded'; payload?: never }
   | { type: 'rebuild failed'; payload?: never };
 
+export type DockerMessage = { type: 'start'; payload?: never } | { type: 'success'; payload: { gridUrl: string } };
+
 export type ShutdownMessage = unknown;
 
 export type ProcessMessage =
   | (WorkerMessage & { scope: 'worker' })
   | (TestMessage & { scope: 'test' })
   | (WebpackMessage & { scope: 'webpack' })
+  | (DockerMessage & { scope: 'docker' })
   | (ShutdownMessage & { scope: 'shutdown' });
 
 export type WorkerHandler = (message: WorkerMessage) => void;
 export type TestHandler = (message: TestMessage) => void;
 export type WebpackHandler = (message: WebpackMessage) => void;
+export type DockerHandler = (message: DockerMessage) => void;
 export type ShutdownHandler = (message: ShutdownMessage) => void;
 
 export interface Worker extends ClusterWorker {
@@ -341,4 +345,8 @@ export function isTestMessage(message: unknown): message is TestMessage {
 
 export function isWebpackMessage(message: unknown): message is WebpackMessage {
   return isProcessMessage(message) && message.scope == 'webpack';
+}
+
+export function isDockerMessage(message: unknown): message is DockerMessage {
+  return isProcessMessage(message) && message.scope == 'docker';
 }

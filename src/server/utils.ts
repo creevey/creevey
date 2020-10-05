@@ -5,6 +5,8 @@ import { SkipOptions, isDefined } from '../types';
 import { emitShutdownMessage, sendShutdownMessage } from './messages';
 import findCacheDir from 'find-cache-dir';
 
+export const LOCALHOST_REGEXP = /(localhost|127\.0\.0\.1)/i;
+
 export const extensions = ['.js', '.jsx', '.ts', '.tsx', '.mjs', '.es', '.es6'];
 
 const compilers = {
