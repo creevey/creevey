@@ -1,0 +1,66 @@
+version: 2.1
+orbs:
+  node: circleci/node@4.1.0
+
+jobs:
+  lint:
+    docker:
+      - image: circleci/node:12.18.4
+
+    steps:
+      - checkout
+      - node/install:
+          install-yarn: true
+      - run:
+          name: Lint
+          command: yarn lint
+
+  build:
+    docker:
+      - image: circleci/node:12.18.4
+    
+    steps:
+      - checkout
+      - node/install:
+          install-yarn: true
+      - run:
+          name: Lint
+          command: yarn lint
+      - run:
+          name: Build
+          command: yarn build
+      - run:
+          name: Pack
+          command: yarn pack
+    
+  tests:
+    docker:
+      - image: circleci/node:12.18.4-browsers
+
+    steps:
+      - setup_remote_docker:
+          version: 19.03.13
+          docker_layer_caching: true
+      - run:
+          name: Git LFS (install Git Large File Storage)
+          command: |
+            curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+            sudo apt-get install git-lfs
+            git lfs install
+      - checkout
+      - node/install:
+          install-yarn: true
+      - run:
+          name: Storybook Start
+          command: yarn start:storybook
+          background: true
+      - run:
+          name: Screenshot tests
+          command: yarn creevey
+
+workflows:
+  tests:
+    jobs:
+      - lint
+      - build
+      - tests
