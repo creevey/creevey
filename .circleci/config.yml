@@ -28,9 +28,9 @@ jobs:
           command: yarn build
       - run:
           name: Pack
-          command: yarn pack
+          command: yarn pack -f creevey.tgz
       - store_artifacts:
-          path: creevey-*.tgz
+          path: creevey.tgz
 
   tests:
     machine:
