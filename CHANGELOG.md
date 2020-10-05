@@ -1,3 +1,10 @@
+# [0.7.0-beta.12](https://github.com/wKich/creevey/compare/v0.7.0-beta.11...v0.7.0-beta.12) (2020-10-05)
+
+### Bug Fixes
+
+- 🐛 hmr tests on windows ([7496a72](https://github.com/wKich/creevey/commit/7496a7244648531c79dff5b9b54f01bb375607fe))
+- 🐛 report static bundle, add polyfiils ([dfb5f51](https://github.com/wKich/creevey/commit/dfb5f515344ae9b91f5070f002a914cbed835fd6))
+
 # [0.7.0-beta.11](https://github.com/wKich/creevey/compare/v0.7.0-beta.10...v0.7.0-beta.11) (2020-10-05)
 
 ### Bug Fixes
