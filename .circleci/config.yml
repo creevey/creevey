@@ -29,14 +29,14 @@ jobs:
       - run:
           name: Pack
           command: yarn pack
+      - store_artifacts:
+          path: creevey-*.tgz
 
   tests:
-    docker:
-      - image: circleci/node:12.18.4-browsers
+    machine:
+      image: ubuntu-1604:202007-01
 
     steps:
-      - setup_remote_docker:
-          version: 19.03.13
       - run:
           name: Git LFS (install Git Large File Storage)
           command: |
@@ -44,8 +44,23 @@ jobs:
             sudo apt-get install git-lfs
             git lfs install
       - checkout
-      - node/install-packages:
-          pkg-manager: yarn
+
+      - run:
+          name: Install Yarn
+          command: npm install -g yarn
+      - restore_cache:
+          name: Restore Yarn Package Cache
+          keys:
+            - yarn-packages-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install Dependencies
+          command: yarn
+      - save_cache:
+          name: Save Yarn Package Cache
+          key: yarn-packages-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
+
       - run:
           name: Storybook Start
           command: yarn start:storybook
@@ -53,6 +68,8 @@ jobs:
       - run:
           name: Screenshot tests
           command: yarn creevey
+      - store_artifacts:
+          path: report
 
 workflows:
   tests:

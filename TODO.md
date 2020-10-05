@@ -194,6 +194,7 @@
 
 - [ ] Update Readme
   - [ ] `UseDocker`
+    - [ ] About CI, can't simply run docker-in-docker env (especially in circle ci because of isolated remote docker. As possible solution use machine executor https://github.com/oblador/loki/issues/183#issuecomment-602669503)
   - [ ] `before/after` hooks
   - [ ] creevey addon
   - [ ] new params config, don't need decorator any more
