@@ -3,7 +3,7 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { Configuration } from 'webpack';
 
 const config: Configuration = {
-  entry: './src/client/web/index.tsx',
+  entry: [require.resolve('core-js'), require.resolve('regenerator-runtime/runtime'), './src/client/web/index.tsx'],
   output: { path: path.join(__dirname, './lib/client/web') },
   module: {
     rules: [
@@ -13,7 +13,11 @@ const config: Configuration = {
         use: {
           loader: 'babel-loader',
           options: {
-            overrides: [{ presets: ['@emotion/babel-preset-css-prop'] }],
+            overrides: [
+              {
+                presets: ['@emotion/babel-preset-css-prop', ['@babel/preset-env', { useBuiltIns: 'entry', corejs: 3 }]],
+              },
+            ],
           },
         },
       },

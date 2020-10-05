@@ -231,6 +231,7 @@
   - [x] Creevey don't work with docs addon (cleanup bundle)
   - [x] `export const parameters = {};` in preview.js lead to error `Singleton client API not yet initialized, cannot call addParameters`
   - [x] Storybook addons override creevey parameters in stories (wait fix from storybook, send PR)
+  - [x] Add regenerator runtime to report main.js
   - [ ] Don't fail build with mdx stories (just ignore it for now)
   - [ ] Re-disable animations on storybook reload
   - [ ] Don't stop rebuilding if rebuild failed due syntax error
@@ -278,13 +279,14 @@
   - [ ] Allow set viewport sizes for story (use width x height as postfix for browser name in UI)
   - [ ] Allow to restart tests on story changes
   - [ ] Creevey-as-a-Service
+  - [ ] Allow disable hmr, load tests from browser (low priority, maybe use only as fallback for difficult scenarios)
 - [ ] Improve Docker
   - [ ] Add vnc
   - [ ] Add video recording
   - [ ] Private docker images registry
   - [ ] Start storybook inside docker
-  - [ ] Add support private docker registers
   - [ ] Allow define custom storybook image
+  - [ ] Support docker-in-docker (start storybook and creevey inside docker)
 
 ## Not in first time
 
