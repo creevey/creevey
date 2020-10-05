@@ -116,7 +116,7 @@ export default async function compile(config: Config, { debug, ui }: Options): P
 
   // NOTE Exclude all addons
   storybookWebpackConfig.entry = Array.isArray(storybookWebpackConfig.entry)
-    ? storybookWebpackConfig.entry.filter((entry) => !entry.includes('@storybook/addon'))
+    ? storybookWebpackConfig.entry.filter((entry) => !/@storybook(\/|\\)addon/.test(entry))
     : storybookWebpackConfig.entry;
 
   // NOTE Add hack to allow stories HMR work in nodejs
@@ -128,7 +128,7 @@ export default async function compile(config: Config, { debug, ui }: Options): P
     ...storybookWebpackConfig.module,
     rules:
       storybookWebpackConfig.module?.rules.filter(
-        (rule) => !(typeof rule.loader == 'string' && rule.loader.includes('@storybook/source-loader')),
+        (rule) => !(typeof rule.loader == 'string' && /@storybook(\/|\\)source-loader/.test(rule.loader)),
       ) ?? [],
   };
 
