@@ -1,3 +1,11 @@
+# [0.7.0-beta.11](https://github.com/wKich/creevey/compare/v0.7.0-beta.10...v0.7.0-beta.11) (2020-10-05)
+
+### Bug Fixes
+
+- 🐛 build addon to support ie11 ([4327d6d](https://github.com/wKich/creevey/commit/4327d6dfe9471adecaf6cba7ae6b36312d9fcf5e))
+- 🐛 output readable error message on switch story ([aa369cb](https://github.com/wKich/creevey/commit/aa369cba3f6acb472d11f403f1081ea6c400f367))
+- 🐛 run tests on circle ci ([a8afef5](https://github.com/wKich/creevey/commit/a8afef582235c37722a60f9596f0e1cbb61a1da0))
+
 # [0.7.0-beta.10](https://github.com/wKich/creevey/compare/v0.7.0-beta.9...v0.7.0-beta.10) (2020-10-02)
 
 ### Bug Fixes
