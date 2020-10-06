@@ -59,11 +59,17 @@ export function withCreeveyTests(
               const prevStories = draft.stories || {};
               Object.entries(tests).forEach(([id, update]) => {
                 if (!prevTests[id]) {
-                  prevTests[id] = { id: id, path: update?.path ?? [], skip: update?.skip ?? false };
+                  prevTests[id] = {
+                    id,
+                    storyId: update?.storyId,
+                    path: update?.path ?? [],
+                    skip: update?.skip ?? false,
+                  };
+                  return;
                 }
-                let test = prevTests[id];
+                const test = prevTests[id];
                 if (test && removedTests.includes(test.path)) {
-                  test = undefined;
+                  delete prevTests[id];
                   return;
                 }
                 if (!update || !test) return;
@@ -109,7 +115,7 @@ export function withCreeveyTests(
         const status = storyStatus
           .map((x) => x.status)
           .reduce((oldStatus, newStatus) => calcStatus(oldStatus, newStatus), undefined);
-        const skip = storyStatus.every((x) => x.skip);
+        const skip = storyStatus.length > 0 ? storyStatus.every((x) => x.skip) : false;
         stories[storyId].name = this.addStatus(stories[storyId].name, status, skip);
       });
       void this.props.api.setStories(stories);

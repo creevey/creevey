@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { CreeveyContext } from './CreeveyContext';
 import { ImagesView } from '../shared/components/ImagesView/ImagesView';
-import { PageHeader } from './PageHeader/PageHeader';
+import { PageHeader } from '../shared/components/PageHeader/PageHeader';
 import { PageFooter } from './PageFooter/PageFooter';
 import { TestResult, ImagesViewMode } from '../../types';
 import { getImageUrl } from '../shared/helpers';

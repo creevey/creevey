@@ -44,7 +44,7 @@ export default class Runner extends EventEmitter {
     if (!test) return;
     test.status = status;
     if (!result) {
-      this.sendUpdate({ tests: { [id]: { path: test.path, status, storyId: test.story.id } } });
+      this.sendUpdate({ tests: { [id]: { path: test.path, status, storyId: test.storyId } } });
       return;
     }
     if (!test.results) {
@@ -52,7 +52,7 @@ export default class Runner extends EventEmitter {
     }
     test.results.push(result);
 
-    this.sendUpdate({ tests: { [id]: { path: test.path, status, results: [result], storyId: test.story.id } } });
+    this.sendUpdate({ tests: { [id]: { path: test.path, status, results: [result], storyId: test.storyId } } });
   };
 
   private handlePoolStop = (): void => {
@@ -75,7 +75,6 @@ export default class Runner extends EventEmitter {
         if (oldTest) {
           this.tests[id] = {
             ...newTest,
-            status: 'unknown',
             retries: oldTest.retries,
             results: oldTest.results,
             approved: oldTest.approved,
@@ -111,7 +110,7 @@ export default class Runner extends EventEmitter {
       tests: testsToStart.reduce(
         (update, { id }) => ({
           ...update,
-          [id]: { path: this.tests[id]?.path, status: 'pending', storyId: this.tests[id]?.story.id },
+          [id]: { path: this.tests[id]?.path, status: 'pending', storyId: this.tests[id]?.storyId },
         }),
         {},
       ),
@@ -147,7 +146,7 @@ export default class Runner extends EventEmitter {
     Object.values(this.tests)
       .filter(isDefined)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .forEach(({ story, fn, ...test }) => (tests[test.id] = { ...test, storyId: story.id }));
+      .forEach(({ story, fn, ...test }) => (tests[test.id] = test));
     return {
       isRunning: this.isRunning,
       tests,
@@ -171,7 +170,7 @@ export default class Runner extends EventEmitter {
     await mkdirAsync(path.join(this.screenDir, testPath), { recursive: true });
     await copyFileAsync(srcImagePath, dstImagePath);
     test.approved[image] = retry;
-    this.sendUpdate({ tests: { [id]: { path: test.path, approved: { [image]: retry }, storyId: test.story.id } } });
+    this.sendUpdate({ tests: { [id]: { path: test.path, approved: { [image]: retry }, storyId: test.storyId } } });
   }
 
   private sendUpdate(data: CreeveyUpdate): void {
