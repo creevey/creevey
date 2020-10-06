@@ -114,6 +114,15 @@ export default async function compile(config: Config, { debug, ui }: Options): P
     filename: 'main.js',
   };
 
+  // NOTE replace mdx to null loader for now
+  // TODO Use creevey-loader instead
+  storybookWebpackConfig.module?.rules
+    .filter(
+      (rule) =>
+        rule.test?.toString() == /\.mdx$/.toString() || rule.test?.toString() == /\.(stories|story).mdx$/.toString(),
+    )
+    .forEach((rule) => (rule.use = require.resolve('null-loader')));
+
   // NOTE Exclude all addons
   storybookWebpackConfig.entry = Array.isArray(storybookWebpackConfig.entry)
     ? storybookWebpackConfig.entry.filter((entry) => !/@storybook(\/|\\)addon/.test(entry))

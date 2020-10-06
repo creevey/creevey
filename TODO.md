@@ -213,6 +213,8 @@
 - [x] Cleanup nodejs storybook bundle (Don't load any of addons)
 - [x] Build addon for ie11
 - [x] Add human readable error message if test failed with `window.__CREEVEY_SELECT_STORY__` is not a function
+- [ ] Add creevey in awesome list
+  - https://github.com/mojoaxel/awesome-regression-testing
 - [ ] Add Storybook integration tests
   - Init projects with various frameworks
   - Init storybook using storybook cli
@@ -232,7 +234,8 @@
   - [x] `export const parameters = {};` in preview.js lead to error `Singleton client API not yet initialized, cannot call addParameters`
   - [x] Storybook addons override creevey parameters in stories (wait fix from storybook, send PR)
   - [x] Add regenerator runtime to report main.js
-  - [ ] Don't fail build with mdx stories (just ignore it for now)
+  - [x] Don't reset scroll on swap images
+  - [x] Don't fail build with mdx stories (just ignore it for now)
   - [ ] Re-disable animations on storybook reload
   - [ ] Don't stop rebuilding if rebuild failed due syntax error
 - [ ] Features
@@ -294,7 +297,6 @@
 - [ ] Don't output skipped tests
 - [ ] Improve css filter for blend view, try to reach pixelmatch output
 - [ ] Profile tests loading process (maybe we don't need workers at all)
-- [ ] Don't reset scroll on swap images
 - [ ] Always save images even if test with matchImages failed
 - [ ] Add liftoff https://github.com/js-cli/js-liftoff
 - [ ] Correctly resize images in views using correct proportions (smaller image should shrink if larger shrink too, max-width/max-height doesn't work)
