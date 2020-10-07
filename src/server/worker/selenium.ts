@@ -109,7 +109,14 @@ async function resizeViewport(browser: WebDriver, viewport: { width: number; hei
     });
 }
 
-function disableAnimations(browser: WebDriver): Promise<void> {
+async function disableAnimations(browser: WebDriver): Promise<void> {
+  if (
+    await browser.executeScript(function () {
+      return Boolean(document.querySelector('[data-creevey="disable-animation"]'));
+    })
+  )
+    return;
+
   const disableAnimationsStyles = `
 *,
 *:hover,
@@ -127,6 +134,7 @@ function disableAnimations(browser: WebDriver): Promise<void> {
     /* eslint-disable no-var */
     var style = document.createElement('style');
     var textNode = document.createTextNode(stylesheet);
+    style.setAttribute('data-creevey', 'disable-animation');
     style.setAttribute('type', 'text/css');
     style.appendChild(textNode);
     document.head.appendChild(style);
@@ -354,6 +362,7 @@ export async function switchStory(this: Context): Promise<void> {
   if (!story) throw new Error(`Current test '${this.testScope.join('/')}' context doesn't have 'story' field`);
 
   await resetMousePosition(this.browser);
+  await disableAnimations(this.browser);
   await selectStory(this.browser, story.id, story.kind, story.name);
 
   const { captureElement } = (story.parameters.creevey ?? {}) as CreeveyStoryParams;

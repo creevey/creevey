@@ -236,7 +236,7 @@
   - [x] Add regenerator runtime to report main.js
   - [x] Don't reset scroll on swap images
   - [x] Don't fail build with mdx stories (just ignore it for now)
-  - [ ] Re-disable animations on storybook reload
+  - [x] Re-disable animations on storybook reload
   - [ ] Don't stop rebuilding if rebuild failed due syntax error
 - [ ] Features
   - [x] ~~Add `args` type for CSFStory~~ (Can't support 5.x and 6.x in same time)
