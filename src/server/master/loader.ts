@@ -1,5 +1,5 @@
 import { getOptions, OptionObject } from 'loader-utils';
-import validateOptions from 'schema-utils';
+import { validate } from 'schema-utils';
 import { JSONSchema7 } from 'schema-utils/declarations/validate';
 import { parse } from '@babel/parser';
 import traverse, { NodePath, Binding } from '@babel/traverse';
@@ -127,9 +127,7 @@ function cleanUpStoryProps(storyPropAssign: NodePath<t.AssignmentExpression>): v
 
 function recursivelyRemoveUnreferencedBindings(path: NodePath<t.Program>): void {
   const getUnreferencedBindings = (): Binding[] => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    // NOTE I don't know what this method do, but it allow get correct bindings
+    // @ts-expect-error: I don't know what this method do, but it allow get correct bindings
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     path.scope.crawl();
     return Object.values(path.scope.bindings).filter(
@@ -249,7 +247,7 @@ const defaultOptions = { debug: false };
 
 export default function (this: loader.LoaderContext | void, source: string): string {
   const options = this ? getOptions(this) || defaultOptions : defaultOptions;
-  validateOptions(schema, options, { name: 'Creevey Stories Loader' });
+  validate(schema, options, { name: 'Creevey Stories Loader' });
   const { ast, done } = tryParse(source, options);
 
   if (!done || !ast) return source;

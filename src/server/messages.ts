@@ -16,9 +16,7 @@ function emitMessage<T>(message: T): boolean {
   if (cluster.isWorker && !process.connected) return false;
   return (
     process.send?.(message) ??
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    // NOTE wrong typings `process.emit` return boolean
+    // @ts-expect-error: wrong typings `process.emit` return boolean
     process.emit('message', message)
   );
 }

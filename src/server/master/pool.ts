@@ -161,14 +161,14 @@ export default class Pool extends EventEmitter {
       if (!isWorkerMessage(message) && !isTestMessage(message)) return;
       if (message.type != 'end' && message.type != 'error') return;
 
-      let result = null;
+      let result: TestResult;
 
       if (message.type == 'error') {
         this.gracefullyKill(worker);
 
-        result = { status: 'failed', ...(message.payload as { error: string }) } as TestResult;
+        result = { status: 'failed', ...message.payload };
       } else {
-        result = message.payload as TestResult;
+        result = message.payload;
       }
 
       const shouldRetry = result.status == 'failed' && this.shouldRetry(test);

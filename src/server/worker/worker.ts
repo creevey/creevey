@@ -128,8 +128,7 @@ export default async function worker(config: Config, options: Options & { browse
     },
   };
   const mocha = new Mocha(mochaOptions);
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
+  // @ts-expect-error: @types/mocha has out-dated types
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   mocha.cleanReferencesAfterRun(false);
 

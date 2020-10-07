@@ -91,8 +91,7 @@ function initStorybookEnvironment(): { clientApi: ClientApi; channel: Channel } 
   });
 
   if (isStorybookVersionLessThan(6)) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
+    // @ts-expect-error: disable logger for 5.x storybook
     logger.debug = noop;
   }
 

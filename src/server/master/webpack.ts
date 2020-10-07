@@ -5,8 +5,7 @@ import nodeExternals from 'webpack-node-externals';
 import { extensions as fallbackExtensions, getCreeveyCache } from '../utils';
 import { Config, Options, noop } from '../../types';
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
+// @ts-expect-error: import internal module that lack of types
 import loadStorybookWebpackConfig from '@storybook/core/dist/server/config';
 import { emitWebpackMessage, subscribeOn } from '../messages';
 
