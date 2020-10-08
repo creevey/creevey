@@ -7,7 +7,6 @@ import { TestResult, ImagesViewMode } from '../../../../types';
 import { PageFooter } from './PageFooter';
 import { getImageUrl } from '../../../shared/helpers';
 import { getViewMode, VIEW_MODE_KEY } from '../../../shared/viewMode';
-import { ThemeProvider, ensure, themes } from '@storybook/theming';
 
 interface TestResultsProps {
   id: string;
@@ -50,19 +49,17 @@ export function ResultsPage({ id, path, results = [], approved = {} }: TestResul
         flex-direction: column;
       `}
     >
-      <ThemeProvider key="theme" theme={ensure(themes.light)}>
-        <PageHeader
-          title={[...path].reverse()}
-          images={result.images}
-          errorMessage={result.error}
-          showViewModes={hasDiffAndExpect}
-          viewMode={viewMode}
-          onViewModeChange={handleChangeViewMode}
-          onImageChange={setImageName}
-          imagesWithError={imagesWithError}
-          showTitle
-        />
-      </ThemeProvider>
+      <PageHeader
+        title={[...path].reverse()}
+        images={result.images}
+        errorMessage={result.error}
+        showViewModes={hasDiffAndExpect}
+        viewMode={viewMode}
+        onViewModeChange={handleChangeViewMode}
+        onImageChange={setImageName}
+        imagesWithError={imagesWithError}
+        showTitle
+      />
       <div
         css={css`
           background: #eee;

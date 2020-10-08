@@ -6,6 +6,7 @@ import { SideBar } from '../src/client/web/CreeveyView/SideBar';
 import { SideBarHeader } from '../src/client/web/CreeveyView/SideBar/SideBarHeader';
 import { treeifyTests } from '../src/client/shared/helpers';
 import { noop, CreeveySuite, CreeveyStatus, isDefined, isTest } from '../src/types';
+import { ensure, ThemeProvider, themes } from '@storybook/theming';
 
 function openSuites(suite: CreeveySuite): CreeveySuite {
   suite.opened = true;
@@ -54,6 +55,13 @@ const headerDecorator = (storyFn: StoryFn<ReactNode>): JSX.Element => (
 
 export default {
   title: 'SideBar',
+  decorators: [
+    (Story: React.ComponentClass): JSX.Element => (
+      <ThemeProvider theme={ensure(themes.light)}>
+        <Story />
+      </ThemeProvider>
+    ),
+  ],
   parameters: {
     creevey: {
       skip: {

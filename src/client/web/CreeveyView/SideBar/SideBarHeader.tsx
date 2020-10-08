@@ -1,11 +1,11 @@
 import React, { useContext, useState } from 'react';
-import { css } from '@emotion/core';
-import { Button, Spinner, Input } from '@skbkontur/react-ui';
-import SearchIcon from '@skbkontur/react-icons/Search';
+import { Button as NativeButton, Loader } from '@storybook/components';
+import { styled } from '@storybook/theming';
 import { CreeveyContext } from '../../../shared/CreeveyContext';
 import { TestsStatus, TestsStatusProps } from './TestsStatus';
 import { TestStatus } from '../../../../types';
 import { CreeveyViewFilter } from '../../../shared/helpers';
+import { Search } from './Search';
 
 interface SideBarHeaderProps {
   testsStatus: Omit<TestsStatusProps, 'onClickByStatus'>;
@@ -15,6 +15,39 @@ interface SideBarHeaderProps {
   onFilterChange: (value: CreeveyViewFilter) => void;
   canStart?: boolean;
 }
+
+const Sticky = styled.div({
+  padding: '24px 32px 8px',
+  background: '#fff',
+  height: '150px',
+  zIndex: 3,
+  position: 'sticky',
+  top: '0',
+});
+
+const Container = styled.div({
+  display: 'flex',
+});
+
+const Header = styled.h2({
+  fontWeight: 'normal',
+  margin: 0,
+});
+
+const Button = styled(NativeButton)({
+  width: '110px',
+  display: 'flex',
+  justifyContent: 'center',
+});
+
+const MarginContainer = styled.div<{ left?: string; right?: string; top?: string; bottom?: string }>(
+  ({ left, right, top, bottom }) => ({
+    marginLeft: left || 0,
+    marginRight: right || 0,
+    marginTop: top || 0,
+    marginBottom: bottom || 0,
+  }),
+);
 
 const parseStringForFilter = (value: string): CreeveyViewFilter => {
   let status: TestStatus | null = null;
@@ -60,63 +93,30 @@ export function SideBarHeader({
   };
 
   return (
-    <div
-      css={css`
-        padding: 24px 32px 8px;
-        background: #fff;
-        height: 150px;
-        z-index: 3;
-        position: sticky;
-        top: 0;
-      `}
-    >
-      <div
-        css={css`
-          display: flex;
-        `}
-      >
+    <Sticky>
+      <Container>
         <div>
-          <h2
-            css={css`
-              font-weight: normal;
-              margin: 0;
-            `}
-          >
-            colin.creevey
-          </h2>
+          <Header>colin.creevey</Header>
           <TestsStatus {...testsStatus} onClickByStatus={handleClickByStatus} />
         </div>
-        <div
-          css={css`
-            margin-top: 10px;
-          `}
-        >
+        <MarginContainer top="10px">
           {isRunning ? (
-            <Button use="default" arrow size="medium" width={100} onClick={onStop}>
-              <Spinner type="mini" caption="" /> Running
+            <Button outline secondary onClick={onStop}>
+              <div style={{ position: 'relative', width: '10px', height: '10px' }}>
+                <Loader size={16} />
+              </div>
+              <MarginContainer left="15px">Running</MarginContainer>
             </Button>
           ) : (
-            <Button use="primary" arrow size="medium" width={100} onClick={onStart} disabled={!canStart}>
+            <Button outline secondary onClick={onStart} disabled={!canStart}>
               Start
             </Button>
           )}
-        </div>
-      </div>
-      <div
-        css={css`
-          margin-top: 36px;
-          margin-bottom: 24px;
-        `}
-      >
-        <Input
-          width="100%"
-          placeholder="search by status or substring"
-          size="medium"
-          rightIcon={<SearchIcon />}
-          onValueChange={handleInputFilterChange}
-          value={filterInput}
-        />
-      </div>
-    </div>
+        </MarginContainer>
+      </Container>
+      <MarginContainer top="36px" bottom="24px">
+        <Search onChange={handleInputFilterChange} value={filterInput} />
+      </MarginContainer>
+    </Sticky>
   );
 }
