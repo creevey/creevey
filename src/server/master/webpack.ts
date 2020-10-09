@@ -113,15 +113,6 @@ export default async function compile(config: Config, { debug, ui }: Options): P
     filename: 'main.js',
   };
 
-  // NOTE replace mdx to null loader for now
-  // TODO Use creevey-loader instead
-  storybookWebpackConfig.module?.rules
-    .filter(
-      (rule) =>
-        rule.test?.toString() == /\.mdx$/.toString() || rule.test?.toString() == /\.(stories|story).mdx$/.toString(),
-    )
-    .forEach((rule) => (rule.use = require.resolve('null-loader')));
-
   // NOTE Exclude all addons
   storybookWebpackConfig.entry = Array.isArray(storybookWebpackConfig.entry)
     ? storybookWebpackConfig.entry.filter((entry) => !/@storybook(\/|\\)addon/.test(entry))
@@ -130,6 +121,15 @@ export default async function compile(config: Config, { debug, ui }: Options): P
   // NOTE Add hack to allow stories HMR work in nodejs
   Array.isArray(storybookWebpackConfig.entry) &&
     storybookWebpackConfig.entry.unshift(path.join(__dirname, 'dummy-hmr'));
+
+  // NOTE replace mdx to null loader for now
+  // TODO Use creevey-loader instead
+  storybookWebpackConfig.module?.rules
+    .filter(
+      (rule) =>
+        rule.test?.toString() == /\.mdx$/.toString() || rule.test?.toString() == /\.(stories|story).mdx$/.toString(),
+    )
+    .forEach((rule) => (rule.use = require.resolve('null-loader')));
 
   // NOTE Exclude source-loader
   storybookWebpackConfig.module = {
@@ -150,6 +150,8 @@ export default async function compile(config: Config, { debug, ui }: Options): P
 
   // NOTE Exclude from bundle all modules from node_modules
   storybookWebpackConfig.externals = [
+    // NOTE Replace `@storybook/${framework}` to ../storybook.ts
+    { [`@storybook/${storybookFramework}`]: `commonjs ${require.resolve('../storybook')}` },
     nodeExternals({
       includeAbsolutePaths: true,
       allowlist: /(webpack|dummy-hmr|generated-stories-entry|generated-config-entry|generated-other-entry)/,

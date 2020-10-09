@@ -213,6 +213,7 @@
 - [x] Cleanup nodejs storybook bundle (Don't load any of addons)
 - [x] Build addon for ie11
 - [x] Add human readable error message if test failed with `window.__CREEVEY_SELECT_STORY__` is not a function
+- [ ] Update examples
 - [ ] Add creevey in awesome list
   - https://github.com/mojoaxel/awesome-regression-testing
 - [ ] Add Storybook integration tests
@@ -224,7 +225,7 @@
 - [x] Creevey as Addon PoC
 - [x] Update Eslint to v7
 - [x] Simplify hot-reloading logic, for v6.x fixed removing tests issue
-- [ ] Bugs
+- [x] Bugs
   - [x] IPC_CHANNEL_CLOSED error infinity loop, could reproduce with invalid gridUrl
   - [x] Error mocha instance already disposed in mocha@7.2
   - [x] Tests not removing in hot-reloading process
@@ -237,7 +238,7 @@
   - [x] Don't reset scroll on swap images
   - [x] Don't fail build with mdx stories (just ignore it for now)
   - [x] Re-disable animations on storybook reload
-  - [ ] Don't stop rebuilding if rebuild failed due syntax error
+  - [x] Don't stop rebuilding if rebuild failed due syntax error
 - [ ] Features
   - [x] ~~Add `args` type for CSFStory~~ (Can't support 5.x and 6.x in same time)
   - [x] Support run tests inside docker
@@ -290,6 +291,7 @@
   - [ ] Start storybook inside docker
   - [ ] Allow define custom storybook image
   - [ ] Support docker-in-docker (start storybook and creevey inside docker)
+  - [ ] Allow use standalone binary instead of Docker image for browser (https://aerokube.com/selenoid/latest/#_standalone_binary)
 
 ## Not in first time
 

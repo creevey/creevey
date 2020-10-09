@@ -2,9 +2,7 @@ import path from 'path';
 import { createHash } from 'crypto';
 import { Context } from 'mocha';
 import chokidar from 'chokidar';
-import { Channel } from '@storybook/channels';
 import addons from '@storybook/addons';
-import { ClientApi } from '@storybook/client-api';
 import Events from '@storybook/core-events';
 import { logger } from '@storybook/client-logger';
 import {
@@ -79,7 +77,7 @@ export function convertStories(
   return tests;
 }
 
-function initStorybookEnvironment(): { clientApi: ClientApi; channel: Channel } {
+function initStorybookEnvironment(): Promise<typeof import('./storybook')> {
   // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
   require('jsdom-global')(undefined, { url: 'http://localhost' });
 
@@ -95,20 +93,7 @@ function initStorybookEnvironment(): { clientApi: ClientApi; channel: Channel } 
     logger.debug = noop;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment
-  const { default: storybookCore } = require('@storybook/core');
-
-  /*
-   * 6.x
-   * return { configure, clientApi, configApi, channel, forceReRender };
-   * 5.x
-   * return { configure, clientApi, configApi, context: { channel, ... }, forceReRender };
-   */
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment
-  const { clientApi, context, channel = context.channel } = storybookCore.start(() => void 0);
-
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  return { clientApi, channel };
+  return import('./storybook');
 }
 
 function watchStories(): void {
@@ -157,15 +142,31 @@ function flatStories({ globalParameters, kindParameters, stories }: SetStoriesDa
   return stories;
 }
 
-function loadStorybookBundle(
+async function loadStorybookBundle(
   watch: boolean,
   storiesListener: (stories: Map<string, StoryInput[]>) => void,
 ): Promise<StoriesRaw> {
   const bundlePath = path.join(getCreeveyCache(), 'storybook/main.js');
 
-  return new Promise((resolve) => {
-    const { channel } = initStorybookEnvironment();
+  const { channel } = await initStorybookEnvironment();
+  channel.removeAllListeners(Events.CURRENT_STORY_WAS_SET);
 
+  channel.on('storiesUpdated', storiesListener);
+
+  if (watch) {
+    subscribeOn('webpack', (message: WebpackMessage) => {
+      if (message.type != 'rebuild succeeded') return;
+
+      Object.values(global.__CREEVEY_HMR_DATA__)
+        .filter(({ callback }) => callback)
+        .forEach(({ data, callback }) => callback(data));
+
+      delete require.cache[bundlePath];
+      require(bundlePath);
+    });
+  }
+
+  return new Promise((resolve) => {
     channel.once(Events.SET_STORIES, (data: SetStoriesData) => {
       if (watch) {
         watchStories();
@@ -177,20 +178,6 @@ function loadStorybookBundle(
         resolve(flatStories(data));
       }
     });
-    channel.on('storiesUpdated', storiesListener);
-
-    if (watch) {
-      subscribeOn('webpack', (message: WebpackMessage) => {
-        if (message.type != 'rebuild succeeded') return;
-
-        Object.values(global.__CREEVEY_HMR_DATA__)
-          .filter(({ callback }) => callback)
-          .forEach(({ data, callback }) => callback(data));
-
-        delete require.cache[bundlePath];
-        require(bundlePath);
-      });
-    }
 
     require(bundlePath);
   });
