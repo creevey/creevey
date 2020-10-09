@@ -1,3 +1,12 @@
+# [0.7.0-beta.13](https://github.com/wKich/creevey/compare/v0.7.0-beta.12...v0.7.0-beta.13) (2020-10-09)
+
+### Bug Fixes
+
+- 🐛 add stories in addon ([50d7279](https://github.com/wKich/creevey/commit/50d7279f3daa706da204682edfa69e4bc5dad43b))
+- 🐛 don't crash on storybook reload error ([b393926](https://github.com/wKich/creevey/commit/b393926eda582094973e18b037f95af4530f5b21))
+- 🐛 don't fail on mdx stories, just ignore it for now ([527f962](https://github.com/wKich/creevey/commit/527f96222a73eac0711882b7541d5d318a9aa4fa))
+- 🐛 re-disable animation ([ecbf380](https://github.com/wKich/creevey/commit/ecbf380316ce3479a70d7ce269a93088930a9880))
+
 # [0.7.0-beta.12](https://github.com/wKich/creevey/compare/v0.7.0-beta.11...v0.7.0-beta.12) (2020-10-05)
 
 ### Bug Fixes
