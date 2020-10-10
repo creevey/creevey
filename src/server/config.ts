@@ -6,7 +6,6 @@ import { requireConfig } from './utils';
 export const defaultBrowser = 'chrome';
 
 export const defaultConfig: Omit<Config, 'gridUrl'> = {
-  useDocker: false,
   storybookUrl: 'http://localhost:6006',
   screenDir: path.resolve('images'),
   reportDir: path.resolve('report'),
@@ -49,16 +48,10 @@ export async function readConfig(options: Options): Promise<Config | null> {
   if (options.reportDir) userConfig.reportDir = path.resolve(options.reportDir);
   if (options.screenDir) userConfig.screenDir = path.resolve(options.screenDir);
 
-  const { gridUrl, useDocker } = userConfig;
-
-  if (!gridUrl && !useDocker) {
-    console.log('Please specify `gridUrl` or enable `useDocker`');
-    process.exitCode = -1;
-    return null;
-  }
+  let useDocker = !userConfig.gridUrl;
 
   // NOTE disable docker for webpack or update workers
-  if (options.webpack || options.update) userConfig.useDocker = false;
+  if (options.webpack || options.update) useDocker = false;
 
   // NOTE: Hack to pass typescript checking
   const config = userConfig as Config;
@@ -67,7 +60,7 @@ export async function readConfig(options: Options): Promise<Config | null> {
     ([browser, browserConfig]) => (config.browsers[browser] = normalizeBrowserConfig(browser, browserConfig)),
   );
 
-  if (config.useDocker) {
+  if (useDocker) {
     return (await import('./docker')).default(config, options);
   }
 

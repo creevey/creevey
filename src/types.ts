@@ -75,7 +75,7 @@ export type BrowserConfig = Capabilities & {
   gridUrl?: string;
   storybookUrl?: string;
   /**
-   * Only make sense with enabled global `useDocker` flag
+   * Specify custom docker image
    * @default `selenoid/${browserName}:${version}`
    */
   dockerImage?: string;
@@ -91,12 +91,8 @@ export interface HookConfig {
 
 export interface Config {
   /**
-   * Allow creevey run browsers in docker containers.
-   * By setting this flag, creevey will ignore `gridUrl` option
-   */
-  useDocker: boolean;
-  /**
-   * Url to Selenium grid hub or standalone selenium instance
+   * Url to Selenium grid hub or standalone selenium.
+   * By default creevey will use docker containers
    */
   gridUrl: string;
   /**

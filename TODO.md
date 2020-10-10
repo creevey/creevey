@@ -193,7 +193,7 @@
 ## First priority (v0.7)
 
 - [ ] Update Readme
-  - [ ] `UseDocker`
+  - [ ] By default creevey use docker, but you can disable it by specifying gridUrl or override for some browsers
     - [ ] About CI, can't simply run docker-in-docker env (especially in circle ci because of isolated remote docker. As possible solution use machine executor https://github.com/oblador/loki/issues/183#issuecomment-602669503)
   - [ ] `before/after` hooks
   - [ ] creevey addon
@@ -225,7 +225,7 @@
 - [x] Creevey as Addon PoC
 - [x] Update Eslint to v7
 - [x] Simplify hot-reloading logic, for v6.x fixed removing tests issue
-- [x] Bugs
+- [ ] Bugs
   - [x] IPC_CHANNEL_CLOSED error infinity loop, could reproduce with invalid gridUrl
   - [x] Error mocha instance already disposed in mocha@7.2
   - [x] Tests not removing in hot-reloading process
@@ -239,6 +239,7 @@
   - [x] Don't fail build with mdx stories (just ignore it for now)
   - [x] Re-disable animations on storybook reload
   - [x] Don't stop rebuilding if rebuild failed due syntax error
+  - [ ] Fix message `You tried to add a duplicate decorator, this is not expected [Function (anonymous)]` with args
 - [ ] Features
   - [x] ~~Add `args` type for CSFStory~~ (Can't support 5.x and 6.x in same time)
   - [x] Support run tests inside docker

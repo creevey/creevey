@@ -144,7 +144,7 @@ async function pullImages(images: string[]): Promise<void> {
   }
 }
 
-export default async function (config: Config, { debug }: Options): Promise<Config> {
+export default async function (config: Config, { debug, browser }: Options): Promise<Config> {
   if (isMaster) {
     const selenoidHost = await startSelenoidContainer(config, debug);
     let gridUrl = 'http://localhost:4444/wd/hub';
@@ -162,6 +162,7 @@ export default async function (config: Config, { debug }: Options): Promise<Conf
     });
     return config;
   } else {
+    if (browser && (config.browsers[browser] as BrowserConfig).gridUrl) return Promise.resolve(config);
     return new Promise((resolve) => {
       subscribeOn('docker', (message) => {
         if (message.type == 'success') {
