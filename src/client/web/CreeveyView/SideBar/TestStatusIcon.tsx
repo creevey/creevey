@@ -1,10 +1,6 @@
 import React from 'react';
-import { css } from '@emotion/core';
-import DeleteIcon from '@skbkontur/react-icons/Delete';
-import OkIcon from '@skbkontur/react-icons/Ok';
-import ClockIcon from '@skbkontur/react-icons/Clock';
-import PauseIcon from '@skbkontur/react-icons/Pause';
-import { Spinner } from '@skbkontur/react-ui';
+import { styled } from '@storybook/theming';
+import { Icons, Loader } from '@storybook/components';
 import { TestStatus } from '../../../../types';
 
 export interface TestStatusIconProps {
@@ -13,29 +9,46 @@ export interface TestStatusIconProps {
   skip: string | boolean;
 }
 
+const Icon = styled(Icons)<{ color?: string }>(({ color }) => ({
+  color: color,
+  width: 10,
+  height: 10,
+  display: 'inline-block',
+}));
+
+const Container = styled.span({
+  width: 12,
+  height: 12,
+  display: 'inline-block',
+});
+
+const Spinner = styled(Loader)({
+  left: '40px',
+});
+
 export function TestStatusIcon({ inverted, status, skip }: TestStatusIconProps): JSX.Element | null {
+  let icon = null;
   switch (status) {
     case 'failed': {
-      return <DeleteIcon color={inverted ? '#fff' : '#d9472b'} />;
+      icon = <Icon color={inverted ? '#fff' : '#d9472b'} icon="cross" />;
+      break;
     }
     case 'success': {
-      return <OkIcon color={inverted ? '#fff' : '#419d14'} />;
+      icon = <Icon color={inverted ? '#fff' : '#419d14'} icon="check" />;
+      break;
     }
     case 'running': {
-      return <Spinner type="mini" caption="" dimmed={inverted} />;
+      icon = <Spinner size={10} />;
+      break;
     }
     case 'pending': {
-      return <ClockIcon color={inverted ? '#fff' : '#a0a0a0'} />;
+      icon = <Icon color={inverted ? '#fff' : '#a0a0a0'} icon="time" />;
+      break;
     }
     default: {
-      if (skip) return <PauseIcon color={inverted ? '#fff' : undefined} />;
-      return (
-        <span
-          css={css`
-            padding: 7px;
-          `}
-        />
-      );
+      if (skip) icon = <Icon color={inverted ? '#fff' : undefined} icon="timer" />;
+      break;
     }
   }
+  return <Container>{icon}</Container>;
 }

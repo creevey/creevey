@@ -28,7 +28,7 @@ const IconContainer = styled.div<{ color?: string }>(({ color }) => ({
   },
 
   '& svg': {
-    marginRight: 2,
+    marginRight: 5,
     width: 10,
     height: 10,
   },
@@ -40,6 +40,10 @@ const Divider = styled.div({
     display: 'block',
     marginRight: 4,
   },
+});
+
+const Button = styled(IconButton)({
+  height: '24px',
 });
 
 export function TestsStatus({
@@ -54,38 +58,38 @@ export function TestsStatus({
     <Container>
       {pendingCount > 0 && (
         <>
-          <IconButton onClick={() => onClickByStatus('pending')}>
+          <Button onClick={() => onClickByStatus('pending')}>
             <IconContainer color="#a0a0a0">
               <Icons icon="time" />
               {pendingCount}
             </IconContainer>
-          </IconButton>
+          </Button>
           <Divider />
         </>
       )}
-      <IconButton onClick={() => onClickByStatus('success')}>
+      <Button onClick={() => onClickByStatus('success')}>
         <IconContainer color="#228007">
           <Icons icon="check" /> {successCount}
         </IconContainer>
-      </IconButton>
+      </Button>
       <Divider />
-      <IconButton onClick={() => onClickByStatus('failed')}>
+      <Button onClick={() => onClickByStatus('failed')}>
         <IconContainer color="#ce0014">
           <Icons icon="cross" /> {failedCount}
         </IconContainer>
-      </IconButton>
+      </Button>
       <Divider />
-      <IconButton>
+      <Button>
         <IconContainer>
           <Icons icon="timer" /> {skippedCount}
         </IconContainer>
-      </IconButton>
+      </Button>
       <Divider />
-      <IconButton>
+      <Button>
         <IconContainer>
           <Icons icon="trash" /> {removedCount}
         </IconContainer>
-      </IconButton>
+      </Button>
     </Container>
   );
 }

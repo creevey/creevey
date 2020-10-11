@@ -19,8 +19,8 @@ interface SideBarHeaderProps {
 const Sticky = styled.div({
   padding: '24px 32px 8px',
   background: '#fff',
-  height: '150px',
-  zIndex: 3,
+  height: '130px',
+  zIndex: 5,
   position: 'sticky',
   top: '0',
 });
@@ -114,7 +114,7 @@ export function SideBarHeader({
           )}
         </MarginContainer>
       </Container>
-      <MarginContainer top="36px" bottom="24px">
+      <MarginContainer top="24px" bottom="24px">
         <Search onChange={handleInputFilterChange} value={filterInput} />
       </MarginContainer>
     </Sticky>

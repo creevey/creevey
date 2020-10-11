@@ -11,7 +11,7 @@ const FilterField = withTheme(
   styled.input(({ theme }) => ({
     appearance: 'none',
     border: 'none',
-    boxSizing: 'inherit',
+    boxSizing: 'border-box',
     display: 'block',
     outline: 'none',
     width: '100%',
