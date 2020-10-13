@@ -12,7 +12,7 @@ jobs:
           node-version: 12.x
       - name: install
         run: yarn
-      - name: lint
+      - name: build
         run: yarn build
       - name: pack
         run: yarn pack

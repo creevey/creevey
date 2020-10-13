@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import cluster from 'cluster';
-import { SkipOptions, isDefined } from '../types';
+import { SkipOptions, isDefined, Test } from '../types';
 import { emitShutdownMessage, sendShutdownMessage } from './messages';
 import findCacheDir from 'find-cache-dir';
 
@@ -128,4 +128,18 @@ export async function runSequence(seq: Array<() => unknown>, predicate: () => bo
   for (const fn of seq) {
     if (predicate()) await fn();
   }
+}
+
+export function testsToImages(tests: (Test | undefined)[]): Set<string> {
+  return new Set(
+    ([] as string[]).concat(
+      ...tests
+        .filter(isDefined)
+        .map(({ path: [browser, ...path], results }) =>
+          Object.keys(results?.slice(-1)[0]?.images ?? {}).map(
+            (image) => `${[...(browser == image ? [browser] : [image, browser]), ...path].reverse().join('/')}.png`,
+          ),
+        ),
+    ),
+  );
 }

@@ -1,11 +1,11 @@
 import path from 'path';
-import { writeFileSync, copyFile, readdir, mkdir } from 'fs';
+import { writeFileSync, copyFile, readdir, mkdir, readdirSync } from 'fs';
 import { promisify } from 'util';
 import master from './master';
 import creeveyServer from './server';
 import creeveyApi from './api';
 import { Config, Options, isDefined } from '../../types';
-import { shutdownWorkers } from '../utils';
+import { shutdownWorkers, testsToImages } from '../utils';
 import { subscribeOn } from '../messages';
 
 const copyFileAsync = promisify(copyFile);
@@ -35,6 +35,22 @@ function reportDataModule<T>(data: T): string {
 `;
 }
 
+function readDirRecursive(dirPath: string): string[] {
+  return ([] as string[]).concat(
+    ...readdirSync(dirPath, { withFileTypes: true }).map((dirent) =>
+      dirent.isDirectory() ? readDirRecursive(`${dirPath}/${dirent.name}`) : [`${dirPath}/${dirent.name}`],
+    ),
+  );
+}
+
+function outputUnnecessaryImages(imagesDir: string, images: Set<string>): void {
+  console.log('We found unnecessary screenshot images, that can be freely removed:');
+  readDirRecursive(imagesDir)
+    .map((imagePath) => path.relative(imagesDir, imagePath))
+    .filter((imagePath) => !images.has(imagePath))
+    .forEach((imagePath) => console.log(imagePath));
+}
+
 export default async function (config: Config, options: Options): Promise<void> {
   if (config.hooks.after) {
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
@@ -60,12 +76,14 @@ export default async function (config: Config, options: Options): Promise<void> 
   } else {
     // TODO Exit if runner don't have tests to run
     runner.once('stop', () => {
-      const isSuccess = Object.values(runner.status.tests)
+      const tests = Object.values(runner.status.tests);
+      const isSuccess = tests
         .filter(isDefined)
         .filter(({ skip }) => !skip)
         .every(({ status }) => status == 'success');
       // TODO output summary
       process.exitCode = isSuccess ? 0 : -1;
+      outputUnnecessaryImages(config.screenDir, testsToImages(tests));
       shutdownWorkers();
     });
     // TODO grep

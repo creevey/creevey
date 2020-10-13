@@ -239,13 +239,15 @@
   - [x] Don't fail build with mdx stories (just ignore it for now)
   - [x] Re-disable animations on storybook reload
   - [x] Don't stop rebuilding if rebuild failed due syntax error
-  - [ ] Fix message `You tried to add a duplicate decorator, this is not expected [Function (anonymous)]` with args
+  - [ ] Cut off all exports in preview.js except creevey params
+  - [ ] Client UI don't show statuses on first run
+  - [ ]
 - [ ] Features
   - [x] ~~Add `args` type for CSFStory~~ (Can't support 5.x and 6.x in same time)
   - [x] Support run tests inside docker
   - [x] Allow define saucelabs/browserstack-local init/dispose functions
   - [x] ~~Allow define custom localhost resolver in config~~ (write function for storybookUrl)
-  - [ ] Output unnecessary images when creevey run from cli
+  - [x] Output unnecessary images when creevey run from cli
 
 ## Second priority (v0.8)
 
@@ -293,6 +295,8 @@
   - [ ] Allow define custom storybook image
   - [ ] Support docker-in-docker (start storybook and creevey inside docker)
   - [ ] Allow use standalone binary instead of Docker image for browser (https://aerokube.com/selenoid/latest/#_standalone_binary)
+- [ ] Rework github actions workflows
+- [ ] Rename `screenDir` config option
 
 ## Not in first time
 
