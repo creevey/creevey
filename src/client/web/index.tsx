@@ -25,8 +25,14 @@ const CreeveAppAsync = React.lazy(async () => {
   let creeveyStatus: CreeveyStatus;
   let creeveyApi: CreeveyClientApi | undefined;
   if (window.location.host) {
-    creeveyApi = await initCreeveyClientApi();
-    creeveyStatus = await creeveyApi.status;
+    try {
+      creeveyApi = await initCreeveyClientApi();
+      creeveyStatus = await creeveyApi.status;
+    } catch (error) {
+      // NOTE: Failed to get status from API
+      // NOTE: It might happen on circle ci from artifact
+      creeveyStatus = { isRunning: false, tests: await loadCreeveyData() };
+    }
   } else {
     creeveyStatus = { isRunning: false, tests: await loadCreeveyData() };
   }
