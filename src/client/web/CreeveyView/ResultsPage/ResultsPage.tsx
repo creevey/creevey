@@ -4,7 +4,7 @@ import { CreeveyContext } from '../../../shared/CreeveyContext';
 import { ImagesView } from '../../../shared/components/ImagesView';
 import { PageHeader } from '../../../shared/components/PageHeader/PageHeader';
 import { TestResult, ImagesViewMode } from '../../../../types';
-import { PageFooter } from './PageFooter';
+import { PageFooter } from './../../../shared/components/PageFooter/PageFooter';
 import { getImageUrl } from '../../../shared/helpers';
 import { getViewMode, VIEW_MODE_KEY } from '../../../shared/viewMode';
 
@@ -91,6 +91,7 @@ export function ResultsPage({ id, path, results = [], approved = {} }: TestResul
           retriesCount={results.length}
           onRetryChange={setRetry}
           onApprove={handleApprove}
+          retry={retry}
         />
       </div>
     </div>
