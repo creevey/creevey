@@ -1,3 +1,14 @@
+# [0.7.0-beta.14](https://github.com/wKich/creevey/compare/v0.7.0-beta.13...v0.7.0-beta.14) (2020-10-13)
+
+### Bug Fixes
+
+- 🐛 fallback report if api don't available ([618682f](https://github.com/wKich/creevey/commit/618682f289cb316dbd3b8b78d9d96ddd9e2c8681))
+
+### Features
+
+- 🎸 output unnecessary images on full run ([b6dbb02](https://github.com/wKich/creevey/commit/b6dbb02d5f6ef5766f1f11c0d50d7f5b4ad17b79))
+- 🎸 remove `useDocker`. Creevey run docker by default ([ccbbb43](https://github.com/wKich/creevey/commit/ccbbb43f6fadd88bfcb21b266f08c45d39389c79))
+
 # [0.7.0-beta.13](https://github.com/wKich/creevey/compare/v0.7.0-beta.12...v0.7.0-beta.13) (2020-10-09)
 
 ### Bug Fixes
