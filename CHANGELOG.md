@@ -1,3 +1,10 @@
+# [0.7.0-beta.15](https://github.com/wKich/creevey/compare/v0.7.0-beta.14...v0.7.0-beta.15) (2020-10-13)
+
+### Bug Fixes
+
+- 🐛 don't output message about unnecessary image ([83c1463](https://github.com/wKich/creevey/commit/83c14635e667d39181cbc1ddc494bac026641a2d))
+- 🐛 improve `getImageUrl` for circle ci at least ([7537ce9](https://github.com/wKich/creevey/commit/7537ce9efa7a0ac3bcf2597a79126d8cd5312d59))
+
 # [0.7.0-beta.14](https://github.com/wKich/creevey/compare/v0.7.0-beta.13...v0.7.0-beta.14) (2020-10-13)
 
 ### Bug Fixes

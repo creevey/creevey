@@ -44,11 +44,13 @@ function readDirRecursive(dirPath: string): string[] {
 }
 
 function outputUnnecessaryImages(imagesDir: string, images: Set<string>): void {
-  console.log('We found unnecessary screenshot images, that can be freely removed:');
-  readDirRecursive(imagesDir)
+  const unnecessaryImages = readDirRecursive(imagesDir)
     .map((imagePath) => path.relative(imagesDir, imagePath))
-    .filter((imagePath) => !images.has(imagePath))
-    .forEach((imagePath) => console.log(imagePath));
+    .filter((imagePath) => !images.has(imagePath));
+  if (unnecessaryImages.length > 0) {
+    console.log('We found unnecessary screenshot images, that can be freely removed:');
+    unnecessaryImages.forEach((imagePath) => console.log(imagePath));
+  }
 }
 
 export default async function (config: Config, options: Options): Promise<void> {
