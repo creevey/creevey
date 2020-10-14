@@ -20,6 +20,7 @@ const Spinner = styled(Loader)({
   left: '40px',
 });
 
+// TODO Use storybook theme colors
 export function TestStatusIcon({ inverted, status, skip }: TestStatusIconProps): JSX.Element | null {
   let icon = null;
   switch (status) {

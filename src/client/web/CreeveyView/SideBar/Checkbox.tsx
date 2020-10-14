@@ -1,11 +1,11 @@
 import React from 'react';
 
-import { styled, withTheme } from '@storybook/theming';
+import { styled, Theme, withTheme } from '@storybook/theming';
 import { Icons } from '@storybook/components';
 import { transparentize } from 'polished';
 
 const Label = withTheme(
-  styled.label(({ theme }) => ({
+  styled.label<{ theme: Theme; disabled?: boolean }>(({ theme, disabled }) => ({
     display: 'inline-flex',
     alignItems: 'baseline',
     lineHeight: theme.typography.size.l1,
@@ -14,6 +14,7 @@ const Label = withTheme(
     cursor: 'pointer',
     fontSize: theme.typography.size.s1,
     padding: '0px',
+    pointerEvents: disabled ? 'none' : 'auto',
 
     input: {
       display: 'inline-block',
@@ -33,9 +34,7 @@ const Label = withTheme(
 
 const Box = withTheme(
   styled.span(({ theme }) => ({
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+    display: 'inline-block',
     width: '16px',
     height: '16px',
     border: theme.appBorderColor,
@@ -52,6 +51,14 @@ const Box = withTheme(
     },
   })),
 );
+
+const CircleIcon = styled(Icons)({
+  margin: '4px',
+});
+
+const CheckIcon = styled(Icons)({
+  margin: '2px',
+});
 
 interface BooleanProps {
   checked?: boolean;
@@ -73,16 +80,16 @@ export class Checkbox extends React.Component<BooleanProps, CheckboxState> {
   public setIndeterminate = (): void => this.handleIndeterminateChange(true);
   public resetIndeterminate = (): void => this.handleIndeterminateChange(false);
   render(): JSX.Element {
-    const { checked, onValueChange } = this.props;
+    const { checked, disabled, onValueChange } = this.props;
     const { indeterminate } = this.state;
     return (
-      <Label>
+      <Label disabled={disabled}>
         <input type="checkbox" onChange={(e) => onValueChange(e.target.checked)} checked={checked || false} />
         <Box>
           {indeterminate ? (
-            <Icons icon="circle" width="8" height="8" />
+            <CircleIcon icon="circle" width="8" height="8" />
           ) : checked ? (
-            <Icons icon="check" stroke="currentColor" strokeWidth="30" width="12" height="12" />
+            <CheckIcon icon="check" stroke="currentColor" strokeWidth="30" width="12" height="12" />
           ) : (
             ' '
           )}

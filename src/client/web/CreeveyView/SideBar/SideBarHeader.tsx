@@ -38,6 +38,7 @@ const Button = styled(NativeButton)({
   width: '110px',
   display: 'flex',
   justifyContent: 'center',
+  transform: 'none',
 });
 
 const MarginContainer = styled.div<{ left?: string; right?: string; top?: string; bottom?: string }>(
