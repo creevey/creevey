@@ -200,6 +200,7 @@
   - [ ] new params config, don't need decorator any more
   - [ ] update demo video
   - [ ] update using types (`export const Slide: Story<React.ComponentProps<typeof ImagesView>> & CSFStory<JSX.Element> = () => ImagesView('slide');`)
+  - [ ] Why need to use `findElement({ css: 'selector' })`. Improve it in `creevey-selenium` add null-loader
   - [ ] Write about differences with other tools
   - [ ] Add how to start docker and IE11 especially
   - [ ] Add instruction for various frameworks
