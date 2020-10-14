@@ -44,7 +44,7 @@ export const Button = withTheme(
 export const CheckboxContainer = styled.div({
   position: 'absolute',
   left: '64px',
-  top: '7px',
+  top: '4px',
   zIndex: 2,
 });
 

@@ -60,7 +60,7 @@ export function TestsStatus({
         <>
           <Button onClick={() => onClickByStatus('pending')}>
             <IconContainer color="#a0a0a0">
-              <Icons icon="time" />
+              <Icons icon="time" stroke="currentColor" strokeWidth="30" />
               {pendingCount}
             </IconContainer>
           </Button>
@@ -69,25 +69,25 @@ export function TestsStatus({
       )}
       <Button onClick={() => onClickByStatus('success')}>
         <IconContainer color="#228007">
-          <Icons icon="check" /> {successCount}
+          <Icons icon="check" stroke="currentColor" strokeWidth="30" /> {successCount}
         </IconContainer>
       </Button>
       <Divider />
       <Button onClick={() => onClickByStatus('failed')}>
         <IconContainer color="#ce0014">
-          <Icons icon="cross" /> {failedCount}
+          <Icons icon="cross" stroke="currentColor" strokeWidth="30" /> {failedCount}
         </IconContainer>
       </Button>
       <Divider />
       <Button>
         <IconContainer>
-          <Icons icon="timer" /> {skippedCount}
+          <Icons icon="timer" stroke="currentColor" strokeWidth="30" /> {skippedCount}
         </IconContainer>
       </Button>
       <Divider />
       <Button>
         <IconContainer>
-          <Icons icon="trash" /> {removedCount}
+          <Icons icon="trash" stroke="currentColor" strokeWidth="30" /> {removedCount}
         </IconContainer>
       </Button>
     </Container>

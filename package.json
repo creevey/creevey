@@ -76,6 +76,7 @@
     "ora": "^5.1.0",
     "pixelmatch": "^5.2.1",
     "pngjs": "^5.0.0",
+    "polished": "^3.4.4",
     "regenerator-runtime": "^0.13.7",
     "schema-utils": "^3.0.0",
     "selenium-webdriver": "^4.0.0-alpha.7",
