@@ -92,8 +92,6 @@
     "@babel/preset-react": "^7.10.4",
     "@babel/preset-typescript": "^7.10.4",
     "@babel/register": "^7.11.5",
-    "@emotion/babel-preset-css-prop": "^10.0.27",
-    "@emotion/core": "^10.0.35",
     "@storybook/addon-essentials": "^6.0.26",
     "@storybook/addons": "^6.0.26",
     "@storybook/api": "^6.0.26",

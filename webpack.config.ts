@@ -15,7 +15,7 @@ const config: Configuration = {
           options: {
             overrides: [
               {
-                presets: ['@emotion/babel-preset-css-prop', ['@babel/preset-env', { useBuiltIns: 'entry', corejs: 3 }]],
+                presets: [['@babel/preset-env', { useBuiltIns: 'entry', corejs: 3 }]],
               },
             ],
           },
