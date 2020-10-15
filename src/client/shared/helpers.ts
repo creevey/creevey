@@ -10,7 +10,6 @@ export interface CreeveyTestsStatus {
   failedCount: number;
   pendingCount: number;
   skippedCount: number;
-  removedCount: number;
 }
 
 const statusUpdatesMap = new Map<TestStatus | undefined, RegExp>([
@@ -236,8 +235,6 @@ export function countTestsStatus(suite: CreeveySuite): CreeveyTestsStatus {
   let failedCount = 0;
   let skippedCount = 0;
   let pendingCount = 0;
-  // TODO Add removed flag into suite object
-  const removedCount = 0;
 
   const cases: Array<CreeveySuite | CreeveyTest> = Object.values(suite.children).filter(isDefined);
   let suiteOrTest;
@@ -252,7 +249,7 @@ export function countTestsStatus(suite: CreeveySuite): CreeveyTestsStatus {
     }
   }
 
-  return { successCount, failedCount, skippedCount, pendingCount, removedCount };
+  return { successCount, failedCount, skippedCount, pendingCount };
 }
 
 export function getConnectionUrl(): string {

@@ -13,7 +13,6 @@ const Container = styled.div({
   alignItems: 'center',
   fontSize: '14px',
   lineHeight: '22px',
-  width: '230px',
 });
 
 const IconContainer = styled.div<{ color?: string }>(({ color }) => ({
@@ -51,22 +50,17 @@ export function TestsStatus({
   failedCount,
   pendingCount,
   skippedCount,
-  removedCount,
   onClickByStatus,
 }: TestsStatusProps): JSX.Element {
   return (
     <Container>
-      {pendingCount > 0 && (
-        <>
-          <Button onClick={() => onClickByStatus('pending')}>
-            <IconContainer color="#a0a0a0">
-              <Icons icon="time" stroke="currentColor" strokeWidth="30" />
-              {pendingCount}
-            </IconContainer>
-          </Button>
-          <Divider />
-        </>
-      )}
+      <Button onClick={() => onClickByStatus('pending')}>
+        <IconContainer color="#a0a0a0">
+          <Icons icon="time" stroke="currentColor" strokeWidth="30" />
+          {pendingCount}
+        </IconContainer>
+      </Button>
+      <Divider />
       <Button onClick={() => onClickByStatus('success')}>
         <IconContainer color="#228007">
           <Icons icon="check" stroke="currentColor" strokeWidth="30" /> {successCount}
@@ -82,12 +76,6 @@ export function TestsStatus({
       <Button>
         <IconContainer>
           <Icons icon="timer" stroke="currentColor" strokeWidth="30" /> {skippedCount}
-        </IconContainer>
-      </Button>
-      <Divider />
-      <Button>
-        <IconContainer>
-          <Icons icon="trash" stroke="currentColor" strokeWidth="30" /> {removedCount}
         </IconContainer>
       </Button>
     </Container>
