@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom';
-import { Loader } from '@skbkontur/react-ui';
+import { Loader } from '@storybook/components';
 import { CreeveyApp } from './CreeveyApp';
 
 import './index.css';
@@ -50,7 +50,7 @@ const CreeveAppAsync = React.lazy(async () => {
 });
 
 ReactDOM.render(
-  <Suspense fallback={<Loader active type="big" />}>
+  <Suspense fallback={<Loader size={64} />}>
     <CreeveAppAsync />
   </Suspense>,
   document.getElementById('root'),
