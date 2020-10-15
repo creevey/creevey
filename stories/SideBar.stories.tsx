@@ -1,12 +1,11 @@
 import React, { ReactNode } from 'react';
 import { StoryFn } from '@storybook/addons';
-import { css } from '@emotion/core';
 import { CreeveyContext } from '../src/client/shared/CreeveyContext';
 import { SideBar } from '../src/client/web/CreeveyView/SideBar';
 import { SideBarHeader } from '../src/client/web/CreeveyView/SideBar/SideBarHeader';
 import { treeifyTests } from '../src/client/shared/helpers';
 import { noop, CreeveySuite, CreeveyStatus, isDefined, isTest } from '../src/types';
-import { ensure, ThemeProvider, themes } from '@storybook/theming';
+import { ensure, styled, ThemeProvider, themes } from '@storybook/theming';
 
 function openSuites(suite: CreeveySuite): CreeveySuite {
   suite.opened = true;
@@ -43,15 +42,11 @@ const statusTests: () => CreeveyStatus['tests'] = () => ({
   12: { id: '12', path: ['pending', 'running', 'root'], skip: false, status: 'pending' },
 });
 
-const headerDecorator = (storyFn: StoryFn<ReactNode>): JSX.Element => (
-  <div
-    css={css`
-      width: 300px;
-    `}
-  >
-    {storyFn()}
-  </div>
-);
+const HeaderContainer = styled.div({
+  width: 300,
+});
+
+const headerDecorator = (storyFn: StoryFn<ReactNode>): JSX.Element => <HeaderContainer>{storyFn()}</HeaderContainer>;
 
 export default {
   title: 'SideBar',
@@ -120,7 +115,6 @@ HeaderDisabled.decorators = [headerDecorator];
 export const SimpleSideBar = (): JSX.Element => (
   <SideBar rootSuite={openSuites(treeifyTests(simpleTests()))} openedTest={null} onOpenTest={noop} />
 );
-
 
 export const StatusSideBar = (): JSX.Element => (
   <SideBar rootSuite={openSuites(treeifyTests(statusTests()))} openedTest={null} onOpenTest={noop} />

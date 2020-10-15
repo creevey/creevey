@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { css } from '@emotion/core';
 import { useImmer } from 'use-immer';
 import { CreeveyUpdate, CreeveySuite, isDefined } from '../../types';
 import { CreeveyClientApi } from '../shared/creeveyClientApi';
@@ -15,7 +14,7 @@ import {
 import { CreeveyContext } from '../shared/CreeveyContext';
 import { SideBar } from './CreeveyView/SideBar';
 import { ResultsPage } from '../shared/components/ResultsPage';
-import { ensure, ThemeProvider, themes } from '@storybook/theming';
+import { ensure, styled, ThemeProvider, themes } from '@storybook/theming';
 
 export interface CreeveyAppProps {
   api?: CreeveyClientApi;
@@ -24,6 +23,10 @@ export interface CreeveyAppProps {
     isRunning: boolean;
   };
 }
+
+const FlexContainer = styled.div({
+  display: 'flex',
+});
 
 export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element {
   const [tests, updateTests] = useImmer(initialState.tests);
@@ -70,14 +73,10 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
         onStop: handleStop,
         onSuiteOpen: handleSuiteOpen,
         onSuiteToggle: handleSuiteToggle,
-     }}
+      }}
     >
       <ThemeProvider theme={ensure(themes.light)}>
-        <div
-          css={css`
-            display: flex;
-          `}
-        >
+        <FlexContainer>
           <SideBar rootSuite={tests} openedTest={openedTest} onOpenTest={openTest} />
           {openedTest && (
             <ResultsPage
@@ -90,7 +89,7 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
               onImageApprove={handleImageApprove}
             />
           )}
-        </div>
+        </FlexContainer>
       </ThemeProvider>
     </CreeveyContext.Provider>
   );
