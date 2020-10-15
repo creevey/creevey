@@ -9,7 +9,7 @@ import { styled, withTheme, Theme } from '@storybook/theming';
 export interface SuiteLinkProps {
   title: string;
   suite: CreeveySuite;
-  id?: string;
+  'data-tid'?: string;
 }
 
 export const Container = withTheme(
@@ -60,7 +60,7 @@ export const SuiteContainer = styled.span<{ padding: number }>(({ padding }) => 
   whiteSpace: 'normal',
 }));
 
-export function SuiteLink({ title, suite, id }: SuiteLinkProps): JSX.Element {
+export function SuiteLink({ title, suite, 'data-tid': dataTid }: SuiteLinkProps): JSX.Element {
   const { onSuiteOpen, onSuiteToggle } = useContext(CreeveyContext);
   const checkboxRef = useRef<Checkbox>(null);
   useEffect(
@@ -75,7 +75,7 @@ export function SuiteLink({ title, suite, id }: SuiteLinkProps): JSX.Element {
 
   return (
     <Container>
-      <Button onClick={handleOpen} id={id}>
+      <Button onClick={handleOpen} data-tid={dataTid}>
         <TestStatusIcon status={suite.status} skip={suite.skip} />
         <SuiteContainer padding={Math.max(48, (suite.path.length + 5) * 8)}>
           {isTest(suite) ||

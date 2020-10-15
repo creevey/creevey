@@ -118,22 +118,24 @@ export const HeaderDisabled = (): JSX.Element => (
 );
 HeaderDisabled.decorators = [headerDecorator];
 
-const simpleSuites = openSuites(treeifyTests(simpleTests()));
-const testPath = simpleTests()[2]?.path.reverse() || [];
-checkSuite(simpleSuites, testPath, false);
+export const SimpleSideBar: CSFStory<JSX.Element> = () => {
+  const simpleSuites = openSuites(treeifyTests(simpleTests()));
+  const testPath = simpleTests()[2]?.path.reverse() || [];
 
-export const SimpleSideBar: CSFStory<JSX.Element> = () => (
-  <SideBar rootSuite={simpleSuites} openedTest={getTestByPath(simpleSuites, testPath)} onOpenTest={noop} />
-);
+  checkSuite(simpleSuites, testPath, false);
+
+  return <SideBar rootSuite={simpleSuites} openedTest={getTestByPath(simpleSuites, testPath)} onOpenTest={noop} />;
+};
 
 SimpleSideBar.parameters = {
   creevey: {
     tests: {
       async hover() {
         if (this.captureElement) {
-          const selectAll = await this.browser.findElement({ css: '#selectAll' });
-          const { x, y } = await selectAll.getRect();
-          await this.browser.actions().move({ x, y }).perform();
+          await this.browser
+            .actions()
+            .move({ origin: this.browser.findElement({ css: '[data-tid="selectAll"]' }) })
+            .perform();
         }
         const hover = await this.takeScreenshot();
 
