@@ -7,7 +7,6 @@ export interface CreeveyContextType {
   onStart: (rootSuite: CreeveySuite) => void;
   onSuiteOpen: (path: string[], opened: boolean) => void;
   onSuiteToggle: (path: string[], checked: boolean) => void;
-  onImageApprove: (id: string, retry: number, image: string) => void;
 }
 
 export const CreeveyContext = React.createContext<CreeveyContextType>({
@@ -16,5 +15,4 @@ export const CreeveyContext = React.createContext<CreeveyContextType>({
   onStart: noop,
   onSuiteOpen: noop,
   onSuiteToggle: noop,
-  onImageApprove: noop,
 });

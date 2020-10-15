@@ -90,7 +90,6 @@ export const HeaderRunning = (): JSX.Element => (
       isRunning: true,
       onStart: noop,
       onStop: noop,
-      onImageApprove: noop,
       onSuiteOpen: noop,
       onSuiteToggle: noop,
     }}
@@ -121,6 +120,8 @@ HeaderDisabled.decorators = [headerDecorator];
 export const SimpleSideBar = (): JSX.Element => (
   <SideBar rootSuite={openSuites(treeifyTests(simpleTests()))} openedTest={null} onOpenTest={noop} />
 );
+
+
 export const StatusSideBar = (): JSX.Element => (
   <SideBar rootSuite={openSuites(treeifyTests(statusTests()))} openedTest={null} onOpenTest={noop} />
 );

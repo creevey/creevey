@@ -14,7 +14,7 @@ import {
 } from '../shared/helpers';
 import { CreeveyContext } from '../shared/CreeveyContext';
 import { SideBar } from './CreeveyView/SideBar';
-import { ResultsPage } from './CreeveyView/ResultsPage';
+import { ResultsPage } from '../shared/components/ResultsPage';
 import { ensure, ThemeProvider, themes } from '@storybook/theming';
 
 export interface CreeveyAppProps {
@@ -70,8 +70,7 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
         onStop: handleStop,
         onSuiteOpen: handleSuiteOpen,
         onSuiteToggle: handleSuiteToggle,
-        onImageApprove: handleImageApprove,
-      }}
+     }}
     >
       <ThemeProvider theme={ensure(themes.light)}>
         <div
@@ -84,9 +83,11 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
             <ResultsPage
               key={`${openedTest.id}_${openedTest.results?.length ?? 0}`}
               id={openedTest.id}
-              path={openedTest.path}
+              path={[...openedTest.path].reverse()}
               results={openedTest.results}
               approved={openedTest.approved}
+              showTitle
+              onImageApprove={handleImageApprove}
             />
           )}
         </div>
