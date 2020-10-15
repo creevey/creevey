@@ -4,8 +4,8 @@ import { css } from '@emotion/core';
 import { CreeveyContext } from '../src/client/shared/CreeveyContext';
 import { SideBar } from '../src/client/web/CreeveyView/SideBar';
 import { SideBarHeader } from '../src/client/web/CreeveyView/SideBar/SideBarHeader';
-import { treeifyTests } from '../src/client/shared/helpers';
-import { noop, CreeveySuite, CreeveyStatus, isDefined, isTest } from '../src/types';
+import { treeifyTests, checkSuite, getTestByPath } from '../src/client/shared/helpers';
+import { noop, CreeveySuite, CreeveyStatus, isDefined, isTest, CSFStory } from '../src/types';
 import { ensure, ThemeProvider, themes } from '@storybook/theming';
 
 function openSuites(suite: CreeveySuite): CreeveySuite {
@@ -118,11 +118,33 @@ export const HeaderDisabled = (): JSX.Element => (
 );
 HeaderDisabled.decorators = [headerDecorator];
 
-export const SimpleSideBar = (): JSX.Element => (
-  <SideBar rootSuite={openSuites(treeifyTests(simpleTests()))} openedTest={null} onOpenTest={noop} />
-);
+export const SimpleSideBar: CSFStory<JSX.Element> = () => {
+  const simpleSuites = openSuites(treeifyTests(simpleTests()));
+  const testPath = simpleTests()[2]?.path.reverse() || [];
+
+  checkSuite(simpleSuites, testPath, false);
+
+  return <SideBar rootSuite={simpleSuites} openedTest={getTestByPath(simpleSuites, testPath)} onOpenTest={noop} />;
+};
+
+SimpleSideBar.parameters = {
+  creevey: {
+    tests: {
+      async hover() {
+        if (this.captureElement) {
+          await this.browser
+            .actions()
+            .move({ origin: this.browser.findElement({ css: '[data-tid="selectAll"]' }) })
+            .perform();
+        }
+        const hover = await this.takeScreenshot();
+
+        await this.expect(hover).to.matchImage();
+      },
+    },
+  },
+};
+
 export const StatusSideBar = (): JSX.Element => (
   <SideBar rootSuite={openSuites(treeifyTests(statusTests()))} openedTest={null} onOpenTest={noop} />
 );
-
-// TODO Hover tests
