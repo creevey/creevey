@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Button, Icons } from '@storybook/components';
-import { noop } from '../../../types';
+import { noop } from '../../../../types';
 import { styled } from '@storybook/theming';
 
 export interface PagingProps {
@@ -13,7 +13,7 @@ export interface PagingProps {
 export type ItemType = number | '.' | 'forward';
 
 const StyledButton = styled(Button)({
-  'margin-left': '8px',
+  marginLeft: '8px',
 });
 
 export function Paging(props: PagingProps): JSX.Element {
