@@ -60,7 +60,7 @@ export function ImagesView({ url, image, canApprove, mode }: ImagesViewProps): J
       {canApprove && diff && expect ? (
         <ViewComponent actual={`${url}/${actual}`} diff={`${url}/${diff}`} expect={`${url}/${expect}`} />
       ) : (
-        <a href={`${url}/${actual}`} target="_blank" rel="noopener noreferrer">
+        <a href={`${url}/${actual}`} target="_blank" rel="noopener noreferrer" style={{ margin: '20px' }}>
           <ActualImage alt="actual" src={`${url}/${actual}`} />
         </a>
       )}
