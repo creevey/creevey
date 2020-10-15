@@ -4,8 +4,8 @@ import { css } from '@emotion/core';
 import { CreeveyContext } from '../src/client/shared/CreeveyContext';
 import { SideBar } from '../src/client/web/CreeveyView/SideBar';
 import { SideBarHeader } from '../src/client/web/CreeveyView/SideBar/SideBarHeader';
-import { treeifyTests } from '../src/client/shared/helpers';
-import { noop, CreeveySuite, CreeveyStatus, isDefined, isTest } from '../src/types';
+import { treeifyTests, checkSuite, getTestByPath } from '../src/client/shared/helpers';
+import { noop, CreeveySuite, CreeveyStatus, isDefined, isTest, CSFStory } from '../src/types';
 import { ensure, ThemeProvider, themes } from '@storybook/theming';
 
 function openSuites(suite: CreeveySuite): CreeveySuite {
@@ -46,7 +46,7 @@ const statusTests: () => CreeveyStatus['tests'] = () => ({
 const headerDecorator = (storyFn: StoryFn<ReactNode>): JSX.Element => (
   <div
     css={css`
-      width: 440px;
+      width: 300px;
     `}
   >
     {storyFn()}
@@ -75,7 +75,7 @@ export default {
 
 export const HeaderStopped = (): JSX.Element => (
   <SideBarHeader
-    testsStatus={{ pendingCount: 0, successCount: 1, failedCount: 2, skippedCount: 3, removedCount: 4 }}
+    testsStatus={{ pendingCount: 0, successCount: 1, failedCount: 2, skippedCount: 3 }}
     filter={{ status: null, subStrings: [] }}
     onFilterChange={noop}
     onStart={noop}
@@ -96,7 +96,7 @@ export const HeaderRunning = (): JSX.Element => (
     }}
   >
     <SideBarHeader
-      testsStatus={{ pendingCount: 1, successCount: 2, failedCount: 3, skippedCount: 4, removedCount: 5 }}
+      testsStatus={{ pendingCount: 1, successCount: 2, failedCount: 3, skippedCount: 4 }}
       filter={{ status: null, subStrings: [] }}
       onFilterChange={noop}
       onStart={noop}
@@ -108,7 +108,7 @@ HeaderRunning.decorators = [headerDecorator];
 
 export const HeaderDisabled = (): JSX.Element => (
   <SideBarHeader
-    testsStatus={{ pendingCount: 0, successCount: 1, failedCount: 2, skippedCount: 3, removedCount: 4 }}
+    testsStatus={{ pendingCount: 0, successCount: 1, failedCount: 2, skippedCount: 3 }}
     filter={{ status: null, subStrings: [] }}
     onFilterChange={noop}
     onStart={noop}
@@ -118,11 +118,33 @@ export const HeaderDisabled = (): JSX.Element => (
 );
 HeaderDisabled.decorators = [headerDecorator];
 
-export const SimpleSideBar = (): JSX.Element => (
-  <SideBar rootSuite={openSuites(treeifyTests(simpleTests()))} openedTest={null} onOpenTest={noop} />
-);
+export const SimpleSideBar: CSFStory<JSX.Element> = () => {
+  const simpleSuites = openSuites(treeifyTests(simpleTests()));
+  const testPath = simpleTests()[2]?.path.reverse() || [];
+
+  checkSuite(simpleSuites, testPath, false);
+
+  return <SideBar rootSuite={simpleSuites} openedTest={getTestByPath(simpleSuites, testPath)} onOpenTest={noop} />;
+};
+
+SimpleSideBar.parameters = {
+  creevey: {
+    tests: {
+      async hover() {
+        if (this.captureElement) {
+          await this.browser
+            .actions()
+            .move({ origin: this.browser.findElement({ css: '[data-tid="selectAll"]' }) })
+            .perform();
+        }
+        const hover = await this.takeScreenshot();
+
+        await this.expect(hover).to.matchImage();
+      },
+    },
+  },
+};
+
 export const StatusSideBar = (): JSX.Element => (
   <SideBar rootSuite={openSuites(treeifyTests(statusTests()))} openedTest={null} onOpenTest={noop} />
 );
-
-// TODO Hover tests

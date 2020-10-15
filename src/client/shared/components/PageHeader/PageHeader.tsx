@@ -48,6 +48,11 @@ const ErrorContainer = withTheme(
   })),
 );
 
+const H1 = styled.h1({
+  margin: 0,
+  marginBottom: '8px',
+});
+
 const HeaderDivider = withTheme(
   styled.span<{ theme: Theme }>(({ theme }) => ({
     padding: '0 8px',
@@ -81,9 +86,7 @@ export function PageHeader({
   return (
     <Container>
       {showTitle && (
-        <h1 style={{ margin: 0 }}>
-          {title.flatMap((token) => [token, <HeaderDivider key={token}>/</HeaderDivider>]).slice(0, -1)}
-        </h1>
+        <H1>{title.flatMap((token) => [token, <HeaderDivider key={token}>/</HeaderDivider>]).slice(0, -1)}</H1>
       )}
       {error && (
         <ErrorContainer>

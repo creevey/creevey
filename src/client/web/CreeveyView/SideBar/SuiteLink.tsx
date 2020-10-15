@@ -4,29 +4,33 @@ import { Icons } from '@storybook/components';
 import { TestStatusIcon } from './TestStatusIcon';
 import { CreeveySuite, isTest } from '../../../../types';
 import { CreeveyContext } from '../../../shared/CreeveyContext';
-import { styled, withTheme } from '@storybook/theming';
+import { styled, withTheme, Theme } from '@storybook/theming';
 
 export interface SuiteLinkProps {
   title: string;
   suite: CreeveySuite;
+  'data-tid'?: string;
 }
 
-export const Container = styled.div({
-  position: 'relative',
-  width: '100%',
+export const Container = withTheme(
+  styled.div<{ theme: Theme; disabled?: boolean }>(({ theme, disabled }) => ({
+    position: 'relative',
+    width: '100%',
+    ...(disabled ? { color: theme.color.mediumdark, pointerEvents: 'none' } : {}),
 
-  '&:hover': {
-    background: '#e5e5e5',
-  },
-});
+    '&:hover': {
+      background: '#e5e5e5',
+    },
+  })),
+);
 
 export const Button = withTheme(
-  styled.button(({ theme }) => ({
+  styled.button<{ theme: Theme; active?: boolean }>(({ theme, active }) => ({
     width: '100%',
     boxSizing: 'border-box',
     appearance: 'none',
-    background: 'none',
-    color: 'inherit',
+    background: active ? theme.color.secondary : 'none',
+    color: active ? theme.color.inverseText : 'inherit',
     border: 'none',
     padding: '6px 36px 6px',
     lineHeight: '20px',
@@ -34,17 +38,13 @@ export const Button = withTheme(
     outline: 'none',
     zIndex: 1,
     textAlign: 'left',
-
-    '&:disabled': {
-      color: theme.color.mediumdark,
-    },
   })),
 );
 
 export const CheckboxContainer = styled.div({
   position: 'absolute',
   left: '64px',
-  top: '7px',
+  top: '4px',
   zIndex: 2,
 });
 
@@ -60,7 +60,7 @@ export const SuiteContainer = styled.span<{ padding: number }>(({ padding }) => 
   whiteSpace: 'normal',
 }));
 
-export function SuiteLink({ title, suite }: SuiteLinkProps): JSX.Element {
+export function SuiteLink({ title, suite, 'data-tid': dataTid }: SuiteLinkProps): JSX.Element {
   const { onSuiteOpen, onSuiteToggle } = useContext(CreeveyContext);
   const checkboxRef = useRef<Checkbox>(null);
   useEffect(
@@ -75,7 +75,7 @@ export function SuiteLink({ title, suite }: SuiteLinkProps): JSX.Element {
 
   return (
     <Container>
-      <Button onClick={handleOpen}>
+      <Button onClick={handleOpen} data-tid={dataTid}>
         <TestStatusIcon status={suite.status} skip={suite.skip} />
         <SuiteContainer padding={Math.max(48, (suite.path.length + 5) * 8)}>
           {isTest(suite) ||

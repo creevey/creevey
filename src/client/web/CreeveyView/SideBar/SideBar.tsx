@@ -25,7 +25,7 @@ export interface SideBarProps {
 
 const Container = withTheme(
   styled.div(({ theme }) => ({
-    width: '440px',
+    width: '300px',
     boxShadow: '0 0 5px #aaa',
     height: '100vh',
     flex: 'none',
@@ -91,7 +91,7 @@ export function SideBar({ rootSuite, openedTest, onOpenTest }: SideBarProps): JS
           <Divider />
           {/* TODO Output message where nothing found */}
           <SelectAllContainer>
-            <SuiteLink title="Select all" suite={rootSuite} />
+            <SuiteLink title="Select all" suite={rootSuite} data-tid="selectAll" />
           </SelectAllContainer>
           {suiteList.map(({ title, suite }) =>
             isTest(suite) ? (
