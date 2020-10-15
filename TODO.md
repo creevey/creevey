@@ -200,6 +200,7 @@
   - [ ] new params config, don't need decorator any more
   - [ ] update demo video
   - [ ] update using types (`export const Slide: Story<React.ComponentProps<typeof ImagesView>> & CSFStory<JSX.Element> = () => ImagesView('slide');`)
+  - [ ] Why need to use `findElement({ css: 'selector' })`. Improve it in `creevey-selenium` add null-loader
   - [ ] Write about differences with other tools
   - [ ] Add how to start docker and IE11 especially
   - [ ] Add instruction for various frameworks
@@ -241,6 +242,7 @@
   - [x] Don't stop rebuilding if rebuild failed due syntax error
   - [ ] Cut off all exports in preview.js except creevey params
   - [ ] Client UI don't show statuses on first run
+  - [ ] Cut off loaders parameters for stories https://github.com/storybookjs/storybook/pull/12699
 - [x] Features
   - [x] ~~Add `args` type for CSFStory~~ (Can't support 5.x and 6.x in same time)
   - [x] Support run tests inside docker
@@ -253,6 +255,7 @@
 - [ ] Update Readme
   - [ ] How to deal with animations (NODE_ENV=='test')
 - [ ] Bugs
+  - [ ] Correctly resize images in views using correct proportions (smaller image should shrink if larger shrink too, max-width/max-height doesn't work)
   - [ ] Use native composite screenshots for browsers which support it
   - [ ] Fix taking composite screenshots with hidden scrollbar
     - Take `document.documentElement.clientWidth/Height` instead of window rect
@@ -275,6 +278,7 @@
   - [ ] Playwright
   - [ ] Puppeteer
 - [ ] Features
+  - [ ] Show swap diff vertically or horizontally depends on aspect ratio
   - [ ] Add bootstrap script, that build and install current version into examples or use monorepo
   - [ ] Easy way to ignore stories/kinds from UI
   - [ ] Add `init` cli option
@@ -305,7 +309,6 @@
 - [ ] Profile tests loading process (maybe we don't need workers at all)
 - [ ] Always save images even if test with matchImages failed
 - [ ] Add liftoff https://github.com/js-cli/js-liftoff
-- [ ] Correctly resize images in views using correct proportions (smaller image should shrink if larger shrink too, max-width/max-height doesn't work)
 - [ ] Tests on images view components with various scenarios (same/diff sizes, less/bigger viewport, elements with width/height not integer size)
 - [ ] Write stories on new components
   - [x] SideBar

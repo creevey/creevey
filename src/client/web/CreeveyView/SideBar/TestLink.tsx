@@ -22,9 +22,8 @@ export function TestLink({ title, opened, test }: TestLinkProps): JSX.Element {
   const handleOpen = (): void => onOpenTest(test.path);
 
   return (
-    //  ${emptyResults ? '' : '&:hover { background: #e5e5e5; }'}
-    <Container>
-      <Button disabled={emptyResults} onClick={handleOpen}>
+    <Container disabled={emptyResults}>
+      <Button onClick={handleOpen} active={opened}>
         <TestStatusIcon inverted={opened} status={test.status} skip={test.skip} />
         <SuiteContainer padding={(test.path.length + 8) * 8}>{title}</SuiteContainer>
       </Button>

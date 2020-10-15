@@ -46,7 +46,7 @@ const statusTests: () => CreeveyStatus['tests'] = () => ({
 const headerDecorator = (storyFn: StoryFn<ReactNode>): JSX.Element => (
   <div
     css={css`
-      width: 440px;
+      width: 300px;
     `}
   >
     {storyFn()}
@@ -75,7 +75,7 @@ export default {
 
 export const HeaderStopped = (): JSX.Element => (
   <SideBarHeader
-    testsStatus={{ pendingCount: 0, successCount: 1, failedCount: 2, skippedCount: 3, removedCount: 4 }}
+    testsStatus={{ pendingCount: 0, successCount: 1, failedCount: 2, skippedCount: 3 }}
     filter={{ status: null, subStrings: [] }}
     onFilterChange={noop}
     onStart={noop}
@@ -96,7 +96,7 @@ export const HeaderRunning = (): JSX.Element => (
     }}
   >
     <SideBarHeader
-      testsStatus={{ pendingCount: 1, successCount: 2, failedCount: 3, skippedCount: 4, removedCount: 5 }}
+      testsStatus={{ pendingCount: 1, successCount: 2, failedCount: 3, skippedCount: 4 }}
       filter={{ status: null, subStrings: [] }}
       onFilterChange={noop}
       onStart={noop}
@@ -108,7 +108,7 @@ HeaderRunning.decorators = [headerDecorator];
 
 export const HeaderDisabled = (): JSX.Element => (
   <SideBarHeader
-    testsStatus={{ pendingCount: 0, successCount: 1, failedCount: 2, skippedCount: 3, removedCount: 4 }}
+    testsStatus={{ pendingCount: 0, successCount: 1, failedCount: 2, skippedCount: 3 }}
     filter={{ status: null, subStrings: [] }}
     onFilterChange={noop}
     onStart={noop}

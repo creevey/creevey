@@ -4,29 +4,32 @@ import { Icons } from '@storybook/components';
 import { TestStatusIcon } from './TestStatusIcon';
 import { CreeveySuite, isTest } from '../../../../types';
 import { CreeveyContext } from '../../../shared/CreeveyContext';
-import { styled, withTheme } from '@storybook/theming';
+import { styled, withTheme, Theme } from '@storybook/theming';
 
 export interface SuiteLinkProps {
   title: string;
   suite: CreeveySuite;
 }
 
-export const Container = styled.div({
-  position: 'relative',
-  width: '100%',
+export const Container = withTheme(
+  styled.div<{ theme: Theme; disabled?: boolean }>(({ theme, disabled }) => ({
+    position: 'relative',
+    width: '100%',
+    ...(disabled ? { color: theme.color.mediumdark, pointerEvents: 'none' } : {}),
 
-  '&:hover': {
-    background: '#e5e5e5',
-  },
-});
+    '&:hover': {
+      background: '#e5e5e5',
+    },
+  })),
+);
 
 export const Button = withTheme(
-  styled.button(({ theme }) => ({
+  styled.button<{ theme: Theme; active?: boolean }>(({ theme, active }) => ({
     width: '100%',
     boxSizing: 'border-box',
     appearance: 'none',
-    background: 'none',
-    color: 'inherit',
+    background: active ? theme.color.secondary : 'none',
+    color: active ? theme.color.inverseText : 'inherit',
     border: 'none',
     padding: '6px 36px 6px',
     lineHeight: '20px',
@@ -34,17 +37,13 @@ export const Button = withTheme(
     outline: 'none',
     zIndex: 1,
     textAlign: 'left',
-
-    '&:disabled': {
-      color: theme.color.mediumdark,
-    },
   })),
 );
 
 export const CheckboxContainer = styled.div({
   position: 'absolute',
   left: '64px',
-  top: '7px',
+  top: '4px',
   zIndex: 2,
 });
 

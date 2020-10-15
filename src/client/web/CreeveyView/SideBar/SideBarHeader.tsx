@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
-import { Button as NativeButton, Loader } from '@storybook/components';
-import { styled } from '@storybook/theming';
+import { Button as NativeButton, Icons } from '@storybook/components';
+import { styled, withTheme } from '@storybook/theming';
 import { CreeveyContext } from '../../../shared/CreeveyContext';
 import { TestsStatus, TestsStatusProps } from './TestsStatus';
 import { TestStatus } from '../../../../types';
@@ -27,6 +27,7 @@ const Sticky = styled.div({
 
 const Container = styled.div({
   display: 'flex',
+  justifyContent: 'space-between',
 });
 
 const Header = styled.h2({
@@ -34,11 +35,25 @@ const Header = styled.h2({
   margin: 0,
 });
 
-const Button = styled(NativeButton)({
-  width: '110px',
-  display: 'flex',
-  justifyContent: 'center',
-});
+const Button = withTheme(
+  styled(NativeButton)(({ theme }) => ({
+    display: 'flex',
+    justifyContent: 'center',
+    transform: 'none',
+    width: '60px',
+    padding: '8px 12px',
+
+    '& svg': {
+      width: '24px',
+      height: '24px',
+      marginRight: 0,
+    },
+
+    '&:active svg path': {
+      fill: theme.color.inverseText,
+    },
+  })),
+);
 
 const MarginContainer = styled.div<{ left?: string; right?: string; top?: string; bottom?: string }>(
   ({ left, right, top, bottom }) => ({
@@ -102,14 +117,11 @@ export function SideBarHeader({
         <MarginContainer top="10px">
           {isRunning ? (
             <Button outline secondary onClick={onStop}>
-              <div style={{ position: 'relative', width: '10px', height: '10px' }}>
-                <Loader size={16} />
-              </div>
-              <MarginContainer left="15px">Running</MarginContainer>
+              <Icons icon="stop" />
             </Button>
           ) : (
             <Button outline secondary onClick={onStart} disabled={!canStart}>
-              Start
+              <Icons icon="play" />
             </Button>
           )}
         </MarginContainer>

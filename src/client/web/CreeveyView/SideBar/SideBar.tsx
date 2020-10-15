@@ -25,7 +25,7 @@ export interface SideBarProps {
 
 const Container = withTheme(
   styled.div(({ theme }) => ({
-    width: '440px',
+    width: '300px',
     boxShadow: '0 0 5px #aaa',
     height: '100vh',
     flex: 'none',

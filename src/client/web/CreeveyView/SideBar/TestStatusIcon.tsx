@@ -9,16 +9,10 @@ export interface TestStatusIconProps {
   skip: string | boolean;
 }
 
-const Icon = styled(Icons)<{ color?: string }>(({ color }) => ({
-  color: color,
+const Container = styled.span({
   width: 10,
   height: 10,
-  display: 'inline-block',
-}));
-
-const Container = styled.span({
-  width: 12,
-  height: 12,
+  padding: 1,
   display: 'inline-block',
 });
 
@@ -26,15 +20,16 @@ const Spinner = styled(Loader)({
   left: '40px',
 });
 
+// TODO Use storybook theme colors
 export function TestStatusIcon({ inverted, status, skip }: TestStatusIconProps): JSX.Element | null {
   let icon = null;
   switch (status) {
     case 'failed': {
-      icon = <Icon color={inverted ? '#fff' : '#d9472b'} icon="cross" />;
+      icon = <Icons color={inverted ? '#fff' : '#d9472b'} icon="cross" stroke="currentColor" strokeWidth="30" />;
       break;
     }
     case 'success': {
-      icon = <Icon color={inverted ? '#fff' : '#419d14'} icon="check" />;
+      icon = <Icons color={inverted ? '#fff' : '#419d14'} icon="check" stroke="currentColor" strokeWidth="30" />;
       break;
     }
     case 'running': {
@@ -42,11 +37,12 @@ export function TestStatusIcon({ inverted, status, skip }: TestStatusIconProps):
       break;
     }
     case 'pending': {
-      icon = <Icon color={inverted ? '#fff' : '#a0a0a0'} icon="time" />;
+      icon = <Icons color={inverted ? '#fff' : '#a0a0a0'} icon="time" stroke="currentColor" strokeWidth="30" />;
       break;
     }
     default: {
-      if (skip) icon = <Icon color={inverted ? '#fff' : undefined} icon="timer" />;
+      if (skip)
+        icon = <Icons color={inverted ? '#fff' : undefined} icon="timer" stroke="currentColor" strokeWidth="30" />;
       break;
     }
   }

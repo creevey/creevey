@@ -96,17 +96,16 @@ function initStorybookEnvironment(): Promise<typeof import('./storybook')> {
   return import('./storybook');
 }
 
-function watchStories(): void {
-  const watchingFiles = new Set<string>();
+function watchStories(initialFiles: Set<string>): void {
+  const watchingFiles = initialFiles;
   let storiesByFiles = new Map<string, StoryInput[]>();
 
   const watcher = chokidar.watch(Array.from(watchingFiles), { ignoreInitial: true });
 
   subscribeOn('shutdown', () => void watcher.close());
 
-  // TODO Check if it works on windows with back slashes
-  watcher.on('change', (filePath) => storiesByFiles.set(`./${filePath}`, []));
-  watcher.on('unlink', (filePath) => storiesByFiles.set(`./${filePath}`, []));
+  watcher.on('change', (filePath) => storiesByFiles.set(`./${filePath.replace(/\\/g, '/')}`, []));
+  watcher.on('unlink', (filePath) => storiesByFiles.set(`./${filePath.replace(/\\/g, '/')}`, []));
 
   addons.getChannel().on(Events.SET_STORIES, (data: SetStoriesData) => {
     const stories = isStorybookVersionLessThan(6) ? data.stories : flatStories(data);
@@ -168,15 +167,11 @@ async function loadStorybookBundle(
 
   return new Promise((resolve) => {
     channel.once(Events.SET_STORIES, (data: SetStoriesData) => {
+      const stories = isStorybookVersionLessThan(6) ? data.stories : flatStories(data);
       if (watch) {
-        watchStories();
+        watchStories(new Set(Object.values(stories).map((story) => story.parameters.fileName)));
       }
-
-      if (isStorybookVersionLessThan(6)) {
-        resolve(data.stories);
-      } else {
-        resolve(flatStories(data));
-      }
+      resolve(stories);
     });
 
     require(bundlePath);
