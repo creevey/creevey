@@ -76,7 +76,6 @@ const PanelInternal = ({ statuses }: PanelProps): JSX.Element => {
           <ResultsPage
             key={`${result.id}_${result.results?.length ?? 0}`}
             id={result.id}
-            // ["chrome", ...]
             path={result.path}
             results={result.results}
             approved={result.approved}

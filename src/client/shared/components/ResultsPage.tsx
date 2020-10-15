@@ -73,7 +73,6 @@ export function ResultsPageInternal({
   return (
     <Wrapper>
       <PageHeader
-        //['chrome', ]
         title={path}
         images={result.images}
         errorMessage={result.error}
