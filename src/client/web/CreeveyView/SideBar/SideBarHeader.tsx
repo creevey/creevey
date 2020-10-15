@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { Button as NativeButton, Icons } from '@storybook/components';
 import { styled, withTheme } from '@storybook/theming';
-import { CreeveyContext } from '../../../shared/CreeveyContext';
+import { CreeveyContext } from '../../CreeveyContext';
 import { TestsStatus, TestsStatusProps } from './TestsStatus';
 import { TestStatus } from '../../../../types';
 import { CreeveyViewFilter } from '../../../shared/helpers';

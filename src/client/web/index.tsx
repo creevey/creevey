@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import { Loader } from '@storybook/components';
 import { CreeveyApp } from './CreeveyApp';
 
-import './index.css';
 import { initCreeveyClientApi, CreeveyClientApi } from '../shared/creeveyClientApi';
 import { CreeveyStatus } from '../../types';
 import { treeifyTests } from '../shared/helpers';

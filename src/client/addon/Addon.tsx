@@ -2,7 +2,7 @@ import React, { useState, Fragment, useCallback, useContext } from 'react';
 import { withCreeveyTests } from './utils';
 import { Test, isDefined, TestStatus } from '../../types';
 import { IconButton, Icons, Loader, Placeholder, Separator, Tabs } from '@storybook/components';
-import { ResultsPage } from './ResultsPage';
+import { ResultsPage } from '../shared/components/ResultsPage';
 import { CreeveyContext } from './CreeveyContext';
 import { styled, withTheme, Theme } from '@storybook/theming';
 
@@ -38,7 +38,7 @@ const PanelInternal = ({ statuses }: PanelProps): JSX.Element => {
 
   const handleBrowserChange = useCallback((id) => setSelectedItem(Number(id)), []);
   const result = statuses[selectedItem];
-  const { onStart, onStop } = useContext(CreeveyContext);
+  const { onStart, onStop, onImageApprove } = useContext(CreeveyContext);
   const isRunning = result?.status === 'running';
   if (!browsers.length) {
     return (
@@ -79,6 +79,7 @@ const PanelInternal = ({ statuses }: PanelProps): JSX.Element => {
             path={result.path}
             results={result.results}
             approved={result.approved}
+            onImageApprove={onImageApprove}
           />
         </Wrapper>
       ) : null}

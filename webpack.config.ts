@@ -15,19 +15,11 @@ const config: Configuration = {
           options: {
             overrides: [
               {
-                presets: ['@emotion/babel-preset-css-prop', ['@babel/preset-env', { useBuiltIns: 'entry', corejs: 3 }]],
+                presets: [['@babel/preset-env', { useBuiltIns: 'entry', corejs: 3 }]],
               },
             ],
           },
         },
-      },
-      {
-        test: /\.css$/,
-        use: ['style-loader', { loader: 'css-loader', options: { modules: 'global' } }],
-      },
-      {
-        test: /\.(woff2?|eot|png)$/,
-        use: 'file-loader',
       },
     ],
   },

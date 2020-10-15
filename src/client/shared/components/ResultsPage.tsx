@@ -1,13 +1,12 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { CreeveyContext } from './CreeveyContext';
-import { ImagesView } from '../shared/components/ImagesView/ImagesView';
-import { PageHeader } from '../shared/components/PageHeader/PageHeader';
-import { PageFooter } from '../shared/components/PageFooter/PageFooter';
-import { TestResult, ImagesViewMode } from '../../types';
-import { getImageUrl } from '../shared/helpers';
+import React, { useState, useEffect } from 'react';
+import { ImagesView } from './ImagesView/ImagesView';
+import { PageHeader } from './PageHeader/PageHeader';
+import { PageFooter } from './PageFooter/PageFooter';
+import { getImageUrl } from '../helpers';
 import { styled, withTheme, Theme } from '@storybook/theming';
 import { Placeholder } from '@storybook/components';
-import { getViewMode, VIEW_MODE_KEY } from '../shared/viewMode';
+import { getViewMode, VIEW_MODE_KEY } from '../viewMode';
+import { ImagesViewMode, TestResult } from '../../../types';
 
 interface TestResultsProps {
   id: string;
@@ -15,6 +14,7 @@ interface TestResultsProps {
   results?: TestResult[];
   approved?: Partial<{ [image: string]: number }>;
   showTitle?: boolean;
+  onImageApprove: (id: string, retry: number, image: string) => void;
   theme: Theme;
 }
 
@@ -41,9 +41,9 @@ export function ResultsPageInternal({
   results = [],
   approved = {},
   theme,
+  onImageApprove,
   showTitle = false,
 }: TestResultsProps): JSX.Element {
-  const { onImageApprove } = useContext(CreeveyContext);
   const [retry, setRetry] = useState(results.length);
   const result = results[retry - 1] ?? {};
   const [imageName, setImageName] = useState(Object.keys(result.images ?? {})[0] ?? '');
