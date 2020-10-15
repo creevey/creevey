@@ -278,6 +278,7 @@
   - [ ] Playwright
   - [ ] Puppeteer
 - [ ] Features
+  - [ ] Show swap diff vertically or horizontally depends on aspect ratio
   - [ ] Add bootstrap script, that build and install current version into examples or use monorepo
   - [ ] Easy way to ignore stories/kinds from UI
   - [ ] Add `init` cli option

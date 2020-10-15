@@ -1,10 +1,6 @@
 import React from 'react';
-import { css } from '@emotion/core';
-import DeleteIcon from '@skbkontur/react-icons/Delete';
-import OkIcon from '@skbkontur/react-icons/Ok';
-import ClockIcon from '@skbkontur/react-icons/Clock';
-import PauseIcon from '@skbkontur/react-icons/Pause';
-import { Spinner } from '@skbkontur/react-ui';
+import { styled } from '@storybook/theming';
+import { Icons, Loader } from '@storybook/components';
 import { TestStatus } from '../../../../types';
 
 export interface TestStatusIconProps {
@@ -13,29 +9,42 @@ export interface TestStatusIconProps {
   skip: string | boolean;
 }
 
+const Container = styled.span({
+  width: 10,
+  height: 10,
+  padding: 1,
+  display: 'inline-block',
+});
+
+const Spinner = styled(Loader)({
+  left: '40px',
+});
+
+// TODO Use storybook theme colors
 export function TestStatusIcon({ inverted, status, skip }: TestStatusIconProps): JSX.Element | null {
+  let icon = null;
   switch (status) {
     case 'failed': {
-      return <DeleteIcon color={inverted ? '#fff' : '#d9472b'} />;
+      icon = <Icons color={inverted ? '#fff' : '#d9472b'} icon="cross" stroke="currentColor" strokeWidth="30" />;
+      break;
     }
     case 'success': {
-      return <OkIcon color={inverted ? '#fff' : '#419d14'} />;
+      icon = <Icons color={inverted ? '#fff' : '#419d14'} icon="check" stroke="currentColor" strokeWidth="30" />;
+      break;
     }
     case 'running': {
-      return <Spinner type="mini" caption="" dimmed={inverted} />;
+      icon = <Spinner size={10} />;
+      break;
     }
     case 'pending': {
-      return <ClockIcon color={inverted ? '#fff' : '#a0a0a0'} />;
+      icon = <Icons color={inverted ? '#fff' : '#a0a0a0'} icon="time" stroke="currentColor" strokeWidth="30" />;
+      break;
     }
     default: {
-      if (skip) return <PauseIcon color={inverted ? '#fff' : undefined} />;
-      return (
-        <span
-          css={css`
-            padding: 7px;
-          `}
-        />
-      );
+      if (skip)
+        icon = <Icons color={inverted ? '#fff' : undefined} icon="timer" stroke="currentColor" strokeWidth="30" />;
+      break;
     }
   }
+  return <Container>{icon}</Container>;
 }

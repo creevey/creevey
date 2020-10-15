@@ -6,6 +6,7 @@ import { SideBar } from '../src/client/web/CreeveyView/SideBar';
 import { SideBarHeader } from '../src/client/web/CreeveyView/SideBar/SideBarHeader';
 import { treeifyTests } from '../src/client/shared/helpers';
 import { noop, CreeveySuite, CreeveyStatus, isDefined, isTest } from '../src/types';
+import { ensure, ThemeProvider, themes } from '@storybook/theming';
 
 function openSuites(suite: CreeveySuite): CreeveySuite {
   suite.opened = true;
@@ -45,7 +46,7 @@ const statusTests: () => CreeveyStatus['tests'] = () => ({
 const headerDecorator = (storyFn: StoryFn<ReactNode>): JSX.Element => (
   <div
     css={css`
-      width: 440px;
+      width: 300px;
     `}
   >
     {storyFn()}
@@ -54,6 +55,13 @@ const headerDecorator = (storyFn: StoryFn<ReactNode>): JSX.Element => (
 
 export default {
   title: 'SideBar',
+  decorators: [
+    (Story: React.ComponentClass): JSX.Element => (
+      <ThemeProvider theme={ensure(themes.light)}>
+        <Story />
+      </ThemeProvider>
+    ),
+  ],
   parameters: {
     creevey: {
       skip: {
@@ -67,7 +75,7 @@ export default {
 
 export const HeaderStopped = (): JSX.Element => (
   <SideBarHeader
-    testsStatus={{ pendingCount: 0, successCount: 1, failedCount: 2, skippedCount: 3, removedCount: 4 }}
+    testsStatus={{ pendingCount: 0, successCount: 1, failedCount: 2, skippedCount: 3 }}
     filter={{ status: null, subStrings: [] }}
     onFilterChange={noop}
     onStart={noop}
@@ -88,7 +96,7 @@ export const HeaderRunning = (): JSX.Element => (
     }}
   >
     <SideBarHeader
-      testsStatus={{ pendingCount: 1, successCount: 2, failedCount: 3, skippedCount: 4, removedCount: 5 }}
+      testsStatus={{ pendingCount: 1, successCount: 2, failedCount: 3, skippedCount: 4 }}
       filter={{ status: null, subStrings: [] }}
       onFilterChange={noop}
       onStart={noop}
@@ -100,7 +108,7 @@ HeaderRunning.decorators = [headerDecorator];
 
 export const HeaderDisabled = (): JSX.Element => (
   <SideBarHeader
-    testsStatus={{ pendingCount: 0, successCount: 1, failedCount: 2, skippedCount: 3, removedCount: 4 }}
+    testsStatus={{ pendingCount: 0, successCount: 1, failedCount: 2, skippedCount: 3 }}
     filter={{ status: null, subStrings: [] }}
     onFilterChange={noop}
     onStart={noop}

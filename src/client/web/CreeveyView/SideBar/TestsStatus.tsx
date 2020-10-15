@@ -1,79 +1,83 @@
 import React from 'react';
-import { css } from '@emotion/core';
-import OkIcon from '@skbkontur/react-icons/Ok';
-import ClockIcon from '@skbkontur/react-icons/Clock';
-import DeleteIcon from '@skbkontur/react-icons/Delete';
-import PauseIcon from '@skbkontur/react-icons/Pause';
-import TrashIcon from '@skbkontur/react-icons/Trash';
-import { Button, ThemeContext, ThemeFactory } from '@skbkontur/react-ui';
 import { TestStatus } from '../../../../types';
 import { CreeveyTestsStatus } from '../../../shared/helpers';
-
-const StatusButtonsTheme = ThemeFactory.create({ linkHoverTextDecoration: 'none' });
+import { styled } from '@storybook/theming';
+import { IconButton, Icons } from '@storybook/components';
 
 export interface TestsStatusProps extends CreeveyTestsStatus {
   onClickByStatus: (value: TestStatus) => void;
 }
+
+const Container = styled.div({
+  display: 'flex',
+  alignItems: 'center',
+  fontSize: '14px',
+  lineHeight: '22px',
+});
+
+const IconContainer = styled.div<{ color?: string }>(({ color }) => ({
+  color: color || 'inherit',
+  display: 'inline-flex',
+  flexDirection: 'row',
+  alignItems: 'center',
+  margin: '0 4px',
+
+  '&:first-of-type': {
+    marginLeft: 0,
+  },
+
+  '& svg': {
+    marginRight: 5,
+    width: 10,
+    height: 10,
+  },
+}));
+
+const Divider = styled.div({
+  '&::before': {
+    content: "'/'",
+    display: 'block',
+    marginRight: 4,
+  },
+});
+
+const Button = styled(IconButton)({
+  height: '24px',
+});
 
 export function TestsStatus({
   successCount,
   failedCount,
   pendingCount,
   skippedCount,
-  removedCount,
   onClickByStatus,
 }: TestsStatusProps): JSX.Element {
   return (
-    <ThemeContext.Provider value={StatusButtonsTheme}>
-      <div
-        css={css`
-          font-size: 14px;
-          line-height: 22px;
-          width: 230px;
-        `}
-      >
-        {pendingCount > 0 && (
-          <>
-            <Button use="link" narrow onClick={() => onClickByStatus('pending')}>
-              <span
-                css={css`
-                  color: #a0a0a0;
-                `}
-              >
-                <ClockIcon /> {pendingCount}
-              </span>
-            </Button>
-            {' / '}
-          </>
-        )}
-        <Button use="link" narrow onClick={() => onClickByStatus('success')}>
-          <span
-            css={css`
-              color: #228007;
-            `}
-          >
-            <OkIcon /> {successCount}
-          </span>
-        </Button>
-        {' / '}
-        <Button use="link" narrow onClick={() => onClickByStatus('failed')}>
-          <span
-            css={css`
-              color: #ce0014;
-            `}
-          >
-            <DeleteIcon /> {failedCount}
-          </span>
-        </Button>
-        {' / '}
-        <span>
-          <PauseIcon /> {skippedCount}
-        </span>
-        {' / '}
-        <span>
-          <TrashIcon /> {removedCount}
-        </span>
-      </div>
-    </ThemeContext.Provider>
+    <Container>
+      <Button onClick={() => onClickByStatus('pending')}>
+        <IconContainer color="#a0a0a0">
+          <Icons icon="time" stroke="currentColor" strokeWidth="30" />
+          {pendingCount}
+        </IconContainer>
+      </Button>
+      <Divider />
+      <Button onClick={() => onClickByStatus('success')}>
+        <IconContainer color="#228007">
+          <Icons icon="check" stroke="currentColor" strokeWidth="30" /> {successCount}
+        </IconContainer>
+      </Button>
+      <Divider />
+      <Button onClick={() => onClickByStatus('failed')}>
+        <IconContainer color="#ce0014">
+          <Icons icon="cross" stroke="currentColor" strokeWidth="30" /> {failedCount}
+        </IconContainer>
+      </Button>
+      <Divider />
+      <Button>
+        <IconContainer>
+          <Icons icon="timer" stroke="currentColor" strokeWidth="30" /> {skippedCount}
+        </IconContainer>
+      </Button>
+    </Container>
   );
 }

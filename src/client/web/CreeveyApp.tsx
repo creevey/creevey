@@ -15,6 +15,7 @@ import {
 import { CreeveyContext } from '../shared/CreeveyContext';
 import { SideBar } from './CreeveyView/SideBar';
 import { ResultsPage } from './CreeveyView/ResultsPage';
+import { ensure, ThemeProvider, themes } from '@storybook/theming';
 
 export interface CreeveyAppProps {
   api?: CreeveyClientApi;
@@ -72,22 +73,24 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
         onImageApprove: handleImageApprove,
       }}
     >
-      <div
-        css={css`
-          display: flex;
-        `}
-      >
-        <SideBar rootSuite={tests} openedTest={openedTest} onOpenTest={openTest} />
-        {openedTest && (
-          <ResultsPage
-            key={`${openedTest.id}_${openedTest.results?.length ?? 0}`}
-            id={openedTest.id}
-            path={openedTest.path}
-            results={openedTest.results}
-            approved={openedTest.approved}
-          />
-        )}
-      </div>
+      <ThemeProvider theme={ensure(themes.light)}>
+        <div
+          css={css`
+            display: flex;
+          `}
+        >
+          <SideBar rootSuite={tests} openedTest={openedTest} onOpenTest={openTest} />
+          {openedTest && (
+            <ResultsPage
+              key={`${openedTest.id}_${openedTest.results?.length ?? 0}`}
+              id={openedTest.id}
+              path={openedTest.path}
+              results={openedTest.results}
+              approved={openedTest.approved}
+            />
+          )}
+        </div>
+      </ThemeProvider>
     </CreeveyContext.Provider>
   );
 }

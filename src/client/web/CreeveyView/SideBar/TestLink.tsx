@@ -1,10 +1,10 @@
 import React, { useContext } from 'react';
-import { css } from '@emotion/core';
-import { Button, Checkbox } from '@skbkontur/react-ui';
 import { CreeveyTest } from '../../../../types';
 import { TestStatusIcon } from './TestStatusIcon';
 import { CreeveyContext } from '../../../shared/CreeveyContext';
 import { SideBarContext } from './SideBar';
+import { Button, Container, CheckboxContainer, SuiteContainer } from './SuiteLink';
+import { Checkbox } from './Checkbox';
 
 export interface TestLinkProps {
   title: string;
@@ -22,44 +22,20 @@ export function TestLink({ title, opened, test }: TestLinkProps): JSX.Element {
   const handleOpen = (): void => onOpenTest(test.path);
 
   return (
-    <div
-      css={css`
-        position: relative;
-
-        ${emptyResults ? '' : '&:hover { background: #e5e5e5; }'}
-
-        /* NOTE: Fix issue of react-ui with fixed height */
-        & button {
-          height: initial !important;
-        }
-      `}
-    >
-      <Button width="100%" align="left" checked={opened} disabled={emptyResults} onClick={handleOpen}>
+    <Container disabled={emptyResults}>
+      <Button onClick={handleOpen} active={opened}>
         <TestStatusIcon inverted={opened} status={test.status} skip={test.skip} />
-        <span
-          css={css`
-            padding-left: ${(test.path.length + 8) * 8}px;
-            white-space: normal;
-          `}
-        >
-          {title}
-        </span>
+        <SuiteContainer padding={(test.path.length + 8) * 8}>{title}</SuiteContainer>
       </Button>
       {/* NOTE Little hack to allow click on checkbox and don't trigger Button click */}
       {/* We can use other approach, but checkbox has vertical-align: top */}
-      <div
-        css={css`
-          position: absolute;
-          left: 66px;
-          top: 4px;
-        `}
-      >
+      <CheckboxContainer>
         <Checkbox
           checked={test.skip ? false : test.checked}
           disabled={Boolean(test.skip)}
           onValueChange={handleCheck}
         />
-      </div>
-    </div>
+      </CheckboxContainer>
+    </Container>
   );
 }

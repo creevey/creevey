@@ -1,16 +1,63 @@
 import React, { useRef, useContext, useEffect } from 'react';
-import { css } from '@emotion/core';
-import { Button, Checkbox } from '@skbkontur/react-ui';
-import ArrowTriangleRightIcon from '@skbkontur/react-icons/ArrowTriangleRight';
-import ArrowTriangleDownIcon from '@skbkontur/react-icons/ArrowTriangleDown';
+import { Checkbox } from './Checkbox';
+import { Icons } from '@storybook/components';
 import { TestStatusIcon } from './TestStatusIcon';
 import { CreeveySuite, isTest } from '../../../../types';
 import { CreeveyContext } from '../../../shared/CreeveyContext';
+import { styled, withTheme, Theme } from '@storybook/theming';
 
 export interface SuiteLinkProps {
   title: string;
   suite: CreeveySuite;
 }
+
+export const Container = withTheme(
+  styled.div<{ theme: Theme; disabled?: boolean }>(({ theme, disabled }) => ({
+    position: 'relative',
+    width: '100%',
+    ...(disabled ? { color: theme.color.mediumdark, pointerEvents: 'none' } : {}),
+
+    '&:hover': {
+      background: '#e5e5e5',
+    },
+  })),
+);
+
+export const Button = withTheme(
+  styled.button<{ theme: Theme; active?: boolean }>(({ theme, active }) => ({
+    width: '100%',
+    boxSizing: 'border-box',
+    appearance: 'none',
+    background: active ? theme.color.secondary : 'none',
+    color: active ? theme.color.inverseText : 'inherit',
+    border: 'none',
+    padding: '6px 36px 6px',
+    lineHeight: '20px',
+    cursor: 'pointer',
+    outline: 'none',
+    zIndex: 1,
+    textAlign: 'left',
+  })),
+);
+
+export const CheckboxContainer = styled.div({
+  position: 'absolute',
+  left: '64px',
+  top: '4px',
+  zIndex: 2,
+});
+
+const ArrawIcon = styled(Icons)({
+  paddingRight: '8px',
+  display: 'inline-block',
+  width: '16px',
+  height: '11px',
+});
+
+export const SuiteContainer = styled.span<{ padding: number }>(({ padding }) => ({
+  paddingLeft: padding,
+  whiteSpace: 'normal',
+}));
 
 export function SuiteLink({ title, suite }: SuiteLinkProps): JSX.Element {
   const { onSuiteOpen, onSuiteToggle } = useContext(CreeveyContext);
@@ -26,55 +73,24 @@ export function SuiteLink({ title, suite }: SuiteLinkProps): JSX.Element {
   const handleOpen = (): void => void (isRootSuite || onSuiteOpen(suite.path, !suite.opened));
 
   return (
-    <div
-      css={css`
-        position: relative;
-        &:hover {
-          background: #e5e5e5;
-        }
-
-        /* NOTE: Fix issue of react-ui with fixed height */
-        & button {
-          height: initial !important;
-        }
-      `}
-    >
-      <Button width="100%" align="left" onClick={handleOpen}>
+    <Container>
+      <Button onClick={handleOpen}>
         <TestStatusIcon status={suite.status} skip={suite.skip} />
-        <span
-          css={css`
-            padding-left: ${Math.max(48, (suite.path.length + 5) * 8)}px;
-            white-space: normal;
-          `}
-        >
+        <SuiteContainer padding={Math.max(48, (suite.path.length + 5) * 8)}>
           {isTest(suite) ||
-            (Boolean(suite.path.length) && (
-              <span
-                css={css`
-                  padding-right: 8px;
-                  display: inline-block;
-                `}
-              >
-                {suite.opened ? <ArrowTriangleDownIcon /> : <ArrowTriangleRightIcon />}
-              </span>
-            ))}
+            (Boolean(suite.path.length) &&
+              (suite.opened ? <ArrawIcon icon="arrowdown" /> : <ArrawIcon icon="arrowright" />))}
           {title}
-        </span>
+        </SuiteContainer>
       </Button>
-      <div
-        css={css`
-          position: absolute;
-          left: 66px;
-          top: 4px;
-        `}
-      >
+      <CheckboxContainer>
         <Checkbox
           ref={checkboxRef}
           checked={suite.skip ? false : suite.checked}
           disabled={Boolean(suite.skip)}
           onValueChange={handleCheck}
         />
-      </div>
-    </div>
+      </CheckboxContainer>
+    </Container>
   );
 }
