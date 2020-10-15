@@ -91,7 +91,7 @@ export function SideBar({ rootSuite, openedTest, onOpenTest }: SideBarProps): JS
           <Divider />
           {/* TODO Output message where nothing found */}
           <SelectAllContainer>
-            <SuiteLink title="Select all" suite={rootSuite} />
+            <SuiteLink title="Select all" suite={rootSuite} id="selectAll" />
           </SelectAllContainer>
           {suiteList.map(({ title, suite }) =>
             isTest(suite) ? (
