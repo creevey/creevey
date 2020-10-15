@@ -21,14 +21,6 @@ const config: Configuration = {
           },
         },
       },
-      {
-        test: /\.css$/,
-        use: ['style-loader', { loader: 'css-loader', options: { modules: 'global' } }],
-      },
-      {
-        test: /\.(woff2?|eot|png)$/,
-        use: 'file-loader',
-      },
     ],
   },
   resolve: {
