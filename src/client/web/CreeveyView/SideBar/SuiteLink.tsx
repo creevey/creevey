@@ -3,7 +3,7 @@ import { Checkbox } from './Checkbox';
 import { Icons } from '@storybook/components';
 import { TestStatusIcon } from './TestStatusIcon';
 import { CreeveySuite, isTest } from '../../../../types';
-import { CreeveyContext } from '../../../shared/CreeveyContext';
+import { CreeveyContext } from '../../CreeveyContext';
 import { styled, withTheme, Theme } from '@storybook/theming';
 
 export interface SuiteLinkProps {

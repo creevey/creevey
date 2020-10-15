@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import { StoryFn } from '@storybook/addons';
-import { CreeveyContext } from '../src/client/shared/CreeveyContext';
+import { CreeveyContext } from '../src/client/web/CreeveyContext';
 import { SideBar } from '../src/client/web/CreeveyView/SideBar';
 import { SideBarHeader } from '../src/client/web/CreeveyView/SideBar/SideBarHeader';
 import { treeifyTests, checkSuite, getTestByPath } from '../src/client/shared/helpers';

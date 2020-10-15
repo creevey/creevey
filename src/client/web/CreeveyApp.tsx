@@ -11,7 +11,7 @@ import {
   getTestByPath,
   removeTests,
 } from '../shared/helpers';
-import { CreeveyContext } from '../shared/CreeveyContext';
+import { CreeveyContext } from './CreeveyContext';
 import { SideBar } from './CreeveyView/SideBar';
 import { ResultsPage } from '../shared/components/ResultsPage';
 import { ensure, styled, ThemeProvider, themes } from '@storybook/theming';

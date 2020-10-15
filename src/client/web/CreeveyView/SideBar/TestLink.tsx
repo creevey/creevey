@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { CreeveyTest } from '../../../../types';
 import { TestStatusIcon } from './TestStatusIcon';
-import { CreeveyContext } from '../../../shared/CreeveyContext';
+import { CreeveyContext } from '../../CreeveyContext';
 import { SideBarContext } from './SideBar';
 import { Button, Container, CheckboxContainer, SuiteContainer } from './SuiteLink';
 import { Checkbox } from './Checkbox';

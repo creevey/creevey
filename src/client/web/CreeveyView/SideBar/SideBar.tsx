@@ -8,7 +8,7 @@ import {
   countTestsStatus,
   getCheckedTests,
 } from '../../../shared/helpers';
-import { CreeveyContext } from '../../../shared/CreeveyContext';
+import { CreeveyContext } from '../../CreeveyContext';
 import { SuiteLink } from './SuiteLink';
 import { TestLink } from './TestLink';
 import { styled, withTheme } from '@storybook/theming';
