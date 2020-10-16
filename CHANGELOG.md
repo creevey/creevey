@@ -1,3 +1,15 @@
+# [0.7.0-beta.16](https://github.com/wKich/creevey/compare/v0.7.0-beta.15...v0.7.0-beta.16) (2020-10-16)
+
+### Bug Fixes
+
+- 🐛 make sidebar a little narrower ([65c9bf7](https://github.com/wKich/creevey/commit/65c9bf7947cad71c07df5e7d5668a1b73ecfe395))
+- 🐛 small ui issues in SideBar ([6df7a0a](https://github.com/wKich/creevey/commit/6df7a0a13dcea12614bc4fc4e34389c52f9b03a8))
+- 🐛 watch stories in windows ([e8458dd](https://github.com/wKich/creevey/commit/e8458ddde503011aaa6a7479694edd2aa42b1941))
+
+### Features
+
+- 🎸 sideBar on storybook components ([2866c8e](https://github.com/wKich/creevey/commit/2866c8ebf7e57d460bf5254a93573c048351e1fe))
+
 # [0.7.0-beta.15](https://github.com/wKich/creevey/compare/v0.7.0-beta.14...v0.7.0-beta.15) (2020-10-13)
 
 ### Bug Fixes
