@@ -182,19 +182,19 @@
   - [x] Add linting job
   - [x] Allow run ui tests in cli by `yarn test:ui`
 
-</details>
-
 ## (v0.6.x)
 
 - [x] Install core-js and regenerator runtime as deps, to fix storybook deps issue, where storybook require own core-js, but module path for bundle resolve incorrect
 - [x] Fix match story and absolute path to file with that story (fix hot-reloading issue in CRA)
   - [x] Add note about storybook version
 
+</details>
+
 ## First priority (v0.7)
 
 - [ ] Update Readme
   - [ ] By default creevey use docker, but you can disable it by specifying gridUrl or override for some browsers
-    - [ ] About CI, can't simply run docker-in-docker env (especially in circle ci because of isolated remote docker. As possible solution use machine executor https://github.com/oblador/loki/issues/183#issuecomment-602669503)
+    - [ ] About CI, can't simply run docker-in-docker env for now (especially in circle ci because of isolated remote docker. As possible solution use machine executor https://github.com/oblador/loki/issues/183#issuecomment-602669503)
   - [ ] `before/after` hooks
   - [ ] creevey addon
   - [ ] new params config, don't need decorator any more
@@ -227,6 +227,7 @@
 - [x] Update Eslint to v7
 - [x] Simplify hot-reloading logic, for v6.x fixed removing tests issue
 - [ ] Bugs
+  - [x] Mocha worker `Possible EventEmitter memory leak detected. 11 error listeners added`
   - [x] IPC_CHANNEL_CLOSED error infinity loop, could reproduce with invalid gridUrl
   - [x] Error mocha instance already disposed in mocha@7.2
   - [x] Tests not removing in hot-reloading process
@@ -249,25 +250,54 @@
   - [x] Allow define saucelabs/browserstack-local init/dispose functions
   - [x] ~~Allow define custom localhost resolver in config~~ (write function for storybookUrl)
   - [x] Output unnecessary images when creevey run from cli
+- [x] Storybook integration
+  - [x] Render tests UI as a part of storybook UI
+- [x] Write stories on new components
+  - [x] SideBar
+  - [x] ResultPageHeader
 
 ## Second priority (v0.8)
 
-- [ ] Update Readme
-  - [ ] How to deal with animations (NODE_ENV=='test')
 - [ ] Bugs
   - [ ] Correctly resize images in views using correct proportions (smaller image should shrink if larger shrink too, max-width/max-height doesn't work)
   - [ ] Use native composite screenshots for browsers which support it
   - [ ] Fix taking composite screenshots with hidden scrollbar
+    - Don't use scrollBarWidth or hasScrollBar helpers
     - Take `document.documentElement.clientWidth/Height` instead of window rect
     - For each screenshot after scroll, take elementRect coordinates
     - Iterate be screen images and calculate resulting x/y coordinates for composite image
     - If image width/height greater than viewport width/height than scroll bar is captured
-- [ ] Setup NODE_ENV to 'test'. (Think, how to test it)
-- [ ] Support esm/cjs builds
-- [ ] Support mdx stories
-- [ ] figure out if I need use my own react and setup this https://reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html or I need to use react from storybook
+- [x] ~~Support esm/cjs builds~~
+- [ ] Figure out if I need use my own react and setup this https://reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html or I need to use react from storybook
+- [ ] Rework github actions workflows
+- [ ] Rename `screenDir` config option
 - [ ] Drop storiesOf and Storybook v4.x support
   - [ ] Could we drop more entry points from webpack config? (generated entry for example)
+- [ ] Support other browser automation tools
+  - [ ] Playwright
+  - [ ] Puppeteer
+- [ ] Features
+  - [ ] Show multiple tests for browser in storybook UI
+  - [ ] Allow run multiple tests from storybook UI
+  - [ ] Support mdx stories
+  - [ ] Show swap diff vertically or horizontally depends on aspect ratio
+  - [ ] Allow defined params for knobs and args to capture story with different states
+  - [ ] Allow set viewport sizes for story (use width x height as postfix for browser name in UI)
+  - [ ] Add fuzzy search and highlight
+  - [ ] Allow to ignore elements in capturing screenshot
+  - [ ] Allow disable hmr, load tests from browser (low priority, maybe use only as fallback for difficult scenarios)
+- [ ] Improve Docker
+  - [ ] Private docker images registry
+  - [ ] Support docker-in-docker (start storybook and creevey inside docker)
+    - [ ] Start storybook inside docker
+    - [ ] Allow define custom storybook image
+  - [ ] Allow use standalone binary instead of Docker image for browser (https://aerokube.com/selenoid/latest/#_standalone_binary)
+
+## Third priority (v0.9)
+
+- [ ] Update Readme
+  - [ ] How to deal with animations (CREEVEY_ENV)
+- [ ] Add bootstrap script, that build and install current version into examples or use monorepo
 - [ ] Transform to monorepo
   - [ ] creevey
   - [ ] chai-images
@@ -275,52 +305,35 @@
   - [ ] creevey-docker
   - [ ] creevey-storybook
   - [ ] examples
-- [ ] Support other browser automation tools
-  - [ ] Playwright
-  - [ ] Puppeteer
 - [ ] Features
+  - [ ] Support JUnit mocha reporter
+  - [ ] Improve CLI add grep/kind/story option
+  - [ ] Setup CREEVEY_ENV (in project use `if (CREEVEY_ENV) {}` and addon define function that check if it inside creevey or not)
   - [ ] Improve creevey-addon webpack config to allow use `import { By } from 'selenium'` and maybe other stuff
-  - [ ] Show swap diff vertically or horizontally depends on aspect ratio
-  - [ ] Add bootstrap script, that build and install current version into examples or use monorepo
-  - [ ] Easy way to ignore stories/kinds from UI
+  - [ ] Allow pass components into `findElement`
+    - The idea is, add some transformation to creevey-addon, and replace it component to `[data-comp-name~="MyComponent"]`
+    - Then need to investigate how to inject such data-attributes to html node (especially for non-react frameworks)
   - [ ] Add `init` cli option
-  - [ ] Allow defined params for knobs and args to capture story with different states
-  - [ ] Add fuzzy search and highlight
-  - [ ] Add `only` option as opposite for `skip`
-  - [ ] Allow to ignore elements in capturing screenshot
-  - [ ] Allow set viewport sizes for story (use width x height as postfix for browser name in UI)
+  - [ ] Easy way to ignore stories/kinds from UI
   - [ ] Allow to restart tests on story changes
+  - [ ] Add `only` option as opposite for `skip`
   - [ ] Creevey-as-a-Service
-  - [ ] Allow disable hmr, load tests from browser (low priority, maybe use only as fallback for difficult scenarios)
 - [ ] Improve Docker
   - [ ] Add vnc
   - [ ] Add video recording
-  - [ ] Private docker images registry
-  - [ ] Start storybook inside docker
-  - [ ] Allow define custom storybook image
-  - [ ] Support docker-in-docker (start storybook and creevey inside docker)
-  - [ ] Allow use standalone binary instead of Docker image for browser (https://aerokube.com/selenoid/latest/#_standalone_binary)
-- [ ] Rework github actions workflows
-- [ ] Rename `screenDir` config option
 
 ## Not in first time
 
 - [ ] Correctly reload and reset tests statuses according source code file dependencies
-- [ ] Don't output skipped tests
 - [ ] Improve css filter for blend view, try to reach pixelmatch output
 - [ ] Profile tests loading process (maybe we don't need workers at all)
 - [ ] Always save images even if test with matchImages failed
 - [ ] Add liftoff https://github.com/js-cli/js-liftoff
 - [ ] Tests on images view components with various scenarios (same/diff sizes, less/bigger viewport, elements with width/height not integer size)
-- [ ] Write stories on new components
-  - [x] SideBar
-  - [ ] ResultPageHeader
 - [ ] Bugs
   - [ ] Firefox double click if clicks in different tests
-  - [ ] Mocha worker `Possible EventEmitter memory leak detected. 11 error listeners added`
 - [ ] Improve CLI
   - [ ] Output cli help
-  - [ ] Add grep/kind/story option
 - [ ] Rework UI
   - [ ] Show removed tests results, mark these as removed
   - [ ] Allow hide skipped tests in UI
@@ -330,11 +343,6 @@
 - [ ] Support mocha options for workers
 - [ ] Programmic API
 - [ ] Add logger lib
-
-## Far future
-
-- [ ] Storybook integration
-  - [ ] Render tests UI as a part of storybook UI
 
 ## Maybe Never
 
