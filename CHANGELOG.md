@@ -1,3 +1,9 @@
+# [0.7.0-beta.17](https://github.com/wKich/creevey/compare/v0.7.0-beta.16...v0.7.0-beta.17) (2020-10-16)
+
+### Bug Fixes
+
+- 🐛 filter tests without statuses ([4c1d25d](https://github.com/wKich/creevey/commit/4c1d25de232816b4d99853fbaa2661a46996effc))
+
 # [0.7.0-beta.16](https://github.com/wKich/creevey/compare/v0.7.0-beta.15...v0.7.0-beta.16) (2020-10-16)
 
 ### Bug Fixes
