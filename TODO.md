@@ -265,6 +265,7 @@
 - [ ] Setup NODE_ENV to 'test'. (Think, how to test it)
 - [ ] Support esm/cjs builds
 - [ ] Support mdx stories
+- [ ] figure out if I need use my own react and setup this https://reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html or I need to use react from storybook
 - [ ] Drop storiesOf and Storybook v4.x support
   - [ ] Could we drop more entry points from webpack config? (generated entry for example)
 - [ ] Transform to monorepo
