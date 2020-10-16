@@ -204,7 +204,7 @@ export function filterTests(suite: CreeveySuite, filter: CreeveyViewFilter): Cre
     if (!status && subStrings.some((subString) => title.toLowerCase().includes(subString))) {
       filteredSuite.children[title] = suiteOrTest;
     } else if (isTest(suiteOrTest)) {
-      if (['pending', 'running', status].includes(suiteOrTest.status ?? null))
+      if (status && suiteOrTest.status && ['pending', 'running', status].includes(suiteOrTest.status))
         filteredSuite.children[title] = suiteOrTest;
     } else {
       const filteredSubSuite = filterTests(suiteOrTest, filter);
