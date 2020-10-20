@@ -243,7 +243,7 @@
   - [x] Don't stop rebuilding if rebuild failed due syntax error
   - [ ] Cut off all exports in preview.js except creevey params
   - [ ] Client UI don't show statuses on first run
-  - [ ] Cut off loaders parameters for stories https://github.com/storybookjs/storybook/pull/12699
+  - [x] Cut off loaders parameters for stories https://github.com/storybookjs/storybook/pull/12699
 - [x] Features
   - [x] ~~Add `args` type for CSFStory~~ (Can't support 5.x and 6.x in same time)
   - [x] Support run tests inside docker

@@ -3,7 +3,10 @@ import React from 'react';
 import Button from './src/Button';
 import Input from './src/Input';
 
-export default { title: 'Button' };
+export default {
+  title: 'Button',
+  loaders: [async () => ({ message: (await fetch('https://example.com').json()).payload })],
+};
 
 export const Text = () => <Button>Hello Button</Button>;
 Text.storyName = 'text button';
@@ -13,3 +16,4 @@ Text.parameters = {
   subcomponents: { input: Input },
   creevey: { captureElement: '#root' },
 };
+Text.loaders = [async () => ({ message: (await fetch('https://example.com').json()).payload })];
