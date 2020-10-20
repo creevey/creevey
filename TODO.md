@@ -241,7 +241,7 @@
   - [x] Don't fail build with mdx stories (just ignore it for now)
   - [x] Re-disable animations on storybook reload
   - [x] Don't stop rebuilding if rebuild failed due syntax error
-  - [ ] Cut off all exports in preview.js except creevey params
+  - [x] Cut off all exports in preview.js except creevey params
   - [ ] Client UI don't show statuses on first run
   - [x] Cut off loaders parameters for stories https://github.com/storybookjs/storybook/pull/12699
 - [x] Features

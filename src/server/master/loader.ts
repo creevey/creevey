@@ -191,6 +191,34 @@ function minifyStories(ast: t.File, source: string): string {
         },
       });
     },
+    ExportNamedDeclaration(namedPath) {
+      let hasDefaultExport = false;
+      namedPath.parentPath.traverse({
+        ExportDefaultDeclaration() {
+          hasDefaultExport = true;
+        },
+      });
+      if (hasDefaultExport) return;
+      isTransformed = true;
+      const declarationPath = namedPath.get('declaration');
+      if (!declarationPath.isVariableDeclaration()) return;
+      const declarations = declarationPath.get('declarations');
+      if (!Array.isArray(declarations)) return;
+      declarations.forEach((declPath) => {
+        if (!declPath.isVariableDeclarator()) return;
+        if (!t.isIdentifier(declPath.node.id, { name: 'parameters' })) return declPath.remove();
+
+        const initPath = declPath.get('init');
+        if (Array.isArray(initPath)) return;
+        if (initPath.isObjectExpression()) return removeAllPropsExcept(initPath, ['creevey']);
+        const resolvedDeclPath = getDeclaratorPath(initPath);
+        if (resolvedDeclPath) {
+          const rightPath = resolvedDeclPath.get('init');
+          if (!rightPath.isObjectExpression()) return;
+          removeAllPropsExcept(rightPath, ['creevey']);
+        }
+      });
+    },
     CallExpression(path) {
       if (path.get('callee').isIdentifier({ name: 'addDecorator' })) {
         isTransformed = true;
