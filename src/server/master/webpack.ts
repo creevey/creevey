@@ -28,10 +28,10 @@ const supportedFrameworks = [
   'web-components',
 ];
 
-function tryDetectStorybookFramework(): string | undefined {
+function tryDetectStorybookFramework(parentDir: string): string | undefined {
   return supportedFrameworks.find((framework) => {
     try {
-      return require.resolve(`@storybook/${framework}`);
+      return require.resolve(path.join(parentDir, `@storybook/${framework}`));
     } catch (_) {
       return false;
     }
@@ -70,7 +70,7 @@ function handleWebpackBuild(error: Error, stats: webpack.Stats): void {
 export default async function compile(config: Config, { debug, ui }: Options): Promise<void> {
   const storybookCorePath = require.resolve('@storybook/core');
   const [storybookParentDirectory] = storybookCorePath.split('@storybook');
-  const storybookFramework = tryDetectStorybookFramework();
+  const storybookFramework = tryDetectStorybookFramework(storybookParentDirectory);
 
   if (!storybookFramework)
     throw new Error(
