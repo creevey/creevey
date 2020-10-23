@@ -365,7 +365,7 @@ export async function switchStory(this: Context): Promise<void> {
   await disableAnimations(this.browser);
   await selectStory(this.browser, story.id, story.kind, story.name);
 
-  const { captureElement } = (story.parameters.creevey ?? {}) as CreeveyStoryParams;
+  const { captureElement = '#root' } = (story.parameters.creevey ?? {}) as CreeveyStoryParams;
 
   if (captureElement)
     Object.defineProperty(this, 'captureElement', {

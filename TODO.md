@@ -193,6 +193,7 @@
 ## First priority (v0.7)
 
 - [ ] Update Readme
+  - [ ] Default captureElement: `#root`
   - [ ] By default creevey use docker, but you can disable it by specifying gridUrl or override for some browsers
     - [ ] About CI, can't simply run docker-in-docker env for now (especially in circle ci because of isolated remote docker. As possible solution use machine executor https://github.com/oblador/loki/issues/183#issuecomment-602669503)
   - [ ] `before/after` hooks
@@ -217,12 +218,6 @@
 - [ ] Update examples
 - [ ] Add creevey in awesome list
   - https://github.com/mojoaxel/awesome-regression-testing
-- [ ] Add Storybook integration tests
-  - Init projects with various frameworks
-  - Init storybook using storybook cli
-  - Add creevey config
-  - Test webpack building (include bundle size)
-  - Test stories tests in output
 - [x] Creevey as Addon PoC
 - [x] Update Eslint to v7
 - [x] Simplify hot-reloading logic, for v6.x fixed removing tests issue
@@ -258,7 +253,14 @@
 
 ## Second priority (v0.8)
 
+- [ ] Add Storybook integration tests
+  - Init projects with various frameworks
+  - Init storybook using storybook cli
+  - Add creevey config
+  - Test webpack building (include bundle size)
+  - Test stories tests in output
 - [ ] Bugs
+  - [ ] Figure out how to deal with creevey.config.ts
   - [ ] Correctly resize images in views using correct proportions (smaller image should shrink if larger shrink too, max-width/max-height doesn't work)
   - [ ] Use native composite screenshots for browsers which support it
   - [ ] Fix taking composite screenshots with hidden scrollbar
