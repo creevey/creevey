@@ -12,6 +12,6 @@
     "src/**/*.d.ts"
   ],
   "exclude": [
-    "**/*.stories.ts"
+    "**/*.stories.*"
   ]
 }

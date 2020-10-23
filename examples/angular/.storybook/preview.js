@@ -1,5 +1,9 @@
-import { addDecorator, addParameters } from "@storybook/angular";
-import { withCreevey } from "creevey";
 
-addParameters({ creevey: { captureElement: "#root" } });
-addDecorator(withCreevey());
+import { setCompodocJson } from "@storybook/addon-docs/angular";
+import docJson from "../documentation.json";
+setCompodocJson(docJson);
+
+
+export const parameters = {
+  actions: { argTypesRegex: "^on[A-Z].*" },
+}
