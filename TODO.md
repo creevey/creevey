@@ -206,6 +206,8 @@
   - [ ] Add how to start docker and IE11 especially
   - [ ] Add instruction for various frameworks
     - [ ] Create React App Typescript
+    - [ ] Gatsby
+    - [ ] Next.js
     - [x] Vue
 - [x] Support Storybook 6.x
 - [x] ~~Add @babel/code-frame to output loader error~~ There is babel issue https://github.com/babel/babel/issues/8617

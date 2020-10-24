@@ -1,5 +1,4 @@
-import { addDecorator, addParameters } from "@storybook/react";
-import { withCreevey } from "creevey";
 
-addParameters({ creevey: { captureElement: "#root" } });
-addDecorator(withCreevey());
+export const parameters = {
+  actions: { argTypesRegex: "^on[A-Z].*" },
+}
