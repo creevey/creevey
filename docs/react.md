@@ -4,7 +4,7 @@ NOTE: This guide suggest that your project has been created by `create-react-app
 
 ## Pre-requisite
 
-1. Install `Storybook` by using [this guide](https://storybook.js.org/docs/react/get-started/introduction)
+0. Install `Storybook` by using [this guide](https://storybook.js.org/docs/react/get-started/introduction)
 
 ## Setup
 

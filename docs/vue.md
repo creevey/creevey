@@ -4,54 +4,18 @@ NOTE: This guide suggest that your project has been created by Vue-CLI `vue crea
 
 ## Pre-requisite
 
-1. Install `Storybook` by command `vue add storybook`
-1. Add peer dependencies: `npm add -D babel-preset-vue`
+0. Install `Storybook` by using [this guide](https://storybook.js.org/docs/vue/get-started/introduction)
 
 ## Setup
 
 1. Install `Creevey`
 
 ```bash
-npm add -D creevey@next
+yarn add -D creevey
 ```
 
-2. Add the following NPM script to your `package.json`:
+2. Add Creevey addon to addons section into `main.js` file inside `.storybook` directory
 
 ```js
-"scripts": {
-  "creevey:ui": "creevey --ui"
-}
-```
-
-3. Add this content from below into `preview.js` file inside `config/.storybook/` directory
-
-```js
-import { addDecorator, addParameters } from '@storybook/vue';
-import { withCreevey } from 'creevey';
-
-addParameters({ creevey: { captureElement: '#root' } });
-addDecorator(withCreevey());
-```
-
-4. Create `creevey` config by adding `creevey.config.js` file in root directory
-
-```js
-const path = require('path');
-
-module.exports = {
-  gridUrl: 'http://localhost:4444/wd/hub',
-  storybookUrl: 'http://localhost:6006',
-  storybookDir: path.join(__dirname, 'config/storybook'),
-  enableFastStoriesLoading: true,
-  browsers: {
-    chrome: {
-      browserName: 'chrome',
-      viewport: { width: 1024, height: 720 },
-    },
-    firefox: {
-      browserName: 'firefox',
-      viewport: { width: 1024, height: 720 },
-    },
-  },
-};
+module.exports = { addons: ['creevey'] };
 ```

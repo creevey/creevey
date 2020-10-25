@@ -205,6 +205,7 @@
   - [ ] Write about differences with other tools
   - [ ] Add how to start docker and IE11 especially
   - [ ] Add instruction for various frameworks
+    - [ ] Web components
     - [ ] Create React App Typescript
     - [ ] Gatsby
     - [ ] Next.js
@@ -217,7 +218,7 @@
 - [x] Cleanup nodejs storybook bundle (Don't load any of addons)
 - [x] Build addon for ie11
 - [x] Add human readable error message if test failed with `window.__CREEVEY_SELECT_STORY__` is not a function
-- [ ] Update examples
+- [x] Update examples
 - [ ] Add creevey in awesome list
   - https://github.com/mojoaxel/awesome-regression-testing
 - [x] Creevey as Addon PoC
