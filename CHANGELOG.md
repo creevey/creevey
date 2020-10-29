@@ -1,3 +1,16 @@
+# [0.7.0-beta.18](https://github.com/wKich/creevey/compare/v0.7.0-beta.17...v0.7.0-beta.18) (2020-10-29)
+
+### Bug Fixes
+
+- 🐛 cutoff parameters in new declarative preview config ([a86c51a](https://github.com/wKich/creevey/commit/a86c51ae80caa1f3e7534a044e1427dcb43e9792))
+- 🐛 improve creevey loader cutoff stories meta data ([7b651d5](https://github.com/wKich/creevey/commit/7b651d5fe2945cffa10929ce038d01885c1db6ab))
+- 🐛 reset body margin for client ui ([54fee7f](https://github.com/wKich/creevey/commit/54fee7f061a7b5eef7179faec09e79fd1652e305))
+- 🐛 storybook framework detection ([25e1651](https://github.com/wKich/creevey/commit/25e1651608765698629e8f2ac1b9e43f98234288))
+
+### Features
+
+- 🎸 change default capture element to `#root` ([8d2c7b8](https://github.com/wKich/creevey/commit/8d2c7b8a5ddf9e3f64102c19aba1f1a7f933d8ad))
+
 # [0.7.0-beta.17](https://github.com/wKich/creevey/compare/v0.7.0-beta.16...v0.7.0-beta.17) (2020-10-16)
 
 ### Bug Fixes
