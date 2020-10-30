@@ -14,6 +14,7 @@ declare global {
 }
 
 const TESTKONTUR_REGEXP = /testkontur/i;
+const DOCKER_INTERNAL = 'host.docker.internal';
 
 function getRealIp(): Promise<string> {
   return new Promise((resolve, reject) =>
@@ -38,6 +39,7 @@ async function resolveStorybookUrl(browser: WebDriver, storybookUrl: string): Pr
     return storybookUrl;
   }
   const addresses = ([] as string[]).concat(
+    DOCKER_INTERNAL,
     ...Object.values(networkInterfaces())
       .filter(isDefined)
       .map((network) => network.filter((info) => info.family == 'IPv4').map((info) => info.address)),
