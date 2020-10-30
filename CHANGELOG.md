@@ -1,3 +1,9 @@
+# [0.7.0-beta.19](https://github.com/wKich/creevey/compare/v0.7.0-beta.18...v0.7.0-beta.19) (2020-10-30)
+
+### Bug Fixes
+
+- 🐛 macos docker netwrok internal host address ([90bf76d](https://github.com/wKich/creevey/commit/90bf76d8986d07626890e03b2097c0ef3ebd3f27))
+
 # [0.7.0-beta.18](https://github.com/wKich/creevey/compare/v0.7.0-beta.17...v0.7.0-beta.18) (2020-10-29)
 
 ### Bug Fixes
