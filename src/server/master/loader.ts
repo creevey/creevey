@@ -103,7 +103,7 @@ function cleanUpStoryProps(storyPropAssign: NodePath<t.AssignmentExpression>): v
   const rightPath = storyPropAssign.get('right') as NodePath;
   if (!rightPath?.isObjectExpression()) return;
 
-  removeAllPropsExcept(rightPath, ['parameters']);
+  removeAllPropsExcept(rightPath, ['name', 'parameters']);
   const storyParametersPath = getPropertyPath(rightPath, 'parameters')?.get('value');
   if (storyParametersPath?.isObjectExpression()) {
     removeAllPropsExcept(storyParametersPath, ['creevey']);

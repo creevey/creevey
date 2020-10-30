@@ -16,6 +16,7 @@ export default {
 
 export const Text = () => {};
 Text.story = {
+  name: 'myText',
   parameters: {
 
 

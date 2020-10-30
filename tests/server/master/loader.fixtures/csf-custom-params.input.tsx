@@ -16,6 +16,7 @@ export default {
 
 export const Text = () => <Button>Hello Button</Button>;
 Text.story = {
+  name: 'myText',
   parameters: {
     component: Button,
     subcomponents: { input: Input },
