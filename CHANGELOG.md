@@ -1,3 +1,9 @@
+# [0.7.0-beta.20](https://github.com/wKich/creevey/compare/v0.7.0-beta.19...v0.7.0-beta.20) (2020-10-30)
+
+### Bug Fixes
+
+- 🐛 don't cutoff `name` prop from stories params ([ca1a19f](https://github.com/wKich/creevey/commit/ca1a19f75f5a31974a7fb930d871c53ce0d77567))
+
 # [0.7.0-beta.19](https://github.com/wKich/creevey/compare/v0.7.0-beta.18...v0.7.0-beta.19) (2020-10-30)
 
 ### Bug Fixes
