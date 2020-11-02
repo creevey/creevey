@@ -43,11 +43,15 @@ export function withCreeveyTests(
 
     async componentDidMount(): Promise<void> {
       const { api } = this.props;
-      this.creeveyApi = await initCreeveyClientApi();
-      const status = await this.creeveyApi.status;
-      this.setState({
-        status: status,
-      });
+      try {
+        this.creeveyApi = await initCreeveyClientApi();
+        const status = await this.creeveyApi.status;
+        this.setState({
+          status: status,
+        });
+      } catch (_) {
+        /* NOTE: Couldn't init Creevey API, just ignore the error */
+      }
       this.creeveyApi?.onUpdate(({ tests, removedTests = [], isRunning }: CreeveyUpdate) => {
         if (isDefined(isRunning)) {
           this.setState({ isRunning });

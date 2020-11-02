@@ -282,6 +282,9 @@
   - [ ] Playwright
   - [ ] Puppeteer
 - [ ] Features
+  - [ ] Wait for resources loaded (fonts, images, etc)
+  - [ ] Integrate build nodejs bundle into storybook (use webpackFinal in addon)
+  - [ ] Support Storybook Composition https://storybook.js.org/docs/react/workflows/storybook-composition
   - [ ] Show multiple tests for browser in storybook UI
   - [ ] Allow run multiple tests from storybook UI
   - [ ] Support mdx stories

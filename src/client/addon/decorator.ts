@@ -16,6 +16,60 @@ declare global {
   interface Window {
     __CREEVEY_SELECT_STORY__: (storyId: string, kind: string, name: string, callback: (error?: string) => void) => void;
   }
+
+  interface Document {
+    fonts: FontFaceSet;
+  }
+
+  type CSSOMString = string;
+  type FontFaceLoadStatus = 'unloaded' | 'loading' | 'loaded' | 'error';
+  type FontFaceSetStatus = 'loading' | 'loaded';
+
+  class FontFace extends FontFaceDescriptors {
+    constructor(family: string, source: string | ArrayBuffer, descriptors?: FontFaceDescriptors);
+    readonly status: FontFaceLoadStatus;
+    readonly loaded: Promise<FontFace>;
+    variationSettings: CSSOMString;
+    display: CSSOMString;
+    load(): Promise<FontFace>;
+  }
+
+  class FontFaceDescriptors {
+    family: CSSOMString;
+    style: CSSOMString;
+    weight: CSSOMString;
+    stretch: CSSOMString;
+    unicodeRange: CSSOMString;
+    variant: CSSOMString;
+    featureSettings: CSSOMString;
+  }
+
+  interface FontFaceSet extends Iterable<FontFace>, EventTarget {
+    readonly status: FontFaceSetStatus;
+    readonly ready: Promise<FontFaceSet>;
+    readonly size: number;
+    add(font: FontFace): void;
+    check(font: string, text?: string): boolean; // throws exception
+    load(font: string, text?: string): Promise<FontFace[]>;
+    delete(font: FontFace): void;
+    clear(): void;
+  }
+}
+
+function waitForFontsLoaded(): Promise<void> | void {
+  if (!document.fonts) return;
+
+  const areFontsLoading = Array.from(document.fonts).some((font) => font.status == 'loading');
+
+  if (areFontsLoading) {
+    return new Promise((resolve) => {
+      const fontsLoadedHandler = (): void => {
+        document.fonts.removeEventListener('loadingdone', fontsLoadedHandler);
+        resolve();
+      };
+      document.fonts.addEventListener('loadingdone', fontsLoadedHandler);
+    });
+  }
 }
 
 export function withCreevey(): MakeDecoratorResult {
@@ -64,6 +118,7 @@ export function withCreevey(): MakeDecoratorResult {
     channel.emit(Events.SET_CURRENT_STORY, { storyId, name, kind });
     try {
       await storyRenderedPromise;
+      await waitForFontsLoaded();
       callback();
     } catch (reason) {
       // NOTE Event `STORY_THREW_EXCEPTION` triggered only in react and vue frameworks and return Error instance
