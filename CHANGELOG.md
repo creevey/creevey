@@ -1,3 +1,9 @@
+# [0.7.0-beta.21](https://github.com/wKich/creevey/compare/v0.7.0-beta.20...v0.7.0-beta.21) (2020-11-02)
+
+### Bug Fixes
+
+- 🐛 wait for fonts loaded ([78c2a74](https://github.com/wKich/creevey/commit/78c2a74782ac9bdb10d7c9c2039a332218a217cd))
+
 # [0.7.0-beta.20](https://github.com/wKich/creevey/compare/v0.7.0-beta.19...v0.7.0-beta.20) (2020-10-30)
 
 ### Bug Fixes
