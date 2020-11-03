@@ -329,7 +329,7 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
       [
         () => viewport && browser && resizeViewport(browser, viewport),
         async () => browser && void (realAddress = await resolveStorybookUrl(browser, realAddress)),
-        () => browser?.get(`${realAddress}/iframe.html`),
+        () => browser?.get(`${realAddress.replace(/\/$/, '')}/iframe.html`),
         () => browser?.wait(until.elementLocated(By.css('#root')), 30000),
         () => browser && disableAnimations(browser),
       ],

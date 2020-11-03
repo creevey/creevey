@@ -1,11 +1,12 @@
 import React from 'react';
 
 import { ImagesView as ImagesViewBase } from '../src/client/shared/components/ImagesView';
-import { ImagesViewMode, CSFStory } from '../src/types';
+import { ImagesViewMode, CreeveyStory } from '../src/types';
 
 import octocatExpect from './fixtures/octocat-expect.png';
 import octocatDiff from './fixtures/octocat-diff.png';
 import octocatActual from './fixtures/octocat-actual.png';
+import { Story } from '@storybook/react';
 
 export default {
   title: 'ImagesViews',
@@ -27,7 +28,7 @@ const ImagesView = (mode: ImagesViewMode): JSX.Element => (
 
 export const SideBySide = (): JSX.Element => ImagesView('side-by-side');
 export const Swap = (): JSX.Element => ImagesView('swap');
-export const Slide: CSFStory<JSX.Element> = () => ImagesView('slide');
+export const Slide: Story & CreeveyStory = () => ImagesView('slide');
 export const Blend = (): JSX.Element => ImagesView('blend');
 
 Slide.parameters = {

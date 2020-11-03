@@ -4,8 +4,9 @@ import { CreeveyContext } from '../src/client/web/CreeveyContext';
 import { SideBar } from '../src/client/web/CreeveyView/SideBar';
 import { SideBarHeader } from '../src/client/web/CreeveyView/SideBar/SideBarHeader';
 import { treeifyTests, checkSuite, getTestByPath } from '../src/client/shared/helpers';
-import { noop, CreeveySuite, CreeveyStatus, isDefined, isTest, CSFStory } from '../src/types';
+import { noop, CreeveySuite, CreeveyStatus, isDefined, isTest, CreeveyStory } from '../src/types';
 import { ensure, styled, ThemeProvider, themes } from '@storybook/theming';
+import { Story } from '@storybook/react';
 
 function openSuites(suite: CreeveySuite): CreeveySuite {
   suite.opened = true;
@@ -112,7 +113,7 @@ export const HeaderDisabled = (): JSX.Element => (
 );
 HeaderDisabled.decorators = [headerDecorator];
 
-export const SimpleSideBar: CSFStory<JSX.Element> = () => {
+export const SimpleSideBar: Story & CreeveyStory = () => {
   const simpleSuites = openSuites(treeifyTests(simpleTests()));
   const testPath = simpleTests()[2]?.path.reverse() || [];
 
