@@ -14,7 +14,7 @@ import {
 import { CreeveyContext } from './CreeveyContext';
 import { SideBar } from './CreeveyView/SideBar';
 import { ResultsPage } from '../shared/components/ResultsPage';
-import { ensure, styled, ThemeProvider, themes, withTheme } from '@storybook/theming';
+import { styled, withTheme } from '@storybook/theming';
 
 export interface CreeveyAppProps {
   api?: CreeveyClientApi;
@@ -79,22 +79,20 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
         onSuiteToggle: handleSuiteToggle,
       }}
     >
-      <ThemeProvider theme={ensure(themes.dark)}>
-        <FlexContainer>
-          <SideBar rootSuite={tests} openedTest={openedTest} onOpenTest={openTest} />
-          {openedTest && (
-            <ResultsPage
-              key={`${openedTest.id}_${openedTest.results?.length ?? 0}`}
-              id={openedTest.id}
-              path={[...openedTest.path].reverse()}
-              results={openedTest.results}
-              approved={openedTest.approved}
-              showTitle
-              onImageApprove={handleImageApprove}
-            />
-          )}
-        </FlexContainer>
-      </ThemeProvider>
+      <FlexContainer>
+        <SideBar rootSuite={tests} openedTest={openedTest} onOpenTest={openTest} />
+        {openedTest && (
+          <ResultsPage
+            key={`${openedTest.id}_${openedTest.results?.length ?? 0}`}
+            id={openedTest.id}
+            path={[...openedTest.path].reverse()}
+            results={openedTest.results}
+            approved={openedTest.approved}
+            showTitle
+            onImageApprove={handleImageApprove}
+          />
+        )}
+      </FlexContainer>
     </CreeveyContext.Provider>
   );
 }

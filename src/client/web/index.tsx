@@ -1,11 +1,12 @@
 import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom';
-import { Loader } from '@storybook/components';
+import { ensure, ThemeProvider, themes } from '@storybook/theming';
 import { CreeveyApp } from './CreeveyApp';
 
 import { initCreeveyClientApi, CreeveyClientApi } from '../shared/creeveyClientApi';
 import { CreeveyStatus } from '../../types';
 import { treeifyTests } from '../shared/helpers';
+import { CreeveyLoader } from './CreeveyLoader';
 
 declare global {
   const __CREEVEY_DATA__: CreeveyStatus['tests'];
@@ -20,7 +21,7 @@ function loadCreeveyData(): Promise<CreeveyStatus['tests']> {
   });
 }
 
-const CreeveAppAsync = React.lazy(async () => {
+const CreeveyAppAsync = React.lazy(async () => {
   let creeveyStatus: CreeveyStatus;
   let creeveyApi: CreeveyClientApi | undefined;
   if (window.location.host) {
@@ -49,8 +50,10 @@ const CreeveAppAsync = React.lazy(async () => {
 });
 
 ReactDOM.render(
-  <Suspense fallback={<Loader size={64} />}>
-    <CreeveAppAsync />
-  </Suspense>,
+  <ThemeProvider theme={ensure(themes.dark)}>
+    <Suspense fallback={<CreeveyLoader />}>
+      <CreeveyAppAsync />
+    </Suspense>
+  </ThemeProvider>,
   document.getElementById('root'),
 );
