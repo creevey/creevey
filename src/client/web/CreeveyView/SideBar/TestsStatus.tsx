@@ -6,7 +6,7 @@ import { IconButton, Icons } from '@storybook/components';
 
 export interface TestsStatusProps extends CreeveyTestsStatus {
   onClickByStatus: (value: TestStatus) => void;
-  theme: Theme;
+  theme?: Theme;
 }
 
 const Container = styled.div({
@@ -55,24 +55,23 @@ export const TestsStatus = withTheme(
     onClickByStatus,
     theme,
   }: TestsStatusProps): JSX.Element => {
-    console.log(theme.color);
     return (
       <Container>
         <Button onClick={() => onClickByStatus('pending')}>
-          <IconContainer color={theme.color.mediumdark}>
+          <IconContainer color={theme?.color.mediumdark}>
             <Icons icon="time" stroke="currentColor" strokeWidth="30" />
             {pendingCount}
           </IconContainer>
         </Button>
         <Divider />
         <Button onClick={() => onClickByStatus('success')}>
-          <IconContainer color={theme.color.green}>
+          <IconContainer color={theme?.color.green}>
             <Icons icon="check" stroke="currentColor" strokeWidth="30" /> {successCount}
           </IconContainer>
         </Button>
         <Divider />
         <Button onClick={() => onClickByStatus('failed')}>
-          <IconContainer color={theme.color.negative}>
+          <IconContainer color={theme?.color.negative}>
             <Icons icon="cross" stroke="currentColor" strokeWidth="30" /> {failedCount}
           </IconContainer>
         </Button>

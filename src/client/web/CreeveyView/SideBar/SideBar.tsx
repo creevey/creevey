@@ -13,6 +13,7 @@ import { SuiteLink } from './SuiteLink';
 import { TestLink } from './TestLink';
 import { styled, withTheme } from '@storybook/theming';
 import { transparentize } from 'polished';
+import { ScrollArea } from '@storybook/components';
 
 export const SideBarContext = createContext<{ onOpenTest: (path: string[]) => void }>({
   onOpenTest: noop,
@@ -83,29 +84,31 @@ export function SideBar({ rootSuite, openedTest, onOpenTest }: SideBarProps): JS
   return (
     <SideBarContext.Provider value={{ onOpenTest }}>
       <Container>
-        <SideBarHeader
-          testsStatus={testsStatus}
-          filter={filter}
-          onFilterChange={setFilter}
-          onStart={handleStart}
-          onStop={onStop}
-          canStart={countCheckedTests !== 0}
-        />
-        <Shadow />
-        <TestsContainer>
-          <Divider />
-          {/* TODO Output message where nothing found */}
-          <SelectAllContainer>
-            <SuiteLink title="Select all" suite={rootSuite} data-tid="selectAll" />
-          </SelectAllContainer>
-          {suiteList.map(({ title, suite }) =>
-            isTest(suite) ? (
-              <TestLink key={suite.path.join('/')} title={title} opened={suite.id == openedTest?.id} test={suite} />
-            ) : (
-              <SuiteLink key={suite.path.join('/')} title={title} suite={suite} />
-            ),
-          )}
-        </TestsContainer>
+        <ScrollArea vertical>
+          <SideBarHeader
+            testsStatus={testsStatus}
+            filter={filter}
+            onFilterChange={setFilter}
+            onStart={handleStart}
+            onStop={onStop}
+            canStart={countCheckedTests !== 0}
+          />
+          <Shadow />
+          <TestsContainer>
+            <Divider />
+            {/* TODO Output message where nothing found */}
+            <SelectAllContainer>
+              <SuiteLink title="Select all" suite={rootSuite} data-tid="selectAll" />
+            </SelectAllContainer>
+            {suiteList.map(({ title, suite }) =>
+              isTest(suite) ? (
+                <TestLink key={suite.path.join('/')} title={title} opened={suite.id == openedTest?.id} test={suite} />
+              ) : (
+                <SuiteLink key={suite.path.join('/')} title={title} suite={suite} />
+              ),
+            )}
+          </TestsContainer>
+        </ScrollArea>
       </Container>
     </SideBarContext.Provider>
   );
