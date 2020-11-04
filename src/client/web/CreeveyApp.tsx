@@ -14,7 +14,7 @@ import {
 import { CreeveyContext } from './CreeveyContext';
 import { SideBar } from './CreeveyView/SideBar';
 import { ResultsPage } from '../shared/components/ResultsPage';
-import { ensure, styled, ThemeProvider, themes } from '@storybook/theming';
+import { ensure, styled, ThemeProvider, themes, withTheme } from '@storybook/theming';
 
 export interface CreeveyAppProps {
   api?: CreeveyClientApi;
@@ -24,9 +24,13 @@ export interface CreeveyAppProps {
   };
 }
 
-const FlexContainer = styled.div({
-  display: 'flex',
-});
+const FlexContainer = withTheme(
+  styled.div(({ theme }) => ({
+    display: 'flex',
+    background: theme.background.content,
+    color: theme.color.defaultText,
+  })),
+);
 
 export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element {
   const [tests, updateTests] = useImmer(initialState.tests);
@@ -75,7 +79,7 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
         onSuiteToggle: handleSuiteToggle,
       }}
     >
-      <ThemeProvider theme={ensure(themes.light)}>
+      <ThemeProvider theme={ensure(themes.dark)}>
         <FlexContainer>
           <SideBar rootSuite={tests} openedTest={openedTest} onOpenTest={openTest} />
           {openedTest && (

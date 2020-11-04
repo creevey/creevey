@@ -31,35 +31,37 @@ const Button = styled.button<{ borderColor?: string }>(({ borderColor }) => ({
 }));
 
 const Image = withTheme(
-  styled.img<{ hasBorder?: boolean; backgroundColor: string }>(({ hasBorder, backgroundColor }) => ({
-    maxHeight: `${IMG_SIZE}px`,
-    width: `${IMG_SIZE}px`,
-    overflow: 'hidden',
-    transform: hasBorder ? 'translateY(2px)' : undefined,
+  styled.img<{ hasBorder?: boolean; backgroundColor: string; theme: Theme }>(
+    ({ hasBorder, backgroundColor, theme }) => ({
+      maxHeight: `${IMG_SIZE}px`,
+      width: `${IMG_SIZE}px`,
+      overflow: 'hidden',
+      transform: hasBorder ? 'translateY(2px)' : undefined,
 
-    '&::before': {
-      content: "' '",
-      display: 'block',
-      height: `${IMG_SIZE - 8}px`,
-      width: `${IMG_SIZE - 8}px`,
-      margin: '4px',
-      backgroundColor: backgroundColor,
-      backgroundImage: `linear-gradient(
+      '&::before': {
+        content: "' '",
+        display: 'block',
+        height: `${IMG_SIZE - 8}px`,
+        width: `${IMG_SIZE - 8}px`,
+        margin: '4px',
+        backgroundColor: backgroundColor,
+        backgroundImage: `linear-gradient(
       45deg,
       rgba(0, 0, 0, 0) ${DIAG_LENGTH / 2 - 0.5}px,
-      #e5e5e5 ${DIAG_LENGTH / 2 - 0.5}px,
-      #e5e5e5 ${DIAG_LENGTH / 2 + 0.5}px,
+      ${theme.color.medium} ${DIAG_LENGTH / 2 - 0.5}px,
+      ${theme.color.medium} ${DIAG_LENGTH / 2 + 0.5}px,
       rgba(0, 0, 0, 0) ${DIAG_LENGTH / 2 + 0.5}px
     ),
     linear-gradient(
       315deg,
       rgba(0, 0, 0, 0) ${DIAG_LENGTH / 2 + 0.2}px,
-      #e5e5e5 ${DIAG_LENGTH / 2 + 0.2}px,
-      #e5e5e5 ${DIAG_LENGTH / 2 + 1.2}px,
+      ${theme.color.medium} ${DIAG_LENGTH / 2 + 0.2}px,
+      ${theme.color.medium} ${DIAG_LENGTH / 2 + 1.2}px,
       rgba(0, 0, 0, 0) ${DIAG_LENGTH / 2 + 1.2}px
     )`,
-    },
-  })),
+      },
+    }),
+  ),
 );
 
 export const ImagePreview = withTheme(

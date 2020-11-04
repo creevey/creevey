@@ -12,6 +12,7 @@ import { CreeveyContext } from '../../CreeveyContext';
 import { SuiteLink } from './SuiteLink';
 import { TestLink } from './TestLink';
 import { styled, withTheme } from '@storybook/theming';
+import { transparentize } from 'polished';
 
 export const SideBarContext = createContext<{ onOpenTest: (path: string[]) => void }>({
   onOpenTest: noop,
@@ -26,7 +27,7 @@ export interface SideBarProps {
 const Container = withTheme(
   styled.div(({ theme }) => ({
     width: '300px',
-    boxShadow: '0 0 5px #aaa',
+    boxShadow: `0 0 5px  ${transparentize(0.8, theme.color.defaultText)}`,
     height: '100vh',
     flex: 'none',
     zIndex: 1000,
@@ -38,12 +39,14 @@ const Container = withTheme(
   })),
 );
 
-const Shadow = styled.div({
-  position: 'sticky',
-  top: '160px',
-  boxShadow: '0 0 5px 2.5px #aaa',
-  zIndex: 3,
-});
+const Shadow = withTheme(
+  styled.div(({ theme }) => ({
+    position: 'sticky',
+    top: '160px',
+    boxShadow: `0 0 5px 2.5px ${transparentize(0.8, theme.color.defaultText)}`,
+    zIndex: 3,
+  })),
+);
 
 const SelectAllContainer = styled.div({
   marginBottom: '30px',
@@ -55,13 +58,15 @@ const TestsContainer = styled.div({
   paddingBottom: '40px',
 });
 
-const Divider = styled.div({
-  position: 'absolute',
-  height: '8px',
-  width: '100%',
-  zIndex: 3,
-  background: '#fff',
-});
+const Divider = withTheme(
+  styled.div(({ theme }) => ({
+    position: 'absolute',
+    height: '8px',
+    width: '100%',
+    zIndex: 3,
+    background: theme.background.content,
+  })),
+);
 
 export function SideBar({ rootSuite, openedTest, onOpenTest }: SideBarProps): JSX.Element {
   const { onStart, onStop } = useContext(CreeveyContext);

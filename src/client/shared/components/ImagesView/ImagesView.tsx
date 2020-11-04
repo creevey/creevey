@@ -4,15 +4,20 @@ import { SwapView } from './SwapView';
 import { SlideView } from './SlideView';
 import { BlendView } from './BlendView';
 import { Images, ImagesViewMode } from '../../../../types';
-import { styled, Theme } from '@storybook/theming';
+import { Color, styled, Theme, withTheme } from '@storybook/theming';
 
-export const borderColors: ViewProps = {
-  actual: '#d9472b',
-  expect: '#419d14',
-  diff: '#1d85d0',
+export const themeBorderColors = {
+  actual: 'negative',
+  expect: 'positive',
+  diff: 'secondary',
 };
 
-export interface ViewProps {
+const isColor = (theme: Theme, color: string): color is keyof Color => color in theme.color;
+export function getBorderColor(theme: Theme, color: string): string {
+  return isColor(theme, color) ? theme.color[color] : color;
+}
+
+interface ViewProps {
   actual: string;
   diff: string;
   expect: string;
@@ -36,19 +41,25 @@ const views: { [mode in ImagesViewMode]: FunctionComponent<ViewProps> } = {
   blend: BlendView,
 };
 
-const Container = styled.div({
-  background: '#eee',
-  height: '100%',
-  display: 'flex',
-  textAlign: 'center',
-  alignItems: 'center',
-  justifyContent: 'center',
-});
+const Container = withTheme(
+  styled.div(({ theme }) => ({
+    background: theme.background.app,
+    height: '100%',
+    display: 'flex',
+    textAlign: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+  })),
+);
 
-const ActualImage = styled.img({
-  border: `1px solid ${borderColors.expect}`,
-  maxWidth: '100%',
-});
+const ActualImage = withTheme(
+  styled.img(({ theme }) => {
+    return {
+      border: `1px solid ${getBorderColor(theme, themeBorderColors.expect)}`,
+      maxWidth: '100%',
+    };
+  }),
+);
 
 export function ImagesView({ url, image, canApprove, mode }: ImagesViewProps): JSX.Element {
   const ViewComponent = views[mode];

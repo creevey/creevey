@@ -16,14 +16,16 @@ interface SideBarHeaderProps {
   canStart?: boolean;
 }
 
-const Sticky = styled.div({
-  padding: '24px 32px 8px',
-  background: '#fff',
-  height: '130px',
-  zIndex: 5,
-  position: 'sticky',
-  top: '0',
-});
+const Sticky = withTheme(
+  styled.div(({ theme }) => ({
+    padding: '24px 32px 8px',
+    background: theme.background.content,
+    height: '130px',
+    zIndex: 5,
+    position: 'sticky',
+    top: '0',
+  })),
+);
 
 const Container = styled.div({
   display: 'flex',

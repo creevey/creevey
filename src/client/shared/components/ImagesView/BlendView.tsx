@@ -1,6 +1,6 @@
 import React from 'react';
-import { ViewProps, borderColors } from './ImagesView';
-import { styled } from '@storybook/theming';
+import { ViewPropsWithTheme, getBorderColor, themeBorderColors } from './ImagesView';
+import { styled, withTheme } from '@storybook/theming';
 
 const Container = styled.div({
   margin: '20px',
@@ -32,17 +32,23 @@ const DiffImage = styled.img({
   border: '1px solid transparent',
 });
 
-export function BlendView({ actual, diff, expect }: ViewProps): JSX.Element {
-  const colors: ViewProps = borderColors;
-  return (
-    <Container>
-      <ImageContainer>
-        <Image borderColor={colors.expect} alt="actual" src={actual} />
-      </ImageContainer>
-      <ImageContainer>
-        <Image borderColor={colors.actual} style={{ mixBlendMode: 'difference' }} alt="expect" src={expect} />
-      </ImageContainer>
-      <DiffImage alt="diff" src={diff} />
-    </Container>
-  );
-}
+export const BlendView = withTheme(
+  ({ actual, diff, expect, theme }: ViewPropsWithTheme): JSX.Element => {
+    return (
+      <Container>
+        <ImageContainer>
+          <Image borderColor={getBorderColor(theme, themeBorderColors.expect)} alt="actual" src={actual} />
+        </ImageContainer>
+        <ImageContainer>
+          <Image
+            borderColor={getBorderColor(theme, themeBorderColors.actual)}
+            style={{ mixBlendMode: 'difference' }}
+            alt="expect"
+            src={expect}
+          />
+        </ImageContainer>
+        <DiffImage alt="diff" src={diff} />
+      </Container>
+    );
+  },
+);
