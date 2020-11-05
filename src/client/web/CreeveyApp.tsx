@@ -108,7 +108,7 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
             />
           )}
           <ToggleContainer>
-            <Toggle value={isDarkTheme} onChange={handleThemeChange} name="darkTheme" title="Тёмная тема" />
+            <Toggle value={isDarkTheme} onChange={handleThemeChange} />
           </ToggleContainer>
         </FlexContainer>
       </ThemeProvider>

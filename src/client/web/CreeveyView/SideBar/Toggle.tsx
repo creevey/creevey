@@ -36,10 +36,17 @@ const Container = withTheme(
     span: {
       cursor: 'pointer',
       display: 'inline-block',
-      width: 10,
       transition: 'all 100ms ease-out',
       userSelect: 'none',
       borderRadius: '100%',
+      background: theme.background.bar,
+      boxShadow: `${opacify(0.1, theme.appBorderColor)} 0 0 2px`,
+      color: theme.color.defaultText,
+      width: 20,
+      height: 20,
+      boxSizing: 'border-box',
+      lineHeight: '19px',
+      textAlign: 'center',
 
       '&:hover': {
         boxShadow: `${opacify(0.3, theme.appBorderColor)} 0 0 0 1px inset`,
@@ -48,42 +55,26 @@ const Container = withTheme(
       '&:active': {
         boxShadow: `${opacify(0.05, theme.appBorderColor)} 0 0 0 2px inset`,
       },
-
-      '&:first-of-type': {
-        paddingRight: 8,
-      },
-      '&:last-of-type': {
-        paddingLeft: 8,
-      },
     },
 
-    'input:checked ~ span:last-of-type, input:not(:checked) ~ span:first-of-type': {
-      background: theme.background.bar,
-      boxShadow: `${opacify(0.1, theme.appBorderColor)} 0 0 2px`,
-      color: theme.color.defaultText,
-      width: 20,
-      height: 20,
-      boxSizing: 'border-box',
+    'input:checked ~ span': {
+      marginLeft: 20,
+    },
+
+    'input:not(:checked) ~ span': {
+      marginRight: 20,
     },
   })),
 );
 
 interface ToggleProps {
   value?: boolean;
-  name: string;
-  title: string;
   onChange: (val: boolean) => void;
 }
 
-export const Toggle = ({ value, name, title, onChange }: ToggleProps): JSX.Element => (
-  <>
-    <label htmlFor={name} title={title}>
-      {title}
-    </label>
-    <Container>
-      <input id={name} type="checkbox" onChange={() => onChange(!value)} checked={value || false} />
-      <span></span>
-      <span></span>
-    </Container>
-  </>
+export const Toggle = ({ value, onChange }: ToggleProps): JSX.Element => (
+  <Container>
+    <input type="checkbox" onChange={() => onChange(!value)} checked={value || false} />
+    <span>{value ? '☪' : '☀'}</span>
+  </Container>
 );
