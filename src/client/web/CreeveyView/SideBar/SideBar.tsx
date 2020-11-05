@@ -29,21 +29,25 @@ const Container = withTheme(
   styled.div(({ theme }) => ({
     width: '300px',
     boxShadow: `0 0 5px  ${transparentize(0.8, theme.color.defaultText)}`,
-    height: '100vh',
-    flex: 'none',
     zIndex: 1000,
-    overflowY: 'auto',
-    position: 'sticky',
-    top: '0',
-    left: '0',
     background: theme.background.content,
   })),
 );
 
+const ScrollContainer = styled.div({
+  height: 'calc(100vh - 165px)',
+  width: 300,
+  flex: 'none',
+  overflowY: 'auto',
+  position: 'sticky',
+  top: '0',
+  left: '0',
+});
+
 const Shadow = withTheme(
   styled.div(({ theme }) => ({
     position: 'sticky',
-    top: '160px',
+    top: '0px',
     boxShadow: `0 0 5px 2.5px ${transparentize(0.8, theme.color.defaultText)}`,
     zIndex: 3,
   })),
@@ -84,31 +88,33 @@ export function SideBar({ rootSuite, openedTest, onOpenTest }: SideBarProps): JS
   return (
     <SideBarContext.Provider value={{ onOpenTest }}>
       <Container>
-        <ScrollArea vertical>
-          <SideBarHeader
-            testsStatus={testsStatus}
-            filter={filter}
-            onFilterChange={setFilter}
-            onStart={handleStart}
-            onStop={onStop}
-            canStart={countCheckedTests !== 0}
-          />
-          <Shadow />
-          <TestsContainer>
-            <Divider />
-            {/* TODO Output message where nothing found */}
-            <SelectAllContainer>
-              <SuiteLink title="Select all" suite={rootSuite} data-tid="selectAll" />
-            </SelectAllContainer>
-            {suiteList.map(({ title, suite }) =>
-              isTest(suite) ? (
-                <TestLink key={suite.path.join('/')} title={title} opened={suite.id == openedTest?.id} test={suite} />
-              ) : (
-                <SuiteLink key={suite.path.join('/')} title={title} suite={suite} />
-              ),
-            )}
-          </TestsContainer>
-        </ScrollArea>
+        <SideBarHeader
+          testsStatus={testsStatus}
+          filter={filter}
+          onFilterChange={setFilter}
+          onStart={handleStart}
+          onStop={onStop}
+          canStart={countCheckedTests !== 0}
+        />
+        <ScrollContainer>
+          <ScrollArea vertical>
+            <Shadow />
+            <TestsContainer>
+              <Divider />
+              {/* TODO Output message where nothing found */}
+              <SelectAllContainer>
+                <SuiteLink title="Select all" suite={rootSuite} data-tid="selectAll" />
+              </SelectAllContainer>
+              {suiteList.map(({ title, suite }) =>
+                isTest(suite) ? (
+                  <TestLink key={suite.path.join('/')} title={title} opened={suite.id == openedTest?.id} test={suite} />
+                ) : (
+                  <SuiteLink key={suite.path.join('/')} title={title} suite={suite} />
+                ),
+              )}
+            </TestsContainer>
+          </ScrollArea>
+        </ScrollContainer>
       </Container>
     </SideBarContext.Provider>
   );
