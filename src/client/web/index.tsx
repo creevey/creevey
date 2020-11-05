@@ -1,6 +1,5 @@
 import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom';
-import { ensure, ThemeProvider, themes } from '@storybook/theming';
 import { CreeveyApp } from './CreeveyApp';
 
 import { initCreeveyClientApi, CreeveyClientApi } from '../shared/creeveyClientApi';
@@ -50,10 +49,8 @@ const CreeveyAppAsync = React.lazy(async () => {
 });
 
 ReactDOM.render(
-  <ThemeProvider theme={ensure(themes.dark)}>
-    <Suspense fallback={<CreeveyLoader />}>
-      <CreeveyAppAsync />
-    </Suspense>
-  </ThemeProvider>,
+  <Suspense fallback={<CreeveyLoader />}>
+    <CreeveyAppAsync />
+  </Suspense>,
   document.getElementById('root'),
 );
