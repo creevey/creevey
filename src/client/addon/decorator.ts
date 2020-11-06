@@ -73,7 +73,6 @@ function waitForFontsLoaded(): Promise<void> | void {
 }
 
 export function withCreevey(): MakeDecoratorResult {
-  const channel = addons.getChannel();
   let currentStory = '';
 
   async function selectStory(
@@ -82,6 +81,7 @@ export function withCreevey(): MakeDecoratorResult {
     name: string,
     callback: (error?: string) => void,
   ): Promise<void> {
+    const channel = addons.getChannel();
     if (storyId == currentStory) {
       const storyMissingPromise = new Promise<void>((resolve) => channel.once(Events.STORY_MISSING, resolve));
       channel.emit(Events.SET_CURRENT_STORY, { storyId: true, name, kind });
