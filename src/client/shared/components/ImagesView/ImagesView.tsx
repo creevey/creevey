@@ -43,7 +43,7 @@ const views: { [mode in ImagesViewMode]: FunctionComponent<ViewProps> } = {
 
 const Container = withTheme(
   styled.div(({ theme }) => ({
-    background: theme.background.app,
+    background: theme.color.mediumlight,
     height: '100%',
     display: 'flex',
     textAlign: 'center',

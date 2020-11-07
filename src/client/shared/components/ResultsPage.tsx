@@ -21,13 +21,15 @@ interface TestResultsProps {
 const Wrapper = styled.div({
   width: '100%',
   height: '100%',
+  boxSizing: 'border-box',
   display: 'flex',
+  // marginBottom: '80px',
   flexDirection: 'column',
 });
 
 const ImagesViewContainer = styled.div(({ theme }) => ({
   background: theme.background.content,
-  height: '100%',
+  flexGrow: 1,
 }));
 
 const FooterContainer = styled.div({
@@ -39,7 +41,7 @@ const FooterContainer = styled.div({
 const Container = styled.div({
   height: '100vh',
   width: '100%',
-  overflowY: 'auto',
+  overflowY: 'hidden',
 });
 
 export function ResultsPageInternal({
@@ -99,19 +101,20 @@ export function ResultsPageInternal({
               <Placeholder>{`Image ${imageName} not found`}</Placeholder>
             )}
           </ImagesViewContainer>
-          {results.length ? (
-            <FooterContainer>
-              <PageFooter
-                canApprove={canApprove}
-                retry={retry}
-                retriesCount={results.length}
-                onRetryChange={setRetry}
-                onApprove={handleApprove}
-              />
-            </FooterContainer>
-          ) : null}
+          {results.length ? <div style={{ minHeight: '80px' }} /> : null}
         </Wrapper>
       </ScrollArea>
+      {results.length ? (
+        <FooterContainer>
+          <PageFooter
+            canApprove={canApprove}
+            retry={retry}
+            retriesCount={results.length}
+            onRetryChange={setRetry}
+            onApprove={handleApprove}
+          />
+        </FooterContainer>
+      ) : null}
     </Container>
   );
 }
