@@ -44,7 +44,7 @@ export const rotate360 = keyframes`
   }
 `;
 
-export function CreeveyLoader() {
+export function CreeveyLoader(): JSX.Element {
   const isDarkTheme = isUseDarkTheme();
   return (
     <ThemeProvider theme={ensure(isDarkTheme ? themes.dark : themes.light)}>

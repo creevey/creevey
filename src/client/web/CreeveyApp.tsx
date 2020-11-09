@@ -80,7 +80,7 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
   const handleImageApprove = (id: string, retry: number, image: string): void => api?.approve(id, retry, image);
   const handleStart = (tests: CreeveySuite): void => api?.start(getCheckedTests(tests).map((test) => test.id));
   const handleStop = (): void => api?.stop();
-  const handleThemeChange = (isDark: boolean) => {
+  const handleThemeChange = (isDark: boolean): void => {
     setIsDarkTheme(isDark);
     setUseDarkTheme(isDark);
   };
