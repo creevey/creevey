@@ -1,3 +1,14 @@
+# [0.7.0](https://github.com/wKich/creevey/compare/v0.7.0-beta.21...v0.7.0) (2020-11-09)
+
+### Bug Fixes
+
+- 🐛 get channel before it created ([b3e89ae](https://github.com/wKich/creevey/commit/b3e89aef18baca926d1684e6734265a03cbf00ab))
+- 🐛 toggle theme sticky z-index ([dcdbb77](https://github.com/wKich/creevey/commit/dcdbb77e63b1f67025c897610c2df74b8d98abbd))
+
+### Features
+
+- 🎸 Dark theme in client ([c36aa4b](https://github.com/wKich/creevey/commit/c36aa4b59ce1661fa7cfbef72a7db1354e8ee0eb))
+
 # [0.7.0-beta.21](https://github.com/wKich/creevey/compare/v0.7.0-beta.20...v0.7.0-beta.21) (2020-11-02)
 
 ### Bug Fixes
