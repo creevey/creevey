@@ -12,6 +12,8 @@ import { CreeveyContext } from '../../CreeveyContext';
 import { SuiteLink } from './SuiteLink';
 import { TestLink } from './TestLink';
 import { styled, withTheme } from '@storybook/theming';
+import { transparentize } from 'polished';
+import { ScrollArea } from '@storybook/components';
 
 export const SideBarContext = createContext<{ onOpenTest: (path: string[]) => void }>({
   onOpenTest: noop,
@@ -26,24 +28,30 @@ export interface SideBarProps {
 const Container = withTheme(
   styled.div(({ theme }) => ({
     width: '300px',
-    boxShadow: '0 0 5px #aaa',
-    height: '100vh',
-    flex: 'none',
+    boxShadow: `0 0 5px  ${transparentize(0.8, theme.color.defaultText)}`,
     zIndex: 1000,
-    overflowY: 'auto',
-    position: 'sticky',
-    top: '0',
-    left: '0',
     background: theme.background.content,
   })),
 );
 
-const Shadow = styled.div({
+const ScrollContainer = styled.div({
+  height: 'calc(100vh - 165px)',
+  width: 300,
+  flex: 'none',
+  overflowY: 'auto',
   position: 'sticky',
-  top: '160px',
-  boxShadow: '0 0 5px 2.5px #aaa',
-  zIndex: 3,
+  top: '0',
+  left: '0',
 });
+
+const Shadow = withTheme(
+  styled.div(({ theme }) => ({
+    position: 'sticky',
+    top: '0px',
+    boxShadow: `0 0 5px 2.5px ${transparentize(0.8, theme.color.defaultText)}`,
+    zIndex: 3,
+  })),
+);
 
 const SelectAllContainer = styled.div({
   marginBottom: '30px',
@@ -55,13 +63,15 @@ const TestsContainer = styled.div({
   paddingBottom: '40px',
 });
 
-const Divider = styled.div({
-  position: 'absolute',
-  height: '8px',
-  width: '100%',
-  zIndex: 3,
-  background: '#fff',
-});
+const Divider = withTheme(
+  styled.div(({ theme }) => ({
+    position: 'absolute',
+    height: '8px',
+    width: '100%',
+    zIndex: 3,
+    background: theme.background.content,
+  })),
+);
 
 export function SideBar({ rootSuite, openedTest, onOpenTest }: SideBarProps): JSX.Element {
   const { onStart, onStop } = useContext(CreeveyContext);
@@ -86,21 +96,25 @@ export function SideBar({ rootSuite, openedTest, onOpenTest }: SideBarProps): JS
           onStop={onStop}
           canStart={countCheckedTests !== 0}
         />
-        <Shadow />
-        <TestsContainer>
-          <Divider />
-          {/* TODO Output message where nothing found */}
-          <SelectAllContainer>
-            <SuiteLink title="Select all" suite={rootSuite} data-tid="selectAll" />
-          </SelectAllContainer>
-          {suiteList.map(({ title, suite }) =>
-            isTest(suite) ? (
-              <TestLink key={suite.path.join('/')} title={title} opened={suite.id == openedTest?.id} test={suite} />
-            ) : (
-              <SuiteLink key={suite.path.join('/')} title={title} suite={suite} />
-            ),
-          )}
-        </TestsContainer>
+        <ScrollContainer>
+          <ScrollArea vertical>
+            <Shadow />
+            <TestsContainer>
+              <Divider />
+              {/* TODO Output message where nothing found */}
+              <SelectAllContainer>
+                <SuiteLink title="Select all" suite={rootSuite} data-tid="selectAll" />
+              </SelectAllContainer>
+              {suiteList.map(({ title, suite }) =>
+                isTest(suite) ? (
+                  <TestLink key={suite.path.join('/')} title={title} opened={suite.id == openedTest?.id} test={suite} />
+                ) : (
+                  <SuiteLink key={suite.path.join('/')} title={title} suite={suite} />
+                ),
+              )}
+            </TestsContainer>
+          </ScrollArea>
+        </ScrollContainer>
       </Container>
     </SideBarContext.Provider>
   );

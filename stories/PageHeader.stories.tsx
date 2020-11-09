@@ -1,17 +1,9 @@
 import React from 'react';
 import { PageHeader } from '../src/client/shared/components/PageHeader/PageHeader';
 import { noop } from '../src';
-import { ThemeProvider, ensure, themes } from '@storybook/theming';
 
 export default {
   title: 'PageHeader',
-  decorators: [
-    (Story: React.ComponentClass): JSX.Element => (
-      <ThemeProvider theme={ensure(themes.light)}>
-        <Story />
-      </ThemeProvider>
-    ),
-  ],
 };
 
 export const Simple = (): JSX.Element => (

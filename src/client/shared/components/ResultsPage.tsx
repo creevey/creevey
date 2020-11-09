@@ -4,7 +4,7 @@ import { PageHeader } from './PageHeader/PageHeader';
 import { PageFooter } from './PageFooter/PageFooter';
 import { getImageUrl } from '../helpers';
 import { styled, withTheme, Theme } from '@storybook/theming';
-import { Placeholder } from '@storybook/components';
+import { Placeholder, ScrollArea } from '@storybook/components';
 import { getViewMode, VIEW_MODE_KEY } from '../viewMode';
 import { ImagesViewMode, TestResult } from '../../../types';
 
@@ -20,19 +20,27 @@ interface TestResultsProps {
 
 const Wrapper = styled.div({
   width: '100%',
+  height: '100%',
+  boxSizing: 'border-box',
   display: 'flex',
   flexDirection: 'column',
 });
 
 const ImagesViewContainer = styled.div(({ theme }) => ({
   background: theme.background.content,
-  height: '100%',
+  flexGrow: 1,
 }));
 
 const FooterContainer = styled.div({
   position: 'sticky',
   bottom: 0,
   zIndex: 1,
+});
+
+const Container = styled.div({
+  height: '100vh',
+  width: '100%',
+  overflowY: 'hidden',
 });
 
 export function ResultsPageInternal({
@@ -71,25 +79,30 @@ export function ResultsPageInternal({
   };
 
   return (
-    <Wrapper>
-      <PageHeader
-        title={path}
-        images={result.images}
-        errorMessage={result.error}
-        showViewModes={hasDiffAndExpect}
-        viewMode={viewMode}
-        onViewModeChange={handleChangeViewMode}
-        onImageChange={setImageName}
-        showTitle={showTitle}
-        imagesWithError={imagesWithError}
-      />
-      <ImagesViewContainer theme={theme}>
-        {image ? (
-          <ImagesView url={url} image={image} canApprove={canApprove} mode={viewMode} />
-        ) : (
-          <Placeholder>{`Image ${imageName} not found`}</Placeholder>
-        )}
-      </ImagesViewContainer>
+    <Container>
+      <ScrollArea vertical>
+        <Wrapper>
+          <PageHeader
+            title={path}
+            images={result.images}
+            errorMessage={result.error}
+            showViewModes={hasDiffAndExpect}
+            viewMode={viewMode}
+            onViewModeChange={handleChangeViewMode}
+            onImageChange={setImageName}
+            showTitle={showTitle}
+            imagesWithError={imagesWithError}
+          />
+          <ImagesViewContainer theme={theme}>
+            {image ? (
+              <ImagesView url={url} image={image} canApprove={canApprove} mode={viewMode} />
+            ) : (
+              <Placeholder>{`Image ${imageName} not found`}</Placeholder>
+            )}
+          </ImagesViewContainer>
+          {results.length ? <div style={{ minHeight: '80px' }} /> : null}
+        </Wrapper>
+      </ScrollArea>
       {results.length ? (
         <FooterContainer>
           <PageFooter
@@ -101,7 +114,7 @@ export function ResultsPageInternal({
           />
         </FooterContainer>
       ) : null}
-    </Wrapper>
+    </Container>
   );
 }
 

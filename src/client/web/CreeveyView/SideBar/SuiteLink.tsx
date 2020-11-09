@@ -19,7 +19,7 @@ export const Container = withTheme(
     ...(disabled ? { color: theme.color.mediumdark, pointerEvents: 'none' } : {}),
 
     '&:hover': {
-      background: '#e5e5e5',
+      background: theme.background.hoverable,
     },
   })),
 );

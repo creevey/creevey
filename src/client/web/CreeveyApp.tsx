@@ -14,7 +14,9 @@ import {
 import { CreeveyContext } from './CreeveyContext';
 import { SideBar } from './CreeveyView/SideBar';
 import { ResultsPage } from '../shared/components/ResultsPage';
-import { ensure, styled, ThemeProvider, themes } from '@storybook/theming';
+import { ensure, styled, ThemeProvider, themes, withTheme } from '@storybook/theming';
+import { isUseDarkTheme, setUseDarkTheme } from './themeUtils';
+import { Toggle } from './CreeveyView/SideBar/Toggle';
 
 export interface CreeveyAppProps {
   api?: CreeveyClientApi;
@@ -24,14 +26,28 @@ export interface CreeveyAppProps {
   };
 }
 
-const FlexContainer = styled.div({
-  display: 'flex',
+const FlexContainer = withTheme(
+  styled.div(({ theme }) => ({
+    height: '100vh',
+    display: 'flex',
+    background: theme.background.content,
+    color: theme.color.defaultText,
+  })),
+);
+
+const ToggleContainer = styled.div({
+  zIndex: 1,
+  position: 'absolute',
+  right: 10,
+  top: 10,
 });
 
 export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element {
   const [tests, updateTests] = useImmer(initialState.tests);
   const [isRunning, setIsRunning] = useState(initialState.isRunning);
   const [openedTestPath, openTest] = useState<string[]>([]);
+  const [isDarkTheme, setIsDarkTheme] = useState(isUseDarkTheme());
+
   const openedTest = getTestByPath(tests, openedTestPath);
   if (openedTestPath.length > 0 && !isDefined(openedTest)) openTest([]);
 
@@ -64,6 +80,10 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
   const handleImageApprove = (id: string, retry: number, image: string): void => api?.approve(id, retry, image);
   const handleStart = (tests: CreeveySuite): void => api?.start(getCheckedTests(tests).map((test) => test.id));
   const handleStop = (): void => api?.stop();
+  const handleThemeChange = (isDark: boolean): void => {
+    setIsDarkTheme(isDark);
+    setUseDarkTheme(isDark);
+  };
 
   return (
     <CreeveyContext.Provider
@@ -75,7 +95,7 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
         onSuiteToggle: handleSuiteToggle,
       }}
     >
-      <ThemeProvider theme={ensure(themes.light)}>
+      <ThemeProvider theme={ensure(isDarkTheme ? themes.dark : themes.light)}>
         <FlexContainer>
           <SideBar rootSuite={tests} openedTest={openedTest} onOpenTest={openTest} />
           {openedTest && (
@@ -89,6 +109,9 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
               onImageApprove={handleImageApprove}
             />
           )}
+          <ToggleContainer>
+            <Toggle value={isDarkTheme} onChange={handleThemeChange} />
+          </ToggleContainer>
         </FlexContainer>
       </ThemeProvider>
     </CreeveyContext.Provider>

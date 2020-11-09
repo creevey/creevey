@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { styled } from '@storybook/theming';
-import { borderColors, ViewProps } from './ImagesView';
+import { styled, withTheme } from '@storybook/theming';
+import { getBorderColor, themeBorderColors, ViewPropsWithTheme } from './ImagesView';
 
 const Container = styled.div({
   position: 'relative',
@@ -74,29 +74,31 @@ const DiffImage = styled.img({
   border: '1px solid transparent',
 });
 
-export const SlideView = ({ actual, diff, expect }: ViewProps): JSX.Element => {
-  const [step, setStep] = useState(0);
-  const [offset, setOffset] = useState(0);
+export const SlideView = withTheme(
+  ({ actual, diff, expect, theme }: ViewPropsWithTheme): JSX.Element => {
+    const [step, setStep] = useState(0);
+    const [offset, setOffset] = useState(0);
 
-  const handleImageLoad = (event: React.SyntheticEvent<HTMLImageElement>): void =>
-    setStep(100 / (event.currentTarget.width + 2));
+    const handleImageLoad = (event: React.SyntheticEvent<HTMLImageElement>): void =>
+      setStep(100 / (event.currentTarget.width + 2));
 
-  const handleSlide = (event: React.ChangeEvent<HTMLInputElement>): void => setOffset(Number(event.target.value));
+    const handleSlide = (event: React.ChangeEvent<HTMLInputElement>): void => setOffset(Number(event.target.value));
 
-  return (
-    <Container>
-      <Input type="range" min={0} max={100} step={step} defaultValue={offset} onChange={handleSlide} />
-      <ImageContainer>
-        <ImageWrapper>
-          <Image alt="actual" src={actual} borderColor={borderColors.actual} />
-        </ImageWrapper>
-      </ImageContainer>
-      <ImageContainer style={{ right: `${100 - offset}%` }}>
-        <ImageWrapper style={{ left: `${100 - offset}%` }}>
-          <Image alt="expect" src={expect} borderColor={borderColors.expect} />
-        </ImageWrapper>
-      </ImageContainer>
-      <DiffImage alt="diff" src={diff} onLoad={handleImageLoad} />
-    </Container>
-  );
-};
+    return (
+      <Container>
+        <Input type="range" min={0} max={100} step={step} defaultValue={offset} onChange={handleSlide} />
+        <ImageContainer>
+          <ImageWrapper>
+            <Image alt="actual" src={actual} borderColor={getBorderColor(theme, themeBorderColors.actual)} />
+          </ImageWrapper>
+        </ImageContainer>
+        <ImageContainer style={{ right: `${100 - offset}%` }}>
+          <ImageWrapper style={{ left: `${100 - offset}%` }}>
+            <Image alt="expect" src={expect} borderColor={getBorderColor(theme, themeBorderColors.expect)} />
+          </ImageWrapper>
+        </ImageContainer>
+        <DiffImage alt="diff" src={diff} onLoad={handleImageLoad} />
+      </Container>
+    );
+  },
+);
