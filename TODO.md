@@ -192,23 +192,21 @@
 
 ## First priority (v0.7)
 
-- [ ] Update Readme
-  - [ ] Default captureElement: `#root`
-  - [ ] By default creevey use docker, but you can disable it by specifying gridUrl or override for some browsers
-    - [ ] About CI, can't simply run docker-in-docker env for now (especially in circle ci because of isolated remote docker. As possible solution use machine executor https://github.com/oblador/loki/issues/183#issuecomment-602669503)
-  - [ ] `before/after` hooks
-  - [ ] creevey addon
-  - [ ] new params config, don't need decorator any more
-  - [ ] update demo video
-  - [ ] update using types (`export const Slide: Story<React.ComponentProps<typeof ImagesView>> & CSFStory<JSX.Element> = () => ImagesView('slide');`)
-  - [ ] Why need to use `findElement({ css: 'selector' })`. Improve it in `creevey-selenium` add null-loader
-  - [ ] Write about differences with other tools
-  - [ ] Add how to start docker and IE11 especially
-  - [ ] Add instruction for various frameworks
-    - [ ] Web components
-    - [ ] Create React App Typescript
-    - [ ] Gatsby
-    - [ ] Next.js
+- [x] Add same font as Storybook uses
+- [x] Update Readme
+  - [x] Best practices: "use git-lfs in your repo"
+  - [x] Default captureElement: `#root`
+  - [x] By default creevey use docker, but you can disable it by specifying gridUrl or override for some browsers
+    - [x] About CI, can't simply run docker-in-docker env for now (especially in circle ci because of isolated remote docker. As possible solution use machine executor https://github.com/oblador/loki/issues/183#issuecomment-602669503)
+  - [x] `before/after` hooks
+  - [x] creevey addon
+  - [x] new params config, don't need decorator any more
+  - [x] update using types (`export const Slide: Story<React.ComponentProps<typeof ImagesView>> & CreeveyStory = () => ImagesView('slide');`)
+  - [x] Why need to use `findElement({ css: 'selector' })`. Improve it in `creevey-selenium` add null-loader
+  - [x] Write about differences with other tools
+  - [x] How's using Creevey?
+  - [x] ~~Add how to start docker and IE11 especially~~
+  - [x] Add instruction for various frameworks
     - [x] Vue
 - [x] Support Storybook 6.x
 - [x] ~~Add @babel/code-frame to output loader error~~ There is babel issue https://github.com/babel/babel/issues/8617
@@ -219,12 +217,12 @@
 - [x] Build addon for ie11
 - [x] Add human readable error message if test failed with `window.__CREEVEY_SELECT_STORY__` is not a function
 - [x] Update examples
-- [ ] Add creevey in awesome list
+- [x] Add creevey in awesome list
   - https://github.com/mojoaxel/awesome-regression-testing
 - [x] Creevey as Addon PoC
 - [x] Update Eslint to v7
 - [x] Simplify hot-reloading logic, for v6.x fixed removing tests issue
-- [ ] Bugs
+- [x] Bugs
   - [x] Mocha worker `Possible EventEmitter memory leak detected. 11 error listeners added`
   - [x] IPC_CHANNEL_CLOSED error infinity loop, could reproduce with invalid gridUrl
   - [x] Error mocha instance already disposed in mocha@7.2
@@ -240,7 +238,7 @@
   - [x] Re-disable animations on storybook reload
   - [x] Don't stop rebuilding if rebuild failed due syntax error
   - [x] Cut off all exports in preview.js except creevey params
-  - [ ] Client UI don't show statuses on first run
+  - [x] Client UI don't show statuses on first run
   - [x] Cut off loaders parameters for stories https://github.com/storybookjs/storybook/pull/12699
 - [x] Features
   - [x] ~~Add `args` type for CSFStory~~ (Can't support 5.x and 6.x in same time)
@@ -256,6 +254,13 @@
 
 ## Second priority (v0.8)
 
+- [ ] Docs
+  - [ ] update demo video
+  - [ ] Add instruction for various frameworks
+    - [ ] Web components
+    - [ ] Create React App Typescript
+    - [ ] Gatsby
+    - [ ] Next.js
 - [ ] Add Storybook integration tests
   - Init projects with various frameworks
   - Init storybook using storybook cli
@@ -263,6 +268,7 @@
   - Test webpack building (include bundle size)
   - Test stories tests in output
 - [ ] Bugs
+  - [ ] Allow use `By` and `Keys` stuff from selenium-webdriver (add creevey-selenium or improve creevey-loader)
   - [ ] Figure out how to deal with creevey.config.ts
   - [ ] Correctly resize images in views using correct proportions (smaller image should shrink if larger shrink too, max-width/max-height doesn't work)
   - [ ] Use native composite screenshots for browsers which support it
@@ -276,12 +282,14 @@
 - [ ] Figure out if I need use my own react and setup this https://reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html or I need to use react from storybook
 - [ ] Rework github actions workflows
 - [ ] Rename `screenDir` config option
+- [ ] Move creevey config to addon
 - [ ] Drop storiesOf and Storybook v4.x support
   - [ ] Could we drop more entry points from webpack config? (generated entry for example)
 - [ ] Support other browser automation tools
   - [ ] Playwright
   - [ ] Puppeteer
 - [ ] Features
+  - [ ] Add addon option `padding` for screenshots
   - [ ] Wait for resources loaded (fonts, images, etc)
   - [ ] Integrate build nodejs bundle into storybook (use webpackFinal in addon)
   - [ ] Support Storybook Composition https://storybook.js.org/docs/react/workflows/storybook-composition

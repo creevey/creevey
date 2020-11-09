@@ -44,7 +44,6 @@ export async function readConfig(options: Options): Promise<Config | null> {
 
   if (isDefined(configPath)) Object.assign(userConfig, requireConfig<Config>(configPath));
 
-  if (options.gridUrl) userConfig.gridUrl = options.gridUrl;
   if (options.reportDir) userConfig.reportDir = path.resolve(options.reportDir);
   if (options.screenDir) userConfig.screenDir = path.resolve(options.screenDir);
 

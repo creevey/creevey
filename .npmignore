@@ -3,9 +3,11 @@
 .vscode
 .eslint*
 .babel*
+.circleci
 .prettier*
 .storybook
 .mocharc.js
+.gitlab-ci.yml
 .gitattributes
 TODO.md
 PROTO.md

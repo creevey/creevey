@@ -39,6 +39,13 @@ export interface StoryMeta<StoryFnReturnType = unknown> {
   };
 }
 
+export interface CreeveyMeta {
+  parameters?: {
+    creevey?: CreeveyStoryParams;
+    [name: string]: unknown;
+  };
+}
+
 export interface CSFStory<StoryFnReturnType = unknown> {
   (): StoryFnReturnType;
   /**
@@ -59,6 +66,13 @@ export interface CSFStory<StoryFnReturnType = unknown> {
 
   storyName?: string;
   decorators?: DecoratorFunction<StoryFnReturnType>[];
+  parameters?: {
+    creevey?: CreeveyStoryParams;
+    [name: string]: unknown;
+  };
+}
+
+export interface CreeveyStory {
   parameters?: {
     creevey?: CreeveyStoryParams;
     [name: string]: unknown;
@@ -147,7 +161,6 @@ export interface Options {
   debug: boolean;
   browser?: string;
   reporter?: string;
-  gridUrl?: string;
   screenDir?: string;
   reportDir?: string;
   saveReport?: boolean;
@@ -262,16 +275,6 @@ export interface CreeveyStoryParams {
     [name: string]: CreeveyTestFunction;
   };
 }
-
-export type CreeveyStory = {
-  id: string;
-  name: string;
-  kind: string;
-  params?: CreeveyStoryParams;
-};
-export type CreeveyStories = Partial<{
-  [id: string]: CreeveyStory;
-}>;
 
 export interface ApprovePayload {
   id: string;
