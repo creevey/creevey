@@ -28,6 +28,7 @@ export interface CreeveyAppProps {
 
 const FlexContainer = withTheme(
   styled.div(({ theme }) => ({
+    height: '100vh',
     display: 'flex',
     background: theme.background.content,
     color: theme.color.defaultText,
@@ -35,6 +36,7 @@ const FlexContainer = withTheme(
 );
 
 const ToggleContainer = styled.div({
+  zIndex: 1,
   position: 'absolute',
   right: 10,
   top: 10,

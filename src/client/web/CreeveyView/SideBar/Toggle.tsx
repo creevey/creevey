@@ -9,7 +9,7 @@ const Container = withTheme(
     display: 'inline-block',
     position: 'relative',
     whiteSpace: 'nowrap',
-    background: `${opacify(0.05, theme.appBorderColor)}`,
+    background: theme.base == 'light' ? theme.color.mediumlight : theme.color.darker,
     borderRadius: '3em',
     padding: 2,
     verticalAlign: 'middle',
@@ -29,7 +29,6 @@ const Container = withTheme(
 
       '&:focus': {
         outline: 'none',
-        boxShadow: `${theme.color.secondary} 0 0 0 1px inset !important`,
       },
     },
 
