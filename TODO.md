@@ -217,7 +217,7 @@
 - [x] Build addon for ie11
 - [x] Add human readable error message if test failed with `window.__CREEVEY_SELECT_STORY__` is not a function
 - [x] Update examples
-- [ ] Add creevey in awesome list
+- [x] Add creevey in awesome list
   - https://github.com/mojoaxel/awesome-regression-testing
 - [x] Creevey as Addon PoC
 - [x] Update Eslint to v7
