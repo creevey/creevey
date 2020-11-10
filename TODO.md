@@ -188,9 +188,7 @@
 - [x] Fix match story and absolute path to file with that story (fix hot-reloading issue in CRA)
   - [x] Add note about storybook version
 
-</details>
-
-## First priority (v0.7)
+## (v0.7)
 
 - [x] Add same font as Storybook uses
 - [x] Update Readme
@@ -252,7 +250,27 @@
   - [x] SideBar
   - [x] ResultPageHeader
 
-## Second priority (v0.8)
+</details>
+
+## (v0.7.x)
+
+- [ ] Rework github actions workflows
+- [ ] Add Storybook integration tests
+  - Init projects with various frameworks
+  - Init storybook using storybook cli
+  - Add creevey config
+  - Test webpack building (include bundle size)
+  - Test stories tests in output
+- [ ] Features
+  - [ ] Show side-by-side diff vertically or horizontally depends on aspect ratio
+- [ ] Improve Docker
+  - [ ] Private docker images registry
+  - [ ] Support docker-in-docker (start storybook and creevey inside docker)
+    - [ ] Start storybook inside docker
+    - [ ] Allow define custom storybook image
+  - [ ] Allow use standalone binary instead of Docker image for browser (https://aerokube.com/selenoid/latest/#_standalone_binary)
+
+## First priority (v0.8)
 
 - [ ] Docs
   - [ ] update demo video
@@ -261,12 +279,6 @@
     - [ ] Create React App Typescript
     - [ ] Gatsby
     - [ ] Next.js
-- [ ] Add Storybook integration tests
-  - Init projects with various frameworks
-  - Init storybook using storybook cli
-  - Add creevey config
-  - Test webpack building (include bundle size)
-  - Test stories tests in output
 - [ ] Bugs
   - [ ] Allow use `By` and `Keys` stuff from selenium-webdriver (add creevey-selenium or improve creevey-loader)
   - [ ] Figure out how to deal with creevey.config.ts
@@ -280,7 +292,6 @@
     - If image width/height greater than viewport width/height than scroll bar is captured
 - [x] ~~Support esm/cjs builds~~
 - [ ] Figure out if I need use my own react and setup this https://reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html or I need to use react from storybook
-- [ ] Rework github actions workflows
 - [ ] Rename `screenDir` config option
 - [ ] Move creevey config to addon
 - [ ] Drop storiesOf and Storybook v4.x support
@@ -289,27 +300,21 @@
   - [ ] Playwright
   - [ ] Puppeteer
 - [ ] Features
+  - [ ] Open Creevey Client from storybook
   - [ ] Add addon option `padding` for screenshots
-  - [ ] Wait for resources loaded (fonts, images, etc)
+  - [ ] Wait for resources loaded (fonts, images, etc) How?
   - [ ] Integrate build nodejs bundle into storybook (use webpackFinal in addon)
   - [ ] Support Storybook Composition https://storybook.js.org/docs/react/workflows/storybook-composition
   - [ ] Show multiple tests for browser in storybook UI
   - [ ] Allow run multiple tests from storybook UI
   - [ ] Support mdx stories
-  - [ ] Show swap diff vertically or horizontally depends on aspect ratio
   - [ ] Allow defined params for knobs and args to capture story with different states
   - [ ] Allow set viewport sizes for story (use width x height as postfix for browser name in UI)
   - [ ] Add fuzzy search and highlight
   - [ ] Allow to ignore elements in capturing screenshot
   - [ ] Allow disable hmr, load tests from browser (low priority, maybe use only as fallback for difficult scenarios)
-- [ ] Improve Docker
-  - [ ] Private docker images registry
-  - [ ] Support docker-in-docker (start storybook and creevey inside docker)
-    - [ ] Start storybook inside docker
-    - [ ] Allow define custom storybook image
-  - [ ] Allow use standalone binary instead of Docker image for browser (https://aerokube.com/selenoid/latest/#_standalone_binary)
 
-## Third priority (v0.9)
+## Second priority (v0.9)
 
 - [ ] Update Readme
   - [ ] How to deal with animations (CREEVEY_ENV)
