@@ -254,7 +254,7 @@
 
 ## (v0.7.x)
 
-- [ ] Rework github actions workflows
+- [x] Rework github actions workflows
 - [ ] Add Storybook integration tests
   - Init projects with various frameworks
   - Init storybook using storybook cli
