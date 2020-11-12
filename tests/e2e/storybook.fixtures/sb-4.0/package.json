@@ -1,0 +1,10 @@
+{
+  "name": "sb-4.0",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "@storybook/react": "~4.0.12",
+    "creevey": "../creevey.tgz"
+  }
+}
