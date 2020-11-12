@@ -6,10 +6,15 @@ import { beforeEach, describe } from 'mocha';
 import { expect } from 'chai';
 
 // TODO tests
-// KindA - StoryA
-// KindB/SubKindA - StoryA
-//
-// - mdx
+// StoriesOf - Parameters, global, kind, story
+// CSF - Parameters, global, kind, story
+// 6.0 - export global parameters
+// SubKinds
+// mdx
+
+// 6.1 https://github.com/storybookjs/storybook/blob/next/MIGRATION.md#single-story-hoisting
+
+// TODO Remove hooks prop from stories for >= 5.2
 
 // TODO stdout and stderr to log file
 describe('Storybook E2E', function () {
@@ -73,7 +78,7 @@ describe('Storybook E2E', function () {
          */
         return;
       }
-      if (version == '6.0') {
+      if (version == '5.2') {
         it(version, () => {
           // eslint-disable-next-line @typescript-eslint/no-var-requires
           const expected = require(`${tmpObj.name}/sb-${version}/expected.json`) as unknown;
