@@ -1,6 +1,3 @@
-import { configure, addDecorator } from '@storybook/react';
-import { withCreevey } from 'creevey';
-
-addDecorator(withCreevey());
+import { configure } from '@storybook/react';
 
 configure(require.context('../stories', true, /\.stories\.jsx$/), module);

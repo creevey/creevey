@@ -17,8 +17,12 @@ export const storiesOf = (kind: string, m: NodeModule): StoryApi => {
   });
 };
 export const configure = (...args: unknown[]): unknown => {
+  if (isStorybookVersionLessThan(5, 2)) {
+    //@ts-expect-error: <= 5.1 pass args as is
+    return api.configApi.configure(...args);
+  }
   if (isStorybookVersionLessThan(6)) {
-    //@ts-expect-error: 5.x pass `framework` as last argument
+    //@ts-expect-error: <= 5.3 pass `framework` as last argument
     return api.configure(...args, framework);
   }
   //@ts-expect-error: 6.x pass `framework` as first argument

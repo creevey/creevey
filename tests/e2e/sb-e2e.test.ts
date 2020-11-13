@@ -17,6 +17,7 @@ import { expect } from 'chai';
 // TODO Remove hooks prop from stories for >= 5.2
 
 // TODO stdout and stderr to log file
+// todo copy load.js
 describe('Storybook E2E', function () {
   const tmpObj = dirSync({ prefix: 'creevey-' });
   const initialDir = process.cwd();
@@ -32,7 +33,7 @@ describe('Storybook E2E', function () {
 
   after(() => {
     shell.cd(initialDir);
-    shell.rm('-rf', tmpObj.name);
+    // shell.rm('-rf', tmpObj.name);
   });
 
   beforeEach(function () {
@@ -47,38 +48,44 @@ describe('Storybook E2E', function () {
   readdirSync(join(__dirname, 'storybook.fixtures'))
     .map((x) => x.split('-'))
     .forEach(([, version]) => {
-      if (version == '4.0' || version == '4.1') {
+      if (version == '4.0') {
         /*
-          [CreeveyWebpack]: Starting with pid 958095
-          [FAIL:958095] Error: Cannot find module '@storybook/core/dist/server/preview/preview-preset'
+          [CreeveyWebpack]: Starting with pid 1005279
+          info => Loading presets
+          info => Using base config because react-scripts is not installed.
+          info => Using default webpack setup based on "create-react-app".
+          info => Using base config because react-scripts is not installed.
+
+          WARNING: We noticed you're using the `useBuiltIns` option without declaring a core-js version. Currently, we assume version 2.x when no version is passed. Since this default version will likely change in future versions of Babel, we recommend explicitly setting the core-js version you are using via the `corejs` option.
+
+          You should also be sure that the version you pass to the `corejs` option matches the version specified in your `package.json`'s `dependencies` section. If it doesn't, you need to run one of the following commands:
+
+            npm install --save core-js@2    npm install --save core-js@3
+            yarn add core-js@2              yarn add core-js@3
+
+          Error: Cannot find module '/tmp/creevey--1005010-13Ihc6sUUlWU/sb-4.1/node_modules/.cache/creevey/storybook/main.js'
           Require stack:
-          - /tmp/creevey--956918-WKbyjnaGyvj2/sb-4.0/node_modules/creevey/lib/server/master/webpack.js
-          - /tmp/creevey--956918-WKbyjnaGyvj2/sb-4.0/node_modules/creevey/lib/server/index.js
-          - /tmp/creevey--956918-WKbyjnaGyvj2/sb-4.0/node_modules/creevey/lib/creevey.js
-          - /tmp/creevey--956918-WKbyjnaGyvj2/sb-4.0/node_modules/creevey/lib/cli.js
+          - /tmp/creevey--1005010-13Ihc6sUUlWU/sb-4.1/node_modules/creevey/lib/server/stories.js
+          - /tmp/creevey--1005010-13Ihc6sUUlWU/sb-4.1/load.js
               at Function.Module._resolveFilename (internal/modules/cjs/loader.js:831:15)
-              at Function.resolve (internal/modules/cjs/helpers.js:80:19)
-              at Object.compile [as default] (/tmp/creevey--956918-WKbyjnaGyvj2/sb-4.0/node_modules/creevey/lib/server/master/webpack.js:112:27)
-        */
+              at Function.Module._load (internal/modules/cjs/loader.js:687:27)
+              at Module.require (internal/modules/cjs/loader.js:903:19)
+              at require (internal/modules/cjs/helpers.js:74:18)
+              at /tmp/creevey--1005010-13Ihc6sUUlWU/sb-4.1/node_modules/creevey/lib/server/stories.js:207:5
+              at new Promise (<anonymous>)
+              at loadStorybookBundle (/tmp/creevey--1005010-13Ihc6sUUlWU/sb-4.1/node_modules/creevey/lib/server/stories.js:196:10)
+              at processTicksAndRejections (internal/process/task_queues.js:97:5)
+              at async Object.loadTestsFromStories (/tmp/creevey--1005010-13Ihc6sUUlWU/sb-4.1/node_modules/creevey/lib/server/stories.js:216:19) {
+            code: 'MODULE_NOT_FOUND',
+            requireStack: [
+              '/tmp/creevey--1005010-13Ihc6sUUlWU/sb-4.1/node_modules/creevey/lib/server/stories.js',
+              '/tmp/creevey--1005010-13Ihc6sUUlWU/sb-4.1/load.js'
+            ]
+          }
+*/
         return;
       }
-      if (version == '5.0') {
-        /*
-        TypeError: Function.prototype.apply was called on undefined, which is a undefined and not a function
-            at configure (/home/ki/Projects/creevey/tests/e2e/storybook.fixtures/sb-5.0/node_modules/creevey/lib/server/storybook.js:40:35)
-            at Module.eval (webpack:///./.storybook/config.js?:4:67)
-            at eval (webpack:///./.storybook/config.js?:5:30)
-            at Module../.storybook/config.js (/home/ki/Projects/creevey/tests/e2e/storybook.fixtures/sb-5.0/node_modules/.cache/creevey/storybook/main.js:97:1)
-            at Object.apply (webpack:///./node_modules/creevey/lib/server/master/dummy-hmr.js?:38:21)
-            at __webpack_require__ (/home/ki/Projects/creevey/tests/e2e/storybook.fixtures/sb-5.0/node_modules/.cache/creevey/storybook/main.js:20:30)
-            at eval (webpack:///multi_./node_modules/creevey/lib/server/master/dummy-hmr_./node_modules/@storybook/core/dist/server/common/polyfills.js_./node_modules/@storybook/core/dist/server/preview/globals.js_./.storybook/config.js?:4:18)
-            at Object.0 (/home/ki/Projects/creevey/tests/e2e/storybook.fixtures/sb-5.0/node_modules/.cache/creevey/storybook/main.js:176:1)
-            at __webpack_require__ (/home/ki/Projects/creevey/tests/e2e/storybook.fixtures/sb-5.0/node_modules/.cache/creevey/storybook/main.js:20:30)
-            at /home/ki/Projects/creevey/tests/e2e/storybook.fixtures/sb-5.0/node_modules/.cache/creevey/storybook/main.js:84:18
-         */
-        return;
-      }
-      if (version == '5.2') {
+      if (version == '4.1') {
         it(version, () => {
           // eslint-disable-next-line @typescript-eslint/no-var-requires
           const expected = require(`${tmpObj.name}/sb-${version}/expected.json`) as unknown;
