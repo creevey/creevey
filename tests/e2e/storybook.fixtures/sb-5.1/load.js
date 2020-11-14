@@ -6,4 +6,3 @@ const creevey = require('creevey/lib/server/stories');
 void creevey
   .loadTestsFromStories({ browsers: ['chrome'] }, () => void 0)
   .then((tests) => fs.writeFileSync('actual.json', JSON.stringify(tests, null, 2)))
-  .catch(console.log);
