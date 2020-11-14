@@ -1,0 +1,23 @@
+{
+  "ca3341806d7c5b0e911199c3f3d8673443264975": {
+    "id": "ca3341806d7c5b0e911199c3f3d8673443264975",
+    "skip": false,
+    "path": [
+      "chrome",
+      "Story A",
+      "KindA"
+    ],
+    "storyId": "kinda--story-a",
+    "story": {
+      "id": "kinda--story-a",
+      "kind": "KindA",
+      "name": "Story A",
+      "story": "Story A",
+      "parameters": {
+        "framework": "creevey",
+        "fileName": "./stories/KindA.stories.jsx",
+        "__id": "kinda--story-a"
+      }
+    }
+  }
+}

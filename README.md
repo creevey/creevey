@@ -54,7 +54,7 @@ module.exports = {
 };
 ```
 
-- Start storybook and run tests
+- Start storybook and Creevey UI Runner. (To start tests from CLI, run Creevey without `--ui` flag)
 
 ```bash
 yarn start-storybook -p 6006

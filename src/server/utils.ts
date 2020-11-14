@@ -114,10 +114,10 @@ export function getStorybookVersion(): string {
   return version;
 }
 
-export function isStorybookVersionLessThan(version: number): boolean {
-  const [storybookVersion] = getStorybookVersion().split('.');
+export function isStorybookVersionLessThan(major: number, minor?: number): boolean {
+  const [sbMajor, sbMinor] = getStorybookVersion().split('.');
 
-  return Number(storybookVersion) < version;
+  return Number(sbMajor) < major || (minor != undefined && Number(sbMajor) == major && Number(sbMinor) < minor);
 }
 
 export function getCreeveyCache(): string {

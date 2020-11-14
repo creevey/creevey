@@ -255,7 +255,8 @@
 ## (v0.7.x)
 
 - [x] Rework github actions workflows
-- [ ] Add Storybook integration tests
+- [x] Add CI example in docs
+- [x] Add Storybook integration tests
   - Init projects with various frameworks
   - Init storybook using storybook cli
   - Add creevey config
@@ -291,6 +292,8 @@
     - Iterate be screen images and calculate resulting x/y coordinates for composite image
     - If image width/height greater than viewport width/height than scroll bar is captured
 - [x] ~~Support esm/cjs builds~~
+- [ ] Update CircleCI and GitLab according by github actions
+- [ ] Add edge cases for e2e tests
 - [ ] Figure out if I need use my own react and setup this https://reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html or I need to use react from storybook
 - [ ] Rename `screenDir` config option
 - [ ] Move creevey config to addon

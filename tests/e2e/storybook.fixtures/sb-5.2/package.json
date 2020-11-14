@@ -1,0 +1,11 @@
+{
+  "name": "sb-5.2",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "@storybook/react": "~5.2.8",
+    "babel-loader": "^8.2.1",
+    "creevey": "../creevey.tgz"
+  }
+}

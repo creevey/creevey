@@ -32,6 +32,18 @@ jobs:
         with:
           name: creevey
           path: creevey-*.tgz
+  e2e:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - name: install
+        run: yarn
+      - name: e2e tests
+        run: yarn test:e2e
   tests:
     name: Tests
     runs-on: ubuntu-latest
@@ -40,15 +52,15 @@ jobs:
         uses: actions/checkout@v2
         with:
           lfs: true
-      - name: checkout lfs
-        run: git lfs checkout
       - uses: actions/setup-node@v1
         with:
           node-version: 12.x
+      - name: checkout lfs
+        run: git lfs checkout
       - name: install
         run: yarn
       - name: unit tests
-        run: yarn test
+        run: yarn test:unit
       - name: storybook
         run: yarn start:storybook &
       - name: creevey
