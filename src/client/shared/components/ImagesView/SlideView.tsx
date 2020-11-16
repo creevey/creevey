@@ -4,7 +4,6 @@ import { getBorderColor, themeBorderColors, ViewPropsWithTheme } from './ImagesV
 
 const Container = styled.div({
   position: 'relative',
-  margin: '20px',
   display: 'flex',
   alignItems: 'flex-start',
   justifyContent: 'flex-start',

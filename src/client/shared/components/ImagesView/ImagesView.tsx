@@ -49,8 +49,13 @@ const Container = withTheme(
     textAlign: 'center',
     alignItems: 'center',
     justifyContent: 'center',
+    padding: '20px',
   })),
 );
+
+const ImageLink = styled.a({
+  lineHeight: 0,
+});
 
 const ActualImage = withTheme(
   styled.img(({ theme }) => {
@@ -71,9 +76,9 @@ export function ImagesView({ url, image, canApprove, mode }: ImagesViewProps): J
       {canApprove && diff && expect ? (
         <ViewComponent actual={`${url}/${actual}`} diff={`${url}/${diff}`} expect={`${url}/${expect}`} />
       ) : (
-        <a href={`${url}/${actual}`} target="_blank" rel="noopener noreferrer" style={{ margin: '20px' }}>
+        <ImageLink href={`${url}/${actual}`} target="_blank" rel="noopener noreferrer">
           <ActualImage alt="actual" src={`${url}/${actual}`} />
-        </a>
+        </ImageLink>
       )}
     </Container>
   );

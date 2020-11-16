@@ -3,7 +3,6 @@ import { ViewPropsWithTheme, getBorderColor, themeBorderColors } from './ImagesV
 import { styled, withTheme } from '@storybook/theming';
 
 const Container = styled.div({
-  margin: '20px',
   position: 'relative',
   display: 'flex',
   alignItems: 'flex-start',

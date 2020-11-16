@@ -13,6 +13,7 @@ export interface PagingProps {
 export type ItemType = number | '.' | 'forward';
 
 const StyledButton = styled(Button)({
+  transform: 'none',
   marginLeft: '8px',
 });
 

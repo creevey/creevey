@@ -14,11 +14,15 @@ export interface PageFooterProps {
 const Container = withTheme(
   styled.div(({ theme }) => ({
     display: 'flex',
-    padding: '20px 0',
+    padding: '20px',
     justifyContent: 'space-between',
     background: theme.background.content,
   })),
 );
+
+const StyledButton = styled(Button)({
+  transform: 'none',
+});
 
 export function PageFooter({
   canApprove,
@@ -31,9 +35,9 @@ export function PageFooter({
     <Container>
       <Paging activePage={retry} onPageChange={onRetryChange} pagesCount={retriesCount} />
       {canApprove ? (
-        <Button secondary outline onClick={onApprove}>
+        <StyledButton secondary outline onClick={onApprove}>
           {'Approve'}
-        </Button>
+        </StyledButton>
       ) : null}
     </Container>
   );

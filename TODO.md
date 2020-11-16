@@ -262,14 +262,20 @@
   - Add creevey config
   - Test webpack building (include bundle size)
   - Test stories tests in output
-- [ ] Features
-  - [ ] Show side-by-side diff vertically or horizontally depends on aspect ratio
+- [x] Features
+  - [x] Show side-by-side diff vertically or horizontally depends on aspect ratio
 - [ ] Improve Docker
   - [ ] Private docker images registry
   - [ ] Support docker-in-docker (start storybook and creevey inside docker)
     - [ ] Start storybook inside docker
     - [ ] Allow define custom storybook image
   - [ ] Allow use standalone binary instead of Docker image for browser (https://aerokube.com/selenoid/latest/#_standalone_binary)
+- [ ] Bugs
+  - [ ] Scale images properly (Use naturalWidth image prop for scale in views)
+  - [ ] Images switch freeze
+  - [ ] creevey-loader `top-level property access`
+  - [ ] creevey-loader `private members`
+  - [ ] webpack config dll references
 
 ## First priority (v0.8)
 
@@ -297,7 +303,7 @@
 - [ ] Figure out if I need use my own react and setup this https://reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html or I need to use react from storybook
 - [ ] Rename `screenDir` config option
 - [ ] Move creevey config to addon
-- [ ] Drop storiesOf and Storybook v4.x support
+- [ ] Drop storiesOf and Storybook v5.x support
   - [ ] Could we drop more entry points from webpack config? (generated entry for example)
 - [ ] Support other browser automation tools
   - [ ] Playwright

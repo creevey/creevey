@@ -5,7 +5,6 @@ import { styled, withTheme } from '@storybook/theming';
 type ImageState = keyof typeof themeBorderColors;
 
 const Container = styled.div({
-  margin: '20px',
   position: 'relative',
 });
 
