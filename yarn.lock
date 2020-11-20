@@ -2480,6 +2480,11 @@
   resolved "https://registry.yarnpkg.com/@types/relateurl/-/relateurl-0.2.28.tgz#6bda7db8653fa62643f5ee69e9f69c11a392e3a6"
   integrity sha1-a9p9uGU/piZD9e5p6facEaOS46Y=
 
+"@types/resize-observer-browser@^0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@types/resize-observer-browser/-/resize-observer-browser-0.1.4.tgz#84879a4d6d4aaefde53d4b29c91c0c4cbcffc26f"
+  integrity sha512-rPvqs+1hL/5hbES/0HTdUu4lvNmneiwKwccbWe7HGLWbnsLdqKnQHyWLg4Pj0AMO7PLHCwBM1Cs8orChdkDONg==
+
 "@types/selenium-webdriver@^4.0.10":
   version "4.0.10"
   resolved "https://registry.yarnpkg.com/@types/selenium-webdriver/-/selenium-webdriver-4.0.10.tgz#1aa370a14747b51752e65622999848c4f037b058"

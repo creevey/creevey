@@ -1,3 +1,4 @@
+import { RefObject, useEffect, useRef, useState } from 'react';
 import { Test, isTest, isDefined, TestStatus, CreeveySuite, CreeveyTest, CreeveyStatus } from '../../types';
 
 export interface CreeveyViewFilter {
@@ -268,4 +269,47 @@ export function getImageUrl(path: string[], imageName: string): string {
     : path.slice(0, -1).join('/');
 
   return encodeURI(imageName == browser ? imagesUrl : `${imagesUrl}/${browser}`);
+}
+
+export function useLoadImages(sources: string[]): boolean {
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    setLoaded(false);
+    void Promise.all(
+      sources.map(
+        (url) =>
+          new Promise((resolve) => {
+            const image = document.createElement('img');
+            image.src = url;
+            image.onload = resolve;
+            image.onerror = resolve;
+          }),
+      ),
+    ).then(() => setLoaded(true));
+  }, [sources]);
+
+  return loaded;
+}
+
+/**
+ * Uses the ResizeObserver API to observe changes within the given HTML Element DOM Rect.
+ *
+ * @returns dimensions of element's content box (which means without paddings and border width)
+ */
+export function useResizeObserver<T extends Element>(
+  elementRef: RefObject<T>,
+  onResize: () => void,
+  debounceTimeout = 16,
+): void {
+  const observerRef = useRef<ResizeObserver | null>(null);
+
+  useEffect(() => {
+    if (!elementRef.current) return;
+
+    observerRef.current = new ResizeObserver(onResize);
+    observerRef.current.observe(elementRef.current);
+
+    return () => observerRef.current?.disconnect();
+  }, [debounceTimeout, elementRef, onResize]);
 }
