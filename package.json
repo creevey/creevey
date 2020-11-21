@@ -30,7 +30,7 @@
     "creevey": "node --require ./scripts/babel-register -- src/cli",
     "fix": "run-s fix:*",
     "fix:eslint": "eslint --fix ./",
-    "fix:prettier": "prettier --write *.{md,json,js,ts} ./**/*.{js,ts,tsx}",
+    "fix:prettier": "prettier --write .",
     "prebuild": "yarn clean && mkdir lib",
     "build": "run-p --continue-on-error build:*",
     "build:types": "tsc --emitDeclarationOnly -p scripts/tsconfig.prod.json",

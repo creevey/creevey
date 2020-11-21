@@ -92,19 +92,20 @@ export default function (
       return imageName ? `Expected image '${imageName}' to match` : 'Expected image to match';
     }
 
-    utils.addMethod(Assertion.prototype, 'matchImage', async function matchImage(
-      this: Record<string, unknown>,
-      imageName?: string,
-    ) {
-      const actual = utils.flag(this, 'object') as string | Buffer;
-      const errorMessage = await assertImage(
-        typeof actual == 'string' ? Buffer.from(actual, 'base64') : actual,
-        imageName,
-      );
-      if (errorMessage) {
-        throw createImageError(imageName ? { [imageName]: errorMessage } : errorMessage);
-      }
-    });
+    utils.addMethod(
+      Assertion.prototype,
+      'matchImage',
+      async function matchImage(this: Record<string, unknown>, imageName?: string) {
+        const actual = utils.flag(this, 'object') as string | Buffer;
+        const errorMessage = await assertImage(
+          typeof actual == 'string' ? Buffer.from(actual, 'base64') : actual,
+          imageName,
+        );
+        if (errorMessage) {
+          throw createImageError(imageName ? { [imageName]: errorMessage } : errorMessage);
+        }
+      },
+    );
 
     utils.addMethod(Assertion.prototype, 'matchImages', async function matchImages(this: Record<string, unknown>) {
       const errors: { [imageName: string]: string } = {};
