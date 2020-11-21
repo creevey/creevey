@@ -14,10 +14,10 @@ const execAsync = (command: string, options: ExecOptions): Promise<void> => {
   );
 };
 
-const parallelLimit = (tasks: Array<() => Promise<unknown>>, limit = cpus().length): Promise<unknown[]> => {
-  return new Promise((resolve) => {
+const parallelLimit = (tasks: Array<() => Promise<unknown>>, limit = cpus().length): Promise<void> => {
+  return new Promise<void>((resolve) => {
     let inProgress = 0;
-    const popCall = async (): Promise<void> => {
+    const runTask = async (): Promise<void> => {
       if (inProgress > limit) return;
       const task = tasks.shift();
       if (task) {
@@ -28,11 +28,11 @@ const parallelLimit = (tasks: Array<() => Promise<unknown>>, limit = cpus().leng
           /* noop */
         }
         inProgress -= 1;
-        void popCall();
+        void runTask();
       }
       if (inProgress == 0) resolve();
     };
-    Array.from({ length: limit }).map(popCall);
+    Array.from({ length: limit }).map(runTask);
   });
 };
 
@@ -42,6 +42,7 @@ const parallelLimit = (tasks: Array<() => Promise<unknown>>, limit = cpus().leng
 // 6.0 - export global parameters
 // SubKinds
 // mdx
+// from frameworks (angular, react, vue, nextjs, etc)
 
 // 6.1 https://github.com/storybookjs/storybook/blob/next/MIGRATION.md#single-story-hoisting
 
