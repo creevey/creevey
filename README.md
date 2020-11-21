@@ -348,4 +348,3 @@ Because tests defined in story parameters and `selenium-webdriver` depends on no
 
 | [![Whisk](https://raw.githubusercontent.com/wKich/creevey/master/.github/whisk.svg)](https://whisk.com/) | [![SKB Kontur](https://kontur.ru/Files/userfiles/image/brandbook/logo-skb-kontur-eng.png)](https://kontur.ru) |
 | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-

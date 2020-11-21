@@ -39,12 +39,14 @@ const ImageDiffLink = styled.a({
 
 const Image = styled.img<{ borderColor: string }>(({ borderColor }) => ({
   border: `1px solid ${borderColor}`,
+  boxSizing: 'content-box',
   maxWidth: '100%',
   flexShrink: 0,
 }));
 
 const DiffImage = styled.img<{ borderColor: string }>(({ borderColor }) => ({
   border: `1px solid ${borderColor}`,
+  boxSizing: 'content-box',
   maxWidth: '100%',
 }));
 
@@ -73,7 +75,8 @@ export const SideBySideView = withTheme(
       }
       if (layout == 'horizontal') {
         const ratio =
-          (containerElement.clientWidth - 46) /
+          // NOTE: 44px because we have two margins by 20px and 1px border for each image
+          (containerElement.clientWidth - 44) /
           [expectImage, diffImage, actualImage].map((image) => image.naturalWidth).reduce((a, b) => a + b, 0);
         setScale(Math.min(1, ratio));
       }

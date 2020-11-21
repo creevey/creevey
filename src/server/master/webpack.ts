@@ -1,11 +1,9 @@
 import { rmdirSync } from 'fs';
 import path from 'path';
-import webpack, { Configuration } from 'webpack';
+import webpack from 'webpack';
 import nodeExternals from 'webpack-node-externals';
 import { extensions as fallbackExtensions, getCreeveyCache } from '../utils';
 import { Config, Options, noop } from '../../types';
-
-// @ts-expect-error: import internal module that lack of types
 import loadStorybookWebpackConfig from '@storybook/core/dist/server/config';
 import { emitWebpackMessage, subscribeOn } from '../messages';
 
@@ -79,7 +77,7 @@ export default async function compile(config: Config, { debug, ui }: Options): P
 
   const { default: storybookFrameworkOptions } = (await import(
     `@storybook/${storybookFramework}/dist/server/options`
-  )) as { default: Record<string, unknown> };
+  )) as { default: { framework: string; frameworkPresets: string[] } };
 
   const outputDir = path.join(getCreeveyCache(), 'storybook');
 
@@ -89,9 +87,7 @@ export default async function compile(config: Config, { debug, ui }: Options): P
     /* noop */
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  const storybookWebpackConfig = (await loadStorybookWebpackConfig({
-    quiet: true,
+  const storybookWebpackConfig = await loadStorybookWebpackConfig({
     configType: 'PRODUCTION',
     outputDir,
     cache: {},
@@ -99,7 +95,7 @@ export default async function compile(config: Config, { debug, ui }: Options): P
     overridePresets: [require.resolve('@storybook/core/dist/server/preview/custom-webpack-preset')],
     ...storybookFrameworkOptions,
     configDir: config.storybookDir,
-  })) as Configuration;
+  });
 
   const extensions = storybookWebpackConfig.resolve?.extensions ?? fallbackExtensions;
 
