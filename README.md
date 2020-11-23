@@ -346,5 +346,5 @@ Because tests defined in story parameters and `selenium-webdriver` depends on no
 
 ## Used by
 
-| [![Whisk](https://raw.githubusercontent.com/wKich/creevey/master/.github/images/whisk.svg)](https://whisk.com/) | [![SKB Kontur](https://raw.githubusercontent.com/wKich/creevey/master/.github/images/kontur.png)](https://kontur.ru/) | [![ABBYY](https://raw.githubusercontent.com/wKich/creevey/master/.github/images/abbyy.svg)](https://www.abbyy.com/) |
-| --------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| [![Whisk](https://raw.githubusercontent.com/wKich/creevey/master/.github/images/whisk.svg)](https://whisk.com/) | [![SKB Kontur](https://kontur.ru/Files/userfiles/image/brandbook/logo-skb-kontur-eng.png)](https://kontur.ru/) | [![ABBYY](https://raw.githubusercontent.com/wKich/creevey/master/.github/images/abbyy.svg)](https://www.abbyy.com/) |
+| --------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
