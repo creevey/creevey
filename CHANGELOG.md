@@ -1,3 +1,14 @@
+## [0.7.1](https://github.com/wKich/creevey/compare/v0.7.0...v0.7.1) (2020-11-24)
+
+### Bug Fixes
+
+- 🐛 don't cutoff named exports ([cd09dd4](https://github.com/wKich/creevey/commit/cd09dd47070e4584429905f78baee82c65a82a47))
+
+### Features
+
+- 🎸 improve side-by-side view for wide images ([3d6a147](https://github.com/wKich/creevey/commit/3d6a1477804bb900d806cbac26d884d26bb28e55))
+- 🎸 side-by-side view supports layout resizing ([123e7c7](https://github.com/wKich/creevey/commit/123e7c78708bf2e85b1649c85d2a264a9e4594d8))
+
 # [0.7.0](https://github.com/wKich/creevey/compare/v0.7.0-beta.21...v0.7.0) (2020-11-09)
 
 ### Bug Fixes
