@@ -206,16 +206,17 @@ function minifyStories(ast: t.File, source: string): string {
       if (!Array.isArray(declarations)) return;
       declarations.forEach((declPath) => {
         if (!declPath.isVariableDeclarator()) return;
-        if (!t.isIdentifier(declPath.node.id, { name: 'parameters' })) return declPath.remove();
-
-        const initPath = declPath.get('init');
-        if (Array.isArray(initPath)) return;
-        if (initPath.isObjectExpression()) return removeAllPropsExcept(initPath, ['creevey']);
-        const resolvedDeclPath = getDeclaratorPath(initPath);
-        if (resolvedDeclPath) {
-          const rightPath = resolvedDeclPath.get('init');
-          if (!rightPath.isObjectExpression()) return;
-          removeAllPropsExcept(rightPath, ['creevey']);
+        if (t.isIdentifier(declPath.node.id, { name: 'decorators' })) return declPath.remove();
+        if (t.isIdentifier(declPath.node.id, { name: 'parameters' })) {
+          const initPath = declPath.get('init');
+          if (Array.isArray(initPath)) return;
+          if (initPath.isObjectExpression()) return removeAllPropsExcept(initPath, ['creevey']);
+          const resolvedDeclPath = getDeclaratorPath(initPath);
+          if (resolvedDeclPath) {
+            const rightPath = resolvedDeclPath.get('init');
+            if (!rightPath.isObjectExpression()) return;
+            removeAllPropsExcept(rightPath, ['creevey']);
+          }
         }
       });
     },

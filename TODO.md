@@ -280,7 +280,8 @@
 ## First priority (v0.8)
 
 - [ ] Docs
-  - [ ] Add ABBYY logo
+  - [x] Add ABBYY logo
+  - [ ] Fix png logos
   - [ ] update demo video
   - [ ] Add instruction for various frameworks
     - [ ] Web components

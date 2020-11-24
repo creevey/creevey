@@ -6,6 +6,7 @@ import { describe } from 'mocha';
 import { expect } from 'chai';
 import { cpus } from 'os';
 
+// TODO fatal don't work
 const execOptions = { silent: true, fatal: true };
 
 const execAsync = (command: string, options: ExecOptions): Promise<void> => {
@@ -35,6 +36,9 @@ const parallelLimit = (tasks: Array<() => Promise<unknown>>, limit = cpus().leng
     Array.from({ length: limit }).map(runTask);
   });
 };
+// TODO Do I need copy-paste some cases
+// TODO Enable easy way to approve
+// In after copy actual.json back
 
 // TODO tests
 // StoriesOf - Parameters, global, kind, story
