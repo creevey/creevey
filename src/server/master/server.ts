@@ -9,9 +9,8 @@ import { subscribeOn } from '../messages';
 
 export default function server(api: CreeveyApi, reportDir: string, port: number): void {
   const app = new Koa();
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises
   const server = http.createServer(app.callback());
-  const wss = new WebSocket.Server({ server });
+  const wss = new WebSocket.Server({ server, noServer: true });
 
   app.use(serve(path.join(__dirname, '../../client/web')));
   app.use(mount('/report', serve(reportDir)));

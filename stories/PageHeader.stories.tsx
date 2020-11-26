@@ -2,9 +2,7 @@ import React from 'react';
 import { PageHeader } from '../src/client/shared/components/PageHeader/PageHeader';
 import { noop } from '../src';
 
-export default {
-  title: 'PageHeader',
-};
+export default { title: 'PageHeader' };
 
 export const Simple = (): JSX.Element => (
   <PageHeader

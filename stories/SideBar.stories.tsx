@@ -58,15 +58,6 @@ export default {
       </ThemeProvider>
     ),
   ],
-  parameters: {
-    creevey: {
-      skip: {
-        in: 'ie11',
-        stories: /.*Side Bar$/,
-        reason: 'Internet Explorer is not supported yet',
-      },
-    },
-  },
 };
 
 export const HeaderStopped = (): JSX.Element => (

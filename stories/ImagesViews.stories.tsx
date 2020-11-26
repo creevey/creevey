@@ -8,14 +8,7 @@ import octocatDiff from './fixtures/octocat-diff.png';
 import octocatActual from './fixtures/octocat-actual.png';
 import { Story } from '@storybook/react';
 
-export default {
-  title: 'ImagesViews',
-  parameters: {
-    creevey: {
-      skip: { in: 'ie11', reason: 'Internet Explorer is not supported yet' },
-    },
-  },
-};
+export default { title: 'ImagesViews' };
 
 const ImagesView = (mode: ImagesViewMode): JSX.Element => (
   <ImagesViewBase
