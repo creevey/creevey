@@ -27,8 +27,9 @@ const Wrapper = styled.div({
 });
 
 const ImagesViewContainer = styled.div(({ theme }) => ({
-  background: theme.background.content,
+  background: theme.base == 'light' ? theme.color.mediumlight : theme.color.darker,
   flexGrow: 1,
+  padding: '20px 0',
 }));
 
 const FooterContainer = styled.div({

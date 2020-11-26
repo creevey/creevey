@@ -1,8 +1,7 @@
-import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { ViewPropsWithTheme, getBorderColor, themeBorderColors } from './ImagesView';
 import { styled, withTheme } from '@storybook/theming';
-import { isDefined } from '../../../../types';
-import { useLoadImages, useResizeObserver } from '../../helpers';
+import { useApplyScale, useLoadImages, useResizeObserver, getBorderSize } from '../../helpers';
 import { Loader } from '@storybook/components';
 
 type LayoutDirection = 'horizontal' | 'vertical';
@@ -10,16 +9,16 @@ type LayoutDirection = 'horizontal' | 'vertical';
 const Container = styled.div({
   display: 'flex',
   flexWrap: 'nowrap',
-  justifyContent: 'center',
   alignItems: 'center',
+  justifyContent: 'center',
   height: '100%',
   width: '100%',
 });
 
 const ImagesLayout = styled.div<{ layout: LayoutDirection }>(({ layout }) => ({
   display: 'flex',
-  justifyContent: 'flex-start',
   alignItems: 'flex-start',
+  justifyContent: 'flex-start',
   flexDirection: layout == 'horizontal' ? 'row' : 'column',
 
   '& > :not(:first-of-type)': {
@@ -38,17 +37,15 @@ const ImageDiffLink = styled.a({
 });
 
 const Image = styled.img<{ borderColor: string }>(({ borderColor }) => ({
+  boxSizing: 'border-box',
   border: `1px solid ${borderColor}`,
-  boxSizing: 'content-box',
   maxWidth: '100%',
   flexShrink: 0,
 }));
 
-const DiffImage = styled.img<{ borderColor: string }>(({ borderColor }) => ({
-  border: `1px solid ${borderColor}`,
-  boxSizing: 'content-box',
-  maxWidth: '100%',
-}));
+const DiffImage = styled(Image)({
+  flexShrink: 1,
+});
 
 export const SideBySideView = withTheme(
   ({ actual, diff, expect, theme }: ViewPropsWithTheme): JSX.Element => {
@@ -60,8 +57,7 @@ export const SideBySideView = withTheme(
     const diffImageRef = useRef<HTMLImageElement | null>(null);
     const actualImageRef = useRef<HTMLImageElement | null>(null);
 
-    const sources = useMemo(() => [expect, diff, actual], [expect, diff, actual]);
-    const loaded = useLoadImages(sources);
+    const loaded = useLoadImages(expect, diff, actual);
 
     const calcScale = useCallback(() => {
       const containerElement = containerRef.current;
@@ -69,23 +65,25 @@ export const SideBySideView = withTheme(
       const diffImage = diffImageRef.current;
       const actualImage = actualImageRef.current;
 
-      if (!containerElement || !expectImage || !actualImage || !diffImage || !loaded) return;
+      if (!containerElement || !expectImage || !actualImage || !diffImage || !loaded) return setScale(1);
+
+      const borderSize = getBorderSize(diffImage);
+
       if (layout == 'vertical') {
-        setScale((diffImage.getBoundingClientRect().width - 2) / diffImage.naturalWidth);
+        const ratio = (diffImage.getBoundingClientRect().width - borderSize * 2) / diffImage.naturalWidth;
+        setScale(Math.min(1, ratio));
       }
       if (layout == 'horizontal') {
         const ratio =
-          // NOTE: 44px because we have two margins by 20px and 1px border for each image
-          (containerElement.clientWidth - 44) /
+          // NOTE: 40px because we have two margins by 20px and 6px for borders
+          (containerElement.getBoundingClientRect().width - 40 - borderSize * 6) /
           [expectImage, diffImage, actualImage].map((image) => image.naturalWidth).reduce((a, b) => a + b, 0);
         setScale(Math.min(1, ratio));
       }
     }, [loaded, layout]);
 
     useResizeObserver(containerRef, calcScale);
-
     useLayoutEffect(calcScale, [calcScale]);
-
     useLayoutEffect(() => {
       const diffImage = diffImageRef.current;
       if (!diffImage || !loaded) return;
@@ -93,13 +91,8 @@ export const SideBySideView = withTheme(
       setLayout(ratio >= 2 ? 'vertical' : 'horizontal');
     }, [loaded]);
 
-    useLayoutEffect(() => {
-      if (!loaded) return;
-      [expectImageRef, actualImageRef]
-        .map((x) => x.current)
-        .filter(isDefined)
-        .forEach((image) => (image.style.height = `${image.naturalHeight * scale}px`));
-    }, [loaded, scale]);
+    useApplyScale(expectImageRef, scale);
+    useApplyScale(actualImageRef, scale);
 
     return (
       <Container ref={containerRef}>

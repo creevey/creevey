@@ -26,6 +26,7 @@ const parallelLimit = (tasks: Array<() => Promise<unknown>>, limit = cpus().leng
         try {
           await task();
         } catch (_) {
+          // TODO Handle errors
           /* noop */
         }
         inProgress -= 1;

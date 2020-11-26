@@ -41,17 +41,14 @@ const views: { [mode in ImagesViewMode]: FunctionComponent<ViewProps> } = {
   blend: BlendView,
 };
 
-const Container = withTheme(
-  styled.div(({ theme }) => ({
-    background: theme.base == 'light' ? theme.color.mediumlight : theme.color.darker,
-    height: '100%',
-    display: 'flex',
-    textAlign: 'center',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '20px',
-  })),
-);
+const Container = styled.div({
+  height: '100%',
+  display: 'flex',
+  textAlign: 'center',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '0 20px',
+});
 
 const ImageLink = styled.a({
   lineHeight: 0,

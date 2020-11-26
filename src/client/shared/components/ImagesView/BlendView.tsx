@@ -1,12 +1,11 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { ViewPropsWithTheme, getBorderColor, themeBorderColors } from './ImagesView';
 import { styled, withTheme } from '@storybook/theming';
+import { useApplyScale, useCalcScale, useLoadImages } from '../../helpers';
 
 const Container = styled.div({
   position: 'relative',
   display: 'flex',
-  alignItems: 'flex-start',
-  justifyContent: 'flex-start',
   filter: 'invert(100%)',
 });
 
@@ -15,38 +14,54 @@ const ImageContainer = styled.div({
   width: '100%',
   height: '100%',
   display: 'flex',
-  alignItems: 'flex-start',
-  justifyContent: 'flex-start',
 });
 
 const Image = styled.img<{ borderColor: string }>(({ borderColor }) => ({
+  boxSizing: 'border-box',
   border: `1px solid ${borderColor}`,
   maxWidth: '100%',
   filter: 'invert(100%)',
 }));
 
-const DiffImage = styled.img({
-  maxWidth: '100%',
+const ActualImage = styled(Image)({
+  mixBlendMode: 'difference',
+});
+
+const DiffImage = styled(Image)({
   opacity: '0',
-  border: '1px solid transparent',
 });
 
 export const BlendView = withTheme(
   ({ actual, diff, expect, theme }: ViewPropsWithTheme): JSX.Element => {
+    const expectImageRef = useRef<HTMLImageElement | null>(null);
+    const diffImageRef = useRef<HTMLImageElement | null>(null);
+    const actualImageRef = useRef<HTMLImageElement | null>(null);
+
+    const loaded = useLoadImages(expect, diff, actual);
+    const scale = useCalcScale(diffImageRef, loaded);
+
+    useApplyScale(expectImageRef, scale, loaded);
+    useApplyScale(actualImageRef, scale, loaded);
+
     return (
       <Container>
         <ImageContainer>
-          <Image borderColor={getBorderColor(theme, themeBorderColors.expect)} alt="actual" src={actual} />
-        </ImageContainer>
-        <ImageContainer>
           <Image
-            borderColor={getBorderColor(theme, themeBorderColors.actual)}
-            style={{ mixBlendMode: 'difference' }}
+            ref={expectImageRef}
+            borderColor={getBorderColor(theme, themeBorderColors.expect)}
             alt="expect"
             src={expect}
           />
         </ImageContainer>
-        <DiffImage alt="diff" src={diff} />
+        <DiffImage ref={diffImageRef} borderColor={'transparent'} alt="diff" src={diff} />
+        <ImageContainer>
+          <ActualImage
+            ref={actualImageRef}
+            borderColor={getBorderColor(theme, themeBorderColors.actual)}
+            alt="actual"
+            src={actual}
+          />
+        </ImageContainer>
       </Container>
     );
   },

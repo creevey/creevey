@@ -1,4 +1,4 @@
-import { RefObject, useEffect, useRef, useState } from 'react';
+import { RefObject, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Test, isTest, isDefined, TestStatus, CreeveySuite, CreeveyTest, CreeveyStatus } from '../../types';
 
 export interface CreeveyViewFilter {
@@ -271,13 +271,19 @@ export function getImageUrl(path: string[], imageName: string): string {
   return encodeURI(imageName == browser ? imagesUrl : `${imagesUrl}/${browser}`);
 }
 
-export function useLoadImages(sources: string[]): boolean {
+export function getBorderSize(element: HTMLElement): number {
+  // NOTE Firefox returns empty string for `borderWidth` prop
+  const borderSize = parseFloat(getComputedStyle(element).borderTopWidth);
+  return Number.isNaN(borderSize) ? 0 : borderSize;
+}
+
+export function useLoadImages(s1: string, s2: string, s3: string): boolean {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     setLoaded(false);
     void Promise.all(
-      sources.map(
+      [s1, s2, s3].map(
         (url) =>
           new Promise((resolve) => {
             const image = document.createElement('img');
@@ -287,7 +293,7 @@ export function useLoadImages(sources: string[]): boolean {
           }),
       ),
     ).then(() => setLoaded(true));
-  }, [sources]);
+  }, [s1, s2, s3]);
 
   return loaded;
 }
@@ -312,4 +318,31 @@ export function useResizeObserver<T extends Element>(
 
     return () => observerRef.current?.disconnect();
   }, [debounceTimeout, elementRef, onResize]);
+}
+
+export function useApplyScale(imageRef: RefObject<HTMLImageElement>, scale: number, dependency?: unknown): void {
+  useLayoutEffect(() => {
+    if (!imageRef.current) return;
+    const image = imageRef.current;
+    const borderSize = getBorderSize(image);
+    image.style.height = `${image.naturalHeight * scale + borderSize * 2}px`;
+  }, [imageRef, scale, dependency]);
+}
+
+export function useCalcScale(diffImageRef: RefObject<HTMLImageElement>, loaded: boolean): number {
+  const [scale, setScale] = useState(1);
+
+  const calcScale = useCallback(() => {
+    const diffImage = diffImageRef.current;
+
+    if (!diffImage || !loaded) return setScale(1);
+    const borderSize = getBorderSize(diffImage);
+    const ratio = (diffImage.getBoundingClientRect().width - borderSize * 2) / diffImage.naturalWidth;
+    setScale(Math.min(1, ratio));
+  }, [diffImageRef, loaded]);
+
+  useResizeObserver(diffImageRef, calcScale);
+  useLayoutEffect(calcScale, [calcScale]);
+
+  return scale;
 }
