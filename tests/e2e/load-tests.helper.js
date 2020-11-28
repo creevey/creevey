@@ -1,6 +1,6 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+/* eslint-disable */
+
 const fs = require('fs');
-// eslint-disable-next-line @typescript-eslint/no-var-requires, node/no-unpublished-require
 const creevey = require('creevey/lib/server/stories');
 
 void creevey

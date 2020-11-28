@@ -254,6 +254,7 @@
 
 ## (v0.7.x)
 
+- [x] Add ABBYY logo
 - [x] Rework github actions workflows
 - [x] Add CI example in docs
 - [x] Add Storybook integration tests
@@ -264,6 +265,8 @@
   - Test stories tests in output
 - [x] Features
   - [x] Show side-by-side diff vertically or horizontally depends on aspect ratio
+  - [ ] Add fallback option, load tests from browser (hmr-disabled in this case)
+  - [ ] Allow run creevey against static-storybook folder (Depends on fallback tests loading)
 - [ ] Improve Docker
   - [ ] Private docker images registry
   - [ ] Support docker-in-docker (start storybook and creevey inside docker)
@@ -271,16 +274,19 @@
     - [ ] Allow define custom storybook image
   - [ ] Allow use standalone binary instead of Docker image for browser (https://aerokube.com/selenoid/latest/#_standalone_binary)
 - [ ] Bugs
-  - [ ] Scale images properly (Use naturalWidth image prop for scale in views)
-  - [ ] Images switch freeze
+  - [x] Correctly resize images in views using correct proportions (smaller image should shrink if larger shrink too, max-width/max-height doesn't work)
+  - [x] Scale images properly (Use naturalWidth image prop for scale in views)
+  - [x] Images switch freeze
   - [ ] creevey-loader `top-level property access`
   - [ ] creevey-loader `private members`
-  - [ ] webpack config dll references
+  - [ ] webpack config dll references (disable dll plugin)
 
 ## First priority (v0.8)
 
 - [ ] Docs
-  - [x] Add ABBYY logo
+  - [ ] Add best practices for stories
+    - Avoid write side-effects
+    - Don't generate CSF dynamically
   - [ ] Fix png logos
   - [ ] update demo video
   - [ ] Add instruction for various frameworks
@@ -289,9 +295,7 @@
     - [ ] Gatsby
     - [ ] Next.js
 - [ ] Bugs
-  - [ ] Allow use `By` and `Keys` stuff from selenium-webdriver (add creevey-selenium or improve creevey-loader)
   - [ ] Figure out how to deal with creevey.config.ts
-  - [ ] Correctly resize images in views using correct proportions (smaller image should shrink if larger shrink too, max-width/max-height doesn't work)
   - [ ] Use native composite screenshots for browsers which support it
   - [ ] Fix taking composite screenshots with hidden scrollbar
     - Don't use scrollBarWidth or hasScrollBar helpers
@@ -311,10 +315,12 @@
   - [ ] Playwright
   - [ ] Puppeteer
 - [ ] Features
+  - [ ] Try to use odiff tool (https://github.com/dmtrKovalenko/odiff)
   - [ ] Open Creevey Client from storybook
   - [ ] Add addon option `padding` for screenshots
   - [ ] Wait for resources loaded (fonts, images, etc) How?
   - [ ] Integrate build nodejs bundle into storybook (use webpackFinal in addon)
+  - [ ] Improve creevey-addon webpack config to allow use `import { By } from 'selenium'` and maybe other stuff (add creevey-selenium or improve creevey-loader)
   - [ ] Support Storybook Composition https://storybook.js.org/docs/react/workflows/storybook-composition
   - [ ] Show multiple tests for browser in storybook UI
   - [ ] Allow run multiple tests from storybook UI
@@ -323,7 +329,6 @@
   - [ ] Allow set viewport sizes for story (use width x height as postfix for browser name in UI)
   - [ ] Add fuzzy search and highlight
   - [ ] Allow to ignore elements in capturing screenshot
-  - [ ] Allow disable hmr, load tests from browser (low priority, maybe use only as fallback for difficult scenarios)
 
 ## Second priority (v0.9)
 
@@ -341,7 +346,6 @@
   - [ ] Support JUnit mocha reporter
   - [ ] Improve CLI add grep/kind/story option
   - [ ] Setup CREEVEY_ENV (in project use `if (CREEVEY_ENV) {}` and addon define function that check if it inside creevey or not)
-  - [ ] Improve creevey-addon webpack config to allow use `import { By } from 'selenium'` and maybe other stuff
   - [ ] Allow pass components into `findElement`
     - The idea is, add some transformation to creevey-addon, and replace it component to `[data-comp-name~="MyComponent"]`
     - Then need to investigate how to inject such data-attributes to html node (especially for non-react frameworks)

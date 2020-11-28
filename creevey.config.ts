@@ -2,6 +2,7 @@ import path from 'path';
 import { CreeveyConfig } from './src/types';
 
 const config: CreeveyConfig = {
+  maxRetries: process.env.CI ? 1 : 0,
   screenDir: path.join(__dirname, 'stories', 'images'),
   browsers: {
     chrome: {

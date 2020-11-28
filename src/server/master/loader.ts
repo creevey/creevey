@@ -38,7 +38,7 @@ function getPropertyPath(path: NodePath<t.ObjectExpression>, name: string): Node
 
 function getDeclaratorPath<T>(path: NodePath<T>): NodePath<t.VariableDeclarator> | undefined {
   if (path.isIdentifier()) {
-    // TODO If kind var has `as` keyword
+    // TODO If kind var has `as` keyword (`const Kind = {} as Meta`)
     const { path: bindingPath } = path.scope.getBinding(path.node.name) ?? {};
     if (bindingPath?.isVariableDeclarator()) return bindingPath;
   }

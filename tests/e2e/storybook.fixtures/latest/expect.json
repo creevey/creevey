@@ -1,0 +1,35 @@
+{
+  "25cd4acc78bd0622f2dfd1921560a41d0fb6c414": {
+    "id": "25cd4acc78bd0622f2dfd1921560a41d0fb6c414",
+    "skip": false,
+    "path": [
+      "chrome",
+      "click",
+      "Imported Tests",
+      "KindA"
+    ],
+    "storyId": "kinda--imported-tests",
+    "story": {
+      "id": "kinda--imported-tests",
+      "kind": "KindA",
+      "name": "Imported Tests",
+      "story": "Imported Tests",
+      "parameters": {
+        "framework": "creevey",
+        "fileName": "./stories/KindA.stories.tsx",
+        "args": {},
+        "argTypes": {},
+        "creevey": {
+          "tests": {
+            "click": "function click() {\n      return _click.apply(this, arguments);\n    }"
+          }
+        },
+        "__id": "kinda--imported-tests",
+        "__isArgsStory": false
+      },
+      "args": {},
+      "initialArgs": {}
+    },
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+  }
+}
