@@ -1,4 +1,3 @@
-import https from 'https';
 import { PNG } from 'pngjs';
 import { Context, Test, Suite } from 'mocha';
 import { Builder, By, until, WebDriver, Origin } from 'selenium-webdriver';
@@ -13,26 +12,7 @@ declare global {
   }
 }
 
-const TESTKONTUR_REGEXP = /testkontur/i;
 const DOCKER_INTERNAL = 'host.docker.internal';
-
-function getRealIp(): Promise<string> {
-  return new Promise((resolve, reject) =>
-    https.get('https://fake.testkontur.ru/ip', (res) => {
-      if (res.statusCode !== 200) {
-        return reject(
-          new Error(`Couldn't resolve real ip for \`localhost\`. Status code: ${res.statusCode ?? 'UNKNOWN'}`),
-        );
-      }
-
-      let data = '';
-
-      res.setEncoding('utf8');
-      res.on('data', (chunk) => (data += chunk));
-      res.on('end', () => resolve(data));
-    }),
-  );
-}
 
 async function resolveStorybookUrl(browser: WebDriver, storybookUrl: string): Promise<string> {
   if (!LOCALHOST_REGEXP.test(storybookUrl)) {
@@ -312,9 +292,6 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
   let realAddress = address;
   let browser: WebDriver | null = null;
   let shuttingDown = false;
-  if (LOCALHOST_REGEXP.test(address) && TESTKONTUR_REGEXP.test(gridUrl)) {
-    realAddress = address.replace(LOCALHOST_REGEXP, await getRealIp());
-  }
 
   subscribeOn('shutdown', () => {
     shuttingDown = true;
