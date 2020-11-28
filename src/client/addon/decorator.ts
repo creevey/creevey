@@ -56,6 +56,20 @@ declare global {
   }
 }
 
+const disableAnimationsStyles = `
+*,
+*:hover,
+*::before,
+*::after {
+  animation-delay: -0.0001ms !important;
+  animation-duration: 0s !important;
+  animation-play-state: paused !important;
+  cursor: none !important;
+  caret-color: transparent !important;
+  transition: 0s !important;
+}
+`;
+
 function waitForFontsLoaded(): Promise<void> | void {
   if (!document.fonts) return;
 
@@ -74,6 +88,16 @@ function waitForFontsLoaded(): Promise<void> | void {
 
 export function withCreevey(): MakeDecoratorResult {
   let currentStory = '';
+  let animationDisabled = false;
+
+  function disableAnimation(): void {
+    animationDisabled = true;
+    const style = document.createElement('style');
+    const textNode = document.createTextNode(disableAnimationsStyles);
+    style.setAttribute('type', 'text/css');
+    style.appendChild(textNode);
+    document.head.appendChild(style);
+  }
 
   async function selectStory(
     storyId: string,
@@ -81,6 +105,8 @@ export function withCreevey(): MakeDecoratorResult {
     name: string,
     callback: (error?: string) => void,
   ): Promise<void> {
+    if (!animationDisabled) disableAnimation();
+
     const channel = addons.getChannel();
     if (storyId == currentStory) {
       const storyMissingPromise = new Promise<void>((resolve) => channel.once(Events.STORY_MISSING, resolve));

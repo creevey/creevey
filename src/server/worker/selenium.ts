@@ -91,39 +91,6 @@ async function resizeViewport(browser: WebDriver, viewport: { width: number; hei
     });
 }
 
-async function disableAnimations(browser: WebDriver): Promise<void> {
-  if (
-    await browser.executeScript(function () {
-      return Boolean(document.querySelector('[data-creevey="disable-animation"]'));
-    })
-  )
-    return;
-
-  const disableAnimationsStyles = `
-*,
-*:hover,
-*::before,
-*::after {
-  animation-delay: -0.0001ms !important;
-  animation-duration: 0s !important;
-  animation-play-state: paused !important;
-  cursor: none !important;
-  caret-color: transparent !important;
-  transition: 0s !important;
-}
-`;
-  return browser.executeScript(function (stylesheet: string) {
-    /* eslint-disable no-var */
-    var style = document.createElement('style');
-    var textNode = document.createTextNode(stylesheet);
-    style.setAttribute('data-creevey', 'disable-animation');
-    style.setAttribute('type', 'text/css');
-    style.appendChild(textNode);
-    document.head.appendChild(style);
-    /* eslint-enable no-var */
-  }, disableAnimationsStyles);
-}
-
 const getScrollBarWidth: (browser: WebDriver) => Promise<number> = (() => {
   let scrollBarWidth: number | null = null;
 
@@ -308,7 +275,6 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
         async () => browser && void (realAddress = await resolveStorybookUrl(browser, realAddress)),
         () => browser?.get(`${realAddress.replace(/\/$/, '')}/iframe.html`),
         () => browser?.wait(until.elementLocated(By.css('#root')), 30000),
-        () => browser && disableAnimations(browser),
       ],
       () => !shuttingDown,
     );
@@ -341,7 +307,6 @@ export async function switchStory(this: Context): Promise<void> {
   if (!story) throw new Error(`Current test '${this.testScope.join('/')}' context doesn't have 'story' field`);
 
   await resetMousePosition(this.browser);
-  await disableAnimations(this.browser);
   await selectStory(this.browser, story.id, story.kind, story.name);
 
   const { captureElement = '#root' } = (story.parameters.creevey ?? {}) as CreeveyStoryParams;

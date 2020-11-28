@@ -295,7 +295,7 @@
     - [ ] Gatsby
     - [ ] Next.js
 - [ ] Bugs
-  - [ ] Figure out how to deal with creevey.config.ts
+  - [ ] Figure out how to deal with creevey.config.ts (move config to storybook addon config)
   - [ ] Use native composite screenshots for browsers which support it
   - [ ] Fix taking composite screenshots with hidden scrollbar
     - Don't use scrollBarWidth or hasScrollBar helpers
@@ -315,6 +315,7 @@
   - [ ] Playwright
   - [ ] Puppeteer
 - [ ] Features
+  - [ ] Add option to apply custom styles to #root
   - [ ] Try to use odiff tool (https://github.com/dmtrKovalenko/odiff)
   - [ ] Open Creevey Client from storybook
   - [ ] Add addon option `padding` for screenshots
