@@ -112,8 +112,6 @@ function cleanUpStoryProps(storyPropAssign: NodePath<t.AssignmentExpression>): v
 
 function recursivelyRemoveUnreferencedBindings(path: NodePath<t.Program>): void {
   const getUnreferencedBindings = (): Binding[] => {
-    // @ts-expect-error: I don't know what this method do, but it allow get correct bindings
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     path.scope.crawl();
     return Object.values(path.scope.bindings).filter(
       (binding) =>

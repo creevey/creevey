@@ -1,3 +1,13 @@
+## [0.7.2](https://github.com/wKich/creevey/compare/v0.7.1...v0.7.2) (2020-11-28)
+
+### Bug Fixes
+
+- 🐛 invalid websocket frame ([6796625](https://github.com/wKich/creevey/commit/679662569e985b600eb4eb6779551a4bf929f54f))
+
+### Features
+
+- 🎸 improve scale handling for image views ([454ee85](https://github.com/wKich/creevey/commit/454ee85ad4b6a608bb999b815fb4192c2a661329))
+
 ## [0.7.1](https://github.com/wKich/creevey/compare/v0.7.0...v0.7.1) (2020-11-24)
 
 ### Bug Fixes
