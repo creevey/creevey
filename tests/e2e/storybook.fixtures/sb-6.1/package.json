@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "devDependencies": {
-    "@storybook/react": "~6.1.2",
+    "@storybook/react": "~6.1.8",
     "creevey": "./creevey.tgz",
     "react": "^16.14.0",
     "react-dom": "^16.14.0"
