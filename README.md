@@ -6,9 +6,18 @@ Screenshot testing tool for [Storybook](https://storybook.js.org/) with fancy UI
 
 ![Creevey Demo](https://user-images.githubusercontent.com/6397708/84031069-7cb71b80-a9ae-11ea-8109-2a5628879029.gif)
 
-## Intro
+## Core features
 
-Creevey integrates with your Storybook and generates screenshot tests from stories in runtime. It allows you to write interaction tests for your stories, review screenshot diffs, and approve them in an easy way from UI Runner. It has docker support and you get deterministic screenshot images in any environment. And it also has some other features, like cross-browser testing, test hot-reloading, CI ready. It named after [Colin Creevey](https://harrypotter.fandom.com/wiki/Colin_Creevey) character from the Harry Potter universe.
+- Integrates with Storybook
+- Uses stories as tests
+- Allows write interaction tests
+- Has fancy UI Runner
+- Supports Docker
+- Cross-browsers testing
+- Tests hot-reloading
+- CI Ready
+
+It named after [Colin Creevey](https://harrypotter.fandom.com/wiki/Colin_Creevey) character from the Harry Potter universe.
 
 ## Contents
 
