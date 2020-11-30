@@ -254,6 +254,7 @@
 
 ## (v0.7.x)
 
+- [ ] Rewrite description to more clear one
 - [x] Add ABBYY logo
 - [x] Rework github actions workflows
 - [x] Add CI example in docs
@@ -285,6 +286,7 @@
 
 - [ ] Docs
   - [ ] Add best practices for stories
+    - Git LFS
     - Avoid write side-effects
     - Don't generate CSF dynamically
   - [ ] Fix png logos
@@ -295,7 +297,6 @@
     - [ ] Gatsby
     - [ ] Next.js
 - [ ] Bugs
-  - [ ] Figure out how to deal with creevey.config.ts (move config to storybook addon config)
   - [ ] Use native composite screenshots for browsers which support it
   - [ ] Fix taking composite screenshots with hidden scrollbar
     - Don't use scrollBarWidth or hasScrollBar helpers
@@ -315,10 +316,10 @@
   - [ ] Playwright
   - [ ] Puppeteer
 - [ ] Features
-  - [ ] Add option to apply custom styles to #root
+  - [ ] Add link `go to runner` in addon UI
+  - [ ] Add option to apply custom styles to #root or something else
   - [ ] Try to use odiff tool (https://github.com/dmtrKovalenko/odiff)
   - [ ] Open Creevey Client from storybook
-  - [ ] Add addon option `padding` for screenshots
   - [ ] Wait for resources loaded (fonts, images, etc) How?
   - [ ] Integrate build nodejs bundle into storybook (use webpackFinal in addon)
   - [ ] Improve creevey-addon webpack config to allow use `import { By } from 'selenium'` and maybe other stuff (add creevey-selenium or improve creevey-loader)

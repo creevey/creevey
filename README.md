@@ -1,26 +1,24 @@
 # Creevey
 
-Easy to start, fast and powerful visual testing runner with a little portion of magic. Named after [Colin Creevey](https://harrypotter.fandom.com/wiki/Colin_Creevey) character from Harry Potter universe.
+## Intro
+
+Screenshot testing tool for [Storybook](https://storybook.js.org/) with fancy UI Runner. Creevey integrates with your Storybook and generates screenshot tests from stories in runtime. It allows you to write interaction tests for your stories, review screenshot diffs, and approve them in an easy way from UI Runner. It has docker support and you get deterministic screenshot images in any environment. And it also has some other features, like cross-browser testing, test hot-reloading, CI ready. It named after [Colin Creevey](https://harrypotter.fandom.com/wiki/Colin_Creevey) character from the Harry Potter universe.
 
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 
 ![Creevey Demo](https://user-images.githubusercontent.com/6397708/84031069-7cb71b80-a9ae-11ea-8109-2a5628879029.gif)
 
-## Intro
-
-Main goal of Creevey take visual testing to a new level. Allow you to get fast and reliable screenshot tests without frustration. You may call it **unit** screenshot tests, because Creevey tightly integrated with [Storybook](https://storybook.js.org/). So you test visual representation of your components in isolate environment and you will not want to return to slow and flaky e2e screenshots anymore.
-
 ## Contents
 
 - [Pre-requisites](#pre-requisites)
 - [How to Start](#how-to-start)
+- [Comparison with other tools](#comparison-with-other-tools)
 - [Config/Options](#configoptions)
   - [CLI Options](#cli-options)
   - [Creevey config](#creevey-config)
   - [Storybook parameters](#storybook-parameters)
 - [Use your Selenium Grid (BrowserStack/SauceLabs/etc)](#use-your-selenium-grid-browserstacksaucelabsetc)
 - [Write tests](#write-tests)
-- [Comparison with other tools](#comparison-with-other-tools)
 - [Creevey under the hood](#creevey-under-the-hood)
 - [Future plans](#future-plans)
 - [Known issues](#known-issues)
@@ -29,7 +27,6 @@ Main goal of Creevey take visual testing to a new level. Allow you to get fast a
 ## Pre-requisites
 
 - Make sure you have installed [Docker](https://www.docker.com/products/docker-desktop). But if you going to use your own separate Selenium Grid, you don't need `Docker`.
-- Also I highly recommend you to setup [Git LFS](https://git-lfs.github.com/) in your project. Git LFS allow you to store your screenshots outside git history.
 
 ## How to start
 
@@ -62,6 +59,19 @@ yarn creevey --ui
 ```
 
 And that's it. In first run you may noticed, that all you tests are failing, it because you don't have source screenshot images yet. If you think, that all images are acceptable, you may approve them all in one command `yarn creevey --update`.
+
+## Comparison with other tools
+
+| Features\Tools    | Creevey            | Storyshots         | Hermione           | Loki               | BackstopJS         | Percy/Happo        | Chromatic          |
+| ----------------- | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ |
+| Easy-to-Setup     | :heavy_check_mark: | :warning:          | :no_entry:         | :heavy_check_mark: | :no_entry:         | :heavy_check_mark: | :heavy_check_mark: |
+| Cross-browser     | :heavy_check_mark: | :no_entry:         | :heavy_check_mark: | :warning:          | :no_entry:         | :heavy_check_mark: | :heavy_check_mark: |
+| Storybook Support | :heavy_check_mark: | :heavy_check_mark: | :no_entry:         | :heavy_check_mark: | :no_entry:         | :heavy_check_mark: | :heavy_check_mark: |
+| Test Interaction  | :heavy_check_mark: | :warning:          | :heavy_check_mark: | :no_entry:         | :heavy_check_mark: | :no_entry:         | :no_entry:         |
+| UI Test Runner    | :heavy_check_mark: | :no_entry:         | :heavy_check_mark: | :no_entry:         | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| Built-in Docker   | :heavy_check_mark: | :no_entry:         | :no_entry:         | :heavy_check_mark: | :heavy_check_mark: | :warning:          | :warning:          |
+| Tests hot-reload  | :heavy_check_mark: | :no_entry:         | :no_entry:         | :no_entry:         | :no_entry:         | :no_entry:         | :no_entry:         |
+| OpenSource/SaaS   | OpenSource         | OpenSource         | OpenSource         | OpenSource         | OpenSource         | SaaS               | SaaS               |
 
 ## Config/Options
 
@@ -294,19 +304,6 @@ Basic.story = {
 ```
 
 NOTE: In this example I fill some simple form and submit it. Also as you could see, I taking two different screenshots `empty` and `submitted` and assert these in the end.
-
-## Comparison with other tools
-
-| Features\Tools    | Creevey            | Storyshots         | Hermione           | Loki               | BackstopJS         | Percy/Happo        | Chromatic          |
-| ----------------- | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ |
-| Easy-to-Setup     | :heavy_check_mark: | :warning:          | :no_entry:         | :heavy_check_mark: | :no_entry:         | :heavy_check_mark: | :heavy_check_mark: |
-| Cross-browser     | :heavy_check_mark: | :no_entry:         | :heavy_check_mark: | :warning:          | :no_entry:         | :heavy_check_mark: | :heavy_check_mark: |
-| Storybook Support | :heavy_check_mark: | :heavy_check_mark: | :no_entry:         | :heavy_check_mark: | :no_entry:         | :heavy_check_mark: | :heavy_check_mark: |
-| Test Interaction  | :heavy_check_mark: | :warning:          | :heavy_check_mark: | :no_entry:         | :heavy_check_mark: | :no_entry:         | :no_entry:         |
-| UI Test Runner    | :heavy_check_mark: | :no_entry:         | :heavy_check_mark: | :no_entry:         | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
-| Built-in Docker   | :heavy_check_mark: | :no_entry:         | :no_entry:         | :heavy_check_mark: | :heavy_check_mark: | :warning:          | :warning:          |
-| Tests hot-reload  | :heavy_check_mark: | :no_entry:         | :no_entry:         | :no_entry:         | :no_entry:         | :no_entry:         | :no_entry:         |
-| OpenSource/SaaS   | OpenSource         | OpenSource         | OpenSource         | OpenSource         | OpenSource         | SaaS               | SaaS               |
 
 ## Creevey under the hood
 

@@ -138,6 +138,7 @@ export default async function compile(config: Config, { debug, ui }: Options): P
   };
 
   // NOTE Add creevey-loader to cut off all unnecessary code except stories meta and tests
+  // TODO Apply only for stories and preview.js
   storybookWebpackConfig.module?.rules.unshift({
     enforce: 'pre',
     test: new RegExp(`\\.(${extensions.map((x) => x.slice(1))?.join('|')})$`),
