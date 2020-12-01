@@ -254,7 +254,8 @@
 
 ## (v0.7.x)
 
-- [ ] Rewrite description to more clear one
+- [ ] update demo video
+- [x] Rewrite description to more clear one
 - [x] Add ABBYY logo
 - [x] Rework github actions workflows
 - [x] Add CI example in docs
@@ -290,7 +291,6 @@
     - Avoid write side-effects
     - Don't generate CSF dynamically
   - [ ] Fix png logos
-  - [ ] update demo video
   - [ ] Add instruction for various frameworks
     - [ ] Web components
     - [ ] Create React App Typescript

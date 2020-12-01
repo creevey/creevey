@@ -1,6 +1,6 @@
-# Creevey
+# 📸+👦🏼 [Creevey](https://harrypotter.fandom.com/wiki/Colin_Creevey)
 
-Screenshot testing tool for [Storybook](https://storybook.js.org/) with fancy UI Runner.
+Cross-browser screenshot testing tool for [Storybook](https://storybook.js.org/) with fancy UI Runner.
 
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 
@@ -8,14 +8,14 @@ Screenshot testing tool for [Storybook](https://storybook.js.org/) with fancy UI
 
 ## Core features
 
-- Integrates with Storybook
-- Uses stories as tests
-- Allows write interaction tests
-- Has fancy UI Runner
-- Supports Docker
-- Cross-browsers testing
-- Tests hot-reloading
-- CI Ready
+- 📚 Integrates with Storybook
+- 📜 Uses stories as tests
+- ✏️ Allows write interaction tests
+- ✨ Has fancy UI Runner
+- 🐳 Supports Docker
+- ⚔️ Cross-browsers testing
+- 🔥 Tests hot-reloading
+- ⚙️ CI Ready
 
 It named after [Colin Creevey](https://harrypotter.fandom.com/wiki/Colin_Creevey) character from the Harry Potter universe.
 
