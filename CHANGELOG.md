@@ -1,3 +1,10 @@
+## [0.7.3](https://github.com/wKich/creevey/compare/v0.7.2...v0.7.3) (2020-12-02)
+
+### Features
+
+- 🎸 apply disable animation styles in storybook decorator ([6dac967](https://github.com/wKich/creevey/commit/6dac96768f6b7953c56e22239a2adcf686f9aabb))
+- 🎸 remove skbkontur ip address resolver ([91e17f4](https://github.com/wKich/creevey/commit/91e17f4f0e87b553bad367eda10ed30a1246be9e))
+
 ## [0.7.2](https://github.com/wKich/creevey/compare/v0.7.1...v0.7.2) (2020-11-28)
 
 ### Bug Fixes
