@@ -4,7 +4,7 @@ Cross-browser screenshot testing tool for [Storybook](https://storybook.js.org/)
 
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 
-![Creevey Demo](https://user-images.githubusercontent.com/6397708/84031069-7cb71b80-a9ae-11ea-8109-2a5628879029.gif)
+![Creevey Demo](https://user-images.githubusercontent.com/6397708/100863723-cd6b8500-34b6-11eb-94e1-849590bc8066.gif)
 
 ## Core features
 
