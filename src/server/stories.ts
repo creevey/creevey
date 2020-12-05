@@ -134,7 +134,7 @@ function flatStories({ globalParameters, kindParameters, stories }: SetStoriesDa
       globalParameters,
       kindParameters[story.kind],
       story.parameters,
-      (_: unknown, srcValue: unknown) => (Array.isArray(srcValue) ? (srcValue as unknown[]) : undefined),
+      (objValue: unknown, srcValue: unknown) => (Array.isArray(objValue) ? objValue.concat(srcValue) : undefined),
     );
   });
 

@@ -10,4 +10,8 @@ void creevey
       'actual.json',
       JSON.stringify(tests, (_, value) => (typeof value == 'function' ? value.toString() : value), 2),
     ),
-  );
+  )
+  .catch((error) => {
+    console.error(error);
+    process.exit(-1);
+  });

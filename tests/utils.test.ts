@@ -2,6 +2,7 @@ import { describe, it } from 'mocha';
 import { expect } from 'chai';
 import { shouldSkip } from '../src/server/utils';
 
+// TODO Write tests
 describe('shouldSkip', () => {
   describe('kinds', () => {
     it('match story by array of kinds', () => {

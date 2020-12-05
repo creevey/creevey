@@ -254,6 +254,11 @@
 
 ## (v0.7.x)
 
+- [ ] Bugs
+  - [ ] Add timeout to resolver
+  - [x] Incorrect merge skip params (global + local)
+  - [ ] Don't have hot reload on preview config storybook
+  - [ ] Fix unnecessary images report for windows
 - [ ] update demo video
 - [x] Rewrite description to more clear one
 - [x] Add ABBYY logo

@@ -12,3 +12,13 @@ ImportedTests.parameters = {
     tests: clickTests
   }
 }
+
+export const SkippedTests: Story = () => <div />
+SkippedTests.parameters = {
+  creevey: {
+    skip: [{
+      in: 'browser',
+      tests: ['testB']
+    }]
+  }
+}

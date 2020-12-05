@@ -15,16 +15,67 @@
       "name": "Imported Tests",
       "story": "Imported Tests",
       "parameters": {
-        "framework": "creevey",
-        "fileName": "./stories/KindA.stories.tsx",
-        "args": {},
-        "argTypes": {},
         "creevey": {
+          "skip": [
+            {
+              "in": "browser",
+              "tests": [
+                "TestA"
+              ]
+            }
+          ],
           "tests": {
             "click": "function click() {\n      return _click.apply(this, arguments);\n    }"
           }
         },
+        "framework": "creevey",
+        "fileName": "./stories/KindA.stories.tsx",
+        "args": {},
+        "argTypes": {},
         "__id": "kinda--imported-tests",
+        "__isArgsStory": false
+      },
+      "args": {},
+      "initialArgs": {}
+    },
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+  },
+  "f714e614a514eabb60925186af9d2a1980288815": {
+    "id": "f714e614a514eabb60925186af9d2a1980288815",
+    "skip": false,
+    "path": [
+      "chrome",
+      "Skipped Tests",
+      "KindA"
+    ],
+    "storyId": "kinda--skipped-tests",
+    "story": {
+      "id": "kinda--skipped-tests",
+      "kind": "KindA",
+      "name": "Skipped Tests",
+      "story": "Skipped Tests",
+      "parameters": {
+        "creevey": {
+          "skip": [
+            {
+              "in": "browser",
+              "tests": [
+                "TestA"
+              ]
+            },
+            {
+              "in": "browser",
+              "tests": [
+                "testB"
+              ]
+            }
+          ]
+        },
+        "framework": "creevey",
+        "fileName": "./stories/KindA.stories.tsx",
+        "args": {},
+        "argTypes": {},
+        "__id": "kinda--skipped-tests",
         "__isArgsStory": false
       },
       "args": {},

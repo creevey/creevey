@@ -17,6 +17,7 @@ const execSync = (command: string, options?: ExecOptions): void => {
 // SubKinds
 // mdx
 // from frameworks (angular, react, vue, nextjs, etc)
+// Apply loader only for stories files
 
 // 6.1 https://github.com/storybookjs/storybook/blob/next/MIGRATION.md#single-story-hoisting
 
@@ -45,15 +46,11 @@ describe('Storybook E2E', function () {
   afterEach(function () {
     if (!this.currentTest) throw new Error("Can't get test name");
     if (!('tempDir' in this) || typeof this.tempDir != 'string') throw new Error("Can't get temp directory path");
-    try {
-      shell.cp(
-        join(this.tempDir, 'actual.json'),
-        join(__dirname, 'storybook.fixtures', this.currentTest.title, 'expect.json'),
-      );
-    } catch (_) {
-      /* noop */
-    }
-    shell.rm('-rf', this.tempDir);
+    const { code } = shell.cp(
+      join(this.tempDir, 'actual.json'),
+      join(__dirname, 'storybook.fixtures', this.currentTest.title, 'expect.json'),
+    );
+    if (code == 0) shell.rm('-rf', this.tempDir);
   });
 
   readdirSync(join(__dirname, 'storybook.fixtures')).forEach((testName) => {
