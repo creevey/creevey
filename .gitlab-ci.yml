@@ -20,12 +20,16 @@ build:
   script:
     - yarn build
     - yarn pack
+e2e:
+  script:
+    - yarn test:e2e
+
+tests:
+  # artifacts:
+  #   paths:
+  #     - report/
+  script:
+    - yarn test:unit
 # NOTE: Disable test until allow use standalone binary for selenoid
-# test:
-#   artifacts:
-#     paths:
-#       - report/
-#   script:
-#     - yarn test
-#     - yarn start:storybook &
-#     - yarn creevey
+#    - yarn start:storybook &
+#    - yarn creevey
