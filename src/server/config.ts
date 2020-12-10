@@ -6,6 +6,7 @@ import { requireConfig } from './utils';
 export const defaultBrowser = 'chrome';
 
 export const defaultConfig: Omit<Config, 'gridUrl'> = {
+  useDocker: true,
   storybookUrl: 'http://localhost:6006',
   screenDir: path.resolve('images'),
   reportDir: path.resolve('report'),
@@ -46,11 +47,8 @@ export async function readConfig(options: Options): Promise<Config | null> {
 
   if (options.reportDir) userConfig.reportDir = path.resolve(options.reportDir);
   if (options.screenDir) userConfig.screenDir = path.resolve(options.screenDir);
-
-  let useDocker = !userConfig.gridUrl;
-
   // NOTE disable docker for webpack or update workers
-  if (options.webpack || options.update) useDocker = false;
+  if (options.webpack || options.update) userConfig.useDocker = false;
 
   // NOTE: Hack to pass typescript checking
   const config = userConfig as Config;
@@ -59,9 +57,15 @@ export async function readConfig(options: Options): Promise<Config | null> {
     ([browser, browserConfig]) => (config.browsers[browser] = normalizeBrowserConfig(browser, browserConfig)),
   );
 
-  if (useDocker) {
-    return (await import('./docker')).default(config, options);
+  if (userConfig.gridUrl) {
+    return config;
   }
 
-  return config;
+  if (userConfig.useDocker) {
+    return (await import('./docker')).default(config, options.browser, async () =>
+      (await import('./selenium/selenoid')).startSelenoidContainer(config, options.debug),
+    );
+  } else {
+    return (await import('./selenium/selenoid')).startSelenoidStandalone(config, options.debug);
+  }
 }

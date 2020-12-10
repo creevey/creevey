@@ -27,6 +27,7 @@ async function resolveStorybookUrl(browser: WebDriver, storybookUrl: string): Pr
   for (const ip of addresses) {
     const resolvedUrl = storybookUrl.replace(LOCALHOST_REGEXP, ip);
     try {
+      // TODO Timeout
       await browser.get(resolvedUrl);
       return resolvedUrl;
     } catch (error) {

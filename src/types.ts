@@ -89,10 +89,15 @@ export type BrowserConfig = Capabilities & {
   gridUrl?: string;
   storybookUrl?: string;
   /**
-   * Specify custom docker image
+   * Specify custom docker image. Used only with `useDocker == true`
    * @default `selenoid/${browserName}:${version}`
    */
   dockerImage?: string;
+  /**
+   * Command to start standalone webdriver
+   * Used only with `useDocker == false`
+   */
+  webdriverCommand?: string[];
   viewport?: { width: number; height: number };
 };
 
@@ -104,6 +109,12 @@ export interface HookConfig {
 }
 
 export interface Config {
+  /**
+   * Allows you to start selenoid without docker
+   * And use standalone browsers
+   * @default true
+   */
+  useDocker: boolean;
   /**
    * Url to Selenium grid hub or standalone selenium.
    * By default creevey will use docker containers
@@ -148,6 +159,11 @@ export interface Config {
    * Hooks that allow run custom script before and after creevey start
    */
   hooks: HookConfig;
+  /**
+   * Creevey automatically download latest selenoid binary. You can define path to different verison.
+   * Works only with `useDocker == false`
+   */
+  selenoidPath?: string;
 }
 
 export type CreeveyConfig = Partial<Config>;
