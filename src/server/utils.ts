@@ -91,17 +91,25 @@ export function requireConfig<T>(configPath: string): T {
   return configModule && configModule.__esModule ? configModule.default : configModule;
 }
 
-export function shutdownWorkers(): void {
+export async function shutdownWorkers(): Promise<void> {
   emitShutdownMessage();
-  Object.values(cluster.workers)
-    .filter(isDefined)
-    .filter((worker) => worker.isConnected())
-    .forEach((worker) => {
-      const timeout = setTimeout(() => worker.kill(), 10000);
-      worker.on('exit', () => clearTimeout(timeout));
-      sendShutdownMessage(worker);
-      worker.disconnect();
-    });
+  await Promise.all(
+    Object.values(cluster.workers)
+      .filter(isDefined)
+      .filter((worker) => worker.isConnected())
+      .map(
+        (worker) =>
+          new Promise<void>((resolve) => {
+            const timeout = setTimeout(() => worker.kill(), 10000);
+            worker.on('exit', () => {
+              clearTimeout(timeout);
+              resolve();
+            });
+            sendShutdownMessage(worker);
+            worker.disconnect();
+          }),
+      ),
+  );
 }
 
 export function getStorybookVersion(): string {
@@ -121,7 +129,7 @@ export function isStorybookVersionLessThan(major: number, minor?: number): boole
 }
 
 export function getCreeveyCache(): string {
-  return findCacheDir({ name: 'creevey' }) as string;
+  return findCacheDir({ name: 'creevey', cwd: __dirname }) as string;
 }
 
 export async function runSequence(seq: Array<() => unknown>, predicate: () => boolean): Promise<void> {

@@ -6,7 +6,7 @@ import { describe, beforeEach, afterEach, it, before } from 'mocha';
 import { expect } from 'chai';
 
 const execSync = (command: string, options?: ExecOptions): void => {
-  const result = shell.exec(command, { silent: true, fatal: true, ...options, async: false });
+  const result = shell.exec(command, { fatal: true, ...options, async: false });
   if (result.code != 0) throw new Error(result.stderr);
 };
 
