@@ -1,4 +1,4 @@
-import fs from 'fs';
+import fs, { existsSync, readFileSync } from 'fs';
 import path from 'path';
 import cluster from 'cluster';
 import { SkipOptions, isDefined, Test } from '../types';
@@ -151,3 +151,6 @@ export function testsToImages(tests: (Test | undefined)[]): Set<string> {
     ),
   );
 }
+
+// https://tuhrig.de/how-to-know-you-are-inside-a-docker-container/
+export const isInsideDocker = existsSync('/proc/1/cgroup') && /docker/.test(readFileSync('/proc/1/cgroup', 'utf8'));
