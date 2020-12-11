@@ -1,13 +1,13 @@
 import path from 'path';
 import { promisify } from 'util';
 import { Writable } from 'stream';
-import { mkdir, writeFile, readFileSync, existsSync } from 'fs';
+import { mkdir, writeFile } from 'fs';
 import cluster, { isMaster } from 'cluster';
 import Docker, { Container } from 'dockerode';
 import ora from 'ora';
 import { Config, BrowserConfig, Options, isDockerMessage } from '../types';
 import { subscribeOn, sendDockerMessage, emitDockerMessage } from './messages';
-import { getCreeveyCache, LOCALHOST_REGEXP } from './utils';
+import { getCreeveyCache, isInsideDocker, LOCALHOST_REGEXP } from './utils';
 
 const mkdirAsync = promisify(mkdir);
 const writeFileAsync = promisify(writeFile);
@@ -19,9 +19,6 @@ class DevNull extends Writable {
     setImmediate(callback);
   }
 }
-
-// https://tuhrig.de/how-to-know-you-are-inside-a-docker-container/
-const isInsideDocker = existsSync('/proc/1/cgroup') && /docker/.test(readFileSync('/proc/1/cgroup', 'utf8'));
 
 async function startSelenoidContainer(config: Config, debug: boolean): Promise<string> {
   const selenoidImage = 'aerokube/selenoid:latest-release';
