@@ -20,9 +20,9 @@ build:
   script:
     - yarn build
     - yarn pack
-e2e:
-  script:
-    - yarn test:e2e
+# e2e:
+#   script:
+#     - yarn test:e2e
 
 tests:
   # artifacts:

@@ -1,14 +1,10 @@
-import { readFileSync, existsSync } from 'fs';
 import cluster, { isMaster } from 'cluster';
 import { Config, BrowserConfig, isDockerMessage } from '../types';
 import { subscribeOn, sendDockerMessage, emitDockerMessage } from './messages';
-import { LOCALHOST_REGEXP } from './utils';
+import { isInsideDocker, LOCALHOST_REGEXP } from './utils';
 import Dockerode, { Container } from 'dockerode';
 import { Writable } from 'stream';
 import ora from 'ora';
-
-// https://tuhrig.de/how-to-know-you-are-inside-a-docker-container/
-const isInsideDocker = existsSync('/proc/1/cgroup') && /docker/.test(readFileSync('/proc/1/cgroup', 'utf8'));
 
 const docker = new Dockerode();
 

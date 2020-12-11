@@ -1,4 +1,4 @@
-import fs from 'fs';
+import fs, { existsSync, readFileSync } from 'fs';
 import path from 'path';
 import cluster from 'cluster';
 import { SkipOptions, isDefined, Test } from '../types';
@@ -91,17 +91,25 @@ export function requireConfig<T>(configPath: string): T {
   return configModule && configModule.__esModule ? configModule.default : configModule;
 }
 
-export function shutdownWorkers(): void {
+export async function shutdownWorkers(): Promise<void> {
   emitShutdownMessage();
-  Object.values(cluster.workers)
-    .filter(isDefined)
-    .filter((worker) => worker.isConnected())
-    .forEach((worker) => {
-      const timeout = setTimeout(() => worker.kill(), 10000);
-      worker.on('exit', () => clearTimeout(timeout));
-      sendShutdownMessage(worker);
-      worker.disconnect();
-    });
+  await Promise.all(
+    Object.values(cluster.workers)
+      .filter(isDefined)
+      .filter((worker) => worker.isConnected())
+      .map(
+        (worker) =>
+          new Promise<void>((resolve) => {
+            const timeout = setTimeout(() => worker.kill(), 10000);
+            worker.on('exit', () => {
+              clearTimeout(timeout);
+              resolve();
+            });
+            sendShutdownMessage(worker);
+            worker.disconnect();
+          }),
+      ),
+  );
 }
 
 export function getStorybookVersion(): string {
@@ -121,7 +129,7 @@ export function isStorybookVersionLessThan(major: number, minor?: number): boole
 }
 
 export function getCreeveyCache(): string {
-  return findCacheDir({ name: 'creevey' }) as string;
+  return findCacheDir({ name: 'creevey', cwd: __dirname }) as string;
 }
 
 export async function runSequence(seq: Array<() => unknown>, predicate: () => boolean): Promise<void> {
@@ -143,3 +151,6 @@ export function testsToImages(tests: (Test | undefined)[]): Set<string> {
     ),
   );
 }
+
+// https://tuhrig.de/how-to-know-you-are-inside-a-docker-container/
+export const isInsideDocker = existsSync('/proc/1/cgroup') && /docker/.test(readFileSync('/proc/1/cgroup', 'utf8'));

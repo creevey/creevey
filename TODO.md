@@ -257,9 +257,11 @@
 - [ ] Bugs
   - [ ] Add timeout to resolver
   - [x] Incorrect merge skip params (global + local)
-  - [ ] Don't have hot reload on preview config storybook
-  - [ ] Fix unnecessary images report for windows
-- [ ] update demo video
+  - [x] Fix unnecessary images report for windows
+  - [x] Store cache inside creevey package dir (fix core-js versions)
+- [ ] Write config description instead of config example
+- [ ] Hide some advanced docs in other pages
+- [x] update demo video
 - [x] Rewrite description to more clear one
 - [x] Add ABBYY logo
 - [x] Rework github actions workflows
@@ -295,6 +297,7 @@
     - Git LFS
     - Avoid write side-effects
     - Don't generate CSF dynamically
+    - Do side-effect in separate files (examples)
   - [ ] Fix png logos
   - [ ] Add instruction for various frameworks
     - [ ] Web components
@@ -302,6 +305,7 @@
     - [ ] Gatsby
     - [ ] Next.js
 - [ ] Bugs
+  - [ ] Don't have hot reload on preview config storybook
   - [ ] Use native composite screenshots for browsers which support it
   - [ ] Fix taking composite screenshots with hidden scrollbar
     - Don't use scrollBarWidth or hasScrollBar helpers
@@ -310,6 +314,7 @@
     - Iterate be screen images and calculate resulting x/y coordinates for composite image
     - If image width/height greater than viewport width/height than scroll bar is captured
 - [x] ~~Support esm/cjs builds~~
+- [ ] Download webdriver binary automatically
 - [ ] Update CircleCI and GitLab according by github actions
 - [ ] Add edge cases for e2e tests
 - [ ] Figure out if I need use my own react and setup this https://reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html or I need to use react from storybook
@@ -321,6 +326,10 @@
   - [ ] Playwright
   - [ ] Puppeteer
 - [ ] Features
+  - [ ] Move creevey config inside addon
+    - Describe storybook config dir in args
+    - How to deal with fallback option?
+    - Load addons from storybook api
   - [ ] Add link `go to runner` in addon UI
   - [ ] Add option to apply custom styles to #root or something else
   - [ ] Try to use odiff tool (https://github.com/dmtrKovalenko/odiff)

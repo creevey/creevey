@@ -4,7 +4,8 @@ import { Builder, By, until, WebDriver, Origin } from 'selenium-webdriver';
 import { Config, BrowserConfig, StoryInput, CreeveyStoryParams, noop, isDefined } from '../../types';
 import { subscribeOn } from '../messages';
 import { networkInterfaces } from 'os';
-import { runSequence, LOCALHOST_REGEXP } from '../utils';
+import { runSequence, LOCALHOST_REGEXP, isInsideDocker } from '../utils';
+import { get } from 'http';
 
 declare global {
   interface Window {
@@ -18,8 +19,7 @@ async function resolveStorybookUrl(browser: WebDriver, storybookUrl: string): Pr
   if (!LOCALHOST_REGEXP.test(storybookUrl)) {
     return storybookUrl;
   }
-  const addresses = ([] as string[]).concat(
-    DOCKER_INTERNAL,
+  const addresses = (isInsideDocker ? [DOCKER_INTERNAL] : ([] as string[])).concat(
     ...Object.values(networkInterfaces())
       .filter(isDefined)
       .map((network) => network.filter((info) => info.family == 'IPv4').map((info) => info.address)),
@@ -27,7 +27,9 @@ async function resolveStorybookUrl(browser: WebDriver, storybookUrl: string): Pr
   for (const ip of addresses) {
     const resolvedUrl = storybookUrl.replace(LOCALHOST_REGEXP, ip);
     try {
-      // TODO Timeout
+      await new Promise<void>((resolve, reject) =>
+        get(resolvedUrl, ({ statusCode }) => (statusCode == 200 ? resolve() : reject())),
+      );
       await browser.get(resolvedUrl);
       return resolvedUrl;
     } catch (error) {

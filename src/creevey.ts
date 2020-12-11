@@ -13,7 +13,7 @@ function shutdown(reason: unknown): void {
 
   process.exitCode = -1;
   if (cluster.isWorker) emitWorkerMessage({ type: 'error', payload: { error } });
-  if (cluster.isMaster) shutdownWorkers();
+  if (cluster.isMaster) void shutdownWorkers();
 }
 
 process.on('uncaughtException', shutdown);

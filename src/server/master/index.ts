@@ -45,7 +45,7 @@ function readDirRecursive(dirPath: string): string[] {
 
 function outputUnnecessaryImages(imagesDir: string, images: Set<string>): void {
   const unnecessaryImages = readDirRecursive(imagesDir)
-    .map((imagePath) => path.relative(imagesDir, imagePath))
+    .map((imagePath) => path.posix.relative(imagesDir, imagePath))
     .filter((imagePath) => !images.has(imagePath));
   if (unnecessaryImages.length > 0) {
     console.log('We found unnecessary screenshot images, that can be freely removed:');
@@ -86,7 +86,8 @@ export default async function (config: Config, options: Options): Promise<void> 
       // TODO output summary
       process.exitCode = isSuccess ? 0 : -1;
       outputUnnecessaryImages(config.screenDir, testsToImages(tests));
-      shutdownWorkers();
+      // eslint-disable-next-line no-process-exit
+      void shutdownWorkers().then(() => process.exit());
     });
     // TODO grep
     runner.start(Object.keys(runner.status.tests));
