@@ -27,7 +27,7 @@ async function resolveStorybookUrl(browser: WebDriver, storybookUrl: string): Pr
   for (const ip of addresses) {
     const resolvedUrl = storybookUrl.replace(LOCALHOST_REGEXP, ip);
     try {
-      await new Promise((resolve, reject) =>
+      await new Promise<void>((resolve, reject) =>
         get(resolvedUrl, ({ statusCode }) => (statusCode == 200 ? resolve() : reject())),
       );
       await browser.get(resolvedUrl);
