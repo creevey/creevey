@@ -1,9 +1,10 @@
-import fs, { existsSync, readFileSync } from 'fs';
+import fs, { createWriteStream, existsSync, readFileSync, unlink } from 'fs';
 import path from 'path';
 import cluster from 'cluster';
-import { SkipOptions, isDefined, Test } from '../types';
+import { SkipOptions, isDefined, Test, noop } from '../types';
 import { emitShutdownMessage, sendShutdownMessage } from './messages';
 import findCacheDir from 'find-cache-dir';
+import { get } from 'https';
 
 export const LOCALHOST_REGEXP = /(localhost|127\.0\.0\.1)/i;
 
@@ -154,3 +155,30 @@ export function testsToImages(tests: (Test | undefined)[]): Set<string> {
 
 // https://tuhrig.de/how-to-know-you-are-inside-a-docker-container/
 export const isInsideDocker = existsSync('/proc/1/cgroup') && /docker/.test(readFileSync('/proc/1/cgroup', 'utf8'));
+
+export const downloadBinary = (downloadUrl: string, destination: string): Promise<void> =>
+  new Promise((resolve, reject) =>
+    get(downloadUrl, (response) => {
+      if (response.statusCode == 302) {
+        const { location } = response.headers;
+        if (!location)
+          return reject(new Error(`Couldn't download selenoid. Status code: ${response.statusCode ?? 'UNKNOWN'}`));
+
+        return resolve(downloadBinary(location, destination));
+      }
+      if (response.statusCode != 200)
+        return reject(new Error(`Couldn't download selenoid. Status code: ${response.statusCode ?? 'UNKNOWN'}`));
+
+      const fileStream = createWriteStream(destination);
+      response.pipe(fileStream);
+
+      fileStream.on('finish', () => {
+        fileStream.close();
+        resolve();
+      });
+      fileStream.on('error', (error) => {
+        unlink(destination, noop);
+        reject(error);
+      });
+    }),
+  );

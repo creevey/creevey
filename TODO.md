@@ -254,8 +254,8 @@
 
 ## (v0.7.x)
 
-- [ ] Bugs
-  - [ ] Add timeout to resolver
+- [x] Bugs
+  - [x] Add timeout to resolver
   - [x] Incorrect merge skip params (global + local)
   - [x] Fix unnecessary images report for windows
   - [x] Store cache inside creevey package dir (fix core-js versions)
@@ -314,7 +314,7 @@
     - Iterate be screen images and calculate resulting x/y coordinates for composite image
     - If image width/height greater than viewport width/height than scroll bar is captured
 - [x] ~~Support esm/cjs builds~~
-- [ ] Download webdriver binary automatically
+- [ ] Download webdriver binary automatically (see example: https://hub.docker.com/r/selenoid/chrome/dockerfile)
 - [ ] Update CircleCI and GitLab according by github actions
 - [ ] Add edge cases for e2e tests
 - [ ] Figure out if I need use my own react and setup this https://reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html or I need to use react from storybook
