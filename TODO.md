@@ -259,6 +259,13 @@
   - [x] Incorrect merge skip params (global + local)
   - [x] Fix unnecessary images report for windows
   - [x] Store cache inside creevey package dir (fix core-js versions)
+  - [x] Correctly resize images in views using correct proportions (smaller image should shrink if larger shrink too, max-width/max-height doesn't work)
+  - [x] Scale images properly (Use naturalWidth image prop for scale in views)
+  - [x] Images switch freeze
+  - [x] creevey-loader `private members`
+  - [ ] creevey-loader `top-level property access`
+  - [ ] webpack config dll references (disable dll plugin)
+- [ ] Add more tests on different esnext features (test babel-parser + plugins)
 - [ ] Write config description instead of config example
 - [ ] Hide some advanced docs in other pages
 - [x] update demo video
@@ -279,13 +286,6 @@
 - [ ] Improve Docker
   - [ ] Private docker images registry
   - [x] Allow use standalone binary instead of Docker image for browser (https://aerokube.com/selenoid/latest/#_standalone_binary)
-- [ ] Bugs
-  - [x] Correctly resize images in views using correct proportions (smaller image should shrink if larger shrink too, max-width/max-height doesn't work)
-  - [x] Scale images properly (Use naturalWidth image prop for scale in views)
-  - [x] Images switch freeze
-  - [ ] creevey-loader `top-level property access`
-  - [ ] creevey-loader `private members`
-  - [ ] webpack config dll references (disable dll plugin)
 
 ## First priority (v0.8)
 
