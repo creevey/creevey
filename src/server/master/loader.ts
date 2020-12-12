@@ -19,7 +19,14 @@ function tryParse(source: string, options: OptionObject): { ast?: t.File; done: 
       // TODO minimal plugins setup
       ast: parse(source, {
         sourceType: 'module',
-        plugins: ['classProperties', 'decorators-legacy', 'jsx', 'typescript'],
+        plugins: [
+          'classProperties',
+          'decorators-legacy',
+          'jsx',
+          'typescript',
+          'classPrivateMethods',
+          'classPrivateProperties',
+        ],
       }),
       done: true,
     };

@@ -20,12 +20,20 @@ build:
   script:
     - yarn build
     - yarn pack
-# NOTE: Disable test until allow use standalone binary for selenoid
-# test:
+unit:
+  script:
+    - yarn test:unit
+
+# NOTE: This job failed by timeout
+# e2e:
+#   script:
+#     - yarn test:e2e
+
+# NOTE: Need to build custom docker image
+# ui:
 #   artifacts:
 #     paths:
 #       - report/
 #   script:
-#     - yarn test
 #     - yarn start:storybook &
 #     - yarn creevey

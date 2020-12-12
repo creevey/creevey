@@ -45,12 +45,14 @@ export default async function master(config: Config, watch: boolean): Promise<Ru
       void Promise.race([
         new Promise((resolve) => setTimeout(resolve, 10000)),
         new Promise((resolve) => runner.once('stop', resolve)),
-      ]).then(() => {
-        shutdownWorkers();
-      });
+      ])
+        .then(() => shutdownWorkers())
+        // eslint-disable-next-line no-process-exit
+        .then(() => process.exit());
       runner.stop();
     } else {
-      shutdownWorkers();
+      // eslint-disable-next-line no-process-exit
+      void shutdownWorkers().then(() => process.exit());
     }
   });
 

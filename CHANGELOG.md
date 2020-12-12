@@ -1,3 +1,11 @@
+## [0.7.4](https://github.com/wKich/creevey/compare/v0.7.3...v0.7.4) (2020-12-11)
+
+### Bug Fixes
+
+- 🐛 change cache dir, some issues on windows ([c2e4f34](https://github.com/wKich/creevey/commit/c2e4f34e3ea70c85c60d1e37b20b6f6ff324dda7))
+- 🐛 merge skip options properly ([24427af](https://github.com/wKich/creevey/commit/24427af40e812478b9832ae82d2dd64e3e146805))
+- 🐛 resolve grid url without docker ([97e06fe](https://github.com/wKich/creevey/commit/97e06fe8c92496a99e659e8f221428bb4bb4062d))
+
 ## [0.7.3](https://github.com/wKich/creevey/compare/v0.7.2...v0.7.3) (2020-12-02)
 
 ### Features
