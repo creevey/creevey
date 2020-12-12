@@ -47,8 +47,6 @@ export async function readConfig(options: Options): Promise<Config | null> {
 
   if (options.reportDir) userConfig.reportDir = path.resolve(options.reportDir);
   if (options.screenDir) userConfig.screenDir = path.resolve(options.screenDir);
-  // NOTE disable docker for webpack or update workers
-  if (options.webpack || options.update) userConfig.useDocker = false;
 
   // NOTE: Hack to pass typescript checking
   const config = userConfig as Config;
@@ -57,7 +55,8 @@ export async function readConfig(options: Options): Promise<Config | null> {
     ([browser, browserConfig]) => (config.browsers[browser] = normalizeBrowserConfig(browser, browserConfig)),
   );
 
-  if (userConfig.gridUrl) {
+  // NOTE: We don't need docker nor selenoid for webpack or update options
+  if (userConfig.gridUrl || options.webpack || options.update) {
     return config;
   }
 

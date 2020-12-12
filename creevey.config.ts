@@ -1,14 +1,14 @@
 import path from 'path';
+import { isInsideDocker } from './src/server/utils';
 import { CreeveyConfig } from './src/types';
 
 const config: CreeveyConfig = {
-  useDocker: process.env.CI ? false : true,
+  useDocker: isInsideDocker ? false : true,
   maxRetries: process.env.CI ? 1 : 0,
   screenDir: path.join(__dirname, 'stories', 'images'),
   browsers: {
     chrome: {
       browserName: 'chrome',
-      webdriverCommand: ['chromedriver'],
       viewport: { width: 1024, height: 720 },
     },
     // ie11: {
@@ -17,7 +17,6 @@ const config: CreeveyConfig = {
     // },
     firefox: {
       browserName: 'firefox',
-      webdriverCommand: ['geckodriver'],
       viewport: { width: 1024, height: 720 },
     },
   },
