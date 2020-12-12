@@ -1,10 +1,9 @@
 import path from 'path';
 import { promisify } from 'util';
-import { mkdir, writeFile, createWriteStream, unlink, copyFile } from 'fs';
-import { Config, BrowserConfig, noop } from '../../types';
-import { getCreeveyCache } from '../utils';
+import { mkdir, writeFile, copyFile } from 'fs';
+import { Config, BrowserConfig } from '../../types';
+import { downloadBinary, getCreeveyCache } from '../utils';
 import { pullImages, runImage } from '../docker';
-import { get } from 'https';
 import { Octokit } from '@octokit/core';
 import { execFile } from 'child_process';
 import { subscribeOn } from '../messages';
@@ -67,24 +66,7 @@ async function downloadSelenoidBinary(destination: string): Promise<void> {
     );
   }
 
-  return new Promise((resolve, reject) =>
-    get(downloadUrl, (response) => {
-      if (response.statusCode !== 200)
-        return reject(new Error(`Couldn't download selenoid. Status code: ${response.statusCode ?? 'UNKNOWN'}`));
-
-      const fileStream = createWriteStream(destination);
-      response.pipe(fileStream);
-
-      fileStream.on('finish', () => {
-        fileStream.close();
-        resolve();
-      });
-      fileStream.on('error', (error) => {
-        unlink(destination, noop);
-        reject(error);
-      });
-    }),
-  );
+  return downloadBinary(downloadUrl, destination);
 }
 
 export async function startSelenoidStandalone(config: Config, debug: boolean): Promise<Config> {
