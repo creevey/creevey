@@ -278,10 +278,7 @@
   - [ ] Allow run creevey against static-storybook folder (Depends on fallback tests loading)
 - [ ] Improve Docker
   - [ ] Private docker images registry
-  - [ ] Support docker-in-docker (start storybook and creevey inside docker)
-    - [ ] Start storybook inside docker
-    - [ ] Allow define custom storybook image
-  - [ ] Allow use standalone binary instead of Docker image for browser (https://aerokube.com/selenoid/latest/#_standalone_binary)
+  - [x] Allow use standalone binary instead of Docker image for browser (https://aerokube.com/selenoid/latest/#_standalone_binary)
 - [ ] Bugs
   - [x] Correctly resize images in views using correct proportions (smaller image should shrink if larger shrink too, max-width/max-height doesn't work)
   - [x] Scale images properly (Use naturalWidth image prop for scale in views)
@@ -314,6 +311,8 @@
     - Iterate be screen images and calculate resulting x/y coordinates for composite image
     - If image width/height greater than viewport width/height than scroll bar is captured
 - [x] ~~Support esm/cjs builds~~
+- [ ] Add custom docker images with node+selenoid+browser
+  - [ ] Support GitLab CI
 - [ ] Download webdriver binary automatically (see example: https://hub.docker.com/r/selenoid/chrome/dockerfile)
 - [ ] Update CircleCI and GitLab according by github actions
 - [ ] Add edge cases for e2e tests
@@ -359,6 +358,9 @@
   - [ ] creevey-storybook
   - [ ] examples
 - [ ] Features
+  - [ ] Support docker-in-docker (start storybook and creevey inside docker)
+    - [ ] Start storybook inside docker
+    - [ ] Allow define custom storybook image
   - [ ] Support JUnit mocha reporter
   - [ ] Improve CLI add grep/kind/story option
   - [ ] Setup CREEVEY_ENV (in project use `if (CREEVEY_ENV) {}` and addon define function that check if it inside creevey or not)
