@@ -55,6 +55,17 @@ export function getTestByPath(suite: CreeveySuite, path: string[]): CreeveyTest 
   return isTest(test) ? test : null;
 }
 
+export function getTestsByStoryId(suite: CreeveySuite, storyId: string): CreeveyTest[] {
+  return Object.values(suite.children)
+    .filter(isDefined)
+    .flatMap((suiteOrTest) => {
+      if (isTest(suiteOrTest)) return suiteOrTest.storyId === storyId ? suiteOrTest : [];
+
+      return getTestsByStoryId(suiteOrTest, storyId);
+    })
+    .filter(isDefined);
+}
+
 function checkTests(suiteOrTest: CreeveySuite | CreeveyTest, checked: boolean): void {
   suiteOrTest.checked = checked;
   if (!isTest(suiteOrTest)) {
