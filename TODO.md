@@ -266,8 +266,8 @@
   - [ ] creevey-loader `top-level property access`
   - [ ] webpack config dll references (disable dll plugin)
 - [ ] Add more tests on different esnext features (test babel-parser + plugins)
-- [ ] Write config description instead of config example
-- [ ] Hide some advanced docs in other pages
+- [x] Write config description instead of config example
+- [x] Hide some advanced docs in other pages
 - [x] update demo video
 - [x] Rewrite description to more clear one
 - [x] Add ABBYY logo
@@ -290,6 +290,7 @@
 ## First priority (v0.8)
 
 - [ ] Docs
+  - [ ] Add new options (selenoidPath, webdriverCommand, etc)
   - [ ] Add best practices for stories
     - Git LFS
     - Avoid write side-effects
