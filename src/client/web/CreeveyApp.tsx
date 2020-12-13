@@ -72,7 +72,7 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
       openSuite(tests, path.slice(0, -1), true);
       openTest(path);
     }
-  }, []);
+  }, [tests]);
 
   // TODO unsubscribe
   useEffect(
