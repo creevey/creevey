@@ -19,7 +19,7 @@ export function TestLink({ title, opened, test }: TestLinkProps): JSX.Element {
   const emptyResults = (test?.results?.length ?? 0) == 0;
 
   const handleCheck = (value: boolean): void => onSuiteToggle(test.path, value);
-  const handleOpen = (): void => onOpenTest(test.path);
+  const handleOpen = (): void => onOpenTest(test);
 
   return (
     <Container disabled={emptyResults}>

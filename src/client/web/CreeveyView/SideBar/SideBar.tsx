@@ -15,14 +15,14 @@ import { styled, withTheme } from '@storybook/theming';
 import { transparentize } from 'polished';
 import { ScrollArea } from '@storybook/components';
 
-export const SideBarContext = createContext<{ onOpenTest: (path: string[]) => void }>({
+export const SideBarContext = createContext<{ onOpenTest: (test: CreeveyTest) => void }>({
   onOpenTest: noop,
 });
 
 export interface SideBarProps {
   rootSuite: CreeveySuite;
   openedTest: CreeveyTest | null;
-  onOpenTest: (path: string[]) => void;
+  onOpenTest: (test: CreeveyTest) => void;
 }
 
 const Container = withTheme(

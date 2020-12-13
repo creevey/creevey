@@ -10,14 +10,17 @@ export function managerEntries(entry: string[] = []): string[] {
 
 declare global {
   const __CREEVEY_SERVER_PORT__: number;
+  const __CREEVEY_CLIENT_PORT__: number | null;
 }
 export interface CreeveyAddonOptions {
   creeveyPort?: number;
+  clientPort?: number;
 }
 export function managerWebpack(config: Configuration, options: CreeveyAddonOptions): Configuration {
   config.plugins?.push(
     new DefinePlugin({
       __CREEVEY_SERVER_PORT__: options.creeveyPort ?? 3000,
+      __CREEVEY_CLIENT_PORT__: options.clientPort,
     }),
   );
   return config;

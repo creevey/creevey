@@ -5,6 +5,7 @@ import { IconButton, Icons, Loader, Placeholder, Separator, Tabs } from '@storyb
 import { ResultsPage } from '../shared/components/ResultsPage';
 import { CreeveyContext } from './CreeveyContext';
 import { styled, withTheme, Theme } from '@storybook/theming';
+import { Tooltip } from './Tooltip';
 
 interface PanelProps {
   statuses: Test[];
@@ -54,6 +55,8 @@ const PanelInternal = ({ statuses }: PanelProps): JSX.Element => {
           actions={{ onSelect: handleBrowserChange }}
           tools={
             <Fragment>
+              <Separator />
+              <Tooltip storyId={result.storyId || ''} browser={browsers[selectedItem]} />
               <Separator />
               <IconButton
                 onClick={() => {
