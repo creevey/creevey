@@ -5,7 +5,11 @@ jobs:
   chromatic-deployment:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
+        with:
+          lfs: true
+      - name: checkout lfs
+        run: git lfs checkout
       - name: Install dependencies
         run: yarn
       - name: Deploy to Chromatic

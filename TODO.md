@@ -266,7 +266,7 @@
   - [ ] creevey-loader `top-level property access`
   - [ ] webpack config dll references (disable dll plugin)
 - [ ] Add more tests on different esnext features (test babel-parser + plugins)
-- [ ] Setup TeamCity CI
+- [x] Setup TeamCity CI
 - [x] Update CircleCI and GitLab according by github actions
 - [x] Write config description instead of config example
 - [x] Hide some advanced docs in other pages

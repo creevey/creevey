@@ -38,8 +38,7 @@ jobs:
     name: Tests
     runs-on: ubuntu-latest
     steps:
-      - name: checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
         with:
           lfs: true
       - uses: actions/setup-node@v1
