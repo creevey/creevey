@@ -1,3 +1,9 @@
+## [0.7.8](https://github.com/wKich/creevey/compare/v0.7.7...v0.7.8) (2020-12-14)
+
+### Bug Fixes
+
+- 🐛 resolve url with docker ([ee5b2f7](https://github.com/wKich/creevey/commit/ee5b2f73c6c7bdbbad7574e927306b432295f241))
+
 ## [0.7.7](https://github.com/wKich/creevey/compare/v0.7.6...v0.7.7) (2020-12-14)
 
 ### Bug Fixes
