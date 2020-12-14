@@ -1,5 +1,5 @@
 import cluster, { isMaster } from 'cluster';
-import { Config, BrowserConfig, isDockerMessage } from '../types';
+import { Config, BrowserConfig, isDockerMessage, DockerAuth } from '../types';
 import { subscribeOn, sendDockerMessage, emitDockerMessage } from './messages';
 import { isInsideDocker, LOCALHOST_REGEXP } from './utils';
 import Dockerode, { Container } from 'dockerode';
@@ -14,14 +14,14 @@ class DevNull extends Writable {
   }
 }
 
-export async function pullImages(images: string[]): Promise<void> {
+export async function pullImages(images: string[], auth?: DockerAuth): Promise<void> {
   console.log('[CreeveyMaster]: Pull docker images');
   for (const image of images) {
     await new Promise<void>((resolve, reject) => {
       const spinner = ora(`${image}: Pull start`).start();
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      docker.pull(image, function (pullError: unknown, stream: ReadableStream) {
+      docker.pull(image, { authconfig: auth }, function (pullError: unknown, stream: ReadableStream) {
         if (pullError) {
           spinner.fail();
           return reject(pullError);

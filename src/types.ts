@@ -108,6 +108,15 @@ export interface HookConfig {
   after?: () => unknown;
 }
 
+export interface DockerAuth {
+  key?: string;
+  username?: string;
+  password?: string;
+  auth?: string;
+  email?: string;
+  serveraddress?: string;
+}
+
 export interface Config {
   /**
    * Allows you to start selenoid without docker
@@ -164,6 +173,10 @@ export interface Config {
    * Works only with `useDocker == false`
    */
   selenoidPath?: string;
+  /**
+   * Define auth config for private docker registry
+   */
+  dockerAuth?: DockerAuth;
 }
 
 export type CreeveyConfig = Partial<Config>;

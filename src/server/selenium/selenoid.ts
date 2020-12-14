@@ -94,8 +94,7 @@ export async function startSelenoidStandalone(config: Config, debug: boolean): P
 }
 
 export async function startSelenoidContainer(config: Config, debug: boolean): Promise<string> {
-  const selenoidImage = 'aerokube/selenoid:latest-release';
-  const images = [selenoidImage];
+  const images: string[] = [];
   let limit = 0;
 
   (Object.values(config.browsers) as BrowserConfig[]).forEach(
@@ -110,6 +109,10 @@ export async function startSelenoidContainer(config: Config, debug: boolean): Pr
     },
   );
 
+  const selenoidImage = 'aerokube/selenoid:latest-release';
+  await pullImages([selenoidImage]);
+  await pullImages(images, config.dockerAuth);
+
   const selenoidOptions = {
     name: 'selenoid',
     ExposedPorts: { '4444/tcp': {} },
@@ -121,8 +124,6 @@ export async function startSelenoidContainer(config: Config, debug: boolean): Pr
       ],
     },
   };
-
-  await pullImages(images);
 
   return runImage(selenoidImage, ['-limit', String(limit)], selenoidOptions, debug);
 }
