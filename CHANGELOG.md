@@ -1,3 +1,9 @@
+## [0.7.6](https://github.com/wKich/creevey/compare/v0.7.5...v0.7.6) (2020-12-14)
+
+### Bug Fixes
+
+- 🐛 don't check `isInDocker` for docker internal host ([5a81138](https://github.com/wKich/creevey/commit/5a8113891940fb0b7d700e0aaa8ebdcca76d886c))
+
 ## [0.7.5](https://github.com/wKich/creevey/compare/v0.7.4...v0.7.5) (2020-12-14)
 
 ### Bug Fixes
