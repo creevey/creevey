@@ -266,6 +266,8 @@
   - [ ] creevey-loader `top-level property access`
   - [ ] webpack config dll references (disable dll plugin)
 - [ ] Add more tests on different esnext features (test babel-parser + plugins)
+- [ ] Setup TeamCity CI
+- [x] Update CircleCI and GitLab according by github actions
 - [x] Write config description instead of config example
 - [x] Hide some advanced docs in other pages
 - [x] update demo video
@@ -280,6 +282,7 @@
   - Test webpack building (include bundle size)
   - Test stories tests in output
 - [x] Features
+  - [x] Add link `go to runner` in addon UI
   - [x] Show side-by-side diff vertically or horizontally depends on aspect ratio
   - [ ] Add fallback option, load tests from browser (hmr-disabled in this case)
   - [ ] Allow run creevey against static-storybook folder (Depends on fallback tests loading)
@@ -296,7 +299,7 @@
     - Avoid write side-effects
     - Don't generate CSF dynamically
     - Do side-effect in separate files (examples)
-  - [ ] Fix png logos
+  - [x] ~~Fix png logos~~
   - [ ] Add instruction for various frameworks
     - [ ] Web components
     - [ ] Create React App Typescript
@@ -315,11 +318,10 @@
 - [ ] Add custom docker images with node+selenoid+browser
   - [ ] Support GitLab CI
 - [ ] Download webdriver binary automatically (see example: https://hub.docker.com/r/selenoid/chrome/dockerfile)
-- [ ] Update CircleCI and GitLab according by github actions
 - [ ] Add edge cases for e2e tests
-- [ ] Figure out if I need use my own react and setup this https://reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html or I need to use react from storybook
+- [x] ~~Figure out if I need use my own react and setup this https://reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html or I need to use react from storybook~~
+  - Storybook uses optional react deps, so it's better to leave as-is
 - [ ] Rename `screenDir` config option
-- [ ] Move creevey config to addon
 - [ ] Drop storiesOf and Storybook v5.x support
   - [ ] Could we drop more entry points from webpack config? (generated entry for example)
 - [ ] Support other browser automation tools
@@ -330,10 +332,8 @@
     - Describe storybook config dir in args
     - How to deal with fallback option?
     - Load addons from storybook api
-  - [ ] Add link `go to runner` in addon UI
   - [ ] Add option to apply custom styles to #root or something else
   - [ ] Try to use odiff tool (https://github.com/dmtrKovalenko/odiff)
-  - [ ] Open Creevey Client from storybook
   - [ ] Wait for resources loaded (fonts, images, etc) How?
   - [ ] Integrate build nodejs bundle into storybook (use webpackFinal in addon)
   - [ ] Improve creevey-addon webpack config to allow use `import { By } from 'selenium'` and maybe other stuff (add creevey-selenium or improve creevey-loader)
@@ -359,6 +359,8 @@
   - [ ] creevey-storybook
   - [ ] examples
 - [ ] Features
+  - [ ] Allow to select elements for capture from storybook UI
+  - [ ] Allow to ignore elements or rects in storybook UI
   - [ ] Support docker-in-docker (start storybook and creevey inside docker)
     - [ ] Start storybook inside docker
     - [ ] Allow define custom storybook image
