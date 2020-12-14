@@ -1,3 +1,9 @@
+## [0.7.9](https://github.com/wKich/creevey/compare/v0.7.8...v0.7.9) (2020-12-14)
+
+### Features
+
+- 🎸 add support docker auth config for private registry ([e157c39](https://github.com/wKich/creevey/commit/e157c39de3f13ae4026a26579590ab181665fcb7))
+
 ## [0.7.8](https://github.com/wKich/creevey/compare/v0.7.7...v0.7.8) (2020-12-14)
 
 ### Bug Fixes
