@@ -2,18 +2,6 @@ name: tests
 on: push
 
 jobs:
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 12.x
-      - name: install
-        run: yarn
-      - name: lint
-        run: yarn lint
   build:
     name: Build
     runs-on: ubuntu-latest
@@ -24,6 +12,8 @@ jobs:
           node-version: 12.x
       - name: install
         run: yarn
+      - name: lint
+        run: yarn lint
       - name: build
         run: yarn build
       - name: pack

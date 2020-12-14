@@ -3,7 +3,7 @@ orbs:
   node: circleci/node@4.1.0
 
 jobs:
-  lint:
+  build:
     docker:
       - image: circleci/node:12.18.4
 
@@ -14,15 +14,6 @@ jobs:
       - run:
           name: Lint
           command: yarn lint
-
-  build:
-    docker:
-      - image: circleci/node:12.18.4
-
-    steps:
-      - checkout
-      - node/install-packages:
-          pkg-manager: yarn
       - run:
           name: Build
           command: yarn build
@@ -86,7 +77,6 @@ jobs:
 workflows:
   tests:
     jobs:
-      - lint
       - build
       - e2e
       - tests

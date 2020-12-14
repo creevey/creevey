@@ -9,15 +9,12 @@ cache:
     - node_modules/
     - .yarn
 
-lint:
-  script:
-    - yarn lint
-
 build:
   artifacts:
     paths:
       - creevey-*.tgz
   script:
+    - yarn lint
     - yarn build
     - yarn pack
 unit:
