@@ -15,7 +15,7 @@ declare global {
 
 const DOCKER_INTERNAL = 'host.docker.internal';
 
-async function resolveStorybookUrl(storybookUrl: string): Promise<string> {
+async function resolveStorybookUrl(browser: WebDriver, storybookUrl: string): Promise<string> {
   if (!LOCALHOST_REGEXP.test(storybookUrl)) {
     return storybookUrl;
   }
@@ -31,7 +31,23 @@ async function resolveStorybookUrl(storybookUrl: string): Promise<string> {
         const request = get(resolvedUrl, ({ statusCode }) => (statusCode == 200 ? resolve() : reject()));
         request.on('error', reject);
       });
-      return resolvedUrl;
+      const isSuccess = await browser.executeAsyncScript(function (
+        url: string,
+        callback: (isSuccess: boolean) => void,
+      ) {
+        const xhr = new XMLHttpRequest();
+        xhr.timeout = 10000;
+        xhr.open('GET', url);
+        xhr.onload = function () {
+          callback(xhr.status == 200);
+        };
+        xhr.onerror = function () {
+          callback(false);
+        };
+        xhr.send();
+      },
+      resolvedUrl);
+      if (isSuccess) return resolvedUrl;
     } catch (error) {
       /* noop */
     }
@@ -276,7 +292,7 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
     await runSequence(
       [
         () => viewport && browser && resizeViewport(browser, viewport),
-        async () => (realAddress = await resolveStorybookUrl(realAddress)),
+        async () => browser && void (realAddress = await resolveStorybookUrl(browser, realAddress)),
         () => browser?.get(`${realAddress.replace(/\/$/, '')}/iframe.html`),
         () => browser?.wait(until.elementLocated(By.css('#root')), 30000),
       ],
