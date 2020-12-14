@@ -4,7 +4,7 @@ import { Builder, By, until, WebDriver, Origin } from 'selenium-webdriver';
 import { Config, BrowserConfig, StoryInput, CreeveyStoryParams, noop, isDefined } from '../../types';
 import { subscribeOn } from '../messages';
 import { networkInterfaces } from 'os';
-import { runSequence, LOCALHOST_REGEXP, isInsideDocker } from '../utils';
+import { runSequence, LOCALHOST_REGEXP } from '../utils';
 import { get } from 'http';
 
 declare global {
@@ -19,7 +19,7 @@ async function resolveStorybookUrl(browser: WebDriver, storybookUrl: string): Pr
   if (!LOCALHOST_REGEXP.test(storybookUrl)) {
     return storybookUrl;
   }
-  const addresses = (isInsideDocker ? [DOCKER_INTERNAL] : ([] as string[])).concat(
+  const addresses = [DOCKER_INTERNAL].concat(
     ...Object.values(networkInterfaces())
       .filter(isDefined)
       .map((network) => network.filter((info) => info.family == 'IPv4').map((info) => info.address)),
