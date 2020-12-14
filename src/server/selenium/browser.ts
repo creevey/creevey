@@ -15,7 +15,7 @@ declare global {
 
 const DOCKER_INTERNAL = 'host.docker.internal';
 
-async function resolveStorybookUrl(browser: WebDriver, storybookUrl: string): Promise<string> {
+async function resolveStorybookUrl(storybookUrl: string): Promise<string> {
   if (!LOCALHOST_REGEXP.test(storybookUrl)) {
     return storybookUrl;
   }
@@ -27,15 +27,16 @@ async function resolveStorybookUrl(browser: WebDriver, storybookUrl: string): Pr
   for (const ip of addresses) {
     const resolvedUrl = storybookUrl.replace(LOCALHOST_REGEXP, ip);
     try {
-      await new Promise<void>((resolve, reject) =>
-        get(resolvedUrl, ({ statusCode }) => (statusCode == 200 ? resolve() : reject())),
-      );
-      await browser.get(resolvedUrl);
+      await new Promise<void>((resolve, reject) => {
+        const request = get(resolvedUrl, ({ statusCode }) => (statusCode == 200 ? resolve() : reject()));
+        request.on('error', reject);
+      });
       return resolvedUrl;
     } catch (error) {
       /* noop */
     }
   }
+  // TODO Output message if Creevey didn't find proper address
   return storybookUrl;
 }
 
@@ -275,7 +276,7 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
     await runSequence(
       [
         () => viewport && browser && resizeViewport(browser, viewport),
-        async () => browser && void (realAddress = await resolveStorybookUrl(browser, realAddress)),
+        async () => (realAddress = await resolveStorybookUrl(realAddress)),
         () => browser?.get(`${realAddress.replace(/\/$/, '')}/iframe.html`),
         () => browser?.wait(until.elementLocated(By.css('#root')), 30000),
       ],
