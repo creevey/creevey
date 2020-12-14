@@ -1,7 +1,7 @@
 {
   "name": "creevey",
   "description": "creevey is a tool for automated visual testing, that tightly integrated with storybook",
-  "version": "0.7.6",
+  "version": "0.7.7",
   "bin": {
     "creevey": "./lib/cli.js"
   },

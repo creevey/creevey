@@ -1,3 +1,9 @@
+## [0.7.7](https://github.com/wKich/creevey/compare/v0.7.6...v0.7.7) (2020-12-14)
+
+### Bug Fixes
+
+- 🐛 handle getaddrinfo error ([b3567fe](https://github.com/wKich/creevey/commit/b3567fe71aca2b9342fe51561cdf60a2936bed0d))
+
 ## [0.7.6](https://github.com/wKich/creevey/compare/v0.7.5...v0.7.6) (2020-12-14)
 
 ### Bug Fixes
