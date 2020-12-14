@@ -1,3 +1,16 @@
+## [0.7.5](https://github.com/wKich/creevey/compare/v0.7.4...v0.7.5) (2020-12-14)
+
+### Bug Fixes
+
+- 🐛 creevey-loader support private class members ([223e3e3](https://github.com/wKich/creevey/commit/223e3e37d2aae7a96a28846abf840d5321b0f96d))
+- 🐛 download selenoid binary ([5e72957](https://github.com/wKich/creevey/commit/5e729571391e7082a0a0fe02dcae6d12e41622f2))
+- 🐛 webpack and update options ([712c911](https://github.com/wKich/creevey/commit/712c91184da6c82989d923b1d90e9d70b13d347c))
+
+### Features
+
+- 🎸 add mvp to allow run selenoid without docker ([c161e0a](https://github.com/wKich/creevey/commit/c161e0a807c26e7643bd7c4969bae8b954bcffd8))
+- 🎸 link to current story ([8a3c043](https://github.com/wKich/creevey/commit/8a3c043be5f05e77044b1ff1ce5707c43fc43a36))
+
 ## [0.7.4](https://github.com/wKich/creevey/compare/v0.7.3...v0.7.4) (2020-12-11)
 
 ### Bug Fixes
