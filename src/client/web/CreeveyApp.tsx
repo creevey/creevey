@@ -62,17 +62,19 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
   if (openedTestPath.length > 0 && !isDefined(openedTest)) openTest([]);
 
   useEffect(() => {
-    const path = getPathFromUrl(tests);
-    if (path.length) {
-      const currentPath: string[] = [];
-      path.slice(0, -1).forEach((token) => {
-        currentPath.push(token);
-        openSuite(tests, currentPath, true);
-      });
-      openSuite(tests, path.slice(0, -1), true);
-      openTest(path);
-    }
-  }, [tests]);
+    updateTests((draft) => {
+      const path = getPathFromUrl(tests);
+      if (path.length) {
+        const currentPath: string[] = [];
+        path.slice(0, -1).forEach((token) => {
+          currentPath.push(token);
+          openSuite(draft, currentPath, true);
+        });
+        openSuite(draft, path.slice(0, -1), true);
+        openTest(path);
+      }
+    });
+  }, [tests, updateTests]);
 
   // TODO unsubscribe
   useEffect(

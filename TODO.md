@@ -263,9 +263,12 @@
   - [x] Scale images properly (Use naturalWidth image prop for scale in views)
   - [x] Images switch freeze
   - [x] creevey-loader `private members`
+  - [ ] Fix flex-shrink in storybook
+  - [ ] Fix height in addon
   - [ ] creevey-loader `top-level property access`
   - [ ] webpack config dll references (disable dll plugin)
 - [ ] Add more tests on different esnext features (test babel-parser + plugins)
+- [ ] Start server early and wait for build
 - [x] Setup TeamCity CI
 - [x] Update CircleCI and GitLab according by github actions
 - [x] Write config description instead of config example
@@ -328,6 +331,10 @@
   - [ ] Playwright
   - [ ] Puppeteer
 - [ ] Features
+  - [ ] Add `HTML` diff view
+  - [ ] Improve how works takeScreenshot with default captureElement
+    - Check `#root` child nodes, if they there, capture `#root > *`
+    - Else capture viewport
   - [ ] Move creevey config inside addon
     - Describe storybook config dir in args
     - How to deal with fallback option?
@@ -359,6 +366,7 @@
   - [ ] creevey-storybook
   - [ ] examples
 - [ ] Features
+  - [ ] Try AWS Lambda (Think about Creevey-as-a-Service. Deploy Creevey server. And it could be used in gitlab as service)
   - [ ] Allow to select elements for capture from storybook UI
   - [ ] Allow to ignore elements or rects in storybook UI
   - [ ] Support docker-in-docker (start storybook and creevey inside docker)
