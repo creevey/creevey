@@ -1,3 +1,9 @@
+## [0.7.10](https://github.com/wKich/creevey/compare/v0.7.9...v0.7.10) (2020-12-15)
+
+### Bug Fixes
+
+- 🐛 switch stories error ([c39ef7e](https://github.com/wKich/creevey/commit/c39ef7edf565f8c983641d89d30b5c552d0b08c7))
+
 ## [0.7.9](https://github.com/wKich/creevey/compare/v0.7.8...v0.7.9) (2020-12-14)
 
 ### Features
