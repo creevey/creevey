@@ -289,10 +289,12 @@
 - [x] Features
   - [x] Add link `go to runner` in addon UI
   - [x] Show side-by-side diff vertically or horizontally depends on aspect ratio
-  - [ ] Add fallback option, load tests from browser (hmr-disabled in this case)
+  - [ ] Add fallback option, load tests from browser (hmr and tests are disabled in this case)
+    - [ ] Send PR to Storybook to allow use HMR for stories
   - [ ] Allow run creevey against static-storybook folder (Depends on fallback tests loading)
-- [ ] Improve Docker
-  - [ ] Private docker images registry
+  - [ ] Implement first iteration of mdx support (support only stories without docs)
+- [x] Improve Docker
+  - [x] Private docker images registry
   - [x] Allow use standalone binary instead of Docker image for browser (https://aerokube.com/selenoid/latest/#_standalone_binary)
 
 ## First priority (v0.8)

@@ -87,8 +87,9 @@ export default async function compile(config: Config, { debug, ui }: Options): P
     /* noop */
   }
 
-  // TODO Add quite
   const storybookWebpackConfig = await loadStorybookWebpackConfig({
+    // @ts-expect-error: 6.1 storybook don't support quite any more. But we still have older versions
+    quiet: true,
     configType: 'PRODUCTION',
     outputDir,
     cache: {},
@@ -160,6 +161,12 @@ export default async function compile(config: Config, { debug, ui }: Options): P
       allowlist: /(webpack|dummy-hmr|generated-stories-entry|generated-config-entry|generated-other-entry)/,
     }),
   ];
+
+  // NOTE Exclude some plugins
+  const excludedPlugins = ['DocgenPlugin'];
+  storybookWebpackConfig.plugins = storybookWebpackConfig.plugins?.filter(
+    (plugin) => !excludedPlugins.includes(plugin.constructor.name),
+  );
 
   const storybookWebpackCompiler = webpack(storybookWebpackConfig);
   if (ui) {
