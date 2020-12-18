@@ -16,7 +16,7 @@ export const Tooltip = ({ testPath }: TooltipProps): JSX.Element => {
         <TooltipLinkList
           links={[
             {
-              onClick: () => onHide(),
+              onClick: onHide,
               id: '1',
               title: 'Show in Creevey UI',
               target: 'blank',

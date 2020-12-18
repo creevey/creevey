@@ -4,7 +4,7 @@ import { TestData, TestStatus } from '../../types';
 import { IconButton, Icons, Loader, Placeholder, Separator, Tabs } from '@storybook/components';
 import { ResultsPage } from '../shared/components/ResultsPage';
 import { CreeveyContext } from './CreeveyContext';
-import { styled, withTheme, Theme } from '@storybook/theming';
+import { styled } from '@storybook/theming';
 import { Tooltip } from './Tooltip';
 import { getTestPath } from '../shared/helpers';
 
@@ -12,22 +12,17 @@ interface PanelProps {
   statuses: TestData[];
 }
 
-const Wrapper = withTheme(
-  styled.div<{ isRunning: boolean; theme: Theme }>(({ isRunning, theme }) => ({
-    opacity: isRunning ? 0.5 : 1,
-    padding: '20px',
-    paddingBottom: 0,
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    background: theme.background.content,
-  })),
-);
+const Wrapper = styled.div<{ isRunning: boolean }>(({ isRunning }) => ({
+  opacity: isRunning ? 0.5 : 1,
+  height: 'calc(100% - 40px)',
+}));
 
 const TabsWrapper = styled.div({
   '&&': {
-    position: 'static',
+    position: 'sticky',
     height: 'initial',
+    top: 0,
+    zIndex: 2,
   },
 });
 
@@ -75,6 +70,7 @@ const PanelInternal = ({ statuses }: PanelProps): JSX.Element => {
       {result?.results?.length ? (
         <Wrapper isRunning={isRunning}>
           <ResultsPage
+            height={'100%'}
             key={`${result.id}_${result.results?.length ?? 0}`} // TODO
             id={result.id}
             path={getTestPath(result)} // TODO Memo?

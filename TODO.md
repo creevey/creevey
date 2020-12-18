@@ -263,9 +263,10 @@
   - [x] Scale images properly (Use naturalWidth image prop for scale in views)
   - [x] Images switch freeze
   - [x] creevey-loader `private members`
+  - [ ] Scrollbar is not visible on dark theme in ResultPage
   - [ ] Fix teamcity preview images
-  - [ ] Fix flex-shrink in storybook
-  - [ ] Fix height in addon
+  - [ ] Fix flex-shrink in side-by-side view not work with disabled cache
+  - [x] Fix height in addon
   - [ ] creevey-loader `top-level property access`
   - [ ] webpack config dll references (disable dll plugin)
 - [ ] Add more tests on different esnext features (test babel-parser + plugins)
@@ -322,7 +323,7 @@
     - Iterate be screen images and calculate resulting x/y coordinates for composite image
     - If image width/height greater than viewport width/height than scroll bar is captured
 - [x] ~~Support esm/cjs builds~~
-- [ ] Add custom docker images with node+selenoid+browser
+- [ ] Add custom docker images with node+selenoid+browser (We won't need them, if we make creevey-as-a-service image)
   - [ ] Support GitLab CI
 - [ ] Download webdriver binary automatically (see example: https://hub.docker.com/r/selenoid/chrome/dockerfile)
 - [ ] Add edge cases for e2e tests

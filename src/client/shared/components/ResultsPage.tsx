@@ -16,6 +16,7 @@ interface TestResultsProps {
   showTitle?: boolean;
   onImageApprove: (id: string, retry: number, image: string) => void;
   theme: Theme;
+  height?: string;
 }
 
 const Wrapper = styled.div({
@@ -32,17 +33,23 @@ const ImagesViewContainer = styled.div(({ theme }) => ({
   padding: '20px 0',
 }));
 
+const HeaderContainer = styled.div({ position: 'sticky', top: 0, zIndex: 1 });
+
+const BodyContainer = styled.div({ flexGrow: 1 });
+
 const FooterContainer = styled.div({
   position: 'sticky',
   bottom: 0,
   zIndex: 1,
 });
 
-const Container = styled.div({
-  height: '100vh',
+const Container = styled.div<{ height?: string }>(({ height = '100vh' }) => ({
+  height,
   width: '100%',
   overflowY: 'hidden',
-});
+  display: 'flex',
+  flexDirection: 'column',
+}));
 
 export function ResultsPageInternal({
   id,
@@ -52,6 +59,7 @@ export function ResultsPageInternal({
   theme,
   onImageApprove,
   showTitle = false,
+  height,
 }: TestResultsProps): JSX.Element {
   const [retry, setRetry] = useState(results.length);
   const result = results[retry - 1] ?? {};
@@ -80,30 +88,33 @@ export function ResultsPageInternal({
   };
 
   return (
-    <Container>
-      <ScrollArea vertical>
-        <Wrapper>
-          <PageHeader
-            title={path}
-            images={result.images}
-            errorMessage={result.error}
-            showViewModes={hasDiffAndExpect}
-            viewMode={viewMode}
-            onViewModeChange={handleChangeViewMode}
-            onImageChange={setImageName}
-            showTitle={showTitle}
-            imagesWithError={imagesWithError}
-          />
-          <ImagesViewContainer theme={theme}>
-            {image ? (
-              <ImagesView url={url} image={image} canApprove={canApprove} mode={viewMode} />
-            ) : (
-              <Placeholder>{`Image ${imageName} not found`}</Placeholder>
-            )}
-          </ImagesViewContainer>
-          {results.length ? <div style={{ minHeight: '80px' }} /> : null}
-        </Wrapper>
-      </ScrollArea>
+    <Container height={height}>
+      <HeaderContainer>
+        <PageHeader
+          title={path}
+          images={result.images}
+          errorMessage={result.error}
+          showViewModes={hasDiffAndExpect}
+          viewMode={viewMode}
+          onViewModeChange={handleChangeViewMode}
+          onImageChange={setImageName}
+          showTitle={showTitle}
+          imagesWithError={imagesWithError}
+        />
+      </HeaderContainer>
+      <BodyContainer>
+        <ScrollArea vertical>
+          <Wrapper>
+            <ImagesViewContainer theme={theme}>
+              {image ? (
+                <ImagesView url={url} image={image} canApprove={canApprove} mode={viewMode} />
+              ) : (
+                <Placeholder>{`Image ${imageName} not found`}</Placeholder>
+              )}
+            </ImagesViewContainer>
+          </Wrapper>
+        </ScrollArea>
+      </BodyContainer>
       {results.length ? (
         <FooterContainer>
           <PageFooter

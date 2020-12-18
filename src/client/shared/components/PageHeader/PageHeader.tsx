@@ -75,7 +75,7 @@ export function PageHeader({
   imagesWithError = [],
   onImageChange,
   onViewModeChange,
-}: PageHeaderProps): JSX.Element {
+}: PageHeaderProps): JSX.Element | null {
   const imageEntires = Object.entries(images) as [string, Images][];
   const [imageName, setImageName] = useState((imageEntires[0] ?? [])[0] ?? '');
 
@@ -83,7 +83,7 @@ export function PageHeader({
   const handleViewModeChange = (mode: string): void => onViewModeChange(mode as ImagesViewMode);
   const error = errorMessage || imagesWithError.includes(imageName) ? images[imageName]?.error || errorMessage : null;
 
-  return (
+  return showTitle || error || imageEntires.length > 1 || showViewModes ? (
     <Container>
       {showTitle && (
         <H1>{title.flatMap((token) => [token, <HeaderDivider key={token}>/</HeaderDivider>]).slice(0, -1)}</H1>
@@ -116,5 +116,5 @@ export function PageHeader({
         </Tabs>
       )}
     </Container>
-  );
+  ) : null;
 }

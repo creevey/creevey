@@ -111,9 +111,9 @@ export default class Runner extends EventEmitter {
     this.sendUpdate({
       isRunning: true,
       tests: testsToStart.reduce(
-        (update, { id, storyId, browser, testName, storyPath }) => ({
+        (update: CreeveyUpdate['tests'], { id, storyId, browser, testName, storyPath }) => ({
           ...update,
-          [id]: { browser, testName, storyPath, status: 'pending', storyId },
+          [id]: { id, browser, testName, storyPath, status: 'pending', storyId },
         }),
         {},
       ),
