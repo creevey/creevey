@@ -7,7 +7,7 @@ import Events from '@storybook/core-events';
 import { logger } from '@storybook/client-logger';
 import {
   isDefined,
-  Test,
+  TestData,
   CreeveyStoryParams,
   StoriesRaw,
   noop,
@@ -30,19 +30,17 @@ function storyTestFabric(delay?: number, testFn?: CreeveyTestFunction) {
 }
 
 function createCreeveyTest(
-  meta: {
-    browser: string;
-    kind: string;
-    story: string;
-  },
+  browser: string,
+  storyMeta: StoryInput,
   skipOptions?: SkipOptions,
   testName?: string,
-): Test {
-  const { browser, kind, story } = meta;
-  const path = [browser, testName, story, kind].filter(isDefined);
-  const skip = skipOptions ? shouldSkip(meta, skipOptions, testName) : false;
+): TestData {
+  // @ts-expect-error: StoryInput has incorrect types
+  const { kind, story, id: storyId } = storyMeta as { kind: string; story: string; id: string };
+  const path = [kind, story, testName, browser].filter(isDefined);
+  const skip = skipOptions ? shouldSkip(browser, { kind, story }, skipOptions, testName) : false;
   const id = createHash('sha1').update(path.join('/')).digest('hex');
-  return { id, skip, path };
+  return { id, skip, browser, testName, storyPath: [...kind.split('/'), story], storyId };
 }
 
 export function convertStories(
@@ -51,10 +49,9 @@ export function convertStories(
 ): Partial<{ [testId: string]: ServerTest }> {
   const tests: { [testId: string]: ServerTest } = {};
 
-  (Array.isArray(stories) ? stories : Object.values(stories)).forEach((story) => {
+  (Array.isArray(stories) ? stories : Object.values(stories)).forEach((storyMeta) => {
     browsers.forEach((browserName) => {
-      const { delay, tests: storyTests, skip } = (story.parameters.creevey ?? {}) as CreeveyStoryParams;
-      const meta = { browser: browserName, story: story.name, kind: story.kind };
+      const { delay, tests: storyTests, skip } = (storyMeta.parameters.creevey ?? {}) as CreeveyStoryParams;
 
       // typeof tests === "undefined" => rootSuite -> kindSuite -> storyTest -> [browsers.png]
       // typeof tests === "function"  => rootSuite -> kindSuite -> storyTest -> browser -> [images.png]
@@ -62,14 +59,14 @@ export function convertStories(
       // typeof tests === "object"    => rootSuite -> kindSuite -> storySuite -> test -> browser -> [images.png]
 
       if (!storyTests) {
-        const test = createCreeveyTest(meta, skip);
-        tests[test.id] = { ...test, storyId: story.id, story, fn: storyTestFabric(delay) };
+        const test = createCreeveyTest(browserName, storyMeta, skip);
+        tests[test.id] = { ...test, storyId: storyMeta.id, story: storyMeta, fn: storyTestFabric(delay) };
         return;
       }
 
       Object.entries(storyTests).forEach(([testName, testFn]) => {
-        const test = createCreeveyTest(meta, skip, testName);
-        tests[test.id] = { ...test, storyId: story.id, story, fn: storyTestFabric(delay, testFn) };
+        const test = createCreeveyTest(browserName, storyMeta, skip, testName);
+        tests[test.id] = { ...test, storyId: storyMeta.id, story: storyMeta, fn: storyTestFabric(delay, testFn) };
       });
     });
   });

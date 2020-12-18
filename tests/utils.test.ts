@@ -7,7 +7,8 @@ describe('shouldSkip', () => {
   describe('kinds', () => {
     it('match story by array of kinds', () => {
       const result = shouldSkip(
-        { browser: 'chrome', kind: 'Button', story: 'with Error' },
+        'chrome',
+        { kind: 'Button', story: 'with Error' },
         {
           kinds: ['Button'],
           reason: 'Skip all buttons',
@@ -18,7 +19,8 @@ describe('shouldSkip', () => {
     });
     it('skip story by array of kinds', () => {
       const result = shouldSkip(
-        { browser: 'chrome', kind: 'Input', story: 'with Error' },
+        'chrome',
+        { kind: 'Input', story: 'with Error' },
         {
           kinds: ['Button'],
           reason: 'Skip all buttons',

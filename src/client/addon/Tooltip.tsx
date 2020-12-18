@@ -1,12 +1,12 @@
 import React from 'react';
 import { IconButton, Icons, WithTooltip, TooltipLinkList } from '@storybook/components';
+import { stringify } from 'qs';
 
 interface TooltipProps {
-  storyId: string;
-  browser: string;
+  testPath: string[];
 }
 
-export const Tooltip = ({ storyId, browser }: TooltipProps): JSX.Element => {
+export const Tooltip = ({ testPath }: TooltipProps): JSX.Element => {
   return (
     <WithTooltip
       placement="top"
@@ -20,9 +20,9 @@ export const Tooltip = ({ storyId, browser }: TooltipProps): JSX.Element => {
               id: '1',
               title: 'Show in Creevey UI',
               target: 'blank',
-              href: `http://localhost:${__CREEVEY_CLIENT_PORT__ || __CREEVEY_SERVER_PORT__}/?storyId=${
-                storyId || ''
-              }&browser=${browser}`,
+              href: `http://localhost:${__CREEVEY_CLIENT_PORT__ || __CREEVEY_SERVER_PORT__}/?${stringify({
+                testPath,
+              })}`,
             },
           ]}
         />

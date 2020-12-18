@@ -1,11 +1,11 @@
 {
-  "1bfdab612e56bfc7ddbae2069e1267a94bf37049": {
-    "id": "1bfdab612e56bfc7ddbae2069e1267a94bf37049",
+  "0d517f02ce6e4d38cd6260311696238b2a0f28e6": {
+    "id": "0d517f02ce6e4d38cd6260311696238b2a0f28e6",
     "skip": false,
-    "path": [
-      "chrome",
-      "StoryA",
-      "KindA"
+    "browser": "chrome",
+    "storyPath": [
+      "KindA",
+      "StoryA"
     ],
     "storyId": "kinda--storya",
     "story": {

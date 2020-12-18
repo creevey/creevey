@@ -18,29 +18,38 @@ function openSuites(suite: CreeveySuite): CreeveySuite {
 }
 
 const simpleTests: () => CreeveyStatus['tests'] = () => ({
-  1: { id: '1', path: ['empty', 'simple', 'root'], skip: false },
-  2: { id: '2', path: ['hasResult', 'simple', 'root'], skip: false, results: [{ status: 'success' }] },
-  3: { id: '3', path: ['skipped', 'simple', 'root'], skip: true },
-  4: { id: '4', path: ['empty', 'skipped', 'root'], skip: true },
+  1: { id: '1', browser: 'empty', storyPath: ['root', 'simple'], storyId: '', skip: false },
+  2: {
+    id: '2',
+    browser: 'hasResult',
+    storyPath: ['root', 'simple'],
+    storyId: '',
+    skip: false,
+    results: [{ status: 'success' }],
+  },
+  3: { id: '3', browser: 'skipped', storyPath: ['root', 'simple'], storyId: '', skip: true },
+  4: { id: '4', browser: 'empty', storyPath: ['root', 'skipped'], storyId: '', skip: true },
   5: {
     id: '5',
-    path: ['Storybook’s Component Story Format (CSF) is the recommended way to write stories', 'simple', 'root'],
+    browser: 'Storybook’s Component Story Format (CSF) is the recommended way to write stories',
+    storyPath: ['root', 'simple'],
+    storyId: '',
     skip: false,
     results: [{ status: 'success' }],
   },
 });
 const statusTests: () => CreeveyStatus['tests'] = () => ({
-  5: { id: '5', path: ['success', 'success', 'root'], skip: false, status: 'success' },
-  6: { id: '6', path: ['empty', 'success', 'root'], skip: false },
+  5: { id: '5', browser: 'success', storyPath: ['root', 'success'], storyId: '', skip: false, status: 'success' },
+  6: { id: '6', browser: 'empty', storyPath: ['root', 'success'], storyId: '', skip: false },
 
-  7: { id: '7', path: ['failed', 'failed', 'root'], skip: false, status: 'failed' },
-  8: { id: '8', path: ['success', 'failed', 'root'], skip: false, status: 'success' },
+  7: { id: '7', browser: 'failed', storyPath: ['root', 'failed'], storyId: '', skip: false, status: 'failed' },
+  8: { id: '8', browser: 'success', storyPath: ['root', 'failed'], storyId: '', skip: false, status: 'success' },
 
-  9: { id: '9', path: ['pending', 'pending', 'root'], skip: false, status: 'pending' },
-  10: { id: '10', path: ['failed', 'pending', 'root'], skip: false, status: 'failed' },
+  9: { id: '9', browser: 'pending', storyPath: ['root', 'pending'], storyId: '', skip: false, status: 'pending' },
+  10: { id: '10', browser: 'failed', storyPath: ['root', 'pending'], storyId: '', skip: false, status: 'failed' },
 
-  11: { id: '11', path: ['running', 'running', 'root'], skip: false, status: 'running' },
-  12: { id: '12', path: ['pending', 'running', 'root'], skip: false, status: 'pending' },
+  11: { id: '11', browser: 'running', storyPath: ['root', 'running'], storyId: '', skip: false, status: 'running' },
+  12: { id: '12', browser: 'pending', storyPath: ['root', 'running'], storyId: '', skip: false, status: 'pending' },
 });
 
 const HeaderContainer = styled.div({
@@ -106,7 +115,7 @@ HeaderDisabled.decorators = [headerDecorator];
 
 export const SimpleSideBar: Story & CreeveyStory = () => {
   const simpleSuites = openSuites(treeifyTests(simpleTests()));
-  const testPath = simpleTests()[2]?.path.reverse() || [];
+  const testPath = ['root', 'simple', 'hasResult'];
 
   checkSuite(simpleSuites, testPath, false);
 

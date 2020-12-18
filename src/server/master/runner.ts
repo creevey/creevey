@@ -11,6 +11,7 @@ import {
   CreeveyUpdate,
   TestStatus,
   ServerTest,
+  TestMeta,
 } from '../../types';
 import Pool from './pool';
 
@@ -42,9 +43,10 @@ export default class Runner extends EventEmitter {
     const test = this.tests[id];
 
     if (!test) return;
+    const { browser, testName, storyPath, storyId } = test;
     test.status = status;
     if (!result) {
-      this.sendUpdate({ tests: { [id]: { path: test.path, status, storyId: test.storyId } } });
+      this.sendUpdate({ tests: { [id]: { id, browser, testName, storyPath, status, storyId } } });
       return;
     }
     if (!test.results) {
@@ -52,7 +54,7 @@ export default class Runner extends EventEmitter {
     }
     test.results.push(result);
 
-    this.sendUpdate({ tests: { [id]: { path: test.path, status, results: [result], storyId: test.storyId } } });
+    this.sendUpdate({ tests: { [id]: { id, browser, testName, storyPath, status, results: [result], storyId } } });
   };
 
   private handlePoolStop = (): void => {
@@ -68,7 +70,7 @@ export default class Runner extends EventEmitter {
 
   public updateTests(testsDiff: Partial<{ [id: string]: ServerTest }>): void {
     const tests: CreeveyStatus['tests'] = {};
-    const removedTests: string[][] = [];
+    const removedTests: TestMeta[] = [];
     Object.entries(testsDiff).forEach(([id, newTest]) => {
       const oldTest = this.tests[id];
       if (newTest) {
@@ -84,8 +86,9 @@ export default class Runner extends EventEmitter {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { story, fn, ...restTest } = newTest;
         tests[id] = { ...restTest, status: 'unknown' };
-      } else {
-        if (oldTest) removedTests.push(oldTest.path);
+      } else if (oldTest) {
+        const { id, browser, testName, storyPath, storyId } = oldTest;
+        removedTests.push({ id, browser, testName, storyPath, storyId });
         delete this.tests[id];
       }
     });
@@ -108,17 +111,17 @@ export default class Runner extends EventEmitter {
     this.sendUpdate({
       isRunning: true,
       tests: testsToStart.reduce(
-        (update, { id }) => ({
+        (update, { id, storyId, browser, testName, storyPath }) => ({
           ...update,
-          [id]: { path: this.tests[id]?.path, status: 'pending', storyId: this.tests[id]?.storyId },
+          [id]: { browser, testName, storyPath, status: 'pending', storyId },
         }),
         {},
       ),
     });
 
     const testsByBrowser: Partial<TestsByBrowser> = testsToStart.reduce((tests: TestsByBrowser, test) => {
-      const { id, path } = test;
-      const [browser, ...restPath] = path;
+      const { id, browser, testName, storyPath } = test;
+      const restPath = [...storyPath, testName].filter(isDefined);
       test.status = 'pending';
       return {
         ...tests,
@@ -163,14 +166,17 @@ export default class Runner extends EventEmitter {
     if (!test.approved) {
       test.approved = {};
     }
-    const [browser, ...restPath] = test.path;
-    const testPath = path.join(...restPath.reverse(), image == browser ? '' : browser);
+    const { browser, testName, storyPath } = test;
+    const restPath = [...storyPath, testName].filter(isDefined);
+    const testPath = path.join(...restPath, image == browser ? '' : browser);
     const srcImagePath = path.join(this.reportDir, testPath, images.actual);
     const dstImagePath = path.join(this.screenDir, testPath, `${image}.png`);
     await mkdirAsync(path.join(this.screenDir, testPath), { recursive: true });
     await copyFileAsync(srcImagePath, dstImagePath);
     test.approved[image] = retry;
-    this.sendUpdate({ tests: { [id]: { path: test.path, approved: { [image]: retry }, storyId: test.storyId } } });
+    this.sendUpdate({
+      tests: { [id]: { id, browser, testName, storyPath, approved: { [image]: retry }, storyId: test.storyId } },
+    });
   }
 
   private sendUpdate(data: CreeveyUpdate): void {

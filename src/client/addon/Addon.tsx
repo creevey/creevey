@@ -1,14 +1,15 @@
 import React, { useState, Fragment, useCallback, useContext } from 'react';
 import { withCreeveyTests } from './utils';
-import { Test, isDefined, TestStatus } from '../../types';
+import { TestData, TestStatus } from '../../types';
 import { IconButton, Icons, Loader, Placeholder, Separator, Tabs } from '@storybook/components';
 import { ResultsPage } from '../shared/components/ResultsPage';
 import { CreeveyContext } from './CreeveyContext';
 import { styled, withTheme, Theme } from '@storybook/theming';
 import { Tooltip } from './Tooltip';
+import { getTestPath } from '../shared/helpers';
 
 interface PanelProps {
-  statuses: Test[];
+  statuses: TestData[];
 }
 
 const Wrapper = withTheme(
@@ -31,15 +32,12 @@ const TabsWrapper = styled.div({
 });
 
 const PanelInternal = ({ statuses }: PanelProps): JSX.Element => {
+  const { onStart, onStop, onImageApprove } = useContext(CreeveyContext);
   const [selectedItem, setSelectedItem] = useState(0);
-  const browsers = statuses
-    .map((x) => x.path)
-    .filter(isDefined)
-    .map((x) => x[0]);
+  const browsers = statuses.map((x) => x.browser);
 
   const handleBrowserChange = useCallback((id) => setSelectedItem(Number(id)), []);
   const result = statuses[selectedItem];
-  const { onStart, onStop, onImageApprove } = useContext(CreeveyContext);
   const isRunning = result?.status === 'running';
   if (!browsers.length) {
     return (
@@ -56,7 +54,7 @@ const PanelInternal = ({ statuses }: PanelProps): JSX.Element => {
           tools={
             <Fragment>
               <Separator />
-              <Tooltip storyId={result.storyId || ''} browser={browsers[selectedItem]} />
+              <Tooltip testPath={getTestPath(result)} />
               <Separator />
               <IconButton
                 onClick={() => {
@@ -77,9 +75,9 @@ const PanelInternal = ({ statuses }: PanelProps): JSX.Element => {
       {result?.results?.length ? (
         <Wrapper isRunning={isRunning}>
           <ResultsPage
-            key={`${result.id}_${result.results?.length ?? 0}`}
+            key={`${result.id}_${result.results?.length ?? 0}`} // TODO
             id={result.id}
-            path={result.path}
+            path={getTestPath(result)} // TODO Memo?
             results={result.results}
             approved={result.approved}
             onImageApprove={onImageApprove}
@@ -90,7 +88,7 @@ const PanelInternal = ({ statuses }: PanelProps): JSX.Element => {
   );
 };
 
-export function getEmojiByTestStatus(status: TestStatus | undefined, skip: string | boolean): string {
+export function getEmojiByTestStatus(status: TestStatus | undefined, skip: string | boolean = false): string {
   switch (status) {
     case 'failed': {
       return '❌';

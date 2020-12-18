@@ -1,12 +1,12 @@
 import path from 'path';
-import { Config, Test, isDefined, ServerTest } from '../../types';
+import { Config, TestData, isDefined, ServerTest } from '../../types';
 import { loadTestsFromStories } from '../stories';
 import Runner from './runner';
 import { startWebpackCompiler } from './stories';
 import { shutdownWorkers } from '../utils';
 
 function mergeTests(
-  testsWithReports: Partial<{ [id: string]: Test }>,
+  testsWithReports: Partial<{ [id: string]: TestData }>,
   testsFromStories: Partial<{ [id: string]: ServerTest }>,
 ): Partial<{ [id: string]: ServerTest }> {
   Object.values(testsFromStories)
@@ -28,7 +28,7 @@ export default async function master(config: Config, watch: boolean): Promise<Ru
   const reportDataPath = path.join(config.reportDir, 'data.js');
   let testsFromReport = {};
   try {
-    testsFromReport = (await import(reportDataPath)) as Partial<{ [id: string]: Test }>;
+    testsFromReport = (await import(reportDataPath)) as Partial<{ [id: string]: TestData }>;
   } catch (error) {
     // Ignore error
   }

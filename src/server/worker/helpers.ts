@@ -11,7 +11,7 @@ function findOrCreateSuite(name: string, parent: Suite): Suite {
   return suite;
 }
 
-function createTest(name: string, fn: (this: Context) => Promise<void>, skip: string | boolean): Test {
+function createTest(name: string, fn: (this: Context) => Promise<void>, skip: string | boolean = false): Test {
   const test = new Test(name, skip ? undefined : fn);
   test.pending = Boolean(skip);
   // NOTE Can't define skip reason in mocha https://github.com/mochajs/mocha/issues/2026
@@ -20,7 +20,7 @@ function createTest(name: string, fn: (this: Context) => Promise<void>, skip: st
 }
 
 function addTest(rootSuite: Suite, test: ServerTest): Test {
-  const [, testName, ...suitePath] = test.path;
+  const [testName, ...suitePath] = [...test.storyPath, test.testName].reverse().filter(isDefined);
   const suite = suitePath.reduceRight((subSuite, suiteName) => findOrCreateSuite(suiteName, subSuite), rootSuite);
   const mochaTest = createTest(testName, test.fn, test.skip);
   suite.addTest(mochaTest);

@@ -1,6 +1,15 @@
 {
   "name": "creevey",
-  "description": "creevey is a tool for automated visual testing, that tightly integrated with storybook",
+  "description": "Cross-browser screenshot testing tool for Storybook with fancy UI Runner.",
+  "keywords": [
+    "testing",
+    "storybook",
+    "storybook-addons",
+    "visual-testing",
+    "visual-regression",
+    "screenshot-tests",
+    "screenshots"
+  ],
   "version": "0.7.10",
   "bin": {
     "creevey": "./lib/cli.js"
@@ -78,6 +87,7 @@
     "pixelmatch": "^5.2.1",
     "pngjs": "^6.0.0",
     "polished": "^3.4.4",
+    "qs": "^6.9.4",
     "regenerator-runtime": "^0.13.7",
     "schema-utils": "^3.0.0",
     "selenium-webdriver": "^4.0.0-alpha.7",
@@ -117,6 +127,7 @@
     "@types/node": "^14.14.9",
     "@types/pixelmatch": "^5.2.2",
     "@types/pngjs": "^3.4.2",
+    "@types/qs": "^6.9.5",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "@types/resize-observer-browser": "^0.1.4",

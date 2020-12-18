@@ -1,12 +1,12 @@
 {
-  "25cd4acc78bd0622f2dfd1921560a41d0fb6c414": {
-    "id": "25cd4acc78bd0622f2dfd1921560a41d0fb6c414",
+  "7fa6eb0e6d7b60bdff1a989521881e1476cb2e66": {
+    "id": "7fa6eb0e6d7b60bdff1a989521881e1476cb2e66",
     "skip": false,
-    "path": [
-      "chrome",
-      "click",
-      "Imported Tests",
-      "KindA"
+    "browser": "chrome",
+    "testName": "click",
+    "storyPath": [
+      "KindA",
+      "Imported Tests"
     ],
     "storyId": "kinda--imported-tests",
     "story": {
@@ -40,13 +40,13 @@
     },
     "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
   },
-  "f714e614a514eabb60925186af9d2a1980288815": {
-    "id": "f714e614a514eabb60925186af9d2a1980288815",
+  "2fd0264d599e219a5bcd0e0f057c46eb3c0fb138": {
+    "id": "2fd0264d599e219a5bcd0e0f057c46eb3c0fb138",
     "skip": false,
-    "path": [
-      "chrome",
-      "Skipped Tests",
-      "KindA"
+    "browser": "chrome",
+    "storyPath": [
+      "KindA",
+      "Skipped Tests"
     ],
     "storyId": "kinda--skipped-tests",
     "story": {

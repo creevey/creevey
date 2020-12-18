@@ -1,12 +1,14 @@
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
 import { checkSuite } from '../../src/client/shared/helpers';
-import { CreeveySuite, Test } from '../../src/types';
+import { CreeveySuite, TestData } from '../../src/types';
 
-function mockTest(): Test {
+function mockTest(): TestData {
   return {
     id: '',
-    path: [],
+    storyId: '',
+    browser: '',
+    storyPath: [],
     skip: false,
   };
 }

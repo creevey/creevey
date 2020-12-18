@@ -249,32 +249,36 @@ export interface ImagesError extends Error {
   images: string | Partial<{ [name: string]: string }>;
 }
 
-export interface Test {
+export interface TestMeta {
   id: string;
-  // NOTE example: [browser, test, story, kind],
-  path: string[];
-  skip: boolean | string;
+  storyPath: string[];
+  browser: string;
+  testName?: string;
+  storyId: string;
+}
+
+export interface TestData extends TestMeta {
+  skip?: boolean | string;
   retries?: number;
   status?: TestStatus;
   results?: TestResult[];
   approved?: Partial<{ [image: string]: number }>;
-  storyId?: string;
 }
 
-export interface ServerTest extends Test {
+export interface ServerTest extends TestData {
   story: StoryInput;
   fn: (this: Context) => Promise<void>;
 }
 
 export interface CreeveyStatus {
   isRunning: boolean;
-  tests: Partial<{ [id: string]: Test }>;
+  tests: Partial<{ [id: string]: TestData }>;
 }
 
 export interface CreeveyUpdate {
   isRunning?: boolean;
-  tests?: Partial<{ [id: string]: Partial<Test> & { path: string[] } }>;
-  removedTests?: string[][];
+  tests?: Partial<{ [id: string]: TestData }>;
+  removedTests?: TestMeta[];
 }
 
 export interface SkipOption {
@@ -319,7 +323,7 @@ export type Request =
 
 export type Response = { type: 'status'; payload: CreeveyStatus } | { type: 'update'; payload: CreeveyUpdate };
 
-export interface CreeveyTest extends Test {
+export interface CreeveyTest extends TestData {
   checked: boolean;
 }
 
@@ -343,8 +347,8 @@ export function isDefined<T>(value: T | null | undefined): value is T {
   return value !== null && value !== undefined;
 }
 
-export function isTest<T1, T2 extends Test>(x?: T1 | T2): x is T2 {
-  return isDefined(x) && 'id' in x && 'path' in x && Array.isArray(x.path) && typeof x.id == 'string';
+export function isTest<T1, T2 extends TestData>(x?: T1 | T2): x is T2 {
+  return isDefined(x) && 'id' in x && 'storyId' in x && typeof x.id == 'string' && typeof x.storyId == 'string';
 }
 
 export function isObject(x: unknown): x is Record<string, unknown> {
