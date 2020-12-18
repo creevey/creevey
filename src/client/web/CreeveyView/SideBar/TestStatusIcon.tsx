@@ -6,7 +6,7 @@ import { TestStatus } from '../../../../types';
 export interface TestStatusIconProps {
   inverted?: boolean;
   status?: TestStatus;
-  skip: string | boolean;
+  skip?: string | boolean;
   theme: Theme;
 }
 

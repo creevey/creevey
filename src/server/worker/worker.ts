@@ -169,10 +169,7 @@ export default async function worker(config: Config, options: Options & { browse
     if (message.type != 'start') return;
 
     const test = message.payload;
-    const testPath = [...test.path]
-      .reverse()
-      .join(' ')
-      .replace(/[|\\{}()[\]^$+*?.-]/g, '\\$&');
+    const testPath = test.path.join(' ').replace(/[|\\{}()[\]^$+*?.-]/g, '\\$&');
 
     images = {};
     error = undefined;

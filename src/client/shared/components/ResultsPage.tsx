@@ -60,7 +60,7 @@ export function ResultsPageInternal({
 
   useEffect(() => setRetry(results.length), [results.length]);
 
-  const url = getImageUrl([...path].reverse(), imageName);
+  const url = getImageUrl(path, imageName);
   const image = result.images?.[imageName];
   const canApprove = Boolean(image && approved[imageName] != retry - 1 && result.status != 'success');
   const hasDiffAndExpect = canApprove && Boolean(image?.diff && image.expect);

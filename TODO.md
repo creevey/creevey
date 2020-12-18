@@ -263,12 +263,14 @@
   - [x] Scale images properly (Use naturalWidth image prop for scale in views)
   - [x] Images switch freeze
   - [x] creevey-loader `private members`
+  - [ ] Fix teamcity preview images
   - [ ] Fix flex-shrink in storybook
   - [ ] Fix height in addon
   - [ ] creevey-loader `top-level property access`
   - [ ] webpack config dll references (disable dll plugin)
 - [ ] Add more tests on different esnext features (test babel-parser + plugins)
 - [ ] Start server early and wait for build
+- [ ] Mdx e2e tests
 - [x] Setup TeamCity CI
 - [x] Update CircleCI and GitLab according by github actions
 - [x] Write config description instead of config example

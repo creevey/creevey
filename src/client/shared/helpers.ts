@@ -1,5 +1,7 @@
+import { themes, ThemeVars } from '@storybook/theming';
+import { parse, stringify } from 'qs';
 import { RefObject, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Test, isTest, isDefined, TestStatus, CreeveySuite, CreeveyTest, CreeveyStatus } from '../../types';
+import { TestData, isTest, isDefined, TestStatus, CreeveySuite, CreeveyTest, CreeveyStatus } from '../../types';
 
 export interface CreeveyViewFilter {
   status: TestStatus | null;
@@ -32,14 +34,13 @@ function makeEmptySuiteNode(path: string[] = []): CreeveySuite {
   };
 }
 
-export function splitLastPathToken(path: string[]): string[] {
-  // NOTE: Do some dirty mutable magic
-  // ['chrome', 'idle', 'playground', 'Button/Error'] => ['chrome', 'idle', 'playground', 'Error', 'Button']
-  return path.splice(path.length - 1, 1, ...path[path.length - 1].split('/').reverse()), path;
-}
-
 export function calcStatus(oldStatus?: TestStatus, newStatus?: TestStatus): TestStatus | undefined {
   return newStatus && statusUpdatesMap.get(oldStatus)?.test(newStatus) ? newStatus : oldStatus;
+}
+
+export function getTestPath(test: Pick<TestData, 'browser' | 'testName' | 'storyPath'>): string[] {
+  const { browser, testName, storyPath } = test;
+  return [...storyPath, testName, browser].filter(isDefined);
 }
 
 export function getSuiteByPath(suite: CreeveySuite, path: string[]): CreeveySuite | CreeveyTest | undefined {
@@ -113,10 +114,9 @@ export function treeifyTests(testsById: CreeveyStatus['tests']): CreeveySuite {
   Object.values(testsById).forEach((test) => {
     if (!test) return;
 
-    splitLastPathToken(test.path).reverse();
+    const [browser, ...testPath] = getTestPath(test).reverse();
 
-    const browser = test.path[test.path.length - 1];
-    const lastSuite = test.path.slice(0, -1).reduce((suite, token) => {
+    const lastSuite = testPath.reverse().reduce((suite, token) => {
       const subSuite = suite.children[token] || makeEmptySuiteNode([...suite.path, token]);
 
       subSuite.status = calcStatus(subSuite.status, test.status);
@@ -128,7 +128,7 @@ export function treeifyTests(testsById: CreeveyStatus['tests']): CreeveySuite {
       suite.status = calcStatus(suite.status, subSuite.status);
 
       if (isTest(subSuite)) {
-        throw new Error(`Suite and Test should not have same path '${JSON.stringify(subSuite.path)}'`);
+        throw new Error(`Suite and Test should not have same path '${JSON.stringify(getTestPath(subSuite))}'`);
       }
 
       return subSuite;
@@ -151,7 +151,7 @@ export function getCheckedTests(suite: CreeveySuite): CreeveyTest[] {
     });
 }
 
-export function updateTestStatus(suite: CreeveySuite, path: string[], update: Partial<Test>): void {
+export function updateTestStatus(suite: CreeveySuite, path: string[], update: Partial<TestData>): void {
   const title = path.shift();
 
   if (!title) return;
@@ -159,7 +159,7 @@ export function updateTestStatus(suite: CreeveySuite, path: string[], update: Pa
   const suiteOrTest =
     suite.children[title] ??
     (suite.children[title] = {
-      ...(path.length == 0 ? (update as Test) : makeEmptySuiteNode([...suite.path, title])),
+      ...(path.length == 0 ? (update as TestData) : makeEmptySuiteNode([...suite.path, title])),
       checked: suite.checked,
     });
   if (isTest(suiteOrTest)) {
@@ -230,8 +230,12 @@ export function filterTests(suite: CreeveySuite, filter: CreeveyViewFilter): Cre
 }
 
 export function openSuite(suite: CreeveySuite, path: string[], opened: boolean): void {
-  let subSuite: CreeveySuite | CreeveyTest | undefined = suite;
-  path.find((token) => (!subSuite || isTest(subSuite) ? true : void (subSuite = subSuite.children[token])));
+  const subSuite = path.reduce((suiteOrTest: CreeveySuite | CreeveyTest | undefined, pathToken) => {
+    if (suiteOrTest && !isTest(suiteOrTest)) {
+      if (opened) suiteOrTest.opened = opened;
+      return suiteOrTest.children[pathToken];
+    }
+  }, suite);
   if (subSuite && !isTest(subSuite)) subSuite.opened = opened;
 }
 
@@ -356,4 +360,39 @@ export function useCalcScale(diffImageRef: RefObject<HTMLImageElement>, loaded: 
   useLayoutEffect(calcScale, [calcScale]);
 
   return scale;
+}
+
+const CREEVEY_THEME = 'Creevey_theme';
+
+function isTheme(theme?: string | null): theme is ThemeVars['base'] {
+  return isDefined(theme) && Object.prototype.hasOwnProperty.call(themes, theme);
+}
+
+function initialTheme(): ThemeVars['base'] {
+  const theme = localStorage.getItem(CREEVEY_THEME);
+  return isTheme(theme) ? theme : 'light';
+}
+
+export function useTheme(): [ThemeVars['base'], (theme: ThemeVars['base']) => void] {
+  const [theme, setTheme] = useState<ThemeVars['base']>(initialTheme());
+
+  useEffect(() => {
+    localStorage.setItem(CREEVEY_THEME, theme);
+  }, [theme]);
+
+  return [theme, setTheme];
+}
+
+export function setSearchParams(testPath: string[]): void {
+  const pageUrl = `?${stringify({ testPath })}`;
+  window.history.pushState({ testPath }, '', pageUrl);
+}
+
+export function getTestPathFromSearch(): string[] {
+  const { testPath } = parse(window.location.search.slice(1));
+  //@ts-expect-error: This expression is not callable.
+  if (Array.isArray(testPath) && testPath.every((token) => typeof token == 'string')) {
+    return testPath as string[];
+  }
+  return [];
 }

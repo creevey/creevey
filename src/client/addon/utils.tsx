@@ -2,7 +2,7 @@ import React, { ComponentClass } from 'react';
 import { SET_STORIES, STORY_RENDERED } from '@storybook/core-events';
 import { API } from '@storybook/api';
 import { initCreeveyClientApi, CreeveyClientApi } from '../shared/creeveyClientApi';
-import { Test, isDefined, CreeveyStatus, CreeveyUpdate, SetStoriesData, StoriesRaw, TestStatus } from '../../types';
+import { TestData, isDefined, CreeveyStatus, CreeveyUpdate, SetStoriesData, StoriesRaw, TestStatus } from '../../types';
 import { produce } from 'immer';
 import { CreeveyContext } from './CreeveyContext';
 import { getEmojiByTestStatus } from './Addon';
@@ -20,7 +20,7 @@ export interface CreeveyTestsProviderState {
   isRunning: boolean;
 }
 interface ChildProps extends CreeveyTestsProviderProps {
-  statuses: Test[];
+  statuses: TestData[];
 }
 
 export function withCreeveyTests(
@@ -34,6 +34,8 @@ export function withCreeveyTests(
       storyId: '',
       isRunning: false,
     };
+
+    // TODO Check where path is used
 
     componentDidUpdate(_: CreeveyTestsProviderProps, prevState: CreeveyTestsProviderState): void {
       if (prevState.stories != this.state.stories && this.state.stories) {
@@ -61,44 +63,36 @@ export function withCreeveyTests(
             produce((draft: CreeveyTestsProviderState) => {
               const prevTests = draft.status.tests;
               const prevStories = draft.stories || {};
-              Object.entries(tests).forEach(([id, update]) => {
-                if (!prevTests[id]) {
-                  prevTests[id] = {
-                    id,
-                    storyId: update?.storyId,
-                    path: update?.path ?? [],
-                    skip: update?.skip ?? false,
-                  };
-                  return;
-                }
-                const test = prevTests[id];
-                if (test && removedTests.includes(test.path)) {
-                  delete prevTests[id];
-                  return;
-                }
-                if (!update || !test) return;
-                const { skip, status, results, approved, storyId } = update;
-                if (isDefined(skip)) test.skip = skip;
-                if (isDefined(status)) {
-                  test.status = status;
-                  if (isDefined(storyId) && isDefined(prevStories[storyId])) {
-                    const story = prevStories[storyId];
-                    const storyStatus = this.getStoryStatus(storyId);
-                    const oldStatus = storyStatus
-                      .map((x) => (x.id === id ? status : x.status))
-                      .reduce((oldStatus, newStatus) => calcStatus(oldStatus, newStatus), undefined);
-
-                    story.name = this.addStatus(story.name, calcStatus(oldStatus, status), skip || false);
+              Object.values(tests)
+                .filter(isDefined)
+                .forEach((update) => {
+                  const { id, skip, status, results, approved, storyId } = update;
+                  const test = prevTests[id];
+                  if (!test) {
+                    return (prevTests[id] = update);
                   }
-                }
-                if (isDefined(results)) test.results ? test.results.push(...results) : (test.results = results);
-                if (isDefined(approved)) {
-                  Object.entries(approved).forEach(
-                    ([image, retry]) =>
-                      retry !== undefined && test && ((test.approved = test?.approved || {})[image] = retry),
-                  );
-                }
-              });
+                  if (isDefined(skip)) test.skip = skip;
+                  if (isDefined(status)) {
+                    test.status = status;
+                    if (isDefined(storyId) && isDefined(prevStories[storyId])) {
+                      const story = prevStories[storyId];
+                      const storyStatus = this.getStoryStatus(storyId);
+                      const oldStatus = storyStatus
+                        .map((x) => (x.id === id ? status : x.status))
+                        .reduce((oldStatus, newStatus) => calcStatus(oldStatus, newStatus), undefined);
+
+                      story.name = this.addStatus(story.name, calcStatus(oldStatus, status), skip || false);
+                    }
+                  }
+                  if (isDefined(results)) test.results ? test.results.push(...results) : (test.results = results);
+                  if (isDefined(approved)) {
+                    Object.entries(approved).forEach(
+                      ([image, retry]) =>
+                        retry !== undefined && test && ((test.approved = test?.approved || {})[image] = retry),
+                    );
+                  }
+                });
+              removedTests.forEach(({ id }) => delete prevTests[id]);
             }),
           );
         }
@@ -134,7 +128,7 @@ export function withCreeveyTests(
       this.setState({ storyId: storyId });
     };
 
-    getStoryStatus = (storyId: string): Test[] => {
+    getStoryStatus = (storyId: string): TestData[] => {
       const { status } = this.state;
       if (!status || !status.tests) return [];
       return Object.values(status.tests)

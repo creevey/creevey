@@ -1,6 +1,6 @@
 import React from 'react';
 import { styled, withTheme, Theme, keyframes, ensure, ThemeProvider, themes } from '@storybook/theming';
-import { isUseDarkTheme } from './themeUtils';
+import { useTheme } from '../shared/helpers';
 
 const Container = withTheme(
   styled.div(({ theme }) => ({
@@ -45,9 +45,9 @@ export const rotate360 = keyframes`
 `;
 
 export function CreeveyLoader(): JSX.Element {
-  const isDarkTheme = isUseDarkTheme();
+  const [theme] = useTheme();
   return (
-    <ThemeProvider theme={ensure(isDarkTheme ? themes.dark : themes.light)}>
+    <ThemeProvider theme={ensure(themes[theme])}>
       <Container>
         <Loader size={64} />
       </Container>

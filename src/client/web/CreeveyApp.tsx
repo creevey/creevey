@@ -1,24 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useImmer } from 'use-immer';
 import { CreeveyUpdate, CreeveySuite, isDefined, CreeveyTest } from '../../types';
 import { CreeveyClientApi } from '../shared/creeveyClientApi';
 import {
   getCheckedTests,
   updateTestStatus,
-  splitLastPathToken,
   checkSuite,
   openSuite,
   getTestByPath,
   removeTests,
-  getTestsByStoryId,
+  getTestPath,
+  useTheme,
+  setSearchParams,
+  getTestPathFromSearch,
 } from '../shared/helpers';
 import { CreeveyContext } from './CreeveyContext';
 import { SideBar } from './CreeveyView/SideBar';
 import { ResultsPage } from '../shared/components/ResultsPage';
 import { ensure, styled, ThemeProvider, themes, withTheme } from '@storybook/theming';
-import { isUseDarkTheme, setUseDarkTheme } from './themeUtils';
 import { Toggle } from './CreeveyView/SideBar/Toggle';
-import { getStoryIdAndBrowserFromSearch, setSearchParams } from '../shared/searchUtils';
 
 export interface CreeveyAppProps {
   api?: CreeveyClientApi;
@@ -44,37 +44,68 @@ const ToggleContainer = styled.div({
   top: 10,
 });
 
-function getPathFromUrl(tests: CreeveySuite): string[] {
-  const { storyId, browser } = getStoryIdAndBrowserFromSearch();
-  if (!isDefined(storyId) || !isDefined(browser)) return [];
-  const testsByStoryId = getTestsByStoryId(tests, storyId);
-  const currentTest = testsByStoryId.find((test) => test.path.includes(browser));
-  return isDefined(currentTest) ? currentTest.path : [];
-}
-
 export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element {
   const [tests, updateTests] = useImmer(initialState.tests);
   const [isRunning, setIsRunning] = useState(initialState.isRunning);
   const [openedTestPath, openTest] = useState<string[]>([]);
-  const [isDarkTheme, setIsDarkTheme] = useState(isUseDarkTheme());
+  const [theme, setTheme] = useTheme();
 
   const openedTest = getTestByPath(tests, openedTestPath);
   if (openedTestPath.length > 0 && !isDefined(openedTest)) openTest([]);
 
+  const handleSuiteOpen = useCallback(
+    (path: string[], opened: boolean): void => {
+      updateTests((draft) => {
+        openSuite(draft, path, opened);
+      });
+    },
+    [updateTests],
+  );
+  const handleSuiteToggle = useCallback(
+    (path: string[], checked: boolean): void => {
+      updateTests((draft) => {
+        checkSuite(draft, path, checked);
+      });
+    },
+    [updateTests],
+  );
+  const handleImageApprove = useCallback(
+    (id: string, retry: number, image: string): void => api?.approve(id, retry, image),
+    [api],
+  );
+  const handleStart = useCallback(
+    (tests: CreeveySuite): void => api?.start(getCheckedTests(tests).map((test) => test.id)),
+    [api],
+  );
+  const handleStop = useCallback((): void => api?.stop(), [api]);
+  const handleThemeChange = useCallback((isDark: boolean): void => setTheme(isDark ? 'dark' : 'light'), [setTheme]);
+  const handleOpenTest = useCallback((test: CreeveyTest): void => {
+    const testPath = getTestPath(test);
+    setSearchParams(testPath);
+    openTest(testPath);
+  }, []);
+
   useEffect(() => {
-    updateTests((draft) => {
-      const path = getPathFromUrl(tests);
-      if (path.length) {
-        const currentPath: string[] = [];
-        path.slice(0, -1).forEach((token) => {
-          currentPath.push(token);
-          openSuite(draft, currentPath, true);
-        });
-        openSuite(draft, path.slice(0, -1), true);
-        openTest(path);
-      }
+    window.addEventListener('popstate', (event) => {
+      updateTests((draft) => {
+        const state = event.state as unknown;
+        if (state && typeof state == 'object' && 'testPath' in state) {
+          const { testPath } = state as { testPath: unknown };
+          if (Array.isArray(testPath)) {
+            // TODO Add validations
+            openSuite(draft, testPath, true);
+            openTest(testPath);
+          }
+        }
+      });
     });
-  }, [tests, updateTests]);
+    updateTests((draft) => {
+      const testPath = getTestPathFromSearch();
+
+      openSuite(draft, testPath, true);
+      openTest(testPath);
+    });
+  }, [updateTests]);
 
   // TODO unsubscribe
   useEffect(
@@ -83,37 +114,12 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
         if (isDefined(isRunning)) setIsRunning(isRunning);
         if (isDefined(tests))
           updateTests((draft) => {
-            Object.values(tests).forEach(
-              (test) => test && updateTestStatus(draft, [...splitLastPathToken(test.path).reverse()], test),
-            );
-            removedTests.forEach((testPath) => removeTests(draft, splitLastPathToken(testPath).reverse()));
+            Object.values(tests).forEach((test) => test && updateTestStatus(draft, getTestPath(test), test));
+            removedTests.forEach((test) => removeTests(draft, getTestPath(test)));
           });
       }),
     [api, updateTests],
   );
-
-  const handleSuiteOpen = (path: string[], opened: boolean): void => {
-    updateTests((draft) => {
-      openSuite(draft, path, opened);
-    });
-  };
-  const handleSuiteToggle = (path: string[], checked: boolean): void => {
-    updateTests((draft) => {
-      checkSuite(draft, path, checked);
-    });
-  };
-  const handleImageApprove = (id: string, retry: number, image: string): void => api?.approve(id, retry, image);
-  const handleStart = (tests: CreeveySuite): void => api?.start(getCheckedTests(tests).map((test) => test.id));
-  const handleStop = (): void => api?.stop();
-  const handleThemeChange = (isDark: boolean): void => {
-    setIsDarkTheme(isDark);
-    setUseDarkTheme(isDark);
-  };
-
-  const handleOpenTest = (test: CreeveyTest): void => {
-    setSearchParams(test.storyId || '', test.path.slice(-1)[0]);
-    openTest(test.path);
-  };
 
   return (
     <CreeveyContext.Provider
@@ -125,14 +131,14 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
         onSuiteToggle: handleSuiteToggle,
       }}
     >
-      <ThemeProvider theme={ensure(isDarkTheme ? themes.dark : themes.light)}>
+      <ThemeProvider theme={ensure(themes[theme])}>
         <FlexContainer>
           <SideBar rootSuite={tests} openedTest={openedTest} onOpenTest={handleOpenTest} />
           {openedTest && (
             <ResultsPage
               key={`${openedTest.id}_${openedTest.results?.length ?? 0}`}
               id={openedTest.id}
-              path={[...openedTest.path].reverse()}
+              path={openedTestPath}
               results={openedTest.results}
               approved={openedTest.approved}
               showTitle
@@ -140,7 +146,7 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
             />
           )}
           <ToggleContainer>
-            <Toggle value={isDarkTheme} onChange={handleThemeChange} />
+            <Toggle value={theme == 'dark'} onChange={handleThemeChange} />
           </ToggleContainer>
         </FlexContainer>
       </ThemeProvider>

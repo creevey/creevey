@@ -1,7 +1,7 @@
 import fs, { createWriteStream, existsSync, readFileSync, unlink } from 'fs';
 import path from 'path';
 import cluster from 'cluster';
-import { SkipOptions, isDefined, Test, noop } from '../types';
+import { SkipOptions, isDefined, TestData, noop } from '../types';
 import { emitShutdownMessage, sendShutdownMessage } from './messages';
 import findCacheDir from 'find-cache-dir';
 import { get } from 'https';
@@ -32,8 +32,8 @@ function matchBy(pattern: string | string[] | RegExp | undefined, value: string)
 }
 
 export function shouldSkip(
+  browser: string,
   meta: {
-    browser: string;
     kind: string;
     story: string;
   },
@@ -44,10 +44,10 @@ export function shouldSkip(
     return skipOptions;
   }
   if (Array.isArray(skipOptions)) {
-    return skipOptions.map((skipOption) => shouldSkip(meta, skipOption, test)).find(Boolean) || false;
+    return skipOptions.map((skipOption) => shouldSkip(browser, meta, skipOption, test)).find(Boolean) || false;
   }
   const { in: browsers, kinds, stories, tests, reason = true } = skipOptions;
-  const { browser, kind, story } = meta;
+  const { kind, story } = meta;
   const skipByBrowser = matchBy(browsers, browser);
   const skipByKind = matchBy(kinds, kind);
   const skipByStory = matchBy(stories, story);
@@ -139,14 +139,17 @@ export async function runSequence(seq: Array<() => unknown>, predicate: () => bo
   }
 }
 
-export function testsToImages(tests: (Test | undefined)[]): Set<string> {
+export function testsToImages(tests: (TestData | undefined)[]): Set<string> {
   return new Set(
     ([] as string[]).concat(
       ...tests
         .filter(isDefined)
-        .map(({ path: [browser, ...path], results }) =>
+        .map(({ browser, testName, storyPath, results }) =>
           Object.keys(results?.slice(-1)[0]?.images ?? {}).map(
-            (image) => `${[...(browser == image ? [browser] : [image, browser]), ...path].reverse().join('/')}.png`,
+            (image) =>
+              `${[...(browser == image ? [browser] : [image, browser]), ...[testName, ...storyPath].filter(isDefined)]
+                .reverse()
+                .join('/')}.png`,
           ),
         ),
     ),
