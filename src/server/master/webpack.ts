@@ -121,11 +121,10 @@ export default async function compile(config: Config, { debug, ui }: Options): P
 
   // NOTE replace mdx to null loader for now
   // TODO Use creevey-loader instead
+  // NOTE Storybook 6.x has a bug with incorrect regexp
+  const mdxRegexps = [/\.mdx$/, /\.(stories|story).mdx$/, /\.(stories|story)\.mdx$/].map((x) => x.toString());
   storybookWebpackConfig.module?.rules
-    .filter(
-      (rule) =>
-        rule.test?.toString() == /\.mdx$/.toString() || rule.test?.toString() == /\.(stories|story)\.mdx$/.toString(),
-    )
+    .filter((rule) => mdxRegexps.some((x) => rule.test?.toString() == x))
     .forEach((rule) => (rule.use = require.resolve('null-loader')));
 
   // NOTE Exclude source-loader
