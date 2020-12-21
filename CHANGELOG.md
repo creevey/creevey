@@ -1,3 +1,16 @@
+## [0.7.11](https://github.com/wKich/creevey/compare/v0.7.10...v0.7.11) (2020-12-21)
+
+### Bug Fixes
+
+- 🐛 addon result page scroll height ([cc12cd6](https://github.com/wKich/creevey/commit/cc12cd66c69b4571015ede6492cd4b5f978f9c34))
+- 🐛 exclude docgen plugin for webpack bundle ([f11210a](https://github.com/wKich/creevey/commit/f11210aec9352c695eccc72202daff640a4617cb))
+- 🐛 webpack mdx regexp, again ([0cadad1](https://github.com/wKich/creevey/commit/0cadad15f4217312fdb3db6a3bf7ee4f2cad5bed))
+- 🐛 webpack mdx rule ([4e1b002](https://github.com/wKich/creevey/commit/4e1b002c378d5de7134e392495953c53537cfa5e))
+
+### Features
+
+- 🎸 store tests view in browser history ([868a6b0](https://github.com/wKich/creevey/commit/868a6b0e1fcd906e6441fe54d6ffeccf4ed75019))
+
 ## [0.7.10](https://github.com/wKich/creevey/compare/v0.7.9...v0.7.10) (2020-12-15)
 
 ### Bug Fixes
