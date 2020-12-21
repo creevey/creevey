@@ -263,9 +263,7 @@
   - [x] Scale images properly (Use naturalWidth image prop for scale in views)
   - [x] Images switch freeze
   - [x] creevey-loader `private members`
-  - [ ] Scrollbar is not visible on dark theme in ResultPage
   - [ ] Fix teamcity preview images
-  - [ ] Fix flex-shrink in side-by-side view not work with disabled cache
   - [x] Fix height in addon
   - [ ] creevey-loader `top-level property access`
   - [ ] webpack config dll references (disable dll plugin)
@@ -314,6 +312,7 @@
     - [ ] Gatsby
     - [ ] Next.js
 - [ ] Bugs
+  - [ ] Scrollbar is not visible on dark theme in ResultPage
   - [ ] Don't have hot reload on preview config storybook
   - [ ] Use native composite screenshots for browsers which support it
   - [ ] Fix taking composite screenshots with hidden scrollbar
@@ -391,6 +390,8 @@
 - [ ] Improve Docker
   - [ ] Add vnc
   - [ ] Add video recording
+- [ ] Bugs
+  - [ ] Fix flex-shrink in side-by-side view not work with disabled cache
 
 ## Not in first time
 
