@@ -1,3 +1,9 @@
+## [0.7.12](https://github.com/wKich/creevey/compare/v0.7.11...v0.7.12) (2020-12-24)
+
+### Bug Fixes
+
+- 🐛 set timeout after open for ie11 ([6fda74d](https://github.com/wKich/creevey/commit/6fda74d9fcf7cc1e6f27f0d5814798bef7f5503d))
+
 ## [0.7.11](https://github.com/wKich/creevey/compare/v0.7.10...v0.7.11) (2020-12-21)
 
 ### Bug Fixes
