@@ -35,9 +35,10 @@ async function resolveStorybookUrl(browser: WebDriver, storybookUrl: string): Pr
         url: string,
         callback: (isSuccess: boolean) => void,
       ) {
-        const xhr = new XMLHttpRequest();
+        // eslint-disable-next-line no-var
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
         xhr.timeout = 10000;
-        xhr.open('GET', url);
         xhr.onload = function () {
           callback(xhr.status == 200);
         };
