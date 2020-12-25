@@ -2,8 +2,7 @@ import path from 'path';
 import { writeFileSync, copyFile, readdir, mkdir, readdirSync } from 'fs';
 import { promisify } from 'util';
 import master from './master';
-import creeveyServer from './server';
-import creeveyApi from './api';
+import creeveyApi, { CreeveyApi } from './api';
 import { Config, Options, isDefined } from '../../types';
 import { shutdownWorkers, testsToImages } from '../utils';
 import { subscribeOn } from '../messages';
@@ -53,7 +52,7 @@ function outputUnnecessaryImages(imagesDir: string, images: Set<string>): void {
   }
 }
 
-export default async function (config: Config, options: Options): Promise<void> {
+export default async function (config: Config, options: Options, resolveApi: (api: CreeveyApi) => void): Promise<void> {
   if (config.hooks.after) {
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     process.on('beforeExit', async () => {
@@ -74,7 +73,8 @@ export default async function (config: Config, options: Options): Promise<void> 
   }
 
   if (options.ui) {
-    creeveyServer(creeveyApi(runner), config.reportDir, options.port);
+    resolveApi(creeveyApi(runner));
+    console.log('[Creevey]:', `Started on http://localhost:${options.port}`);
   } else {
     // TODO Exit if runner don't have tests to run
     runner.once('stop', () => {

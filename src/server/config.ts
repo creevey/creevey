@@ -39,7 +39,7 @@ function resolveConfigPath(configPath?: string): string | undefined {
   return configPath;
 }
 
-export async function readConfig(options: Options): Promise<Config | null> {
+export function readConfig(options: Options): Config | null {
   const configPath = resolveConfigPath(options.config);
   const userConfig: typeof defaultConfig & Partial<Pick<Config, 'gridUrl'>> = { ...defaultConfig };
 
@@ -55,16 +55,5 @@ export async function readConfig(options: Options): Promise<Config | null> {
     ([browser, browserConfig]) => (config.browsers[browser] = normalizeBrowserConfig(browser, browserConfig)),
   );
 
-  // NOTE: We don't need docker nor selenoid for webpack or update options
-  if (userConfig.gridUrl || options.webpack || options.update) {
-    return config;
-  }
-
-  if (userConfig.useDocker) {
-    return (await import('./docker')).default(config, options.browser, async () =>
-      (await import('./selenium/selenoid')).startSelenoidContainer(config, options.debug),
-    );
-  } else {
-    return (await import('./selenium/selenoid')).startSelenoidStandalone(config, options.debug);
-  }
+  return config;
 }

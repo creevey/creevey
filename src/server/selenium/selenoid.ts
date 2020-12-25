@@ -69,7 +69,7 @@ async function downloadSelenoidBinary(destination: string): Promise<void> {
   return downloadBinary(downloadUrl, destination);
 }
 
-export async function startSelenoidStandalone(config: Config, debug: boolean): Promise<Config> {
+export async function startSelenoidStandalone(config: Config, debug: boolean): Promise<void> {
   const selenoidConfigDir = await createSelenoidConfig(config, { useDocker: false });
   const binaryPath = path.join(selenoidConfigDir, 'selenoid');
   if (config.selenoidPath) {
@@ -90,7 +90,6 @@ export async function startSelenoidStandalone(config: Config, debug: boolean): P
   subscribeOn('shutdown', () => selenoidProcess.kill());
 
   config.gridUrl = 'http://localhost:4444/wd/hub';
-  return config;
 }
 
 export async function startSelenoidContainer(config: Config, debug: boolean): Promise<string> {

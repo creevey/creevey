@@ -95,7 +95,7 @@ export default async function (
   config: Config,
   browser: string | undefined,
   startContainer: () => Promise<string>,
-): Promise<Config> {
+): Promise<void> {
   if (isMaster) {
     const host = await startContainer();
     let gridUrl = 'http://localhost:4444/wd/hub';
@@ -111,14 +111,13 @@ export default async function (
         payload: { gridUrl },
       });
     });
-    return config;
   } else {
-    if (browser && (config.browsers[browser] as BrowserConfig).gridUrl) return Promise.resolve(config);
+    if (browser && (config.browsers[browser] as BrowserConfig).gridUrl) return Promise.resolve();
     return new Promise((resolve) => {
       subscribeOn('docker', (message) => {
         if (message.type == 'success') {
           config.gridUrl = message.payload.gridUrl;
-          resolve(config);
+          resolve();
         }
       });
       emitDockerMessage({ type: 'start' });
