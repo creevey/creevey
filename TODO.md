@@ -263,13 +263,11 @@
   - [x] Scale images properly (Use naturalWidth image prop for scale in views)
   - [x] Images switch freeze
   - [x] creevey-loader `private members`
-  - [ ] Fix teamcity preview images
+  - [x] ~~Fix teamcity preview images~~ (TeamCity bug)
   - [x] Fix height in addon
+  - [ ] Fix firefox 61 in skbkontur selenium grid
   - [ ] creevey-loader `top-level property access`
-  - [ ] webpack config dll references (disable dll plugin)
-- [ ] Add more tests on different esnext features (test babel-parser + plugins)
 - [ ] Start server early and wait for build
-- [ ] Mdx e2e tests
 - [x] Setup TeamCity CI
 - [x] Update CircleCI and GitLab according by github actions
 - [x] Write config description instead of config example
@@ -312,6 +310,7 @@
     - [ ] Gatsby
     - [ ] Next.js
 - [ ] Bugs
+  - [ ] webpack config dll references (disable dll plugin)
   - [ ] Scrollbar is not visible on dark theme in ResultPage
   - [ ] Don't have hot reload on preview config storybook
   - [ ] Use native composite screenshots for browsers which support it
@@ -322,6 +321,8 @@
     - Iterate be screen images and calculate resulting x/y coordinates for composite image
     - If image width/height greater than viewport width/height than scroll bar is captured
 - [x] ~~Support esm/cjs builds~~
+- [ ] Add more tests on different esnext features (test babel-parser + plugins)
+- [ ] Mdx e2e tests
 - [ ] Add custom docker images with node+selenoid+browser (We won't need them, if we make creevey-as-a-service image)
   - [ ] Support GitLab CI
 - [ ] Download webdriver binary automatically (see example: https://hub.docker.com/r/selenoid/chrome/dockerfile)

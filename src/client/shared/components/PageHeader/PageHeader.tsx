@@ -100,7 +100,7 @@ export function PageHeader({
             <ImagePreview
               key={name}
               imageName={name}
-              url={`${getImageUrl([...title].reverse(), name)}/${image.actual}`}
+              url={`${getImageUrl(title, name)}/${image.actual}`}
               isActive={name === imageName}
               onClick={handleImageChange}
               error={imagesWithError.includes(name)}
