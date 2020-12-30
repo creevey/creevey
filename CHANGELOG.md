@@ -1,3 +1,17 @@
+## [0.7.13](https://github.com/wKich/creevey/compare/v0.7.12...v0.7.13) (2020-12-30)
+
+### Bug Fixes
+
+- 🐛 images preview urls ([d2a7853](https://github.com/wKich/creevey/commit/d2a7853b2761a3c52a05aee2401b0f54b0e97832))
+
+### Features
+
+- 🎸 start creevey server early and wait for build ([e325d59](https://github.com/wKich/creevey/commit/e325d59b651ef3a52a2284aeb6b9de4eca4a3366))
+
+### Performance Improvements
+
+- ⚡️ speedup resolving storybook url ([4c24c88](https://github.com/wKich/creevey/commit/4c24c88646d1f4711fe24e9e8445ead06238756f))
+
 ## [0.7.12](https://github.com/wKich/creevey/compare/v0.7.11...v0.7.12) (2020-12-24)
 
 ### Bug Fixes

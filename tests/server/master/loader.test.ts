@@ -26,7 +26,7 @@ describe('loader', () => {
   x Typescript
 
 - CSF
-  - with non-creevey params (options to include/exclude)
+  x with non-creevey params (options to include/exclude)
   - with non-story exports
   - function declaration story (export function Text() {})
   - function expression (export const Text = TextButton)
@@ -47,6 +47,10 @@ describe('loader', () => {
   - function declaration (.add('Text', function Text() {}))
   - function expression (.add('Text', Text))
   - with multiple storiesOf
+
+  - MDX
+  - <Meta /> and <Story />
+  - Whole page
 
 - commonjs
 
