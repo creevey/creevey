@@ -35,14 +35,21 @@ async function resolveStorybookUrl(browser: WebDriver, storybookUrl: string): Pr
         url: string,
         callback: (isSuccess: boolean) => void,
       ) {
+        // TODO Need to test with browserstack
+        // eslint-disable-next-line no-var
+        var timeout = setTimeout(function () {
+          callback(false);
+        }, 1000);
         // eslint-disable-next-line no-var
         var xhr = new XMLHttpRequest();
         xhr.open('GET', url, true);
-        xhr.timeout = 10000;
+        xhr.timeout = 1000;
         xhr.onload = function () {
+          clearTimeout(timeout);
           callback(xhr.status == 200);
         };
         xhr.onerror = function () {
+          clearTimeout(timeout);
           callback(false);
         };
         xhr.send();
@@ -53,8 +60,11 @@ async function resolveStorybookUrl(browser: WebDriver, storybookUrl: string): Pr
       /* noop */
     }
   }
-  // TODO Output message if Creevey didn't find proper address
-  return storybookUrl;
+  const error = new Error(
+    "Creevey couldn't resolve IP address of storybook URL. Please specify `storybookUrl` with IP address that accessible from remote browser",
+  );
+  error.name = 'ResolveUrlError';
+  throw error;
 }
 
 async function resetMousePosition(browser: WebDriver): Promise<void> {
@@ -304,6 +314,7 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
       browser?.quit().catch(noop);
       return null;
     }
+    if (originalError instanceof Error && originalError.name == 'ResolveUrlError') throw originalError;
     const error = new Error(`Can't load storybook root page by URL ${realAddress}/iframe.html`);
     if (originalError instanceof Error) error.stack = originalError.stack;
     throw error;

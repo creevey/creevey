@@ -265,7 +265,7 @@
   - [x] creevey-loader `private members`
   - [x] ~~Fix teamcity preview images~~ (TeamCity bug)
   - [x] Fix height in addon
-  - [ ] Fix firefox 61 in skbkontur selenium grid
+  - [x] ~~Fix firefox 61 in skbkontur selenium grid~~
   - [ ] creevey-loader `top-level property access`
 - [x] Start server early and wait for build
 - [x] Setup TeamCity CI
@@ -321,6 +321,7 @@
     - Iterate be screen images and calculate resulting x/y coordinates for composite image
     - If image width/height greater than viewport width/height than scroll bar is captured
 - [x] ~~Support esm/cjs builds~~
+- [ ] Test standalone selenoid + webdriver work
 - [ ] Add more tests on different esnext features (test babel-parser + plugins)
 - [ ] Mdx e2e tests
 - [ ] Add custom docker images with node+selenoid+browser (We won't need them, if we make creevey-as-a-service image)

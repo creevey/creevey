@@ -82,6 +82,7 @@ export interface CreeveyStory {
 export interface Capabilities {
   browserName: string;
   version?: string;
+  [prop: string]: unknown;
 }
 
 export type BrowserConfig = Capabilities & {
