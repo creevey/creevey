@@ -4,7 +4,6 @@ import { Context } from 'mocha';
 import chokidar from 'chokidar';
 import addons from '@storybook/addons';
 import Events from '@storybook/core-events';
-import { logger } from '@storybook/client-logger';
 import {
   isDefined,
   TestData,
@@ -74,7 +73,7 @@ export function convertStories(
   return tests;
 }
 
-function initStorybookEnvironment(): Promise<typeof import('./storybook')> {
+async function initStorybookEnvironment(): Promise<typeof import('./storybook')> {
   // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
   require('jsdom-global')(undefined, { url: 'http://localhost' });
 
@@ -86,8 +85,10 @@ function initStorybookEnvironment(): Promise<typeof import('./storybook')> {
   });
 
   if (isStorybookVersionLessThan(6)) {
-    // @ts-expect-error: disable logger for 5.x storybook
-    logger.debug = noop;
+    // NOTE: disable logger for 5.x storybook
+    ((await import(require.resolve('@storybook/client-logger', { paths: [process.cwd()] }))) as {
+      logger: { debug: unknown };
+    }).logger.debug = noop;
   }
 
   return import('./storybook');

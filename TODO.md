@@ -285,7 +285,8 @@
   - Test stories tests in output
 - [x] Features
   - [x] Add link `go to runner` in addon UI
-  - [x] Show side-by-side diff vertically or horizontally depends on aspect ratio
+  - [x] Show side-by-side diff vertically or horizontally depends on aspect
+  - [ ] Output browser logs for debug
   - [ ] Add fallback option, load tests from browser (hmr and tests are disabled in this case)
     - [ ] Send PR to Storybook to allow use HMR for stories
   - [ ] Allow run creevey against static-storybook folder (Depends on fallback tests loading)
