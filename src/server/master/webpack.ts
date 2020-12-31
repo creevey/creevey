@@ -163,7 +163,7 @@ export default async function compile(config: Config, { debug, ui }: Options): P
   ];
 
   // NOTE Exclude some plugins
-  const excludedPlugins = ['DocgenPlugin'];
+  const excludedPlugins = ['DocgenPlugin', 'ForkTsCheckerWebpackPlugin'];
   storybookWebpackConfig.plugins = storybookWebpackConfig.plugins?.filter(
     (plugin) => !excludedPlugins.includes(plugin.constructor.name),
   );
