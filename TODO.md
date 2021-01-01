@@ -267,6 +267,7 @@
   - [x] Fix height in addon
   - [x] ~~Fix firefox 61 in skbkontur selenium grid~~
   - [ ] creevey-loader `top-level property access`
+  - [ ] wait-on don't work properly
 - [x] Start server early and wait for build
 - [x] Setup TeamCity CI
 - [x] Update CircleCI and GitLab according by github actions

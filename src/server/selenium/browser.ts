@@ -1,11 +1,11 @@
 import { PNG } from 'pngjs';
 import { Context, Test, Suite } from 'mocha';
-import { Builder, By, until, WebDriver, Origin } from 'selenium-webdriver';
+import { Builder, By, WebDriver, Origin, Capabilities } from 'selenium-webdriver';
 import { Config, BrowserConfig, StoryInput, CreeveyStoryParams, noop, isDefined } from '../../types';
 import { subscribeOn } from '../messages';
 import { networkInterfaces } from 'os';
 import { runSequence, LOCALHOST_REGEXP } from '../utils';
-import { get } from 'http';
+import { PageLoadStrategy } from 'selenium-webdriver/lib/capabilities';
 
 declare global {
   interface Window {
@@ -15,7 +15,7 @@ declare global {
 
 const DOCKER_INTERNAL = 'host.docker.internal';
 
-async function resolveStorybookUrl(browser: WebDriver, storybookUrl: string): Promise<string> {
+async function resolveStorybookUrl(storybookUrl: string, checkUrl: (url: string) => Promise<boolean>): Promise<string> {
   if (!LOCALHOST_REGEXP.test(storybookUrl)) {
     return storybookUrl;
   }
@@ -26,38 +26,8 @@ async function resolveStorybookUrl(browser: WebDriver, storybookUrl: string): Pr
   );
   for (const ip of addresses) {
     const resolvedUrl = storybookUrl.replace(LOCALHOST_REGEXP, ip);
-    try {
-      await new Promise<void>((resolve, reject) => {
-        const request = get(resolvedUrl, ({ statusCode }) => (statusCode == 200 ? resolve() : reject()));
-        request.on('error', reject);
-      });
-      const isSuccess = await browser.executeAsyncScript(function (
-        url: string,
-        callback: (isSuccess: boolean) => void,
-      ) {
-        // TODO Need to test with browserstack
-        // eslint-disable-next-line no-var
-        var timeout = setTimeout(function () {
-          callback(false);
-        }, 1000);
-        // eslint-disable-next-line no-var
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', url, true);
-        xhr.timeout = 1000;
-        xhr.onload = function () {
-          clearTimeout(timeout);
-          callback(xhr.status == 200);
-        };
-        xhr.onerror = function () {
-          clearTimeout(timeout);
-          callback(false);
-        };
-        xhr.send();
-      },
-      resolvedUrl);
-      if (isSuccess) return resolvedUrl;
-    } catch (error) {
-      /* noop */
+    if (await checkUrl(resolvedUrl)) {
+      return resolvedUrl;
     }
   }
   const error = new Error(
@@ -65,6 +35,41 @@ async function resolveStorybookUrl(browser: WebDriver, storybookUrl: string): Pr
   );
   error.name = 'ResolveUrlError';
   throw error;
+}
+
+function getUrlChecker(browser: WebDriver): (url: string) => Promise<boolean> {
+  return async (url: string): Promise<boolean> => {
+    try {
+      //  NOTE: Before trying a new url, reset current one
+      await browser.get('about:blank');
+      await browser.get(`${url.replace(/\/$/, '')}/iframe.html`);
+      let source = '';
+      do {
+        try {
+          source = await browser.getPageSource();
+        } catch (_) {
+          // NOTE: Firefox can raise exception "WebDriverError: TypeError: curContainer.frame.document.documentElement is null"
+          // So just ignore it
+        }
+      } while (source.length == 0 || source.includes('<body></body>'));
+      // NOTE: This is the most optimal way to check if we in storybook or not
+      // We can't use different page load strategies because they add significant delay and the `eager` works only from chrome 77
+      // Chrome also in some cases loads page successful even it fail to get remote resource
+      // So we need to check if it storybook page or not
+      return source.includes('<div id="root"></div>');
+    } catch (error) {
+      return false;
+    }
+  };
+}
+
+function waitForStorybook(browser: WebDriver): Promise<void> {
+  return browser.executeAsyncScript(function (callback: () => void): void {
+    if (document.readyState == 'complete') return callback();
+    window.addEventListener('load', function () {
+      callback();
+    });
+  });
 }
 
 async function resetMousePosition(browser: WebDriver): Promise<void> {
@@ -284,12 +289,16 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
     storybookUrl: address = config.storybookUrl,
     limit,
     viewport,
-    ...capabilities
+    ...userCapabilities
   } = browserConfig;
   void limit;
   let realAddress = address;
   let browser: WebDriver | null = null;
   let shuttingDown = false;
+
+  // TODO Define some capabilities explicitly and define typings
+  const capabilities = new Capabilities(userCapabilities);
+  capabilities.setPageLoadStrategy(PageLoadStrategy.NONE);
 
   subscribeOn('shutdown', () => {
     shuttingDown = true;
@@ -302,10 +311,10 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
 
     await runSequence(
       [
+        () => browser?.manage().setTimeouts({ pageLoad: 5000, script: 60000 }),
         () => viewport && browser && resizeViewport(browser, viewport),
-        async () => browser && void (realAddress = await resolveStorybookUrl(browser, realAddress)),
-        () => browser?.get(`${realAddress.replace(/\/$/, '')}/iframe.html`),
-        () => browser?.wait(until.elementLocated(By.css('#root')), 30000),
+        async () => browser && void (realAddress = await resolveStorybookUrl(realAddress, getUrlChecker(browser))),
+        () => browser && waitForStorybook(browser),
       ],
       () => !shuttingDown,
     );
