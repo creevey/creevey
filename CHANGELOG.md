@@ -1,3 +1,14 @@
+## [0.7.14](https://github.com/wKich/creevey/compare/v0.7.13...v0.7.14) (2021-01-01)
+
+### Bug Fixes
+
+- 🐛 disable debug logger for storybook 5.x ([a758bab](https://github.com/wKich/creevey/commit/a758bab23ebff4d357f46087ad21a9a8005dd130))
+- 🐛 resolve storybook properly and wait for page load ([6888178](https://github.com/wKich/creevey/commit/6888178a3ca2ee2c22ef69fc633564154a256e55))
+
+### Performance Improvements
+
+- ⚡️ exclude fork ts checker plugin for webpack ([cebc0be](https://github.com/wKich/creevey/commit/cebc0be6d42148fe9be859ef49364f0abe8f883f))
+
 ## [0.7.13](https://github.com/wKich/creevey/compare/v0.7.12...v0.7.13) (2020-12-30)
 
 ### Bug Fixes
