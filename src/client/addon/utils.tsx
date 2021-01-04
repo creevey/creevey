@@ -5,8 +5,8 @@ import { initCreeveyClientApi, CreeveyClientApi } from '../shared/creeveyClientA
 import { TestData, isDefined, CreeveyStatus, CreeveyUpdate, SetStoriesData, StoriesRaw, TestStatus } from '../../types';
 import { produce } from 'immer';
 import { CreeveyContext } from './CreeveyContext';
-import { getEmojiByTestStatus } from './Addon';
 import { calcStatus } from '../shared/helpers';
+import { Placeholder } from '@storybook/components';
 
 export interface CreeveyTestsProviderProps {
   active?: boolean;
@@ -141,6 +141,7 @@ export function withCreeveyTests(
     handleStart = (ids: string[]): void => this.creeveyApi?.start(ids);
     handleStop = (): void => this.creeveyApi?.stop();
     render(): JSX.Element | null {
+      const statuses = this.getStoryStatus(this.state.storyId);
       return this.props.active ? (
         <CreeveyContext.Provider
           value={{
@@ -150,9 +151,34 @@ export function withCreeveyTests(
             onImageApprove: this.handleImageApprove,
           }}
         >
-          <Child statuses={this.getStoryStatus(this.state.storyId)} {...this.props} />
+          {statuses.length ? (
+            <Child key={this.state.storyId} statuses={statuses} {...this.props} />
+          ) : (
+            <Placeholder>{`Can't connect to Creevey server by 'http://${window.location.hostname}:${__CREEVEY_SERVER_PORT__}'. Please, make sure that you start it.`}</Placeholder>
+          )}
         </CreeveyContext.Provider>
       ) : null;
     }
   };
+}
+
+export function getEmojiByTestStatus(status: TestStatus | undefined, skip: string | boolean = false): string {
+  switch (status) {
+    case 'failed': {
+      return '❌';
+    }
+    case 'success': {
+      return '✔';
+    }
+    case 'running': {
+      return '🟡';
+    }
+    case 'pending': {
+      return '🕗';
+    }
+    default: {
+      if (skip) return '⏸';
+      return '';
+    }
+  }
 }
