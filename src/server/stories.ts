@@ -34,12 +34,11 @@ function createCreeveyTest(
   skipOptions?: SkipOptions,
   testName?: string,
 ): TestData {
-  // @ts-expect-error: StoryInput has incorrect types
-  const { kind, story, id: storyId } = storyMeta as { kind: string; story: string; id: string };
+  const { kind, name: story, id: storyId } = storyMeta;
   const path = [kind, story, testName, browser].filter(isDefined);
   const skip = skipOptions ? shouldSkip(browser, { kind, story }, skipOptions, testName) : false;
   const id = createHash('sha1').update(path.join('/')).digest('hex');
-  return { id, skip, browser, testName, storyPath: [...kind.split('/'), story], storyId };
+  return { id, skip, browser, testName, storyPath: [...kind.split('/').map((x) => x.trim()), story], storyId };
 }
 
 export function convertStories(
