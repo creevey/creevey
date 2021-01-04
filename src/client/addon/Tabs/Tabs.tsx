@@ -1,9 +1,9 @@
 import { ScrollArea, TabBar } from '@storybook/components';
 import { styled } from '@storybook/theming';
-import React, { FunctionComponentElement, useCallback } from 'react';
-import { TestData, TestStatus } from '../../../types';
+import React, { FunctionComponentElement } from 'react';
+import { TestData } from '../../../types';
 import { calcStatus } from '../../shared/helpers';
-import { getEmojiByTestStatus } from '../Addon';
+import { getEmojiByTestStatus } from '../utils';
 import { BrowserButton, TooltipWithTestNames } from './TabButtons';
 
 interface CreeveyTabsProps {
@@ -25,13 +25,12 @@ const FlexBar = styled.div(({ theme }) => ({
   background: theme.barBg,
 }));
 
-const BrowserButtonTitle = styled.span({
+const TestName = styled.span({
   display: 'inline-block',
-  maxWidth: '100px',
+  maxWidth: '60px',
   whiteSpace: 'nowrap',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
-  paddingRight: '5px',
 });
 
 export const Bar = styled(({ children }) => (
@@ -58,43 +57,42 @@ const Tools = styled.div({
 });
 
 export function CreeveyTabs({ onSelectTest, ...props }: CreeveyTabsProps): JSX.Element {
-  const handleSelectTest = useCallback(
-    (testId: string) => {
-      onSelectTest(testId);
-    },
-    [onSelectTest],
-  );
-
   return (
     <Bar>
       <FlexBar>
         <TabBar key="tabs">
-          {Object.entries(props.tabs).map(([browser, resultsByBrowser]) => {
-            const isActive = resultsByBrowser.some((x) => x.id === props.selectedTestId);
-            const browserStatus = resultsByBrowser
+          {Object.entries(props.tabs).map(([browser, tests]) => {
+            const activeTest = tests.find((x) => x.id === props.selectedTestId);
+            const browserStatus = tests
               .map((x) => x.status)
               .reduce((oldStatus, newStatus) => calcStatus(oldStatus, newStatus), undefined);
-            const browserSkip = resultsByBrowser.length > 0 ? resultsByBrowser.every((x) => x.skip) : false;
+            const browserSkip = tests.length > 0 ? tests.every((x) => x.skip) : false;
+            const emojiStatus = getEmojiByTestStatus(browserStatus, browserSkip);
 
-            return resultsByBrowser.length === 1 ? (
+            return tests.length === 1 ? (
               <BrowserButton
-                id={resultsByBrowser[0].id}
+                id={tests[0].id}
                 browser={browser}
-                active={isActive}
+                active={!!activeTest}
                 key={browser}
-                onClick={handleSelectTest}
+                onClick={onSelectTest}
               >
-                {getBrowserButtonTitle(browser, browserStatus, browserSkip, resultsByBrowser[0].testName)}
+                {emojiStatus} {browser}
               </BrowserButton>
             ) : (
               <TooltipWithTestNames
-                results={resultsByBrowser}
+                results={tests}
                 key={browser}
                 selectedTestId={props.selectedTestId}
-                onSelect={handleSelectTest}
+                onSelect={onSelectTest}
               >
-                <BrowserButton browser={browser} active={isActive}>
-                  {getBrowserButtonTitle(browser, browserStatus, browserSkip)}
+                <BrowserButton browser={browser} title={activeTest?.testName} active={!!activeTest}>
+                  {emojiStatus} {browser}{' '}
+                  {activeTest?.testName ? (
+                    <>
+                      (<TestName>{activeTest.testName}</TestName>)
+                    </>
+                  ) : null}
                 </BrowserButton>
               </TooltipWithTestNames>
             );
@@ -103,22 +101,5 @@ export function CreeveyTabs({ onSelectTest, ...props }: CreeveyTabsProps): JSX.E
         {props.tools ? <Tools>{props.tools}</Tools> : null}
       </FlexBar>
     </Bar>
-  );
-}
-
-function getBrowserButtonTitle(
-  browser: string,
-  status: TestStatus | undefined,
-  skip: boolean | string | undefined,
-  testName?: string,
-): JSX.Element {
-  return (
-    <>
-      <BrowserButtonTitle>
-        {browser}
-        {testName ? ` (${testName})` : ''}
-      </BrowserButtonTitle>{' '}
-      {getEmojiByTestStatus(status, skip)}
-    </>
   );
 }

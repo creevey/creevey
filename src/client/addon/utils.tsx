@@ -5,7 +5,6 @@ import { initCreeveyClientApi, CreeveyClientApi } from '../shared/creeveyClientA
 import { TestData, isDefined, CreeveyStatus, CreeveyUpdate, SetStoriesData, StoriesRaw, TestStatus } from '../../types';
 import { produce } from 'immer';
 import { CreeveyContext } from './CreeveyContext';
-import { getEmojiByTestStatus } from './Addon';
 import { calcStatus } from '../shared/helpers';
 import { Placeholder } from '@storybook/components';
 
@@ -161,4 +160,25 @@ export function withCreeveyTests(
       ) : null;
     }
   };
+}
+
+export function getEmojiByTestStatus(status: TestStatus | undefined, skip: string | boolean = false): string {
+  switch (status) {
+    case 'failed': {
+      return '❌';
+    }
+    case 'success': {
+      return '✔';
+    }
+    case 'running': {
+      return '🟡';
+    }
+    case 'pending': {
+      return '🕗';
+    }
+    default: {
+      if (skip) return '⏸';
+      return '';
+    }
+  }
 }

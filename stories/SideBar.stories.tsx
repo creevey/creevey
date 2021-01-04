@@ -126,12 +126,10 @@ SimpleSideBar.parameters = {
   creevey: {
     tests: {
       async hover() {
-        if (this.captureElement) {
-          await this.browser
-            .actions()
-            .move({ origin: this.browser.findElement({ css: '[data-tid="selectAll"]' }) })
-            .perform();
-        }
+        await this.browser
+          .actions()
+          .move({ origin: this.browser.findElement({ css: '[data-tid="selectAll"]' }) })
+          .perform();
         const hover = await this.takeScreenshot();
 
         await this.expect(hover).to.matchImage();

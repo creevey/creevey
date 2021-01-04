@@ -1,6 +1,6 @@
-import React, { useState, Fragment, useCallback, useContext } from 'react';
+import React, { useState, Fragment, useContext } from 'react';
 import { withCreeveyTests } from './utils';
-import { TestData, TestStatus } from '../../types';
+import { TestData } from '../../types';
 import { IconButton, Icons, Loader, Separator } from '@storybook/components';
 import { ResultsPage } from '../shared/components/ResultsPage';
 import { CreeveyContext } from './CreeveyContext';
@@ -31,10 +31,6 @@ const PanelInternal = ({ statuses }: PanelProps): JSX.Element => {
   const { onStart, onStop, onImageApprove } = useContext(CreeveyContext);
   const [selectedTestId, setSelectedTestId] = useState(statuses[0].id);
 
-  const handleSelectTest = useCallback((selectedTestId: string) => {
-    setSelectedTestId(selectedTestId);
-  }, []);
-
   const result = statuses.find((x) => x.id === selectedTestId);
   const isRunning = result?.status === 'running';
 
@@ -49,7 +45,7 @@ const PanelInternal = ({ statuses }: PanelProps): JSX.Element => {
       <TabsWrapper>
         <CreeveyTabs
           selectedTestId={selectedTestId}
-          onSelectTest={handleSelectTest}
+          onSelectTest={setSelectedTestId}
           tabs={tabs}
           tools={
             result && (
@@ -86,25 +82,5 @@ const PanelInternal = ({ statuses }: PanelProps): JSX.Element => {
     </Fragment>
   );
 };
-export function getEmojiByTestStatus(status: TestStatus | undefined, skip: string | boolean = false): string {
-  switch (status) {
-    case 'failed': {
-      return '❌';
-    }
-    case 'success': {
-      return '✔';
-    }
-    case 'running': {
-      return '🟡';
-    }
-    case 'pending': {
-      return '🕗';
-    }
-    default: {
-      if (skip) return '⏸';
-      return '';
-    }
-  }
-}
 
 export const Panel = withCreeveyTests(PanelInternal);

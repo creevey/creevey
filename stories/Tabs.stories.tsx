@@ -4,10 +4,17 @@ import { CreeveyStory, noop, TestData } from '../src/types';
 // eslint-disable-next-line node/no-extraneous-import
 import { action } from '@storybook/addon-actions';
 import { IconButton, Icons, Separator } from '@storybook/components';
-import { Story } from '@storybook/react';
+import { Meta, Story } from '@storybook/react';
+import { styled } from '@storybook/theming';
+
+const TabsContainer = styled.div({
+  height: '150px',
+});
+
 export default {
   title: 'AddonTabs',
-};
+  decorators: [(storyFn) => <TabsContainer id="addon-tabs">{storyFn()}</TabsContainer>],
+} as Meta;
 
 const onSelect = action('onSelect');
 
@@ -28,14 +35,11 @@ export const WithNamesAndBrowsers: Story & CreeveyStory = () => {
     <CreeveyTabs
       selectedTestId={'2'}
       tabs={{
+        firefox: [getTest({ id: '3', browser: 'firefox' })],
         chrome: [
           getTest({ id: '1', testName: 'click long long long long Name', status: 'failed' }),
-          getTest({ id: '2', testName: 'another click' }),
-          getTest({ id: '3', testName: 'click', status: undefined }),
+          getTest({ id: '2', testName: 'click', status: undefined }),
         ],
-        firefox: [getTest({ id: '4', browser: 'firefox', testName: 'click long long long long Name' })],
-        firefox2: [getTest({ id: '5', browser: 'firefox2', testName: 'click' })],
-        firefox3: [getTest({ id: '6', browser: 'firefox2' })],
       }}
       onSelectTest={onSelect}
       tools={
@@ -53,14 +57,10 @@ export const WithNamesAndBrowsers: Story & CreeveyStory = () => {
 WithNamesAndBrowsers.parameters = {
   creevey: {
     tests: {
-      async clickTestName() {
-        const tabs = await this.takeScreenshot();
-        if (this.captureElement) {
-          const chromeTab = await this.browser.findElement({ css: "button[type='button'][value~='chrome']" });
-          await this.browser.actions().click(chromeTab).perform();
-          const tooltip = await this.browser.findElement({ css: '.css-1tz551k' }).takeScreenshot();
-          await this.expect({ tabs, tooltip }).to.matchImages();
-        }
+      async click() {
+        const chromeTab = await this.browser.findElement({ css: "button[type='button'][value~='chrome']" });
+        await this.browser.actions().click(chromeTab).perform();
+        await this.expect(await this.takeScreenshot()).to.matchImage();
       },
     },
   },

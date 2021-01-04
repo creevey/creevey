@@ -1,8 +1,8 @@
 import { TabButton, TooltipLinkList, WithTooltip } from '@storybook/components';
 import { styled } from '@storybook/theming';
-import React, { useCallback } from 'react';
+import React, { ComponentProps, ReactNode, useCallback } from 'react';
 import { TestData } from '../../../types';
-import { getEmojiByTestStatus } from '../Addon';
+import { getEmojiByTestStatus } from '../utils';
 
 const LinkIconContainer = styled.span(({ theme }) => ({
   display: 'inline-block',
@@ -13,18 +13,26 @@ const LinkIconContainer = styled.span(({ theme }) => ({
 
 interface BrowserButtonProps {
   browser: string;
+  title?: string;
   id?: string;
   active: boolean;
   onClick?: (id: string) => void;
-  children: React.ReactChild;
+  children: ReactNode;
 }
 
-export const BrowserButton = ({ browser, id, active, onClick, children }: BrowserButtonProps): JSX.Element => {
+export const BrowserButton = ({
+  browser,
+  title = browser,
+  id,
+  active,
+  onClick,
+  children,
+}: BrowserButtonProps): JSX.Element => {
   const handleClick = useCallback(() => {
     if (onClick && id) onClick(id);
   }, [id, onClick]);
   return (
-    <TabButton value={browser} active={active} title={browser} onClick={handleClick}>
+    <TabButton value={browser} active={active} title={title} onClick={handleClick}>
       {children}
     </TabButton>
   );
@@ -34,7 +42,7 @@ interface TooltipWithTestNamesProps {
   results: TestData[];
   selectedTestId: string;
   onSelect: (id: string) => void;
-  children: React.ReactChild;
+  children: ReactNode;
 }
 
 export const TooltipWithTestNames = ({
@@ -43,7 +51,7 @@ export const TooltipWithTestNames = ({
   selectedTestId,
   children,
 }: TooltipWithTestNamesProps): JSX.Element => {
-  const getLinks = (onHide: () => void): { id: string; title: string; onClick: () => void; active: boolean }[] => {
+  const getLinks = (onHide: () => void): ComponentProps<typeof TooltipLinkList>['links'] => {
     return results.map((x) => ({
       id: x.id,
       title: x.testName ?? '',
