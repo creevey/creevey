@@ -139,6 +139,11 @@ export function withCreeveyTests(
     handleImageApprove = (id: string, retry: number, image: string): void => this.creeveyApi?.approve(id, retry, image);
 
     handleStart = (ids: string[]): void => this.creeveyApi?.start(ids);
+
+    handleStartAllTests = (): void => {
+      const allIds = Object.keys(this.state.status.tests);
+      this.creeveyApi?.start(allIds);
+    };
     handleStop = (): void => this.creeveyApi?.stop();
     render(): JSX.Element | null {
       const statuses = this.getStoryStatus(this.state.storyId);
@@ -147,6 +152,7 @@ export function withCreeveyTests(
           value={{
             isRunning: this.state.isRunning,
             onStart: this.handleStart,
+            onStartAllTests: this.handleStartAllTests,
             onStop: this.handleStop,
             onImageApprove: this.handleImageApprove,
           }}

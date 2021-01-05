@@ -1,13 +1,14 @@
-import React, { useState, Fragment, useContext } from 'react';
+import React, { useState, Fragment, useContext, useCallback } from 'react';
 import { withCreeveyTests } from './utils';
 import { TestData } from '../../types';
 import { IconButton, Icons, Loader, Separator } from '@storybook/components';
 import { ResultsPage } from '../shared/components/ResultsPage';
 import { CreeveyContext } from './CreeveyContext';
 import { styled } from '@storybook/theming';
-import { Tooltip } from './Tooltip';
 import { getTestPath } from '../shared/helpers';
 import { CreeveyTabs } from './Tabs/Tabs';
+import { ForwardIcon, NextIcon } from './Icons';
+import { stringify } from 'qs';
 
 interface PanelProps {
   statuses: TestData[];
@@ -28,10 +29,16 @@ const TabsWrapper = styled.div({
 });
 
 const PanelInternal = ({ statuses }: PanelProps): JSX.Element => {
-  const { onStart, onStop, onImageApprove } = useContext(CreeveyContext);
+  const { onStart, onStop, onImageApprove, onStartAllTests } = useContext(CreeveyContext);
   const [selectedTestId, setSelectedTestId] = useState(statuses[0].id);
 
+  const handleRunInAllBrowsers = useCallback(() => {
+    const testIds = statuses.map((x) => x.id);
+    onStart(testIds);
+  }, [statuses, onStart]);
+
   const result = statuses.find((x) => x.id === selectedTestId);
+
   const isRunning = result?.status === 'running';
 
   const tabs: { [key: string]: TestData[] } = statuses.reduce((buf: { [key: string]: TestData[] }, status) => {
@@ -50,13 +57,37 @@ const PanelInternal = ({ statuses }: PanelProps): JSX.Element => {
           tools={
             result && (
               <Fragment>
+                <IconButton
+                  href={`http://localhost:${__CREEVEY_CLIENT_PORT__ || __CREEVEY_SERVER_PORT__}/?${stringify({
+                    testPath: getTestPath(result),
+                  })}`}
+                  target="_blank"
+                  title="Show in Creevey UI"
+                >
+                  <Icons icon="sharealt" />
+                </IconButton>
                 <Separator />
-                <Tooltip testPath={getTestPath(result)} />
-                <Separator />
+                <IconButton
+                  onClick={() => {
+                    isRunning ? onStop() : onStartAllTests();
+                  }}
+                  title="Run all"
+                >
+                  {isRunning ? <Icons icon={'stop'} /> : <ForwardIcon />}
+                </IconButton>
+                <IconButton
+                  onClick={() => {
+                    isRunning ? onStop() : handleRunInAllBrowsers();
+                  }}
+                  title="Run all story tests"
+                >
+                  {isRunning ? <Icons icon={'stop'} /> : <NextIcon width={15} height={11} />}
+                </IconButton>
                 <IconButton
                   onClick={() => {
                     isRunning ? onStop() : onStart([result.id]);
                   }}
+                  title="Run"
                 >
                   <Icons icon={isRunning ? 'stop' : 'play'} />
                 </IconButton>
