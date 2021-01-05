@@ -268,6 +268,7 @@
   - [x] ~~Fix firefox 61 in skbkontur selenium grid~~
   - [ ] creevey-loader `top-level property access`
   - [ ] wait-on don't work properly
+  - [ ] Don't pull docker local images
 - [x] Start server early and wait for build
 - [x] Setup TeamCity CI
 - [x] Update CircleCI and GitLab according by github actions
@@ -287,6 +288,7 @@
 - [x] Features
   - [x] Add link `go to runner` in addon UI
   - [x] Show side-by-side diff vertically or horizontally depends on aspect
+  - [ ] Save webpack stats.json for debug
   - [ ] Output browser logs for debug
   - [ ] Add fallback option, load tests from browser (hmr and tests are disabled in this case)
     - [ ] Send PR to Storybook to allow use HMR for stories
