@@ -51,10 +51,10 @@ module.exports = {
   storybookDir: path.join(__dirname, '.storybook'),
 
   // Where original images are stored
-  screenDir: path.join(__dirname, 'images'),
+  screenDir: path.join(__dirname, '../images'),
 
   // Report directory that contains data from previous runs
-  reportDir: path.join(__dirname, 'report'),
+  reportDir: path.join(__dirname, '../report'),
 
   // Pixelmatch options
   diffOptions: { threshold: 0.1 },
