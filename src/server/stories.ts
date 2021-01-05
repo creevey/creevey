@@ -41,7 +41,7 @@ function createCreeveyTest(
   return { id, skip, browser, testName, storyPath: [...kind.split('/').map((x) => x.trim()), story], storyId };
 }
 
-export function convertStories(
+function convertStories(
   browsers: string[],
   stories: StoriesRaw | StoryInput[],
 ): Partial<{ [testId: string]: ServerTest }> {
