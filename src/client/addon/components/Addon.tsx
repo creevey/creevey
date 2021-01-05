@@ -1,11 +1,11 @@
 import React, { useState, Fragment, useContext } from 'react';
-import { withCreeveyTests } from './utils';
-import { TestData } from '../../types';
+import { withCreeveyTests } from '../withCreeveyTests';
+import { TestData } from '../../../types';
 import { Loader } from '@storybook/components';
-import { ResultsPage } from '../shared/components/ResultsPage';
-import { CreeveyContext } from './CreeveyContext';
+import { ResultsPage } from '../../shared/components/ResultsPage';
+import { CreeveyContext } from '../CreeveyContext';
 import { styled } from '@storybook/theming';
-import { getTestPath } from '../shared/helpers';
+import { getTestPath } from '../../shared/helpers';
 import { CreeveyTabs } from './Tabs/Tabs';
 import { Tools } from './Tabs/Tools';
 

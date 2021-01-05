@@ -1,8 +1,8 @@
 import { TabButton, TooltipLinkList, WithTooltip } from '@storybook/components';
 import { styled } from '@storybook/theming';
 import React, { ComponentProps, ReactNode, useCallback } from 'react';
-import { TestData } from '../../../types';
-import { getEmojiByTestStatus } from '../utils';
+import { TestData } from '../../../../types';
+import { getEmojiByTestStatus } from '../../utils';
 
 const LinkIconContainer = styled.span(({ theme }) => ({
   display: 'inline-block',

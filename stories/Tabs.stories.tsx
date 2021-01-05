@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { CreeveyTabs } from '../src/client/addon/Tabs/Tabs';
+import { CreeveyTabs } from '../src/client/addon/components/Tabs/Tabs';
 import { CreeveyStory, noop, TestData } from '../src/types';
 // eslint-disable-next-line node/no-extraneous-import
 import { action } from '@storybook/addon-actions';

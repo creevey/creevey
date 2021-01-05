@@ -1,11 +1,11 @@
 import React, { Fragment, useState, useContext } from 'react';
 import { IconButton, Icons, Separator } from '@storybook/components';
-import { ForwardIcon, NextIcon } from './../Icons';
+import { ForwardIcon, NextIcon } from '../../Icons';
 import { stringify } from 'qs';
 import { styled } from '@storybook/theming';
-import { CreeveyContext } from '../CreeveyContext';
-import { TestData } from '../../../types';
-import { getTestPath } from '../../shared/helpers';
+import { CreeveyContext } from '../../CreeveyContext';
+import { TestData } from '../../../../types';
+import { getTestPath } from '../../../shared/helpers';
 
 interface ToolsProps {
   test: TestData;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { addons, types } from '@storybook/addons';
-import { Panel } from './Addon';
+import { Panel } from './components/Addon';
 
 export const ADDON_ID = 'creevey';
 const PANEL_ID = `${ADDON_ID}/panel`;
@@ -10,7 +10,7 @@ addons.register(ADDON_ID, (api) => {
   addons.addPanel(PANEL_ID, {
     title,
     type: types.PANEL,
-    // TODO console.log(key) what is key?
+    // NOTE key = PANEL_ID needs to correct render button in addons panel
     // eslint-disable-next-line react/display-name
     render: ({ active, key }) => React.createElement(Panel, { api, active, key }),
   });
