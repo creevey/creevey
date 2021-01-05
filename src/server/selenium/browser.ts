@@ -31,7 +31,8 @@ async function resolveStorybookUrl(storybookUrl: string, checkUrl: (url: string)
     }
   }
   const error = new Error(
-    "Creevey couldn't resolve IP address of storybook URL. Please specify `storybookUrl` with IP address that accessible from remote browser",
+    "Creevey couldn't resolve IP address of storybook URL. \
+    Please specify `storybookUrl` with IP address that accessible from remote browser",
   );
   error.name = 'ResolveUrlError';
   throw error;
@@ -40,7 +41,7 @@ async function resolveStorybookUrl(storybookUrl: string, checkUrl: (url: string)
 function getUrlChecker(browser: WebDriver): (url: string) => Promise<boolean> {
   return async (url: string): Promise<boolean> => {
     try {
-      //  NOTE: Before trying a new url, reset current one
+      //  NOTE: Before trying a new url, reset the current one
       await browser.get('about:blank');
       await browser.get(`${url.replace(/\/$/, '')}/iframe.html`);
       let source = '';
@@ -48,14 +49,14 @@ function getUrlChecker(browser: WebDriver): (url: string) => Promise<boolean> {
         try {
           source = await browser.getPageSource();
         } catch (_) {
-          // NOTE: Firefox can raise exception "WebDriverError: TypeError: curContainer.frame.document.documentElement is null"
-          // So just ignore it
+          // NOTE: Firefox can raise exception "curContainer.frame.document.documentElement is null"
         }
       } while (source.length == 0 || source.includes('<body></body>'));
       // NOTE: This is the most optimal way to check if we in storybook or not
-      // We can't use different page load strategies because they add significant delay and the `eager` works only from chrome 77
-      // Chrome also in some cases loads page successful even it fail to get remote resource
-      // So we need to check if it storybook page or not
+      // We don't use any page load strategies except `NONE`
+      // because other add significant delay and some of them don't work in earlier chrome versions
+      // Browsers always load page successful even it's failed
+      // So we just check `#root` element
       return source.includes('<div id="root"></div>');
     } catch (error) {
       return false;
