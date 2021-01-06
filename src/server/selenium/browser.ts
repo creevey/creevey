@@ -51,7 +51,8 @@ function getUrlChecker(browser: WebDriver): (url: string) => Promise<boolean> {
         } catch (_) {
           // NOTE: Firefox can raise exception "curContainer.frame.document.documentElement is null"
         }
-      } while (source.length == 0 || source.includes('<body></body>'));
+        // NOTE: IE11 can return only `head` without body
+      } while (source.length == 0 || !/<body([^>]*>).+<\/body>/s.test(source));
       // NOTE: This is the most optimal way to check if we in storybook or not
       // We don't use any page load strategies except `NONE`
       // because other add significant delay and some of them don't work in earlier chrome versions
