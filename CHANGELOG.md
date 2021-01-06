@@ -1,3 +1,10 @@
+## [0.7.16](https://github.com/wKich/creevey/compare/v0.7.15...v0.7.16) (2021-01-06)
+
+### Bug Fixes
+
+- 🐛 resolve url for ie11 ([562a982](https://github.com/wKich/creevey/commit/562a9821135f42e428da7f64fe29f2473565eb6d))
+- 🐛 spinner position in sidebar ([5d2d34a](https://github.com/wKich/creevey/commit/5d2d34a7229d7fef8fd4f6731df6b807dce00d7f))
+
 ## [0.7.15](https://github.com/wKich/creevey/compare/v0.7.14...v0.7.15) (2021-01-06)
 
 ### Bug Fixes
