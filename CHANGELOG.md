@@ -1,3 +1,14 @@
+## [0.7.15](https://github.com/wKich/creevey/compare/v0.7.14...v0.7.15) (2021-01-06)
+
+### Bug Fixes
+
+- 🐛 addon show test name in tabs panel ([3393474](https://github.com/wKich/creevey/commit/339347498e87d5e43d1a5e89b611aeaf896e81f3))
+- 🐛 trim story kinds ([6ff25b0](https://github.com/wKich/creevey/commit/6ff25b0b87558d2ce0c11ecd5130480003f41988))
+
+### Features
+
+- 🎸 add run all buttons in addon ([94ac2d3](https://github.com/wKich/creevey/commit/94ac2d3c6c72ec9a537b974294235f4bfdbf5a69))
+
 ## [0.7.14](https://github.com/wKich/creevey/compare/v0.7.13...v0.7.14) (2021-01-01)
 
 ### Bug Fixes
