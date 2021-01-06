@@ -1,13 +1,13 @@
 import React, { useState, Fragment, useContext } from 'react';
-import { withCreeveyTests } from './utils';
-import { TestData } from '../../types';
-import { IconButton, Icons, Loader, Separator } from '@storybook/components';
-import { ResultsPage } from '../shared/components/ResultsPage';
-import { CreeveyContext } from './CreeveyContext';
+import { withCreeveyTests } from '../withCreeveyTests';
+import { TestData } from '../../../types';
+import { Loader } from '@storybook/components';
+import { ResultsPage } from '../../shared/components/ResultsPage';
+import { CreeveyContext } from '../CreeveyContext';
 import { styled } from '@storybook/theming';
-import { Tooltip } from './Tooltip';
-import { getTestPath } from '../shared/helpers';
+import { getTestPath } from '../../shared/helpers';
 import { CreeveyTabs } from './Tabs/Tabs';
+import { Tools } from './Tabs/Tools';
 
 interface PanelProps {
   statuses: TestData[];
@@ -28,10 +28,11 @@ const TabsWrapper = styled.div({
 });
 
 const PanelInternal = ({ statuses }: PanelProps): JSX.Element => {
-  const { onStart, onStop, onImageApprove } = useContext(CreeveyContext);
+  const { onImageApprove } = useContext(CreeveyContext);
   const [selectedTestId, setSelectedTestId] = useState(statuses[0].id);
 
   const result = statuses.find((x) => x.id === selectedTestId);
+
   const isRunning = result?.status === 'running';
 
   const tabs: { [key: string]: TestData[] } = statuses.reduce((buf: { [key: string]: TestData[] }, status) => {
@@ -47,22 +48,7 @@ const PanelInternal = ({ statuses }: PanelProps): JSX.Element => {
           selectedTestId={selectedTestId}
           onSelectTest={setSelectedTestId}
           tabs={tabs}
-          tools={
-            result && (
-              <Fragment>
-                <Separator />
-                <Tooltip testPath={getTestPath(result)} />
-                <Separator />
-                <IconButton
-                  onClick={() => {
-                    isRunning ? onStop() : onStart([result.id]);
-                  }}
-                >
-                  <Icons icon={isRunning ? 'stop' : 'play'} />
-                </IconButton>
-              </Fragment>
-            )
-          }
+          tools={result && <Tools test={result} />}
         />
       </TabsWrapper>
       {isRunning && <Loader />}

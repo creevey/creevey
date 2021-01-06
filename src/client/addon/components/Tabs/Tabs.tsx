@@ -1,9 +1,9 @@
 import { ScrollArea, TabBar } from '@storybook/components';
 import { styled } from '@storybook/theming';
 import React, { FunctionComponentElement } from 'react';
-import { TestData } from '../../../types';
-import { calcStatus } from '../../shared/helpers';
-import { getEmojiByTestStatus } from '../utils';
+import { TestData } from '../../../../types';
+import { calcStatus } from '../../../shared/helpers';
+import { getEmojiByTestStatus } from '../../utils';
 import { BrowserButton, TooltipWithTestNames } from './TabButtons';
 
 interface CreeveyTabsProps {
