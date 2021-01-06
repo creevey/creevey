@@ -31,6 +31,7 @@ function tryParse(source: string, options: OptionObject): { ast?: t.File; done: 
       done: true,
     };
   } catch (error) {
+    // TODO Output babel error code frame
     if (options.debug) console.log(error);
     return { done: false };
   }
