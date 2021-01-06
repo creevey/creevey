@@ -351,7 +351,7 @@ export async function switchStory(this: Context): Promise<void> {
   await resetMousePosition(this.browser);
   await selectStory(this.browser, story.id, story.kind, story.name);
 
-  const { captureElement = '#root' } = (story.parameters.creevey ?? {}) as CreeveyStoryParams;
+  const { captureElement = '#root', ignoreElements } = (story.parameters.creevey ?? {}) as CreeveyStoryParams;
 
   if (captureElement)
     Object.defineProperty(this, 'captureElement', {
@@ -363,5 +363,31 @@ export async function switchStory(this: Context): Promise<void> {
 
   this.takeScreenshot = () => takeScreenshot(this.browser, captureElement);
 
+  await handleIgnoreElements(this.browser, ignoreElements);
+
   this.testScope.reverse();
+}
+
+async function handleIgnoreElements(browser: WebDriver, ignoreElements?: string | string[] | null): Promise<void> {
+  const ignoreSelectors = Array.prototype.concat(ignoreElements).filter(Boolean);
+
+  await browser.executeScript<{
+    ignoreSelectors: string[];
+  }>(function (ignoreSelectors: string[]) {
+    const STYLE_NODE_ID = 'creevey-ignore-style';
+    let style = document.getElementById(STYLE_NODE_ID);
+    if (ignoreSelectors.length) {
+      if (!style) {
+        style = document.createElement('style');
+        style.setAttribute('type', 'text/css');
+        style.setAttribute('id', STYLE_NODE_ID);
+        document.head.appendChild(style);
+      }
+      style.innerHTML = `${ignoreSelectors.toString()} { visibility: hidden }`;
+    } else {
+      if (style) {
+        style.innerHTML = '';
+      }
+    }
+  }, ignoreSelectors);
 }

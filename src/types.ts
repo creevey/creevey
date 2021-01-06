@@ -302,6 +302,7 @@ export type CreeveyTestFunction = (this: {
 
 export interface CreeveyStoryParams {
   captureElement?: string | null;
+  ignoreElements?: string | string[] | null;
   delay?: number;
   skip?: SkipOptions;
   tests?: {
