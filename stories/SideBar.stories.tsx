@@ -48,7 +48,14 @@ const statusTests: () => CreeveyStatus['tests'] = () => ({
   9: { id: '9', browser: 'pending', storyPath: ['root', 'pending'], storyId: '', skip: false, status: 'pending' },
   10: { id: '10', browser: 'failed', storyPath: ['root', 'pending'], storyId: '', skip: false, status: 'failed' },
 
-  11: { id: '11', browser: 'running', storyPath: ['root', 'running'], storyId: '', skip: false, status: 'running' },
+  11: {
+    id: '11',
+    browser: 'running',
+    storyPath: ['root', 'running with very long name'],
+    storyId: '',
+    skip: false,
+    status: 'running',
+  },
   12: { id: '12', browser: 'pending', storyPath: ['root', 'running'], storyId: '', skip: false, status: 'pending' },
 });
 

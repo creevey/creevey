@@ -18,6 +18,7 @@ const Container = styled.span({
 });
 
 const Spinner = styled(Loader)({
+  top: '13px',
   left: '40px',
 });
 
