@@ -288,6 +288,7 @@
 - [x] Features
   - [x] Add link `go to runner` in addon UI
   - [x] Show side-by-side diff vertically or horizontally depends on aspect
+  - [ ] Add resolveStorybookUrl to config
   - [ ] Save webpack stats.json for debug
   - [ ] Output browser logs for debug
   - [ ] Add fallback option, load tests from browser (hmr and tests are disabled in this case)

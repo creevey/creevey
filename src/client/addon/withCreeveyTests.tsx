@@ -2,12 +2,13 @@ import React, { ComponentClass } from 'react';
 import { SET_STORIES, STORY_RENDERED } from '@storybook/core-events';
 import { API } from '@storybook/api';
 import { initCreeveyClientApi, CreeveyClientApi } from '../shared/creeveyClientApi';
-import { TestData, isDefined, CreeveyStatus, CreeveyUpdate, SetStoriesData, StoriesRaw, TestStatus } from '../../types';
+import { TestData, isDefined, CreeveyStatus, CreeveyUpdate, StoriesRaw, TestStatus } from '../../types';
 import { produce } from 'immer';
 import { CreeveyContext } from './CreeveyContext';
 import { calcStatus } from '../shared/helpers';
 import { Placeholder } from '@storybook/components';
 import { getEmojiByTestStatus } from './utils';
+import { denormalizeStoryParameters, SetStoriesPayload } from '@storybook/api/dist/lib/stories';
 
 export interface CreeveyTestsProviderProps {
   active?: boolean;
@@ -107,8 +108,10 @@ export function withCreeveyTests(
       api.off(STORY_RENDERED, this.onStoryRendered);
       api.off(SET_STORIES, this.addStatusesToSidebar);
     }
-    addStatusesToSidebar = ({ stories }: SetStoriesData): void => {
-      this.setState({ stories: stories });
+    addStatusesToSidebar = (data: SetStoriesPayload): void => {
+      // TODO: Send PR to storybook to fix this
+      const stories = data.v ? denormalizeStoryParameters(data) : (data as StoriesRaw);
+      this.setState({ stories });
       Object.keys(stories).forEach((storyId) => {
         const storyStatus = this.getStoryStatus(storyId);
         const status = storyStatus
@@ -117,6 +120,7 @@ export function withCreeveyTests(
         const skip = storyStatus.length > 0 ? storyStatus.every((x) => x.skip) : false;
         stories[storyId].name = this.addStatus(stories[storyId].name, status, skip);
       });
+
       void this.props.api.setStories(stories);
     };
 
