@@ -361,36 +361,60 @@ export async function switchStory(this: Context): Promise<void> {
 
   this.takeScreenshot = () => takeScreenshot(this.browser, captureElement);
 
-  await handleIgnoreElements(this.browser, ignoreElements);
+  if (ignoreElements) {
+    await insertIgnoreStyles(this.browser, ignoreElements);
+  }
 
   this.testScope.reverse();
 }
 
-async function handleIgnoreElements(browser: WebDriver, ignoreElements?: string | string[] | null): Promise<void> {
-  const ignoreSelectors = Array.prototype.concat(ignoreElements).filter(Boolean);
+const IGNORE_STYLES_ID = 'creevey-ignore-styles';
 
-  await browser.executeScript<{
-    ignoreSelectors: string[];
-  }>(function (ignoreSelectors: string[]) {
-    const STYLE_NODE_ID = 'creevey-ignore-style';
-    let style = document.getElementById(STYLE_NODE_ID);
-    if (ignoreSelectors.length) {
-      if (!style) {
-        style = document.createElement('style');
-        style.setAttribute('type', 'text/css');
-        style.setAttribute('id', STYLE_NODE_ID);
-        document.head.appendChild(style);
-      }
-      style.innerHTML = `${ignoreSelectors.toString()} { visibility: hidden }`;
-    } else {
-      if (style) {
-        style.innerHTML = '';
-      }
-    }
-  }, ignoreSelectors);
+async function insertIgnoreStyles(browser: WebDriver, ignoreElements: string | string[] | null): Promise<void> {
+  const ignoreSelectors = Array.prototype.concat(ignoreElements).filter(Boolean);
+  if (ignoreSelectors.length) {
+    await browser.executeScript(
+      function (ignoreSelectors: string[], IGNORE_STYLES_ID: string) {
+        const stylesElement = document.createElement('style');
+        stylesElement.setAttribute('type', 'text/css');
+        stylesElement.setAttribute('id', IGNORE_STYLES_ID);
+        document.head.appendChild(stylesElement);
+        ignoreSelectors.forEach((selector) => {
+          stylesElement.innerHTML += `
+          ${selector} {
+            background: #000 !important;
+            box-shadow: none !important;
+            text-shadow: none !important;
+            outline: 0 !important;
+            color: rgba(0,0,0,0) !important;
+          }
+          ${selector} * {
+            visibility: hidden;
+          }
+        `;
+        });
+      },
+      ignoreSelectors,
+      IGNORE_STYLES_ID,
+    );
+  }
+}
+
+async function removeIgnoreStyles(browser: WebDriver): Promise<void> {
+  await browser.executeScript(function (IGNORE_STYLES_ID: string) {
+    const element = document.getElementById(IGNORE_STYLES_ID);
+    element?.parentNode?.removeChild(element);
+  }, IGNORE_STYLES_ID);
 }
 
 export async function cleanUp(this: Context): Promise<void> {
+  const story = this.currentTest?.ctx?.story as StoryInput;
+  const { ignoreElements } = (story.parameters.creevey ?? {}) as CreeveyStoryParams;
+
   await resetMousePosition(this.browser);
   Reflect.deleteProperty(this, 'captureElement');
+
+  if (ignoreElements) {
+    await removeIgnoreStyles(this.browser);
+  }
 }
