@@ -90,6 +90,11 @@ export type BrowserConfig = Capabilities & {
   gridUrl?: string;
   storybookUrl?: string;
   /**
+   * Storybook's globals to set in a specific browser
+   * @see https://github.com/storybookjs/storybook/blob/v6.0.0/docs/essentials/toolbars-and-globals.md
+   */
+  storybookGlobals?: StorybookGlobals;
+  /**
    * Specify custom docker image. Used only with `useDocker == true`
    * @default `selenoid/${browserName}:${version}`
    */
@@ -101,6 +106,10 @@ export type BrowserConfig = Capabilities & {
   webdriverCommand?: string[];
   viewport?: { width: number; height: number };
 };
+
+export interface StorybookGlobals {
+  [key: string]: unknown;
+}
 
 export type Browser = boolean | string | BrowserConfig;
 

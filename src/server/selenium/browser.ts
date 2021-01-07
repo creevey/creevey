@@ -1,7 +1,7 @@
 import { PNG } from 'pngjs';
 import { Context, Test, Suite } from 'mocha';
 import { Builder, By, WebDriver, Origin, Capabilities } from 'selenium-webdriver';
-import { Config, BrowserConfig, StoryInput, CreeveyStoryParams, noop, isDefined } from '../../types';
+import { Config, BrowserConfig, StoryInput, CreeveyStoryParams, noop, isDefined, StorybookGlobals } from '../../types';
 import { subscribeOn } from '../messages';
 import { networkInterfaces } from 'os';
 import { runSequence, LOCALHOST_REGEXP } from '../utils';
@@ -282,6 +282,12 @@ async function selectStory(browser: WebDriver, storyId: string, kind: string, st
     story,
   );
   if (errorMessage) throw new Error(errorMessage);
+}
+
+export async function updateStorybookGlobals(browser: WebDriver, globals: StorybookGlobals): Promise<void> {
+  await browser.executeScript(function (globals: StorybookGlobals) {
+    window.__CREEVEY_UPDATE_GLOBALS__(globals);
+  }, globals);
 }
 
 export async function getBrowser(config: Config, browserConfig: BrowserConfig): Promise<WebDriver | null> {

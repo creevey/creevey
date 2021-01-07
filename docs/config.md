@@ -76,6 +76,11 @@ module.exports = {
       limit: 2,
       /* Also you can define any browser capabilities here */
       version: '86.0',
+      // It's possible to set Storybook's globals
+      // https://github.com/storybookjs/storybook/blob/v6.0.0/docs/essentials/toolbars-and-globals.md
+      storybookGlobals: {
+        myTheme: 'dark',
+      },
     },
 
     // You can override some global options for specific browser
