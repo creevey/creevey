@@ -348,7 +348,6 @@ export async function switchStory(this: Context): Promise<void> {
 
   if (!story) throw new Error(`Current test '${this.testScope.join('/')}' context doesn't have 'story' field`);
 
-  await resetMousePosition(this.browser);
   await selectStory(this.browser, story.id, story.kind, story.name);
 
   const { captureElement = '#root', ignoreElements } = (story.parameters.creevey ?? {}) as CreeveyStoryParams;
@@ -359,7 +358,6 @@ export async function switchStory(this: Context): Promise<void> {
       configurable: true,
       get: () => this.browser.findElement(By.css(captureElement)),
     });
-  else Reflect.deleteProperty(this, 'captureElement');
 
   this.takeScreenshot = () => takeScreenshot(this.browser, captureElement);
 
@@ -390,4 +388,9 @@ async function handleIgnoreElements(browser: WebDriver, ignoreElements?: string 
       }
     }
   }, ignoreSelectors);
+}
+
+export async function cleanUp(this: Context): Promise<void> {
+  await resetMousePosition(this.browser);
+  Reflect.deleteProperty(this, 'captureElement');
 }
