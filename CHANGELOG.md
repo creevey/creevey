@@ -1,3 +1,9 @@
+## [0.7.17](https://github.com/wKich/creevey/compare/v0.7.16...v0.7.17) (2021-01-07)
+
+### Bug Fixes
+
+- 🐛 addon erases global parameters in storybook ([2ed4700](https://github.com/wKich/creevey/commit/2ed47000f00e30890656872d1daae420e47db2d9))
+
 ## [0.7.16](https://github.com/wKich/creevey/compare/v0.7.15...v0.7.16) (2021-01-06)
 
 ### Bug Fixes
