@@ -1,3 +1,9 @@
+## [0.7.18](https://github.com/wKich/creevey/compare/v0.7.17...v0.7.18) (2021-01-08)
+
+### Bug Fixes
+
+- 🐛 copy-paste missing function from storybook ([29144a4](https://github.com/wKich/creevey/commit/29144a41afe013874b082ca29eecc74b5b56a017))
+
 ## [0.7.17](https://github.com/wKich/creevey/compare/v0.7.16...v0.7.17) (2021-01-07)
 
 ### Bug Fixes
