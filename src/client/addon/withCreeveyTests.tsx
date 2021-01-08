@@ -7,8 +7,8 @@ import { produce } from 'immer';
 import { CreeveyContext } from './CreeveyContext';
 import { calcStatus } from '../shared/helpers';
 import { Placeholder } from '@storybook/components';
-import { getEmojiByTestStatus } from './utils';
-import { denormalizeStoryParameters, SetStoriesPayload } from '@storybook/api/dist/lib/stories';
+import { denormalizeStoryParameters, getEmojiByTestStatus } from './utils';
+import { SetStoriesPayload } from '@storybook/api/dist/lib/stories';
 
 export interface CreeveyTestsProviderProps {
   active?: boolean;

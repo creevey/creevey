@@ -111,6 +111,7 @@ export default async function compile(config: Config, { debug, ui }: Options): P
     filename: 'main.js',
   };
 
+  // TODO Need to exclude third-party addons
   // NOTE Exclude all addons
   storybookWebpackConfig.entry = Array.isArray(storybookWebpackConfig.entry)
     ? storybookWebpackConfig.entry.filter((entry) => !/@storybook(\/|\\)addon/.test(entry))
@@ -121,7 +122,7 @@ export default async function compile(config: Config, { debug, ui }: Options): P
     storybookWebpackConfig.entry.unshift(path.join(__dirname, 'dummy-hmr'));
 
   // NOTE replace mdx to null loader for now
-  // TODO Use creevey-loader instead
+  // TODO Use mdx plugin from storybook and then apply creevey-loader
   // NOTE Storybook 6.x has a bug with incorrect regexp
   const mdxRegexps = [/\.mdx$/, /\.(stories|story).mdx$/, /\.(stories|story)\.mdx$/].map((x) => x.toString());
   storybookWebpackConfig.module?.rules

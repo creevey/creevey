@@ -267,8 +267,10 @@
   - [x] Fix height in addon
   - [x] ~~Fix firefox 61 in skbkontur selenium grid~~
   - [ ] creevey-loader `top-level property access`
-  - [ ] wait-on don't work properly
+  - [ ] wait-on doesn't work properly
   - [ ] Don't pull docker local images
+  - [ ] ERR! Runtime error! Check your browser console. ERR! ResizeObserver loop limit exceeded (in addon)
+- [ ] Change viewport height to 786 in config
 - [x] Start server early and wait for build
 - [x] Setup TeamCity CI
 - [x] Update CircleCI and GitLab according by github actions
@@ -342,6 +344,11 @@
   - [ ] Playwright
   - [ ] Puppeteer
 - [ ] Features
+  - [ ] Improve creevey-loader
+    - First step remove all non-creevey params, story fns, unused variables
+    - Second step check all used by creevey params references and remove other ones
+    - Output warnings when somewhere is spread/rest is used
+  - [ ] Merge stories from nodejs bundle and browser, output warning to user if some stories are missing in nodejs
   - [ ] Add `HTML` diff view
   - [ ] Improve how works takeScreenshot with default captureElement
     - Check `#root` child nodes, if they there, capture `#root > *`
