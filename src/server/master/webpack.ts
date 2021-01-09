@@ -102,7 +102,7 @@ export default async function compile(config: Config, { debug, ui }: Options): P
   const extensions = storybookWebpackConfig.resolve?.extensions ?? fallbackExtensions;
 
   delete storybookWebpackConfig.optimization;
-  delete storybookWebpackConfig.devtool;
+  storybookWebpackConfig.devtool = false;
   storybookWebpackConfig.performance = false;
   storybookWebpackConfig.mode = 'development';
   storybookWebpackConfig.target = 'node';
