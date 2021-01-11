@@ -1,6 +1,8 @@
 import Events from '@storybook/core-events';
 import { addons, MakeDecoratorResult, makeDecorator } from '@storybook/addons';
 import { isObject, StoriesRaw } from '../../types';
+import { mapSetStoriesPayload, setStoriesToPublicGlobalVariable } from './utils';
+import { SetStoriesPayload } from '@storybook/api/dist/lib/stories';
 
 if (typeof process != 'object' || typeof process.version != 'string') {
   // NOTE If you don't use babel-polyfill or any other polyfills that add EventSource for IE11
@@ -86,6 +88,7 @@ function waitForFontsLoaded(): Promise<void> | void {
     });
   }
 }
+let isSubscribedOnSetStories = false;
 
 export function withCreevey(): MakeDecoratorResult {
   let currentStory = '';
@@ -100,6 +103,12 @@ export function withCreevey(): MakeDecoratorResult {
     document.head.appendChild(style);
   }
 
+  const channel = addons.getChannel();
+  if (!isSubscribedOnSetStories) {
+    channel.on(Events.SET_STORIES, setStoriesToPublicGlobalVariable);
+    isSubscribedOnSetStories = true;
+  }
+
   async function selectStory(
     storyId: string,
     kind: string,
@@ -108,7 +117,6 @@ export function withCreevey(): MakeDecoratorResult {
   ): Promise<void> {
     if (!animationDisabled) disableAnimation();
 
-    const channel = addons.getChannel();
     if (storyId == currentStory) {
       const storyMissingPromise = new Promise<void>((resolve) => channel.once(Events.STORY_MISSING, resolve));
       channel.emit(Events.SET_CURRENT_STORY, { storyId: true, name, kind });

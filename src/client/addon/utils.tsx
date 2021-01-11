@@ -45,3 +45,14 @@ export const denormalizeStoryParameters = ({
     parameters: combineParameters(globalParameters, kindParameters[storyData.kind], storyData.parameters as Parameters),
   })) as StoriesRaw;
 };
+
+export function mapSetStoriesPayload(data: SetStoriesPayload): StoriesRaw {
+  // TODO: Send PR to storybook to fix this
+  return data.v ? denormalizeStoryParameters(data) : (data as StoriesRaw);
+}
+
+export function setStoriesToPublicGlobalVariable(data: SetStoriesPayload): void {
+  const stories = mapSetStoriesPayload(data);
+  // TODO: extract variable name to shared public constants
+  window.__CREEVEY_STORIES__ = stories;
+}
