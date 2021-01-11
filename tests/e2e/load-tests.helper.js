@@ -1,9 +1,9 @@
 /* eslint-disable */
 
 const fs = require('fs');
-const creevey = require('creevey/lib/server/stories');
+const { webpackStoriesProvider } = require('creevey/lib/server/storiesProviders/localWebpackStoriesProvider');
 
-void creevey
+void webpackStoriesProvider
   .loadTestsFromStories({ browsers: ['chrome'] }, () => void 0)
   .then((tests) =>
     fs.writeFileSync(

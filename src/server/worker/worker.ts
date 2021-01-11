@@ -11,6 +11,7 @@ import chaiImage from './chai-image';
 import { getBrowser, switchStory } from '../selenium';
 import { CreeveyReporter, TeamcityReporter } from './reporter';
 import { addTestsFromStories } from './helpers';
+import { storiesProviderFactory } from '../storiesProviders/storiesProviderFactory';
 
 const statAsync = promisify(fs.stat);
 const readdirAsync = promisify(fs.readdir);
@@ -134,7 +135,9 @@ export default async function worker(config: Config, options: Options & { browse
 
   chai.use(chaiImage(getExpected, config.diffOptions));
 
-  await addTestsFromStories(mocha.suite, {
+  const provider = storiesProviderFactory({ config });
+
+  await addTestsFromStories(mocha.suite, provider, {
     browser: options.browser,
     watch: options.ui,
   });

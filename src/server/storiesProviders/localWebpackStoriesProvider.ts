@@ -2,6 +2,7 @@ import path from 'path';
 import { createHash } from 'crypto';
 import { Context } from 'mocha';
 import chokidar from 'chokidar';
+import cluster from 'cluster';
 import addons from '@storybook/addons';
 import Events from '@storybook/core-events';
 import {
@@ -16,10 +17,13 @@ import {
   WebpackMessage,
   CreeveyTestFunction,
   SetStoriesData,
-} from '../types';
-import { shouldSkip, isStorybookVersionLessThan, getCreeveyCache } from './utils';
+  StoriesProvider,
+  StoriesProviderFactory,
+  isWebpackMessage,
+} from '../../types';
+import { shouldSkip, isStorybookVersionLessThan, getCreeveyCache } from '../utils';
 import { mergeWith } from 'lodash';
-import { subscribeOn } from './messages';
+import { emitWebpackMessage, subscribeOn } from '../messages';
 
 function storyTestFabric(delay?: number, testFn?: CreeveyTestFunction) {
   return async function storyTest(this: Context) {
@@ -41,7 +45,7 @@ function createCreeveyTest(
   return { id, skip, browser, testName, storyPath: [...kind.split('/').map((x) => x.trim()), story], storyId };
 }
 
-function convertStories(
+export function convertStories(
   browsers: string[],
   stories: StoriesRaw | StoryInput[],
 ): Partial<{ [testId: string]: ServerTest }> {
@@ -72,7 +76,7 @@ function convertStories(
   return tests;
 }
 
-async function initStorybookEnvironment(): Promise<typeof import('./storybook')> {
+async function initStorybookEnvironment(): Promise<typeof import('../storybook')> {
   // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
   require('jsdom-global')(undefined, { url: 'http://localhost' });
 
@@ -90,7 +94,7 @@ async function initStorybookEnvironment(): Promise<typeof import('./storybook')>
     }).logger.debug = noop;
   }
 
-  return import('./storybook');
+  return import('../storybook');
 }
 
 function watchStories(initialFiles: Set<string>): void {
@@ -175,7 +179,7 @@ async function loadStorybookBundle(
   });
 }
 
-export async function loadTestsFromStories(
+async function loadTestsFromStories(
   { browsers, watch }: { browsers: string[]; watch: boolean },
   applyTestsDiff: (testsDiff: Partial<{ [id: string]: ServerTest }>) => void,
 ): Promise<Partial<{ [id: string]: ServerTest }>> {
@@ -206,3 +210,36 @@ export async function loadTestsFromStories(
 
   return tests;
 }
+
+function startWebpackCompiler(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    cluster.setupMaster({ args: ['--webpack', ...process.argv.slice(2)] });
+    const webpackCompiler = cluster.fork({ NODE_ENV: 'test' });
+
+    webpackCompiler.on('message', (message: unknown) => {
+      if (!isWebpackMessage(message)) return;
+
+      Object.values(cluster.workers)
+        .filter((worker) => worker != webpackCompiler)
+        .forEach((worker) => worker?.send(message));
+      switch (message.type) {
+        case 'success':
+          return resolve();
+        case 'fail':
+          return reject();
+        case 'rebuild succeeded':
+        case 'rebuild failed':
+          return emitWebpackMessage(message);
+      }
+    });
+  });
+}
+
+export const webpackStoriesProvider: StoriesProvider = {
+  loadTestsFromStories,
+  async init() {
+    await startWebpackCompiler();
+  },
+};
+
+export const createLocalWebpackStoriesProvider: StoriesProviderFactory = () => webpackStoriesProvider;
