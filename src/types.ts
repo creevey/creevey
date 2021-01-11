@@ -396,3 +396,23 @@ export function isWebpackMessage(message: unknown): message is WebpackMessage {
 export function isDockerMessage(message: unknown): message is DockerMessage {
   return isProcessMessage(message) && message.scope == 'docker';
 }
+
+export interface StoriesProvider {
+  loadTestsFromStories(
+    { browsers, watch }: { browsers: string[]; watch: boolean },
+    applyTestsDiff: (testsDiff: Partial<{ [id: string]: ServerTest }>) => void,
+  ): Promise<Partial<{ [id: string]: ServerTest }>>;
+
+  /**
+   * Will be executed only at master thread
+   *
+   * @returns {Promise<void>}
+   */
+  init(): Promise<void>;
+}
+
+export interface StoriesProviderFactoryOptions {
+  config: Config;
+}
+
+export type StoriesProviderFactory = (options: StoriesProviderFactoryOptions) => StoriesProvider;

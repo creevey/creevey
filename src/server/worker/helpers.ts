@@ -1,6 +1,5 @@
 import { Suite, Context, Test } from 'mocha';
-import { isDefined, ServerTest } from '../../types';
-import { loadTestsFromStories } from '../stories';
+import { isDefined, ServerTest, StoriesProvider } from '../../types';
 
 function findOrCreateSuite(name: string, parent: Suite): Suite {
   const suite = parent.suites.find(({ title }) => title == name) || new Suite(name, parent.ctx);
@@ -38,10 +37,11 @@ function removeTestOrSuite(testOrSuite: Test | Suite): void {
 
 export async function addTestsFromStories(
   rootSuite: Suite,
+  provider: StoriesProvider,
   { browser, watch }: { browser: string; watch: boolean },
 ): Promise<void> {
   const mochaTestsById = new Map<string, Test>();
-  const tests = await loadTestsFromStories({ browsers: [browser], watch }, (testsDiff) =>
+  const tests = await provider.loadTestsFromStories({ browsers: [browser], watch }, (testsDiff) =>
     Object.entries(testsDiff).forEach(([id, newTest]) => {
       const oldTest = mochaTestsById.get(id);
       mochaTestsById.delete(id);
