@@ -88,7 +88,6 @@ function waitForFontsLoaded(): Promise<void> | void {
     });
   }
 }
-let isSubscribedOnSetStories = false;
 
 export function withCreevey(): MakeDecoratorResult {
   let currentStory = '';
@@ -104,10 +103,8 @@ export function withCreevey(): MakeDecoratorResult {
   }
 
   const channel = addons.getChannel();
-  if (!isSubscribedOnSetStories) {
-    channel.on(Events.SET_STORIES, setStoriesToPublicGlobalVariable);
-    isSubscribedOnSetStories = true;
-  }
+
+  channel.on(Events.SET_STORIES, setStoriesToPublicGlobalVariable);
 
   async function selectStory(
     storyId: string,
