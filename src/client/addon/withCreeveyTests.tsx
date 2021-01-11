@@ -108,9 +108,21 @@ export function withCreeveyTests(
       api.off(STORY_RENDERED, this.onStoryRendered);
       api.off(SET_STORIES, this.addStatusesToSidebar);
     }
-    addStatusesToSidebar = (data: SetStoriesPayload): void => {
+
+    setStoriesHandler = (data: SetStoriesPayload): void => {
       // TODO: Send PR to storybook to fix this
       const stories = data.v ? denormalizeStoryParameters(data) : (data as StoriesRaw);
+
+      this.setStoriesToPublicGlobalVariable(stories);
+      this.addStatusesToSidebar(stories);
+    };
+
+    setStoriesToPublicGlobalVariable = (stories: StoriesRaw): void => {
+      // TODO: extract variable name to shared public constants
+      window.__CREEVEY_STORIES__ = stories;
+    };
+
+    addStatusesToSidebar = (stories: StoriesRaw): void => {
       this.setState({ stories });
       Object.keys(stories).forEach((storyId) => {
         const storyStatus = this.getStoryStatus(storyId);

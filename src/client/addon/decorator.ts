@@ -1,6 +1,6 @@
 import Events from '@storybook/core-events';
 import { addons, MakeDecoratorResult, makeDecorator } from '@storybook/addons';
-import { isObject } from '../../types';
+import { isObject, StoriesRaw } from '../../types';
 
 if (typeof process != 'object' || typeof process.version != 'string') {
   // NOTE If you don't use babel-polyfill or any other polyfills that add EventSource for IE11
@@ -15,6 +15,7 @@ if (typeof process != 'object' || typeof process.version != 'string') {
 declare global {
   interface Window {
     __CREEVEY_SELECT_STORY__: (storyId: string, kind: string, name: string, callback: (error?: string) => void) => void;
+    __CREEVEY_STORIES__?: StoriesRaw;
   }
 
   interface Document {
