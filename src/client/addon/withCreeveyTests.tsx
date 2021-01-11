@@ -7,7 +7,7 @@ import { produce } from 'immer';
 import { CreeveyContext } from './CreeveyContext';
 import { calcStatus } from '../shared/helpers';
 import { Placeholder } from '@storybook/components';
-import { denormalizeStoryParameters, getEmojiByTestStatus } from './utils';
+import { getEmojiByTestStatus, mapSetStoriesPayload } from './utils';
 import { SetStoriesPayload } from '@storybook/api/dist/lib/stories';
 
 export interface CreeveyTestsProviderProps {
@@ -109,20 +109,8 @@ export function withCreeveyTests(
       api.off(SET_STORIES, this.addStatusesToSidebar);
     }
 
-    setStoriesHandler = (data: SetStoriesPayload): void => {
-      // TODO: Send PR to storybook to fix this
-      const stories = data.v ? denormalizeStoryParameters(data) : (data as StoriesRaw);
-
-      this.setStoriesToPublicGlobalVariable(stories);
-      this.addStatusesToSidebar(stories);
-    };
-
-    setStoriesToPublicGlobalVariable = (stories: StoriesRaw): void => {
-      // TODO: extract variable name to shared public constants
-      window.__CREEVEY_STORIES__ = stories;
-    };
-
-    addStatusesToSidebar = (stories: StoriesRaw): void => {
+    addStatusesToSidebar = (data: SetStoriesPayload): void => {
+      const stories = mapSetStoriesPayload(data);
       this.setState({ stories });
       Object.keys(stories).forEach((storyId) => {
         const storyStatus = this.getStoryStatus(storyId);
