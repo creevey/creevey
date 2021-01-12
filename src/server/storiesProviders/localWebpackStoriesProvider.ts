@@ -1,80 +1,24 @@
 import path from 'path';
-import { createHash } from 'crypto';
-import { Context } from 'mocha';
 import chokidar from 'chokidar';
 import cluster from 'cluster';
 import addons from '@storybook/addons';
 import Events from '@storybook/core-events';
 import {
   isDefined,
-  TestData,
-  CreeveyStoryParams,
   StoriesRaw,
   noop,
-  SkipOptions,
   ServerTest,
   StoryInput,
   WebpackMessage,
-  CreeveyTestFunction,
   SetStoriesData,
   StoriesProvider,
   StoriesProviderFactory,
   isWebpackMessage,
 } from '../../types';
-import { shouldSkip, isStorybookVersionLessThan, getCreeveyCache } from '../utils';
+import { isStorybookVersionLessThan, getCreeveyCache } from '../utils';
 import { mergeWith } from 'lodash';
 import { emitWebpackMessage, subscribeOn } from '../messages';
-
-function storyTestFabric(delay?: number, testFn?: CreeveyTestFunction) {
-  return async function storyTest(this: Context) {
-    delay ? await new Promise((resolve) => setTimeout(resolve, delay)) : void 0;
-    await (testFn?.call(this) ?? this.expect(await this.takeScreenshot()).to.matchImage());
-  };
-}
-
-function createCreeveyTest(
-  browser: string,
-  storyMeta: StoryInput,
-  skipOptions?: SkipOptions,
-  testName?: string,
-): TestData {
-  const { kind, name: story, id: storyId } = storyMeta;
-  const path = [kind, story, testName, browser].filter(isDefined);
-  const skip = skipOptions ? shouldSkip(browser, { kind, story }, skipOptions, testName) : false;
-  const id = createHash('sha1').update(path.join('/')).digest('hex');
-  return { id, skip, browser, testName, storyPath: [...kind.split('/').map((x) => x.trim()), story], storyId };
-}
-
-export function convertStories(
-  browsers: string[],
-  stories: StoriesRaw | StoryInput[],
-): Partial<{ [testId: string]: ServerTest }> {
-  const tests: { [testId: string]: ServerTest } = {};
-
-  (Array.isArray(stories) ? stories : Object.values(stories)).forEach((storyMeta) => {
-    browsers.forEach((browserName) => {
-      const { delay, tests: storyTests, skip } = (storyMeta.parameters.creevey ?? {}) as CreeveyStoryParams;
-
-      // typeof tests === "undefined" => rootSuite -> kindSuite -> storyTest -> [browsers.png]
-      // typeof tests === "function"  => rootSuite -> kindSuite -> storyTest -> browser -> [images.png]
-      // typeof tests === "object"    => rootSuite -> kindSuite -> storySuite -> test -> [browsers.png]
-      // typeof tests === "object"    => rootSuite -> kindSuite -> storySuite -> test -> browser -> [images.png]
-
-      if (!storyTests) {
-        const test = createCreeveyTest(browserName, storyMeta, skip);
-        tests[test.id] = { ...test, storyId: storyMeta.id, story: storyMeta, fn: storyTestFabric(delay) };
-        return;
-      }
-
-      Object.entries(storyTests).forEach(([testName, testFn]) => {
-        const test = createCreeveyTest(browserName, storyMeta, skip, testName);
-        tests[test.id] = { ...test, storyId: storyMeta.id, story: storyMeta, fn: storyTestFabric(delay, testFn) };
-      });
-    });
-  });
-
-  return tests;
-}
+import { convertStoriesToTests } from './convertStoriesToTests';
 
 async function initStorybookEnvironment(): Promise<typeof import('../storybook')> {
   // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
@@ -187,7 +131,7 @@ async function loadTestsFromStories(
   const stories = await loadStorybookBundle(watch, (storiesByFiles) => {
     const testsDiff: Partial<{ [id: string]: ServerTest }> = {};
     Array.from(storiesByFiles.entries()).forEach(([filename, stories]) => {
-      const tests = convertStories(browsers, stories);
+      const tests = convertStoriesToTests(browsers, stories);
       const changed = Object.keys(tests);
       const removed = testIdsByFiles.get(filename)?.filter((testId) => !tests[testId]) ?? [];
       if (changed.length == 0) testIdsByFiles.delete(filename);
@@ -199,7 +143,7 @@ async function loadTestsFromStories(
     applyTestsDiff(testsDiff);
   });
 
-  const tests = convertStories(browsers, stories);
+  const tests = convertStoriesToTests(browsers, stories);
 
   Object.values(tests)
     .filter(isDefined)
