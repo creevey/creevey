@@ -93,7 +93,7 @@ export type BrowserConfig = Capabilities & {
    * Storybook's globals to set in a specific browser
    * @see https://github.com/storybookjs/storybook/blob/v6.0.0/docs/essentials/toolbars-and-globals.md
    */
-  storybookGlobals?: StorybookGlobals;
+  _storybookGlobals?: StorybookGlobals;
   /**
    * Specify custom docker image. Used only with `useDocker == true`
    * @default `selenoid/${browserName}:${version}`

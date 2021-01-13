@@ -296,6 +296,7 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
     storybookUrl: address = config.storybookUrl,
     limit,
     viewport,
+    _storybookGlobals,
     ...userCapabilities
   } = browserConfig;
   void limit;
@@ -334,6 +335,10 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
     const error = new Error(`Can't load storybook root page by URL ${realAddress}/iframe.html`);
     if (originalError instanceof Error) error.stack = originalError.stack;
     throw error;
+  }
+
+  if (_storybookGlobals) {
+    await updateStorybookGlobals(browser, _storybookGlobals);
   }
 
   return browser;

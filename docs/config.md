@@ -78,7 +78,8 @@ module.exports = {
       version: '86.0',
       // It's possible to set Storybook's globals
       // https://github.com/storybookjs/storybook/blob/v6.0.0/docs/essentials/toolbars-and-globals.md
-      storybookGlobals: {
+      // NOTE: This is an experimental feature and will be replaced in future
+      _storybookGlobals: {
         myTheme: 'dark',
       },
     },
