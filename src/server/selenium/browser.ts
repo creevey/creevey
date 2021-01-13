@@ -4,8 +4,9 @@ import { Builder, By, WebDriver, Origin, Capabilities } from 'selenium-webdriver
 import { Config, BrowserConfig, StoryInput, CreeveyStoryParams, noop, isDefined, StorybookGlobals } from '../../types';
 import { subscribeOn } from '../messages';
 import { networkInterfaces } from 'os';
-import { runSequence, LOCALHOST_REGEXP } from '../utils';
+import { runSequence, LOCALHOST_REGEXP, isStorybookVersionLessThan } from '../utils';
 import { PageLoadStrategy } from 'selenium-webdriver/lib/capabilities';
+import chalk from 'chalk';
 
 declare global {
   interface Window {
@@ -285,6 +286,12 @@ async function selectStory(browser: WebDriver, storyId: string, kind: string, st
 }
 
 export async function updateStorybookGlobals(browser: WebDriver, globals: StorybookGlobals): Promise<void> {
+  if (isStorybookVersionLessThan(6)) {
+    console.log(
+      chalk`[{yellow WARN}{gray :${process.pid}}] Globals are not supported by Storybook versions less than 6`,
+    );
+    return;
+  }
   await browser.executeScript(function (globals: StorybookGlobals) {
     window.__CREEVEY_UPDATE_GLOBALS__(globals);
   }, globals);
