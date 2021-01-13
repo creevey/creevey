@@ -8,7 +8,7 @@ import { Key } from 'selenium-webdriver';
 import { Config, Images, Options, BrowserConfig, TestMessage, isImageError } from '../../types';
 import { subscribeOn, emitTestMessage, emitWorkerMessage } from '../messages';
 import chaiImage from './chai-image';
-import { getBrowser, switchStory, updateStorybookGlobals } from '../selenium';
+import { getBrowser, switchStory } from '../selenium';
 import { CreeveyReporter, TeamcityReporter } from './reporter';
 import { addTestsFromStories } from './helpers';
 import { storiesProviderFactory } from '../storiesProviders/storiesProviderFactory';
@@ -157,10 +157,6 @@ export default async function worker(config: Config, options: Options & { browse
   );
 
   subscribeOn('shutdown', () => clearInterval(interval));
-
-  if (browserConfig.storybookGlobals) {
-    await updateStorybookGlobals(browser, browserConfig.storybookGlobals);
-  }
 
   mocha.suite.beforeAll(function (this: Context) {
     this.config = config;
