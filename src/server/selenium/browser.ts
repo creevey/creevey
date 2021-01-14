@@ -316,8 +316,8 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
   if (config.resolveStorybookUrl) {
     try {
       realAddress = await config.resolveStorybookUrl();
-    } catch (_) {
-      // skip
+    } catch (e) {
+      console.log(e);
     }
   }
 
