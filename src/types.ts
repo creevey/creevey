@@ -145,6 +145,10 @@ export interface Config {
    */
   storybookUrl: string;
   /**
+   * Url where storybook hosted on
+   */
+  resolveStorybookUrl?: () => Promise<string>;
+  /**
    * Absolute path to directory with reference images
    * @default path.join(process.cwd(), './images')
    */
