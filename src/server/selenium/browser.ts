@@ -17,7 +17,7 @@ const DOCKER_INTERNAL = 'host.docker.internal';
 
 async function resolveStorybookUrl(storybookUrl: string, checkUrl: (url: string) => Promise<boolean>): Promise<string> {
   if (!LOCALHOST_REGEXP.test(storybookUrl)) {
-    return getIframeFromUrl(storybookUrl);
+    return storybookUrl;
   }
 
   const addresses = [DOCKER_INTERNAL].concat(
@@ -48,7 +48,7 @@ function getUrlChecker(browser: WebDriver): (url: string) => Promise<boolean> {
     try {
       //  NOTE: Before trying a new url, reset the current one
       await browser.get('about:blank');
-      await browser.get(getIframeFromUrl(url));
+      await browser.get(url);
       let source = '';
       do {
         try {
@@ -320,6 +320,8 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
       console.log(e);
     }
   }
+
+  realAddress = getIframeFromUrl(realAddress);
 
   try {
     browser = await new Builder().usingServer(gridUrl).withCapabilities(capabilities).build();
