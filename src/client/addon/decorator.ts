@@ -1,9 +1,7 @@
 import Events from '@storybook/core-events';
 import { addons, MakeDecoratorResult, makeDecorator } from '@storybook/addons';
 import { isObject, StorybookGlobals, StoriesRaw } from '../../types';
-
-import { mapSetStoriesPayload, setStoriesToPublicGlobalVariable } from './utils';
-import { SetStoriesPayload } from '@storybook/api/dist/lib/stories';
+import { mapSetStoriesPayload } from './utils';
 
 if (typeof process != 'object' || typeof process.version != 'string') {
   // NOTE If you don't use babel-polyfill or any other polyfills that add EventSource for IE11
@@ -19,7 +17,9 @@ declare global {
   interface Window {
     __CREEVEY_SELECT_STORY__: (storyId: string, kind: string, name: string, callback: (error?: string) => void) => void;
     __CREEVEY_UPDATE_GLOBALS__: (globals: StorybookGlobals) => void;
-    __CREEVEY_STORIES__?: StoriesRaw;
+    __CREEVEY_GET_STORIES__?: () => StoriesRaw;
+    // TODO:
+    __STORYBOOK_CLIENT_API__: any;
   }
 
   interface Document {
@@ -104,10 +104,6 @@ export function withCreevey(): MakeDecoratorResult {
     document.head.appendChild(style);
   }
 
-  const channel = addons.getChannel();
-
-  channel.on(Events.SET_STORIES, setStoriesToPublicGlobalVariable);
-
   async function selectStory(
     storyId: string,
     kind: string,
@@ -115,6 +111,8 @@ export function withCreevey(): MakeDecoratorResult {
     callback: (error?: string) => void,
   ): Promise<void> {
     if (!animationDisabled) disableAnimation();
+
+    const channel = addons.getChannel();
 
     if (storyId == currentStory) {
       const storyMissingPromise = new Promise<void>((resolve) => channel.once(Events.STORY_MISSING, resolve));
@@ -171,8 +169,31 @@ export function withCreevey(): MakeDecoratorResult {
     addons.getChannel().emit(Events.UPDATE_GLOBALS, { globals });
   }
 
+  function getStories() {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const storybookClientApi: any = window.__STORYBOOK_CLIENT_API__;
+
+    if (!storybookClientApi) {
+       throw new Error('__STORYBOOK_CLIENT_API__ is unavailable')
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+    const storyStore = storybookClientApi._storyStore;
+
+    // from chromatic
+    // Storybook 5+ API
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+    if (storyStore.extract) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+      return mapSetStoriesPayload(storyStore.extract());
+    }
+
+    throw new Error('Unsupported version of Storybook. If your storybook is 5+, create an issue here:');
+  }
+
   window.__CREEVEY_SELECT_STORY__ = selectStory;
   window.__CREEVEY_UPDATE_GLOBALS__ = updateGlobals;
+  window.__CREEVEY_GET_STORIES__ = getStories;
 
   return makeDecorator({
     name: 'withCreevey',
