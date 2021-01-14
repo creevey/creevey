@@ -1,11 +1,12 @@
 import { PNG } from 'pngjs';
 import { Context, Test, Suite } from 'mocha';
 import { Builder, By, WebDriver, Origin, Capabilities } from 'selenium-webdriver';
-import { Config, BrowserConfig, StoryInput, CreeveyStoryParams, noop, isDefined } from '../../types';
+import { Config, BrowserConfig, StoryInput, CreeveyStoryParams, noop, isDefined, StorybookGlobals } from '../../types';
 import { subscribeOn } from '../messages';
 import { networkInterfaces } from 'os';
-import { runSequence, LOCALHOST_REGEXP } from '../utils';
+import { runSequence, LOCALHOST_REGEXP, isStorybookVersionLessThan } from '../utils';
 import { PageLoadStrategy } from 'selenium-webdriver/lib/capabilities';
+import chalk from 'chalk';
 
 declare global {
   interface Window {
@@ -285,12 +286,25 @@ async function selectStory(browser: WebDriver, storyId: string, kind: string, st
   if (errorMessage) throw new Error(errorMessage);
 }
 
+export async function updateStorybookGlobals(browser: WebDriver, globals: StorybookGlobals): Promise<void> {
+  if (isStorybookVersionLessThan(6)) {
+    console.log(
+      chalk`[{yellow WARN}{gray :${process.pid}}] Globals are not supported by Storybook versions less than 6`,
+    );
+    return;
+  }
+  await browser.executeScript(function (globals: StorybookGlobals) {
+    window.__CREEVEY_UPDATE_GLOBALS__(globals);
+  }, globals);
+}
+
 export async function getBrowser(config: Config, browserConfig: BrowserConfig): Promise<WebDriver | null> {
   const {
     gridUrl = config.gridUrl,
     storybookUrl: address = config.storybookUrl,
     limit,
     viewport,
+    _storybookGlobals,
     ...userCapabilities
   } = browserConfig;
   void limit;
@@ -329,6 +343,10 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
     const error = new Error(`Can't load storybook root page by URL ${realAddress}/iframe.html`);
     if (originalError instanceof Error) error.stack = originalError.stack;
     throw error;
+  }
+
+  if (_storybookGlobals) {
+    await updateStorybookGlobals(browser, _storybookGlobals);
   }
 
   return browser;
