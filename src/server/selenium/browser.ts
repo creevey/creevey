@@ -303,7 +303,11 @@ async function openStorybookPage(
   }
 
   try {
-    return browser.get((await resolver?.()) ?? (await resolveStorybookUrl(storybookUrl, getUrlChecker(browser))));
+    if (resolver) {
+      return browser.get(await resolver());
+    }
+    // NOTE: getUrlChecker already calls `browser.get` so we don't need another one
+    return void (await resolveStorybookUrl(storybookUrl, getUrlChecker(browser)));
   } catch (error) {
     console.log(
       chalk`[{yellow WARN}{grey :${process.pid}}]`,
