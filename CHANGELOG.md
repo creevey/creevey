@@ -1,3 +1,9 @@
+## [0.7.20](https://github.com/wKich/creevey/compare/v0.7.19...v0.7.20) (2021-01-15)
+
+### Bug Fixes
+
+- 🐛 apply iframe after custom resolver ([e77bf33](https://github.com/wKich/creevey/commit/e77bf33048673e733ad2acd4799277b336e27fe5))
+
 ## [0.7.19](https://github.com/wKich/creevey/compare/v0.7.18...v0.7.19) (2021-01-14)
 
 ### Bug Fixes
