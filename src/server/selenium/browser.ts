@@ -293,21 +293,25 @@ export async function updateStorybookGlobals(browser: WebDriver, globals: Storyb
   }, globals);
 }
 
+function appendIframePath(url: string): string {
+  return `${url.replace(/\/$/, '')}/iframe.html`;
+}
+
 async function openStorybookPage(
   browser: WebDriver,
   storybookUrl: string,
   resolver?: () => Promise<string>,
 ): Promise<void> {
   if (!LOCALHOST_REGEXP.test(storybookUrl)) {
-    return browser?.get(storybookUrl);
+    return browser?.get(appendIframePath(storybookUrl));
   }
 
   try {
     if (resolver) {
-      return browser.get(await resolver());
+      return browser.get(appendIframePath(await resolver()));
     }
     // NOTE: getUrlChecker already calls `browser.get` so we don't need another one
-    return void (await resolveStorybookUrl(storybookUrl, getUrlChecker(browser)));
+    return void (await resolveStorybookUrl(appendIframePath(storybookUrl), getUrlChecker(browser)));
   } catch (error) {
     console.log(
       chalk`[{yellow WARN}{grey :${process.pid}}]`,
@@ -328,7 +332,7 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
     ...userCapabilities
   } = browserConfig;
   void limit;
-  let realAddress = address;
+  const realAddress = address;
   let browser: WebDriver | null = null;
   let shuttingDown = false;
 
@@ -341,8 +345,6 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
     browser?.quit().catch(noop);
     browser = null;
   });
-
-  realAddress = `${realAddress.replace(/\/$/, '')}/iframe.html`;
 
   try {
     browser = await new Builder().usingServer(gridUrl).withCapabilities(capabilities).build();
