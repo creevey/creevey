@@ -1,3 +1,21 @@
+## [0.7.20](https://github.com/wKich/creevey/compare/v0.7.19...v0.7.20) (2021-01-15)
+
+### Bug Fixes
+
+- 🐛 apply iframe after custom resolver ([e77bf33](https://github.com/wKich/creevey/commit/e77bf33048673e733ad2acd4799277b336e27fe5))
+
+## [0.7.19](https://github.com/wKich/creevey/compare/v0.7.18...v0.7.19) (2021-01-14)
+
+### Bug Fixes
+
+- 🐛 document unloaded error, again ([171b8bb](https://github.com/wKich/creevey/commit/171b8bb633f55616d58bc46655981e986cf9db95))
+- 🐛 document unloaded while waiting for result ([dd31445](https://github.com/wKich/creevey/commit/dd3144558de74349f41108e29aed97814a48eeb7))
+- 🐛 properly output unnecessary images ([40e791e](https://github.com/wKich/creevey/commit/40e791edd5eddce838ccc62902430ca00422bb8b))
+
+### Features
+
+- allow to set storybook's globals ([7500245](https://github.com/wKich/creevey/commit/75002458b38d5f7ac3d47cc32516ec9b55091db2))
+
 ## [0.7.18](https://github.com/wKich/creevey/compare/v0.7.17...v0.7.18) (2021-01-08)
 
 ### Bug Fixes

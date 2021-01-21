@@ -147,8 +147,8 @@ export function testsToImages(tests: (TestData | undefined)[]): Set<string> {
         .map(({ browser, testName, storyPath, results }) =>
           Object.keys(results?.slice(-1)[0]?.images ?? {}).map(
             (image) =>
-              `${[...(browser == image ? [browser] : [image, browser]), ...[testName, ...storyPath].filter(isDefined)]
-                .reverse()
+              `${[...storyPath, testName, browser, browser == image ? undefined : image]
+                .filter(isDefined)
                 .join('/')}.png`,
           ),
         ),
