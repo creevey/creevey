@@ -55,6 +55,7 @@
     "node": ">=10.10"
   },
   "dependencies": {
+    "@babel/code-frame": "^7.12.11",
     "@babel/generator": "^7.12.11",
     "@babel/parser": "^7.12.11",
     "@babel/traverse": "^7.12.12",
@@ -112,6 +113,7 @@
     "@storybook/core": "^6.1.2",
     "@storybook/core-events": "^6.1.2",
     "@storybook/react": "^6.1.2",
+    "@types/babel__code-frame": "^7.0.2",
     "@types/babel__generator": "^7.6.2",
     "@types/babel__traverse": "^7.0.15",
     "@types/dockerode": "^3.2.1",

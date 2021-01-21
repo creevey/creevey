@@ -82,5 +82,154 @@
       "initialArgs": {}
     },
     "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+  },
+  "ee4c11585e510cce9e2c9544454fb39072535a35": {
+    "id": "ee4c11585e510cce9e2c9544454fb39072535a35",
+    "skip": false,
+    "browser": "chrome",
+    "storyPath": [
+      "KindA",
+      "Decorators"
+    ],
+    "storyId": "kinda--decorators",
+    "story": {
+      "id": "kinda--decorators",
+      "kind": "KindA",
+      "name": "Decorators",
+      "story": "Decorators",
+      "parameters": {
+        "creevey": {
+          "skip": [
+            {
+              "in": "browser",
+              "tests": [
+                "TestA"
+              ]
+            }
+          ]
+        },
+        "framework": "creevey",
+        "fileName": "./stories/KindA.stories.tsx",
+        "args": {},
+        "argTypes": {},
+        "__id": "kinda--decorators",
+        "__isArgsStory": false
+      },
+      "args": {},
+      "initialArgs": {}
+    },
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+  },
+  "230cf78513493eab436dc46cd4267575680140f3": {
+    "id": "230cf78513493eab436dc46cd4267575680140f3",
+    "skip": false,
+    "browser": "chrome",
+    "storyPath": [
+      "KindA",
+      "Parameters"
+    ],
+    "storyId": "kinda--parameters",
+    "story": {
+      "id": "kinda--parameters",
+      "kind": "KindA",
+      "name": "Parameters",
+      "story": "Parameters",
+      "parameters": {
+        "creevey": {
+          "skip": [
+            {
+              "in": "browser",
+              "tests": [
+                "TestA"
+              ]
+            }
+          ]
+        },
+        "framework": "creevey",
+        "fileName": "./stories/KindA.stories.tsx",
+        "args": {},
+        "argTypes": {},
+        "__id": "kinda--parameters",
+        "__isArgsStory": false
+      },
+      "args": {},
+      "initialArgs": {}
+    },
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+  },
+  "d23da9824993be60b86d13beca3e430979e12b2b": {
+    "id": "d23da9824993be60b86d13beca3e430979e12b2b",
+    "skip": false,
+    "browser": "chrome",
+    "storyPath": [
+      "KindB",
+      "SubKind",
+      "Story A"
+    ],
+    "storyId": "kindb-subkind--story-a",
+    "story": {
+      "id": "kindb-subkind--story-a",
+      "kind": "KindB / SubKind",
+      "name": "Story A",
+      "story": "Story A",
+      "parameters": {
+        "creevey": {
+          "skip": [
+            {
+              "in": "browser",
+              "tests": [
+                "TestA"
+              ]
+            }
+          ]
+        },
+        "framework": "creevey",
+        "fileName": "./stories/KindB.stories.tsx",
+        "args": {},
+        "argTypes": {},
+        "__id": "kindb-subkind--story-a",
+        "__isArgsStory": false
+      },
+      "args": {},
+      "initialArgs": {}
+    },
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+  },
+  "547f2235f9a2d7631362bf318922cb4307a5b4d4": {
+    "id": "547f2235f9a2d7631362bf318922cb4307a5b4d4",
+    "skip": false,
+    "browser": "chrome",
+    "storyPath": [
+      "KindC",
+      "Story A"
+    ],
+    "storyId": "kindc--story-a",
+    "story": {
+      "id": "kindc--story-a",
+      "kind": "KindC",
+      "name": "Story A",
+      "story": "Story A",
+      "parameters": {
+        "creevey": {
+          "skip": [
+            {
+              "in": "browser",
+              "tests": [
+                "TestA"
+              ]
+            }
+          ]
+        },
+        "framework": "creevey",
+        "fileName": "./stories/KindC.stories.tsx",
+        "args": {},
+        "argTypes": {},
+        "__id": "kindc--story-a",
+        "__isArgsStory": false
+      },
+      "args": {},
+      "initialArgs": {}
+    },
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
   }
 }

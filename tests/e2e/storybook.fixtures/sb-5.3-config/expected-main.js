@@ -95,17 +95,9 @@
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* WEBPACK VAR INJECTION */(function(module) {/* harmony import */ var core_js_modules_web_dom_iterable_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core-js/modules/web.dom.iterable.js */ "core-js/modules/web.dom.iterable.js");
-/* harmony import */ var core_js_modules_web_dom_iterable_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_web_dom_iterable_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var core_js_modules_es6_array_iterator_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core-js/modules/es6.array.iterator.js */ "core-js/modules/es6.array.iterator.js");
-/* harmony import */ var core_js_modules_es6_array_iterator_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_array_iterator_js__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var core_js_modules_es6_object_to_string_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! core-js/modules/es6.object.to-string.js */ "core-js/modules/es6.object.to-string.js");
-/* harmony import */ var core_js_modules_es6_object_to_string_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_object_to_string_js__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var core_js_modules_es6_array_for_each_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core-js/modules/es6.array.for-each.js */ "core-js/modules/es6.array.for-each.js");
-/* harmony import */ var core_js_modules_es6_array_for_each_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_array_for_each_js__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _storybook_react__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @storybook/react */ "@storybook/react");
-/* harmony import */ var _storybook_react__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_storybook_react__WEBPACK_IMPORTED_MODULE_4__);
-Object(_storybook_react__WEBPACK_IMPORTED_MODULE_4__["addParameters"])({creevey:{captureElement:"root"}});function loadStories(){var req=__webpack_require__("./stories sync recursive \\.stories\\.jsx$");req.keys().forEach(function(filename){return req(filename)})}Object(_storybook_react__WEBPACK_IMPORTED_MODULE_4__["configure"])(loadStories,module);
+/* WEBPACK VAR INJECTION */(function(module) {/* harmony import */ var _storybook_react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @storybook/react */ "@storybook/react");
+/* harmony import */ var _storybook_react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_storybook_react__WEBPACK_IMPORTED_MODULE_0__);
+Object(_storybook_react__WEBPACK_IMPORTED_MODULE_0__["addParameters"])({creevey:{captureElement:"root"}});Object(_storybook_react__WEBPACK_IMPORTED_MODULE_0__["configure"])(__webpack_require__("./stories sync recursive \\.stories\\.jsx$"),module);
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../node_modules/webpack/buildin/harmony-module.js */ "./node_modules/webpack/buildin/harmony-module.js")(module)))
 
 /***/ }),
@@ -237,37 +229,38 @@ webpackContext.id = "./stories sync recursive \\.stories\\.jsx$";
 /*!***********************************!*\
   !*** ./stories/KindA.stories.jsx ***!
   \***********************************/
-/*! no exports provided */
+/*! exports provided: default, StoryA */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* WEBPACK VAR INJECTION */(function(module) {/* harmony import */ var _storybook_react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @storybook/react */ "@storybook/react");
+/* WEBPACK VAR INJECTION */(function(module) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "StoryA", function() { return StoryA; });
+/* harmony import */ var _storybook_react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @storybook/react */ "@storybook/react");
 /* harmony import */ var _storybook_react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_storybook_react__WEBPACK_IMPORTED_MODULE_0__);
-Object(_storybook_react__WEBPACK_IMPORTED_MODULE_0__["storiesOf"])("KindA",module).add("StoryA",function(){});
+/* harmony default export */ __webpack_exports__["default"] = ({title:"KindA"});var StoryA=function(){};Object(_storybook_react__WEBPACK_IMPORTED_MODULE_0__["storiesOf"])("KindB",module).add("StoryB",function(){});
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../node_modules/webpack/buildin/harmony-module.js */ "./node_modules/webpack/buildin/harmony-module.js")(module)))
 
 /***/ }),
 
-/***/ "/tmp/creevey-sb-5.0/node_modules/@storybook/core/dist/server/common/polyfills.js":
-/*!***************************************************************************************************!*\
-  !*** external "/tmp/creevey-sb-5.0/node_modules/@storybook/core/dist/server/common/polyfills.js" ***!
-  \***************************************************************************************************/
+/***/ "/tmp/creevey-sb-5.3-config/node_modules/@storybook/core/dist/server/common/polyfills.js":
+/*!**********************************************************************************************************!*\
+  !*** external "/tmp/creevey-sb-5.3-config/node_modules/@storybook/core/dist/server/common/polyfills.js" ***!
+  \**********************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = require("/tmp/creevey-sb-5.0/node_modules/@storybook/core/dist/server/common/polyfills.js");
+module.exports = require("/tmp/creevey-sb-5.3-config/node_modules/@storybook/core/dist/server/common/polyfills.js");
 
 /***/ }),
 
-/***/ "/tmp/creevey-sb-5.0/node_modules/@storybook/core/dist/server/preview/globals.js":
-/*!**************************************************************************************************!*\
-  !*** external "/tmp/creevey-sb-5.0/node_modules/@storybook/core/dist/server/preview/globals.js" ***!
-  \**************************************************************************************************/
+/***/ "/tmp/creevey-sb-5.3-config/node_modules/@storybook/core/dist/server/preview/globals.js":
+/*!*********************************************************************************************************!*\
+  !*** external "/tmp/creevey-sb-5.3-config/node_modules/@storybook/core/dist/server/preview/globals.js" ***!
+  \*********************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = require("/tmp/creevey-sb-5.0/node_modules/@storybook/core/dist/server/preview/globals.js");
+module.exports = require("/tmp/creevey-sb-5.3-config/node_modules/@storybook/core/dist/server/preview/globals.js");
 
 /***/ }),
 
@@ -278,66 +271,22 @@ module.exports = require("/tmp/creevey-sb-5.0/node_modules/@storybook/core/dist/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /tmp/creevey-sb-5.0/node_modules/creevey/lib/server/master/dummy-hmr */"./node_modules/creevey/lib/server/master/dummy-hmr.js");
-__webpack_require__(/*! /tmp/creevey-sb-5.0/node_modules/@storybook/core/dist/server/common/polyfills.js */"/tmp/creevey-sb-5.0/node_modules/@storybook/core/dist/server/common/polyfills.js");
-__webpack_require__(/*! /tmp/creevey-sb-5.0/node_modules/@storybook/core/dist/server/preview/globals.js */"/tmp/creevey-sb-5.0/node_modules/@storybook/core/dist/server/preview/globals.js");
-module.exports = __webpack_require__(/*! /tmp/creevey-sb-5.0/.storybook/config.js */"./.storybook/config.js");
+__webpack_require__(/*! /tmp/creevey-sb-5.3-config/node_modules/creevey/lib/server/master/dummy-hmr */"./node_modules/creevey/lib/server/master/dummy-hmr.js");
+__webpack_require__(/*! /tmp/creevey-sb-5.3-config/node_modules/@storybook/core/dist/server/common/polyfills.js */"/tmp/creevey-sb-5.3-config/node_modules/@storybook/core/dist/server/common/polyfills.js");
+__webpack_require__(/*! /tmp/creevey-sb-5.3-config/node_modules/@storybook/core/dist/server/preview/globals.js */"/tmp/creevey-sb-5.3-config/node_modules/@storybook/core/dist/server/preview/globals.js");
+module.exports = __webpack_require__(/*! /tmp/creevey-sb-5.3-config/.storybook/config.js */"./.storybook/config.js");
 
 
 /***/ }),
 
 /***/ "@storybook/react":
-/*!***********************************************************************************!*\
-  !*** external "/tmp/creevey-sb-5.0/node_modules/creevey/lib/server/storybook.js" ***!
-  \***********************************************************************************/
+/*!******************************************************************************************!*\
+  !*** external "/tmp/creevey-sb-5.3-config/node_modules/creevey/lib/server/storybook.js" ***!
+  \******************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = require("/tmp/creevey-sb-5.0/node_modules/creevey/lib/server/storybook.js");
-
-/***/ }),
-
-/***/ "core-js/modules/es6.array.for-each.js":
-/*!********************************************************!*\
-  !*** external "core-js/modules/es6.array.for-each.js" ***!
-  \********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = require("core-js/modules/es6.array.for-each.js");
-
-/***/ }),
-
-/***/ "core-js/modules/es6.array.iterator.js":
-/*!********************************************************!*\
-  !*** external "core-js/modules/es6.array.iterator.js" ***!
-  \********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = require("core-js/modules/es6.array.iterator.js");
-
-/***/ }),
-
-/***/ "core-js/modules/es6.object.to-string.js":
-/*!**********************************************************!*\
-  !*** external "core-js/modules/es6.object.to-string.js" ***!
-  \**********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = require("core-js/modules/es6.object.to-string.js");
-
-/***/ }),
-
-/***/ "core-js/modules/web.dom.iterable.js":
-/*!******************************************************!*\
-  !*** external "core-js/modules/web.dom.iterable.js" ***!
-  \******************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = require("core-js/modules/web.dom.iterable.js");
+module.exports = require("/tmp/creevey-sb-5.3-config/node_modules/creevey/lib/server/storybook.js");
 
 /***/ })
 

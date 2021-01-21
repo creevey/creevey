@@ -266,7 +266,7 @@
   - [x] ~~Fix teamcity preview images~~ (TeamCity bug)
   - [x] Fix height in addon
   - [x] ~~Fix firefox 61 in skbkontur selenium grid~~
-  - [ ] creevey-loader `top-level property access`
+  - [x] creevey-loader `top-level property access`
   - [ ] wait-on doesn't work properly
   - [ ] Don't pull docker local images
   - [ ] ERR! Runtime error! Check your browser console. ERR! ResizeObserver loop limit exceeded (in addon)
@@ -290,7 +290,8 @@
 - [x] Features
   - [x] Add link `go to runner` in addon UI
   - [x] Show side-by-side diff vertically or horizontally depends on aspect
-  - [ ] Add resolveStorybookUrl to config
+  - [x] Add resolveStorybookUrl to config
+  - [ ] Support teamcity screenshots diff UI
   - [ ] Save webpack stats.json for debug
   - [ ] Output browser logs for debug
   - [ ] Add fallback option, load tests from browser (hmr and tests are disabled in this case)
@@ -344,10 +345,15 @@
   - [ ] Playwright
   - [ ] Puppeteer
 - [ ] Features
+  - [ ] Support switch between globals https://github.com/wKich/creevey/discussions/108
+  - [ ] Change `skip` option API
   - [ ] Improve creevey-loader
-    - First step remove all non-creevey params, story fns, unused variables
-    - Second step check all used by creevey params references and remove other ones
-    - Output warnings when somewhere is spread/rest is used
+    - [x] Support re-export stories
+    - [ ] Don't warn user on imported tests
+    - [ ] Check storiesOf/addDecorators/addParameters import from @storybook
+    - [ ] Output warnings when somewhere is spread/rest is used
+    - [ ] Remove unused side-effects from nested scopes
+    - [ ] Support exclude/include stories parameter
   - [ ] Merge stories from nodejs bundle and browser, output warning to user if some stories are missing in nodejs
   - [ ] Add `HTML` diff view
   - [ ] Improve how works takeScreenshot with default captureElement
@@ -384,6 +390,8 @@
   - [ ] creevey-storybook
   - [ ] examples
 - [ ] Features
+  - [ ] Add API to allow to use third party "stories" resolvers to support not only storybook
+  - [ ] Allow to extend browser API
   - [ ] Try AWS Lambda (Think about Creevey-as-a-Service. Deploy Creevey server. And it could be used in gitlab as service)
   - [ ] Allow to select elements for capture from storybook UI
   - [ ] Allow to ignore elements or rects in storybook UI

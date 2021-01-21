@@ -32,7 +32,7 @@ describe('Storybook E2E', function () {
   readdirSync(join(__dirname, 'storybook.fixtures')).forEach((testName) => {
     describe(testName, function () {
       before(function () {
-        const tempDir = dirSync({ prefix: 'creevey-', name: testName }).name;
+        const tempDir = dirSync({ name: `creevey-${testName}` }).name;
         this.tempDir = tempDir;
         shell.cp('-r', join(__dirname, 'storybook.fixtures', testName, '{.,}*'), tempDir);
         shell.cp(join(__dirname, 'load-tests.helper.js'), join(tempDir, 'load.js'));
