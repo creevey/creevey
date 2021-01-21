@@ -4,10 +4,12 @@
 
 
 
-export default {
+const Kind = {
   title: 'Button' };
 
 
 
+
+export default Kind;
 
 export const Text = () => {};

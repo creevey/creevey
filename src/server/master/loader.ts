@@ -1,3 +1,5 @@
+import path from 'path';
+import { codeFrameColumns } from '@babel/code-frame';
 import { getOptions, OptionObject } from 'loader-utils';
 import { validate } from 'schema-utils';
 import { JSONSchema7 } from 'schema-utils/declarations/validate';
@@ -6,35 +8,13 @@ import traverse, { NodePath, Binding } from '@babel/traverse';
 import generate from '@babel/generator';
 import * as t from '@babel/types';
 import { loader } from 'webpack';
+import { isDefined } from '../../types';
+import chalk from 'chalk';
+import { isStorybookVersionLessThan } from '../utils';
 
-// TODO Babel lack of some method types
-interface ExtendedNodePath<T = t.Node> extends NodePath<T> {
-  isTSAsExpression(this: NodePath<T>): this is NodePath<t.TSAsExpression>;
-}
-
-function tryParse(source: string, options: OptionObject): { ast?: t.File; done: boolean } {
-  try {
-    return {
-      // TODO maybe replace sourceType to unambiguous
-      // TODO minimal plugins setup
-      ast: parse(source, {
-        sourceType: 'module',
-        plugins: [
-          'classProperties',
-          'decorators-legacy',
-          'jsx',
-          'typescript',
-          'classPrivateMethods',
-          'classPrivateProperties',
-        ],
-      }),
-      done: true,
-    };
-  } catch (error) {
-    // TODO Output babel error code frame
-    if (options.debug) console.log(error);
-    return { done: false };
-  }
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function findRootPath(path: NodePath<any>): NodePath | null {
+  return path.find((x) => x.parentPath?.isProgram());
 }
 
 function getPropertyPath(path: NodePath<t.ObjectExpression>, name: string): NodePath<t.ObjectProperty> | undefined {
@@ -46,7 +26,6 @@ function getPropertyPath(path: NodePath<t.ObjectExpression>, name: string): Node
 
 function getDeclaratorPath<T>(path: NodePath<T>): NodePath<t.VariableDeclarator> | undefined {
   if (path.isIdentifier()) {
-    // TODO If kind var has `as` keyword (`const Kind = {} as Meta`)
     const { path: bindingPath } = path.scope.getBinding(path.node.name) ?? {};
     if (bindingPath?.isVariableDeclarator()) return bindingPath;
   }
@@ -55,9 +34,6 @@ function getDeclaratorPath<T>(path: NodePath<T>): NodePath<t.VariableDeclarator>
 function getKindObjectNodePath<T>(path: NodePath<T>): NodePath<t.ObjectExpression> | undefined {
   if (path.isObjectExpression()) {
     return getPropertyPath(path, 'title') ? path : undefined;
-  } else if ((path as ExtendedNodePath<T>).isTSAsExpression()) {
-    const pathExpression = ((path as NodePath<unknown>) as NodePath<t.TSAsExpression>).get('expression');
-    return pathExpression.isObjectExpression() && getPropertyPath(pathExpression, 'title') ? pathExpression : undefined;
   }
 }
 
@@ -133,44 +109,85 @@ function recursivelyRemoveUnreferencedBindings(path: NodePath<t.Program>): void 
   } while ((bindings = getUnreferencedBindings()).length > 0);
 }
 
-function minifyStories(ast: t.File, source: string): string {
-  let isTransformed = false;
-  const visited = new Set();
+function getUnvisitedRefs(
+  paths: NodePath[],
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  state: { visitedTopPaths: Set<NodePath<any>>; visitedBindings: Set<Binding> },
+): NodePath[] {
+  const rootPaths = [...new Set(paths.map(findRootPath).filter(isDefined))];
+  const bindings = new Set<Binding>();
 
-  traverse(ast, {
-    ExportDefaultDeclaration(defaultPath) {
-      const defaultDeclaration = defaultPath.get('declaration');
-      let kindPath = getKindObjectNodePath(defaultDeclaration);
-      const declaratorPath = getDeclaratorPath(defaultDeclaration);
-      if (declaratorPath) {
-        const kindInitPath = declaratorPath.get('init');
-        if (!Array.isArray(kindInitPath)) kindPath = getKindObjectNodePath(kindInitPath);
-      }
-      if (!kindPath) return;
-      isTransformed = true;
-      removeAllPropsExcept(kindPath, ['title', 'parameters']);
-      const kindParametersPath = getPropertyPath(kindPath, 'parameters')?.get('value');
-      if (kindParametersPath?.isObjectExpression()) {
-        removeAllPropsExcept(kindParametersPath, ['creevey']);
-      }
-      if (declaratorPath) {
-        const kindPropAssigns = getPropertyAssignmentPaths(defaultPath, [declaratorPath.node]);
-        for (const [assignPath, props] of kindPropAssigns?.entries() ?? []) {
-          const [first, second] = props;
-          if (first == 'title') continue;
-          else if (first == 'parameters') {
-            if (!second) {
-              const rightPath = assignPath.get('right') as NodePath;
-              if (!rightPath?.isObjectExpression()) continue;
-              removeAllPropsExcept(rightPath, ['creevey']);
-            } else if (second != 'creevey') assignPath.remove();
-          } else assignPath.remove();
+  rootPaths.forEach((rootPath) => {
+    state.visitedTopPaths.add(rootPath);
+    rootPath.traverse({
+      Identifier(identifierPath) {
+        const binding = identifierPath.scope.getBinding(identifierPath.node.name);
+        if (binding?.scope == rootPath.scope && !state.visitedBindings.has(binding)) {
+          bindings.add(binding);
+          state.visitedBindings.add(binding);
         }
-      }
-      defaultPath.parentPath.traverse({
-        ExportNamedDeclaration(namedPath) {
+      },
+    });
+  });
+
+  const refs = ([] as NodePath[]).concat(...[...bindings].map((b) => [b.path, ...b.referencePaths]));
+  return [...new Set(refs)];
+}
+
+function transform(ast: t.File): string {
+  traverse(
+    ast,
+    {
+      ExportAllDeclaration(allPath, state) {
+        if (fileType == FileType.Story) {
+          const request = allPath.get('source').node.value;
+          reexportedStories.set(resourcePath, (reexportedStories.get(resourcePath) ?? new Set<string>()).add(request));
+          state.visitedTopPaths.add(allPath);
+        }
+      },
+      ExportDefaultDeclaration(defaultPath, state) {
+        if (fileType != FileType.Story) return;
+
+        const defaultDeclaration = defaultPath.get('declaration');
+        let kindPath = getKindObjectNodePath(defaultDeclaration);
+        const declaratorPath = getDeclaratorPath(defaultDeclaration);
+        if (declaratorPath) {
+          const kindInitPath = declaratorPath.get('init');
+          if (!Array.isArray(kindInitPath)) kindPath = getKindObjectNodePath(kindInitPath);
+        }
+        if (!kindPath) return;
+
+        state.visitedTopPaths.add(defaultPath);
+
+        removeAllPropsExcept(kindPath, ['title', 'parameters']);
+        const kindParametersPath = getPropertyPath(kindPath, 'parameters')?.get('value');
+        if (kindParametersPath?.isObjectExpression()) {
+          removeAllPropsExcept(kindParametersPath, ['creevey']);
+        }
+
+        if (declaratorPath) {
+          const kindPropAssigns = getPropertyAssignmentPaths(defaultPath, [declaratorPath.node]);
+          for (const [assignPath, props] of kindPropAssigns?.entries() ?? []) {
+            const [first, second] = props;
+            if (first == 'title') continue;
+            else if (first == 'parameters') {
+              if (!second) {
+                const rightPath = assignPath.get('right') as NodePath;
+                if (!rightPath?.isObjectExpression()) continue; // TODO it could be reassign
+                removeAllPropsExcept(rightPath, ['creevey']);
+              } else if (second != 'creevey') assignPath.remove();
+            } else assignPath.remove();
+          }
+        }
+      },
+      ExportNamedDeclaration(namedPath, state) {
+        if (fileType == FileType.Story) {
+          state.visitedTopPaths.add(namedPath);
           const namedDeclaration = namedPath.node.declaration as t.Node;
-          if (!t.isVariableDeclaration(namedDeclaration)) return;
+          if (!t.isVariableDeclaration(namedDeclaration)) {
+            if (t.isFunctionDeclaration(namedDeclaration)) namedDeclaration.body = t.blockStatement([]);
+            return;
+          }
           replaceStoryFnToNoop(namedDeclaration.declarations);
           const storyFnPropAssigns = getPropertyAssignmentPaths(namedPath, namedDeclaration.declarations);
           for (const [assignPath, props] of storyFnPropAssigns.entries()) {
@@ -194,80 +211,93 @@ function minifyStories(ast: t.File, source: string): string {
               } else if (second != 'creevey') assignPath.remove();
             } else assignPath.remove();
           }
-        },
-      });
-    },
-    ExportNamedDeclaration(namedPath) {
-      let hasDefaultExport = false;
-      namedPath.parentPath.traverse({
-        ExportDefaultDeclaration() {
-          hasDefaultExport = true;
-        },
-      });
-      if (hasDefaultExport) return;
-      isTransformed = true;
-      const declarationPath = namedPath.get('declaration');
-      if (!declarationPath.isVariableDeclaration()) return;
-      const declarations = declarationPath.get('declarations');
-      if (!Array.isArray(declarations)) return;
-      declarations.forEach((declPath) => {
-        if (!declPath.isVariableDeclarator()) return;
-        if (t.isIdentifier(declPath.node.id, { name: 'decorators' })) return declPath.remove();
-        if (t.isIdentifier(declPath.node.id, { name: 'parameters' })) {
-          const initPath = declPath.get('init');
-          if (Array.isArray(initPath)) return;
-          if (initPath.isObjectExpression()) return removeAllPropsExcept(initPath, ['creevey']);
-          const resolvedDeclPath = getDeclaratorPath(initPath);
-          if (resolvedDeclPath) {
-            const rightPath = resolvedDeclPath.get('init');
-            if (!rightPath.isObjectExpression()) return;
-            removeAllPropsExcept(rightPath, ['creevey']);
+        }
+        if (fileType == FileType.Preview) {
+          state.visitedTopPaths.add(namedPath);
+          const declarationPath = namedPath.get('declaration');
+          if (!declarationPath.isVariableDeclaration()) return;
+          const declarations = declarationPath.get('declarations');
+          if (!Array.isArray(declarations)) return;
+          declarations.forEach((declPath) => {
+            if (!declPath.isVariableDeclarator()) return;
+            if (t.isIdentifier(declPath.node.id, { name: 'decorators' })) return declPath.remove();
+            if (t.isIdentifier(declPath.node.id, { name: 'parameters' })) {
+              const initPath = declPath.get('init');
+              if (Array.isArray(initPath)) return;
+              if (initPath.isObjectExpression()) return removeAllPropsExcept(initPath, ['creevey']);
+              const resolvedDeclPath = getDeclaratorPath(initPath);
+              if (resolvedDeclPath) {
+                const rightPath = resolvedDeclPath.get('init');
+                if (!rightPath.isObjectExpression()) return;
+                removeAllPropsExcept(rightPath, ['creevey']);
+              }
+            }
+          });
+        }
+      },
+      CallExpression(rootCallPath, state) {
+        const rootPath = findRootPath(rootCallPath);
+        if (fileType == FileType.Preview) {
+          if (rootCallPath.get('callee').isIdentifier({ name: 'configure' })) {
+            if (rootPath) state.visitedTopPaths.add(rootPath);
+            return;
+          }
+          if (rootCallPath.get('callee').isIdentifier({ name: 'addDecorator' })) {
+            rootCallPath.remove();
+            return;
+          }
+          if (rootCallPath.get('callee').isIdentifier({ name: 'addParameters' })) {
+            const [argPath] = rootCallPath.get('arguments');
+            if (!argPath || !argPath.isObjectExpression()) return;
+            if (rootPath) state.visitedTopPaths.add(rootPath);
+            removeAllPropsExcept(argPath, ['creevey']);
+            return;
           }
         }
-      });
-    },
-    CallExpression(path) {
-      if (path.get('callee').isIdentifier({ name: 'addDecorator' })) {
-        isTransformed = true;
-        path.remove();
-        return;
-      }
-      if (path.get('callee').isIdentifier({ name: 'addParameters' })) {
-        const [argPath] = path.get('arguments');
-        if (!argPath || !argPath.isObjectExpression()) return;
-        isTransformed = true;
-        removeAllPropsExcept(argPath, ['creevey']);
-        return;
-      }
-      if (!path.get('callee').isIdentifier({ name: 'storiesOf' }) || visited.has(path)) return;
-      isTransformed = true;
-      visited.add(path);
-      let callPath = path as NodePath;
-      do {
-        const childCallPath = callPath;
-        const { parentPath: memberPath } = childCallPath;
-        const propPath = memberPath.get('property');
-        callPath = memberPath.parentPath;
-        if (!memberPath.isMemberExpression() || !callPath.isCallExpression()) return;
-        if (!Array.isArray(propPath) && propPath.isIdentifier({ name: 'add' })) {
-          const [, storyPath, parametersPath] = callPath.get('arguments') as NodePath[];
-          storyPath.replaceWith(t.arrowFunctionExpression([], t.blockStatement([])));
-          if (parametersPath?.isObjectExpression()) getPropertyPath(parametersPath, 'decorators')?.remove();
+        if (fileType == FileType.Story) {
+          if (!rootCallPath.get('callee').isIdentifier({ name: 'storiesOf' })) return;
+          if (rootPath) state.visitedTopPaths.add(rootPath);
+          let callPath = rootCallPath as NodePath;
+          do {
+            const childCallPath = callPath;
+            const { parentPath: memberPath } = childCallPath;
+            const propPath = memberPath.get('property');
+            callPath = memberPath.parentPath;
+            if (!memberPath.isMemberExpression() || !callPath.isCallExpression()) return;
+            if (!Array.isArray(propPath) && propPath.isIdentifier({ name: 'add' })) {
+              const [, storyPath, parametersPath] = callPath.get('arguments') as NodePath[];
+              storyPath.replaceWith(t.arrowFunctionExpression([], t.blockStatement([])));
+              if (parametersPath?.isObjectExpression()) getPropertyPath(parametersPath, 'decorators')?.remove();
+            }
+            if (!Array.isArray(propPath) && propPath.isIdentifier({ name: 'addDecorator' })) {
+              callPath.replaceWith(childCallPath);
+            }
+          } while (callPath.parentPath != null);
         }
-        if (!Array.isArray(propPath) && propPath.isIdentifier({ name: 'addDecorator' })) {
-          callPath.replaceWith(childCallPath);
-        }
-      } while (callPath.parentPath != null);
-    },
-  });
-
-  if (isTransformed) {
-    traverse(ast, {
-      TSInterfaceDeclaration(path) {
-        path.remove();
       },
       Program: {
-        exit(path) {
+        enter(path) {
+          path.traverse({
+            TSDeclareFunction(path) {
+              path.remove();
+            },
+            TSTypeAliasDeclaration(path) {
+              path.remove();
+            },
+            TSInterfaceDeclaration(path) {
+              path.remove();
+            },
+            TSTypeAnnotation(path) {
+              path.remove();
+            },
+            TSAsExpression(path) {
+              path.replaceWith(path.get('expression'));
+            },
+          });
+        },
+        exit(path, state) {
+          if (fileType != FileType.Story && fileType != FileType.Preview) return;
+
           recursivelyRemoveUnreferencedBindings(path);
 
           path.traverse({
@@ -275,37 +305,154 @@ function minifyStories(ast: t.File, source: string): string {
               if (path.node.specifiers.length == 0) path.remove();
             },
           });
+
+          let refs = [...state.visitedTopPaths];
+          while (refs.length > 0) {
+            refs = getUnvisitedRefs(refs, state);
+          }
+          path
+            .get('body')
+            .filter((x) => !state.visitedTopPaths.has(x))
+            .forEach((x) => x.remove());
         },
       },
-    });
+    },
+    undefined,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    { isStoriesFile: false, visitedTopPaths: new Set<NodePath<any>>(), visitedBindings: new Set<Binding>() },
+  );
 
-    return generate(ast, { retainLines: true }).code;
+  return generate(ast, { retainLines: true }).code;
+}
+
+function toPosix(filePath: string): string {
+  return filePath
+    .split(path.win32.sep)
+    .join(path.posix.sep)
+    .replace(/^[a-z]:/i, '');
+}
+
+function getIssuerResource(context: loader.LoaderContext): string | undefined {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
+  return context._module?.issuer?.resource;
+}
+
+function getIssuerConstructorName(context: loader.LoaderContext): string | undefined {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
+  return context._module?.issuer?.constructor?.name;
+}
+
+function isEntry(context: loader.LoaderContext): boolean {
+  return getIssuerConstructorName(context) == 'MultiModule';
+}
+
+function isPreview(context: loader.LoaderContext, options: Options | Readonly<OptionObject>): boolean {
+  const { dir: resourceDir, name: resourceName } = path.posix.parse(toPosix(context.resourcePath));
+  const storybookDir = typeof options.storybookDir == 'string' ? toPosix(options.storybookDir) : '';
+  const isConfigFile = resourceDir == storybookDir && (resourceName == 'preview' || resourceName == 'config');
+  if (isStorybookVersionLessThan(6)) {
+    return isEntry(context) && isConfigFile;
   }
+  const issuerResource = getIssuerResource(context);
+  return Boolean(issuerResource && entries.has(issuerResource) && isConfigFile);
+}
 
-  return source;
+function isStoryFile(context: loader.LoaderContext): boolean {
+  const issuerResource = getIssuerResource(context);
+  return (
+    getIssuerConstructorName(context) == 'ContextModule' ||
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    Boolean(issuerResource && reexportedStories.get(issuerResource)?.has(context._module?.rawRequest as string)) ||
+    (issuerResource == previewPath && path.posix.parse(toPosix(previewPath)).name == 'config')
+  );
+}
+
+// NOTE: non-story files before preview => issuer.resource is entry
+
+export enum FileType {
+  Invalid = -1,
+  Entry,
+  Preview,
+  Story,
+}
+
+interface Options {
+  debug: boolean;
+  storybookDir: string;
 }
 
 const schema: JSONSchema7 = {
   type: 'object',
   properties: {
     debug: { type: 'boolean' },
+    storybookDir: { type: 'string' },
   },
 };
 
-const defaultOptions = { debug: false };
+let fileType = FileType.Invalid;
+let previewPath = '';
+let resourcePath = '';
+const entries = new Set<string>();
+const stories = new Set<string>();
+const reexportedStories = new Map<string, Set<string>>();
+const isTest = process.env.NODE_ENV == 'test';
+const defaultOptions: Options = {
+  debug: isTest,
+  storybookDir: process.cwd(),
+};
 
 export default function (this: loader.LoaderContext | void, source: string): string {
   const options = this ? getOptions(this) || defaultOptions : defaultOptions;
   validate(schema, options, { name: 'Creevey Stories Loader' });
-  const { ast, done } = tryParse(source, options);
 
-  if (!done || !ast) return source;
+  fileType = FileType.Invalid;
+
+  if (this) {
+    const issuerResource = getIssuerResource(this);
+    resourcePath = this.resourcePath;
+    if (isStoryFile(this)) {
+      fileType = FileType.Story;
+      stories.add(this.resourcePath);
+    } else if (isPreview(this, options)) {
+      fileType = FileType.Preview;
+      previewPath = this.resourcePath;
+    } else if (isEntry(this)) {
+      fileType = FileType.Entry;
+      entries.add(this.resourcePath);
+    } else if (issuerResource && stories.has(issuerResource) && options.debug) {
+      console.log(
+        chalk`[{yellow WARN}{grey :CreeveyWebpack}]`,
+        'Trying to transform possible non-story file',
+        this.resourcePath,
+        'Please check the',
+        issuerResource,
+      );
+      // TODO Add link to docs, how creevey works and what user should do in this situation
+    }
+  }
+  if (isTest && !Number.isNaN(Number(process.env.CREEVEY_LOADER_FILE_TYPE))) {
+    fileType = Number(process.env.CREEVEY_LOADER_FILE_TYPE);
+  }
 
   try {
-    return minifyStories(ast, source);
+    const ast = parse(source, {
+      sourceType: 'module',
+      plugins: ['classProperties', 'decorators-legacy', 'jsx', 'typescript'],
+    });
+    return transform(ast);
   } catch (error) {
-    if (options.debug) console.log(error);
-    // TODO Debug output
+    this && console.log(chalk`[{yellow WARN}{grey :CreeveyWebpack}]`, 'Failed to transform file', this.resourcePath);
+    if ('loc' in error) {
+      console.log(
+        codeFrameColumns(
+          source,
+          { start: ((error as unknown) as { loc: t.SourceLocation['start'] }).loc },
+          { highlightCode: true },
+        ),
+      );
+    } else {
+      console.log(error);
+    }
     return source;
   }
 }

@@ -261,6 +261,7 @@ async function takeScreenshot(browser: WebDriver, captureElement?: string | null
 
   if (isFitIntoViewport) return browser.findElement(By.css(captureElement)).takeScreenshot();
 
+  // TODO pointer-events: none, need to research
   return takeCompositeScreenshot(browser, windowRect, elementRect);
 }
 

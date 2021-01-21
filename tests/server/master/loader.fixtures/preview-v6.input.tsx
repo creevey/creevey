@@ -2,10 +2,13 @@
 import React from 'react';
 import { ThemeProvider } from 'styled-components';
 
-export const buttonTests = { async click() {} };
+const buttonTests = { async click() {} };
 
 export const parameters = {
-  creevey: { captureElement: '#root' },
+  creevey: {
+    captureElement: '#root',
+    tests: buttonTests,
+  },
   backgrounds: {
     values: [
       { name: 'red', value: '#f00' },

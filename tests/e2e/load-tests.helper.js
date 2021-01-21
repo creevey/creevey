@@ -7,7 +7,7 @@ void creevey
   .loadTestsFromStories({ browsers: ['chrome'] }, () => void 0)
   .then((tests) =>
     fs.writeFileSync(
-      'actual.json',
+      'actual-tests.json',
       JSON.stringify(tests, (_, value) => (typeof value == 'function' ? value.toString() : value), 2),
     ),
   )

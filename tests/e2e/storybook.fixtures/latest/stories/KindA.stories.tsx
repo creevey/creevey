@@ -22,3 +22,6 @@ SkippedTests.parameters = {
     }]
   }
 }
+
+export const decorators: Story = () => <div />
+export const parameters: Story = () => <div />

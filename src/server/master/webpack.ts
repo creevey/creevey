@@ -101,8 +101,9 @@ export default async function compile(config: Config, { debug, ui }: Options): P
 
   const extensions = storybookWebpackConfig.resolve?.extensions ?? fallbackExtensions;
 
+  // TODO Save stats.json on debug
   delete storybookWebpackConfig.optimization;
-  delete storybookWebpackConfig.devtool;
+  storybookWebpackConfig.devtool = false;
   storybookWebpackConfig.performance = false;
   storybookWebpackConfig.mode = 'development';
   storybookWebpackConfig.target = 'node';
@@ -144,7 +145,7 @@ export default async function compile(config: Config, { debug, ui }: Options): P
     enforce: 'pre',
     test: new RegExp(`\\.(${extensions.map((x) => x.slice(1))?.join('|')})$`),
     exclude: /node_modules/,
-    use: { loader: require.resolve('./loader'), options: { debug } },
+    use: { loader: require.resolve('./loader'), options: { debug, storybookDir: config.storybookDir } },
   });
 
   // NOTE Exclude from bundle all modules from node_modules

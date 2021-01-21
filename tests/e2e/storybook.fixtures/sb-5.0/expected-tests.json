@@ -19,6 +19,9 @@
           "hierarchyRootSeparator": "|",
           "hierarchySeparator": {}
         },
+        "creevey": {
+          "captureElement": "root"
+        },
         "framework": "creevey"
       }
     },
