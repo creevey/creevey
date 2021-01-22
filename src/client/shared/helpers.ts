@@ -280,10 +280,10 @@ export function getImageUrl(path: string[], imageName: string): string {
   const imagesUrl = window.location.host
     ? `${window.location.protocol}//${getConnectionUrl()}${
         window.location.pathname == '/' ? '/report' : window.location.pathname.split('/').slice(0, -1).join('/')
-      }/${path.slice(0, -1).join('/')}`
-    : path.slice(0, -1).join('/');
+      }/${encodeURI(path.slice(0, -1).join('/'))}`
+    : encodeURI(path.slice(0, -1).join('/'));
 
-  return encodeURI(imageName == browser ? imagesUrl : `${imagesUrl}/${browser}`);
+  return imageName == browser ? imagesUrl : `${imagesUrl}/${encodeURI(browser)}`;
 }
 
 export function getBorderSize(element: HTMLElement): number {
