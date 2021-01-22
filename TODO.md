@@ -390,8 +390,9 @@
   - [ ] creevey-storybook
   - [ ] examples
 - [ ] Features
+  - [ ] Allow save approved screenshots in separate storage, like S3
   - [ ] Add API to allow to use third party "stories" resolvers to support not only storybook
-  - [ ] Allow to extend browser API
+  - [ ] Allow to extend this.browser API
   - [ ] Try AWS Lambda (Think about Creevey-as-a-Service. Deploy Creevey server. And it could be used in gitlab as service)
   - [ ] Allow to select elements for capture from storybook UI
   - [ ] Allow to ignore elements or rects in storybook UI
