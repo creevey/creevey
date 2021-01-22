@@ -278,7 +278,7 @@ export function getImageUrl(path: string[], imageName: string): string {
   // path => [kind, story, test, browser]
   const browser = path.slice(-1)[0];
   const imagesUrl = window.location.host
-    ? `http://${getConnectionUrl()}${
+    ? `//${getConnectionUrl()}${
         window.location.pathname == '/' ? '/report' : window.location.pathname.split('/').slice(0, -1).join('/')
       }/${path.slice(0, -1).join('/')}`
     : path.slice(0, -1).join('/');
