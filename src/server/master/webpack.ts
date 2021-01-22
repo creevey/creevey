@@ -170,14 +170,14 @@ export default async function compile(config: Config, { debug, ui }: Options): P
   const storybookWebpackCompiler = webpack(storybookWebpackConfig);
   if (ui) {
     const watcher = storybookWebpackCompiler.watch({}, (error: Error, stats: webpack.Stats) => {
-      if (debug) writeFile(path.join(outputDir, 'stats.json'), JSON.stringify(stats.toJson(), null, 2), noop);
+      if (debug) writeFile(path.join(config.reportDir, 'stats.json'), JSON.stringify(stats.toJson(), null, 2), noop);
       handleWebpackBuild(error, stats);
     });
 
     subscribeOn('shutdown', () => watcher.close(noop));
   } else {
     storybookWebpackCompiler.run((error: Error, stats: webpack.Stats) => {
-      if (debug) writeFile(path.join(outputDir, 'stats.json'), JSON.stringify(stats.toJson(), null, 2), noop);
+      if (debug) writeFile(path.join(config.reportDir, 'stats.json'), JSON.stringify(stats.toJson(), null, 2), noop);
       handleWebpackBuild(error, stats);
     });
   }
