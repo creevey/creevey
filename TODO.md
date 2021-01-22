@@ -304,6 +304,9 @@
 ## First priority (v0.8)
 
 - [ ] Docs
+  - [ ] Describe use cases
+  - [ ] Rewrite config docs to more detail
+  - [ ] How to setup creevey report in TeamCity
   - [ ] Add new options (selenoidPath, webdriverCommand, etc)
   - [ ] Add best practices for stories
     - Git LFS

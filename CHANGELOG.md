@@ -1,3 +1,19 @@
+## [0.7.21](https://github.com/wKich/creevey/compare/v0.7.20...v0.7.21) (2021-01-22)
+
+### Bug Fixes
+
+- 🐛 create protocol relative image url ([5c574dc](https://github.com/wKich/creevey/commit/5c574dc3025eacf1c9d4402880a9893193c0180f))
+- 🐛 encode only path tokens for url ([28751c9](https://github.com/wKich/creevey/commit/28751c968cb4a3a8afcb606096a0a0bc2fc3bccf))
+- 🐛 get image url with empty port number ([43a8226](https://github.com/wKich/creevey/commit/43a822653001ecbb31534c40f688814e14bb52db))
+- 🐛 make report from static files works from creevey repo ([4b49df7](https://github.com/wKich/creevey/commit/4b49df72f21cee725848187c267f6b87b9e988e3))
+- 🐛 protocol relative resolving ([fc2559e](https://github.com/wKich/creevey/commit/fc2559e60091ef96af48fbbac92e7f06b7f57dbc))
+- 🐛 store stats.json into report dir ([9b0586d](https://github.com/wKich/creevey/commit/9b0586db49681b654045ad54dece4c195e490605))
+
+### Features
+
+- 🎸 improve creevey-loader, cut-off side-effects ([a302708](https://github.com/wKich/creevey/commit/a30270808275fa5dbe83ddb33d0e5490995e9b37))
+- 🎸 save webpack stats.json on debug ([248e271](https://github.com/wKich/creevey/commit/248e2713bc97a601877eaa20f3c6e16ecc1e2aa5))
+
 ## [0.7.20](https://github.com/wKich/creevey/compare/v0.7.19...v0.7.20) (2021-01-15)
 
 ### Bug Fixes
