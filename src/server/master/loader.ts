@@ -421,7 +421,7 @@ export default function (this: loader.LoaderContext | void, source: string): str
       entries.add(this.resourcePath);
     } else if (issuerResource && stories.has(issuerResource) && options.debug) {
       console.log(
-        chalk`[{yellow WARN}{grey :CreeveyWebpack}]`,
+        chalk`[{yellow WARN}:CreeveyWebpack]`,
         'Trying to transform possible non-story file',
         this.resourcePath,
         'Please check the',

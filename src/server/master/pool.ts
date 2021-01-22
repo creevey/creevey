@@ -55,9 +55,8 @@ export default class Pool extends EventEmitter {
   }
 
   stop(): void {
-    // TODO Timeout
     if (!this.isRunning) {
-      // TODO this.emit("stop");
+      this.emit('stop');
       return;
     }
 

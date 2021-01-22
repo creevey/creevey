@@ -291,9 +291,8 @@
   - [x] Add link `go to runner` in addon UI
   - [x] Show side-by-side diff vertically or horizontally depends on aspect
   - [x] Add resolveStorybookUrl to config
-  - [ ] Support teamcity screenshots diff UI
-  - [ ] Save webpack stats.json for debug
-  - [ ] Output browser logs for debug
+  - [ ] Support teamcity screenshots diff UI https://www.jetbrains.com/help/teamcity/including-third-party-reports-in-the-build-results.html
+  - [x] Save webpack stats.json for debug
   - [ ] Add fallback option, load tests from browser (hmr and tests are disabled in this case)
     - [ ] Send PR to Storybook to allow use HMR for stories
   - [ ] Allow run creevey against static-storybook folder (Depends on fallback tests loading)
@@ -345,6 +344,7 @@
   - [ ] Playwright
   - [ ] Puppeteer
 - [ ] Features
+  - [ ] Output browser logs for debug
   - [ ] Support switch between globals https://github.com/wKich/creevey/discussions/108
   - [ ] Change `skip` option API
   - [ ] Improve creevey-loader

@@ -1,4 +1,4 @@
-import { rmdirSync } from 'fs';
+import { rmdirSync, writeFile } from 'fs';
 import path from 'path';
 import webpack from 'webpack';
 import nodeExternals from 'webpack-node-externals';
@@ -36,12 +36,10 @@ function tryDetectStorybookFramework(parentDir: string): string | undefined {
   });
 }
 
-// TODO Output summary of success builds
-// TODO Don't fail on failed build
 function handleWebpackBuild(error: Error, stats: webpack.Stats): void {
   if (error || !stats || stats.hasErrors()) {
     emitWebpackMessage({ type: isInitiated ? 'rebuild failed' : 'fail' });
-    console.error('=> Failed to build the preview'); // TODO Change message
+    console.error('=> Failed to build the Storybook preview bundle');
 
     if (error) return console.error(error.message);
     if (stats && (stats.hasErrors() || stats.hasWarnings())) {
@@ -101,10 +99,10 @@ export default async function compile(config: Config, { debug, ui }: Options): P
 
   const extensions = storybookWebpackConfig.resolve?.extensions ?? fallbackExtensions;
 
-  // TODO Save stats.json on debug
   delete storybookWebpackConfig.optimization;
   storybookWebpackConfig.devtool = false;
   storybookWebpackConfig.performance = false;
+  storybookWebpackConfig.profile = debug;
   storybookWebpackConfig.mode = 'development';
   storybookWebpackConfig.target = 'node';
   storybookWebpackConfig.output = {
@@ -140,7 +138,6 @@ export default async function compile(config: Config, { debug, ui }: Options): P
   };
 
   // NOTE Add creevey-loader to cut off all unnecessary code except stories meta and tests
-  // TODO Apply only for stories and preview.js
   storybookWebpackConfig.module?.rules.unshift({
     enforce: 'pre',
     test: new RegExp(`\\.(${extensions.map((x) => x.slice(1))?.join('|')})$`),
@@ -172,10 +169,16 @@ export default async function compile(config: Config, { debug, ui }: Options): P
 
   const storybookWebpackCompiler = webpack(storybookWebpackConfig);
   if (ui) {
-    const watcher = storybookWebpackCompiler.watch({}, handleWebpackBuild);
+    const watcher = storybookWebpackCompiler.watch({}, (error: Error, stats: webpack.Stats) => {
+      if (debug) writeFile(path.join(outputDir, 'stats.json'), JSON.stringify(stats.toJson(), null, 2), noop);
+      handleWebpackBuild(error, stats);
+    });
 
     subscribeOn('shutdown', () => watcher.close(noop));
   } else {
-    storybookWebpackCompiler.run(handleWebpackBuild);
+    storybookWebpackCompiler.run((error: Error, stats: webpack.Stats) => {
+      if (debug) writeFile(path.join(outputDir, 'stats.json'), JSON.stringify(stats.toJson(), null, 2), noop);
+      handleWebpackBuild(error, stats);
+    });
   }
 }
