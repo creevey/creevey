@@ -35,7 +35,7 @@ async function createSelenoidConfig(config: Config, { useDocker }: { useDocker: 
       selenoidConfig[browserName].versions[version] = {
         image: useDocker ? dockerImage : webdriverCommand,
         port: '4444',
-        path: '/',
+        path: !useDocker || browserName == 'chrome' || browserName == 'opera' ? '/' : '/wd/hub',
       };
     },
   );
