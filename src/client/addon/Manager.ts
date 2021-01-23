@@ -4,6 +4,7 @@ import { SET_STORIES, STORY_RENDERED } from '@storybook/core-events';
 import { CreeveyStatus, CreeveyUpdate, isDefined, TestData, TestStatus, StoriesRaw } from '../../types';
 import { initCreeveyClientApi, CreeveyClientApi } from '../shared/creeveyClientApi';
 import { calcStatus } from '../shared/helpers';
+import { ADDON_ID } from './register';
 import { getEmojiByTestStatus, denormalizeStoryParameters } from './utils';
 
 export class CreeveyManager {
@@ -178,12 +179,12 @@ export class CreeveyManager {
     let firstPanelBrowser = this.activeBrowser;
     for (const p in panels) {
       const panel = panels[p];
-      if (panel.id?.indexOf('creevey') === 0 && panel.paramKey) {
+      if (panel.id?.indexOf(ADDON_ID) === 0 && panel.paramKey) {
         panel.title = this.getTabTitle(panel.paramKey);
         if (!firstPanelBrowser) firstPanelBrowser = panel.paramKey;
       }
     }
-    this.storybookApi.setSelectedPanel(`creevey/panel/${firstPanelBrowser}`);
+    this.storybookApi.setSelectedPanel(`${ADDON_ID}/panel/${firstPanelBrowser}`);
   };
 
   async addStatusesToSideBar(): Promise<void> {

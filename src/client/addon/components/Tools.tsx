@@ -1,6 +1,6 @@
 import React, { Fragment, useState, useEffect } from 'react';
 import { IconButton, Icons, Separator } from '@storybook/components';
-import { ForwardIcon, NextIcon } from '../Icons';
+import { ForwardIcon, NextIcon } from './Icons';
 import { stringify } from 'qs';
 import { styled } from '@storybook/theming';
 import { isDefined, TestData } from '../../../types';
@@ -84,7 +84,7 @@ export const Tools = ({ manager }: ToolsProps): JSX.Element | null => {
         manager.onStartAllStoryTests,
         <NextIcon width={15} height={11} />,
       )}
-      {renderButton('RunTest', 'Run', () => manager.onStart(), <Icons icon="play" />)}
+      {renderButton('RunTest', 'Run', manager.onStart, <Icons icon="play" />)}
     </Fragment>
   );
 };
