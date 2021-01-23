@@ -170,7 +170,7 @@ export class CreeveyManager {
       .reduce((oldStatus, newStatus) => calcStatus(oldStatus, newStatus), undefined);
     const browserSkip = tests.length > 0 ? tests.every((x) => x && x.skip) : false;
     const emojiStatus = getEmojiByTestStatus(browserStatus, browserSkip);
-    return `${emojiStatus} Creevey/${browser}`;
+    return `${emojiStatus ? `${emojiStatus} ` : ''}Creevey/${browser}`;
   };
 
   setPanelsTitle = (): void => {
@@ -205,6 +205,7 @@ export class CreeveyManager {
 
   addStatusToStoryName(name: string, status: TestStatus | undefined, skip: string | boolean): string {
     name = name.replace(/^(❌|✔|🟡|🕗|⏸) /, '');
-    return `${getEmojiByTestStatus(status, skip)} ${name}`;
+    const emojiStatus = getEmojiByTestStatus(status, skip);
+    return `${emojiStatus ? `${emojiStatus} ` : ''} ${name}`;
   }
 }
