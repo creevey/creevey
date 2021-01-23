@@ -1,12 +1,13 @@
 import path from 'path';
 import { promisify } from 'util';
-import { mkdir, writeFile, copyFile } from 'fs';
+import { mkdir, writeFile, copyFile, lstatSync, existsSync } from 'fs';
 import { Config, BrowserConfig } from '../../types';
 import { downloadBinary, getCreeveyCache } from '../utils';
 import { pullImages, runImage } from '../docker';
 import { Octokit } from '@octokit/core';
 import { execFile } from 'child_process';
 import { subscribeOn } from '../messages';
+import { isWorker } from 'cluster';
 
 const mkdirAsync = promisify(mkdir);
 const writeFileAsync = promisify(writeFile);
@@ -34,7 +35,7 @@ async function createSelenoidConfig(config: Config, { useDocker }: { useDocker: 
       selenoidConfig[browserName].versions[version] = {
         image: useDocker ? dockerImage : webdriverCommand,
         port: '4444',
-        path: browserName == 'chrome' || browserName == 'opera' ? '/' : '/wd/hub',
+        path: !useDocker || browserName == 'chrome' || browserName == 'opera' ? '/' : '/wd/hub',
       };
     },
   );
@@ -49,7 +50,7 @@ async function downloadSelenoidBinary(destination: string): Promise<void> {
   const platformNameMapping: Partial<Record<NodeJS.Platform, string>> = {
     darwin: 'selenoid_darwin_amd64',
     linux: 'selenoid_linux_amd64',
-    win32: 'selenoid_windows_amd64',
+    win32: 'selenoid_windows_amd64.exe',
   };
   const octokit = new Octokit();
   const response = await octokit.request('GET /repos/{owner}/{repo}/releases/latest', {
@@ -57,8 +58,10 @@ async function downloadSelenoidBinary(destination: string): Promise<void> {
     repo: 'selenoid',
   });
   const { assets } = response.data;
-  const { browser_download_url: downloadUrl } =
+  const { browser_download_url: downloadUrl, size: binarySize } =
     assets.find(({ name }) => platformNameMapping[process.platform] == name) ?? {};
+
+  if (existsSync(destination) && lstatSync(destination).size == binarySize) return;
 
   if (!downloadUrl) {
     throw new Error(
@@ -70,26 +73,28 @@ async function downloadSelenoidBinary(destination: string): Promise<void> {
 }
 
 export async function startSelenoidStandalone(config: Config, debug: boolean): Promise<void> {
+  config.gridUrl = 'http://localhost:4444/wd/hub';
+
+  if (isWorker) return;
+
   const selenoidConfigDir = await createSelenoidConfig(config, { useDocker: false });
-  const binaryPath = path.join(selenoidConfigDir, 'selenoid');
+  const binaryPath = path.join(selenoidConfigDir, process.platform == 'win32' ? 'selenoid.exe' : 'selenoid');
   if (config.selenoidPath) {
     await copyFileAsync(path.resolve(config.selenoidPath), binaryPath);
   } else {
     await downloadSelenoidBinary(binaryPath);
   }
 
-  const selenoidProcess = execFile(binaryPath, ['-conf', './browser.json', '-disable-docker'], {
+  const selenoidProcess = execFile(binaryPath, ['-conf', './browsers.json', '-disable-docker'], {
     cwd: selenoidConfigDir,
   });
 
   if (debug) {
     selenoidProcess.stdout?.pipe(process.stdout);
+    selenoidProcess.stderr?.pipe(process.stderr);
   }
-  selenoidProcess.stderr?.pipe(process.stderr);
 
   subscribeOn('shutdown', () => selenoidProcess.kill());
-
-  config.gridUrl = 'http://localhost:4444/wd/hub';
 }
 
 export async function startSelenoidContainer(config: Config, debug: boolean): Promise<string> {

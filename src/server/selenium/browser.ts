@@ -34,21 +34,34 @@ async function resolveStorybookUrl(storybookUrl: string, checkUrl: (url: string)
   throw error;
 }
 
+async function openUrlAndWaitForPageSource(
+  browser: WebDriver,
+  url: string,
+  predicate: (source: string) => boolean,
+): Promise<string> {
+  let source = '';
+  await browser.get(url);
+  do {
+    try {
+      source = await browser.getPageSource();
+    } catch (_) {
+      // NOTE: Firefox can raise exception "curContainer.frame.document.documentElement is null"
+    }
+  } while (predicate(source));
+  return source;
+}
+
 function getUrlChecker(browser: WebDriver): (url: string) => Promise<boolean> {
   return async (url: string): Promise<boolean> => {
     try {
-      //  NOTE: Before trying a new url, reset the current one
-      await browser.get('about:blank');
-      await browser.get(url);
-      let source = '';
-      do {
-        try {
-          source = await browser.getPageSource();
-        } catch (_) {
-          // NOTE: Firefox can raise exception "curContainer.frame.document.documentElement is null"
-        }
+      // NOTE: Before trying a new url, reset the current one
+      await openUrlAndWaitForPageSource(browser, 'about:blank', (source: string) => !source.includes('<body></body>'));
+      const source = await openUrlAndWaitForPageSource(
+        browser,
+        url,
         // NOTE: IE11 can return only `head` without body
-      } while (source.length == 0 || !/<body([^>]*>).+<\/body>/s.test(source));
+        (source: string) => source.length == 0 || !/<body([^>]*>).+<\/body>/s.test(source),
+      );
       // NOTE: This is the most optimal way to check if we in storybook or not
       // We don't use any page load strategies except `NONE`
       // because other add significant delay and some of them don't work in earlier chrome versions
