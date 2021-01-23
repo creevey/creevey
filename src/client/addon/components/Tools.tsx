@@ -1,11 +1,11 @@
 import React, { Fragment, useState, useEffect } from 'react';
 import { IconButton, Icons, Separator } from '@storybook/components';
-import { ForwardIcon, NextIcon } from '../../Icons';
+import { ForwardIcon, NextIcon } from '../Icons';
 import { stringify } from 'qs';
 import { styled } from '@storybook/theming';
-import { isDefined, TestData } from '../../../../types';
-import { getTestPath } from '../../../shared/helpers';
-import { CreeveyManager } from '../../Manager';
+import { isDefined, TestData } from '../../../types';
+import { getTestPath } from '../../shared/helpers';
+import { CreeveyManager } from '../Manager';
 
 interface ToolsProps {
   manager: CreeveyManager;
@@ -36,7 +36,7 @@ export const Tools = ({ manager }: ToolsProps): JSX.Element | null => {
     });
     return unsubscribe;
   }, [manager]);
-  //  TODO onInit
+
   useEffect(() => {
     const unsubscribe = manager.onUpdateStatus(({ isRunning }) => {
       if (isDefined(isRunning)) setRunning(isRunning);

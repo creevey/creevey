@@ -1,8 +1,8 @@
 import addons, { types } from '@storybook/addons';
 import { API } from '@storybook/api';
 import React from 'react';
-import { Addon } from './Addon';
-import { Tools } from './components/Tabs/Tools';
+import { Addon } from './components/Addon';
+import { Tools } from './components/Tools';
 import { CreeveyManager } from './Manager';
 import { ADDON_ID } from './register';
 
