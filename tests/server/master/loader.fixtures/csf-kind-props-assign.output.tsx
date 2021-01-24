@@ -1,9 +1,9 @@
 // @ts-nocheck
 
-import { Meta } from '@storybook/react';
 
 
-const Kind: Meta = { title: 'Button' };
+
+const Kind = { title: 'Button' };
 
 export const Text = () => {};
 

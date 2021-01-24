@@ -1,13 +1,13 @@
 // @ts-nocheck
 
-import { Meta } from '@storybook/react';
 
 
 
-export default ({
-  title: 'Button' } as
+
+export default {
+  title: 'Button' };
 
 
-Meta);
+
 
 export const Text = () => {};

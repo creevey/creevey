@@ -1,5 +1,5 @@
 import path from 'path';
-import { writeFileSync, copyFile, readdir, mkdir, readdirSync } from 'fs';
+import { writeFileSync, copyFile, readdir, mkdir, readdirSync, existsSync } from 'fs';
 import { promisify } from 'util';
 import master from './master';
 import creeveyApi, { CreeveyApi } from './api';
@@ -43,6 +43,7 @@ function readDirRecursive(dirPath: string): string[] {
 }
 
 function outputUnnecessaryImages(imagesDir: string, images: Set<string>): void {
+  if (!existsSync(imagesDir)) return;
   const unnecessaryImages = readDirRecursive(imagesDir)
     .map((imagePath) => path.posix.relative(imagesDir, imagePath))
     .filter((imagePath) => !images.has(imagePath));
@@ -76,7 +77,12 @@ export default async function (config: Config, options: Options, resolveApi: (ap
     resolveApi(creeveyApi(runner));
     console.log('[Creevey]:', `Started on http://localhost:${options.port}`);
   } else {
-    // TODO Exit if runner don't have tests to run
+    if (Object.values(runner.status.tests).filter((test) => test && !test.skip).length == 0) {
+      console.log('[Creevey]:', "Don't have any tests to run");
+      // eslint-disable-next-line no-process-exit
+      void shutdownWorkers().then(() => process.exit());
+      return;
+    }
     runner.once('stop', () => {
       const tests = Object.values(runner.status.tests);
       const isSuccess = tests

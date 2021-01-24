@@ -2,7 +2,9 @@
 
 
 
-export const buttonTests = { async click() {} };
+const buttonTests = { async click() {} };
 
 export const parameters = {
-  creevey: { captureElement: '#root' } };
+  creevey: {
+    captureElement: '#root',
+    tests: buttonTests } };

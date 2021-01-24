@@ -269,21 +269,24 @@ export function countTestsStatus(suite: CreeveySuite): CreeveyTestsStatus {
 }
 
 export function getConnectionUrl(): string {
-  return `${window.location.hostname}:${
-    typeof __CREEVEY_SERVER_PORT__ != 'undefined' ? __CREEVEY_SERVER_PORT__ : window.location.port
-  }`;
+  return [
+    window.location.hostname,
+    typeof __CREEVEY_SERVER_PORT__ == 'undefined' ? window.location.port : __CREEVEY_SERVER_PORT__,
+  ]
+    .filter(Boolean)
+    .join(':');
 }
 
 export function getImageUrl(path: string[], imageName: string): string {
   // path => [kind, story, test, browser]
   const browser = path.slice(-1)[0];
   const imagesUrl = window.location.host
-    ? `http://${getConnectionUrl()}${
+    ? `${window.location.protocol}//${getConnectionUrl()}${
         window.location.pathname == '/' ? '/report' : window.location.pathname.split('/').slice(0, -1).join('/')
-      }/${path.slice(0, -1).join('/')}`
-    : path.slice(0, -1).join('/');
+      }/${encodeURI(path.slice(0, -1).join('/'))}`
+    : encodeURI(path.slice(0, -1).join('/'));
 
-  return encodeURI(imageName == browser ? imagesUrl : `${imagesUrl}/${browser}`);
+  return imageName == browser ? imagesUrl : `${imagesUrl}/${encodeURI(browser)}`;
 }
 
 export function getBorderSize(element: HTMLElement): number {

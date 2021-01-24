@@ -266,9 +266,11 @@
   - [x] ~~Fix teamcity preview images~~ (TeamCity bug)
   - [x] Fix height in addon
   - [x] ~~Fix firefox 61 in skbkontur selenium grid~~
-  - [ ] creevey-loader `top-level property access`
-  - [ ] wait-on don't work properly
+  - [x] creevey-loader `top-level property access`
+  - [ ] wait-on doesn't work properly
   - [ ] Don't pull docker local images
+  - [ ] ERR! Runtime error! Check your browser console. ERR! ResizeObserver loop limit exceeded (in addon)
+- [ ] Change viewport height to 786 in config
 - [x] Start server early and wait for build
 - [x] Setup TeamCity CI
 - [x] Update CircleCI and GitLab according by github actions
@@ -288,8 +290,9 @@
 - [x] Features
   - [x] Add link `go to runner` in addon UI
   - [x] Show side-by-side diff vertically or horizontally depends on aspect
-  - [ ] Save webpack stats.json for debug
-  - [ ] Output browser logs for debug
+  - [x] Add resolveStorybookUrl to config
+  - [ ] Support teamcity screenshots diff UI https://www.jetbrains.com/help/teamcity/including-third-party-reports-in-the-build-results.html
+  - [x] Save webpack stats.json for debug
   - [ ] Add fallback option, load tests from browser (hmr and tests are disabled in this case)
     - [ ] Send PR to Storybook to allow use HMR for stories
   - [ ] Allow run creevey against static-storybook folder (Depends on fallback tests loading)
@@ -301,6 +304,9 @@
 ## First priority (v0.8)
 
 - [ ] Docs
+  - [ ] Describe use cases
+  - [ ] Rewrite config docs to more detail
+  - [ ] How to setup creevey report in TeamCity
   - [ ] Add new options (selenoidPath, webdriverCommand, etc)
   - [ ] Add best practices for stories
     - Git LFS
@@ -341,6 +347,17 @@
   - [ ] Playwright
   - [ ] Puppeteer
 - [ ] Features
+  - [ ] Output browser logs for debug
+  - [ ] Support switch between globals https://github.com/wKich/creevey/discussions/108
+  - [ ] Change `skip` option API
+  - [ ] Improve creevey-loader
+    - [x] Support re-export stories
+    - [ ] Don't warn user on imported tests
+    - [ ] Check storiesOf/addDecorators/addParameters import from @storybook
+    - [ ] Output warnings when somewhere is spread/rest is used
+    - [ ] Remove unused side-effects from nested scopes
+    - [ ] Support exclude/include stories parameter
+  - [ ] Merge stories from nodejs bundle and browser, output warning to user if some stories are missing in nodejs
   - [ ] Add `HTML` diff view
   - [ ] Improve how works takeScreenshot with default captureElement
     - Check `#root` child nodes, if they there, capture `#root > *`
@@ -376,6 +393,9 @@
   - [ ] creevey-storybook
   - [ ] examples
 - [ ] Features
+  - [ ] Allow save approved screenshots in separate storage, like S3
+  - [ ] Add API to allow to use third party "stories" resolvers to support not only storybook
+  - [ ] Allow to extend this.browser API
   - [ ] Try AWS Lambda (Think about Creevey-as-a-Service. Deploy Creevey server. And it could be used in gitlab as service)
   - [ ] Allow to select elements for capture from storybook UI
   - [ ] Allow to ignore elements or rects in storybook UI

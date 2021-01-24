@@ -1,0 +1,126 @@
+{
+  "0d517f02ce6e4d38cd6260311696238b2a0f28e6": {
+    "id": "0d517f02ce6e4d38cd6260311696238b2a0f28e6",
+    "skip": false,
+    "browser": "chrome",
+    "storyPath": [
+      "KindA",
+      "StoryA"
+    ],
+    "storyId": "kinda--storya",
+    "story": {
+      "id": "kinda--storya",
+      "kind": "KindA",
+      "name": "StoryA",
+      "story": "StoryA",
+      "parameters": {
+        "fileName": "./stories/KindA.stories.jsx",
+        "options": {
+          "hierarchyRootSeparator": "|",
+          "hierarchySeparator": {}
+        },
+        "creevey": {
+          "captureElement": "root"
+        },
+        "framework": "creevey"
+      }
+    },
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+  },
+  "d0c19c761d374aed4bd49144afa36198b442c4bb": {
+    "id": "d0c19c761d374aed4bd49144afa36198b442c4bb",
+    "skip": false,
+    "browser": "chrome",
+    "testName": "click",
+    "storyPath": [
+      "KindA",
+      "configure"
+    ],
+    "storyId": "kinda--configure",
+    "story": {
+      "id": "kinda--configure",
+      "kind": "KindA",
+      "name": "configure",
+      "story": "configure",
+      "parameters": {
+        "fileName": "./stories/KindA.stories.jsx",
+        "options": {
+          "hierarchyRootSeparator": "|",
+          "hierarchySeparator": {}
+        },
+        "creevey": {
+          "captureElement": "root",
+          "tests": {
+            "click": "function click(){}"
+          }
+        },
+        "framework": "creevey"
+      }
+    },
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+  },
+  "2bcb19ec4faea25fc8ca82bac2d03926f4aaf3cf": {
+    "id": "2bcb19ec4faea25fc8ca82bac2d03926f4aaf3cf",
+    "skip": false,
+    "browser": "chrome",
+    "testName": "click",
+    "storyPath": [
+      "KindA",
+      "addDecorator"
+    ],
+    "storyId": "kinda--adddecorator",
+    "story": {
+      "id": "kinda--adddecorator",
+      "kind": "KindA",
+      "name": "addDecorator",
+      "story": "addDecorator",
+      "parameters": {
+        "fileName": "./stories/KindA.stories.jsx",
+        "options": {
+          "hierarchyRootSeparator": "|",
+          "hierarchySeparator": {}
+        },
+        "creevey": {
+          "captureElement": "root",
+          "tests": {
+            "click": "function click(){}"
+          }
+        },
+        "framework": "creevey"
+      }
+    },
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+  },
+  "b5489517080fe3edfc2cb6ec9cd4bf5f951fbca7": {
+    "id": "b5489517080fe3edfc2cb6ec9cd4bf5f951fbca7",
+    "skip": false,
+    "browser": "chrome",
+    "testName": "click",
+    "storyPath": [
+      "KindA",
+      "addParameters"
+    ],
+    "storyId": "kinda--addparameters",
+    "story": {
+      "id": "kinda--addparameters",
+      "kind": "KindA",
+      "name": "addParameters",
+      "story": "addParameters",
+      "parameters": {
+        "fileName": "./stories/KindA.stories.jsx",
+        "options": {
+          "hierarchyRootSeparator": "|",
+          "hierarchySeparator": {}
+        },
+        "creevey": {
+          "captureElement": "root",
+          "tests": {
+            "click": "function click(){}"
+          }
+        },
+        "framework": "creevey"
+      }
+    },
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+  }
+}

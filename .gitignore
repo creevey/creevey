@@ -68,3 +68,6 @@ lib
 
 # Screenshot tests report
 report
+
+/chromedriver.exe
+/geckodriver.exe

@@ -1,3 +1,56 @@
+## [0.7.21](https://github.com/wKich/creevey/compare/v0.7.20...v0.7.21) (2021-01-22)
+
+### Bug Fixes
+
+- 🐛 create protocol relative image url ([5c574dc](https://github.com/wKich/creevey/commit/5c574dc3025eacf1c9d4402880a9893193c0180f))
+- 🐛 encode only path tokens for url ([28751c9](https://github.com/wKich/creevey/commit/28751c968cb4a3a8afcb606096a0a0bc2fc3bccf))
+- 🐛 get image url with empty port number ([43a8226](https://github.com/wKich/creevey/commit/43a822653001ecbb31534c40f688814e14bb52db))
+- 🐛 make report from static files works from creevey repo ([4b49df7](https://github.com/wKich/creevey/commit/4b49df72f21cee725848187c267f6b87b9e988e3))
+- 🐛 protocol relative resolving ([fc2559e](https://github.com/wKich/creevey/commit/fc2559e60091ef96af48fbbac92e7f06b7f57dbc))
+- 🐛 store stats.json into report dir ([9b0586d](https://github.com/wKich/creevey/commit/9b0586db49681b654045ad54dece4c195e490605))
+
+### Features
+
+- 🎸 improve creevey-loader, cut-off side-effects ([a302708](https://github.com/wKich/creevey/commit/a30270808275fa5dbe83ddb33d0e5490995e9b37))
+- 🎸 save webpack stats.json on debug ([248e271](https://github.com/wKich/creevey/commit/248e2713bc97a601877eaa20f3c6e16ecc1e2aa5))
+
+## [0.7.20](https://github.com/wKich/creevey/compare/v0.7.19...v0.7.20) (2021-01-15)
+
+### Bug Fixes
+
+- 🐛 apply iframe after custom resolver ([e77bf33](https://github.com/wKich/creevey/commit/e77bf33048673e733ad2acd4799277b336e27fe5))
+
+## [0.7.19](https://github.com/wKich/creevey/compare/v0.7.18...v0.7.19) (2021-01-14)
+
+### Bug Fixes
+
+- 🐛 document unloaded error, again ([171b8bb](https://github.com/wKich/creevey/commit/171b8bb633f55616d58bc46655981e986cf9db95))
+- 🐛 document unloaded while waiting for result ([dd31445](https://github.com/wKich/creevey/commit/dd3144558de74349f41108e29aed97814a48eeb7))
+- 🐛 properly output unnecessary images ([40e791e](https://github.com/wKich/creevey/commit/40e791edd5eddce838ccc62902430ca00422bb8b))
+
+### Features
+
+- allow to set storybook's globals ([7500245](https://github.com/wKich/creevey/commit/75002458b38d5f7ac3d47cc32516ec9b55091db2))
+
+## [0.7.18](https://github.com/wKich/creevey/compare/v0.7.17...v0.7.18) (2021-01-08)
+
+### Bug Fixes
+
+- 🐛 copy-paste missing function from storybook ([29144a4](https://github.com/wKich/creevey/commit/29144a41afe013874b082ca29eecc74b5b56a017))
+
+## [0.7.17](https://github.com/wKich/creevey/compare/v0.7.16...v0.7.17) (2021-01-07)
+
+### Bug Fixes
+
+- 🐛 addon erases global parameters in storybook ([2ed4700](https://github.com/wKich/creevey/commit/2ed47000f00e30890656872d1daae420e47db2d9))
+
+## [0.7.16](https://github.com/wKich/creevey/compare/v0.7.15...v0.7.16) (2021-01-06)
+
+### Bug Fixes
+
+- 🐛 resolve url for ie11 ([562a982](https://github.com/wKich/creevey/commit/562a9821135f42e428da7f64fe29f2473565eb6d))
+- 🐛 spinner position in sidebar ([5d2d34a](https://github.com/wKich/creevey/commit/5d2d34a7229d7fef8fd4f6731df6b807dce00d7f))
+
 ## [0.7.15](https://github.com/wKich/creevey/compare/v0.7.14...v0.7.15) (2021-01-06)
 
 ### Bug Fixes

@@ -10,6 +10,7 @@ const config: CreeveyConfig = {
     chrome: {
       browserName: 'chrome',
       viewport: { width: 1024, height: 720 },
+      webdriverCommand: [path.resolve('./chromedriver.exe')],
     },
     // ie11: {
     //   browserName: 'internet explorer',
@@ -18,6 +19,7 @@ const config: CreeveyConfig = {
     firefox: {
       browserName: 'firefox',
       viewport: { width: 1024, height: 720 },
+      webdriverCommand: [path.resolve('./geckodriver.exe')],
     },
   },
 };

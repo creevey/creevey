@@ -1,6 +1,6 @@
 import Events from '@storybook/core-events';
 import { addons, MakeDecoratorResult, makeDecorator } from '@storybook/addons';
-import { isObject } from '../../types';
+import { isObject, StorybookGlobals } from '../../types';
 
 if (typeof process != 'object' || typeof process.version != 'string') {
   // NOTE If you don't use babel-polyfill or any other polyfills that add EventSource for IE11
@@ -15,6 +15,7 @@ if (typeof process != 'object' || typeof process.version != 'string') {
 declare global {
   interface Window {
     __CREEVEY_SELECT_STORY__: (storyId: string, kind: string, name: string, callback: (error?: string) => void) => void;
+    __CREEVEY_UPDATE_GLOBALS__: (globals: StorybookGlobals) => void;
   }
 
   interface Document {
@@ -159,7 +160,12 @@ export function withCreevey(): MakeDecoratorResult {
     }
   }
 
+  function updateGlobals(globals: StorybookGlobals): void {
+    addons.getChannel().emit(Events.UPDATE_GLOBALS, { globals });
+  }
+
   window.__CREEVEY_SELECT_STORY__ = selectStory;
+  window.__CREEVEY_UPDATE_GLOBALS__ = updateGlobals;
 
   return makeDecorator({
     name: 'withCreevey',

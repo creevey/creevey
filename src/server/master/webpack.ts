@@ -1,4 +1,4 @@
-import { rmdirSync } from 'fs';
+import { rmdirSync, writeFile } from 'fs';
 import path from 'path';
 import webpack from 'webpack';
 import nodeExternals from 'webpack-node-externals';
@@ -36,12 +36,10 @@ function tryDetectStorybookFramework(parentDir: string): string | undefined {
   });
 }
 
-// TODO Output summary of success builds
-// TODO Don't fail on failed build
 function handleWebpackBuild(error: Error, stats: webpack.Stats): void {
   if (error || !stats || stats.hasErrors()) {
     emitWebpackMessage({ type: isInitiated ? 'rebuild failed' : 'fail' });
-    console.error('=> Failed to build the preview'); // TODO Change message
+    console.error('=> Failed to build the Storybook preview bundle');
 
     if (error) return console.error(error.message);
     if (stats && (stats.hasErrors() || stats.hasWarnings())) {
@@ -102,8 +100,9 @@ export default async function compile(config: Config, { debug, ui }: Options): P
   const extensions = storybookWebpackConfig.resolve?.extensions ?? fallbackExtensions;
 
   delete storybookWebpackConfig.optimization;
-  delete storybookWebpackConfig.devtool;
+  storybookWebpackConfig.devtool = false;
   storybookWebpackConfig.performance = false;
+  storybookWebpackConfig.profile = debug;
   storybookWebpackConfig.mode = 'development';
   storybookWebpackConfig.target = 'node';
   storybookWebpackConfig.output = {
@@ -111,6 +110,7 @@ export default async function compile(config: Config, { debug, ui }: Options): P
     filename: 'main.js',
   };
 
+  // TODO Need to exclude third-party addons
   // NOTE Exclude all addons
   storybookWebpackConfig.entry = Array.isArray(storybookWebpackConfig.entry)
     ? storybookWebpackConfig.entry.filter((entry) => !/@storybook(\/|\\)addon/.test(entry))
@@ -121,7 +121,7 @@ export default async function compile(config: Config, { debug, ui }: Options): P
     storybookWebpackConfig.entry.unshift(path.join(__dirname, 'dummy-hmr'));
 
   // NOTE replace mdx to null loader for now
-  // TODO Use creevey-loader instead
+  // TODO Use mdx plugin from storybook and then apply creevey-loader
   // NOTE Storybook 6.x has a bug with incorrect regexp
   const mdxRegexps = [/\.mdx$/, /\.(stories|story).mdx$/, /\.(stories|story)\.mdx$/].map((x) => x.toString());
   storybookWebpackConfig.module?.rules
@@ -138,12 +138,11 @@ export default async function compile(config: Config, { debug, ui }: Options): P
   };
 
   // NOTE Add creevey-loader to cut off all unnecessary code except stories meta and tests
-  // TODO Apply only for stories and preview.js
   storybookWebpackConfig.module?.rules.unshift({
     enforce: 'pre',
     test: new RegExp(`\\.(${extensions.map((x) => x.slice(1))?.join('|')})$`),
     exclude: /node_modules/,
-    use: { loader: require.resolve('./loader'), options: { debug } },
+    use: { loader: require.resolve('./loader'), options: { debug, storybookDir: config.storybookDir } },
   });
 
   // NOTE Exclude from bundle all modules from node_modules
@@ -170,10 +169,16 @@ export default async function compile(config: Config, { debug, ui }: Options): P
 
   const storybookWebpackCompiler = webpack(storybookWebpackConfig);
   if (ui) {
-    const watcher = storybookWebpackCompiler.watch({}, handleWebpackBuild);
+    const watcher = storybookWebpackCompiler.watch({}, (error: Error, stats: webpack.Stats) => {
+      if (debug) writeFile(path.join(config.reportDir, 'stats.json'), JSON.stringify(stats.toJson(), null, 2), noop);
+      handleWebpackBuild(error, stats);
+    });
 
     subscribeOn('shutdown', () => watcher.close(noop));
   } else {
-    storybookWebpackCompiler.run(handleWebpackBuild);
+    storybookWebpackCompiler.run((error: Error, stats: webpack.Stats) => {
+      if (debug) writeFile(path.join(config.reportDir, 'stats.json'), JSON.stringify(stats.toJson(), null, 2), noop);
+      handleWebpackBuild(error, stats);
+    });
   }
 }

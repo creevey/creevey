@@ -1,24 +1,23 @@
 import { PNG } from 'pngjs';
 import { Context, Test, Suite } from 'mocha';
 import { Builder, By, WebDriver, Origin, Capabilities, WebElement } from 'selenium-webdriver';
-import { Config, BrowserConfig, StoryInput, CreeveyStoryParams, noop, isDefined } from '../../types';
+import { Config, BrowserConfig, StoryInput, CreeveyStoryParams, noop, isDefined, StorybookGlobals } from '../../types';
 import { subscribeOn } from '../messages';
 import { networkInterfaces } from 'os';
-import { runSequence, LOCALHOST_REGEXP } from '../utils';
+import { runSequence, LOCALHOST_REGEXP, isStorybookVersionLessThan } from '../utils';
 import { PageLoadStrategy } from 'selenium-webdriver/lib/capabilities';
+import chalk from 'chalk';
 
 declare global {
   interface Window {
     __CREEVEY_RESTORE_SCROLL__?: () => void;
+    __CREEVEY_UPDATE_GLOBALS__: (globals: StorybookGlobals) => void;
   }
 }
 
 const DOCKER_INTERNAL = 'host.docker.internal';
 
 async function resolveStorybookUrl(storybookUrl: string, checkUrl: (url: string) => Promise<boolean>): Promise<string> {
-  if (!LOCALHOST_REGEXP.test(storybookUrl)) {
-    return storybookUrl;
-  }
   const addresses = [DOCKER_INTERNAL].concat(
     ...Object.values(networkInterfaces())
       .filter(isDefined)
@@ -30,28 +29,39 @@ async function resolveStorybookUrl(storybookUrl: string, checkUrl: (url: string)
       return resolvedUrl;
     }
   }
-  const error = new Error(
-    "Creevey couldn't resolve IP address of storybook URL. \
-    Please specify `storybookUrl` with IP address that accessible from remote browser",
-  );
+  const error = new Error('Please specify `storybookUrl` with IP address that accessible from remote browser');
   error.name = 'ResolveUrlError';
   throw error;
+}
+
+async function openUrlAndWaitForPageSource(
+  browser: WebDriver,
+  url: string,
+  predicate: (source: string) => boolean,
+): Promise<string> {
+  let source = '';
+  await browser.get(url);
+  do {
+    try {
+      source = await browser.getPageSource();
+    } catch (_) {
+      // NOTE: Firefox can raise exception "curContainer.frame.document.documentElement is null"
+    }
+  } while (predicate(source));
+  return source;
 }
 
 function getUrlChecker(browser: WebDriver): (url: string) => Promise<boolean> {
   return async (url: string): Promise<boolean> => {
     try {
-      //  NOTE: Before trying a new url, reset the current one
-      await browser.get('about:blank');
-      await browser.get(`${url.replace(/\/$/, '')}/iframe.html`);
-      let source = '';
-      do {
-        try {
-          source = await browser.getPageSource();
-        } catch (_) {
-          // NOTE: Firefox can raise exception "curContainer.frame.document.documentElement is null"
-        }
-      } while (source.length == 0 || source.includes('<body></body>'));
+      // NOTE: Before trying a new url, reset the current one
+      await openUrlAndWaitForPageSource(browser, 'about:blank', (source: string) => !source.includes('<body></body>'));
+      const source = await openUrlAndWaitForPageSource(
+        browser,
+        url,
+        // NOTE: IE11 can return only `head` without body
+        (source: string) => source.length == 0 || !/<body([^>]*>).+<\/body>/s.test(source),
+      );
       // NOTE: This is the most optimal way to check if we in storybook or not
       // We don't use any page load strategies except `NONE`
       // because other add significant delay and some of them don't work in earlier chrome versions
@@ -273,7 +283,8 @@ async function takeScreenshot(
 
     screenshot = isFitIntoViewport
       ? await browser.findElement(By.css(captureElement)).takeScreenshot()
-      : await takeCompositeScreenshot(browser, windowRect, elementRect);
+      : // TODO pointer-events: none, need to research
+        await takeCompositeScreenshot(browser, windowRect, elementRect);
   }
 
   await removeIgnoreStyles(browser, ignoreStyles);
@@ -298,16 +309,58 @@ async function selectStory(browser: WebDriver, storyId: string, kind: string, st
   if (errorMessage) throw new Error(errorMessage);
 }
 
+export async function updateStorybookGlobals(browser: WebDriver, globals: StorybookGlobals): Promise<void> {
+  if (isStorybookVersionLessThan(6)) {
+    console.log(
+      chalk`[{yellow WARN}{gray :${process.pid}}] Globals are not supported by Storybook versions less than 6`,
+    );
+    return;
+  }
+  await browser.executeScript(function (globals: StorybookGlobals) {
+    window.__CREEVEY_UPDATE_GLOBALS__(globals);
+  }, globals);
+}
+
+function appendIframePath(url: string): string {
+  return `${url.replace(/\/$/, '')}/iframe.html`;
+}
+
+async function openStorybookPage(
+  browser: WebDriver,
+  storybookUrl: string,
+  resolver?: () => Promise<string>,
+): Promise<void> {
+  if (!LOCALHOST_REGEXP.test(storybookUrl)) {
+    return browser?.get(appendIframePath(storybookUrl));
+  }
+
+  try {
+    if (resolver) {
+      return browser.get(appendIframePath(await resolver()));
+    }
+    // NOTE: getUrlChecker already calls `browser.get` so we don't need another one
+    return void (await resolveStorybookUrl(appendIframePath(storybookUrl), getUrlChecker(browser)));
+  } catch (error) {
+    console.log(
+      chalk`[{yellow WARN}{grey :${process.pid}}]`,
+      'Failed to resolve storybook URL',
+      error instanceof Error ? error.message : '',
+    );
+    throw error;
+  }
+}
+
 export async function getBrowser(config: Config, browserConfig: BrowserConfig): Promise<WebDriver | null> {
   const {
     gridUrl = config.gridUrl,
     storybookUrl: address = config.storybookUrl,
     limit,
     viewport,
+    _storybookGlobals,
     ...userCapabilities
   } = browserConfig;
   void limit;
-  let realAddress = address;
+  const realAddress = address;
   let browser: WebDriver | null = null;
   let shuttingDown = false;
 
@@ -328,7 +381,7 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
       [
         () => browser?.manage().setTimeouts({ pageLoad: 5000, script: 60000 }),
         () => viewport && browser && resizeViewport(browser, viewport),
-        async () => browser && void (realAddress = await resolveStorybookUrl(realAddress, getUrlChecker(browser))),
+        () => browser && openStorybookPage(browser, realAddress, config.resolveStorybookUrl),
         () => browser && waitForStorybook(browser),
       ],
       () => !shuttingDown,
@@ -339,9 +392,13 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
       return null;
     }
     if (originalError instanceof Error && originalError.name == 'ResolveUrlError') throw originalError;
-    const error = new Error(`Can't load storybook root page by URL ${realAddress}/iframe.html`);
+    const error = new Error(`Can't load storybook root page by URL ${(await browser?.getCurrentUrl()) ?? realAddress}`);
     if (originalError instanceof Error) error.stack = originalError.stack;
     throw error;
+  }
+
+  if (_storybookGlobals) {
+    await updateStorybookGlobals(browser, _storybookGlobals);
   }
 
   return browser;

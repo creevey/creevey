@@ -1,0 +1,55 @@
+{
+  "c8b121eda917de521e25cf4c532d053f48ec138f": {
+    "id": "c8b121eda917de521e25cf4c532d053f48ec138f",
+    "skip": false,
+    "browser": "chrome",
+    "storyPath": [
+      "KindB",
+      "StoryB"
+    ],
+    "storyId": "kindb--storyb",
+    "story": {
+      "id": "kindb--storyb",
+      "kind": "KindB",
+      "name": "StoryB",
+      "story": "StoryB",
+      "parameters": {
+        "fileName": "./stories/KindA.stories.jsx",
+        "creevey": {
+          "captureElement": "root"
+        },
+        "options": {},
+        "docs": {},
+        "framework": "creevey"
+      }
+    },
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+  },
+  "6885b5f9a78751992b8e87e54ff1a72621e897fd": {
+    "id": "6885b5f9a78751992b8e87e54ff1a72621e897fd",
+    "skip": false,
+    "browser": "chrome",
+    "storyPath": [
+      "KindA",
+      "Story A"
+    ],
+    "storyId": "kinda--story-a",
+    "story": {
+      "id": "kinda--story-a",
+      "kind": "KindA",
+      "name": "Story A",
+      "story": "Story A",
+      "parameters": {
+        "fileName": "./stories/KindA.stories.jsx",
+        "creevey": {
+          "captureElement": "root"
+        },
+        "options": {},
+        "docs": {},
+        "framework": "creevey",
+        "__id": "kinda--story-a"
+      }
+    },
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+  }
+}

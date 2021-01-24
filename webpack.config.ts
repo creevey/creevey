@@ -1,5 +1,4 @@
 import path from 'path';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { Configuration } from 'webpack';
 
 const config: Configuration = {
@@ -26,7 +25,6 @@ const config: Configuration = {
   resolve: {
     extensions: ['.tsx', '.ts', '.jsx', '.js'],
   },
-  plugins: [new HtmlWebpackPlugin({ template: './src/client/web/index.html' })],
   devServer: {
     port: 8000,
     proxy: {

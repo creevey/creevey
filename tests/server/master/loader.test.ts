@@ -2,7 +2,42 @@ import fs from 'fs';
 import path from 'path';
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
-import loader from '../../../src/server/master/loader';
+import loader, { FileType } from '../../../src/server/master/loader';
+
+const testsToFileTypes: Partial<Record<string, FileType>> = {
+  addDecorator: FileType.Preview,
+  addParameters: FileType.Preview,
+  'crucial-refs': FileType.Story,
+  'csf-as-expression': FileType.Story,
+  'csf-component': FileType.Story,
+  'csf-custom-params': FileType.Story,
+  'csf-decorators': FileType.Story,
+  'csf-duplicate-assigns': FileType.Story,
+  'csf-function': FileType.Story,
+  'csf-import-tests': FileType.Story,
+  'csf-kind-as': FileType.Story,
+  'csf-kind-props-assign': FileType.Story,
+  'csf-multiple-decls': FileType.Story,
+  'csf-side-effects': FileType.Story,
+  'csf-simple': FileType.Story,
+  'csf-storybook-v6': FileType.Story,
+  'csf-tests': FileType.Story,
+  'csf-var-kind': FileType.Story,
+  'csf-var-tests': FileType.Story,
+  destructuring: FileType.Story,
+  imports: FileType.Story,
+  'interface-typeof': FileType.Story,
+  'preview-side-effects': FileType.Preview,
+  'preview-v6': FileType.Preview,
+  recursion: FileType.Story,
+  'storiesof-chain': FileType.Story,
+  'storiesof-decorators': FileType.Story,
+  'storiesof-import-tests': FileType.Story,
+  'storiesof-simple': FileType.Story,
+  'storiesof-tests': FileType.Story,
+  'storiesof-var-tests': FileType.Story,
+  'type-declarations': FileType.Story,
+};
 
 describe('loader', () => {
   const fixtures = path.join(__dirname, 'loader.fixtures');
@@ -14,23 +49,23 @@ describe('loader', () => {
 
       return { testName, input, output };
     })
-    .forEach(({ testName, input, output }) => it(testName, () => expect(loader(input)).to.equal(output)));
+    .forEach(({ testName, input, output }) =>
+      it(testName, () => {
+        process.env.CREEVEY_LOADER_FILE_TYPE = String(testsToFileTypes[testName] ?? FileType.Invalid);
+        expect(loader(input)).to.equal(output);
+      }),
+    );
 });
 
-// TODO Can't use decorators and decorators-legacy plugins in same time
 // TODO Write more tests
 /*
-- Syntax plugins
-  - class properties
-  - decorators
-  x Typescript
-
 - CSF
   x with non-creevey params (options to include/exclude)
   - with non-story exports
-  - function declaration story (export function Text() {})
+  x function declaration story (export function Text() {})
   - function expression (export const Text = TextButton)
-  - with reexport (export Text from './TextButton')
+  - with all reexport (export * from './TextButton')
+  - with default reexport (export Text from './TextButton')
   - with export specifiers (export { Button, Input })
   x with multiple export declarations (export const Text = () => {}, Input = () => {})
   - declaration with destructuring (export const { Text } = stories)
@@ -38,6 +73,7 @@ describe('loader', () => {
   x default export without declaration (const Kind = {}; export default Kind;)
   x story args for 6.x
   x kind with `as` type cast (export default {} as Meta)
+  - ts `as` expression (const Kind = {} as Meta)
 
 - StoriesOf
   - story decorator + params
