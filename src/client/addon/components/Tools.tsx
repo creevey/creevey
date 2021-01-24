@@ -4,7 +4,7 @@ import { ForwardIcon, NextIcon } from './Icons';
 import { stringify } from 'qs';
 import { styled } from '@storybook/theming';
 import { isDefined, TestData } from '../../../types';
-import { getTestPath } from '../../shared/helpers';
+import { getTestPath, useForceUpdate } from '../../shared/helpers';
 import { CreeveyManager } from '../Manager';
 
 interface ToolsProps {
@@ -27,15 +27,15 @@ type ButtonType = 'RunAll' | 'RunStoryTests' | 'RunTest';
 export const Tools = ({ manager }: ToolsProps): JSX.Element | null => {
   const [buttonClicked, setButtonClicked] = useState<ButtonType | null>();
   const [isRunning, setRunning] = useState(manager.status.isRunning);
-  const [, setTestId] = useState(manager.selectedTestId);
+  const forceUpdate = useForceUpdate();
   const test: TestData | undefined = manager.getCurrentTest();
 
   useEffect(() => {
-    const unsubscribe = manager.onChangeTest((testId: string) => {
-      setTestId(testId);
+    const unsubscribe = manager.onChangeTest(() => {
+      forceUpdate();
     });
     return unsubscribe;
-  }, [manager]);
+  }, [manager, forceUpdate]);
 
   useEffect(() => {
     const unsubscribe = manager.onUpdateStatus(({ isRunning }) => {

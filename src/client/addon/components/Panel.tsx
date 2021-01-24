@@ -6,7 +6,7 @@ import { styled } from '@storybook/theming';
 import { getTestPath } from '../../shared/helpers';
 import TestSelect from './TestSelect';
 interface PanelProps {
-  statuses: TestData[];
+  tests: TestData[];
   selectedTestId: string;
   onChangeTest: (testId: string) => void;
   onImageApprove: (id: string, retry: number, image: string) => void;
@@ -22,16 +22,16 @@ const TestSelectContainer = styled.div(({ theme }) => ({
   border: `1px solid ${theme.appBorderColor}`,
 }));
 
-export const Panel = ({ statuses, selectedTestId, onChangeTest, onImageApprove }: PanelProps): JSX.Element => {
-  const result = statuses.find((x) => x.id === selectedTestId);
+export const Panel = ({ tests, selectedTestId, onChangeTest, onImageApprove }: PanelProps): JSX.Element => {
+  const result = tests.find((x) => x.id === selectedTestId);
 
   const isRunning = result?.status === 'running';
 
   return (
     <div>
-      {statuses.length > 1 && (
+      {tests.length > 1 && (
         <TestSelectContainer>
-          <TestSelect tests={statuses} selectedTestId={selectedTestId} onChangeTest={onChangeTest} />
+          <TestSelect tests={tests} selectedTestId={selectedTestId} onChangeTest={onChangeTest} />
         </TestSelectContainer>
       )}
       {isRunning && <Loader />}

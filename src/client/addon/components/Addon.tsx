@@ -10,15 +10,15 @@ interface AddonProps {
   manager: CreeveyManager;
 }
 export const Addon = ({ active, browser, manager }: AddonProps): JSX.Element | null => {
-  const [status, setStatus] = useState<TestData[]>([]);
+  const [tests, setTests] = useState<TestData[]>([]);
 
   const [selectedTestId, setSelectedTestId] = useState(manager.selectedTestId);
 
   useEffect(() => {
     if (active) {
       manager.setActiveBrowser(browser);
-      const browserStatus = manager.getTestsByStoryIdAndBrowser();
-      setStatus(browserStatus);
+      const browserTests = manager.getTestsByStoryIdAndBrowser();
+      setTests(browserTests);
     }
   }, [active, browser, manager]);
 
@@ -26,22 +26,22 @@ export const Addon = ({ active, browser, manager }: AddonProps): JSX.Element | n
     const unsubscribe = manager.onChangeTest((testId) => {
       setSelectedTestId(testId);
       const status = manager.getTestsByStoryIdAndBrowser();
-      setStatus(status);
+      setTests(status);
     });
     return unsubscribe;
   }, [manager]);
 
   useEffect(() => {
     const unsubscribe = manager.onUpdateStatus(() => {
-      setStatus(manager.getTestsByStoryIdAndBrowser());
+      setTests(manager.getTestsByStoryIdAndBrowser());
     });
     return unsubscribe;
   }, [manager, browser]);
 
   return active ? (
-    status.length ? (
+    tests.length ? (
       <Panel
-        statuses={status}
+        tests={tests}
         selectedTestId={selectedTestId}
         onChangeTest={manager.setSelectedTestId}
         onImageApprove={manager.onImageApprove}
