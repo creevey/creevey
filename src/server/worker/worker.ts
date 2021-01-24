@@ -8,7 +8,7 @@ import { Key } from 'selenium-webdriver';
 import { Config, Images, Options, BrowserConfig, TestMessage, isImageError } from '../../types';
 import { subscribeOn, emitTestMessage, emitWorkerMessage } from '../messages';
 import chaiImage from './chai-image';
-import { getBrowser, switchStory, cleanUp } from '../selenium';
+import { getBrowser, switchStory } from '../selenium';
 import { CreeveyReporter, TeamcityReporter } from './reporter';
 import { addTestsFromStories } from './helpers';
 
@@ -164,7 +164,6 @@ export default async function worker(config: Config, options: Options & { browse
     this.testScope = testScope;
   });
   mocha.suite.beforeEach(switchStory);
-  mocha.suite.afterEach(cleanUp);
 
   subscribeOn('test', (message: TestMessage) => {
     if (message.type != 'start') return;

@@ -1,6 +1,6 @@
 import { PNG } from 'pngjs';
 import { Context, Test, Suite } from 'mocha';
-import { Builder, By, WebDriver, Origin, Capabilities } from 'selenium-webdriver';
+import { Builder, By, WebDriver, Origin, Capabilities, WebElement } from 'selenium-webdriver';
 import { Config, BrowserConfig, StoryInput, CreeveyStoryParams, noop, isDefined } from '../../types';
 import { subscribeOn } from '../messages';
 import { networkInterfaces } from 'os';
@@ -237,34 +237,48 @@ async function takeCompositeScreenshot(
   return PNG.sync.write(compositeImage).toString('base64');
 }
 
-async function takeScreenshot(browser: WebDriver, captureElement?: string | null): Promise<string> {
-  if (!captureElement) return browser.takeScreenshot();
+async function takeScreenshot(
+  browser: WebDriver,
+  captureElement?: string | null,
+  ignoreElements?: string | string[] | null,
+): Promise<string> {
+  let screenshot: string;
 
-  const { elementRect, windowRect } = await browser.executeScript<{
-    elementRect?: DOMRect;
-    windowRect: { width: number; height: number; x: number; y: number };
-  }>(function (selector: string) {
-    window.scrollTo(0, 0);
-    return {
-      elementRect: document.querySelector(selector)?.getBoundingClientRect(),
-      windowRect: {
-        width: window.innerWidth,
-        height: window.innerHeight,
-        x: Math.round(window.scrollX),
-        y: Math.round(window.scrollY),
-      },
-    };
-  }, captureElement);
+  const ignoreStyles = await insertIgnoreStyles(browser, ignoreElements);
 
-  if (!elementRect) throw new Error(`Couldn't find element with selector: '${captureElement}'`);
+  if (!captureElement) {
+    screenshot = await browser.takeScreenshot();
+  } else {
+    const { elementRect, windowRect } = await browser.executeScript<{
+      elementRect?: DOMRect;
+      windowRect: { width: number; height: number; x: number; y: number };
+    }>(function (selector: string) {
+      window.scrollTo(0, 0);
+      return {
+        elementRect: document.querySelector(selector)?.getBoundingClientRect(),
+        windowRect: {
+          width: window.innerWidth,
+          height: window.innerHeight,
+          x: Math.round(window.scrollX),
+          y: Math.round(window.scrollY),
+        },
+      };
+    }, captureElement);
 
-  const isFitIntoViewport =
-    elementRect.width + elementRect.left <= windowRect.width &&
-    elementRect.height + elementRect.top <= windowRect.height;
+    if (!elementRect) throw new Error(`Couldn't find element with selector: '${captureElement}'`);
 
-  if (isFitIntoViewport) return browser.findElement(By.css(captureElement)).takeScreenshot();
+    const isFitIntoViewport =
+      elementRect.width + elementRect.left <= windowRect.width &&
+      elementRect.height + elementRect.top <= windowRect.height;
 
-  return takeCompositeScreenshot(browser, windowRect, elementRect);
+    screenshot = isFitIntoViewport
+      ? await browser.findElement(By.css(captureElement)).takeScreenshot()
+      : await takeCompositeScreenshot(browser, windowRect, elementRect);
+  }
+
+  await removeIgnoreStyles(browser, ignoreStyles);
+
+  return screenshot;
 }
 
 async function selectStory(browser: WebDriver, storyId: string, kind: string, story: string): Promise<void> {
@@ -348,6 +362,7 @@ export async function switchStory(this: Context): Promise<void> {
 
   if (!story) throw new Error(`Current test '${this.testScope.join('/')}' context doesn't have 'story' field`);
 
+  await resetMousePosition(this.browser);
   await selectStory(this.browser, story.id, story.kind, story.name);
 
   const { captureElement = '#root', ignoreElements } = (story.parameters.creevey ?? {}) as CreeveyStoryParams;
@@ -358,63 +373,47 @@ export async function switchStory(this: Context): Promise<void> {
       configurable: true,
       get: () => this.browser.findElement(By.css(captureElement)),
     });
+  else Reflect.deleteProperty(this, 'captureElement');
 
-  this.takeScreenshot = () => takeScreenshot(this.browser, captureElement);
-
-  if (ignoreElements) {
-    await insertIgnoreStyles(this.browser, ignoreElements);
-  }
+  this.takeScreenshot = () => takeScreenshot(this.browser, captureElement, ignoreElements);
 
   this.testScope.reverse();
 }
 
-const IGNORE_STYLES_ID = 'creevey-ignore-styles';
-
-async function insertIgnoreStyles(browser: WebDriver, ignoreElements: string | string[] | null): Promise<void> {
+async function insertIgnoreStyles(
+  browser: WebDriver,
+  ignoreElements?: string | string[] | null,
+): Promise<WebElement | null> {
   const ignoreSelectors = Array.prototype.concat(ignoreElements).filter(Boolean);
-  if (ignoreSelectors.length) {
-    await browser.executeScript(
-      function (ignoreSelectors: string[], IGNORE_STYLES_ID: string) {
-        const stylesElement = document.createElement('style');
-        stylesElement.setAttribute('type', 'text/css');
-        stylesElement.setAttribute('id', IGNORE_STYLES_ID);
-        document.head.appendChild(stylesElement);
-        ignoreSelectors.forEach((selector) => {
-          stylesElement.innerHTML += `
-          ${selector} {
-            background: #000 !important;
-            box-shadow: none !important;
-            text-shadow: none !important;
-            outline: 0 !important;
-            color: rgba(0,0,0,0) !important;
-          }
-          ${selector} * {
-            visibility: hidden;
-          }
-        `;
-        });
-      },
-      ignoreSelectors,
-      IGNORE_STYLES_ID,
-    );
-  }
+
+  if (!ignoreSelectors.length) return null;
+
+  return await browser.executeScript(function (ignoreSelectors: string[]) {
+    const stylesElement = document.createElement('style');
+    stylesElement.setAttribute('type', 'text/css');
+    document.head.appendChild(stylesElement);
+    ignoreSelectors.forEach((selector) => {
+      stylesElement.innerHTML += `
+        ${selector} {
+          background: #000 !important;
+          box-shadow: none !important;
+          text-shadow: none !important;
+          outline: 0 !important;
+          color: rgba(0,0,0,0) !important;
+        }
+        ${selector} * {
+          visibility: hidden;
+        }
+      `;
+    });
+    return stylesElement;
+  }, ignoreSelectors);
 }
 
-async function removeIgnoreStyles(browser: WebDriver): Promise<void> {
-  await browser.executeScript(function (IGNORE_STYLES_ID: string) {
-    const element = document.getElementById(IGNORE_STYLES_ID);
-    element?.parentNode?.removeChild(element);
-  }, IGNORE_STYLES_ID);
-}
-
-export async function cleanUp(this: Context): Promise<void> {
-  const story = this.currentTest?.ctx?.story as StoryInput;
-  const { ignoreElements } = (story.parameters.creevey ?? {}) as CreeveyStoryParams;
-
-  await resetMousePosition(this.browser);
-  Reflect.deleteProperty(this, 'captureElement');
-
-  if (ignoreElements) {
-    await removeIgnoreStyles(this.browser);
+async function removeIgnoreStyles(browser: WebDriver, ignoreStyles: WebElement | null): Promise<void> {
+  if (ignoreStyles) {
+    await browser.executeScript(function (ignoreStyles: HTMLStyleElement) {
+      ignoreStyles.parentNode?.removeChild(ignoreStyles);
+    }, ignoreStyles);
   }
 }
