@@ -12,6 +12,8 @@ declare global {
   interface Window {
     __CREEVEY_RESTORE_SCROLL__?: () => void;
     __CREEVEY_UPDATE_GLOBALS__: (globals: StorybookGlobals) => void;
+    __CREEVEY_INSERT_IGNORE_STYLES__: (ignoreElements: string[]) => HTMLStyleElement;
+    __CREEVEY_REMOVE_IGNORE_STYLES__: (ignoreStyles: HTMLStyleElement) => void;
   }
 }
 
@@ -442,35 +444,17 @@ async function insertIgnoreStyles(
   ignoreElements?: string | string[] | null,
 ): Promise<WebElement | null> {
   const ignoreSelectors = Array.prototype.concat(ignoreElements).filter(Boolean);
-
   if (!ignoreSelectors.length) return null;
 
   return await browser.executeScript(function (ignoreSelectors: string[]) {
-    const stylesElement = document.createElement('style');
-    stylesElement.setAttribute('type', 'text/css');
-    document.head.appendChild(stylesElement);
-    ignoreSelectors.forEach((selector) => {
-      stylesElement.innerHTML += `
-        ${selector} {
-          background: #000 !important;
-          box-shadow: none !important;
-          text-shadow: none !important;
-          outline: 0 !important;
-          color: rgba(0,0,0,0) !important;
-        }
-        ${selector} * {
-          visibility: hidden;
-        }
-      `;
-    });
-    return stylesElement;
+    return window.__CREEVEY_INSERT_IGNORE_STYLES__(ignoreSelectors);
   }, ignoreSelectors);
 }
 
 async function removeIgnoreStyles(browser: WebDriver, ignoreStyles: WebElement | null): Promise<void> {
   if (ignoreStyles) {
     await browser.executeScript(function (ignoreStyles: HTMLStyleElement) {
-      ignoreStyles.parentNode?.removeChild(ignoreStyles);
+      window.__CREEVEY_REMOVE_IGNORE_STYLES__(ignoreStyles);
     }, ignoreStyles);
   }
 }
