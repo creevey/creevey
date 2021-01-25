@@ -10,7 +10,7 @@
     "screenshot-tests",
     "screenshots"
   ],
-  "version": "0.7.21",
+  "version": "0.7.22",
   "bin": {
     "creevey": "./lib/cli.js"
   },
