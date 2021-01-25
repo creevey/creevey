@@ -291,7 +291,7 @@
   - [x] Add link `go to runner` in addon UI
   - [x] Show side-by-side diff vertically or horizontally depends on aspect
   - [x] Add resolveStorybookUrl to config
-  - [ ] Support teamcity screenshots diff UI https://www.jetbrains.com/help/teamcity/including-third-party-reports-in-the-build-results.html
+  - [x] Support teamcity screenshots diff UI https://www.jetbrains.com/help/teamcity/including-third-party-reports-in-the-build-results.html
   - [x] Save webpack stats.json for debug
   - [ ] Add fallback option, load tests from browser (hmr and tests are disabled in this case)
     - [ ] Send PR to Storybook to allow use HMR for stories

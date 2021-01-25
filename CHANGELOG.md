@@ -1,3 +1,10 @@
+## [0.7.22](https://github.com/wKich/creevey/compare/v0.7.21...v0.7.22) (2021-01-25)
+
+### Bug Fixes
+
+- run standalone browsers and selenoid ([ba85fdc](https://github.com/wKich/creevey/commit/ba85fdcd7f5e2ad0e6139cb3fe84e969dacb2b4c))
+- selenium url path for standalone run ([da45662](https://github.com/wKich/creevey/commit/da45662aff604bacb02bd949ece5e406888cbd4d))
+
 ## [0.7.21](https://github.com/wKich/creevey/compare/v0.7.20...v0.7.21) (2021-01-22)
 
 ### Bug Fixes
