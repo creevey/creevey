@@ -5,9 +5,9 @@ import { Config, BrowserConfig } from '../../types';
 import { downloadBinary, getCreeveyCache } from '../utils';
 import { pullImages, runImage } from '../docker';
 import { Octokit } from '@octokit/core';
-import { execFile } from 'child_process';
 import { subscribeOn } from '../messages';
 import { isWorker } from 'cluster';
+import { chmod, exec } from 'shelljs';
 
 const mkdirAsync = promisify(mkdir);
 const writeFileAsync = promisify(writeFile);
@@ -85,7 +85,14 @@ export async function startSelenoidStandalone(config: Config, debug: boolean): P
     await downloadSelenoidBinary(binaryPath);
   }
 
-  const selenoidProcess = execFile(binaryPath, ['-conf', './browsers.json', '-disable-docker'], {
+  try {
+    if (process.platform != 'win32') chmod('+x', binaryPath);
+  } catch (_) {
+    /* noop */
+  }
+
+  const selenoidProcess = exec(`${binaryPath} -conf ./browsers.json -disable-docker`, {
+    async: true,
     cwd: selenoidConfigDir,
   });
 
