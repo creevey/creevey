@@ -59,6 +59,11 @@ function createCreeveyTest(
 function storyTestFabric(delay?: number, testFn?: CreeveyTestFunction) {
   return async function storyTest(this: Context) {
     delay ? await new Promise((resolve) => setTimeout(resolve, delay)) : void 0;
-    await (testFn?.call(this) ?? this.expect(await this.takeScreenshot()).to.matchImage());
+
+    if (typeof testFn !== 'function') {
+      return await this.expect(await this.takeScreenshot()).to.matchImage();
+    }
+
+    await testFn.call(this);
   };
 }

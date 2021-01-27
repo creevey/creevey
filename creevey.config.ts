@@ -22,6 +22,7 @@ const config: CreeveyConfig = {
       webdriverCommand: ['/usr/bin/geckodriver'],
     },
   },
+  storiesProvider: 'dedicatedStorybook',
 };
 
 export default config;

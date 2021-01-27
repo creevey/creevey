@@ -1,6 +1,15 @@
 import { StoriesProviderFactory } from '../../types';
-import { createLocalWebpackStoriesProvider } from './localWebpackStoriesProvider';
+import { createDedicatedStorybookStoriesProvider } from './dedicatedStorybookStoriesProvider';
+import { createIntegratedStorybookStoriesProvider } from './integratedStorybookStoriesProvider';
 
 export const storiesProviderFactory: StoriesProviderFactory = (options) => {
-  return createLocalWebpackStoriesProvider(options);
+  if (options.config.storiesProvider === 'integratedStorybook') {
+    return createIntegratedStorybookStoriesProvider(options);
+  }
+
+  if (options.config.storiesProvider === 'dedicatedStorybook') {
+    return createDedicatedStorybookStoriesProvider(options);
+  }
+
+  return options.config.storiesProvider(options);
 };

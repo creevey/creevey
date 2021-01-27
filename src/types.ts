@@ -191,6 +191,8 @@ export interface Config {
    * Define auth config for private docker registry
    */
   dockerAuth?: DockerAuth;
+
+  storiesProvider: 'integratedStorybook' | 'dedicatedStorybook' | StoriesProviderFactory;
 }
 
 export type CreeveyConfig = Partial<Config>;
