@@ -32,23 +32,21 @@ function getRealIp(): Promise<string> {
 }
 
 async function resetMousePosition(browser: WebDriver): Promise<void> {
-  const isChrome = (await browser.getCapabilities()).get('browserName') == 'chrome';
-  const { top, left, width, height } = await browser.executeScript(function() {
-    /* eslint-disable no-var */
+  const browserName = (await browser.getCapabilities()).getBrowserName();
+  const [browserVersion] =
+    (await browser.getCapabilities()).getBrowserVersion()?.split('.') ??
+    ((await browser.getCapabilities()).get('version') as string | undefined)?.split('.') ??
+    [];
+  const { top, left, width, height } = await browser.executeScript<DOMRect>(function() {
     // NOTE On storybook >= 4.x already reset scroll
+    // TODO Check this on new storybook
     window.scrollTo(0, 0);
 
-    var bodyRect = document.body.getBoundingClientRect();
-    return {
-      top: bodyRect.top,
-      left: bodyRect.left,
-      width: bodyRect.width,
-      height: bodyRect.height,
-    };
-    /* eslint-enable no-var */
+    return document.body.getBoundingClientRect();
   });
 
-  if (isChrome) {
+  // NOTE Reset mouse position to support keweb selenium grid browser versions
+  if (browserName == 'chrome' && browserVersion == '70') {
     // NOTE Bridge mode not support move mouse relative viewport
     await browser
       .actions({ bridge: true })
@@ -58,12 +56,17 @@ async function resetMousePosition(browser: WebDriver): Promise<void> {
         y: Math.ceil((-1 * height) / 2) - top,
       })
       .perform();
-  } else {
+  } else if (browserName == 'firefox' && browserVersion == '61') {
     // NOTE Firefox for some reason moving by 0 x 0 move cursor in bottom left corner :sad:
-    // NOTE IE don't emit move events until force window focus or connect by RDP on virtual machine
     await browser
       .actions()
       .move({ origin: Origin.VIEWPORT, x: 0, y: 1 })
+      .perform();
+  } else {
+    // NOTE IE don't emit move events until force window focus or connect by RDP on virtual machine
+    await browser
+      .actions()
+      .move({ origin: Origin.VIEWPORT, x: 0, y: 0 })
       .perform();
   }
 }
