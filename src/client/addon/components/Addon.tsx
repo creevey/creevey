@@ -17,7 +17,7 @@ export const Addon = ({ active, browser, manager }: AddonProps): JSX.Element | n
   useEffect(() => {
     if (active) {
       manager.setActiveBrowser(browser);
-      const browserTests = manager.getTestsByStoryIdAndBrowser();
+      const browserTests = manager.getTestsByStoryIdAndBrowser(manager.activeBrowser);
       setTests(browserTests);
     }
   }, [active, browser, manager]);
@@ -25,7 +25,7 @@ export const Addon = ({ active, browser, manager }: AddonProps): JSX.Element | n
   useEffect(() => {
     const unsubscribe = manager.onChangeTest((testId) => {
       setSelectedTestId(testId);
-      const status = manager.getTestsByStoryIdAndBrowser();
+      const status = manager.getTestsByStoryIdAndBrowser(manager.activeBrowser);
       setTests(status);
     });
     return unsubscribe;
@@ -33,7 +33,7 @@ export const Addon = ({ active, browser, manager }: AddonProps): JSX.Element | n
 
   useEffect(() => {
     const unsubscribe = manager.onUpdateStatus(() => {
-      setTests(manager.getTestsByStoryIdAndBrowser());
+      setTests(manager.getTestsByStoryIdAndBrowser(manager.activeBrowser));
     });
     return unsubscribe;
   }, [manager, browser]);

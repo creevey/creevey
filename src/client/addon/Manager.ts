@@ -92,7 +92,7 @@ export class CreeveyManager {
     if (this.storyId === '') void this.addStatusesToSideBar();
     if (this.storyId !== storyId) {
       this.storyId = storyId;
-      this.selectedTestId = this.getTestsByStoryIdAndBrowser()[0]?.id ?? '';
+      this.selectedTestId = this.getTestsByStoryIdAndBrowser(this.activeBrowser)[0]?.id ?? '';
       this.setPanelsTitle();
       this.changeTestListeners.forEach((x) => x(this.selectedTestId));
     }
@@ -130,7 +130,7 @@ export class CreeveyManager {
 
   setActiveBrowser = (browser: string): void => {
     this.activeBrowser = browser;
-    this.selectedTestId = this.getTestsByStoryIdAndBrowser()[0]?.id ?? '';
+    this.selectedTestId = this.getTestsByStoryIdAndBrowser(this.activeBrowser)[0]?.id ?? '';
     this.changeTestListeners.forEach((x) => x(this.selectedTestId));
   };
 
@@ -157,14 +157,14 @@ export class CreeveyManager {
     }, []);
   };
 
-  getTestsByStoryIdAndBrowser = (): TestData[] => {
+  getTestsByStoryIdAndBrowser = (browser: string): TestData[] => {
     return Object.values(this.status.tests)
-      .filter(isDefined)
-      .filter((x) => x.browser === this.activeBrowser && x.storyId === this.storyId);
+      .filter((x) => x?.browser === browser && x.storyId === this.storyId)
+      .filter(isDefined);
   };
 
   getTabTitle = (browser: string): string => {
-    const tests = Object.values(this.status.tests).filter((x) => x?.browser === browser && x.storyId === this.storyId);
+    const tests = this.getTestsByStoryIdAndBrowser(browser);
     const browserStatus = tests
       .map((x) => x && x.status)
       .reduce((oldStatus, newStatus) => calcStatus(oldStatus, newStatus), undefined);
