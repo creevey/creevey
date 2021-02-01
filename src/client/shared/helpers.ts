@@ -399,3 +399,9 @@ export function getTestPathFromSearch(): string[] {
   }
   return [];
 }
+
+export function useForceUpdate(): () => void {
+  const [, update] = useState({});
+
+  return useCallback(() => update({}), []);
+}
