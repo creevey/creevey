@@ -1,3 +1,9 @@
+## [0.7.23](https://github.com/wKich/creevey/compare/v0.7.22...v0.7.23) (2021-01-25)
+
+### Bug Fixes
+
+- 🐛 use shelljs to run selenoid binary ([3306071](https://github.com/wKich/creevey/commit/3306071d2840b6f8fde442880457085f6992915a))
+
 ## [0.7.22](https://github.com/wKich/creevey/compare/v0.7.21...v0.7.22) (2021-01-25)
 
 ### Bug Fixes
