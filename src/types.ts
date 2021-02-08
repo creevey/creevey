@@ -149,6 +149,12 @@ export interface Config {
    */
   resolveStorybookUrl?: () => Promise<string>;
   /**
+   * Absolute path to built storybook.
+   * This option ignores `storybookUrl`
+   * @default path.join(process.cwd(), './storybook-static')
+   */
+  storybookStaticDir: string;
+  /**
    * Absolute path to directory with reference images
    * @default path.join(process.cwd(), './images')
    */

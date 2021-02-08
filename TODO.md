@@ -267,9 +267,8 @@
   - [x] Fix height in addon
   - [x] ~~Fix firefox 61 in skbkontur selenium grid~~
   - [x] creevey-loader `top-level property access`
-  - [ ] wait-on doesn't work properly
+  - [x] ~~wait-on doesn't work properly~~ (Storybook dev server always return the page)
   - [ ] Don't pull docker local images
-  - [ ] ERR! Runtime error! Check your browser console. ERR! ResizeObserver loop limit exceeded (in addon)
 - [ ] Change viewport height to 786 in config
 - [x] Start server early and wait for build
 - [x] Setup TeamCity CI
@@ -320,6 +319,7 @@
     - [ ] Gatsby
     - [ ] Next.js
 - [ ] Bugs
+  - [ ] ERR! Runtime error! Check your browser console. ERR! ResizeObserver loop limit exceeded (in addon)
   - [ ] webpack config dll references (disable dll plugin)
   - [ ] Scrollbar is not visible on dark theme in ResultPage
   - [ ] Don't have hot reload on preview config storybook
