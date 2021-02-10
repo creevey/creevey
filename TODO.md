@@ -320,6 +320,7 @@
     - [ ] Gatsby
     - [ ] Next.js
 - [ ] Bugs
+  - [ ] Remove support ts config file version
   - [ ] webpack config dll references (disable dll plugin)
   - [ ] Scrollbar is not visible on dark theme in ResultPage
   - [ ] Don't have hot reload on preview config storybook
