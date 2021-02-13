@@ -36,4 +36,4 @@ ui:
       - report/
   script:
     - yarn start:storybook &
-    - yarn creevey
+    - yarn creevey --config .creevey/gitlab.config.ts
