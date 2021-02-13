@@ -26,19 +26,9 @@ unit:
 #   script:
 #     - yarn test:e2e
 
-chrome-ui:
+ui:
   services:
     - selenoid/chrome
-  artifacts:
-    when: always
-    paths:
-      - report/
-  script:
-    - yarn start:storybook &
-    - yarn creevey --config .creevey/chrome.config.ts
-
-firefox-ui:
-  services:
     - selenoid/firefox
   artifacts:
     when: always
@@ -46,4 +36,4 @@ firefox-ui:
       - report/
   script:
     - yarn start:storybook &
-    - yarn creevey --config .creevey/firefox.config.ts
+    - yarn creevey
