@@ -381,7 +381,7 @@
   - [ ] Allow defined params for knobs and args to capture story with different states
   - [ ] Allow set viewport sizes for story (use width x height as postfix for browser name in UI)
   - [ ] Add fuzzy search and highlight
-  - [ ] Allow to ignore elements in capturing screenshot
+  - [x] Allow to ignore elements in capturing screenshot
 
 ## Second priority (v0.9)
 
