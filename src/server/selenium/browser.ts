@@ -258,38 +258,40 @@ async function takeScreenshot(
 
   const ignoreStyles = await insertIgnoreStyles(browser, ignoreElements);
 
-  if (!captureElement) {
-    screenshot = await browser.takeScreenshot();
-  } else {
-    const { elementRect, windowRect } = await browser.executeScript<{
-      elementRect?: DOMRect;
-      windowRect: { width: number; height: number; x: number; y: number };
-    }>(function (selector: string) {
-      window.scrollTo(0, 0);
-      return {
-        elementRect: document.querySelector(selector)?.getBoundingClientRect(),
-        windowRect: {
-          width: window.innerWidth,
-          height: window.innerHeight,
-          x: Math.round(window.scrollX),
-          y: Math.round(window.scrollY),
-        },
-      };
-    }, captureElement);
+  try {
+    if (!captureElement) {
+      screenshot = await browser.takeScreenshot();
+    } else {
+      const { elementRect, windowRect } = await browser.executeScript<{
+        elementRect?: DOMRect;
+        windowRect: { width: number; height: number; x: number; y: number };
+      }>(function (selector: string) {
+        window.scrollTo(0, 0);
+        return {
+          elementRect: document.querySelector(selector)?.getBoundingClientRect(),
+          windowRect: {
+            width: window.innerWidth,
+            height: window.innerHeight,
+            x: Math.round(window.scrollX),
+            y: Math.round(window.scrollY),
+          },
+        };
+      }, captureElement);
 
-    if (!elementRect) throw new Error(`Couldn't find element with selector: '${captureElement}'`);
+      if (!elementRect) throw new Error(`Couldn't find element with selector: '${captureElement}'`);
 
-    const isFitIntoViewport =
-      elementRect.width + elementRect.left <= windowRect.width &&
-      elementRect.height + elementRect.top <= windowRect.height;
+      const isFitIntoViewport =
+        elementRect.width + elementRect.left <= windowRect.width &&
+        elementRect.height + elementRect.top <= windowRect.height;
 
-    screenshot = isFitIntoViewport
-      ? await browser.findElement(By.css(captureElement)).takeScreenshot()
-      : // TODO pointer-events: none, need to research
-        await takeCompositeScreenshot(browser, windowRect, elementRect);
+      screenshot = isFitIntoViewport
+        ? await browser.findElement(By.css(captureElement)).takeScreenshot()
+        : // TODO pointer-events: none, need to research
+          await takeCompositeScreenshot(browser, windowRect, elementRect);
+    }
+  } finally {
+    await removeIgnoreStyles(browser, ignoreStyles);
   }
-
-  await removeIgnoreStyles(browser, ignoreStyles);
 
   return screenshot;
 }
