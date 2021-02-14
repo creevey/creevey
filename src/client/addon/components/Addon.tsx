@@ -1,72 +1,53 @@
-import React, { useState, Fragment, useContext } from 'react';
-import { withCreeveyTests } from '../withCreeveyTests';
+import { Placeholder } from '@storybook/components';
+import React, { useEffect, useState } from 'react';
 import { TestData } from '../../../types';
-import { Loader } from '@storybook/components';
-import { ResultsPage } from '../../shared/components/ResultsPage';
-import { CreeveyContext } from '../CreeveyContext';
-import { styled } from '@storybook/theming';
-import { getTestPath } from '../../shared/helpers';
-import { CreeveyTabs } from './Tabs/Tabs';
-import { Tools } from './Tabs/Tools';
+import { Panel } from './Panel';
+import { CreeveyManager } from '../Manager';
 
-interface PanelProps {
-  statuses: TestData[];
+interface AddonProps {
+  active?: boolean;
+  browser: string;
+  manager: CreeveyManager;
 }
+export const Addon = ({ active, browser, manager }: AddonProps): JSX.Element | null => {
+  const [tests, setTests] = useState<TestData[]>([]);
 
-const Wrapper = styled.div<{ isRunning: boolean }>(({ isRunning }) => ({
-  opacity: isRunning ? 0.5 : 1,
-  height: 'calc(100% - 40px)',
-}));
+  const [selectedTestId, setSelectedTestId] = useState(manager.selectedTestId);
 
-const TabsWrapper = styled.div({
-  '&&': {
-    position: 'sticky',
-    height: 'initial',
-    top: 0,
-    zIndex: 2,
-  },
-});
+  useEffect(() => {
+    if (active) {
+      manager.setActiveBrowser(browser);
+      const browserTests = manager.getTestsByStoryIdAndBrowser(manager.activeBrowser);
+      setTests(browserTests);
+    }
+  }, [active, browser, manager]);
 
-const PanelInternal = ({ statuses }: PanelProps): JSX.Element => {
-  const { onImageApprove } = useContext(CreeveyContext);
-  const [selectedTestId, setSelectedTestId] = useState(statuses[0].id);
+  useEffect(() => {
+    const unsubscribe = manager.onChangeTest((testId) => {
+      setSelectedTestId(testId);
+      const status = manager.getTestsByStoryIdAndBrowser(manager.activeBrowser);
+      setTests(status);
+    });
+    return unsubscribe;
+  }, [manager]);
 
-  const result = statuses.find((x) => x.id === selectedTestId);
+  useEffect(() => {
+    const unsubscribe = manager.onUpdateStatus(() => {
+      setTests(manager.getTestsByStoryIdAndBrowser(manager.activeBrowser));
+    });
+    return unsubscribe;
+  }, [manager, browser]);
 
-  const isRunning = result?.status === 'running';
-
-  const tabs: { [key: string]: TestData[] } = statuses.reduce((buf: { [key: string]: TestData[] }, status) => {
-    if (!buf[status.browser]) buf[status.browser] = [];
-    buf[status.browser].push(status);
-    return buf;
-  }, {});
-
-  return (
-    <Fragment>
-      <TabsWrapper>
-        <CreeveyTabs
-          selectedTestId={selectedTestId}
-          onSelectTest={setSelectedTestId}
-          tabs={tabs}
-          tools={result && <Tools test={result} />}
-        />
-      </TabsWrapper>
-      {isRunning && <Loader />}
-      {result?.results?.length ? (
-        <Wrapper isRunning={isRunning}>
-          <ResultsPage
-            height={'100%'}
-            key={`${result.id}_${result.results?.length ?? 0}`} // TODO
-            id={result.id}
-            path={getTestPath(result)} // TODO Memo?
-            results={result.results}
-            approved={result.approved}
-            onImageApprove={onImageApprove}
-          />
-        </Wrapper>
-      ) : null}
-    </Fragment>
-  );
+  return active ? (
+    tests.length ? (
+      <Panel
+        tests={tests}
+        selectedTestId={selectedTestId}
+        onChangeTest={manager.setSelectedTestId}
+        onImageApprove={manager.onImageApprove}
+      />
+    ) : (
+      <Placeholder>No test results</Placeholder>
+    )
+  ) : null;
 };
-
-export const Panel = withCreeveyTests(PanelInternal);

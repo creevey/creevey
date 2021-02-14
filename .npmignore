@@ -4,6 +4,7 @@
 .vscode
 .eslint*
 .babel*
+.creevey
 .circleci
 .prettier*
 .storybook

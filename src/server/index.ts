@@ -1,6 +1,6 @@
 import cluster from 'cluster';
 import { readConfig, defaultBrowser } from './config';
-import { Options, noop, Config } from '../types';
+import { Options, noop, Config, BrowserConfig } from '../types';
 
 // NOTE: Impure function, mutate config by adding gridUrl prop
 async function startWebdriverServer(config: Config, options: Options): Promise<void> {
@@ -21,7 +21,11 @@ export default async function (options: Options): Promise<void> {
 
   const resolveApi = ui && cluster.isMaster ? (await import('./master/server')).default(config.reportDir, port) : noop;
   // NOTE: We don't need docker nor selenoid for webpack or update options
-  if (!config.gridUrl && !webpack && !update) {
+  if (
+    !(config.gridUrl || (Object.values(config.browsers) as BrowserConfig[]).every(({ gridUrl }) => gridUrl)) &&
+    !webpack &&
+    !update
+  ) {
     await startWebdriverServer(config, options);
   }
 

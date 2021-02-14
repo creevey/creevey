@@ -1,5 +1,5 @@
 import { join } from 'path';
-import { readdirSync, readFileSync } from 'fs';
+import { readdirSync, readFileSync, writeFileSync } from 'fs';
 import { dirSync } from 'tmp';
 import shell, { ExecOptions } from 'shelljs';
 import { describe, it, before } from 'mocha';
@@ -30,6 +30,7 @@ describe('Storybook E2E', function () {
   });
 
   readdirSync(join(__dirname, 'storybook.fixtures')).forEach((testName) => {
+    const mainJsPath = 'node_modules/creevey/node_modules/.cache/creevey/storybook/main.js';
     describe(testName, function () {
       before(function () {
         const tempDir = dirSync({ name: `creevey-${testName}` }).name;
@@ -40,18 +41,22 @@ describe('Storybook E2E', function () {
         execSync('npm i', { cwd: tempDir });
         execSync('npx creevey --webpack', { cwd: tempDir });
         execSync('node load', { cwd: tempDir });
+        writeFileSync(
+          join(this.tempDir, mainJsPath),
+          readFileSync(join(this.tempDir, mainJsPath), { encoding: 'utf-8' }).replace(
+            new RegExp(this.tempDir, 'g'),
+            '.',
+          ),
+        );
       });
 
       after(function () {
         if (!('tempDir' in this) || typeof this.tempDir != 'string') throw new Error("Can't get temp directory path");
         shell.cp(
           join(this.tempDir, 'actual-tests.json'),
-          join(__dirname, 'storybook.fixtures', testName, 'expected-tests.json'),
+          join(__dirname, `storybook.fixtures/${testName}/expected-tests.json`),
         );
-        shell.cp(
-          join(this.tempDir, 'node_modules', 'creevey', 'node_modules', '.cache', 'creevey', 'storybook', 'main.js'),
-          join(__dirname, 'storybook.fixtures', testName, 'expected-main.js'),
-        );
+        shell.cp(join(this.tempDir, mainJsPath), join(__dirname, `storybook.fixtures/${testName}/expected-main.js`));
         shell.rm('-rf', this.tempDir);
       });
 
@@ -69,10 +74,7 @@ describe('Storybook E2E', function () {
         if (!('tempDir' in this) || typeof this.tempDir != 'string') throw new Error("Can't get temp directory path");
 
         const expected = readFileSync(join(this.tempDir, 'expected-main.js'), { encoding: 'utf-8' });
-        const actual = readFileSync(
-          join(this.tempDir, 'node_modules', 'creevey', 'node_modules', '.cache', 'creevey', 'storybook', 'main.js'),
-          { encoding: 'utf-8' },
-        );
+        const actual = readFileSync(join(this.tempDir, mainJsPath), { encoding: 'utf-8' });
 
         expect(actual).to.equal(expected);
       });

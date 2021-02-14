@@ -26,11 +26,14 @@ unit:
 #   script:
 #     - yarn test:e2e
 
-# NOTE: Need to build custom docker image
-# ui:
-#   artifacts:
-#     paths:
-#       - report/
-#   script:
-#     - yarn start:storybook &
-#     - yarn creevey
+ui:
+  services:
+    - selenoid/chrome
+    - selenoid/firefox
+  artifacts:
+    when: always
+    paths:
+      - report/
+  script:
+    - yarn start:storybook &
+    - yarn creevey --config .creevey/gitlab.config.ts

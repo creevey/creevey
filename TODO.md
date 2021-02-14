@@ -271,6 +271,7 @@
   - [ ] Don't pull docker local images
   - [ ] ERR! Runtime error! Check your browser console. ERR! ResizeObserver loop limit exceeded (in addon)
 - [ ] Change viewport height to 786 in config
+- [ ] Save TeamCity config in repo
 - [x] Start server early and wait for build
 - [x] Setup TeamCity CI
 - [x] Update CircleCI and GitLab according by github actions
@@ -291,7 +292,7 @@
   - [x] Add link `go to runner` in addon UI
   - [x] Show side-by-side diff vertically or horizontally depends on aspect
   - [x] Add resolveStorybookUrl to config
-  - [ ] Support teamcity screenshots diff UI https://www.jetbrains.com/help/teamcity/including-third-party-reports-in-the-build-results.html
+  - [x] Support teamcity screenshots diff UI https://www.jetbrains.com/help/teamcity/including-third-party-reports-in-the-build-results.html
   - [x] Save webpack stats.json for debug
   - [ ] Add fallback option, load tests from browser (hmr and tests are disabled in this case)
     - [ ] Send PR to Storybook to allow use HMR for stories
@@ -320,6 +321,7 @@
     - [ ] Gatsby
     - [ ] Next.js
 - [ ] Bugs
+  - [ ] Remove support ts config file version
   - [ ] webpack config dll references (disable dll plugin)
   - [ ] Scrollbar is not visible on dark theme in ResultPage
   - [ ] Don't have hot reload on preview config storybook
@@ -331,6 +333,7 @@
     - Iterate be screen images and calculate resulting x/y coordinates for composite image
     - If image width/height greater than viewport width/height than scroll bar is captured
 - [x] ~~Support esm/cjs builds~~
+- [ ] Drop support nodejs 10
 - [ ] Test standalone selenoid + webdriver work
 - [ ] Add more tests on different esnext features (test babel-parser + plugins)
 - [ ] Mdx e2e tests
