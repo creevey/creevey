@@ -179,8 +179,8 @@ export function withCreevey(): MakeDecoratorResult {
           outline: 0 !important;
           color: rgba(0,0,0,0) !important;
         }
-        ${selector} * {
-          visibility: hidden;
+        ${selector} *, ${selector}::before, ${selector}::after {
+          visibility: hidden !important;
         }
       `;
     });
