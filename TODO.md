@@ -271,6 +271,7 @@
   - [ ] Don't pull docker local images
   - [ ] ERR! Runtime error! Check your browser console. ERR! ResizeObserver loop limit exceeded (in addon)
 - [ ] Change viewport height to 786 in config
+- [ ] Save TeamCity config in repo
 - [x] Start server early and wait for build
 - [x] Setup TeamCity CI
 - [x] Update CircleCI and GitLab according by github actions
@@ -320,6 +321,7 @@
     - [ ] Gatsby
     - [ ] Next.js
 - [ ] Bugs
+  - [ ] Remove support ts config file version
   - [ ] webpack config dll references (disable dll plugin)
   - [ ] Scrollbar is not visible on dark theme in ResultPage
   - [ ] Don't have hot reload on preview config storybook
@@ -331,6 +333,7 @@
     - Iterate be screen images and calculate resulting x/y coordinates for composite image
     - If image width/height greater than viewport width/height than scroll bar is captured
 - [x] ~~Support esm/cjs builds~~
+- [ ] Drop support nodejs 10
 - [ ] Test standalone selenoid + webdriver work
 - [ ] Add more tests on different esnext features (test babel-parser + plugins)
 - [ ] Mdx e2e tests

@@ -242,25 +242,25 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "/tmp/creevey-sb-5.3-config/node_modules/@storybook/core/dist/server/common/polyfills.js":
+/***/ "./node_modules/@storybook/core/dist/server/common/polyfills.js":
 /*!**********************************************************************************************************!*\
-  !*** external "/tmp/creevey-sb-5.3-config/node_modules/@storybook/core/dist/server/common/polyfills.js" ***!
+  !*** external "./node_modules/@storybook/core/dist/server/common/polyfills.js" ***!
   \**********************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = require("/tmp/creevey-sb-5.3-config/node_modules/@storybook/core/dist/server/common/polyfills.js");
+module.exports = require("./node_modules/@storybook/core/dist/server/common/polyfills.js");
 
 /***/ }),
 
-/***/ "/tmp/creevey-sb-5.3-config/node_modules/@storybook/core/dist/server/preview/globals.js":
+/***/ "./node_modules/@storybook/core/dist/server/preview/globals.js":
 /*!*********************************************************************************************************!*\
-  !*** external "/tmp/creevey-sb-5.3-config/node_modules/@storybook/core/dist/server/preview/globals.js" ***!
+  !*** external "./node_modules/@storybook/core/dist/server/preview/globals.js" ***!
   \*********************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = require("/tmp/creevey-sb-5.3-config/node_modules/@storybook/core/dist/server/preview/globals.js");
+module.exports = require("./node_modules/@storybook/core/dist/server/preview/globals.js");
 
 /***/ }),
 
@@ -271,22 +271,22 @@ module.exports = require("/tmp/creevey-sb-5.3-config/node_modules/@storybook/cor
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /tmp/creevey-sb-5.3-config/node_modules/creevey/lib/server/master/dummy-hmr */"./node_modules/creevey/lib/server/master/dummy-hmr.js");
-__webpack_require__(/*! /tmp/creevey-sb-5.3-config/node_modules/@storybook/core/dist/server/common/polyfills.js */"/tmp/creevey-sb-5.3-config/node_modules/@storybook/core/dist/server/common/polyfills.js");
-__webpack_require__(/*! /tmp/creevey-sb-5.3-config/node_modules/@storybook/core/dist/server/preview/globals.js */"/tmp/creevey-sb-5.3-config/node_modules/@storybook/core/dist/server/preview/globals.js");
-module.exports = __webpack_require__(/*! /tmp/creevey-sb-5.3-config/.storybook/config.js */"./.storybook/config.js");
+__webpack_require__(/*! ./node_modules/creevey/lib/server/master/dummy-hmr */"./node_modules/creevey/lib/server/master/dummy-hmr.js");
+__webpack_require__(/*! ./node_modules/@storybook/core/dist/server/common/polyfills.js */"./node_modules/@storybook/core/dist/server/common/polyfills.js");
+__webpack_require__(/*! ./node_modules/@storybook/core/dist/server/preview/globals.js */"./node_modules/@storybook/core/dist/server/preview/globals.js");
+module.exports = __webpack_require__(/*! ./.storybook/config.js */"./.storybook/config.js");
 
 
 /***/ }),
 
 /***/ "@storybook/react":
 /*!******************************************************************************************!*\
-  !*** external "/tmp/creevey-sb-5.3-config/node_modules/creevey/lib/server/storybook.js" ***!
+  !*** external "./node_modules/creevey/lib/server/storybook.js" ***!
   \******************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = require("/tmp/creevey-sb-5.3-config/node_modules/creevey/lib/server/storybook.js");
+module.exports = require("./node_modules/creevey/lib/server/storybook.js");
 
 /***/ })
 
