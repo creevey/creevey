@@ -1,5 +1,5 @@
 import path from 'path';
-import { Configuration } from 'webpack';
+import { Configuration, DefinePlugin } from 'webpack';
 
 const config: Configuration = {
   entry: [require.resolve('core-js'), require.resolve('regenerator-runtime/runtime'), './src/client/web/index.tsx'],
@@ -25,15 +25,12 @@ const config: Configuration = {
   resolve: {
     extensions: ['.tsx', '.ts', '.jsx', '.js'],
   },
-  devServer: {
-    port: 8000,
-    proxy: {
-      '/': {
-        target: 'ws://localhost:3000',
-        ws: true,
-      },
-    },
-  },
+  devServer: { port: 8000, proxy: { '/': { target: 'http://localhost:3000' } } },
+  plugins: [
+    new DefinePlugin({
+      __CREEVEY_SERVER_PORT__: JSON.stringify('3000'),
+    }),
+  ],
   performance: false,
 };
 
