@@ -1,6 +1,6 @@
 import { PNG } from 'pngjs';
 import { Context, Test, Suite } from 'mocha';
-import { Builder, By, WebDriver, Origin, Capabilities } from 'selenium-webdriver';
+import { Builder, By, WebDriver, Origin, Capabilities, WebElement } from 'selenium-webdriver';
 import { Config, BrowserConfig, StoryInput, CreeveyStoryParams, noop, isDefined, StorybookGlobals } from '../../types';
 import { subscribeOn } from '../messages';
 import { networkInterfaces } from 'os';
@@ -12,6 +12,8 @@ declare global {
   interface Window {
     __CREEVEY_RESTORE_SCROLL__?: () => void;
     __CREEVEY_UPDATE_GLOBALS__: (globals: StorybookGlobals) => void;
+    __CREEVEY_INSERT_IGNORE_STYLES__: (ignoreElements: string[]) => HTMLStyleElement;
+    __CREEVEY_REMOVE_IGNORE_STYLES__: (ignoreStyles: HTMLStyleElement) => void;
   }
 }
 
@@ -247,35 +249,51 @@ async function takeCompositeScreenshot(
   return PNG.sync.write(compositeImage).toString('base64');
 }
 
-async function takeScreenshot(browser: WebDriver, captureElement?: string | null): Promise<string> {
-  if (!captureElement) return browser.takeScreenshot();
+async function takeScreenshot(
+  browser: WebDriver,
+  captureElement?: string | null,
+  ignoreElements?: string | string[] | null,
+): Promise<string> {
+  let screenshot: string;
 
-  const { elementRect, windowRect } = await browser.executeScript<{
-    elementRect?: DOMRect;
-    windowRect: { width: number; height: number; x: number; y: number };
-  }>(function (selector: string) {
-    window.scrollTo(0, 0);
-    return {
-      elementRect: document.querySelector(selector)?.getBoundingClientRect(),
-      windowRect: {
-        width: window.innerWidth,
-        height: window.innerHeight,
-        x: Math.round(window.scrollX),
-        y: Math.round(window.scrollY),
-      },
-    };
-  }, captureElement);
+  const ignoreStyles = await insertIgnoreStyles(browser, ignoreElements);
 
-  if (!elementRect) throw new Error(`Couldn't find element with selector: '${captureElement}'`);
+  try {
+    if (!captureElement) {
+      screenshot = await browser.takeScreenshot();
+    } else {
+      const { elementRect, windowRect } = await browser.executeScript<{
+        elementRect?: DOMRect;
+        windowRect: { width: number; height: number; x: number; y: number };
+      }>(function (selector: string) {
+        window.scrollTo(0, 0);
+        return {
+          elementRect: document.querySelector(selector)?.getBoundingClientRect(),
+          windowRect: {
+            width: window.innerWidth,
+            height: window.innerHeight,
+            x: Math.round(window.scrollX),
+            y: Math.round(window.scrollY),
+          },
+        };
+      }, captureElement);
 
-  const isFitIntoViewport =
-    elementRect.width + elementRect.left <= windowRect.width &&
-    elementRect.height + elementRect.top <= windowRect.height;
+      if (!elementRect) throw new Error(`Couldn't find element with selector: '${captureElement}'`);
 
-  if (isFitIntoViewport) return browser.findElement(By.css(captureElement)).takeScreenshot();
+      const isFitIntoViewport =
+        elementRect.width + elementRect.left <= windowRect.width &&
+        elementRect.height + elementRect.top <= windowRect.height;
 
-  // TODO pointer-events: none, need to research
-  return takeCompositeScreenshot(browser, windowRect, elementRect);
+      screenshot = isFitIntoViewport
+        ? await browser.findElement(By.css(captureElement)).takeScreenshot()
+        : // TODO pointer-events: none, need to research
+          await takeCompositeScreenshot(browser, windowRect, elementRect);
+    }
+  } finally {
+    await removeIgnoreStyles(browser, ignoreStyles);
+  }
+
+  return screenshot;
 }
 
 async function selectStory(browser: WebDriver, storyId: string, kind: string, story: string): Promise<void> {
@@ -408,7 +426,7 @@ export async function switchStory(this: Context): Promise<void> {
   await resetMousePosition(this.browser);
   await selectStory(this.browser, story.id, story.kind, story.name);
 
-  const { captureElement = '#root' } = (story.parameters.creevey ?? {}) as CreeveyStoryParams;
+  const { captureElement = '#root', ignoreElements } = (story.parameters.creevey ?? {}) as CreeveyStoryParams;
 
   if (captureElement)
     Object.defineProperty(this, 'captureElement', {
@@ -418,7 +436,27 @@ export async function switchStory(this: Context): Promise<void> {
     });
   else Reflect.deleteProperty(this, 'captureElement');
 
-  this.takeScreenshot = () => takeScreenshot(this.browser, captureElement);
+  this.takeScreenshot = () => takeScreenshot(this.browser, captureElement, ignoreElements);
 
   this.testScope.reverse();
+}
+
+async function insertIgnoreStyles(
+  browser: WebDriver,
+  ignoreElements?: string | string[] | null,
+): Promise<WebElement | null> {
+  const ignoreSelectors = Array.prototype.concat(ignoreElements).filter(Boolean);
+  if (!ignoreSelectors.length) return null;
+
+  return await browser.executeScript(function (ignoreSelectors: string[]) {
+    return window.__CREEVEY_INSERT_IGNORE_STYLES__(ignoreSelectors);
+  }, ignoreSelectors);
+}
+
+async function removeIgnoreStyles(browser: WebDriver, ignoreStyles: WebElement | null): Promise<void> {
+  if (ignoreStyles) {
+    await browser.executeScript(function (ignoreStyles: HTMLStyleElement) {
+      window.__CREEVEY_REMOVE_IGNORE_STYLES__(ignoreStyles);
+    }, ignoreStyles);
+  }
 }

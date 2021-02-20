@@ -39,8 +39,8 @@ const Wrapper = styled.span({
 });
 
 const ComponentChunk: FunctionComponent = (props) => (
-  <ChunkContainer>
-    <Wrapper>{props.children}</Wrapper>
+  <ChunkContainer data-tid="Tile">
+    <Wrapper data-tid="TileContent">{props.children}</Wrapper>
   </ChunkContainer>
 );
 
@@ -63,3 +63,9 @@ export const ViewportFit = (): JSX.Element => <ChunkTiles size={2} offset={0} />
 export const Overflow = (): JSX.Element => <ChunkTiles size={6} offset={0} />;
 export const ViewportFitOffset = (): JSX.Element => <ChunkTiles size={2} offset={4} />;
 export const OverflowOffset = (): JSX.Element => <ChunkTiles size={6} offset={4} />;
+export const IgnoreElements = (): JSX.Element => <ChunkTiles size={3} offset={0} />;
+IgnoreElements.parameters = {
+  creevey: {
+    ignoreElements: '[data-tid=Tile]:nth-of-type(even) [data-tid=TileContent]',
+  },
+};

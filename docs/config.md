@@ -142,6 +142,8 @@ export const Basic: Story & CreeveyStory = () => <MyComponent />;
 Basic.parameters = {
   creevey: {
     captureElement: '.container',
+    // elements to ignore in capturing screenshot
+    ignoreElements: ['button', '.local-time'],
     // Delay before test starts in ms
     delay: 1000,
     tests: {

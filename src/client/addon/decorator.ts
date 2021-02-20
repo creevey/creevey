@@ -16,6 +16,8 @@ declare global {
   interface Window {
     __CREEVEY_SELECT_STORY__: (storyId: string, kind: string, name: string, callback: (error?: string) => void) => void;
     __CREEVEY_UPDATE_GLOBALS__: (globals: StorybookGlobals) => void;
+    __CREEVEY_INSERT_IGNORE_STYLES__: (ignoreElements: string[]) => HTMLStyleElement;
+    __CREEVEY_REMOVE_IGNORE_STYLES__: (ignoreStyles: HTMLStyleElement) => void;
   }
 
   interface Document {
@@ -164,8 +166,35 @@ export function withCreevey(): MakeDecoratorResult {
     addons.getChannel().emit(Events.UPDATE_GLOBALS, { globals });
   }
 
+  function insertIgnoreStyles(ignoreSelectors: string[]) {
+    const stylesElement = document.createElement('style');
+    stylesElement.setAttribute('type', 'text/css');
+    document.head.appendChild(stylesElement);
+    ignoreSelectors.forEach((selector) => {
+      stylesElement.innerHTML += `
+        ${selector} {
+          background: #000 !important;
+          box-shadow: none !important;
+          text-shadow: none !important;
+          outline: 0 !important;
+          color: rgba(0,0,0,0) !important;
+        }
+        ${selector} *, ${selector}::before, ${selector}::after {
+          visibility: hidden !important;
+        }
+      `;
+    });
+    return stylesElement;
+  }
+
+  function removeIgnoreStyles(ignoreStyles: HTMLStyleElement) {
+    ignoreStyles.parentNode?.removeChild(ignoreStyles);
+  }
+
   window.__CREEVEY_SELECT_STORY__ = selectStory;
   window.__CREEVEY_UPDATE_GLOBALS__ = updateGlobals;
+  window.__CREEVEY_INSERT_IGNORE_STYLES__ = insertIgnoreStyles;
+  window.__CREEVEY_REMOVE_IGNORE_STYLES__ = removeIgnoreStyles;
 
   return makeDecorator({
     name: 'withCreevey',
