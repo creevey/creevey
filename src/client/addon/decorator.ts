@@ -166,7 +166,7 @@ export function withCreevey(): MakeDecoratorResult {
     addons.getChannel().emit(Events.UPDATE_GLOBALS, { globals });
   }
 
-  function insertIgnoreStyles(ignoreSelectors: string[]) {
+  function insertIgnoreStyles(ignoreSelectors: string[]): HTMLStyleElement {
     const stylesElement = document.createElement('style');
     stylesElement.setAttribute('type', 'text/css');
     document.head.appendChild(stylesElement);
@@ -187,7 +187,7 @@ export function withCreevey(): MakeDecoratorResult {
     return stylesElement;
   }
 
-  function removeIgnoreStyles(ignoreStyles: HTMLStyleElement) {
+  function removeIgnoreStyles(ignoreStyles: HTMLStyleElement): void {
     ignoreStyles.parentNode?.removeChild(ignoreStyles);
   }
 
