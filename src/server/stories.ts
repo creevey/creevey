@@ -80,7 +80,10 @@ async function initStorybookEnvironment(): Promise<typeof import('./storybook')>
   // https://github.com/storybookjs/storybook/blob/v5.2.8/lib/core/src/client/preview/start.js#L98
   // Example: "Mozilla/5.0 (linux) AppleWebKit/537.36 (KHTML, like Gecko) jsdom/15.2.1"
   Object.defineProperty(window.navigator, 'userAgent', {
-    value: window.navigator.userAgent.replace(/jsdom\/(\d+\.?)+/, '').trim(),
+    value: window.navigator.userAgent
+      .split(' ')
+      .filter((token) => !token.startsWith('jsdom'))
+      .join(' '),
   });
 
   if (isStorybookVersionLessThan(6)) {
