@@ -11,7 +11,7 @@ export class CreeveyManager {
   storyId = '';
   activeBrowser = '';
   selectedTestId = '';
-  status: CreeveyStatus = { isRunning: false, tests: {} };
+  status: CreeveyStatus = { isRunning: false, tests: {}, browsers: [] };
   creeveyApi: CreeveyClientApi | null = null;
   stories: StoriesRaw = {};
 
@@ -147,14 +147,7 @@ export class CreeveyManager {
   };
 
   getBrowsers = (): string[] => {
-    if (!this.status) return [];
-    return Object.values(this.status.tests).reduce((buf: string[], x) => {
-      const browser: string = x?.browser ?? '';
-      if (!buf.includes(browser)) {
-        buf.push(browser);
-      }
-      return buf;
-    }, []);
+    return this.status.browsers;
   };
 
   getTestsByStoryIdAndBrowser = (browser: string): TestData[] => {

@@ -30,10 +30,10 @@ const CreeveyAppAsync = React.lazy(async () => {
     } catch (error) {
       // NOTE: Failed to get status from API
       // NOTE: It might happen on circle ci from artifact
-      creeveyStatus = { isRunning: false, tests: await loadCreeveyData() };
+      creeveyStatus = { isRunning: false, tests: await loadCreeveyData(), browsers: [] };
     }
   } else {
-    creeveyStatus = { isRunning: false, tests: await loadCreeveyData() };
+    creeveyStatus = { isRunning: false, tests: await loadCreeveyData(), browsers: [] };
   }
 
   return {
