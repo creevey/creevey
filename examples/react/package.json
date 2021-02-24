@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@testing-library/jest-dom": "^5.11.4",
-    "@testing-library/react": "^11.1.0",
-    "@testing-library/user-event": "^12.1.10",
+    "@testing-library/jest-dom": "^5.11.9",
+    "@testing-library/react": "^11.2.5",
+    "@testing-library/user-event": "^12.7.3",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
-    "react-scripts": "4.0.0",
+    "react-scripts": "4.0.3",
     "web-vitals": "^0.2.4"
   },
   "scripts": {
@@ -39,14 +39,14 @@
     ]
   },
   "devDependencies": {
-    "@babel/core": "^7.12.3",
-    "@storybook/addon-actions": "^6.0.27",
-    "@storybook/addon-essentials": "^6.0.27",
-    "@storybook/addon-links": "^6.0.27",
-    "@storybook/node-logger": "^6.0.27",
-    "@storybook/preset-create-react-app": "^3.1.4",
-    "@storybook/react": "^6.0.27",
-    "babel-loader": "^8.1.0",
+    "@babel/core": "^7.13.1",
+    "@storybook/addon-actions": "^6.1.20",
+    "@storybook/addon-essentials": "^6.1.20",
+    "@storybook/addon-links": "^6.1.20",
+    "@storybook/node-logger": "^6.1.20",
+    "@storybook/preset-create-react-app": "^3.1.6",
+    "@storybook/react": "^6.1.20",
+    "babel-loader": "^8.2.2",
     "creevey": "../../creevey.tgz",
     "react-is": "^17.0.1"
   }

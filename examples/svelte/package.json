@@ -13,10 +13,10 @@
     "@babel/core": "^7.12.10",
     "@rollup/plugin-commonjs": "^16.0.0",
     "@rollup/plugin-node-resolve": "^10.0.0",
-    "@storybook/addon-actions": "^6.1.11",
-    "@storybook/addon-essentials": "^6.1.11",
-    "@storybook/addon-links": "^6.1.11",
-    "@storybook/svelte": "^6.1.11",
+    "@storybook/addon-actions": "^6.1.20",
+    "@storybook/addon-essentials": "^6.1.20",
+    "@storybook/addon-links": "^6.1.20",
+    "@storybook/svelte": "^6.1.20",
     "babel-loader": "^8.2.2",
     "creevey": "../../creevey.tgz",
     "rollup": "^2.3.4",
@@ -28,6 +28,6 @@
     "svelte-loader": "^2.13.6"
   },
   "dependencies": {
-    "sirv-cli": "^1.0.0"
+    "sirv-cli": "^1.0.11"
   }
 }
