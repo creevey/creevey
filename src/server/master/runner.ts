@@ -153,6 +153,7 @@ export default class Runner extends EventEmitter {
     return {
       isRunning: this.isRunning,
       tests,
+      browsers: this.browsers,
     };
   }
 
@@ -178,7 +179,6 @@ export default class Runner extends EventEmitter {
       tests: { [id]: { id, browser, testName, storyPath, approved: { [image]: retry }, storyId: test.storyId } },
     });
   }
-
   private sendUpdate(data: CreeveyUpdate): void {
     this.emit('update', data);
   }

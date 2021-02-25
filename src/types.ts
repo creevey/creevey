@@ -287,6 +287,7 @@ export interface ServerTest extends TestData {
 export interface CreeveyStatus {
   isRunning: boolean;
   tests: Partial<{ [id: string]: TestData }>;
+  browsers: string[];
 }
 
 export interface CreeveyUpdate {
