@@ -1,9 +1,10 @@
 *.log
 *.tgz
+.husky
+.babel*
 .github
 .vscode
 .eslint*
-.babel*
 .creevey
 .circleci
 .prettier*

@@ -87,9 +87,7 @@
 /******/ ({
 
 /***/ "./.storybook/generated-entry.js":
-/*!***************************************!*\
-  !*** ./.storybook/generated-entry.js ***!
-  \***************************************/
+/* ./.storybook/generated-entry.js */
 /*! no exports provided */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -103,9 +101,7 @@ module._StorybookPreserveDecorators=!0;Object(_storybook_react__WEBPACK_IMPORTED
 /***/ }),
 
 /***/ "./.storybook/preview.js":
-/*!*******************************!*\
-  !*** ./.storybook/preview.js ***!
-  \*******************************/
+/* ./.storybook/preview.js */
 /*! exports provided: parameters */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -117,9 +113,7 @@ var parameters={creevey:{captureElement:"root"}};
 /***/ }),
 
 /***/ "./node_modules/creevey/lib/server/master/dummy-hmr.js":
-/*!*************************************************************!*\
-  !*** ./node_modules/creevey/lib/server/master/dummy-hmr.js ***!
-  \*************************************************************/
+/* ./node_modules/creevey/lib/server/master/dummy-hmr.js */
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -172,9 +166,7 @@ exports.default = _default;
 /***/ }),
 
 /***/ "./node_modules/webpack/buildin/harmony-module.js":
-/*!*******************************************!*\
-  !*** (webpack)/buildin/harmony-module.js ***!
-  \*******************************************/
+/* (webpack)/buildin/harmony-module.js */
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -207,9 +199,7 @@ module.exports = function(originalModule) {
 /***/ }),
 
 /***/ "./stories sync recursive ^\\.\\/(?:(?:(?!\\.)(?:(?:(?!(?:|\\/)\\.).)*?)\\/)?(?!\\.)(?=.)[^/]*?\\.stories\\.jsx\\/?)$":
-/*!********************************************************************************************************!*\
-  !*** ./stories sync ^\.\/(?:(?:(?!\.)(?:(?:(?!(?:|\/)\.).)*?)\/)?(?!\.)(?=.)[^/]*?\.stories\.jsx\/?)$ ***!
-  \********************************************************************************************************/
+/* ./stories sync ^\.\/(?:(?:(?!\.)(?:(?:(?!(?:|\/)\.).)*?)\/)?(?!\.)(?=.)[^/]*?\.stories\.jsx\/?)$ */
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -240,9 +230,7 @@ webpackContext.id = "./stories sync recursive ^\\.\\/(?:(?:(?!\\.)(?:(?:(?!(?:|\
 /***/ }),
 
 /***/ "./stories/KindA.stories.jsx":
-/*!***********************************!*\
-  !*** ./stories/KindA.stories.jsx ***!
-  \***********************************/
+/* ./stories/KindA.stories.jsx */
 /*! exports provided: default, StoryA */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -254,9 +242,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "./node_modules/@storybook/core/dist/server/common/polyfills.js":
-/*!***************************************************************************************************!*\
-  !*** external "./node_modules/@storybook/core/dist/server/common/polyfills.js" ***!
-  \***************************************************************************************************/
+/* external "./node_modules/@storybook/core/dist/server/common/polyfills.js" */
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -265,9 +251,7 @@ module.exports = require("./node_modules/@storybook/core/dist/server/common/poly
 /***/ }),
 
 /***/ "./node_modules/@storybook/core/dist/server/preview/globals.js":
-/*!**************************************************************************************************!*\
-  !*** external "./node_modules/@storybook/core/dist/server/preview/globals.js" ***!
-  \**************************************************************************************************/
+/* external "./node_modules/@storybook/core/dist/server/preview/globals.js" */
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -276,9 +260,7 @@ module.exports = require("./node_modules/@storybook/core/dist/server/preview/glo
 /***/ }),
 
 /***/ 0:
-/*!*****************************************************************************************************************************************************************************************************************************************************!*\
-  !*** multi ./node_modules/creevey/lib/server/master/dummy-hmr ./node_modules/@storybook/core/dist/server/common/polyfills.js ./node_modules/@storybook/core/dist/server/preview/globals.js ./.storybook/preview.js ./.storybook/generated-entry.js ***!
-  \*****************************************************************************************************************************************************************************************************************************************************/
+/* multi ./node_modules/creevey/lib/server/master/dummy-hmr ./node_modules/@storybook/core/dist/server/common/polyfills.js ./node_modules/@storybook/core/dist/server/preview/globals.js ./.storybook/preview.js ./.storybook/generated-entry.js */
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -292,9 +274,7 @@ module.exports = __webpack_require__(/*! ./.storybook/generated-entry.js */"./.s
 /***/ }),
 
 /***/ "@storybook/react":
-/*!***********************************************************************************!*\
-  !*** external "./node_modules/creevey/lib/server/storybook.js" ***!
-  \***********************************************************************************/
+/* external "./node_modules/creevey/lib/server/storybook.js" */
 /*! no static exports found */
 /***/ (function(module, exports) {
 

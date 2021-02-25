@@ -43,10 +43,10 @@ describe('Storybook E2E', function () {
         execSync('node load', { cwd: tempDir });
         writeFileSync(
           join(this.tempDir, mainJsPath),
-          readFileSync(join(this.tempDir, mainJsPath), { encoding: 'utf-8' }).replace(
-            new RegExp(this.tempDir, 'g'),
-            '.',
-          ),
+          readFileSync(join(this.tempDir, mainJsPath), { encoding: 'utf-8' })
+            .replace(new RegExp(this.tempDir, 'g'), '.')
+            .replace(/^\/\*!\*.*$\n\s{2}!\*{3}/gm, '/*')
+            .replace(/\*{3}!$\n\s{2}\\\*+\/$/gm, '*/'),
         );
       });
 

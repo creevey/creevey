@@ -87,9 +87,7 @@
 /******/ ({
 
 /***/ "./.storybook/config.js":
-/*!******************************!*\
-  !*** ./.storybook/config.js ***!
-  \******************************/
+/* ./.storybook/config.js */
 /*! no exports provided */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -113,9 +111,7 @@ Object(_storybook_react__WEBPACK_IMPORTED_MODULE_5__["addParameters"])({creevey:
 /***/ }),
 
 /***/ "./node_modules/creevey/lib/server/master/dummy-hmr.js":
-/*!*************************************************************!*\
-  !*** ./node_modules/creevey/lib/server/master/dummy-hmr.js ***!
-  \*************************************************************/
+/* ./node_modules/creevey/lib/server/master/dummy-hmr.js */
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -168,9 +164,7 @@ exports.default = _default;
 /***/ }),
 
 /***/ "./node_modules/webpack/buildin/harmony-module.js":
-/*!*******************************************!*\
-  !*** (webpack)/buildin/harmony-module.js ***!
-  \*******************************************/
+/* (webpack)/buildin/harmony-module.js */
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -203,9 +197,7 @@ module.exports = function(originalModule) {
 /***/ }),
 
 /***/ "./stories sync recursive \\.stories\\.jsx$":
-/*!**************************************!*\
-  !*** ./stories sync \.stories\.jsx$ ***!
-  \**************************************/
+/* ./stories sync \.stories\.jsx$ */
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -236,9 +228,7 @@ webpackContext.id = "./stories sync recursive \\.stories\\.jsx$";
 /***/ }),
 
 /***/ "./stories/KindA.stories.jsx":
-/*!***********************************!*\
-  !*** ./stories/KindA.stories.jsx ***!
-  \***********************************/
+/* ./stories/KindA.stories.jsx */
 /*! no exports provided */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -252,9 +242,7 @@ Object(_storybook_react__WEBPACK_IMPORTED_MODULE_0__["storiesOf"])("KindA",modul
 /***/ }),
 
 /***/ "./node_modules/@storybook/core/dist/server/common/polyfills.js":
-/*!***************************************************************************************************!*\
-  !*** external "./node_modules/@storybook/core/dist/server/common/polyfills.js" ***!
-  \***************************************************************************************************/
+/* external "./node_modules/@storybook/core/dist/server/common/polyfills.js" */
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -263,9 +251,7 @@ module.exports = require("./node_modules/@storybook/core/dist/server/common/poly
 /***/ }),
 
 /***/ "./node_modules/@storybook/core/dist/server/preview/globals.js":
-/*!**************************************************************************************************!*\
-  !*** external "./node_modules/@storybook/core/dist/server/preview/globals.js" ***!
-  \**************************************************************************************************/
+/* external "./node_modules/@storybook/core/dist/server/preview/globals.js" */
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -274,9 +260,7 @@ module.exports = require("./node_modules/@storybook/core/dist/server/preview/glo
 /***/ }),
 
 /***/ 0:
-/*!********************************************************************************************************************************************************************************************************************!*\
-  !*** multi ./node_modules/creevey/lib/server/master/dummy-hmr ./node_modules/@storybook/core/dist/server/common/polyfills.js ./node_modules/@storybook/core/dist/server/preview/globals.js ./.storybook/config.js ***!
-  \********************************************************************************************************************************************************************************************************************/
+/* multi ./node_modules/creevey/lib/server/master/dummy-hmr ./node_modules/@storybook/core/dist/server/common/polyfills.js ./node_modules/@storybook/core/dist/server/preview/globals.js ./.storybook/config.js */
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -289,9 +273,7 @@ module.exports = __webpack_require__(/*! ./.storybook/config.js */"./.storybook/
 /***/ }),
 
 /***/ "@storybook/react":
-/*!***********************************************************************************!*\
-  !*** external "./node_modules/creevey/lib/server/storybook.js" ***!
-  \***********************************************************************************/
+/* external "./node_modules/creevey/lib/server/storybook.js" */
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -300,9 +282,7 @@ module.exports = require("./node_modules/creevey/lib/server/storybook.js");
 /***/ }),
 
 /***/ "core-js/modules/es.array.for-each.js":
-/*!*******************************************************!*\
-  !*** external "core-js/modules/es.array.for-each.js" ***!
-  \*******************************************************/
+/* external "core-js/modules/es.array.for-each.js" */
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -311,9 +291,7 @@ module.exports = require("core-js/modules/es.array.for-each.js");
 /***/ }),
 
 /***/ "core-js/modules/es.array.iterator.js":
-/*!*******************************************************!*\
-  !*** external "core-js/modules/es.array.iterator.js" ***!
-  \*******************************************************/
+/* external "core-js/modules/es.array.iterator.js" */
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -322,9 +300,7 @@ module.exports = require("core-js/modules/es.array.iterator.js");
 /***/ }),
 
 /***/ "core-js/modules/es.object.to-string.js":
-/*!*********************************************************!*\
-  !*** external "core-js/modules/es.object.to-string.js" ***!
-  \*********************************************************/
+/* external "core-js/modules/es.object.to-string.js" */
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -333,9 +309,7 @@ module.exports = require("core-js/modules/es.object.to-string.js");
 /***/ }),
 
 /***/ "core-js/modules/web.dom-collections.for-each.js":
-/*!******************************************************************!*\
-  !*** external "core-js/modules/web.dom-collections.for-each.js" ***!
-  \******************************************************************/
+/* external "core-js/modules/web.dom-collections.for-each.js" */
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -344,9 +318,7 @@ module.exports = require("core-js/modules/web.dom-collections.for-each.js");
 /***/ }),
 
 /***/ "core-js/modules/web.dom-collections.iterator.js":
-/*!******************************************************************!*\
-  !*** external "core-js/modules/web.dom-collections.iterator.js" ***!
-  \******************************************************************/
+/* external "core-js/modules/web.dom-collections.iterator.js" */
 /*! no static exports found */
 /***/ (function(module, exports) {
 
