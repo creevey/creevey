@@ -6,7 +6,7 @@ const config: CreeveyConfig = {
   browsers: {
     firefox: {
       browserName: 'firefox',
-      viewport: { width: 1024, height: 720 },
+      viewport: { width: 1024, height: 768 },
       gridUrl: 'http://selenoid__firefox:4444/wd/hub',
     },
   },

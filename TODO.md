@@ -270,7 +270,8 @@
   - [ ] wait-on doesn't work properly
   - [ ] Don't pull docker local images
   - [ ] ERR! Runtime error! Check your browser console. ERR! ResizeObserver loop limit exceeded (in addon)
-- [ ] Change viewport height to 786 in config
+  - [ ] Creevey nodejs console output `This browser doesn't support requestAnimationFrame.`
+- [x] Change viewport height to 786 in config
 - [ ] Save TeamCity config in repo
 - [x] Start server early and wait for build
 - [x] Setup TeamCity CI
@@ -350,6 +351,7 @@
   - [ ] Playwright
   - [ ] Puppeteer
 - [ ] Features
+  - [ ] Add status approved, apply after approve and reset after run
   - [ ] Output browser logs for debug
   - [ ] Support switch between globals https://github.com/wKich/creevey/discussions/108
   - [ ] Change `skip` option API

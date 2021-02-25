@@ -6,7 +6,7 @@ const config: CreeveyConfig = {
   browsers: {
     chrome: {
       browserName: 'chrome',
-      viewport: { width: 1024, height: 720 },
+      viewport: { width: 1024, height: 768 },
       gridUrl: 'http://selenoid__chrome:4444',
     },
   },

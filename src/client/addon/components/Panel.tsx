@@ -14,7 +14,7 @@ interface PanelProps {
 
 const Wrapper = styled.div<{ isRunning: boolean }>(({ isRunning }) => ({
   opacity: isRunning ? 0.5 : 1,
-  height: 'calc(100% - 40px)',
+  height: '100%',
 }));
 
 const TestSelectContainer = styled.div(({ theme }) => ({
