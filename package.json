@@ -47,9 +47,10 @@
     "build:client": "webpack --mode production",
     "postbuild": "cp scripts/dist/* lib/ && cp src/client/web/index.html lib/client/web",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
-    "prepublishOnly": "yarn build",
     "build-storybook": "build-storybook",
     "chromatic": "npx chromatic --project-token t3010eknrh",
+    "prepublishOnly": "yarn build && pinst --disable",
+    "postinstall": "husky install",
     "postpublish": "pinst --enable"
   },
   "engines": {
@@ -176,11 +177,6 @@
   "config": {
     "commitizen": {
       "path": "./node_modules/git-cz"
-    }
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
     }
   },
   "lint-staged": {
