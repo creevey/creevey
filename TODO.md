@@ -273,6 +273,9 @@
   - [ ] Creevey nodejs console output `This browser doesn't support requestAnimationFrame.`
 - [x] Change viewport height to 786 in config
 - [ ] Save TeamCity config in repo
+- [ ] Gitlab browse report fix
+- [ ] use `/** @type {import("webpack").Configuration } */` thing for creevey.config
+  - Remove ts config support
 - [x] Start server early and wait for build
 - [x] Setup TeamCity CI
 - [x] Update CircleCI and GitLab according by github actions
@@ -295,6 +298,7 @@
   - [x] Add resolveStorybookUrl to config
   - [x] Support teamcity screenshots diff UI https://www.jetbrains.com/help/teamcity/including-third-party-reports-in-the-build-results.html
   - [x] Save webpack stats.json for debug
+  - [x] Send list of available browsers from api
   - [ ] Add fallback option, load tests from browser (hmr and tests are disabled in this case)
     - [ ] Send PR to Storybook to allow use HMR for stories
   - [ ] Allow run creevey against static-storybook folder (Depends on fallback tests loading)
