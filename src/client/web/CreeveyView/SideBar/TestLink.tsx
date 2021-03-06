@@ -41,7 +41,7 @@ export function TestLink({ title, opened, test }: TestLinkProps): JSX.Element {
       setSidebarFocusedItem(testPath);
       buttonRef.current?.focus();
     }
-  }, [opened]);
+  }, [opened, setSidebarFocusedItem, testPath]);
 
   const handleOpen = useCallback((): void => {
     onOpenTest(test);

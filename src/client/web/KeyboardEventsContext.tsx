@@ -28,11 +28,11 @@ export const KeyboardEvents = ({
 
   const suiteList = flattenSuite(filterTests(rootSuite, filter));
 
-  const focusOnNode = (path: string[]): void => {
+  const focusOnNode = useCallback((path: string[]): void => {
     setSideBarFocusedItem(path);
-  };
+  }, []);
 
-  const getFocusedItemIndex = (): number => {
+  const getFocusedItemIndex = useCallback((): number => {
     return suiteList.findIndex((x) => {
       const path = isTest(x.suite) ? getTestPath(x.suite) : x.suite.path;
 
@@ -41,7 +41,7 @@ export const KeyboardEvents = ({
         sidebarFocusedItem.every((focusedPath) => path.includes(focusedPath))
       );
     });
-  };
+  }, [suiteList, sidebarFocusedItem]);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -102,7 +102,7 @@ export const KeyboardEvents = ({
         focusOnNode(path.slice(0, -1));
       }
     },
-    [focusOnNode, onSuiteOpen, onSuiteToggle, rootSuite, suiteList, setSideBarFocusedItem],
+    [focusOnNode, onSuiteOpen, onSuiteToggle, rootSuite, suiteList, getFocusedItemIndex, sidebarFocusedItem],
   );
 
   useEffect(() => {

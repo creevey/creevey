@@ -126,7 +126,15 @@ export const SimpleSideBar: Story & CreeveyStory = () => {
 
   checkSuite(simpleSuites, testPath, false);
 
-  return <SideBar rootSuite={simpleSuites} openedTest={getTestByPath(simpleSuites, testPath)} onOpenTest={noop} />;
+  return (
+    <SideBar
+      rootSuite={simpleSuites}
+      openedTest={getTestByPath(simpleSuites, testPath)}
+      onOpenTest={noop}
+      filter={{ status: null, subStrings: [] }}
+      setFilter={noop}
+    />
+  );
 };
 
 SimpleSideBar.parameters = {
@@ -146,5 +154,11 @@ SimpleSideBar.parameters = {
 };
 
 export const StatusSideBar = (): JSX.Element => (
-  <SideBar rootSuite={openSuites(treeifyTests(statusTests()))} openedTest={null} onOpenTest={noop} />
+  <SideBar
+    rootSuite={openSuites(treeifyTests(statusTests()))}
+    openedTest={null}
+    onOpenTest={noop}
+    filter={{ status: null, subStrings: [] }}
+    setFilter={noop}
+  />
 );
