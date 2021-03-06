@@ -13,8 +13,10 @@ import {
   useTheme,
   setSearchParams,
   getTestPathFromSearch,
+  CreeveyViewFilter,
 } from '../shared/helpers';
 import { CreeveyContext } from './CreeveyContext';
+import { KeyboardEvents } from './KeyboardEventsContext';
 import { SideBar } from './CreeveyView/SideBar';
 import { ResultsPage } from '../shared/components/ResultsPage';
 import { ensure, styled, ThemeProvider, themes, withTheme } from '@storybook/theming';
@@ -48,6 +50,7 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
   const [tests, updateTests] = useImmer(initialState.tests);
   const [isRunning, setIsRunning] = useState(initialState.isRunning);
   const [openedTestPath, openTest] = useState<string[]>([]);
+  const [filter, setFilter] = useState<CreeveyViewFilter>({ status: null, subStrings: [] });
   const [theme, setTheme] = useTheme();
 
   const openedTest = getTestByPath(tests, openedTestPath);
@@ -132,23 +135,31 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
       }}
     >
       <ThemeProvider theme={ensure(themes[theme])}>
-        <FlexContainer>
-          <SideBar rootSuite={tests} openedTest={openedTest} onOpenTest={handleOpenTest} />
-          {openedTest && (
-            <ResultsPage
-              key={`${openedTest.id}_${openedTest.results?.length ?? 0}`}
-              id={openedTest.id}
-              path={openedTestPath}
-              results={openedTest.results}
-              approved={openedTest.approved}
-              showTitle
-              onImageApprove={handleImageApprove}
+        <KeyboardEvents rootSuite={tests} filter={filter}>
+          <FlexContainer>
+            <SideBar
+              rootSuite={tests}
+              openedTest={openedTest}
+              onOpenTest={handleOpenTest}
+              filter={filter}
+              setFilter={setFilter}
             />
-          )}
-          <ToggleContainer>
-            <Toggle value={theme == 'dark'} onChange={handleThemeChange} />
-          </ToggleContainer>
-        </FlexContainer>
+            {openedTest && (
+              <ResultsPage
+                key={`${openedTest.id}_${openedTest.results?.length ?? 0}`}
+                id={openedTest.id}
+                path={openedTestPath}
+                results={openedTest.results}
+                approved={openedTest.approved}
+                showTitle
+                onImageApprove={handleImageApprove}
+              />
+            )}
+            <ToggleContainer>
+              <Toggle value={theme == 'dark'} onChange={handleThemeChange} />
+            </ToggleContainer>
+          </FlexContainer>
+        </KeyboardEvents>
       </ThemeProvider>
     </CreeveyContext.Provider>
   );

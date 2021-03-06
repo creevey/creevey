@@ -1,4 +1,4 @@
-import React, { useState, createContext, useContext } from 'react';
+import React, { createContext, useContext } from 'react';
 import { SideBarHeader } from './SideBarHeader';
 import { CreeveySuite, CreeveyTest, noop, isTest } from '../../../../types';
 import {
@@ -23,6 +23,8 @@ export interface SideBarProps {
   rootSuite: CreeveySuite;
   openedTest: CreeveyTest | null;
   onOpenTest: (test: CreeveyTest) => void;
+  filter: CreeveyViewFilter;
+  setFilter: (filter: CreeveyViewFilter) => void;
 }
 
 const Container = withTheme(
@@ -73,9 +75,8 @@ const Divider = withTheme(
   })),
 );
 
-export function SideBar({ rootSuite, openedTest, onOpenTest }: SideBarProps): JSX.Element {
+export function SideBar({ rootSuite, openedTest, onOpenTest, filter, setFilter }: SideBarProps): JSX.Element {
   const { onStart, onStop } = useContext(CreeveyContext);
-  const [filter, setFilter] = useState<CreeveyViewFilter>({ status: null, subStrings: [] });
 
   // TODO Maybe need to do flatten first?
   const suite = filterTests(rootSuite, filter);
