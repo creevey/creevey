@@ -1,3 +1,17 @@
+## [0.7.24](https://github.com/wKich/creevey/compare/v0.7.23...v0.7.24) (2021-03-10)
+
+### Bug Fixes
+
+- 🐛 some security issues ([d3eed3c](https://github.com/wKich/creevey/commit/d3eed3c8970f097309e9ec2e3926a2e6a881fd9c))
+- 🐛 websocket invalid frame error ([aafda92](https://github.com/wKich/creevey/commit/aafda92ff3d45cf20005872ea344831b53c2f5af))
+- upgrade tslib from 2.0.3 to 2.1.0 ([f047cae](https://github.com/wKich/creevey/commit/f047cae1c0a6b072b30b91be9f7bceef1a776917))
+- upgrade zone.js from 0.11.3 to 0.11.4 ([f1a911a](https://github.com/wKich/creevey/commit/f1a911a070658f8b2488f1d596a53e3cd2d3e001))
+
+### Features
+
+- 🎸 new panels in addon ([02232eb](https://github.com/wKich/creevey/commit/02232ebbeb3fe0eb0878743ccc9ad1a83277de64))
+- allow to ignore elements in screenshot ([19a38e0](https://github.com/wKich/creevey/commit/19a38e0379ad0b1cbbe6254f197888d2ebfb1a22))
+
 ## [0.7.23](https://github.com/wKich/creevey/compare/v0.7.22...v0.7.23) (2021-01-25)
 
 ### Bug Fixes

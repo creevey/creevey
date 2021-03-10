@@ -293,6 +293,7 @@
   - Test webpack building (include bundle size)
   - Test stories tests in output
 - [x] Features
+  - [x] Allow to ignore elements in capturing screenshot
   - [x] Add link `go to runner` in addon UI
   - [x] Show side-by-side diff vertically or horizontally depends on aspect
   - [x] Add resolveStorybookUrl to config
@@ -310,6 +311,7 @@
 ## First priority (v0.8)
 
 - [ ] Docs
+  - [ ] Ignore elements
   - [ ] Describe use cases
   - [ ] Rewrite config docs to more detail
   - [ ] How to setup creevey report in TeamCity
@@ -355,6 +357,7 @@
   - [ ] Playwright
   - [ ] Puppeteer
 - [ ] Features
+  - [ ] Stop gif animations (investigate)
   - [ ] Add status approved, apply after approve and reset after run
   - [ ] Output browser logs for debug
   - [ ] Support switch between globals https://github.com/wKich/creevey/discussions/108
@@ -387,7 +390,6 @@
   - [ ] Allow defined params for knobs and args to capture story with different states
   - [ ] Allow set viewport sizes for story (use width x height as postfix for browser name in UI)
   - [ ] Add fuzzy search and highlight
-  - [x] Allow to ignore elements in capturing screenshot
 
 ## Second priority (v0.9)
 
