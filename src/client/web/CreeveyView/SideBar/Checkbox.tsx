@@ -69,6 +69,13 @@ interface CheckboxState {
   indeterminate: boolean;
 }
 
+export const CheckboxContainer = styled.div({
+  position: 'absolute',
+  left: '64px',
+  top: '6px',
+  zIndex: 2,
+});
+
 export class Checkbox extends React.Component<BooleanProps, CheckboxState> {
   state: CheckboxState = { indeterminate: false };
 

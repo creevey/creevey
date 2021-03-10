@@ -143,7 +143,7 @@ SimpleSideBar.parameters = {
       async hover() {
         await this.browser
           .actions()
-          .move({ origin: this.browser.findElement({ css: '[data-tid="selectAll"]' }) })
+          .move({ origin: this.browser.findElement({ css: '[data-tid="root"]' }) })
           .perform();
         const hover = await this.takeScreenshot();
 

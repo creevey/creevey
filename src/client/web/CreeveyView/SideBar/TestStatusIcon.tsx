@@ -17,8 +17,13 @@ const Container = styled.span({
   display: 'inline-block',
 });
 
+const Icon = styled(Icons)({
+  position: 'relative',
+  top: '1.5px',
+});
+
 const Spinner = styled(Loader)({
-  top: '13px',
+  top: '14px',
   left: '40px',
 });
 
@@ -29,7 +34,7 @@ export const TestStatusIcon = withTheme(
     switch (status) {
       case 'failed': {
         icon = (
-          <Icons
+          <Icon
             color={inverted ? theme.color.lightest : theme.color.negative}
             icon="cross"
             stroke="currentColor"
@@ -40,7 +45,7 @@ export const TestStatusIcon = withTheme(
       }
       case 'success': {
         icon = (
-          <Icons
+          <Icon
             color={inverted ? theme.color.lightest : theme.color.green}
             icon="check"
             stroke="currentColor"
@@ -55,7 +60,7 @@ export const TestStatusIcon = withTheme(
       }
       case 'pending': {
         icon = (
-          <Icons
+          <Icon
             color={inverted ? theme.color.lightest : theme.color.mediumdark}
             icon="time"
             stroke="currentColor"
@@ -67,7 +72,7 @@ export const TestStatusIcon = withTheme(
       default: {
         if (skip)
           icon = (
-            <Icons
+            <Icon
               color={inverted ? theme.color.lightest : undefined}
               icon="timer"
               stroke="currentColor"

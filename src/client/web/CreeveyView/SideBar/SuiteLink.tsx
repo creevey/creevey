@@ -1,5 +1,5 @@
 import React, { useRef, useContext, useEffect, useMemo } from 'react';
-import { Checkbox } from './Checkbox';
+import { Checkbox, CheckboxContainer } from './Checkbox';
 import { Icons } from '@storybook/components';
 import { TestStatusIcon } from './TestStatusIcon';
 import { CreeveySuite, isTest } from '../../../../types';
@@ -26,16 +26,15 @@ export const Button = withTheme(
     width: '100%',
     boxSizing: 'border-box',
     appearance: 'none',
-    border: '1px solid transparent',
-    padding: '6px 36px 6px',
+    padding: '6px 36px',
     lineHeight: '20px',
     cursor: 'pointer',
-    outline: 'none',
+    border: 'none',
     zIndex: 1,
     textAlign: 'left',
     background: active ? theme.color.secondary : focused ? theme.background.hoverable : 'none',
     color: active ? theme.color.inverseText : 'inherit',
-    borderColor: focused ? theme.color.ancillary : 'transparent',
+    outline: focused ? `1px solid ${theme.color.ancillary}` : 'none',
 
     '&:hover': active
       ? {}
@@ -44,13 +43,6 @@ export const Button = withTheme(
         },
   })),
 );
-
-export const CheckboxContainer = styled.div({
-  position: 'absolute',
-  left: '64px',
-  top: '4px',
-  zIndex: 2,
-});
 
 const ArrowIcon = styled(Icons)({
   paddingRight: '8px',

@@ -4,8 +4,8 @@ import { TestStatusIcon } from './TestStatusIcon';
 import { CreeveyContext } from '../../CreeveyContext';
 import { SideBarContext } from './SideBar';
 import { KeyboardEventsContext } from '../../KeyboardEventsContext';
-import { Button, Container, CheckboxContainer, SuiteContainer } from './SuiteLink';
-import { Checkbox } from './Checkbox';
+import { Button, Container, SuiteContainer } from './SuiteLink';
+import { Checkbox, CheckboxContainer } from './Checkbox';
 import { getTestPath } from '../../../shared/helpers';
 
 export interface TestLinkProps {

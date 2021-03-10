@@ -57,7 +57,7 @@ const Shadow = withTheme(
 
 const SelectAllContainer = styled.div({
   marginBottom: '30px',
-  paddingTop: '8px',
+  paddingTop: '9px',
 });
 
 const TestsContainer = styled.div({
@@ -111,7 +111,7 @@ export function SideBar({ rootSuite, openedTest, onOpenTest, filter, setFilter }
                 isTest(suite) ? (
                   <TestLink key={suite.id} title={title} opened={suite.id == openedTest?.id} test={suite} />
                 ) : (
-                  <SuiteLink key={suite.path.join('/')} title={title} suite={suite} />
+                  <SuiteLink key={suite.path.join('/')} title={title} suite={suite} data-tid={title} />
                 ),
               )}
             </TestsContainer>
