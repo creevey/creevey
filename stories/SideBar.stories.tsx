@@ -126,7 +126,15 @@ export const SimpleSideBar: Story & CreeveyStory = () => {
 
   checkSuite(simpleSuites, testPath, false);
 
-  return <SideBar rootSuite={simpleSuites} openedTest={getTestByPath(simpleSuites, testPath)} onOpenTest={noop} />;
+  return (
+    <SideBar
+      rootSuite={simpleSuites}
+      openedTest={getTestByPath(simpleSuites, testPath)}
+      onOpenTest={noop}
+      filter={{ status: null, subStrings: [] }}
+      setFilter={noop}
+    />
+  );
 };
 
 SimpleSideBar.parameters = {
@@ -135,7 +143,7 @@ SimpleSideBar.parameters = {
       async hover() {
         await this.browser
           .actions()
-          .move({ origin: this.browser.findElement({ css: '[data-tid="selectAll"]' }) })
+          .move({ origin: this.browser.findElement({ css: '[data-tid="root"]' }) })
           .perform();
         const hover = await this.takeScreenshot();
 
@@ -146,5 +154,11 @@ SimpleSideBar.parameters = {
 };
 
 export const StatusSideBar = (): JSX.Element => (
-  <SideBar rootSuite={openSuites(treeifyTests(statusTests()))} openedTest={null} onOpenTest={noop} />
+  <SideBar
+    rootSuite={openSuites(treeifyTests(statusTests()))}
+    openedTest={null}
+    onOpenTest={noop}
+    filter={{ status: null, subStrings: [] }}
+    setFilter={noop}
+  />
 );
