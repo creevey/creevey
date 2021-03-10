@@ -25,6 +25,7 @@ It named after [Colin Creevey](https://harrypotter.fandom.com/wiki/Colin_Creevey
 - [How to Start](#how-to-start)
 - [Comparison with other tools](#comparison-with-other-tools)
 - [Config/Options](docs/config.md)
+- [Examples](https://github.com/wKich/creevey-examples)
 - Advanced usage
   - [Write tests](docs/tests.md)
   - [Use your Selenium Grid (BrowserStack/SauceLabs/etc)](docs/grid.md)
