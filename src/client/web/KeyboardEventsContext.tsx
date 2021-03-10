@@ -22,15 +22,13 @@ export const KeyboardEvents = ({
   filter: CreeveyViewFilter;
   children: React.ReactChild;
 }): JSX.Element => {
-  const [sidebarFocusedItem, setSideBarFocusedItem] = useState<string[]>([]);
+  const [sidebarFocusedItem, setSidebarFocusedItem] = useState<string[]>([]);
 
   const { onSuiteOpen, onSuiteToggle } = useContext(CreeveyContext);
 
   const suiteList = flattenSuite(filterTests(rootSuite, filter));
 
-  const focusOnNode = useCallback((path: string[]): void => {
-    setSideBarFocusedItem(path);
-  }, []);
+  const focusOnNode = useCallback((path: string[]): void => setSidebarFocusedItem(path), []);
 
   const getFocusedItemIndex = useCallback((): number => {
     return suiteList.findIndex((x) => {
@@ -45,7 +43,6 @@ export const KeyboardEvents = ({
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
-      // console.log(e.code, sidebarFocusedItem);
       if (e.code === 'Enter') {
         if (sidebarFocusedItem.length === 0) return;
 
@@ -114,9 +111,7 @@ export const KeyboardEvents = ({
   }, [handleKeyDown]);
 
   return (
-    <KeyboardEventsContext.Provider
-      value={{ sidebarFocusedItem: sidebarFocusedItem, setSidebarFocusedItem: setSideBarFocusedItem }}
-    >
+    <KeyboardEventsContext.Provider value={{ sidebarFocusedItem, setSidebarFocusedItem }}>
       {children}
     </KeyboardEventsContext.Provider>
   );

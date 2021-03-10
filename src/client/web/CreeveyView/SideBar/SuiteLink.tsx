@@ -37,9 +37,11 @@ export const Button = withTheme(
     color: active ? theme.color.inverseText : 'inherit',
     borderColor: focused ? theme.color.ancillary : 'transparent',
 
-    '&:hover': {
-      background: theme.background.hoverable,
-    },
+    '&:hover': active
+      ? {}
+      : {
+          background: theme.background.hoverable,
+        },
   })),
 );
 
@@ -78,9 +80,7 @@ export function SuiteLink({ title, suite, 'data-tid': dataTid }: SuiteLinkProps)
   );
 
   useEffect(() => {
-    if (isSuiteFocused && buttonRef && buttonRef.current) {
-      buttonRef.current.focus();
-    }
+    if (isSuiteFocused) buttonRef.current?.focus();
   }, [isSuiteFocused]);
 
   const isRootSuite = suite.path.length == 0;

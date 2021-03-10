@@ -31,17 +31,8 @@ export function TestLink({ title, opened, test }: TestLinkProps): JSX.Element {
   const handleCheck = useCallback((value: boolean): void => onSuiteToggle(testPath, value), [testPath, onSuiteToggle]);
 
   useEffect(() => {
-    if (isTestFocused && buttonRef && buttonRef.current) {
-      buttonRef.current.focus();
-    }
+    if (isTestFocused) buttonRef.current?.focus();
   }, [isTestFocused]);
-
-  useEffect(() => {
-    if (opened) {
-      setSidebarFocusedItem(testPath);
-      buttonRef.current?.focus();
-    }
-  }, [opened, setSidebarFocusedItem, testPath]);
 
   const handleOpen = useCallback((): void => {
     onOpenTest(test);
