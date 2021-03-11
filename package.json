@@ -89,7 +89,7 @@
     "ora": "^5.3.0",
     "pixelmatch": "^5.2.1",
     "pngjs": "^6.0.0",
-    "polished": "^3.4.4",
+    "polished": "^3.7.1",
     "qs": "^6.9.6",
     "regenerator-runtime": "^0.13.7",
     "schema-utils": "^3.0.0",
