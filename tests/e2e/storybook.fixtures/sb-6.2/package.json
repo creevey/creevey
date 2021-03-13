@@ -1,0 +1,12 @@
+{
+  "name": "sb-6.2",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "@storybook/react": "~6.2.0-beta",
+    "creevey": "./creevey.tgz",
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0"
+  }
+}

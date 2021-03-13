@@ -192,7 +192,8 @@ module.exports = function(originalModule) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./KindA.stories.jsx": "./stories/KindA.stories.jsx"
+	"./KindA.stories.jsx": "./stories/KindA.stories.jsx",
+	"./KindB.stories.jsx": "./stories/KindB.stories.jsx"
 };
 
 
@@ -224,10 +225,21 @@ webpackContext.id = "./stories sync recursive \\.stories\\.jsx$";
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* WEBPACK VAR INJECTION */(function(module) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "StoryA", function() { return StoryA; });
-/* harmony import */ var _storybook_react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @storybook/react */ "@storybook/react");
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "StoryA", function() { return StoryA; });
+/* harmony default export */ __webpack_exports__["default"] = ({title:"KindA"});var StoryA=function(){};
+
+/***/ }),
+
+/***/ "./stories/KindB.stories.jsx":
+/* ./stories/KindB.stories.jsx */
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* WEBPACK VAR INJECTION */(function(module) {/* harmony import */ var _storybook_react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @storybook/react */ "@storybook/react");
 /* harmony import */ var _storybook_react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_storybook_react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony default export */ __webpack_exports__["default"] = ({title:"KindA"});var StoryA=function(){};Object(_storybook_react__WEBPACK_IMPORTED_MODULE_0__["storiesOf"])("KindB",module).add("StoryB",function(){});
+Object(_storybook_react__WEBPACK_IMPORTED_MODULE_0__["storiesOf"])("KindB",module).add("StoryB",function(){});
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../node_modules/webpack/buildin/harmony-module.js */ "./node_modules/webpack/buildin/harmony-module.js")(module)))
 
 /***/ }),

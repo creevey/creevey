@@ -14,7 +14,7 @@
       "name": "StoryB",
       "story": "StoryB",
       "parameters": {
-        "fileName": "./stories/KindA.stories.jsx",
+        "fileName": "./stories/KindB.stories.jsx",
         "creevey": {
           "captureElement": "root"
         },

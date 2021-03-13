@@ -1,10 +1,12 @@
 import { StoryApi } from '@storybook/addons';
-import core from '@storybook/core';
+import * as core from '@storybook/core';
 import { isStorybookVersionLessThan } from './utils';
 
 const framework = 'creevey';
 
-const api = core.start(() => void 0);
+//@ts-expect-error: 6.2 use named exports
+const start = isStorybookVersionLessThan(6, 2) ? core.default.start : (core.start as typeof core.default.start);
+const api = start(() => void 0);
 
 //@ts-expect-error: 6.x has { channel }, but 5.x has { context: { channel } }
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment

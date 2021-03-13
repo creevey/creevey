@@ -267,15 +267,12 @@
   - [x] Fix height in addon
   - [x] ~~Fix firefox 61 in skbkontur selenium grid~~
   - [x] creevey-loader `top-level property access`
-  - [ ] wait-on doesn't work properly
+  - [x] wait-on doesn't work properly
   - [ ] Don't pull docker local images
-  - [ ] ERR! Runtime error! Check your browser console. ERR! ResizeObserver loop limit exceeded (in addon)
-  - [ ] Creevey nodejs console output `This browser doesn't support requestAnimationFrame.`
 - [x] Change viewport height to 786 in config
 - [ ] Save TeamCity config in repo
 - [ ] Gitlab browse report fix
-- [ ] use `/** @type {import("webpack").Configuration } */` thing for creevey.config
-  - Remove ts config support
+- [x] Add Storybook 6.2 e2e tests
 - [x] Start server early and wait for build
 - [x] Setup TeamCity CI
 - [x] Update CircleCI and GitLab according by github actions
@@ -304,6 +301,7 @@
     - [ ] Send PR to Storybook to allow use HMR for stories
   - [ ] Allow run creevey against static-storybook folder (Depends on fallback tests loading)
   - [ ] Implement first iteration of mdx support (support only stories without docs)
+    - Add tests loader and e2e
 - [x] Improve Docker
   - [x] Private docker images registry
   - [x] Allow use standalone binary instead of Docker image for browser (https://aerokube.com/selenoid/latest/#_standalone_binary)
@@ -311,6 +309,8 @@
 ## First priority (v0.8)
 
 - [ ] Docs
+  - [ ] Add vue3 example
+  - [ ] Add github actions for creevey-examples
   - [ ] Ignore elements
   - [ ] Describe use cases
   - [ ] Rewrite config docs to more detail
@@ -328,7 +328,10 @@
     - [ ] Gatsby
     - [ ] Next.js
 - [ ] Bugs
+  - [ ] ERR! Runtime error! Check your browser console. ERR! ResizeObserver loop limit exceeded (in addon)
+  - [ ] Creevey nodejs console output `This browser doesn't support requestAnimationFrame.`
   - [ ] Remove support ts config file version
+    - use `/** @type {import("webpack").Configuration } */` thing for creevey.config
   - [ ] webpack config dll references (disable dll plugin)
   - [ ] Scrollbar is not visible on dark theme in ResultPage
   - [ ] Don't have hot reload on preview config storybook
@@ -357,6 +360,7 @@
   - [ ] Playwright
   - [ ] Puppeteer
 - [ ] Features
+  - [ ] Webpack 5 support
   - [ ] Stop gif animations (investigate)
   - [ ] Add status approved, apply after approve and reset after run
   - [ ] Output browser logs for debug

@@ -1,2 +1,2 @@
 export * from './types';
-export * from './client/addon/decorator';
+export * from './client/addon/withCreevey';
