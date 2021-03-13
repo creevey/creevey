@@ -272,6 +272,7 @@
 - [x] Change viewport height to 786 in config
 - [ ] Save TeamCity config in repo
 - [ ] Gitlab browse report fix
+- [ ] Annotate types for storybook 6.2
 - [x] Add Storybook 6.2 e2e tests
 - [x] Start server early and wait for build
 - [x] Setup TeamCity CI
@@ -297,6 +298,7 @@
   - [x] Support teamcity screenshots diff UI https://www.jetbrains.com/help/teamcity/including-third-party-reports-in-the-build-results.html
   - [x] Save webpack stats.json for debug
   - [x] Send list of available browsers from api
+  - [ ] Handle main.js for 6.x+, remove addons from it
   - [ ] Add fallback option, load tests from browser (hmr and tests are disabled in this case)
     - [ ] Send PR to Storybook to allow use HMR for stories
   - [ ] Allow run creevey against static-storybook folder (Depends on fallback tests loading)

@@ -97,7 +97,6 @@ async function getWebpackConfigForStorybook_6_2(
   // TODO Remove addons by requiring main.js and monkey patch
   // TODO Find where storybook load main.js
 
-  // TODO How to use quite
   const options = {
     quiet: true,
     configType: 'PRODUCTION',
