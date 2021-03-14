@@ -298,7 +298,7 @@
   - [x] Support teamcity screenshots diff UI https://www.jetbrains.com/help/teamcity/including-third-party-reports-in-the-build-results.html
   - [x] Save webpack stats.json for debug
   - [x] Send list of available browsers from api
-  - [ ] Handle main.js for 6.x+, remove addons from it
+  - [x] Handle main.js for 6.x+, remove addons from it
   - [ ] Add fallback option, load tests from browser (hmr and tests are disabled in this case)
     - [ ] Send PR to Storybook to allow use HMR for stories
   - [ ] Allow run creevey against static-storybook folder (Depends on fallback tests loading)
@@ -345,6 +345,7 @@
     - Iterate be screen images and calculate resulting x/y coordinates for composite image
     - If image width/height greater than viewport width/height than scroll bar is captured
 - [x] ~~Support esm/cjs builds~~
+- [ ] Add google analytics (send reports, versions, addons, framework, configs, package.json?)
 - [ ] Drop support nodejs 10
 - [ ] Test standalone selenoid + webdriver work
 - [ ] Add more tests on different esnext features (test babel-parser + plugins)

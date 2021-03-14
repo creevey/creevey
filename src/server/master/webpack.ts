@@ -1,12 +1,13 @@
 import { rmdirSync, writeFile } from 'fs';
 import path from 'path';
-import webpack, { Configuration } from 'webpack';
+import webpack, { Configuration, Stats } from 'webpack';
 import nodeExternals from 'webpack-node-externals';
 import { extensions as fallbackExtensions, getCreeveyCache, isStorybookVersionLessThan } from '../utils';
 import { Config, Options, noop } from '../../types';
 import { emitWebpackMessage, subscribeOn } from '../messages';
 
 let isInitiated = false;
+let dumpStats: (stats: Stats) => void = noop;
 const supportedFrameworks = [
   'react',
   'vue',
@@ -35,7 +36,9 @@ function tryDetectStorybookFramework(parentDir: string): string | undefined {
   });
 }
 
-function handleWebpackBuild(error: Error, stats: webpack.Stats): void {
+function handleWebpackBuild(error: Error, stats: Stats): void {
+  dumpStats(stats);
+
   if (error || !stats || stats.hasErrors()) {
     emitWebpackMessage({ type: isInitiated ? 'rebuild failed' : 'fail' });
     console.error('=> Failed to build the Storybook preview bundle');
@@ -94,9 +97,6 @@ async function getWebpackConfigForStorybook_6_2(
   const { default: storybookFrameworkOptions } = (await import(`@storybook/${framework}/dist/cjs/server/options`)) as {
     default: { framework: string; frameworkPresets: string[] };
   };
-  // TODO Remove addons by requiring main.js and monkey patch
-  // TODO Find where storybook load main.js
-
   const options = {
     quiet: true,
     configType: 'PRODUCTION',
@@ -139,6 +139,22 @@ async function getWebpackConfigForStorybook_6_2(
   return builder.getConfig({ ...options, presets });
 }
 
+async function removeAddons(configDir: string): Promise<boolean> {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const { default: config } = (await import(path.join(configDir, 'main'))) as {
+      default: { stories: string[]; addons?: (string | { name: string })[] };
+    };
+    if (config.addons && config.stories) {
+      config.addons = [];
+      return true;
+    }
+  } catch (_) {
+    /* noop */
+  }
+  return false;
+}
+
 export default async function compile(config: Config, { debug, ui }: Options): Promise<void> {
   const storybookCorePath = require.resolve('@storybook/core');
   const [storybookParentDirectory] = storybookCorePath.split('@storybook');
@@ -156,6 +172,9 @@ export default async function compile(config: Config, { debug, ui }: Options): P
   } catch (_) {
     /* noop */
   }
+
+  // NOTE Remove addons by monkey patching, only for new config file (main.js)
+  const areAddonsRemoved = await removeAddons(config.storybookDir);
 
   const getWebpackConfig = isStorybookVersionLessThan(6, 2)
     ? getWebpackConfigForStorybook_pre6_2
@@ -176,12 +195,6 @@ export default async function compile(config: Config, { debug, ui }: Options): P
     filename: 'main.js',
   };
 
-  // TODO Need to exclude third-party addons
-  // NOTE Exclude all addons
-  storybookWebpackConfig.entry = Array.isArray(storybookWebpackConfig.entry)
-    ? storybookWebpackConfig.entry.filter((entry) => !/@storybook(\/|\\)addon/.test(entry))
-    : storybookWebpackConfig.entry;
-
   // NOTE Add hack to allow stories HMR work in nodejs
   Array.isArray(storybookWebpackConfig.entry) &&
     storybookWebpackConfig.entry.unshift(path.join(__dirname, 'dummy-hmr'));
@@ -193,19 +206,31 @@ export default async function compile(config: Config, { debug, ui }: Options): P
     /\.(stories|story).mdx$/, // NOTE Storybook <= 6.1 has a bug with incorrect regexp
     /\.(stories|story)\.mdx$/,
     /(stories|story)\.mdx$/, // NOTE Introduced in 6.2
-  ].map((x) => x.toString());
-  storybookWebpackConfig.module?.rules
-    .filter((rule) => mdxRegexps.some((x) => rule.test?.toString() == x))
-    .forEach((rule) => (rule.use = require.resolve('null-loader')));
+  ];
 
-  // NOTE Exclude source-loader
-  storybookWebpackConfig.module = {
-    ...storybookWebpackConfig.module,
-    rules:
-      storybookWebpackConfig.module?.rules.filter(
-        (rule) => !(typeof rule.loader == 'string' && /@storybook(\/|\\)source-loader/.test(rule.loader)),
-      ) ?? [],
-  };
+  if (areAddonsRemoved) {
+    mdxRegexps.forEach((test) =>
+      storybookWebpackConfig.module?.rules.push({ test, use: require.resolve('null-loader') }),
+    );
+  } else {
+    // NOTE Exclude addons' entry points
+    storybookWebpackConfig.entry = Array.isArray(storybookWebpackConfig.entry)
+      ? storybookWebpackConfig.entry.filter((entry) => !/@storybook(\/|\\)addon/.test(entry))
+      : storybookWebpackConfig.entry;
+
+    storybookWebpackConfig.module?.rules
+      .filter((rule) => mdxRegexps.some((x) => rule.test?.toString() == x.toString()))
+      .forEach((rule) => (rule.use = require.resolve('null-loader')));
+
+    // NOTE Exclude source-loader
+    storybookWebpackConfig.module = {
+      ...storybookWebpackConfig.module,
+      rules:
+        storybookWebpackConfig.module?.rules.filter(
+          (rule) => !(typeof rule.loader == 'string' && /@storybook(\/|\\)source-loader/.test(rule.loader)),
+        ) ?? [],
+    };
+  }
 
   // NOTE Add creevey-loader to cut off all unnecessary code except stories meta and tests
   storybookWebpackConfig.module?.rules.unshift({
@@ -238,17 +263,15 @@ export default async function compile(config: Config, { debug, ui }: Options): P
   );
 
   const storybookWebpackCompiler = webpack(storybookWebpackConfig);
+
+  dumpStats = (stats: Stats) =>
+    writeFile(path.join(config.reportDir, 'stats.json'), JSON.stringify(stats.toJson(), null, 2), noop);
+
   if (ui) {
-    const watcher = storybookWebpackCompiler.watch({}, (error: Error, stats: webpack.Stats) => {
-      if (debug) writeFile(path.join(config.reportDir, 'stats.json'), JSON.stringify(stats.toJson(), null, 2), noop);
-      handleWebpackBuild(error, stats);
-    });
+    const watcher = storybookWebpackCompiler.watch({}, handleWebpackBuild);
 
     subscribeOn('shutdown', () => watcher.close(noop));
   } else {
-    storybookWebpackCompiler.run((error: Error, stats: webpack.Stats) => {
-      if (debug) writeFile(path.join(config.reportDir, 'stats.json'), JSON.stringify(stats.toJson(), null, 2), noop);
-      handleWebpackBuild(error, stats);
-    });
+    storybookWebpackCompiler.run(handleWebpackBuild);
   }
 }
