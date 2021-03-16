@@ -40,5 +40,6 @@ ui:
     paths:
       - report/
   script:
+    - cp lib/client/web/main.js report/
     - yarn start:storybook &
     - yarn creevey --config .creevey/gitlab.config.ts
