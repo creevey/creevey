@@ -10,6 +10,7 @@ cache:
     - .yarn
 
 build:
+  stage: build
   artifacts:
     paths:
       - lib/
@@ -28,6 +29,7 @@ unit:
 #     - yarn test:e2e
 
 ui:
+  stage: test
   services:
     - selenoid/chrome
     - selenoid/firefox
