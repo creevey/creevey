@@ -112,8 +112,8 @@ var parameters={creevey:{captureElement:"root"}};
 
 /***/ }),
 
-/***/ "./node_modules/creevey/lib/server/master/dummy-hmr.js":
-/* ./node_modules/creevey/lib/server/master/dummy-hmr.js */
+/***/ "./node_modules/creevey/lib/server/webpack/dummy-hmr.js":
+/* ./node_modules/creevey/lib/server/webpack/dummy-hmr.js */
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -260,11 +260,11 @@ module.exports = require("./node_modules/@storybook/core/dist/server/preview/glo
 /***/ }),
 
 /***/ 0:
-/* multi ./node_modules/creevey/lib/server/master/dummy-hmr ./node_modules/@storybook/core/dist/server/common/polyfills.js ./node_modules/@storybook/core/dist/server/preview/globals.js ./.storybook/preview.js ./.storybook/generated-entry.js */
+/* multi ./node_modules/creevey/lib/server/webpack/dummy-hmr.js ./node_modules/@storybook/core/dist/server/common/polyfills.js ./node_modules/@storybook/core/dist/server/preview/globals.js ./.storybook/preview.js ./.storybook/generated-entry.js */
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! ./node_modules/creevey/lib/server/master/dummy-hmr */"./node_modules/creevey/lib/server/master/dummy-hmr.js");
+__webpack_require__(/*! ./node_modules/creevey/lib/server/webpack/dummy-hmr.js */"./node_modules/creevey/lib/server/webpack/dummy-hmr.js");
 __webpack_require__(/*! ./node_modules/@storybook/core/dist/server/common/polyfills.js */"./node_modules/@storybook/core/dist/server/common/polyfills.js");
 __webpack_require__(/*! ./node_modules/@storybook/core/dist/server/preview/globals.js */"./node_modules/@storybook/core/dist/server/preview/globals.js");
 __webpack_require__(/*! ./.storybook/preview.js */"./.storybook/preview.js");

@@ -270,9 +270,8 @@
   - [x] wait-on doesn't work properly
   - [ ] Don't pull docker local images
 - [x] Change viewport height to 786 in config
-- [ ] Save TeamCity config in repo
+- [x] Save TeamCity config in repo
 - [ ] Gitlab browse report fix
-- [ ] Annotate types for storybook 6.2
 - [x] Add Storybook 6.2 e2e tests
 - [x] Start server early and wait for build
 - [x] Setup TeamCity CI
@@ -306,7 +305,6 @@
     - Move webpack/update to separate folder/file
   - [x] Mdx e2e tests
     - Add tests loader and e2e
-- [ ] Bring all examples from storybook repo and test with creevey
 - [x] Improve Docker
   - [x] Private docker images registry
   - [x] Allow use standalone binary instead of Docker image for browser (https://aerokube.com/selenoid/latest/#_standalone_binary)
@@ -351,6 +349,11 @@
     - Iterate be screen images and calculate resulting x/y coordinates for composite image
     - If image width/height greater than viewport width/height than scroll bar is captured
 - [x] ~~Support esm/cjs builds~~
+- [ ] Move from yarn to npm@7
+- [ ] Bring all examples from storybook repo and test with creevey
+  - Save here images/configs/bundle/stories.json
+  - Grab storybook examples from same version as installed here
+- [ ] Annotate types for storybook 6.2
 - [ ] Add google analytics (send reports, versions, addons, framework, configs, package.json?)
 - [ ] Drop support nodejs 10
 - [ ] Test standalone selenoid + webdriver work
