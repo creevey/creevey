@@ -12,6 +12,7 @@ cache:
 build:
   artifacts:
     paths:
+      - lib/
       - creevey-*.tgz
   script:
     - yarn lint
@@ -30,6 +31,8 @@ ui:
   services:
     - selenoid/chrome
     - selenoid/firefox
+  dependencies:
+    - build
   artifacts:
     when: always
     paths:
