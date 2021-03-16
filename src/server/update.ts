@@ -1,6 +1,6 @@
 import fs, { Dirent, mkdirSync } from 'fs';
 import path from 'path';
-import { Config, isDefined } from '../../types';
+import { Config, isDefined } from '../types';
 
 const actualRegex = /^(.*)-actual-(\d+)\.png$/i;
 

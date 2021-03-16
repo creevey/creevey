@@ -457,7 +457,6 @@ export default function (this: loader.LoaderContext | void, source: string): str
       sourceType: 'module',
       plugins: ['classProperties', 'decorators-legacy', 'jsx', 'typescript'],
     });
-    console.log(source);
     return transform(ast);
   } catch (error) {
     this && console.log(chalk`[{yellow WARN}{grey :CreeveyWebpack}]`, 'Failed to transform file', this.resourcePath);

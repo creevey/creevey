@@ -31,12 +31,12 @@ export default async function (options: Options): Promise<void> {
 
   switch (true) {
     case update: {
-      return (await import('./master/update')).default(config);
+      return (await import('./update')).default(config);
     }
     case webpack: {
       console.log('[CreeveyWebpack]:', `Starting with pid ${process.pid}`);
 
-      return (await import('./master/webpack')).default(config, options);
+      return (await import('./webpack')).default(config, options);
     }
     case cluster.isMaster: {
       console.log('[CreeveyMaster]:', `Starting with pid ${process.pid}`);

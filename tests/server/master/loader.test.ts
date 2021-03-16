@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
-import loader, { FileType } from '../../../src/server/master/loader';
+import loader, { FileType } from '../../../src/server/webpack/creevey-loader';
 
 const testsToFileTypes: Partial<Record<string, FileType>> = {
   addDecorator: FileType.Preview,

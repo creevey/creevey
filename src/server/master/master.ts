@@ -2,7 +2,7 @@ import path from 'path';
 import { Config, TestData, isDefined, ServerTest } from '../../types';
 import { loadTestsFromStories } from '../stories';
 import Runner from './runner';
-import { startWebpackCompiler } from './stories';
+import { startWebpackCompiler } from './compiler';
 import { shutdownWorkers } from '../utils';
 
 function mergeTests(

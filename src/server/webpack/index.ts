@@ -75,7 +75,7 @@ function handleWebpackBuild(error: Error, stats: Stats): void {
 }
 
 async function applyMdxLoader(config: Configuration, areAddonsRemoved: boolean, loader: RuleSetUse): Promise<void> {
-  const { mdxLoaders } = await import('./mdx-loaders');
+  const { mdxLoaders } = await import('./mdx-loader');
 
   mdxLoaders.splice(1, 0, loader);
 
@@ -135,7 +135,7 @@ async function getWebpackConfigForStorybook_pre6_2(
     cache: {},
     corePresets: [require.resolve('@storybook/core/dist/server/preview/preview-preset')],
     overridePresets: [
-      ...(hasDocsAddon ? [require.resolve('./mdx-loaders')] : []),
+      ...(hasDocsAddon ? [require.resolve('./mdx-loader')] : []),
       require.resolve('@storybook/core/dist/server/preview/custom-webpack-preset'),
     ],
     ...storybookFrameworkOptions,
@@ -185,7 +185,7 @@ async function getWebpackConfigForStorybook_6_2(
       require.resolve('@storybook/core-server/dist/cjs/presets/babel-cache-preset'),
     ],
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-    overridePresets: [...(hasDocsAddon ? [require.resolve('./mdx-loaders')] : []), ...builder.overridePresets],
+    overridePresets: [...(hasDocsAddon ? [require.resolve('./mdx-loader')] : []), ...builder.overridePresets],
     ...options,
   });
 
@@ -227,7 +227,10 @@ export default async function compile(config: Config, { debug, ui }: Options): P
     /* noop */
   }
 
-  const creeveyLoader = { loader: require.resolve('./loader'), options: { debug, storybookDir: config.storybookDir } };
+  const creeveyLoader = {
+    loader: require.resolve('./creevey-loader'),
+    options: { debug, storybookDir: config.storybookDir },
+  };
 
   // NOTE Remove addons by monkey patching, only for new config file (main.js)
   const areAddonsRemoved = await removeAddons(config.storybookDir);
@@ -252,8 +255,7 @@ export default async function compile(config: Config, { debug, ui }: Options): P
   };
 
   // NOTE Add hack to allow stories HMR work in nodejs
-  Array.isArray(storybookWebpackConfig.entry) &&
-    storybookWebpackConfig.entry.unshift(path.join(__dirname, 'dummy-hmr'));
+  Array.isArray(storybookWebpackConfig.entry) && storybookWebpackConfig.entry.unshift(require.resolve('./dummy-hmr'));
 
   // NOTE apply creevey loader to output from mdx loader
   if (hasDocsAddon) await applyMdxLoader(storybookWebpackConfig, areAddonsRemoved, creeveyLoader);

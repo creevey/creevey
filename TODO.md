@@ -302,7 +302,7 @@
   - [ ] Add fallback option, load tests from browser (hmr and tests are disabled in this case)
     - [ ] Send PR to Storybook to allow use HMR for stories
   - [ ] Allow run creevey against static-storybook folder (Depends on fallback tests loading)
-  - [ ] Implement first iteration of mdx support (support only stories without docs)
+  - [x] Implement first iteration of mdx support (support only stories without docs)
     - Move webpack/update to separate folder/file
   - [x] Mdx e2e tests
     - Add tests loader and e2e
