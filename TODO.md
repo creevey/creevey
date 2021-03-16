@@ -303,7 +303,10 @@
     - [ ] Send PR to Storybook to allow use HMR for stories
   - [ ] Allow run creevey against static-storybook folder (Depends on fallback tests loading)
   - [ ] Implement first iteration of mdx support (support only stories without docs)
+    - Move webpack/update to separate folder/file
+  - [x] Mdx e2e tests
     - Add tests loader and e2e
+- [ ] Bring all examples from storybook repo and test with creevey
 - [x] Improve Docker
   - [x] Private docker images registry
   - [x] Allow use standalone binary instead of Docker image for browser (https://aerokube.com/selenoid/latest/#_standalone_binary)
@@ -315,9 +318,11 @@
   - [ ] Add github actions for creevey-examples
   - [ ] Ignore elements
   - [ ] Describe use cases
+    - MDX, animations, CI + docker
   - [ ] Rewrite config docs to more detail
   - [ ] How to setup creevey report in TeamCity
   - [ ] Add new options (selenoidPath, webdriverCommand, etc)
+  - [ ] Lazy-load components (use https://storybook.js.org/docs/react/writing-stories/loaders)
   - [ ] Add best practices for stories
     - Git LFS
     - Avoid write side-effects
@@ -330,6 +335,7 @@
     - [ ] Gatsby
     - [ ] Next.js
 - [ ] Bugs
+  - [ ] MDX imported stories missed source parameters in creevey (allow to import such stories)
   - [ ] ERR! Runtime error! Check your browser console. ERR! ResizeObserver loop limit exceeded (in addon)
   - [ ] Creevey nodejs console output `This browser doesn't support requestAnimationFrame.`
   - [ ] Remove support ts config file version
@@ -349,7 +355,6 @@
 - [ ] Drop support nodejs 10
 - [ ] Test standalone selenoid + webdriver work
 - [ ] Add more tests on different esnext features (test babel-parser + plugins)
-- [ ] Mdx e2e tests
 - [ ] Add custom docker images with node+selenoid+browser (We won't need them, if we make creevey-as-a-service image)
   - [ ] Support GitLab CI
 - [ ] Download webdriver binary automatically (see example: https://hub.docker.com/r/selenoid/chrome/dockerfile)
@@ -368,7 +373,7 @@
   - [ ] Add status approved, apply after approve and reset after run
   - [ ] Output browser logs for debug
   - [ ] Support switch between globals https://github.com/wKich/creevey/discussions/108
-  - [ ] Change `skip` option API
+  - [ ] Change `skip` option API (described somewhere in telegram, like object with keys)
   - [ ] Improve creevey-loader
     - [x] Support re-export stories
     - [ ] Don't warn user on imported tests
@@ -379,7 +384,8 @@
   - [ ] Merge stories from nodejs bundle and browser, output warning to user if some stories are missing in nodejs
   - [ ] Add `HTML` diff view
   - [ ] Improve how works takeScreenshot with default captureElement
-    - Check `#root` child nodes, if they there, capture `#root > *`
+    - If only one child inside `#root` node => capture `#root > *`
+    - If more children => capture `#root`
     - Else capture viewport
   - [ ] Move creevey config inside addon
     - Describe storybook config dir in args
@@ -393,7 +399,7 @@
   - [ ] Support Storybook Composition https://storybook.js.org/docs/react/workflows/storybook-composition
   - [ ] Show multiple tests for browser in storybook UI
   - [ ] Allow run multiple tests from storybook UI
-  - [ ] Support mdx stories
+  - [ ] Support mdx documentation page
   - [ ] Allow defined params for knobs and args to capture story with different states
   - [ ] Allow set viewport sizes for story (use width x height as postfix for browser name in UI)
   - [ ] Add fuzzy search and highlight

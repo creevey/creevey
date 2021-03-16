@@ -1,6 +1,6 @@
 import { rmdirSync, writeFile } from 'fs';
 import path from 'path';
-import webpack, { Configuration, Stats } from 'webpack';
+import webpack, { Configuration, RuleSetUse, Stats } from 'webpack';
 import nodeExternals from 'webpack-node-externals';
 import { extensions as fallbackExtensions, getCreeveyCache, isStorybookVersionLessThan } from '../utils';
 import { Config, Options, noop } from '../../types';
@@ -8,6 +8,15 @@ import { emitWebpackMessage, subscribeOn } from '../messages';
 
 let isInitiated = false;
 let dumpStats: (stats: Stats) => void = noop;
+const hasDocsAddon = (() => {
+  try {
+    // eslint-disable-next-line node/no-extraneous-require
+    require.resolve('@storybook/addon-docs');
+    return true;
+  } catch (_) {
+    return false;
+  }
+})();
 const supportedFrameworks = [
   'react',
   'vue',
@@ -65,6 +74,48 @@ function handleWebpackBuild(error: Error, stats: Stats): void {
   return;
 }
 
+async function applyMdxLoader(config: Configuration, areAddonsRemoved: boolean, loader: RuleSetUse): Promise<void> {
+  const { mdxLoaders } = await import('./mdx-loaders');
+
+  mdxLoaders.splice(1, 0, loader);
+
+  const mdxRegexps = isStorybookVersionLessThan(6, 2)
+    ? [/\.(stories|story).mdx$/, /\.(stories|story)\.mdx$/]
+    : [/(stories|story)\.mdx$/];
+
+  // NOTE replace md/mdx to null loader
+  const mdRegexps = [/\.md$/, /\.mdx$/];
+
+  if (areAddonsRemoved) {
+    mdRegexps.forEach((test) =>
+      config.module?.rules.push({ test, exclude: /(stories|story)\.mdx$/, use: require.resolve('null-loader') }),
+    );
+    config.module?.rules.push({ test: /(stories|story)\.mdx$/, use: mdxLoaders });
+  } else {
+    // NOTE Exclude addons' entry points
+    config.entry = Array.isArray(config.entry)
+      ? config.entry.filter((entry) => !/@storybook(\/|\\)addon/.test(entry))
+      : config.entry;
+
+    config.module?.rules
+      .filter((rule) => mdRegexps.some((test) => rule.test?.toString() == test.toString()))
+      .forEach((rule) => (rule.use = require.resolve('null-loader')));
+
+    config.module?.rules
+      .filter((rule) => mdxRegexps.some((test) => rule.test?.toString() == test.toString()))
+      .forEach((rule) => (rule.use = mdxLoaders as RuleSetUse));
+
+    // NOTE Exclude source-loader
+    config.module = {
+      ...config.module,
+      rules:
+        config.module?.rules.filter(
+          (rule) => !(typeof rule.loader == 'string' && /@storybook(\/|\\)source-loader/.test(rule.loader)),
+        ) ?? [],
+    };
+  }
+}
+
 async function getWebpackConfigForStorybook_pre6_2(
   framework: string,
   configDir: string,
@@ -74,16 +125,19 @@ async function getWebpackConfigForStorybook_pre6_2(
     default: { framework: string; frameworkPresets: string[] };
   };
 
-  const { default: loadStorybookWebpackConfig } = await import('@storybook/core/dist/server/config');
+  const { default: getConfig } = await import('@storybook/core/dist/server/config');
 
-  return loadStorybookWebpackConfig({
+  return getConfig({
     // @ts-expect-error: 6.1 storybook don't support quite any more. But we still have older versions
     quiet: true,
     configType: 'PRODUCTION',
     outputDir,
     cache: {},
     corePresets: [require.resolve('@storybook/core/dist/server/preview/preview-preset')],
-    overridePresets: [require.resolve('@storybook/core/dist/server/preview/custom-webpack-preset')],
+    overridePresets: [
+      ...(hasDocsAddon ? [require.resolve('./mdx-loaders')] : []),
+      require.resolve('@storybook/core/dist/server/preview/custom-webpack-preset'),
+    ],
     ...storybookFrameworkOptions,
     configDir,
   });
@@ -131,7 +185,7 @@ async function getWebpackConfigForStorybook_6_2(
       require.resolve('@storybook/core-server/dist/cjs/presets/babel-cache-preset'),
     ],
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-    overridePresets: builder.overridePresets,
+    overridePresets: [...(hasDocsAddon ? [require.resolve('./mdx-loaders')] : []), ...builder.overridePresets],
     ...options,
   });
 
@@ -173,6 +227,8 @@ export default async function compile(config: Config, { debug, ui }: Options): P
     /* noop */
   }
 
+  const creeveyLoader = { loader: require.resolve('./loader'), options: { debug, storybookDir: config.storybookDir } };
+
   // NOTE Remove addons by monkey patching, only for new config file (main.js)
   const areAddonsRemoved = await removeAddons(config.storybookDir);
 
@@ -199,45 +255,15 @@ export default async function compile(config: Config, { debug, ui }: Options): P
   Array.isArray(storybookWebpackConfig.entry) &&
     storybookWebpackConfig.entry.unshift(path.join(__dirname, 'dummy-hmr'));
 
-  // NOTE replace mdx to null loader for now
-  // TODO Use mdx plugin from storybook and then apply creevey-loader
-  const mdxRegexps = [
-    /\.mdx$/,
-    /\.(stories|story).mdx$/, // NOTE Storybook <= 6.1 has a bug with incorrect regexp
-    /\.(stories|story)\.mdx$/,
-    /(stories|story)\.mdx$/, // NOTE Introduced in 6.2
-  ];
-
-  if (areAddonsRemoved) {
-    mdxRegexps.forEach((test) =>
-      storybookWebpackConfig.module?.rules.push({ test, use: require.resolve('null-loader') }),
-    );
-  } else {
-    // NOTE Exclude addons' entry points
-    storybookWebpackConfig.entry = Array.isArray(storybookWebpackConfig.entry)
-      ? storybookWebpackConfig.entry.filter((entry) => !/@storybook(\/|\\)addon/.test(entry))
-      : storybookWebpackConfig.entry;
-
-    storybookWebpackConfig.module?.rules
-      .filter((rule) => mdxRegexps.some((x) => rule.test?.toString() == x.toString()))
-      .forEach((rule) => (rule.use = require.resolve('null-loader')));
-
-    // NOTE Exclude source-loader
-    storybookWebpackConfig.module = {
-      ...storybookWebpackConfig.module,
-      rules:
-        storybookWebpackConfig.module?.rules.filter(
-          (rule) => !(typeof rule.loader == 'string' && /@storybook(\/|\\)source-loader/.test(rule.loader)),
-        ) ?? [],
-    };
-  }
+  // NOTE apply creevey loader to output from mdx loader
+  if (hasDocsAddon) await applyMdxLoader(storybookWebpackConfig, areAddonsRemoved, creeveyLoader);
 
   // NOTE Add creevey-loader to cut off all unnecessary code except stories meta and tests
   storybookWebpackConfig.module?.rules.unshift({
     enforce: 'pre',
     test: new RegExp(`\\.(${extensions.map((x) => x.slice(1))?.join('|')})$`),
     exclude: /node_modules/,
-    use: { loader: require.resolve('./loader'), options: { debug, storybookDir: config.storybookDir } },
+    use: creeveyLoader,
   });
 
   // NOTE Exclude from bundle all modules from node_modules

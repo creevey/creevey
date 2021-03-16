@@ -98,7 +98,7 @@ var _frameworkImportPath = __webpack_require__(/*! @storybook/react */ "@storybo
 /* eslint-disable import/no-unresolved */
 
 
-(0, _frameworkImportPath.configure)([__webpack_require__("./stories sync recursive ^\\.(?:(?:^|\\/|(?:(?:(?!(?:^|\\/)\\.).)*?)\\/)(?!\\.)(?=.)[^/]*?\\.stories\\.tsx)$")], module, false);
+(0, _frameworkImportPath.configure)([__webpack_require__("./stories sync recursive ^\\.(?:(?:^|\\/|(?:(?:(?!(?:^|\\/)\\.).)*?)\\/)(?!\\.)(?=.)[^/]*?\\.stories\\.(md|ts)x)$")], module, false);
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../node_modules/webpack/buildin/module.js */ "./node_modules/webpack/buildin/module.js")(module)))
 
 /***/ }),
@@ -334,15 +334,16 @@ module.exports = function(module) {
 
 /***/ }),
 
-/***/ "./stories sync recursive ^\\.(?:(?:^|\\/|(?:(?:(?!(?:^|\\/)\\.).)*?)\\/)(?!\\.)(?=.)[^/]*?\\.stories\\.tsx)$":
-/* ./stories sync ^\.(?:(?:^|\/|(?:(?:(?!(?:^|\/)\.).)*?)\/)(?!\.)(?=.)[^/]*?\.stories\.tsx)$ */
+/***/ "./stories sync recursive ^\\.(?:(?:^|\\/|(?:(?:(?!(?:^|\\/)\\.).)*?)\\/)(?!\\.)(?=.)[^/]*?\\.stories\\.(md|ts)x)$":
+/* ./stories sync ^\.(?:(?:^|\/|(?:(?:(?!(?:^|\/)\.).)*?)\/)(?!\.)(?=.)[^/]*?\.stories\.(md|ts)x)$ */
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
 	"./KindA.stories.tsx": "./stories/KindA.stories.tsx",
 	"./KindB.stories.tsx": "./stories/KindB.stories.tsx",
-	"./KindC.stories.tsx": "./stories/KindC.stories.tsx"
+	"./KindC.stories.tsx": "./stories/KindC.stories.tsx",
+	"./KindD.stories.mdx": "./stories/KindD.stories.mdx"
 };
 
 
@@ -363,7 +364,7 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = "./stories sync recursive ^\\.(?:(?:^|\\/|(?:(?:(?!(?:^|\\/)\\.).)*?)\\/)(?!\\.)(?=.)[^/]*?\\.stories\\.tsx)$";
+webpackContext.id = "./stories sync recursive ^\\.(?:(?:^|\\/|(?:(?:(?!(?:^|\\/)\\.).)*?)\\/)(?!\\.)(?=.)[^/]*?\\.stories\\.(md|ts)x)$";
 
 /***/ }),
 
@@ -444,6 +445,46 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "StoryA", function() { return StoryA; });
 var StoryA = function StoryA() {};
+
+/***/ }),
+
+/***/ "./stories/KindD.stories.mdx":
+/* ./stories/KindD.stories.mdx */
+/*! exports provided: _SkippedTests_, _ExternalStory_, storyA, default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_SkippedTests_", function() { return _SkippedTests_; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_ExternalStory_", function() { return _ExternalStory_; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "storyA", function() { return storyA; });
+/* harmony import */ var core_js_modules_es_object_assign_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core-js/modules/es.object.assign.js */ "core-js/modules/es.object.assign.js");
+/* harmony import */ var core_js_modules_es_object_assign_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_object_assign_js__WEBPACK_IMPORTED_MODULE_0__);
+
+
+/* @jsxRuntime classic */
+
+/* @jsx mdx */
+var _SkippedTests_ = function _SkippedTests_() {};
+var _ExternalStory_ = function _ExternalStory_() {};
+var storyA = function storyA() {};
+storyA.storyName = 'StoryA';
+storyA.parameters = Object.assign({}, {
+  creevey: {
+    captureElement: 'mdx-by-children'
+  }
+});
+var componentMeta = {
+  title: 'Docs/KindD',
+  parameters: {
+    creevey: {
+      ignoreElements: ['img']
+    }
+  },
+  includeStories: ["_SkippedTests_", "_ExternalStory_", "storyA"]
+};
+componentMeta.parameters = componentMeta.parameters || {};
+/* harmony default export */ __webpack_exports__["default"] = (componentMeta);
 
 /***/ }),
 
@@ -568,6 +609,15 @@ module.exports = require("core-js/modules/es.array.filter.js");
 /***/ (function(module, exports) {
 
 module.exports = require("core-js/modules/es.array.for-each.js");
+
+/***/ }),
+
+/***/ "core-js/modules/es.object.assign.js":
+/* external "core-js/modules/es.object.assign.js" */
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("core-js/modules/es.object.assign.js");
 
 /***/ }),
 

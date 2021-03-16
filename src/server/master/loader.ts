@@ -37,13 +37,30 @@ function getKindObjectNodePath<T>(path: NodePath<T>): NodePath<t.ObjectExpressio
   }
 }
 
-function removeAllPropsExcept(path: NodePath<t.ObjectExpression>, propNames: string[]): void {
-  (path.get('properties') as NodePath[])
-    .filter(
-      (propPath) =>
-        !propPath.isObjectProperty() || !propNames.some((name) => t.isIdentifier(propPath.node.key, { name })),
-    )
-    .forEach((propPath) => propPath.remove());
+type NestedPropNames = [string, ...(string | NestedPropNames)[]];
+type PropNames = (string | NestedPropNames)[];
+function removeAllPropsExcept(path: NodePath<t.ObjectExpression>, propNames: PropNames): void {
+  path.get('properties').forEach((propPath) => {
+    if (propPath.isObjectProperty()) {
+      const propName = propNames.find((name) =>
+        t.isIdentifier(propPath.node.key, { name: Array.isArray(name) ? name[0] : name }),
+      );
+      if (!propName) return propPath.remove();
+      const restNames = Array.isArray(propName) ? propName.slice(1) : [];
+      if (restNames.length == 0) return;
+      const propValuePath = propPath?.get('value');
+      if (propValuePath?.isObjectExpression()) removeAllPropsExcept(propValuePath, restNames);
+    } else if (propPath.isSpreadElement()) {
+      const argumentPath = propPath.get('argument');
+      if (argumentPath.isObjectExpression()) return removeAllPropsExcept(argumentPath, propNames);
+      const declaratorPath = getDeclaratorPath(argumentPath);
+      if (declaratorPath) {
+        const rightPath = declaratorPath.get('init');
+        if (rightPath.isObjectExpression()) removeAllPropsExcept(rightPath, propNames);
+        else propPath.remove();
+      } else propPath.remove();
+    } else propPath.remove();
+  });
 }
 
 function replaceStoryFnToNoop(declarations: t.VariableDeclarator[]): void {
@@ -60,9 +77,7 @@ function getPropertyAssignmentPaths<T>(
     .map(({ id }) => id)
     .forEach((id) => {
       if (!t.isIdentifier(id)) return;
-      const { referencePaths } = path.scope.getBinding(id.name) ?? {};
-
-      if (!referencePaths) return;
+      const referencePaths = path.scope.getBinding(id.name)?.referencePaths ?? [];
 
       referencePaths.forEach((refPath) => {
         const assignmentPath = refPath.findParent((parentPath) => parentPath.isAssignmentExpression());
@@ -84,14 +99,10 @@ function getPropertyAssignmentPaths<T>(
 }
 
 function cleanUpStoryProps(storyPropAssign: NodePath<t.AssignmentExpression>): void {
-  const rightPath = storyPropAssign.get('right') as NodePath;
+  const rightPath = storyPropAssign.get('right');
   if (!rightPath?.isObjectExpression()) return;
 
-  removeAllPropsExcept(rightPath, ['name', 'parameters']);
-  const storyParametersPath = getPropertyPath(rightPath, 'parameters')?.get('value');
-  if (storyParametersPath?.isObjectExpression()) {
-    removeAllPropsExcept(storyParametersPath, ['creevey']);
-  }
+  removeAllPropsExcept(rightPath, ['name', ['parameters', 'creevey']]);
 }
 
 function recursivelyRemoveUnreferencedBindings(path: NodePath<t.Program>): void {
@@ -159,20 +170,16 @@ function transform(ast: t.File): string {
 
         state.visitedTopPaths.add(defaultPath);
 
-        removeAllPropsExcept(kindPath, ['title', 'parameters']);
-        const kindParametersPath = getPropertyPath(kindPath, 'parameters')?.get('value');
-        if (kindParametersPath?.isObjectExpression()) {
-          removeAllPropsExcept(kindParametersPath, ['creevey']);
-        }
+        removeAllPropsExcept(kindPath, ['title', ['parameters', 'creevey'], 'includeStories', 'excludeStories']);
 
         if (declaratorPath) {
           const kindPropAssigns = getPropertyAssignmentPaths(defaultPath, [declaratorPath.node]);
           for (const [assignPath, props] of kindPropAssigns?.entries() ?? []) {
             const [first, second] = props;
-            if (first == 'title') continue;
+            if (first == 'title' || first == 'includeStories' || first == 'excludeStories') continue;
             else if (first == 'parameters') {
               if (!second) {
-                const rightPath = assignPath.get('right') as NodePath;
+                const rightPath = assignPath.get('right');
                 if (!rightPath?.isObjectExpression()) continue; // TODO it could be reassign
                 removeAllPropsExcept(rightPath, ['creevey']);
               } else if (second != 'creevey') assignPath.remove();
@@ -183,7 +190,7 @@ function transform(ast: t.File): string {
       ExportNamedDeclaration(namedPath, state) {
         if (fileType == FileType.Story) {
           state.visitedTopPaths.add(namedPath);
-          const namedDeclaration = namedPath.node.declaration as t.Node;
+          const namedDeclaration = namedPath.node.declaration;
           if (!t.isVariableDeclaration(namedDeclaration)) {
             if (t.isFunctionDeclaration(namedDeclaration)) namedDeclaration.body = t.blockStatement([]);
             return;
@@ -198,14 +205,14 @@ function transform(ast: t.File): string {
               else if (second == 'name') continue;
               else if (second == 'parameters') {
                 if (!third) {
-                  const rightPath = assignPath.get('right') as NodePath;
+                  const rightPath = assignPath.get('right');
                   if (!rightPath?.isObjectExpression()) continue;
                   removeAllPropsExcept(rightPath, ['creevey']);
                 } else if (third != 'creevey') assignPath.remove();
               } else assignPath.remove();
             } else if (first == 'parameters') {
               if (!second) {
-                const rightPath = assignPath.get('right') as NodePath;
+                const rightPath = assignPath.get('right');
                 if (!rightPath?.isObjectExpression()) continue;
                 removeAllPropsExcept(rightPath, ['creevey']);
               } else if (second != 'creevey') assignPath.remove();
@@ -265,7 +272,7 @@ function transform(ast: t.File): string {
             callPath = memberPath.parentPath;
             if (!memberPath.isMemberExpression() || !callPath.isCallExpression()) return;
             if (!Array.isArray(propPath) && propPath.isIdentifier({ name: 'add' })) {
-              const [, storyPath, parametersPath] = callPath.get('arguments') as NodePath[];
+              const [, storyPath, parametersPath] = callPath.get('arguments');
               storyPath.replaceWith(t.arrowFunctionExpression([], t.blockStatement([])));
               if (parametersPath?.isObjectExpression()) getPropertyPath(parametersPath, 'decorators')?.remove();
             }
@@ -273,6 +280,15 @@ function transform(ast: t.File): string {
               callPath.replaceWith(childCallPath);
             }
           } while (callPath.parentPath != null);
+        }
+      },
+      FunctionDeclaration(functionPath) {
+        const functionName = functionPath.get('id').node?.name;
+        if (isMDX && functionName == 'MDXContent') {
+          const rootPath = findRootPath(functionPath);
+          const refs = rootPath?.scope.getBinding(functionName)?.referencePaths ?? [];
+          refs.forEach((refPath) => findRootPath(refPath)?.remove());
+          rootPath?.remove();
         }
       },
       Program: {
@@ -390,6 +406,7 @@ const schema: JSONSchema7 = {
 };
 
 let fileType = FileType.Invalid;
+let isMDX = false;
 let previewPath = '';
 let resourcePath = '';
 const entries = new Set<string>();
@@ -412,6 +429,7 @@ export default function (this: loader.LoaderContext | void, source: string): str
     resourcePath = this.resourcePath;
     if (isStoryFile(this)) {
       fileType = FileType.Story;
+      isMDX = path.parse(resourcePath).ext == '.mdx';
       stories.add(this.resourcePath);
     } else if (isPreview(this, options)) {
       fileType = FileType.Preview;
@@ -439,6 +457,7 @@ export default function (this: loader.LoaderContext | void, source: string): str
       sourceType: 'module',
       plugins: ['classProperties', 'decorators-legacy', 'jsx', 'typescript'],
     });
+    console.log(source);
     return transform(ast);
   } catch (error) {
     this && console.log(chalk`[{yellow WARN}{grey :CreeveyWebpack}]`, 'Failed to transform file', this.resourcePath);

@@ -231,5 +231,129 @@
       "initialArgs": {}
     },
     "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+  },
+  "e25dd97ad95fc95e9fdf9ab1f55311333f08e890": {
+    "id": "e25dd97ad95fc95e9fdf9ab1f55311333f08e890",
+    "skip": false,
+    "browser": "chrome",
+    "storyPath": [
+      "Docs",
+      "KindD",
+      "Skipped Tests"
+    ],
+    "storyId": "docs-kindd--skipped-tests",
+    "story": {
+      "id": "docs-kindd--skipped-tests",
+      "kind": "Docs/KindD",
+      "name": "Skipped Tests",
+      "story": "Skipped Tests",
+      "parameters": {
+        "creevey": {
+          "skip": [
+            {
+              "in": "browser",
+              "tests": [
+                "TestA"
+              ]
+            }
+          ],
+          "ignoreElements": [
+            "img"
+          ]
+        },
+        "framework": "creevey",
+        "fileName": "./stories/KindD.stories.mdx",
+        "args": {},
+        "argTypes": {},
+        "__id": "docs-kindd--skipped-tests",
+        "__isArgsStory": false
+      },
+      "args": {},
+      "initialArgs": {}
+    },
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+  },
+  "b15d4d73bc867905a8cb706131c4eeac53d99f2a": {
+    "id": "b15d4d73bc867905a8cb706131c4eeac53d99f2a",
+    "skip": false,
+    "browser": "chrome",
+    "storyPath": [
+      "Docs",
+      "KindD",
+      "External Story"
+    ],
+    "storyId": "docs-kindd--external-story",
+    "story": {
+      "id": "docs-kindd--external-story",
+      "kind": "Docs/KindD",
+      "name": "External Story",
+      "story": "External Story",
+      "parameters": {
+        "creevey": {
+          "skip": [
+            {
+              "in": "browser",
+              "tests": [
+                "TestA"
+              ]
+            }
+          ],
+          "ignoreElements": [
+            "img"
+          ]
+        },
+        "framework": "creevey",
+        "fileName": "./stories/KindD.stories.mdx",
+        "args": {},
+        "argTypes": {},
+        "__id": "docs-kindd--external-story",
+        "__isArgsStory": false
+      },
+      "args": {},
+      "initialArgs": {}
+    },
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+  },
+  "4e2e625edcb3a9432873556e51246b9526d2660a": {
+    "id": "4e2e625edcb3a9432873556e51246b9526d2660a",
+    "skip": false,
+    "browser": "chrome",
+    "storyPath": [
+      "Docs",
+      "KindD",
+      "StoryA"
+    ],
+    "storyId": "docs-kindd--story-a",
+    "story": {
+      "id": "docs-kindd--story-a",
+      "kind": "Docs/KindD",
+      "name": "StoryA",
+      "story": "StoryA",
+      "parameters": {
+        "creevey": {
+          "skip": [
+            {
+              "in": "browser",
+              "tests": [
+                "TestA"
+              ]
+            }
+          ],
+          "ignoreElements": [
+            "img"
+          ],
+          "captureElement": "mdx-by-children"
+        },
+        "framework": "creevey",
+        "fileName": "./stories/KindD.stories.mdx",
+        "args": {},
+        "argTypes": {},
+        "__id": "docs-kindd--story-a",
+        "__isArgsStory": false
+      },
+      "args": {},
+      "initialArgs": {}
+    },
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
   }
 }

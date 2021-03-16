@@ -1,0 +1,21 @@
+import { Meta, Story, Canvas } from '@storybook/addon-docs/blocks';
+import { SkippedTests } from './KindA.stories'
+import { ExternalStory } from './KindD/ExternalStory'
+
+<Meta title="Docs/KindD" parameters={{ creevey: { ignoreElements: ['img'] } }} />
+
+## Story A
+
+Simple Story A
+
+<Canvas>
+  <Story id="kinda--imported-tests" parameters={{ creevey: { captureElement: 'mdx-by-id' } }} />
+  <Story story={SkippedTests} parameters={{ creevey: { captureElement: 'mdx-by-import' } }} />
+  <Story story={ExternalStory} parameters={{ creevey: { captureElement: 'mdx-by-import' } }} />
+  <Story name="StoryA" parameters={{ creevey: { captureElement: 'mdx-by-children' } }}>
+    {() => <div />}
+  </Story>
+</Canvas>
+
+TODO: Describe behavior of storybook
+  - Overriden parameters missed in import/id stories, but exists on docs page

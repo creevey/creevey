@@ -20,6 +20,7 @@ const testsToFileTypes: Partial<Record<string, FileType>> = {
   'csf-multiple-decls': FileType.Story,
   'csf-side-effects': FileType.Story,
   'csf-simple': FileType.Story,
+  'csf-spread-params': FileType.Story,
   'csf-storybook-v6': FileType.Story,
   'csf-tests': FileType.Story,
   'csf-var-kind': FileType.Story,
@@ -61,7 +62,7 @@ describe('loader', () => {
 /*
 - CSF
   x with non-creevey params (options to include/exclude)
-  - with non-story exports
+  - with non-story exports (include/exclude stories)
   x function declaration story (export function Text() {})
   - function expression (export const Text = TextButton)
   - with all reexport (export * from './TextButton')
@@ -74,6 +75,7 @@ describe('loader', () => {
   x story args for 6.x
   x kind with `as` type cast (export default {} as Meta)
   - ts `as` expression (const Kind = {} as Meta)
+  x spread parameters ({ ...parameters })
 
 - StoriesOf
   - story decorator + params
@@ -84,9 +86,8 @@ describe('loader', () => {
   - function expression (.add('Text', Text))
   - with multiple storiesOf
 
-  - MDX
-  - <Meta /> and <Story />
-  - Whole page
+- MDX
+  - MDXContent function
 
 - commonjs
 
