@@ -43,8 +43,6 @@ jobs:
       image: ubuntu-1604:202007-01
 
     steps:
-      - attach_workspace:
-          at: lib
       - run:
           name: Git LFS (install Git Large File Storage)
           command: |
@@ -67,6 +65,8 @@ jobs:
           key: yarn-packages-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache/yarn
+      - attach_workspace:
+          at: lib
       - run:
           name: Unit tests
           command: yarn test:unit
