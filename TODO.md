@@ -271,7 +271,7 @@
   - [ ] Don't pull docker local images
 - [x] Change viewport height to 786 in config
 - [x] Save TeamCity config in repo
-- [ ] Gitlab browse report fix
+- [x] Gitlab browse report fix
 - [x] Add Storybook 6.2 e2e tests
 - [x] Start server early and wait for build
 - [x] Setup TeamCity CI
