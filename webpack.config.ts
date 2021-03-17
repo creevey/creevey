@@ -26,11 +26,9 @@ const config: Configuration = {
     extensions: ['.tsx', '.ts', '.jsx', '.js'],
   },
   devServer: { port: 8000, proxy: { '/': { target: 'http://localhost:3000' } } },
-  plugins: [
-    new DefinePlugin({
-      __CREEVEY_SERVER_PORT__: JSON.stringify('3000'),
-    }),
-  ],
+  ...(process.env.WEBPACK_DEV_SERVER
+    ? { plugins: [new DefinePlugin({ __CREEVEY_SERVER_PORT__: JSON.stringify('3000') })] }
+    : {}),
   performance: false,
 };
 

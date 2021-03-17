@@ -20,6 +20,10 @@ jobs:
       - run:
           name: Pack
           command: yarn pack -f creevey.tgz
+      - persist_to_workspace:
+          root: lib
+          paths:
+            - "*"
       - store_artifacts:
           path: creevey.tgz
 
@@ -39,6 +43,8 @@ jobs:
       image: ubuntu-1604:202007-01
 
     steps:
+      - attach_workspace:
+          at: lib
       - run:
           name: Git LFS (install Git Large File Storage)
           command: |
