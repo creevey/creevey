@@ -39,8 +39,6 @@ jobs:
           command: yarn test:e2e
 
   tests:
-    requires:
-      - build
     machine:
       image: ubuntu-1604:202007-01
 
@@ -87,4 +85,6 @@ workflows:
     jobs:
       - build
       - e2e
-      - tests
+      - tests:
+          requires:
+            - build
