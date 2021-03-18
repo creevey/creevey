@@ -1,3 +1,17 @@
+## [0.7.25](https://github.com/wKich/creevey/compare/v0.7.24...v0.7.25) (2021-03-18)
+
+### Bug Fixes
+
+- 🐛 exclude all addons from nodejs storybook bundle ([1194400](https://github.com/wKich/creevey/commit/1194400d441fe22a0b60718c67e083c76bf7e2c2))
+- 🐛 hover shouldn't override focus styles ([6762af9](https://github.com/wKich/creevey/commit/6762af942600dbb9f5d100539dcbe1fdee016a4c))
+- 🐛 test status icons align ([c3e5c7e](https://github.com/wKich/creevey/commit/c3e5c7ea14eb46e218a0d1dcbcec9374989b364d))
+
+### Features
+
+- 🎸 add sidebar keyboard handlers ([bf160b6](https://github.com/wKich/creevey/commit/bf160b61ecdd49417135f0b7b9c316efddb6e898))
+- 🎸 add support storybook 6.2 ([e4cc662](https://github.com/wKich/creevey/commit/e4cc66245b0f2aea8cfba0e849f1e9e4f80d1442))
+- 🎸 support capture mdx stories ([6fc9185](https://github.com/wKich/creevey/commit/6fc918505718393ccbc424a794159eecf66a456d))
+
 ## [0.7.24](https://github.com/wKich/creevey/compare/v0.7.23...v0.7.24) (2021-03-10)
 
 ### Bug Fixes
