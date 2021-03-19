@@ -1,13 +1,13 @@
 import { CreeveyConfig } from '../src/types';
 import baseConfig from './base.config';
-import chromeConfig from './chrome.config';
-import firefoxConfig from './firefox.config';
+import chrome from './chrome.config';
+import firefox from './firefox.config';
 
 const config: CreeveyConfig = {
   ...baseConfig,
   browsers: {
-    ...chromeConfig.browsers,
-    ...firefoxConfig.browsers,
+    chrome: { ...chrome, gridUrl: 'http://selenoid__chrome:4444' },
+    firefox: { ...firefox, gridUrl: 'http://selenoid__firefox:4444/wd/hub' },
   },
 };
 

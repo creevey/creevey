@@ -1,15 +1,8 @@
-import { CreeveyConfig } from '../src/types';
-import baseConfig from './base.config';
+import { BrowserConfig } from '../src/types';
 
-const config: CreeveyConfig = {
-  ...baseConfig,
-  browsers: {
-    firefox: {
-      browserName: 'firefox',
-      viewport: { width: 1024, height: 768 },
-      gridUrl: 'http://selenoid__firefox:4444/wd/hub',
-    },
-  },
+const config: BrowserConfig = {
+  browserName: 'firefox',
+  viewport: { width: 1024, height: 768 },
 };
 
 export default config;

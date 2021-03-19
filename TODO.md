@@ -316,8 +316,8 @@
   - [ ] Add github actions for creevey-examples
   - [ ] Ignore elements
   - [ ] Describe use cases
-    - MDX, animations, CI + docker
-  - [ ] Rewrite config docs to more detail
+    - MDX, animations, CI + docker, custom images, sauceLabs, standalone
+  - [ ] Rewrite config docs to more detail (simple setup, use cases, config description)
   - [ ] How to setup creevey report in TeamCity
   - [ ] Add new options (selenoidPath, webdriverCommand, etc)
   - [ ] Lazy-load components (use https://storybook.js.org/docs/react/writing-stories/loaders)
