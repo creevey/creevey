@@ -56,7 +56,7 @@ export async function runImage(
   debug: boolean,
 ): Promise<string> {
   await Promise.all(
-    (await docker.listContainers({ all: true, filters: { name: ['selenoid'] } })).map(async (info) => {
+    (await docker.listContainers({ all: true, filters: { ancestor: [image] } })).map(async (info) => {
       const container = docker.getContainer(info.Id);
       try {
         await container.stop();

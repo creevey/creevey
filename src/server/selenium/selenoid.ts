@@ -120,12 +120,14 @@ export async function startSelenoidContainer(config: Config, debug: boolean): Pr
     },
   );
 
-  const selenoidImage = 'aerokube/selenoid:latest-release';
-  await pullImages([selenoidImage]);
-  await pullImages(images, config.dockerAuth);
+  const selenoidImage = config.dockerImage;
+  if (config.pullImages) {
+    await pullImages([selenoidImage]);
+    await pullImages(images, config.dockerAuth);
+  }
 
+  // TODO Allow pass custom options
   const selenoidOptions = {
-    name: 'selenoid',
     ExposedPorts: { '4444/tcp': {} },
     HostConfig: {
       PortBindings: { '4444/tcp': [{ HostPort: '4444' }] },

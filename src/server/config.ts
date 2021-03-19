@@ -7,6 +7,8 @@ export const defaultBrowser = 'chrome';
 
 export const defaultConfig: Omit<Config, 'gridUrl'> = {
   useDocker: true,
+  dockerImage: 'aerokube/selenoid:latest-release',
+  pullImages: true,
   storybookUrl: 'http://localhost:6006',
   screenDir: path.resolve('images'),
   reportDir: path.resolve('report'),

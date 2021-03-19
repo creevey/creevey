@@ -96,7 +96,7 @@ export type BrowserConfig = Capabilities & {
   _storybookGlobals?: StorybookGlobals;
   /**
    * Specify custom docker image. Used only with `useDocker == true`
-   * @default `selenoid/${browserName}:${version}`
+   * @default `selenoid/${browserName}:${version ?? 'latest'}`
    */
   dockerImage?: string;
   /**
@@ -135,13 +135,23 @@ export interface Config {
    */
   useDocker: boolean;
   /**
+   * Custom selenoid docker image
+   * @default 'aerokube/selenoid:latest-release'
+   */
+  dockerImage: string;
+  /**
+   * Should Creevey pull docker images or use local ones
+   * @default true
+   */
+  pullImages: boolean;
+  /**
    * Url to Selenium grid hub or standalone selenium.
    * By default creevey will use docker containers
    */
   gridUrl: string;
   /**
    * Url where storybook hosted on
-   * @default http://localhost:6006
+   * @default 'http://localhost:6006'
    */
   storybookUrl: string;
   /**

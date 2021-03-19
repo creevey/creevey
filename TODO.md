@@ -268,7 +268,7 @@
   - [x] ~~Fix firefox 61 in skbkontur selenium grid~~
   - [x] creevey-loader `top-level property access`
   - [x] wait-on doesn't work properly
-  - [ ] Don't pull docker local images
+  - [x] Don't pull docker local images
 - [x] Change viewport height to 786 in config
 - [x] Save TeamCity config in repo
 - [x] Gitlab browse report fix
@@ -316,7 +316,7 @@
   - [ ] Add github actions for creevey-examples
   - [ ] Ignore elements
   - [ ] Describe use cases
-    - MDX, animations, CI + docker, custom images, sauceLabs, standalone
+    - MDX, animations, CI + docker, custom images (options), sauceLabs, standalone
   - [ ] Rewrite config docs to more detail (simple setup, use cases, config description)
   - [ ] How to setup creevey report in TeamCity
   - [ ] Add new options (selenoidPath, webdriverCommand, etc)
@@ -349,6 +349,7 @@
     - Iterate be screen images and calculate resulting x/y coordinates for composite image
     - If image width/height greater than viewport width/height than scroll bar is captured
 - [x] ~~Support esm/cjs builds~~
+- [ ] Move docker config options to separate prop `docker`
 - [ ] Move from yarn to npm@7
 - [ ] Bring all examples from storybook repo and test with creevey
   - Save here images/configs/bundle/stories.json
