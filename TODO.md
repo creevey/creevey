@@ -290,6 +290,7 @@
   - Test webpack building (include bundle size)
   - Test stories tests in output
 - [x] Features
+  - [x] Add `waitForReady` parameter
   - [x] Allow to ignore elements in capturing screenshot
   - [x] Add link `go to runner` in addon UI
   - [x] Show side-by-side diff vertically or horizontally depends on aspect
@@ -316,7 +317,7 @@
   - [ ] Add github actions for creevey-examples
   - [ ] Ignore elements
   - [ ] Describe use cases
-    - MDX, animations, CI + docker, custom images (options), sauceLabs, standalone
+    - MDX, animations, CI + docker, custom images (options), sauceLabs, standalone, waitForReady
   - [ ] Rewrite config docs to more detail (simple setup, use cases, config description)
   - [ ] How to setup creevey report in TeamCity
   - [ ] Add new options (selenoidPath, webdriverCommand, etc)
@@ -372,6 +373,9 @@
   - [ ] Playwright
   - [ ] Puppeteer
 - [ ] Features
+  - [ ] Improve `waitForReady` for interaction tests
+    - `await this.waitForReady(() => this.browser.sendKeys().perform())`
+    - `await this.takeScreenshot()`
   - [ ] Webpack 5 support
   - [ ] Stop gif animations (investigate)
   - [ ] Add status approved, apply after approve and reset after run

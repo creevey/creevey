@@ -1,4 +1,4 @@
-import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { styled, withTheme } from '@storybook/theming';
 import { getBorderColor, themeBorderColors, ViewPropsWithTheme } from './ImagesView';
 import { useApplyScale, useCalcScale, useLoadImages } from '../../helpers';
@@ -109,6 +109,10 @@ export const SlideView = withTheme(
         expectedImageContainerRef.current.style.right = '100%';
         expectedImageWrapperRef.current.style.left = '100%';
       }
+    }, [loaded]);
+
+    useEffect(() => {
+      if (loaded) window.__CREEVEY_SET_READY_FOR_CAPTURE__();
     }, [loaded]);
 
     return loaded ? (

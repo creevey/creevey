@@ -35,7 +35,9 @@ Simple side-by-side view. Expected image on the right, actual on the left and di
 Swap view, allow to swap between expected and actual images by click
 
 <Canvas>
-  <Story name="Swap">{() => ImagesView('swap')}</Story>
+  <Story name="Swap" parameters={{ creevey: { waitForReady: true } }}>
+    {() => ImagesView('swap')}
+  </Story>
 </Canvas>
 
 ## Slide
@@ -47,6 +49,7 @@ Most powerful view, allow to see differences using slider on expected and actual
     name="Slide"
     parameters={{
       creevey: {
+        waitForReady: true,
         tests: {
           async click() {
             const idle = await this.takeScreenshot();

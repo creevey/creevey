@@ -20,12 +20,15 @@ const ImagesView = (mode: ImagesViewMode): JSX.Element => (
 );
 
 export const SideBySide = (): JSX.Element => ImagesView('side-by-side');
-export const Swap = (): JSX.Element => ImagesView('swap');
+export const Swap: Story & CreeveyStory = () => ImagesView('swap');
 export const Slide: Story & CreeveyStory = () => ImagesView('slide');
 export const Blend = (): JSX.Element => ImagesView('blend');
 
+Swap.parameters = { creevey: { waitForReady: true } };
+
 Slide.parameters = {
   creevey: {
+    waitForReady: true,
     tests: {
       async click() {
         const idle = await this.takeScreenshot();

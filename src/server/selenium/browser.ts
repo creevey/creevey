@@ -296,19 +296,26 @@ async function takeScreenshot(
   return screenshot;
 }
 
-async function selectStory(browser: WebDriver, storyId: string, kind: string, story: string): Promise<void> {
+async function selectStory(
+  browser: WebDriver,
+  story: { id: string; kind: string; name: string },
+  waitForReady = false,
+): Promise<void> {
   const errorMessage = await browser.executeAsyncScript<string | undefined>(
-    function (storyId: string, kind: string, name: string, callback: (error?: string) => void) {
+    function (
+      { id, kind, name }: { id: string; kind: string; name: string },
+      shouldWaitForReady: boolean,
+      callback: (error?: string) => void,
+    ) {
       if (typeof window.__CREEVEY_SELECT_STORY__ == 'undefined') {
         return callback(
           "Creevey can't switch story. This may happened if forget to add `creevey` addon to your storybook config, or storybook not loaded in browser due syntax error.",
         );
       }
-      window.__CREEVEY_SELECT_STORY__(storyId, kind, name, callback);
+      window.__CREEVEY_SELECT_STORY__(id, kind, name, shouldWaitForReady, callback);
     },
-    storyId,
-    kind,
     story,
+    waitForReady,
   );
   if (errorMessage) throw new Error(errorMessage);
 }
@@ -423,10 +430,11 @@ export async function switchStory(this: Context): Promise<void> {
 
   if (!story) throw new Error(`Current test '${this.testScope.join('/')}' context doesn't have 'story' field`);
 
-  await resetMousePosition(this.browser);
-  await selectStory(this.browser, story.id, story.kind, story.name);
+  const { id, kind, name, parameters } = story;
+  const { captureElement = '#root', waitForReady, ignoreElements } = (parameters.creevey ?? {}) as CreeveyStoryParams;
 
-  const { captureElement = '#root', ignoreElements } = (story.parameters.creevey ?? {}) as CreeveyStoryParams;
+  await resetMousePosition(this.browser);
+  await selectStory(this.browser, { id, kind, name }, waitForReady);
 
   if (captureElement)
     Object.defineProperty(this, 'captureElement', {

@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ViewPropsWithTheme, getBorderColor, themeBorderColors } from './ImagesView';
 import { styled, withTheme } from '@storybook/theming';
 import { useApplyScale, useCalcScale, useLoadImages } from '../../helpers';
@@ -46,6 +46,10 @@ export const SwapView = withTheme(
       (): void => setImage((prevImage) => (prevImage == 'actual' ? 'expect' : 'actual')),
       [],
     );
+
+    useEffect(() => {
+      if (loaded) window.__CREEVEY_SET_READY_FOR_CAPTURE__();
+    }, [loaded]);
 
     return loaded ? (
       <Container>

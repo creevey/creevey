@@ -1,6 +1,6 @@
 import Events from '@storybook/core-events';
-import { addons, MakeDecoratorResult, makeDecorator } from '@storybook/addons';
-import { isObject, StorybookGlobals } from '../../types';
+import { addons, MakeDecoratorResult, makeDecorator, Channel } from '@storybook/addons';
+import { isObject, noop, StorybookGlobals } from '../../types';
 
 if (typeof process != 'object' || typeof process.version != 'string') {
   // NOTE If you don't use babel-polyfill or any other polyfills that add EventSource for IE11
@@ -14,10 +14,17 @@ if (typeof process != 'object' || typeof process.version != 'string') {
 
 declare global {
   interface Window {
-    __CREEVEY_SELECT_STORY__: (storyId: string, kind: string, name: string, callback: (error?: string) => void) => void;
+    __CREEVEY_SELECT_STORY__: (
+      storyId: string,
+      kind: string,
+      name: string,
+      shouldWaitForReady: boolean,
+      callback: (error?: string) => void,
+    ) => void;
     __CREEVEY_UPDATE_GLOBALS__: (globals: StorybookGlobals) => void;
     __CREEVEY_INSERT_IGNORE_STYLES__: (ignoreElements: string[]) => HTMLStyleElement;
     __CREEVEY_REMOVE_IGNORE_STYLES__: (ignoreStyles: HTMLStyleElement) => void;
+    __CREEVEY_SET_READY_FOR_CAPTURE__: () => void;
   }
 
   interface Document {
@@ -73,6 +80,41 @@ const disableAnimationsStyles = `
 }
 `;
 
+async function resetCurrentStory(channel: Channel): Promise<void> {
+  setTimeout(() => channel.emit(Events.SET_CURRENT_STORY, { storyId: true, name: '', kind: '' }), 0);
+  return new Promise<void>((resolve) => channel.once(Events.STORY_MISSING, resolve));
+}
+
+function waitForStoryRendered(channel: Channel): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    function removeHandlers(): void {
+      /* eslint-disable @typescript-eslint/no-use-before-define */
+      channel.off(Events.STORY_RENDERED, renderHandler);
+      channel.off(Events.STORY_ERRORED, errorHandler);
+      channel.off(Events.STORY_THREW_EXCEPTION, errorHandler);
+      /* eslint-enable @typescript-eslint/no-use-before-define */
+    }
+    function renderHandler(): void {
+      removeHandlers();
+      resolve();
+    }
+    function errorHandler({ title, description }: { title: string; description: string }): void {
+      removeHandlers();
+      reject({
+        message: title,
+        stack: description,
+      });
+    }
+    function exceptionHandler(exception: Error): void {
+      removeHandlers();
+      reject(exception);
+    }
+    channel.once(Events.STORY_RENDERED, renderHandler);
+    channel.once(Events.STORY_ERRORED, errorHandler);
+    channel.once(Events.STORY_THREW_EXCEPTION, exceptionHandler);
+  });
+}
+
 function waitForFontsLoaded(): Promise<void> | void {
   if (!document.fonts) return;
 
@@ -91,10 +133,10 @@ function waitForFontsLoaded(): Promise<void> | void {
 
 export function withCreevey(): MakeDecoratorResult {
   let currentStory = '';
-  let animationDisabled = false;
+  let isAnimationDisabled = false;
 
   function disableAnimation(): void {
-    animationDisabled = true;
+    isAnimationDisabled = true;
     const style = document.createElement('style');
     const textNode = document.createTextNode(disableAnimationsStyles);
     style.setAttribute('type', 'text/css');
@@ -106,48 +148,25 @@ export function withCreevey(): MakeDecoratorResult {
     storyId: string,
     kind: string,
     name: string,
+    shouldWaitForReady: boolean,
     callback: (error?: string) => void,
   ): Promise<void> {
-    if (!animationDisabled) disableAnimation();
+    if (!isAnimationDisabled) disableAnimation();
 
     const channel = addons.getChannel();
-    if (storyId == currentStory) {
-      const storyMissingPromise = new Promise<void>((resolve) => channel.once(Events.STORY_MISSING, resolve));
-      channel.emit(Events.SET_CURRENT_STORY, { storyId: true, name, kind });
-      await storyMissingPromise;
-    }
-    currentStory = storyId;
-    const storyRenderedPromise = new Promise<void>((resolve, reject) => {
-      function removeHandlers(): void {
-        /* eslint-disable @typescript-eslint/no-use-before-define */
-        channel.off(Events.STORY_RENDERED, renderHandler);
-        channel.off(Events.STORY_ERRORED, errorHandler);
-        channel.off(Events.STORY_THREW_EXCEPTION, errorHandler);
-        /* eslint-enable @typescript-eslint/no-use-before-define */
-      }
-      function renderHandler(): void {
-        removeHandlers();
-        resolve();
-      }
-      function errorHandler({ title, description }: { title: string; description: string }): void {
-        removeHandlers();
-        reject({
-          message: title,
-          stack: description,
-        });
-      }
-      function exceptionHandler(exception: Error): void {
-        removeHandlers();
-        reject(exception);
-      }
-      channel.once(Events.STORY_RENDERED, renderHandler);
-      channel.once(Events.STORY_ERRORED, errorHandler);
-      channel.once(Events.STORY_THREW_EXCEPTION, exceptionHandler);
-    });
-    channel.emit(Events.SET_CURRENT_STORY, { storyId, name, kind });
+    const waitForReady = shouldWaitForReady
+      ? new Promise<void>((resolve) => (window.__CREEVEY_SET_READY_FOR_CAPTURE__ = resolve))
+      : Promise.resolve();
+
+    if (storyId == currentStory) await resetCurrentStory(channel);
+    else currentStory = storyId;
+
+    setTimeout(() => channel.emit(Events.SET_CURRENT_STORY, { storyId, name, kind }), 0);
+
     try {
-      await storyRenderedPromise;
+      await waitForStoryRendered(channel);
       await waitForFontsLoaded();
+      await waitForReady;
       callback();
     } catch (reason) {
       // NOTE Event `STORY_THREW_EXCEPTION` triggered only in react and vue frameworks and return Error instance
@@ -195,6 +214,7 @@ export function withCreevey(): MakeDecoratorResult {
   window.__CREEVEY_UPDATE_GLOBALS__ = updateGlobals;
   window.__CREEVEY_INSERT_IGNORE_STYLES__ = insertIgnoreStyles;
   window.__CREEVEY_REMOVE_IGNORE_STYLES__ = removeIgnoreStyles;
+  window.__CREEVEY_SET_READY_FOR_CAPTURE__ = noop;
 
   return makeDecorator({
     name: 'withCreevey',
