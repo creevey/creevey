@@ -23,11 +23,6 @@ unit:
   script:
     - yarn test:unit
 
-# NOTE: This job failed by timeout
-# e2e:
-#   script:
-#     - yarn test:e2e
-
 ui:
   stage: test
   services:

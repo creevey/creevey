@@ -27,17 +27,6 @@ jobs:
       - store_artifacts:
           path: creevey.tgz
 
-  e2e:
-    docker:
-      - image: circleci/node:12.18.4
-    steps:
-      - checkout
-      - node/install-packages:
-          pkg-manager: yarn
-      - run:
-          name: E2E tests
-          command: yarn test:e2e
-
   tests:
     machine:
       image: ubuntu-1604:202007-01
@@ -85,7 +74,6 @@ workflows:
   tests:
     jobs:
       - build
-      - e2e
       - tests:
           requires:
             - build
