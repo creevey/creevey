@@ -290,6 +290,8 @@
   - Test webpack building (include bundle size)
   - Test stories tests in output
 - [x] Features
+  - [x] Show multiple tests for browser in storybook UI
+  - [x] Allow run multiple tests from storybook UI
   - [x] Add `waitForReady` parameter
   - [x] Allow to ignore elements in capturing screenshot
   - [x] Add link `go to runner` in addon UI
@@ -361,8 +363,8 @@
 - [ ] Test standalone selenoid + webdriver work
 - [ ] Add more tests on different esnext features (test babel-parser + plugins)
 - [ ] Add custom docker images with node+selenoid+browser (We won't need them, if we make creevey-as-a-service image)
-  - [ ] Support GitLab CI
-- [ ] Download webdriver binary automatically (see example: https://hub.docker.com/r/selenoid/chrome/dockerfile)
+  - [x] Support GitLab CI (used services and standalone selenoid)
+- [ ] Download webdriver binary automatically (see bigtest as example)
 - [ ] Add edge cases for e2e tests
 - [x] ~~Figure out if I need use my own react and setup this https://reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html or I need to use react from storybook~~
   - Storybook uses optional react deps, so it's better to leave as-is
@@ -373,6 +375,7 @@
   - [ ] Playwright
   - [ ] Puppeteer
 - [ ] Features
+  - [ ] Support JUnit mocha reporter
   - [ ] Improve `waitForReady` for interaction tests
     - `await this.waitForReady(() => this.browser.sendKeys().perform())`
     - `await this.takeScreenshot()`
@@ -388,7 +391,8 @@
     - [ ] Check storiesOf/addDecorators/addParameters import from @storybook
     - [ ] Output warnings when somewhere is spread/rest is used
     - [ ] Remove unused side-effects from nested scopes
-    - [ ] Support exclude/include stories parameter
+    - [x] Support exclude/include stories parameter
+    - [ ] Correctly cutoff re-exported stories/parameters
   - [ ] Merge stories from nodejs bundle and browser, output warning to user if some stories are missing in nodejs
   - [ ] Add `HTML` diff view
   - [ ] Improve how works takeScreenshot with default captureElement
@@ -401,12 +405,10 @@
     - Load addons from storybook api
   - [ ] Add option to apply custom styles to #root or something else
   - [ ] Try to use odiff tool (https://github.com/dmtrKovalenko/odiff)
-  - [ ] Wait for resources loaded (fonts, images, etc) How?
+  - [ ] Wait for resources loaded (~~fonts~~, images, etc) How?
   - [ ] Integrate build nodejs bundle into storybook (use webpackFinal in addon)
   - [ ] Improve creevey-addon webpack config to allow use `import { By } from 'selenium'` and maybe other stuff (add creevey-selenium or improve creevey-loader)
   - [ ] Support Storybook Composition https://storybook.js.org/docs/react/workflows/storybook-composition
-  - [ ] Show multiple tests for browser in storybook UI
-  - [ ] Allow run multiple tests from storybook UI
   - [ ] Support mdx documentation page
   - [ ] Allow defined params for knobs and args to capture story with different states
   - [ ] Allow set viewport sizes for story (use width x height as postfix for browser name in UI)
@@ -434,7 +436,6 @@
   - [ ] Support docker-in-docker (start storybook and creevey inside docker)
     - [ ] Start storybook inside docker
     - [ ] Allow define custom storybook image
-  - [ ] Support JUnit mocha reporter
   - [ ] Improve CLI add grep/kind/story option
   - [ ] Setup CREEVEY_ENV (in project use `if (CREEVEY_ENV) {}` and addon define function that check if it inside creevey or not)
   - [ ] Allow pass components into `findElement`
