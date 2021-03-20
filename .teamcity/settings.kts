@@ -30,7 +30,6 @@ version = "2020.2"
 
 project {
 
-    buildType(E2e)
     buildType(Tests)
     buildType(Build)
 
@@ -84,42 +83,6 @@ object Build : BuildType({
         script {
             name = "pack"
             scriptContent = "yarn pack"
-        }
-    }
-
-    triggers {
-        vcs {
-        }
-    }
-
-    features {
-        commitStatusPublisher {
-            publisher = github {
-                githubUrl = "https://api.github.com"
-                authType = personalToken {
-                    token = "credentialsJSON:43d7baea-a084-42de-8862-7d191a694a60"
-                }
-            }
-            param("github_oauth_user", "wKich")
-        }
-    }
-})
-
-object E2e : BuildType({
-    name = "E2E"
-
-    vcs {
-        root(DslContext.settingsRoot)
-    }
-
-    steps {
-        script {
-            name = "install"
-            scriptContent = "yarn"
-        }
-        script {
-            name = "e2e tests"
-            scriptContent = "yarn test:e2e"
         }
     }
 
