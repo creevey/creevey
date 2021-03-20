@@ -2,4 +2,5 @@ lib
 report
 examples
 scripts/dist
+tests/**/approvals
 tests/**/*.fixtures

@@ -5,7 +5,6 @@
   "license": "MIT",
   "devDependencies": {
     "@storybook/react": "~6.0.28",
-    "creevey": "./creevey.tgz",
     "react": "^16.14.0",
     "react-dom": "^16.14.0"
   }

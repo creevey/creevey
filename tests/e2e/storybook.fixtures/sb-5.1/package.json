@@ -6,7 +6,6 @@
   "devDependencies": {
     "@storybook/react": "~5.1.11",
     "babel-loader": "^8.2.1",
-    "creevey": "./creevey.tgz",
     "react": "^16.14.0",
     "react-dom": "^16.14.0"
   }

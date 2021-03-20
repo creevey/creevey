@@ -1,4 +1,3 @@
-import { join } from 'path';
 import { readdirSync, readFileSync, writeFileSync } from 'fs';
 import { dirSync } from 'tmp';
 import shell, { ExecOptions } from 'shelljs';
@@ -24,27 +23,24 @@ const execSync = (command: string, options?: ExecOptions): void => {
 describe('Storybook E2E', function () {
   this.timeout('300s');
 
-  before(() => {
-    execSync('yarn build');
-    execSync('yarn pack -f creevey.tgz');
-  });
-
-  readdirSync(join(__dirname, 'storybook.fixtures')).forEach((testName) => {
+  readdirSync(`${__dirname}/storybook.fixtures`).forEach((testName) => {
     const mainJsPath = 'node_modules/creevey/node_modules/.cache/creevey/storybook/main.js';
     describe(testName, function () {
       before(function () {
         const tempDir = dirSync({ name: `creevey-${testName}` }).name;
         this.tempDir = tempDir;
-        shell.cp('-r', join(__dirname, 'storybook.fixtures', testName, '{.,}*'), tempDir);
-        shell.cp(join(__dirname, 'load-tests.helper.js'), join(tempDir, 'load.js'));
+        shell.cp('-r', `${__dirname}/storybook.fixtures/${testName}/{.,}*`, tempDir);
+        shell.cp(`${__dirname}/approvals/${testName}/tests.json`, `${tempDir}/expected-tests.json`);
+        shell.cp(`${__dirname}/approvals/${testName}/main.js`, `${tempDir}/expected-main.js`);
+        shell.cp(`${__dirname}/load-tests.helper.js`, `${tempDir}/load.js`);
         shell.cp('creevey.tgz', tempDir);
-        execSync('npm i', { cwd: tempDir });
+        execSync('npm i ./creevey.tgz', { cwd: tempDir });
         execSync('npx creevey --webpack', { cwd: tempDir });
         execSync('node load', { cwd: tempDir });
         writeFileSync(
-          join(this.tempDir, mainJsPath),
-          readFileSync(join(this.tempDir, mainJsPath), { encoding: 'utf-8' })
-            .replace(new RegExp(this.tempDir, 'g'), '.')
+          `${tempDir}/${mainJsPath}`,
+          readFileSync(`${tempDir}/${mainJsPath}`, { encoding: 'utf-8' })
+            .replace(new RegExp(tempDir, 'g'), '.')
             .replace(/^\/\*!\*.*$\n\s{2}!\*{3}/gm, '/*')
             .replace(/\*{3}!$\n\s{2}\\\*+\/$/gm, '*/'),
         );
@@ -52,20 +48,15 @@ describe('Storybook E2E', function () {
 
       after(function () {
         if (!('tempDir' in this) || typeof this.tempDir != 'string') throw new Error("Can't get temp directory path");
-        shell.cp(
-          join(this.tempDir, 'actual-tests.json'),
-          join(__dirname, `storybook.fixtures/${testName}/expected-tests.json`),
-        );
-        shell.cp(join(this.tempDir, mainJsPath), join(__dirname, `storybook.fixtures/${testName}/expected-main.js`));
+        shell.cp(`${this.tempDir}/actual-tests.json`, `${__dirname}/approvals/${testName}/tests.json`);
+        shell.cp(`${this.tempDir}/${mainJsPath}`, `${__dirname}/approvals/${testName}/main.js`);
         shell.rm('-rf', this.tempDir);
       });
 
-      it('tests', function () {
+      it('tests', async function () {
         if (!('tempDir' in this) || typeof this.tempDir != 'string') throw new Error("Can't get temp directory path");
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const expected = require(join(this.tempDir, 'expected-tests.json')) as unknown;
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const actual = require(join(this.tempDir, 'actual-tests.json')) as unknown;
+        const expected = (await import(`${this.tempDir}/expected-tests.json`)) as unknown;
+        const actual = (await import(`${this.tempDir}/actual-tests.json`)) as unknown;
 
         expect(actual).to.eql(expected);
       });
@@ -73,8 +64,8 @@ describe('Storybook E2E', function () {
       it('webpack', function () {
         if (!('tempDir' in this) || typeof this.tempDir != 'string') throw new Error("Can't get temp directory path");
 
-        const expected = readFileSync(join(this.tempDir, 'expected-main.js'), { encoding: 'utf-8' });
-        const actual = readFileSync(join(this.tempDir, mainJsPath), { encoding: 'utf-8' });
+        const expected = readFileSync(`${this.tempDir}/expected-main.js`, { encoding: 'utf-8' });
+        const actual = readFileSync(`${this.tempDir}/${mainJsPath}`, { encoding: 'utf-8' });
 
         expect(actual).to.equal(expected);
       });

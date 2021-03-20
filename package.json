@@ -31,7 +31,7 @@
     "lint:prettier": "prettier --check *.{md,json,js,ts} ./**/*.{js,ts,tsx}",
     "test": "run-p test:*",
     "test:unit": "mocha ./tests/{client,server}/**/*.test.ts ./tests/*.test.ts",
-    "test:e2e": "mocha ./tests/e2e/**/*.test.ts",
+    "test:e2e": "yarn build && yarn pack -f creevey.tgz && mocha ./tests/e2e/**/*.test.ts",
     "start": "cross-env NODE_ENV=test run-p start:*",
     "start:client": "webpack-dev-server",
     "start:storybook": "start-storybook --ci -p 6006",
