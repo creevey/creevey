@@ -308,6 +308,7 @@
     - Move webpack/update to separate folder/file
   - [x] Mdx e2e tests
     - Add tests loader and e2e
+- [ ] Check latest storybook docs on useful cases
 - [x] Improve Docker
   - [x] Private docker images registry
   - [x] Allow use standalone binary instead of Docker image for browser (https://aerokube.com/selenoid/latest/#_standalone_binary)
