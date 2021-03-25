@@ -1,6 +1,6 @@
 {
   "name": "creevey",
-  "description": "Cross-browser screenshot testing tool for Storybook with fancy UI Runner.",
+  "description": "Cross-browser screenshot testing tool for Storybook with fancy UI Runner",
   "keywords": [
     "testing",
     "storybook",
@@ -8,7 +8,10 @@
     "visual-testing",
     "visual-regression",
     "screenshot-tests",
-    "screenshots"
+    "screenshots",
+    "storybook-addon",
+    "addon",
+    "test"
   ],
   "version": "0.7.25",
   "bin": {
@@ -187,5 +190,8 @@
     "**/*.(md|json)": [
       "prettier --write"
     ]
+  },
+  "storybook": {
+    "displayName": "Creevey"
   }
 }
