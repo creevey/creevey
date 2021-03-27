@@ -70,7 +70,18 @@ export default {
   decorators: [
     (Story: React.ComponentClass): JSX.Element => (
       <ThemeProvider theme={ensure(themes.light)}>
-        <Story />
+        <CreeveyContext.Provider
+          value={{
+            isReport: false,
+            isRunning: false,
+            onStart: noop,
+            onStop: noop,
+            onSuiteOpen: noop,
+            onSuiteToggle: noop,
+          }}
+        >
+          <Story />
+        </CreeveyContext.Provider>
       </ThemeProvider>
     ),
   ],
@@ -90,6 +101,7 @@ HeaderStopped.decorators = [headerDecorator];
 export const HeaderRunning = (): JSX.Element => (
   <CreeveyContext.Provider
     value={{
+      isReport: false,
       isRunning: true,
       onStart: noop,
       onStop: noop,

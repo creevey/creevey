@@ -91,7 +91,7 @@ export function SideBarHeader({
   onFilterChange,
   canStart,
 }: SideBarHeaderProps): JSX.Element {
-  const { isRunning } = useContext(CreeveyContext);
+  const { isReport, isRunning } = useContext(CreeveyContext);
   const [filterInput, setFilterInput] = useState('');
 
   const handleClickByStatus = (status: TestStatus): void => {
@@ -116,17 +116,19 @@ export function SideBarHeader({
           <Header>colin.creevey</Header>
           <TestsStatus {...testsStatus} onClickByStatus={handleClickByStatus} />
         </div>
-        <MarginContainer top="10px">
-          {isRunning ? (
-            <Button outline secondary onClick={onStop}>
-              <Icons icon="stop" />
-            </Button>
-          ) : (
-            <Button outline secondary onClick={onStart} disabled={!canStart}>
-              <Icons icon="play" />
-            </Button>
-          )}
-        </MarginContainer>
+        {isReport ? null : (
+          <MarginContainer top="10px">
+            {isRunning ? (
+              <Button outline secondary onClick={onStop}>
+                <Icons icon="stop" />
+              </Button>
+            ) : (
+              <Button outline secondary onClick={onStart} disabled={!canStart}>
+                <Icons icon="play" />
+              </Button>
+            )}
+          </MarginContainer>
+        )}
       </Container>
       <MarginContainer top="24px" bottom="24px">
         <Search onChange={handleInputFilterChange} value={filterInput} />

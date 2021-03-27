@@ -2,6 +2,7 @@ import React from 'react';
 import { CreeveySuite, noop } from '../../types';
 
 export interface CreeveyContextType {
+  isReport: boolean;
   isRunning: boolean;
   onStop: () => void;
   onStart: (rootSuite: CreeveySuite) => void;
@@ -10,6 +11,7 @@ export interface CreeveyContextType {
 }
 
 export const CreeveyContext = React.createContext<CreeveyContextType>({
+  isReport: true,
   isRunning: false,
   onStop: noop,
   onStart: noop,

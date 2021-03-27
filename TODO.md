@@ -301,6 +301,7 @@
   - [x] Save webpack stats.json for debug
   - [x] Send list of available browsers from api
   - [x] Handle main.js for 6.x+, remove addons from it
+  - [ ] Support `stories.svelte` https://storybook.js.org/blog/storybook-for-svelte/
   - [ ] Add fallback option, load tests from browser (hmr and tests are disabled in this case)
     - [ ] Send PR to Storybook to allow use HMR for stories
   - [ ] Allow run creevey against static-storybook folder (Depends on fallback tests loading)
@@ -309,18 +310,29 @@
   - [x] Mdx e2e tests
     - Add tests loader and e2e
 - [ ] Check latest storybook docs on useful cases
+- [ ] Improve and approve storybook.examples e2e tests
 - [x] Improve Docker
   - [x] Private docker images registry
   - [x] Allow use standalone binary instead of Docker image for browser (https://aerokube.com/selenoid/latest/#_standalone_binary)
 
 ## First priority (v0.8)
 
+- [ ] Demo Page
+  - [ ] Expose official storybook page with creevey
+  - [ ] Run creevey API somewhere in VPS
+  - [ ] Support changing args (pass new args values to creevey server -> server sends them to browser in docker)
+  - [ ] (Optional) On approve save args values for story
+  - [ ] (Question) How handle multiple users? Github auth? Autoscale docker hosting
+    - Limit session time 5-10 min then stop/remove docker container
+    - Limit 1 session per IP, reuse same container
+    - Start new instance by request from browser
+    - Write nodejs proxy app, that starts creevey on random port
 - [ ] Docs
   - [ ] Add vue3 example
   - [ ] Add github actions for creevey-examples
   - [ ] Ignore elements
   - [ ] Describe use cases
-    - MDX, animations, CI + docker, custom images (options), sauceLabs, standalone, waitForReady
+    - MDX, animations, CI + docker, custom images (options), sauceLabs, standalone, waitForReady, extract
   - [ ] Rewrite config docs to more detail (simple setup, use cases, config description)
   - [ ] How to setup creevey report in TeamCity
   - [ ] Add new options (selenoidPath, webdriverCommand, etc)
@@ -376,6 +388,7 @@
   - [ ] Playwright
   - [ ] Puppeteer
 - [ ] Features
+  - [ ] Add test editor inside the addon (user be able to write/change tests for story)
   - [ ] Support JUnit mocha reporter
   - [ ] Improve `waitForReady` for interaction tests
     - `await this.waitForReady(() => this.browser.sendKeys().perform())`
@@ -417,6 +430,7 @@
 
 ## Second priority (v0.9)
 
+- [ ] Experiment with html2canvas
 - [ ] Update Readme
   - [ ] How to deal with animations (CREEVEY_ENV)
 - [ ] Add bootstrap script, that build and install current version into examples or use monorepo

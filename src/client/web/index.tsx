@@ -3,13 +3,15 @@ import ReactDOM from 'react-dom';
 import { CreeveyApp } from './CreeveyApp';
 
 import { initCreeveyClientApi, CreeveyClientApi } from '../shared/creeveyClientApi';
-import { CreeveyStatus } from '../../types';
+import { CreeveyStatus, noop } from '../../types';
 import { treeifyTests } from '../shared/helpers';
 import { CreeveyLoader } from './CreeveyLoader';
 
 declare global {
   const __CREEVEY_DATA__: CreeveyStatus['tests'];
 }
+
+window.__CREEVEY_SET_READY_FOR_CAPTURE__ = noop;
 
 function loadCreeveyData(): Promise<CreeveyStatus['tests']> {
   return new Promise<CreeveyStatus['tests']>((resolve) => {
@@ -21,6 +23,7 @@ function loadCreeveyData(): Promise<CreeveyStatus['tests']> {
 }
 
 const CreeveyAppAsync = React.lazy(async () => {
+  let isReport = false;
   let creeveyStatus: CreeveyStatus;
   let creeveyApi: CreeveyClientApi | undefined;
   if (window.location.host) {
@@ -30,9 +33,11 @@ const CreeveyAppAsync = React.lazy(async () => {
     } catch (error) {
       // NOTE: Failed to get status from API
       // NOTE: It might happen on circle ci from artifact
+      isReport = true;
       creeveyStatus = { isRunning: false, tests: await loadCreeveyData(), browsers: [] };
     }
   } else {
+    isReport = true;
     creeveyStatus = { isRunning: false, tests: await loadCreeveyData(), browsers: [] };
   }
 
@@ -41,7 +46,7 @@ const CreeveyAppAsync = React.lazy(async () => {
       return (
         <CreeveyApp
           api={creeveyApi}
-          initialState={{ isRunning: creeveyStatus.isRunning, tests: treeifyTests(creeveyStatus.tests) }}
+          initialState={{ isReport, isRunning: creeveyStatus.isRunning, tests: treeifyTests(creeveyStatus.tests) }}
         />
       );
     },

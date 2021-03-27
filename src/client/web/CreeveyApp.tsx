@@ -27,6 +27,7 @@ export interface CreeveyAppProps {
   initialState: {
     tests: CreeveySuite;
     isRunning: boolean;
+    isReport: boolean;
   };
 }
 
@@ -127,6 +128,7 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
   return (
     <CreeveyContext.Provider
       value={{
+        isReport: initialState.isReport,
         isRunning,
         onStart: handleStart,
         onStop: handleStop,

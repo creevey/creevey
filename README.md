@@ -2,6 +2,7 @@
 
 Cross-browser screenshot testing tool for [Storybook](https://storybook.js.org/) with fancy UI Runner.
 
+[![Creevey downloads](https://img.shields.io/npm/dt/creevey)](https://www.npmjs.com/package/creevey)
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 
 ![Creevey Demo](https://user-images.githubusercontent.com/6397708/100863723-cd6b8500-34b6-11eb-94e1-849590bc8066.gif)
