@@ -301,6 +301,7 @@
   - [x] Save webpack stats.json for debug
   - [x] Send list of available browsers from api
   - [x] Handle main.js for 6.x+, remove addons from it
+  - [x] Add extract command for CLI
   - [ ] Support `stories.svelte` https://storybook.js.org/blog/storybook-for-svelte/
   - [ ] Add fallback option, load tests from browser (hmr and tests are disabled in this case)
     - [ ] Send PR to Storybook to allow use HMR for stories
@@ -311,6 +312,7 @@
     - Add tests loader and e2e
 - [ ] Check latest storybook docs on useful cases
 - [ ] Improve and approve storybook.examples e2e tests
+- [ ] Be able to run storybook examples e2e in CI
 - [x] Improve Docker
   - [x] Private docker images registry
   - [x] Allow use standalone binary instead of Docker image for browser (https://aerokube.com/selenoid/latest/#_standalone_binary)

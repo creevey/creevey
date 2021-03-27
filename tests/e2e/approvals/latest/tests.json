@@ -28,7 +28,7 @@
             "click": "function click() {\n      return _click.apply(this, arguments);\n    }"
           }
         },
-        "framework": "creevey",
+        "framework": "react",
         "fileName": "./stories/KindA.stories.tsx",
         "args": {},
         "argTypes": {},
@@ -71,7 +71,7 @@
             }
           ]
         },
-        "framework": "creevey",
+        "framework": "react",
         "fileName": "./stories/KindA.stories.tsx",
         "args": {},
         "argTypes": {},
@@ -108,7 +108,7 @@
             }
           ]
         },
-        "framework": "creevey",
+        "framework": "react",
         "fileName": "./stories/KindA.stories.tsx",
         "args": {},
         "argTypes": {},
@@ -145,7 +145,7 @@
             }
           ]
         },
-        "framework": "creevey",
+        "framework": "react",
         "fileName": "./stories/KindA.stories.tsx",
         "args": {},
         "argTypes": {},
@@ -183,7 +183,7 @@
             }
           ]
         },
-        "framework": "creevey",
+        "framework": "react",
         "fileName": "./stories/KindB.stories.tsx",
         "args": {},
         "argTypes": {},
@@ -220,7 +220,7 @@
             }
           ]
         },
-        "framework": "creevey",
+        "framework": "react",
         "fileName": "./stories/KindC.stories.tsx",
         "args": {},
         "argTypes": {},
@@ -261,7 +261,7 @@
             "img"
           ]
         },
-        "framework": "creevey",
+        "framework": "react",
         "fileName": "./stories/KindD.stories.mdx",
         "args": {},
         "argTypes": {},
@@ -302,7 +302,7 @@
             "img"
           ]
         },
-        "framework": "creevey",
+        "framework": "react",
         "fileName": "./stories/KindD.stories.mdx",
         "args": {},
         "argTypes": {},
@@ -344,7 +344,7 @@
           ],
           "captureElement": "mdx-by-children"
         },
-        "framework": "creevey",
+        "framework": "react",
         "fileName": "./stories/KindD.stories.mdx",
         "args": {},
         "argTypes": {},

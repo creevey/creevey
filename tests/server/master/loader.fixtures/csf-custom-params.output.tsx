@@ -5,6 +5,7 @@
 
 export default {
   title: 'Button',
+  id: 'button-id',
 
 
   parameters: {
@@ -18,6 +19,7 @@ export const Text = () => {};
 Text.story = {
   name: 'myText',
   parameters: {
+    docsOnly: true,
 
 
     creevey: { captureElement: '#root' } } };

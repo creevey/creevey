@@ -2,7 +2,14 @@ import { rmdirSync, writeFile } from 'fs';
 import path from 'path';
 import webpack, { Configuration, RuleSetUse, Stats } from 'webpack';
 import nodeExternals from 'webpack-node-externals';
-import { extensions as fallbackExtensions, getCreeveyCache, isStorybookVersionLessThan } from '../utils';
+import {
+  extensions as fallbackExtensions,
+  getCreeveyCache,
+  getStorybookFramework,
+  getStorybookParentDirectory,
+  isStorybookVersion,
+  isStorybookVersionLessThan,
+} from '../utils';
 import { Config, Options, noop } from '../../types';
 import { emitWebpackMessage, subscribeOn } from '../messages';
 
@@ -17,33 +24,6 @@ const hasDocsAddon = (() => {
     return false;
   }
 })();
-const supportedFrameworks = [
-  'react',
-  'vue',
-  'angular',
-  'marionette',
-  'mithril',
-  'marko',
-  'html',
-  'svelte',
-  'riot',
-  'ember',
-  'preact',
-  'rax',
-  'aurelia',
-  'server',
-  'web-components',
-];
-
-function tryDetectStorybookFramework(parentDir: string): string | undefined {
-  return supportedFrameworks.find((framework) => {
-    try {
-      return require.resolve(path.join(parentDir, `@storybook/${framework}`));
-    } catch (_) {
-      return false;
-    }
-  });
-}
 
 function handleWebpackBuild(error: Error, stats: Stats): void {
   dumpStats(stats);
@@ -194,10 +174,25 @@ async function getWebpackConfigForStorybook_6_2(
 }
 
 async function removeAddons(configDir: string): Promise<boolean> {
+  const storybookUtilsPath = isStorybookVersionLessThan(6, 2)
+    ? '@storybook/core/dist/server/utils'
+    : '@storybook/core-common/dist/cjs/utils';
+  const serverRequireModule = isStorybookVersionLessThan(6, 2) ? 'server-require' : 'interpret-require';
   try {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const { default: config } = (await import(path.join(configDir, 'main'))) as {
-      default: { stories: string[]; addons?: (string | { name: string })[] };
+    const { getInterpretedFile } = await import(`${storybookUtilsPath}/interpret-files`);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const { serverRequire } = await import(`${storybookUtilsPath}/${serverRequireModule}`);
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const mainConfigFile = isStorybookVersion(6)
+      ? path.join(configDir, 'main')
+      : // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        getInterpretedFile(path.join(configDir, 'main'));
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+    const config = serverRequire(mainConfigFile) as {
+      stories: string[];
+      addons?: (string | { name: string })[];
     };
     if (config.addons && config.stories) {
       config.addons = [];
@@ -210,14 +205,7 @@ async function removeAddons(configDir: string): Promise<boolean> {
 }
 
 export default async function compile(config: Config, { debug, ui }: Options): Promise<void> {
-  const storybookCorePath = require.resolve('@storybook/core');
-  const [storybookParentDirectory] = storybookCorePath.split('@storybook');
-  const storybookFramework = tryDetectStorybookFramework(storybookParentDirectory);
-
-  if (!storybookFramework)
-    throw new Error(
-      "Couldn't detect used Storybook framework. Please ensure that you install `@storybook/<framework>` package",
-    );
+  const storybookFramework = getStorybookFramework();
 
   const outputDir = path.join(getCreeveyCache(), 'storybook');
 
@@ -268,8 +256,27 @@ export default async function compile(config: Config, { debug, ui }: Options): P
     use: creeveyLoader,
   });
 
+  const aliases = storybookWebpackConfig.resolve?.alias ?? {};
+  const excluded = [
+    '@storybook/addons',
+    '@storybook/api',
+    '@storybook/channel-postmessage',
+    '@storybook/channels',
+    '@storybook/client-api',
+    '@storybook/client-logger',
+    '@storybook/components',
+    '@storybook/core-events',
+    '@storybook/router',
+    '@storybook/semver',
+    '@storybook/theming',
+  ];
+
   // NOTE Exclude from bundle all modules from node_modules
   storybookWebpackConfig.externals = [
+    ...Object.entries(aliases)
+      .filter(([alias]) => excluded.includes(alias))
+      .map(([, aliasPath]) => ({ [aliasPath]: `commonjs ${aliasPath}` })),
+
     // NOTE Replace `@storybook/${framework}` to ../storybook.ts
     { [`@storybook/${storybookFramework}`]: `commonjs ${require.resolve('../storybook')}` },
     nodeExternals({
@@ -278,7 +285,7 @@ export default async function compile(config: Config, { debug, ui }: Options): P
     }),
     // TODO Don't work well with monorepos
     nodeExternals({
-      modulesDir: storybookParentDirectory,
+      modulesDir: getStorybookParentDirectory(),
       includeAbsolutePaths: true,
       allowlist: /(webpack|dummy-hmr|generated-stories-entry|generated-config-entry|generated-other-entry)/,
     }),
@@ -292,8 +299,10 @@ export default async function compile(config: Config, { debug, ui }: Options): P
 
   const storybookWebpackCompiler = webpack(storybookWebpackConfig);
 
-  dumpStats = (stats: Stats) =>
-    writeFile(path.join(config.reportDir, 'stats.json'), JSON.stringify(stats.toJson(), null, 2), noop);
+  if (debug) {
+    dumpStats = (stats: Stats) =>
+      writeFile(path.join(config.reportDir, 'stats.json'), JSON.stringify(stats.toJson(), null, 2), noop);
+  }
 
   if (ui) {
     const watcher = storybookWebpackCompiler.watch({}, handleWebpackBuild);

@@ -34,6 +34,7 @@ const testsToFileTypes: Partial<Record<string, FileType>> = {
   'storiesof-chain': FileType.Story,
   'storiesof-decorators': FileType.Story,
   'storiesof-import-tests': FileType.Story,
+  'storiesof-parameters': FileType.Story,
   'storiesof-simple': FileType.Story,
   'storiesof-tests': FileType.Story,
   'storiesof-var-tests': FileType.Story,
@@ -85,6 +86,9 @@ describe('loader', () => {
   - function declaration (.add('Text', function Text() {}))
   - function expression (.add('Text', Text))
   - with multiple storiesOf
+  x storiesOf().addParameters()
+  - storiesOf().loader
+  - var parameters (addParameters(params) and add('Text', () => {}, params))
 
 - MDX
   - MDXContent function

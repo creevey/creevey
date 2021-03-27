@@ -1,8 +1,8 @@
 import { StoryApi } from '@storybook/addons';
 import * as core from '@storybook/core';
-import { isStorybookVersionLessThan } from './utils';
+import { getStorybookFramework, isStorybookVersionLessThan } from './utils';
 
-const framework = 'creevey';
+const framework = getStorybookFramework();
 
 //@ts-expect-error: 6.2 use named exports
 const start = isStorybookVersionLessThan(6, 2) ? core.default.start : (core.start as typeof core.default.start);

@@ -102,7 +102,7 @@ function cleanUpStoryProps(storyPropAssign: NodePath<t.AssignmentExpression>): v
   const rightPath = storyPropAssign.get('right');
   if (!rightPath?.isObjectExpression()) return;
 
-  removeAllPropsExcept(rightPath, ['name', ['parameters', 'creevey']]);
+  removeAllPropsExcept(rightPath, ['name', ['parameters', 'creevey', 'docsOnly']]);
 }
 
 function recursivelyRemoveUnreferencedBindings(path: NodePath<t.Program>): void {
@@ -170,13 +170,13 @@ function transform(ast: t.File): string {
 
         state.visitedTopPaths.add(defaultPath);
 
-        removeAllPropsExcept(kindPath, ['title', ['parameters', 'creevey'], 'includeStories', 'excludeStories']);
+        removeAllPropsExcept(kindPath, ['title', 'id', ['parameters', 'creevey'], 'includeStories', 'excludeStories']);
 
         if (declaratorPath) {
           const kindPropAssigns = getPropertyAssignmentPaths(defaultPath, [declaratorPath.node]);
           for (const [assignPath, props] of kindPropAssigns?.entries() ?? []) {
             const [first, second] = props;
-            if (first == 'title' || first == 'includeStories' || first == 'excludeStories') continue;
+            if (first == 'title' || first == 'id' || first == 'includeStories' || first == 'excludeStories') continue;
             else if (first == 'parameters') {
               if (!second) {
                 const rightPath = assignPath.get('right');
@@ -196,6 +196,8 @@ function transform(ast: t.File): string {
             return;
           }
           replaceStoryFnToNoop(namedDeclaration.declarations);
+          // TODO Simplify like this
+          // removeAllPropAssignsExcept(..., ['storyName', ['story', 'name', ['parameters', 'creevey', 'docsOnly']], ['parameters', 'creevey', 'docsOnly']])
           const storyFnPropAssigns = getPropertyAssignmentPaths(namedPath, namedDeclaration.declarations);
           for (const [assignPath, props] of storyFnPropAssigns.entries()) {
             const [first, second, third] = props;
@@ -207,15 +209,15 @@ function transform(ast: t.File): string {
                 if (!third) {
                   const rightPath = assignPath.get('right');
                   if (!rightPath?.isObjectExpression()) continue;
-                  removeAllPropsExcept(rightPath, ['creevey']);
-                } else if (third != 'creevey') assignPath.remove();
+                  removeAllPropsExcept(rightPath, ['creevey', 'docsOnly']);
+                } else if (third != 'creevey' && third != 'docsOnly') assignPath.remove();
               } else assignPath.remove();
             } else if (first == 'parameters') {
               if (!second) {
                 const rightPath = assignPath.get('right');
                 if (!rightPath?.isObjectExpression()) continue;
-                removeAllPropsExcept(rightPath, ['creevey']);
-              } else if (second != 'creevey') assignPath.remove();
+                removeAllPropsExcept(rightPath, ['creevey', 'docsOnly']);
+              } else if (second != 'creevey' && second != 'docsOnly') assignPath.remove();
             } else assignPath.remove();
           }
         }
@@ -274,10 +276,14 @@ function transform(ast: t.File): string {
             if (!Array.isArray(propPath) && propPath.isIdentifier({ name: 'add' })) {
               const [, storyPath, parametersPath] = callPath.get('arguments');
               storyPath.replaceWith(t.arrowFunctionExpression([], t.blockStatement([])));
-              if (parametersPath?.isObjectExpression()) getPropertyPath(parametersPath, 'decorators')?.remove();
+              if (parametersPath?.isObjectExpression()) removeAllPropsExcept(parametersPath, ['creevey']);
             }
             if (!Array.isArray(propPath) && propPath.isIdentifier({ name: 'addDecorator' })) {
               callPath.replaceWith(childCallPath);
+            }
+            if (!Array.isArray(propPath) && propPath.isIdentifier({ name: 'addParameters' })) {
+              const [parametersPath] = callPath.get('arguments');
+              if (parametersPath?.isObjectExpression()) removeAllPropsExcept(parametersPath, ['creevey']);
             }
           } while (callPath.parentPath != null);
         }
@@ -412,7 +418,7 @@ let resourcePath = '';
 const entries = new Set<string>();
 const stories = new Set<string>();
 const reexportedStories = new Map<string, Set<string>>();
-const isTest = process.env.NODE_ENV == 'test';
+const isTest = process.env.__CREEVEY_ENV__ == 'test';
 const defaultOptions: Options = {
   debug: isTest,
   storybookDir: process.cwd(),

@@ -22,8 +22,8 @@ process.on('unhandledRejection', shutdown);
 const argv = minimist<Options>(process.argv.slice(2), {
   string: ['browser', 'config', 'reporter', 'reportDir', 'screenDir'],
   boolean: ['debug', 'ui', 'update', 'saveReport', 'webpack'],
-  default: { port: 3000, saveReport: true },
-  alias: { port: 'p', config: 'c', debug: 'd', update: 'u' },
+  default: { port: 3000, saveReport: true, extract: false },
+  alias: { port: 'p', config: 'c', debug: 'd', update: 'u', extract: 'e' },
 });
 
 // @ts-expect-error: define log level for storybook

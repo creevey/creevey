@@ -15,7 +15,7 @@ async function startWebdriverServer(config: Config, options: Options): Promise<v
 
 export default async function (options: Options): Promise<void> {
   const config = readConfig(options);
-  const { browser = defaultBrowser, update, webpack, ui, port } = options;
+  const { browser = defaultBrowser, extract, update, webpack, ui, port } = options;
 
   if (!config) return;
 
@@ -23,6 +23,7 @@ export default async function (options: Options): Promise<void> {
   // NOTE: We don't need docker nor selenoid for webpack or update options
   if (
     !(config.gridUrl || (Object.values(config.browsers) as BrowserConfig[]).every(({ gridUrl }) => gridUrl)) &&
+    !extract &&
     !webpack &&
     !update
   ) {
@@ -30,6 +31,9 @@ export default async function (options: Options): Promise<void> {
   }
 
   switch (true) {
+    case Boolean(extract): {
+      return (await import('./extract')).default(config, options);
+    }
     case update: {
       return (await import('./update')).default(config);
     }

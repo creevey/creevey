@@ -21,6 +21,8 @@ import { shouldSkip, isStorybookVersionLessThan, getCreeveyCache } from './utils
 import { mergeWith } from 'lodash';
 import { subscribeOn } from './messages';
 
+export let storybookApi: null | typeof import('./storybook') = null;
+
 function storyTestFabric(delay?: number, testFn?: CreeveyTestFunction) {
   return async function storyTest(this: Context) {
     delay ? await new Promise((resolve) => setTimeout(resolve, delay)) : void 0;
@@ -147,7 +149,9 @@ async function loadStorybookBundle(
 ): Promise<StoriesRaw> {
   const bundlePath = path.join(getCreeveyCache(), 'storybook/main.js');
 
-  const { channel } = await initStorybookEnvironment();
+  storybookApi = await initStorybookEnvironment();
+
+  const { channel } = storybookApi;
   channel.removeAllListeners(Events.CURRENT_STORY_WAS_SET);
 
   channel.on('storiesUpdated', storiesListener);

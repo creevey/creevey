@@ -1,7 +1,7 @@
 import fs, { createWriteStream, existsSync, readFileSync, unlink } from 'fs';
 import path from 'path';
 import cluster from 'cluster';
-import { SkipOptions, isDefined, TestData, noop } from '../types';
+import { SkipOptions, isDefined, TestData, noop, isFunction } from '../types';
 import { emitShutdownMessage, sendShutdownMessage } from './messages';
 import findCacheDir from 'find-cache-dir';
 import { get } from 'https';
@@ -9,6 +9,24 @@ import { get } from 'https';
 export const LOCALHOST_REGEXP = /(localhost|127\.0\.0\.1)/i;
 
 export const extensions = ['.js', '.jsx', '.ts', '.tsx', '.mjs', '.es', '.es6'];
+
+export const supportedFrameworks = [
+  'react',
+  'vue',
+  'angular',
+  'marionette',
+  'mithril',
+  'marko',
+  'html',
+  'svelte',
+  'riot',
+  'ember',
+  'preact',
+  'rax',
+  'aurelia',
+  'server',
+  'web-components',
+];
 
 const compilers = {
   '@babel/register': ({ extension }: { extension: string }) => (hook: (...args: unknown[]) => void) =>
@@ -113,20 +131,49 @@ export async function shutdownWorkers(): Promise<void> {
   );
 }
 
+export function getStorybookParentDirectory(): string {
+  return require.resolve('@storybook/core').split('@storybook')[0];
+}
+
 export function getStorybookVersion(): string {
-  const [storybookParentDirectory] = require.resolve('@storybook/core').split('@storybook');
+  const parentDir = getStorybookParentDirectory();
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { version } = require(path.join(storybookParentDirectory, '@storybook', 'core', 'package.json')) as {
-    version: string;
-  };
+  const { version } = require(path.join(parentDir, '@storybook', 'core', 'package.json')) as { version: string };
 
   return version;
 }
 
 export function isStorybookVersionLessThan(major: number, minor?: number): boolean {
-  const [sbMajor, sbMinor] = getStorybookVersion().split('.');
+  const [sbMajor, sbMinor] = (process.env.__CREEVEY_STORYBOOK_VERSION__ ?? getStorybookVersion()).split('.');
 
   return Number(sbMajor) < major || (minor != undefined && Number(sbMajor) == major && Number(sbMinor) < minor);
+}
+
+export function isStorybookVersion(major: number, minor?: number): boolean {
+  const [sbMajor, sbMinor] = (process.env.__CREEVEY_STORYBOOK_VERSION__ ?? getStorybookVersion()).split('.');
+
+  return Number(sbMajor) == major || (minor != undefined && Number(sbMajor) == major && Number(sbMinor) == minor);
+}
+
+export function getStorybookFramework(): string {
+  const parentDir = getStorybookParentDirectory();
+
+  const framework =
+    process.env.__CREEVEY_STORYBOOK_FRAMEWORK__ ??
+    supportedFrameworks.find((framework) => {
+      try {
+        return require.resolve(path.join(parentDir, `@storybook/${framework}`));
+      } catch (_) {
+        return false;
+      }
+    });
+
+  if (!framework)
+    throw new Error(
+      "Couldn't detect used Storybook framework. Please ensure that you install `@storybook/<framework>` package",
+    );
+
+  return framework;
 }
 
 export function getCreeveyCache(): string {
@@ -185,3 +232,20 @@ export const downloadBinary = (downloadUrl: string, destination: string): Promis
       });
     }),
   );
+
+export function removeProps(obj: Record<string, unknown>, propPath: (string | ((key: string) => boolean))[]): void {
+  const [prop, ...restPath] = propPath;
+  if (restPath.length > 0) {
+    if (typeof prop == 'string') obj[prop] && removeProps(obj[prop] as Record<string, unknown>, restPath);
+    if (isFunction(prop))
+      Object.keys(obj)
+        .filter(prop)
+        .forEach((key) => obj[key] && removeProps(obj[key] as Record<string, unknown>, restPath));
+  } else {
+    if (typeof prop == 'string') delete obj[prop];
+    if (isFunction(prop))
+      Object.keys(obj)
+        .filter(prop)
+        .forEach((key) => delete obj[key]);
+  }
+}

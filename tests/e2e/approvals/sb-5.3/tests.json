@@ -15,7 +15,7 @@
       "story": "Story A",
       "parameters": {
         "fileName": "./stories/KindA.stories.jsx",
-        "framework": "creevey",
+        "framework": "react",
         "__id": "kinda--story-a"
       }
     },

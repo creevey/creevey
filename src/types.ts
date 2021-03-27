@@ -212,11 +212,12 @@ export interface Options {
   update: boolean;
   webpack: boolean;
   debug: boolean;
+  extract: boolean | 'stories' | 'tests';
   browser?: string;
   reporter?: string;
   screenDir?: string;
   reportDir?: string;
-  saveReport?: boolean;
+  saveReport: boolean;
 }
 
 export type WorkerMessage = { type: 'ready'; payload?: never } | { type: 'error'; payload: { error: string } };
@@ -384,6 +385,11 @@ export function isObject(x: unknown): x is Record<string, unknown> {
 
 export function isString(x: unknown): x is string {
   return typeof x == 'string';
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function isFunction(x: unknown): x is (...args: any[]) => any {
+  return typeof x == 'function';
 }
 
 export function isImageError(error: unknown): error is ImagesError {

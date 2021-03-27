@@ -1,19 +1,35 @@
-import { describe } from 'mocha';
-import { createTests } from './test-helper';
+// import { expect } from 'chai';
+import path from 'path';
+import { after, before, describe } from 'mocha';
+import {
+  assertExtractedStories,
+  assertExtractedTests,
+  assertWebpackBundle,
+  execSync,
+  prepareWorkDir,
+  updateApprovals,
+} from './test-helpers';
 
-// TODO tests
-// StoriesOf - Parameters, global, kind, story
-// CSF - Parameters, global, kind, story
-// 6.0 - export global parameters
-// SubKinds
-// mdx
-// from frameworks (angular, react, vue, nextjs, etc)
-// Apply loader only for stories files
+// TODO Support storiesOf variables
 
-// 6.1 https://github.com/storybookjs/storybook/blob/next/MIGRATION.md#single-story-hoisting
+const storybookDir = path.join(process.cwd(), '../storybook');
+const workDir = `${storybookDir}/examples/official-storybook`;
 
-describe('Storybook E2E', function () {
+describe('Storybook Official E2E', function () {
   this.timeout('300s');
 
-  createTests('storybook.fixtures');
+  before(function () {
+    prepareWorkDir(workDir);
+    execSync('npm run build-storybook', { cwd: workDir });
+  });
+
+  after(function () {
+    updateApprovals(workDir, 'storybook');
+  });
+
+  assertExtractedTests(workDir, 'storybook');
+
+  assertWebpackBundle(workDir, 'storybook');
+
+  assertExtractedStories(workDir);
 });

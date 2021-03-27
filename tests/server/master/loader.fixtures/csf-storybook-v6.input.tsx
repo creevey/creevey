@@ -12,6 +12,7 @@ export const Text = () => <Button>Hello Button</Button>;
 Text.storyName = 'text button';
 Text.decorators = [storyFn => <center>{storyFn()}</center>];
 Text.parameters = {
+  docsOnly: true,
   component: Button,
   subcomponents: { input: Input },
   creevey: { captureElement: '#root' },

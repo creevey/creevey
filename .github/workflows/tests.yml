@@ -33,7 +33,7 @@ jobs:
       - name: install
         run: yarn
       - name: e2e tests
-        run: yarn test:e2e
+        run: yarn test:e2e --grep Fixtures
   tests:
     name: Tests
     runs-on: ubuntu-latest

@@ -14,7 +14,7 @@
       "name": "Story A",
       "story": "Story A",
       "parameters": {
-        "framework": "creevey",
+        "framework": "react",
         "fileName": "./stories/KindA.stories.tsx",
         "args": {},
         "argTypes": {},
