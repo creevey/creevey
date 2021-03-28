@@ -1,3 +1,15 @@
+## [0.7.26](https://github.com/wKich/creevey/compare/v0.7.25...v0.7.26) (2021-03-28)
+
+### Bug Fixes
+
+- 🐛 don't show run button in a report ([958c8ad](https://github.com/wKich/creevey/commit/958c8ad742121dd57adb841939fb5f27134132c5))
+
+### Features
+
+- 🎸 add `--extract` as faster alternative to `sb extract` ([5f5de2d](https://github.com/wKich/creevey/commit/5f5de2d44ba49c0f9868cb843a522745308fa055))
+- 🎸 add `waitForReady` story parameter ([8517883](https://github.com/wKich/creevey/commit/8517883019dc371141a0b7308b37bde8b17577b6))
+- 🎸 allow define custom selenoid images and skip pull step ([e508eec](https://github.com/wKich/creevey/commit/e508eec9918cb63194a74c2ebd44aa1f62c9930d))
+
 ## [0.7.25](https://github.com/wKich/creevey/compare/v0.7.24...v0.7.25) (2021-03-18)
 
 ### Bug Fixes
