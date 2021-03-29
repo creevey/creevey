@@ -48,7 +48,7 @@ jobs:
       - name: Checkout Storybook
         uses: actions/checkout@v2
         with:
-          repository: https://github.com/creevey/storybook.git
+          repository: creevey/storybook
           ref: creevey
           path: storybook
       - uses: actions/setup-node@v1
