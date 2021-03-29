@@ -310,9 +310,8 @@
     - Move webpack/update to separate folder/file
   - [x] Mdx e2e tests
     - Add tests loader and e2e
-- [ ] Check latest storybook docs on useful cases
 - [ ] Improve and approve storybook.examples e2e tests
-- [ ] Be able to run storybook examples e2e in CI
+- [x] Be able to run storybook examples e2e in CI
 - [x] Improve Docker
   - [x] Private docker images registry
   - [x] Allow use standalone binary instead of Docker image for browser (https://aerokube.com/selenoid/latest/#_standalone_binary)
@@ -367,6 +366,7 @@
     - Iterate be screen images and calculate resulting x/y coordinates for composite image
     - If image width/height greater than viewport width/height than scroll bar is captured
 - [x] ~~Support esm/cjs builds~~
+- [ ] Check latest storybook docs on useful cases
 - [ ] Move docker config options to separate prop `docker`
 - [ ] Move from yarn to npm@7
 - [ ] Bring all examples from storybook repo and test with creevey

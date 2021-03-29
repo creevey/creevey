@@ -1,4 +1,3 @@
-// import { expect } from 'chai';
 import { readdirSync } from 'fs';
 import { describe } from 'mocha';
 import {

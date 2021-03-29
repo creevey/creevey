@@ -1,5 +1,3 @@
-// import { expect } from 'chai';
-import path from 'path';
 import { after, before, describe } from 'mocha';
 import {
   assertExtractedStories,
@@ -7,12 +5,12 @@ import {
   assertWebpackBundle,
   execSync,
   prepareWorkDir,
+  storybookDir,
   updateApprovals,
 } from './test-helpers';
 
 // TODO Support storiesOf variables
 
-const storybookDir = path.join(process.cwd(), '../storybook');
 const workDir = `${storybookDir}/examples/official-storybook`;
 
 describe('Storybook Official E2E', function () {

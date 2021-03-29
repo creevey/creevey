@@ -1,4 +1,3 @@
-import { join } from 'path';
 import { writeFileSync, readFileSync } from 'fs';
 import { ChildProcess } from 'child_process';
 import { expect } from 'chai';
@@ -10,12 +9,12 @@ function readMainJsBundle(workDir: string): string {
   const mainJsPath = 'node_modules/creevey/node_modules/.cache/creevey/storybook/main.js';
 
   return readFileSync(`${workDir}/${mainJsPath}`, { encoding: 'utf-8' })
-    .replace(new RegExp(workDir, 'g'), '.')
+    .replace(new RegExp(workDir.startsWith(storybookDir) ? storybookDir : workDir, 'g'), '.')
     .replace(/^\/\*!\*.*$\n\s{2}!\*{3}/gm, '/*')
     .replace(/\*{3}!$\n\s{2}\\\*+\/$/gm, '*/');
 }
 
-export const storybookDir = join(process.cwd(), '../storybook');
+export const storybookDir = `${__dirname}../../../storybook`;
 
 export function execSync(command: string, options?: ExecOptions): void {
   const result = shell.exec(command, {
@@ -28,7 +27,7 @@ export function execSync(command: string, options?: ExecOptions): void {
 }
 
 export function prepareWorkDir(workDir: string): void {
-  execSync(`npm install serve ${process.cwd()}/creevey.tgz --no-save`, { cwd: workDir });
+  execSync(`npm install serve ${__dirname}/../../creevey.tgz --no-save`, { cwd: workDir });
   execSync('npx creevey --webpack', { cwd: workDir });
 }
 
