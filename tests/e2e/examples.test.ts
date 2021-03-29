@@ -18,11 +18,18 @@ const excludedExamples = [
   'standalone-preview', // NOTE: This isn't regular stories project
 ];
 
+let examples: string[] = [];
+try {
+  examples = readdirSync(`${storybookDir}/examples`);
+} catch (_) {
+  /* noop */
+}
+
 // TODO Just skip for now. Unskip examples one by one and approve the result
 describe.skip('Storybook Examples E2E', function () {
   this.timeout('300s');
 
-  readdirSync(`${storybookDir}/examples`)
+  examples
     .filter((suiteName) => !excludedExamples.includes(suiteName))
     .forEach((suiteName) => {
       describe(suiteName, function () {
