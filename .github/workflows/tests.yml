@@ -1,4 +1,4 @@
-name: tests
+name: Build and Test
 on: push
 
 jobs:
@@ -22,8 +22,8 @@ jobs:
         with:
           name: creevey
           path: creevey-*.tgz
-  e2e:
-    name: E2E Tests
+  e2e-fixtures:
+    name: Storybook Fixtures E2E Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -32,8 +32,34 @@ jobs:
           node-version: 12.x
       - name: install
         run: yarn
-      - name: e2e tests
+      - name: tests
         run: yarn test:e2e --grep Fixtures
+  e2e-storybook:
+    name: Storybook Official E2E Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: creevey
+    steps:
+      - name: Checkout Creevey
+        uses: actions/checkout@v2
+        with:
+          path: creevey
+      - name: Checkout Storybook
+        uses: actions/checkout@v2
+        with:
+          repository: https://github.com/creevey/storybook.git
+          ref: creevey
+          path: storybook
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - name: install
+        run: yarn
+      - name: bootstrap
+        run: yarn bootstrap:storybook
+      - name: tests
+        run: yarn test:e2e --grep Official
   tests:
     name: Tests
     runs-on: ubuntu-latest
