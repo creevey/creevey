@@ -1,3 +1,4 @@
+import path from 'path';
 import { writeFileSync, readFileSync } from 'fs';
 import { ChildProcess } from 'child_process';
 import { expect } from 'chai';
@@ -14,7 +15,7 @@ function readMainJsBundle(workDir: string): string {
     .replace(/\*{3}!$\n\s{2}\\\*+\/$/gm, '*/');
 }
 
-export const storybookDir = `${__dirname}../../../storybook`;
+export const storybookDir = path.join(__dirname, '../../../storybook');
 
 export function execSync(command: string, options?: ExecOptions): void {
   const result = shell.exec(command, {
@@ -27,7 +28,7 @@ export function execSync(command: string, options?: ExecOptions): void {
 }
 
 export function prepareWorkDir(workDir: string): void {
-  execSync(`npm install serve ${__dirname}/../../creevey.tgz --no-save`, { cwd: workDir });
+  execSync(`npm install serve ${path.join(__dirname, '/../../creevey.tgz')} --no-save`, { cwd: workDir });
   execSync('npx creevey --webpack', { cwd: workDir });
 }
 
