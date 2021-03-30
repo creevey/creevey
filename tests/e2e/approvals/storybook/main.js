@@ -87,7 +87,7 @@
 /******/ ({
 
 /***/ "../../addons/docs/dist/mdx/title-generators.js":
-/* /home/ki/Projects/creevey/storybook/addons/docs/dist/mdx/title-generators.js */
+/* ./addons/docs/dist/mdx/title-generators.js */
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -108,7 +108,7 @@ exports.titleFunction = titleFunction;
 /***/ }),
 
 /***/ "../../lib/components/src sync recursive ^\\.(?:(?:^|\\/|(?:(?:(?!(?:^|\\/)\\.).)*?)\\/)(?!\\.)(?=.)[^/]*?\\.stories\\.(js|tsx|mdx))$":
-/* /home/ki/Projects/creevey/storybook/lib/components/src sync ^\.(?:(?:^|\/|(?:(?:(?!(?:^|\/)\.).)*?)\/)(?!\.)(?=.)[^/]*?\.stories\.(js|tsx|mdx))$ */
+/* ./lib/components/src sync ^\.(?:(?:^|\/|(?:(?:(?!(?:^|\/)\.).)*?)\/)(?!\.)(?=.)[^/]*?\.stories\.(js|tsx|mdx))$ */
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -184,7 +184,7 @@ webpackContext.id = "../../lib/components/src sync recursive ^\\.(?:(?:^|\\/|(?:
 /***/ }),
 
 /***/ "../../lib/components/src/ActionBar/ActionBar.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/ActionBar/ActionBar.stories.tsx */
+/* ./lib/components/src/ActionBar/ActionBar.stories.tsx */
 /*! exports provided: default, singleItem, manyItems */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -197,7 +197,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/components/src/Badge/Badge.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/Badge/Badge.stories.tsx */
+/* ./lib/components/src/Badge/Badge.stories.tsx */
 /*! no exports provided */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -211,7 +211,7 @@ Object(_storybook_react__WEBPACK_IMPORTED_MODULE_0__["storiesOf"])("Basics/Badge
 /***/ }),
 
 /***/ "../../lib/components/src/Button/Button.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/Button/Button.stories.tsx */
+/* ./lib/components/src/Button/Button.stories.tsx */
 /*! no exports provided */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -225,7 +225,7 @@ Object(_storybook_react__WEBPACK_IMPORTED_MODULE_0__["storiesOf"])("Basics/Butto
 /***/ }),
 
 /***/ "../../lib/components/src/Colors/colorpalette.stories.mdx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/Colors/colorpalette.stories.mdx */
+/* ./lib/components/src/Colors/colorpalette.stories.mdx */
 /*! exports provided: __page, default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -249,7 +249,7 @@ componentMeta.parameters = componentMeta.parameters || {};
 /***/ }),
 
 /***/ "../../lib/components/src/Loader/Loader.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/Loader/Loader.stories.tsx */
+/* ./lib/components/src/Loader/Loader.stories.tsx */
 /*! exports provided: default, InfiniteState, SizeAdjusted, ProgressBar, ProgressError */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -264,7 +264,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/components/src/ScrollArea/ScrollArea.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/ScrollArea/ScrollArea.stories.tsx */
+/* ./lib/components/src/ScrollArea/ScrollArea.stories.tsx */
 /*! exports provided: default, vertical, horizontal, both, withOuterBorder */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -279,7 +279,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/components/src/Zoom/Zoom.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/Zoom/Zoom.stories.tsx */
+/* ./lib/components/src/Zoom/Zoom.stories.tsx */
 /*! exports provided: default, elementActualSize, elementZoomedIn, elementZoomedOut, iFrameActualSize, iFrameZoomedIn, iFrameZoomedOut */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -296,7 +296,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx */
+/* ./lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx */
 /*! exports provided: default, String, LongName, LongDesc, Boolean, Color, Date, Number, Range, Radio, InlineRadio, Check, InlineCheck, Select, MultiSelect, ObjectOf, ArrayOf, ComplexObject, Func, Enum, LongEnum, ComplexUnion, Markdown, StringCompact, StringNoControls, StringNoControlsCompact */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -332,7 +332,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/components/src/blocks/ArgsTable/ArgsTable.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/blocks/ArgsTable/ArgsTable.stories.tsx */
+/* ./lib/components/src/blocks/ArgsTable/ArgsTable.stories.tsx */
 /*! exports provided: default, Normal, Compact, InAddonPanel, InAddonPanelWithWarning, Sections, SectionsCompact, SectionsAndSubsections, SubsectionsOnly, AllControls, Error, Empty, WithDefaultExpandedArgs */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -355,7 +355,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/components/src/blocks/ArgsTable/SectionRow.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/blocks/ArgsTable/SectionRow.stories.tsx */
+/* ./lib/components/src/blocks/ArgsTable/SectionRow.stories.tsx */
 /*! exports provided: default, Section, Subsection, Collapsed, Nested */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -370,7 +370,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/components/src/blocks/ArgsTable/TabbedArgsTable.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/blocks/ArgsTable/TabbedArgsTable.stories.tsx */
+/* ./lib/components/src/blocks/ArgsTable/TabbedArgsTable.stories.tsx */
 /*! exports provided: default, Tabs, TabsInAddonPanel, Empty */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -384,7 +384,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/components/src/blocks/ColorPalette.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/blocks/ColorPalette.stories.tsx */
+/* ./lib/components/src/blocks/ColorPalette.stories.tsx */
 /*! exports provided: default, defaultStyle, NamedColors */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -397,7 +397,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/components/src/blocks/Description.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/blocks/Description.stories.tsx */
+/* ./lib/components/src/blocks/Description.stories.tsx */
 /*! exports provided: default, Text, Markdown, MarkdownLinks */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -411,7 +411,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/components/src/blocks/DocsPage.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/blocks/DocsPage.stories.tsx */
+/* ./lib/components/src/blocks/DocsPage.stories.tsx */
 /*! exports provided: default, WithSubtitle, Empty, NoText, Text, Markdown */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -427,7 +427,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/components/src/blocks/EmptyBlock.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/blocks/EmptyBlock.stories.tsx */
+/* ./lib/components/src/blocks/EmptyBlock.stories.tsx */
 /*! exports provided: default, error */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -439,7 +439,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/components/src/blocks/IconGallery.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/blocks/IconGallery.stories.tsx */
+/* ./lib/components/src/blocks/IconGallery.stories.tsx */
 /*! exports provided: default, defaultStyle */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -451,7 +451,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/components/src/blocks/Preview.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/blocks/Preview.stories.tsx */
+/* ./lib/components/src/blocks/Preview.stories.tsx */
 /*! exports provided: default, CodeCollapsed, CodeExpanded, CodeError, Single, Row, Column, GridWith3Columns, WithToolbar, Wide, WithToolbarMulti, WithFullscreenSingle, WithFullscreenMulti, WithCenteredSingle, WithCenteredMulti, WithAdditionalActions */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -477,7 +477,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/components/src/blocks/Source.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/blocks/Source.stories.tsx */
+/* ./lib/components/src/blocks/Source.stories.tsx */
 /*! exports provided: default, JSX, CSS, NoStory, SourceUnavailable */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -492,7 +492,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/components/src/blocks/Story.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/blocks/Story.stories.tsx */
+/* ./lib/components/src/blocks/Story.stories.tsx */
 /*! exports provided: default, Inline, Error, ReactHook */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -506,7 +506,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/components/src/blocks/Typeset.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/blocks/Typeset.stories.tsx */
+/* ./lib/components/src/blocks/Typeset.stories.tsx */
 /*! exports provided: default, withFontSizes, withFontWeight, withFontFamily, withWeightText */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -521,7 +521,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/components/src/brand/StorybookIcon.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/brand/StorybookIcon.stories.tsx */
+/* ./lib/components/src/brand/StorybookIcon.stories.tsx */
 /*! no exports provided */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -535,7 +535,7 @@ Object(_storybook_react__WEBPACK_IMPORTED_MODULE_0__["storiesOf"])("Basics/Brand
 /***/ }),
 
 /***/ "../../lib/components/src/brand/StorybookLogo.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/brand/StorybookLogo.stories.tsx */
+/* ./lib/components/src/brand/StorybookLogo.stories.tsx */
 /*! exports provided: default, normal */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -547,7 +547,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/components/src/controls/Array.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/controls/Array.stories.tsx */
+/* ./lib/components/src/controls/Array.stories.tsx */
 /*! exports provided: default, Basic, Undefined */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -560,7 +560,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/components/src/controls/Boolean.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/controls/Boolean.stories.tsx */
+/* ./lib/components/src/controls/Boolean.stories.tsx */
 /*! exports provided: default, Basic, Undefined */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -573,7 +573,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/components/src/controls/Color.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/controls/Color.stories.tsx */
+/* ./lib/components/src/controls/Color.stories.tsx */
 /*! exports provided: default, Basic, Undefined, WithPresetColors */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -587,7 +587,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/components/src/controls/Date.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/controls/Date.stories.tsx */
+/* ./lib/components/src/controls/Date.stories.tsx */
 /*! exports provided: default, Basic, Undefined */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -600,7 +600,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/components/src/controls/Number.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/controls/Number.stories.tsx */
+/* ./lib/components/src/controls/Number.stories.tsx */
 /*! exports provided: default, Basic, Undefined */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -613,7 +613,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/components/src/controls/Object.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/controls/Object.stories.tsx */
+/* ./lib/components/src/controls/Object.stories.tsx */
 /*! exports provided: default, Basic, Null, Undefined, ValidatedAsArray */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -628,7 +628,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/components/src/controls/Range.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/controls/Range.stories.tsx */
+/* ./lib/components/src/controls/Range.stories.tsx */
 /*! exports provided: default, Basic, Undefined */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -641,7 +641,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/components/src/controls/Text.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/controls/Text.stories.tsx */
+/* ./lib/components/src/controls/Text.stories.tsx */
 /*! exports provided: default, Basic, Undefined */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -654,7 +654,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/components/src/controls/options/Options.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/controls/options/Options.stories.tsx */
+/* ./lib/components/src/controls/options/Options.stories.tsx */
 /*! exports provided: default, CheckArray, InlineCheckArray, CheckObject, InlineCheckObject, ArrayRadio, ArrayInlineRadio, ObjectRadio, ObjectInlineRadio, ArraySelect, ArrayMultiSelect, ObjectSelect, ObjectMultiSelect */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -680,7 +680,7 @@ var ArraySelect=function(){};var ArrayMultiSelect=function(){};var ObjectSelect=
 /***/ }),
 
 /***/ "../../lib/components/src/form/form.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/form/form.stories.tsx */
+/* ./lib/components/src/form/form.stories.tsx */
 /*! no exports provided */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -694,7 +694,7 @@ Object(_storybook_react__WEBPACK_IMPORTED_MODULE_0__["storiesOf"])("Basics/Form/
 /***/ }),
 
 /***/ "../../lib/components/src/icon/icon.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/icon/icon.stories.tsx */
+/* ./lib/components/src/icon/icon.stories.tsx */
 /*! no exports provided */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -708,7 +708,7 @@ Object(_storybook_react__WEBPACK_IMPORTED_MODULE_0__["storiesOf"])("Basics/Icon"
 /***/ }),
 
 /***/ "../../lib/components/src/placeholder/placeholder.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/placeholder/placeholder.stories.tsx */
+/* ./lib/components/src/placeholder/placeholder.stories.tsx */
 /*! exports provided: default, singleChild, twoChildren */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -721,7 +721,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/components/src/spaced/Spaced.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/spaced/Spaced.stories.tsx */
+/* ./lib/components/src/spaced/Spaced.stories.tsx */
 /*! no exports provided */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -735,7 +735,7 @@ Object(_storybook_react__WEBPACK_IMPORTED_MODULE_0__["storiesOf"])("Basics/Space
 /***/ }),
 
 /***/ "../../lib/components/src/syntaxhighlighter/syntaxhighlighter.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/syntaxhighlighter/syntaxhighlighter.stories.tsx */
+/* ./lib/components/src/syntaxhighlighter/syntaxhighlighter.stories.tsx */
 /*! no exports provided */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -749,7 +749,7 @@ Object(_storybook_react__WEBPACK_IMPORTED_MODULE_0__["storiesOf"])("Basics/Synta
 /***/ }),
 
 /***/ "../../lib/components/src/tabs/tabs.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/tabs/tabs.stories.tsx */
+/* ./lib/components/src/tabs/tabs.stories.tsx */
 /*! no exports provided */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -763,7 +763,7 @@ Object(_storybook_react__WEBPACK_IMPORTED_MODULE_0__["storiesOf"])("Basics/Tabs"
 /***/ }),
 
 /***/ "../../lib/components/src/tooltip/ListItem.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/tooltip/ListItem.stories.tsx */
+/* ./lib/components/src/tooltip/ListItem.stories.tsx */
 /*! no exports provided */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -777,7 +777,7 @@ Object(_storybook_react__WEBPACK_IMPORTED_MODULE_0__["storiesOf"])("basics/Toolt
 /***/ }),
 
 /***/ "../../lib/components/src/tooltip/Tooltip.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/tooltip/Tooltip.stories.tsx */
+/* ./lib/components/src/tooltip/Tooltip.stories.tsx */
 /*! no exports provided */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -791,7 +791,7 @@ Object(_storybook_react__WEBPACK_IMPORTED_MODULE_0__["storiesOf"])("basics/Toolt
 /***/ }),
 
 /***/ "../../lib/components/src/tooltip/TooltipLinkList.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/tooltip/TooltipLinkList.stories.tsx */
+/* ./lib/components/src/tooltip/TooltipLinkList.stories.tsx */
 /*! exports provided: links */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -806,7 +806,7 @@ var links=function(){};Object(_storybook_react__WEBPACK_IMPORTED_MODULE_0__["sto
 /***/ }),
 
 /***/ "../../lib/components/src/tooltip/TooltipMessage.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/tooltip/TooltipMessage.stories.tsx */
+/* ./lib/components/src/tooltip/TooltipMessage.stories.tsx */
 /*! no exports provided */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -820,7 +820,7 @@ Object(_storybook_react__WEBPACK_IMPORTED_MODULE_0__["storiesOf"])("basics/Toolt
 /***/ }),
 
 /***/ "../../lib/components/src/tooltip/TooltipNote.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/tooltip/TooltipNote.stories.tsx */
+/* ./lib/components/src/tooltip/TooltipNote.stories.tsx */
 /*! no exports provided */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -834,7 +834,7 @@ Object(_storybook_react__WEBPACK_IMPORTED_MODULE_0__["storiesOf"])("basics/Toolt
 /***/ }),
 
 /***/ "../../lib/components/src/tooltip/WithTooltip.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/tooltip/WithTooltip.stories.tsx */
+/* ./lib/components/src/tooltip/WithTooltip.stories.tsx */
 /*! no exports provided */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -848,7 +848,7 @@ Object(_storybook_react__WEBPACK_IMPORTED_MODULE_0__["storiesOf"])("basics/Toolt
 /***/ }),
 
 /***/ "../../lib/components/src/typography/DocumentWrapper.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/typography/DocumentWrapper.stories.tsx */
+/* ./lib/components/src/typography/DocumentWrapper.stories.tsx */
 /*! exports provided: default, withMarkdown, withDOM */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -861,7 +861,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/components/src/typography/link/link.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/typography/link/link.stories.tsx */
+/* ./lib/components/src/typography/link/link.stories.tsx */
 /*! no exports provided */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -875,7 +875,7 @@ Object(_storybook_react__WEBPACK_IMPORTED_MODULE_0__["storiesOf"])("Basics/Link"
 /***/ }),
 
 /***/ "../../lib/components/src/typography/typography.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/components/src/typography/typography.stories.tsx */
+/* ./lib/components/src/typography/typography.stories.tsx */
 /*! no exports provided */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -889,7 +889,7 @@ Object(_storybook_react__WEBPACK_IMPORTED_MODULE_0__["storiesOf"])("Basics/typog
 /***/ }),
 
 /***/ "../../lib/core/dist/server/common/polyfills.js":
-/* /home/ki/Projects/creevey/storybook/lib/core/dist/server/common/polyfills.js */
+/* ./lib/core/dist/server/common/polyfills.js */
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -905,7 +905,7 @@ __webpack_require__(/*! core-js/features/symbol */ "core-js/features/symbol");
 /***/ }),
 
 /***/ "../../lib/core/dist/server/preview/globals.js":
-/* /home/ki/Projects/creevey/storybook/lib/core/dist/server/preview/globals.js */
+/* ./lib/core/dist/server/preview/globals.js */
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -919,7 +919,7 @@ _global.window.STORYBOOK_REACT_CLASSES = {};
 /***/ }),
 
 /***/ "../../lib/ui/src sync recursive ^\\.(?:(?:^|\\/|(?:(?:(?!(?:^|\\/)\\.).)*?)\\/)(?!\\.)(?=.)[^/]*?\\.stories\\.(js|tsx|mdx))$":
-/* /home/ki/Projects/creevey/storybook/lib/ui/src sync ^\.(?:(?:^|\/|(?:(?:(?!(?:^|\/)\.).)*?)\/)(?!\.)(?=.)[^/]*?\.stories\.(js|tsx|mdx))$ */
+/* ./lib/ui/src sync ^\.(?:(?:^|\/|(?:(?:(?!(?:^|\/)\.).)*?)\/)(?!\.)(?=.)[^/]*?\.stories\.(js|tsx|mdx))$ */
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -971,7 +971,7 @@ webpackContext.id = "../../lib/ui/src sync recursive ^\\.(?:(?:^|\\/|(?:(?:(?!(?
 /***/ }),
 
 /***/ "../../lib/ui/src/app.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/ui/src/app.stories.tsx */
+/* ./lib/ui/src/app.stories.tsx */
 /*! exports provided: default, Default, LoadingState */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -984,7 +984,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/ui/src/components/layout/desktop.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/ui/src/components/layout/desktop.stories.tsx */
+/* ./lib/ui/src/components/layout/desktop.stories.tsx */
 /*! exports provided: default, Default, NoAddons, NoSidebar, NoPanel, BottomPanel, Fullscreen, NoPanelNoSidebar, Page */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1003,7 +1003,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/ui/src/components/layout/mobile.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/ui/src/components/layout/mobile.stories.tsx */
+/* ./lib/ui/src/components/layout/mobile.stories.tsx */
 /*! exports provided: default, InitialSidebar, InitialCanvas, InitialAddons, Page */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1018,7 +1018,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/ui/src/components/notifications/NotificationItem.stories.js":
-/* /home/ki/Projects/creevey/storybook/lib/ui/src/components/notifications/NotificationItem.stories.js */
+/* ./lib/ui/src/components/notifications/NotificationItem.stories.js */
 /*! exports provided: default, simpleData, simple, longHeadlineData, longHeadline, linkData, link, linkIconWithColorData, linkIconWithColor, linkIconWithColorSubHeadlineData, linkIconWithColorSubHeadline, bookIconData, bookIcon, strongSubHeadlineData, strongSubHeadline, strongEmphasizedSubHeadlineData, strongEmphasizedSubHeadline, bookIconSubHeadlineData, bookIconSubHeadline, bookIconLongSubHeadlineData, bookIconLongSubHeadline, accessibilityIconData, accessibilityIcon, accessibilityGoldIconData, accessibilityGoldIcon, accessibilityGoldIconLongHeadLineNoSubHeadlineData, accessibilityGoldIconLongHeadLineNoSubHeadline */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1055,7 +1055,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/ui/src/components/notifications/NotificationList.stories.js":
-/* /home/ki/Projects/creevey/storybook/lib/ui/src/components/notifications/NotificationList.stories.js */
+/* ./lib/ui/src/components/notifications/NotificationList.stories.js */
 /*! exports provided: default, singleData, allData, single, all, placement */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1071,7 +1071,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/ui/src/components/panel/panel.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/ui/src/components/panel/panel.stories.tsx */
+/* ./lib/ui/src/components/panel/panel.stories.tsx */
 /*! exports provided: default, Default, NoPanels */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1084,7 +1084,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/ui/src/components/preview/iframe.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/ui/src/components/preview/iframe.stories.tsx */
+/* ./lib/ui/src/components/preview/iframe.stories.tsx */
 /*! exports provided: default, workingStory, missingStory */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1097,7 +1097,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/ui/src/components/preview/preview.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/ui/src/components/preview/preview.stories.tsx */
+/* ./lib/ui/src/components/preview/preview.stories.tsx */
 /*! exports provided: default, noTabs, withTabs */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1110,7 +1110,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/ui/src/components/sidebar/Explorer.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/ui/src/components/sidebar/Explorer.stories.tsx */
+/* ./lib/ui/src/components/sidebar/Explorer.stories.tsx */
 /*! exports provided: default, Simple, WithRefs */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1123,7 +1123,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/ui/src/components/sidebar/Heading.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/ui/src/components/sidebar/Heading.stories.tsx */
+/* ./lib/ui/src/components/sidebar/Heading.stories.tsx */
 /*! exports provided: default, menuHighlighted, standardData, standard, standardNoLink, linkAndText, onlyText, longText, customBrandImage, customBrandImageTall, customBrandImageUnsizedSVG, noBrand */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1145,7 +1145,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/ui/src/components/sidebar/Menu.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/ui/src/components/sidebar/Menu.stories.tsx */
+/* ./lib/ui/src/components/sidebar/Menu.stories.tsx */
 /*! exports provided: default, Items, Real, Expanded, ExpandedWithoutReleaseNotes */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1160,7 +1160,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/ui/src/components/sidebar/Refs.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/ui/src/components/sidebar/Refs.stories.tsx */
+/* ./lib/ui/src/components/sidebar/Refs.stories.tsx */
 /*! exports provided: default, simpleData, loadingData, Optimized, IsEmpty, StartInjectedUnknown, StartInjectedLoading, StartInjectedReady, Versions, VersionsMissingCurrent, Errored, Auth, Long */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1183,7 +1183,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/ui/src/components/sidebar/Search.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/ui/src/components/sidebar/Search.stories.tsx */
+/* ./lib/ui/src/components/sidebar/Search.stories.tsx */
 /*! exports provided: default, Simple, FilledIn, LastViewed, ShortcutsDisabled */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1198,7 +1198,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/ui/src/components/sidebar/SearchResults.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/ui/src/components/sidebar/SearchResults.stories.tsx */
+/* ./lib/ui/src/components/sidebar/SearchResults.stories.tsx */
 /*! exports provided: default, searching, noResults, lastViewed, Searching, NoResults, LastViewed */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1215,7 +1215,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/ui/src/components/sidebar/Sidebar.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/ui/src/components/sidebar/Sidebar.stories.tsx */
+/* ./lib/ui/src/components/sidebar/Sidebar.stories.tsx */
 /*! exports provided: default, simpleData, loadingData, Simple, Loading, Empty, WithRefs, LoadingWithRefs */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1233,7 +1233,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/ui/src/components/sidebar/Tree.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/ui/src/components/sidebar/Tree.stories.tsx */
+/* ./lib/ui/src/components/sidebar/Tree.stories.tsx */
 /*! exports provided: default, Full, SingleStoryComponents */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1246,7 +1246,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/ui/src/components/sidebar/TreeNode.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/ui/src/components/sidebar/TreeNode.stories.tsx */
+/* ./lib/ui/src/components/sidebar/TreeNode.stories.tsx */
 /*! exports provided: default, Types, Expandable, Nested, Selection */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1261,7 +1261,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/ui/src/containers/panel.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/ui/src/containers/panel.stories.tsx */
+/* ./lib/ui/src/containers/panel.stories.tsx */
 /*! exports provided: default, AllAddons, FilteredAddons */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1274,7 +1274,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/ui/src/settings/SettingsFooter.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/ui/src/settings/SettingsFooter.stories.tsx */
+/* ./lib/ui/src/settings/SettingsFooter.stories.tsx */
 /*! exports provided: default, basic */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1286,7 +1286,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/ui/src/settings/about.stories.js":
-/* /home/ki/Projects/creevey/storybook/lib/ui/src/settings/about.stories.js */
+/* ./lib/ui/src/settings/about.stories.js */
 /*! no exports provided */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1300,7 +1300,7 @@ Object(_storybook_react__WEBPACK_IMPORTED_MODULE_0__["storiesOf"])("UI/Settings/
 /***/ }),
 
 /***/ "../../lib/ui/src/settings/release_notes.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/ui/src/settings/release_notes.stories.tsx */
+/* ./lib/ui/src/settings/release_notes.stories.tsx */
 /*! exports provided: default, Loading, DidHitMaxWaitTime */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1313,7 +1313,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../lib/ui/src/settings/shortcuts.stories.tsx":
-/* /home/ki/Projects/creevey/storybook/lib/ui/src/settings/shortcuts.stories.tsx */
+/* ./lib/ui/src/settings/shortcuts.stories.tsx */
 /*! exports provided: default, defaults */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1325,7 +1325,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ "../../node_modules/chromatic/dist/isChromatic.js":
-/* /home/ki/Projects/creevey/storybook/node_modules/chromatic/dist/isChromatic.js */
+/* ./node_modules/chromatic/dist/isChromatic.js */
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1336,7 +1336,7 @@ Object.defineProperty(exports,"__esModule",{value:!0}),exports["default"]=_defau
 /***/ }),
 
 /***/ "../../node_modules/chromatic/isChromatic.js":
-/* /home/ki/Projects/creevey/storybook/node_modules/chromatic/isChromatic.js */
+/* ./node_modules/chromatic/isChromatic.js */
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1522,7 +1522,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var core_js_modules_es_object_keys__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_object_keys__WEBPACK_IMPORTED_MODULE_7__);
 /* harmony import */ var core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! core-js/modules/web.dom-collections.for-each */ "core-js/modules/web.dom-collections.for-each");
 /* harmony import */ var core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_8__);
-var _clientApi=__webpack_require__(/*! /home/ki/Projects/creevey/storybook/lib/client-api */ "/home/ki/Projects/creevey/storybook/lib/client-api"),_clientLogger=__webpack_require__(/*! /home/ki/Projects/creevey/storybook/lib/client-logger */ "/home/ki/Projects/creevey/storybook/lib/client-logger"),_configFilename=__webpack_require__(/*! ./preview.js */ "./preview.js");function ownKeys(object,enumerableOnly){var keys=Object.keys(object);if(Object.getOwnPropertySymbols){var symbols=Object.getOwnPropertySymbols(object);enumerableOnly&&(symbols=symbols.filter(function(sym){return Object.getOwnPropertyDescriptor(object,sym).enumerable})),keys.push.apply(keys,symbols)}return keys}function _objectSpread(target){for(var source,i=1;i<arguments.length;i++)source=null==arguments[i]?{}:arguments[i],i%2?ownKeys(Object(source),!0).forEach(function(key){_defineProperty(target,key,source[key])}):Object.getOwnPropertyDescriptors?Object.defineProperties(target,Object.getOwnPropertyDescriptors(source)):ownKeys(Object(source)).forEach(function(key){Object.defineProperty(target,key,Object.getOwnPropertyDescriptor(source,key))});return target}function _defineProperty(obj,key,value){return key in obj?Object.defineProperty(obj,key,{value:value,enumerable:!0,configurable:!0,writable:!0}):obj[key]=value,obj}(_configFilename.args||_configFilename.argTypes)&&_clientLogger.logger.warn("Invalid args/argTypes in config, ignoring.",JSON.stringify({args:_configFilename.args,argTypes:_configFilename.argTypes})),_configFilename.decorators&&_configFilename.decorators.forEach(function(decorator){return(0,_clientApi.addDecorator)(decorator,!1)}),_configFilename.loaders&&_configFilename.loaders.forEach(function(loader){return(0,_clientApi.addLoader)(loader,!1)}),(_configFilename.parameters||_configFilename.globals||_configFilename.globalTypes)&&(0,_clientApi.addParameters)(_objectSpread(_objectSpread({},_configFilename.parameters),{},{globals:_configFilename.globals,globalTypes:_configFilename.globalTypes}),!1),_configFilename.argTypesEnhancers&&_configFilename.argTypesEnhancers.forEach(function(enhancer){return(0,_clientApi.addArgTypesEnhancer)(enhancer)});
+var _clientApi=__webpack_require__(/*! ./lib/client-api */ "./lib/client-api"),_clientLogger=__webpack_require__(/*! ./lib/client-logger */ "./lib/client-logger"),_configFilename=__webpack_require__(/*! ./preview.js */ "./preview.js");function ownKeys(object,enumerableOnly){var keys=Object.keys(object);if(Object.getOwnPropertySymbols){var symbols=Object.getOwnPropertySymbols(object);enumerableOnly&&(symbols=symbols.filter(function(sym){return Object.getOwnPropertyDescriptor(object,sym).enumerable})),keys.push.apply(keys,symbols)}return keys}function _objectSpread(target){for(var source,i=1;i<arguments.length;i++)source=null==arguments[i]?{}:arguments[i],i%2?ownKeys(Object(source),!0).forEach(function(key){_defineProperty(target,key,source[key])}):Object.getOwnPropertyDescriptors?Object.defineProperties(target,Object.getOwnPropertyDescriptors(source)):ownKeys(Object(source)).forEach(function(key){Object.defineProperty(target,key,Object.getOwnPropertyDescriptor(source,key))});return target}function _defineProperty(obj,key,value){return key in obj?Object.defineProperty(obj,key,{value:value,enumerable:!0,configurable:!0,writable:!0}):obj[key]=value,obj}(_configFilename.args||_configFilename.argTypes)&&_clientLogger.logger.warn("Invalid args/argTypes in config, ignoring.",JSON.stringify({args:_configFilename.args,argTypes:_configFilename.argTypes})),_configFilename.decorators&&_configFilename.decorators.forEach(function(decorator){return(0,_clientApi.addDecorator)(decorator,!1)}),_configFilename.loaders&&_configFilename.loaders.forEach(function(loader){return(0,_clientApi.addLoader)(loader,!1)}),(_configFilename.parameters||_configFilename.globals||_configFilename.globalTypes)&&(0,_clientApi.addParameters)(_objectSpread(_objectSpread({},_configFilename.parameters),{},{globals:_configFilename.globals,globalTypes:_configFilename.globalTypes}),!1),_configFilename.argTypesEnhancers&&_configFilename.argTypesEnhancers.forEach(function(enhancer){return(0,_clientApi.addArgTypesEnhancer)(enhancer)});
 
 /***/ }),
 
@@ -2968,45 +2968,45 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "/home/ki/Projects/creevey/storybook/lib/client-api":
-/* external "/home/ki/Projects/creevey/storybook/lib/client-api" */
+/***/ "./lib/client-api":
+/* external "./lib/client-api" */
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = require("/home/ki/Projects/creevey/storybook/lib/client-api");
+module.exports = require("./lib/client-api");
 
 /***/ }),
 
-/***/ "/home/ki/Projects/creevey/storybook/lib/client-logger":
-/* external "/home/ki/Projects/creevey/storybook/lib/client-logger" */
+/***/ "./lib/client-logger":
+/* external "./lib/client-logger" */
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = require("/home/ki/Projects/creevey/storybook/lib/client-logger");
+module.exports = require("./lib/client-logger");
 
 /***/ }),
 
 /***/ 0:
-/* multi ./node_modules/creevey/lib/server/webpack/dummy-hmr.js /home/ki/Projects/creevey/storybook/lib/core/dist/server/common/polyfills.js /home/ki/Projects/creevey/storybook/lib/core/dist/server/preview/globals.js ./storybook-init-framework-entry.js ./preview.js-generated-config-entry.js ./generated-stories-entry.js */
+/* multi ./node_modules/creevey/lib/server/webpack/dummy-hmr.js ./lib/core/dist/server/common/polyfills.js ./lib/core/dist/server/preview/globals.js ./storybook-init-framework-entry.js ./preview.js-generated-config-entry.js ./generated-stories-entry.js */
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! ./node_modules/creevey/lib/server/webpack/dummy-hmr.js */"./node_modules/creevey/lib/server/webpack/dummy-hmr.js");
-__webpack_require__(/*! /home/ki/Projects/creevey/storybook/lib/core/dist/server/common/polyfills.js */"../../lib/core/dist/server/common/polyfills.js");
-__webpack_require__(/*! /home/ki/Projects/creevey/storybook/lib/core/dist/server/preview/globals.js */"../../lib/core/dist/server/preview/globals.js");
-__webpack_require__(/*! ./storybook-init-framework-entry.js */"./storybook-init-framework-entry.js");
-__webpack_require__(/*! ./preview.js-generated-config-entry.js */"./preview.js-generated-config-entry.js");
-module.exports = __webpack_require__(/*! ./generated-stories-entry.js */"./generated-stories-entry.js");
+__webpack_require__(/*! ./examples/official-storybook/node_modules/creevey/lib/server/webpack/dummy-hmr.js */"./node_modules/creevey/lib/server/webpack/dummy-hmr.js");
+__webpack_require__(/*! ./lib/core/dist/server/common/polyfills.js */"../../lib/core/dist/server/common/polyfills.js");
+__webpack_require__(/*! ./lib/core/dist/server/preview/globals.js */"../../lib/core/dist/server/preview/globals.js");
+__webpack_require__(/*! ./examples/official-storybook/storybook-init-framework-entry.js */"./storybook-init-framework-entry.js");
+__webpack_require__(/*! ./examples/official-storybook/preview.js-generated-config-entry.js */"./preview.js-generated-config-entry.js");
+module.exports = __webpack_require__(/*! ./examples/official-storybook/generated-stories-entry.js */"./generated-stories-entry.js");
 
 
 /***/ }),
 
 /***/ "@storybook/react":
-/* external "./node_modules/creevey/lib/server/storybook.js" */
+/* external "./examples/official-storybook/node_modules/creevey/lib/server/storybook.js" */
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = require("./node_modules/creevey/lib/server/storybook.js");
+module.exports = require("./examples/official-storybook/node_modules/creevey/lib/server/storybook.js");
 
 /***/ }),
 
