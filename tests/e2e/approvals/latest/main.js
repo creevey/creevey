@@ -124,35 +124,43 @@ var parameters = {
 
 /***/ "./.storybook/preview.js-generated-config-entry.js":
 /* ./.storybook/preview.js-generated-config-entry.js */
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_core_js_modules_es_object_keys_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/core-js/modules/es.object.keys.js */ "./node_modules/core-js/modules/es.object.keys.js");
+/* harmony import */ var _node_modules_core_js_modules_es_object_keys_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_core_js_modules_es_object_keys_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_core_js_modules_es_symbol_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./node_modules/core-js/modules/es.symbol.js */ "./node_modules/core-js/modules/es.symbol.js");
+/* harmony import */ var _node_modules_core_js_modules_es_symbol_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_core_js_modules_es_symbol_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _node_modules_core_js_modules_es_array_filter_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./node_modules/core-js/modules/es.array.filter.js */ "./node_modules/core-js/modules/es.array.filter.js");
+/* harmony import */ var _node_modules_core_js_modules_es_array_filter_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_core_js_modules_es_array_filter_js__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _node_modules_core_js_modules_es_object_get_own_property_descriptor_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/core-js/modules/es.object.get-own-property-descriptor.js */ "./node_modules/core-js/modules/es.object.get-own-property-descriptor.js");
+/* harmony import */ var _node_modules_core_js_modules_es_object_get_own_property_descriptor_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_core_js_modules_es_object_get_own_property_descriptor_js__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _node_modules_core_js_modules_es_array_for_each_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./node_modules/core-js/modules/es.array.for-each.js */ "./node_modules/core-js/modules/es.array.for-each.js");
+/* harmony import */ var _node_modules_core_js_modules_es_array_for_each_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_core_js_modules_es_array_for_each_js__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _node_modules_core_js_modules_web_dom_collections_for_each_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./node_modules/core-js/modules/web.dom-collections.for-each.js */ "./node_modules/core-js/modules/web.dom-collections.for-each.js");
+/* harmony import */ var _node_modules_core_js_modules_web_dom_collections_for_each_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_core_js_modules_web_dom_collections_for_each_js__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _node_modules_core_js_modules_es_object_get_own_property_descriptors_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./node_modules/core-js/modules/es.object.get-own-property-descriptors.js */ "./node_modules/core-js/modules/es.object.get-own-property-descriptors.js");
+/* harmony import */ var _node_modules_core_js_modules_es_object_get_own_property_descriptors_js__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_node_modules_core_js_modules_es_object_get_own_property_descriptors_js__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _node_modules_core_js_modules_es_object_define_properties_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./node_modules/core-js/modules/es.object.define-properties.js */ "./node_modules/core-js/modules/es.object.define-properties.js");
+/* harmony import */ var _node_modules_core_js_modules_es_object_define_properties_js__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(_node_modules_core_js_modules_es_object_define_properties_js__WEBPACK_IMPORTED_MODULE_7__);
+/* harmony import */ var _node_modules_core_js_modules_es_object_define_property_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./node_modules/core-js/modules/es.object.define-property.js */ "./node_modules/core-js/modules/es.object.define-property.js");
+/* harmony import */ var _node_modules_core_js_modules_es_object_define_property_js__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(_node_modules_core_js_modules_es_object_define_property_js__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var _node_modules_storybook_client_api__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./node_modules/@storybook/client-api */ "./node_modules/@storybook/client-api");
+/* harmony import */ var _node_modules_storybook_client_api__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(_node_modules_storybook_client_api__WEBPACK_IMPORTED_MODULE_9__);
+/* harmony import */ var _node_modules_storybook_client_logger__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./node_modules/@storybook/client-logger */ "./node_modules/@storybook/client-logger");
+/* harmony import */ var _node_modules_storybook_client_logger__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(_node_modules_storybook_client_logger__WEBPACK_IMPORTED_MODULE_10__);
+/* harmony import */ var _storybook_preview_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./.storybook/preview.js */ "./.storybook/preview.js");
 
 
-__webpack_require__(/*! core-js/modules/es.object.keys.js */ "core-js/modules/es.object.keys.js");
 
-__webpack_require__(/*! core-js/modules/es.symbol.js */ "core-js/modules/es.symbol.js");
 
-__webpack_require__(/*! core-js/modules/es.array.filter.js */ "core-js/modules/es.array.filter.js");
 
-__webpack_require__(/*! core-js/modules/es.object.get-own-property-descriptor.js */ "core-js/modules/es.object.get-own-property-descriptor.js");
 
-__webpack_require__(/*! core-js/modules/es.array.for-each.js */ "core-js/modules/es.array.for-each.js");
 
-__webpack_require__(/*! core-js/modules/web.dom-collections.for-each.js */ "core-js/modules/web.dom-collections.for-each.js");
 
-__webpack_require__(/*! core-js/modules/es.object.get-own-property-descriptors.js */ "core-js/modules/es.object.get-own-property-descriptors.js");
 
-__webpack_require__(/*! core-js/modules/es.object.define-properties.js */ "core-js/modules/es.object.define-properties.js");
-
-__webpack_require__(/*! core-js/modules/es.object.define-property.js */ "core-js/modules/es.object.define-property.js");
-
-var _clientApi = __webpack_require__(/*! ./node_modules/@storybook/client-api */ "./node_modules/@storybook/client-api");
-
-var _clientLogger = __webpack_require__(/*! ./node_modules/@storybook/client-logger */ "./node_modules/@storybook/client-logger");
-
-var _configFilename = __webpack_require__(/*! ./.storybook/preview.js */ "./.storybook/preview.js");
 
 function ownKeys(object, enumerableOnly) {
   var keys = Object.keys(object);
@@ -202,38 +210,63 @@ function _defineProperty(obj, key, value) {
 
   return obj;
 }
+/* eslint-disable import/no-unresolved */
 
-if (_configFilename.args || _configFilename.argTypes) {
-  _clientLogger.logger.warn('Invalid args/argTypes in config, ignoring.', JSON.stringify({
-    args: _configFilename.args,
-    argTypes: _configFilename.argTypes
-  }));
-}
 
-if (_configFilename.decorators) {
-  _configFilename.decorators.forEach(function (decorator) {
-    return (0, _clientApi.addDecorator)(decorator, false);
-  });
-}
 
-if (_configFilename.loaders) {
-  _configFilename.loaders.forEach(function (loader) {
-    return (0, _clientApi.addLoader)(loader, false);
-  });
-}
 
-if (_configFilename.parameters || _configFilename.globals || _configFilename.globalTypes) {
-  (0, _clientApi.addParameters)(_objectSpread(_objectSpread({}, _configFilename.parameters), {}, {
-    globals: _configFilename.globals,
-    globalTypes: _configFilename.globalTypes
-  }), false);
-}
 
-if (_configFilename.argTypesEnhancers) {
-  _configFilename.argTypesEnhancers.forEach(function (enhancer) {
-    return (0, _clientApi.addArgTypesEnhancer)(enhancer);
-  });
-}
+Object.keys(_storybook_preview_js__WEBPACK_IMPORTED_MODULE_11__).forEach(function (key) {
+  var value = _storybook_preview_js__WEBPACK_IMPORTED_MODULE_11__[key];
+
+  switch (key) {
+    case 'args':
+    case 'argTypes':
+      {
+        return _node_modules_storybook_client_logger__WEBPACK_IMPORTED_MODULE_10__["logger"].warn('Invalid args/argTypes in config, ignoring.', JSON.stringify(value));
+      }
+
+    case 'decorators':
+      {
+        return value.forEach(function (decorator) {
+          return Object(_node_modules_storybook_client_api__WEBPACK_IMPORTED_MODULE_9__["addDecorator"])(decorator, false);
+        });
+      }
+
+    case 'loaders':
+      {
+        return value.forEach(function (loader) {
+          return Object(_node_modules_storybook_client_api__WEBPACK_IMPORTED_MODULE_9__["addLoader"])(loader, false);
+        });
+      }
+
+    case 'parameters':
+      {
+        return Object(_node_modules_storybook_client_api__WEBPACK_IMPORTED_MODULE_9__["addParameters"])(_objectSpread({}, value), false);
+      }
+
+    case 'argTypesEnhancers':
+      {
+        return value.forEach(function (enhancer) {
+          return Object(_node_modules_storybook_client_api__WEBPACK_IMPORTED_MODULE_9__["addArgTypesEnhancer"])(enhancer);
+        });
+      }
+
+    case 'globals':
+    case 'globalTypes':
+      {
+        var v = {};
+        v[key] = value;
+        return Object(_node_modules_storybook_client_api__WEBPACK_IMPORTED_MODULE_9__["addParameters"])(v, false);
+      }
+
+    default:
+      {
+        // eslint-disable-next-line prefer-template
+        return console.log(key + ' was not supported :( !');
+      }
+  }
+});
 
 /***/ }),
 
@@ -458,8 +491,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_SkippedTests_", function() { return _SkippedTests_; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_ExternalStory_", function() { return _ExternalStory_; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "storyA", function() { return storyA; });
-/* harmony import */ var core_js_modules_es_object_assign_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core-js/modules/es.object.assign.js */ "core-js/modules/es.object.assign.js");
-/* harmony import */ var core_js_modules_es_object_assign_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_object_assign_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_core_js_modules_es_object_assign_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/core-js/modules/es.object.assign.js */ "./node_modules/core-js/modules/es.object.assign.js");
+/* harmony import */ var _node_modules_core_js_modules_es_object_assign_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_core_js_modules_es_object_assign_js__WEBPACK_IMPORTED_MODULE_0__);
 
 
 /* @jsxRuntime classic */
@@ -496,19 +529,15 @@ componentMeta.parameters = componentMeta.parameters || {};
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "clickTests", function() { return clickTests; });
-/* harmony import */ var core_js_modules_es_promise_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core-js/modules/es.promise.js */ "core-js/modules/es.promise.js");
-/* harmony import */ var core_js_modules_es_promise_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_promise_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var core_js_modules_es_object_to_string_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core-js/modules/es.object.to-string.js */ "core-js/modules/es.object.to-string.js");
-/* harmony import */ var core_js_modules_es_object_to_string_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_object_to_string_js__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var regenerator_runtime_runtime_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! regenerator-runtime/runtime.js */ "regenerator-runtime/runtime.js");
-/* harmony import */ var regenerator_runtime_runtime_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(regenerator_runtime_runtime_js__WEBPACK_IMPORTED_MODULE_2__);
-
-
-
-
+/* harmony import */ var _node_modules_core_js_modules_es_promise_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/core-js/modules/es.promise.js */ "./node_modules/core-js/modules/es.promise.js");
+/* harmony import */ var _node_modules_core_js_modules_es_promise_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_core_js_modules_es_promise_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_core_js_modules_es_object_to_string_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./node_modules/core-js/modules/es.object.to-string.js */ "./node_modules/core-js/modules/es.object.to-string.js");
+/* harmony import */ var _node_modules_core_js_modules_es_object_to_string_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_core_js_modules_es_object_to_string_js__WEBPACK_IMPORTED_MODULE_1__);
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
 
 var clickTests = {
   click: function () {
@@ -552,32 +581,140 @@ module.exports = require("./node_modules/@storybook/client-logger");
 
 /***/ }),
 
-/***/ "./node_modules/@storybook/core/dist/server/common/polyfills.js":
-/* external "./node_modules/@storybook/core/dist/server/common/polyfills.js" */
+/***/ "./node_modules/@storybook/core-server/dist/cjs/globals/globals.js":
+/* external "./node_modules/@storybook/core-server/dist/cjs/globals/globals.js" */
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = require("./node_modules/@storybook/core/dist/server/common/polyfills.js");
+module.exports = require("./node_modules/@storybook/core-server/dist/cjs/globals/globals.js");
 
 /***/ }),
 
-/***/ "./node_modules/@storybook/core/dist/server/preview/globals.js":
-/* external "./node_modules/@storybook/core/dist/server/preview/globals.js" */
+/***/ "./node_modules/@storybook/core-server/dist/cjs/globals/polyfills.js":
+/* external "./node_modules/@storybook/core-server/dist/cjs/globals/polyfills.js" */
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = require("./node_modules/@storybook/core/dist/server/preview/globals.js");
+module.exports = require("./node_modules/@storybook/core-server/dist/cjs/globals/polyfills.js");
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/es.array.filter.js":
+/* external "./node_modules/core-js/modules/es.array.filter.js" */
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("./node_modules/core-js/modules/es.array.filter.js");
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/es.array.for-each.js":
+/* external "./node_modules/core-js/modules/es.array.for-each.js" */
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("./node_modules/core-js/modules/es.array.for-each.js");
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/es.object.assign.js":
+/* external "./node_modules/core-js/modules/es.object.assign.js" */
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("./node_modules/core-js/modules/es.object.assign.js");
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/es.object.define-properties.js":
+/* external "./node_modules/core-js/modules/es.object.define-properties.js" */
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("./node_modules/core-js/modules/es.object.define-properties.js");
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/es.object.define-property.js":
+/* external "./node_modules/core-js/modules/es.object.define-property.js" */
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("./node_modules/core-js/modules/es.object.define-property.js");
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/es.object.get-own-property-descriptor.js":
+/* external "./node_modules/core-js/modules/es.object.get-own-property-descriptor.js" */
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("./node_modules/core-js/modules/es.object.get-own-property-descriptor.js");
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/es.object.get-own-property-descriptors.js":
+/* external "./node_modules/core-js/modules/es.object.get-own-property-descriptors.js" */
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("./node_modules/core-js/modules/es.object.get-own-property-descriptors.js");
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/es.object.keys.js":
+/* external "./node_modules/core-js/modules/es.object.keys.js" */
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("./node_modules/core-js/modules/es.object.keys.js");
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/es.object.to-string.js":
+/* external "./node_modules/core-js/modules/es.object.to-string.js" */
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("./node_modules/core-js/modules/es.object.to-string.js");
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/es.promise.js":
+/* external "./node_modules/core-js/modules/es.promise.js" */
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("./node_modules/core-js/modules/es.promise.js");
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/es.symbol.js":
+/* external "./node_modules/core-js/modules/es.symbol.js" */
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("./node_modules/core-js/modules/es.symbol.js");
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/web.dom-collections.for-each.js":
+/* external "./node_modules/core-js/modules/web.dom-collections.for-each.js" */
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("./node_modules/core-js/modules/web.dom-collections.for-each.js");
 
 /***/ }),
 
 /***/ 0:
-/* multi ./node_modules/creevey/lib/server/webpack/dummy-hmr.js ./node_modules/@storybook/core/dist/server/common/polyfills.js ./node_modules/@storybook/core/dist/server/preview/globals.js ./.storybook/storybook-init-framework-entry.js ./.storybook/preview.js-generated-config-entry.js ./.storybook/generated-stories-entry.js */
+/* multi ./node_modules/creevey/lib/server/webpack/dummy-hmr.js ./node_modules/@storybook/core-server/dist/cjs/globals/polyfills.js ./node_modules/@storybook/core-server/dist/cjs/globals/globals.js ./.storybook/storybook-init-framework-entry.js ./.storybook/preview.js-generated-config-entry.js ./.storybook/generated-stories-entry.js */
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(/*! ./node_modules/creevey/lib/server/webpack/dummy-hmr.js */"./node_modules/creevey/lib/server/webpack/dummy-hmr.js");
-__webpack_require__(/*! ./node_modules/@storybook/core/dist/server/common/polyfills.js */"./node_modules/@storybook/core/dist/server/common/polyfills.js");
-__webpack_require__(/*! ./node_modules/@storybook/core/dist/server/preview/globals.js */"./node_modules/@storybook/core/dist/server/preview/globals.js");
+__webpack_require__(/*! ./node_modules/@storybook/core-server/dist/cjs/globals/polyfills.js */"./node_modules/@storybook/core-server/dist/cjs/globals/polyfills.js");
+__webpack_require__(/*! ./node_modules/@storybook/core-server/dist/cjs/globals/globals.js */"./node_modules/@storybook/core-server/dist/cjs/globals/globals.js");
 __webpack_require__(/*! ./.storybook/storybook-init-framework-entry.js */"./.storybook/storybook-init-framework-entry.js");
 __webpack_require__(/*! ./.storybook/preview.js-generated-config-entry.js */"./.storybook/preview.js-generated-config-entry.js");
 module.exports = __webpack_require__(/*! ./.storybook/generated-stories-entry.js */"./.storybook/generated-stories-entry.js");
@@ -591,123 +728,6 @@ module.exports = __webpack_require__(/*! ./.storybook/generated-stories-entry.js
 /***/ (function(module, exports) {
 
 module.exports = require("./node_modules/creevey/lib/server/storybook.js");
-
-/***/ }),
-
-/***/ "core-js/modules/es.array.filter.js":
-/* external "core-js/modules/es.array.filter.js" */
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = require("core-js/modules/es.array.filter.js");
-
-/***/ }),
-
-/***/ "core-js/modules/es.array.for-each.js":
-/* external "core-js/modules/es.array.for-each.js" */
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = require("core-js/modules/es.array.for-each.js");
-
-/***/ }),
-
-/***/ "core-js/modules/es.object.assign.js":
-/* external "core-js/modules/es.object.assign.js" */
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = require("core-js/modules/es.object.assign.js");
-
-/***/ }),
-
-/***/ "core-js/modules/es.object.define-properties.js":
-/* external "core-js/modules/es.object.define-properties.js" */
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = require("core-js/modules/es.object.define-properties.js");
-
-/***/ }),
-
-/***/ "core-js/modules/es.object.define-property.js":
-/* external "core-js/modules/es.object.define-property.js" */
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = require("core-js/modules/es.object.define-property.js");
-
-/***/ }),
-
-/***/ "core-js/modules/es.object.get-own-property-descriptor.js":
-/* external "core-js/modules/es.object.get-own-property-descriptor.js" */
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = require("core-js/modules/es.object.get-own-property-descriptor.js");
-
-/***/ }),
-
-/***/ "core-js/modules/es.object.get-own-property-descriptors.js":
-/* external "core-js/modules/es.object.get-own-property-descriptors.js" */
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = require("core-js/modules/es.object.get-own-property-descriptors.js");
-
-/***/ }),
-
-/***/ "core-js/modules/es.object.keys.js":
-/* external "core-js/modules/es.object.keys.js" */
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = require("core-js/modules/es.object.keys.js");
-
-/***/ }),
-
-/***/ "core-js/modules/es.object.to-string.js":
-/* external "core-js/modules/es.object.to-string.js" */
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = require("core-js/modules/es.object.to-string.js");
-
-/***/ }),
-
-/***/ "core-js/modules/es.promise.js":
-/* external "core-js/modules/es.promise.js" */
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = require("core-js/modules/es.promise.js");
-
-/***/ }),
-
-/***/ "core-js/modules/es.symbol.js":
-/* external "core-js/modules/es.symbol.js" */
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = require("core-js/modules/es.symbol.js");
-
-/***/ }),
-
-/***/ "core-js/modules/web.dom-collections.for-each.js":
-/* external "core-js/modules/web.dom-collections.for-each.js" */
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = require("core-js/modules/web.dom-collections.for-each.js");
-
-/***/ }),
-
-/***/ "regenerator-runtime/runtime.js":
-/* external "regenerator-runtime/runtime.js" */
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = require("regenerator-runtime/runtime.js");
 
 /***/ })
 

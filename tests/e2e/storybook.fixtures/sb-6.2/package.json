@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "@storybook/react": "~6.2.0-rc",
+    "@storybook/react": "~6.2.0",
     "react": "^16.14.0",
     "react-dom": "^16.14.0"
   }

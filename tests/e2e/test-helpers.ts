@@ -8,9 +8,11 @@ import { removeProps } from '../../src/server/utils';
 
 function readMainJsBundle(workDir: string): string {
   const mainJsPath = 'node_modules/creevey/node_modules/.cache/creevey/storybook/main.js';
+  const projectDir = workDir.startsWith(storybookDir) ? storybookDir : workDir;
 
   return readFileSync(`${workDir}/${mainJsPath}`, { encoding: 'utf-8' })
-    .replace(new RegExp(workDir.startsWith(storybookDir) ? storybookDir : workDir, 'g'), '.')
+    .replace(new RegExp(projectDir, 'g'), '.')
+    .replace(new RegExp(projectDir.replace(/[-/\s]/g, '_'), 'g'), '')
     .replace(/^\/\*!\*.*$\n\s{2}!\*{3}/gm, '/*')
     .replace(/\*{3}!$\n\s{2}\\\*+\/$/gm, '*/');
 }
