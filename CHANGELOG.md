@@ -1,3 +1,10 @@
+## [0.7.27](https://github.com/wKich/creevey/compare/v0.7.26...v0.7.27) (2021-03-31)
+
+### Bug Fixes
+
+- 🐛 capturing screenshots in ie11 ([2e47b2f](https://github.com/wKich/creevey/commit/2e47b2fe77a5af88673c369f297b5a373d3a2eba))
+- 🐛 compose browsers with external grid and builtin selenoid ([c429bec](https://github.com/wKich/creevey/commit/c429becc3827764c8349ed428bae5a7f4288bd5a))
+
 ## [0.7.26](https://github.com/wKich/creevey/compare/v0.7.25...v0.7.26) (2021-03-28)
 
 ### Bug Fixes
