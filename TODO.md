@@ -310,6 +310,7 @@
     - Move webpack/update to separate folder/file
   - [x] Mdx e2e tests
     - Add tests loader and e2e
+- [ ] Fix todos in browser.ts and `no-shadow` rule
 - [ ] Improve and approve storybook.examples e2e tests
 - [x] Be able to run storybook examples e2e in CI
 - [x] Improve Docker
@@ -349,6 +350,7 @@
     - [ ] Create React App Typescript
     - [ ] Gatsby
     - [ ] Next.js
+    - [ ] https://nx.dev/
 - [ ] Bugs
   - [ ] MDX imported stories missed source parameters in creevey (allow to import such stories)
   - [ ] ERR! Runtime error! Check your browser console. ERR! ResizeObserver loop limit exceeded (in addon)

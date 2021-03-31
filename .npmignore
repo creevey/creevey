@@ -1,5 +1,6 @@
 *.log
 *.tgz
+.env
 .husky
 .babel*
 .github
@@ -7,6 +8,7 @@
 .eslint*
 .creevey
 .circleci
+.teamcity
 .prettier*
 .storybook
 .mocharc.js

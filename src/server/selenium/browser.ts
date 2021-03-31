@@ -91,12 +91,14 @@ async function resetMousePosition(browser: WebDriver): Promise<void> {
     (await browser.getCapabilities()).getBrowserVersion()?.split('.') ??
     ((await browser.getCapabilities()).get('version') as string | undefined)?.split('.') ??
     [];
+  // TODO Fix types
   const { top, left, width, height } = await browser.executeScript<DOMRect>(function () {
     // NOTE On storybook >= 4.x already reset scroll
     // TODO Check this on new storybook
     window.scrollTo(0, 0);
+    const bodyRect = document.body.getBoundingClientRect();
 
-    return document.body.getBoundingClientRect();
+    return { top: bodyRect.top, left: bodyRect.left, width: bodyRect.width, height: bodyRect.height };
   });
 
   // NOTE Reset mouse position to support keweb selenium grid browser versions
@@ -262,23 +264,44 @@ async function takeScreenshot(
     if (!captureElement) {
       screenshot = await browser.takeScreenshot();
     } else {
-      const { elementRect, windowRect } = await browser.executeScript<{
-        elementRect?: DOMRect;
-        windowRect: { width: number; height: number; x: number; y: number };
-      }>(function (selector: string) {
-        window.scrollTo(0, 0);
+      // TODO Fix types
+      const rects = await browser.executeScript<
+        | {
+            elementRect?: DOMRect;
+            // TODO Why we use top/left of x/y. Let's unify it
+            windowRect: { width: number; height: number; x: number; y: number };
+          }
+        | undefined
+        // TODO Check return type
+      >(function (selector: string) {
+        window.scrollTo(0, 0); // TODO Maybe we shold remove same code from `resetMousePosition`
+        // eslint-disable-next-line no-var
+        var element = document.querySelector(selector);
+        if (!element) return;
+
+        // eslint-disable-next-line no-var
+        var elementRect = element.getBoundingClientRect();
+
         return {
-          elementRect: document.querySelector(selector)?.getBoundingClientRect(),
+          elementRect: {
+            width: elementRect.width,
+            height: elementRect.height,
+            left: elementRect.left,
+            right: elementRect.right,
+            top: elementRect.top,
+            bottom: elementRect.bottom,
+          },
           windowRect: {
             width: window.innerWidth,
             height: window.innerHeight,
-            x: Math.round(window.scrollX),
-            y: Math.round(window.scrollY),
+            x: Math.round(window.scrollX || window.pageXOffset),
+            y: Math.round(window.scrollY || window.pageYOffset),
           },
         };
       }, captureElement);
+      const { elementRect, windowRect } = rects ?? {};
 
-      if (!elementRect) throw new Error(`Couldn't find element with selector: '${captureElement}'`);
+      if (!elementRect || !windowRect) throw new Error(`Couldn't find element with selector: '${captureElement}'`);
 
       const isFitIntoViewport =
         elementRect.width + elementRect.left <= windowRect.width &&
@@ -298,15 +321,11 @@ async function takeScreenshot(
 
 async function selectStory(
   browser: WebDriver,
-  story: { id: string; kind: string; name: string },
+  { id, kind, name }: { id: string; kind: string; name: string },
   waitForReady = false,
 ): Promise<void> {
   const errorMessage = await browser.executeAsyncScript<string | undefined>(
-    function (
-      { id, kind, name }: { id: string; kind: string; name: string },
-      shouldWaitForReady: boolean,
-      callback: (error?: string) => void,
-    ) {
+    function (id: string, kind: string, name: string, shouldWaitForReady: boolean, callback: (error?: string) => void) {
       if (typeof window.__CREEVEY_SELECT_STORY__ == 'undefined') {
         return callback(
           "Creevey can't switch story. This may happened if forget to add `creevey` addon to your storybook config, or storybook not loaded in browser due syntax error.",
@@ -314,7 +333,9 @@ async function selectStory(
       }
       window.__CREEVEY_SELECT_STORY__(id, kind, name, shouldWaitForReady, callback);
     },
-    story,
+    id,
+    kind,
+    name,
     waitForReady,
   );
   if (errorMessage) throw new Error(errorMessage);
