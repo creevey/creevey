@@ -13,7 +13,7 @@ const mkdirAsync = promisify(mkdir);
 const writeFileAsync = promisify(writeFile);
 const copyFileAsync = promisify(copyFile);
 
-async function createSelenoidConfig(config: Config, { useDocker }: { useDocker: boolean }): Promise<string> {
+async function createSelenoidConfig(browsers: BrowserConfig[], { useDocker }: { useDocker: boolean }): Promise<string> {
   const selenoidConfig: {
     [browser: string]: {
       default: string;
@@ -22,7 +22,7 @@ async function createSelenoidConfig(config: Config, { useDocker }: { useDocker: 
   } = {};
   const selenoidConfigDir = path.join(getCreeveyCache(), 'selenoid');
 
-  (Object.values(config.browsers) as BrowserConfig[]).forEach(
+  browsers.forEach(
     ({
       browserName,
       version = 'latest',
@@ -77,7 +77,8 @@ export async function startSelenoidStandalone(config: Config, debug: boolean): P
 
   if (isWorker) return;
 
-  const selenoidConfigDir = await createSelenoidConfig(config, { useDocker: false });
+  const browsers = (Object.values(config.browsers) as BrowserConfig[]).filter((browser) => !browser.gridUrl);
+  const selenoidConfigDir = await createSelenoidConfig(browsers, { useDocker: false });
   const binaryPath = path.join(selenoidConfigDir, process.platform == 'win32' ? 'selenoid.exe' : 'selenoid');
   if (config.selenoidPath) {
     await copyFileAsync(path.resolve(config.selenoidPath), binaryPath);
@@ -85,6 +86,7 @@ export async function startSelenoidStandalone(config: Config, debug: boolean): P
     await downloadSelenoidBinary(binaryPath);
   }
 
+  // TODO Download browser webdrivers
   try {
     if (process.platform != 'win32') chmod('+x', binaryPath);
   } catch (_) {
@@ -105,10 +107,11 @@ export async function startSelenoidStandalone(config: Config, debug: boolean): P
 }
 
 export async function startSelenoidContainer(config: Config, debug: boolean): Promise<string> {
+  const browsers = (Object.values(config.browsers) as BrowserConfig[]).filter((browser) => !browser.gridUrl);
   const images: string[] = [];
   let limit = 0;
 
-  (Object.values(config.browsers) as BrowserConfig[]).forEach(
+  browsers.forEach(
     ({
       browserName,
       version = 'latest',
@@ -133,7 +136,7 @@ export async function startSelenoidContainer(config: Config, debug: boolean): Pr
       PortBindings: { '4444/tcp': [{ HostPort: '4444' }] },
       Binds: [
         '/var/run/docker.sock:/var/run/docker.sock',
-        `${await createSelenoidConfig(config, { useDocker: true })}:/etc/selenoid/:ro`,
+        `${await createSelenoidConfig(browsers, { useDocker: true })}:/etc/selenoid/:ro`,
       ],
     },
   };
