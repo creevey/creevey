@@ -1874,7 +1874,7 @@
     unfetch "^4.2.0"
     util-deprecate "^1.0.2"
 
-"@storybook/core-common@6.2.2":
+"@storybook/core-common@6.2.2", "@storybook/core-common@^6.2.2":
   version "6.2.2"
   resolved "https://registry.yarnpkg.com/@storybook/core-common/-/core-common-6.2.2.tgz#965d2f2a19ede1ad5ed57a2815c1347ba7319e22"
   integrity sha512-1EWGENdVDvmptZHcOHaDFsaF+M1JQ7qJ602cwPHHPm6r0k9FYbetOIMj49NI06dcI1wsiK72B6gh1Jvw7ul9uA==
@@ -1935,7 +1935,7 @@
   dependencies:
     core-js "^3.8.2"
 
-"@storybook/core-server@6.2.2":
+"@storybook/core-server@6.2.2", "@storybook/core-server@^6.2.2":
   version "6.2.2"
   resolved "https://registry.yarnpkg.com/@storybook/core-server/-/core-server-6.2.2.tgz#af8b8dedaf428c587774a228f51a1f444fe1e97f"
   integrity sha512-ELfY9uAV33PX8QE7bKfqFWhAU66GSF7aMZcl9HR5YbFv+Eey5IEyTzMIzbOaxWK0kZSrp/yaBgG4szeROaqBVA==

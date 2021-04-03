@@ -105,17 +105,22 @@ async function getWebpackConfigForStorybook_pre6_2(
     default: { framework: string; frameworkPresets: string[] };
   };
 
+  //@ts-expect-error: This module exists in Storybook <= 6.1
+  // eslint-disable-next-line node/no-missing-import, @typescript-eslint/no-unsafe-assignment
   const { default: getConfig } = await import('@storybook/core/dist/server/config');
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
   return getConfig({
-    // @ts-expect-error: 6.1 storybook don't support quite any more. But we still have older versions
+    // NOTE: 6.1 storybook don't support quite any more. But we still have older versions
     quiet: true,
     configType: 'PRODUCTION',
     outputDir,
     cache: {},
+    // eslint-disable-next-line node/no-missing-require
     corePresets: [require.resolve('@storybook/core/dist/server/preview/preview-preset')],
     overridePresets: [
       ...(hasDocsAddon ? [require.resolve('./mdx-loader')] : []),
+      // eslint-disable-next-line node/no-missing-require
       require.resolve('@storybook/core/dist/server/preview/custom-webpack-preset'),
     ],
     ...storybookFrameworkOptions,
@@ -136,16 +141,18 @@ async function getWebpackConfigForStorybook_6_2(
     configType: 'PRODUCTION',
     outputDir,
     configDir,
+    // TODO Check default values
+    // cache: {},
+    // docsMode: '',
+    // ignorePreview: false,
+    // packageJson: { name: 'creevey', version: '' },
     ...storybookFrameworkOptions,
   };
 
-  // TODO Annotate types
-
   //@ts-expect-error missing import
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, node/no-missing-import
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const { getPreviewBuilder } = await import('@storybook/core-server/dist/cjs/utils/get-preview-builder');
-  //@ts-expect-error missing import
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, node/no-missing-import
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const { loadAllPresets } = await import('@storybook/core-common');
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
@@ -163,11 +170,11 @@ async function getWebpackConfigForStorybook_6_2(
       ...builder.corePresets,
       // eslint-disable-next-line node/no-missing-require
       require.resolve('@storybook/core-server/dist/cjs/presets/babel-cache-preset'),
-    ],
+    ] as string[],
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
     overridePresets: [...(hasDocsAddon ? [require.resolve('./mdx-loader')] : []), ...builder.overridePresets],
     ...options,
-  });
+  } as Parameters<typeof loadAllPresets>[0]);
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment
   return builder.getConfig({ ...options, presets });

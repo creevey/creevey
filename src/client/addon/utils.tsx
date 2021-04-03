@@ -1,5 +1,5 @@
 import { Parameters } from '@storybook/api';
-import { SetStoriesPayload } from '@storybook/api/dist/lib/stories';
+import { SetStoriesPayload } from '@storybook/api/dist/ts3.9/lib/stories';
 import { mapValues, mergeWith } from 'lodash';
 import { StoriesRaw, TestStatus } from '../../types';
 
