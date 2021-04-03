@@ -1,7 +1,7 @@
 import { CreeveyConfig } from '../src/types';
 import baseConfig from './base.config';
-import chrome from './chrome.config';
-import firefox from './firefox.config';
+import chrome from './browsers/chrome';
+import firefox from './browsers/firefox';
 
 const config: CreeveyConfig = {
   ...baseConfig,

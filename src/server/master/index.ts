@@ -6,6 +6,7 @@ import creeveyApi, { CreeveyApi } from './api';
 import { Config, Options, isDefined } from '../../types';
 import { shutdownWorkers, testsToImages } from '../utils';
 import { subscribeOn } from '../messages';
+import Runner from './runner';
 
 const copyFileAsync = promisify(copyFile);
 const readdirAsync = promisify(readdir);
@@ -54,23 +55,33 @@ function outputUnnecessaryImages(imagesDir: string, images: Set<string>): void {
 }
 
 export default async function (config: Config, options: Options, resolveApi: (api: CreeveyApi) => void): Promise<void> {
-  if (config.hooks.after) {
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    process.on('beforeExit', async () => {
-      await config.hooks.after?.();
-      // eslint-disable-next-line no-process-exit
-      process.exit();
-    });
-  }
+  let runner: Runner | null = null;
   if (config.hooks.before) {
     await config.hooks.before();
   }
-  const runner = await master(config, options.ui);
+  subscribeOn('shutdown', () => config.hooks.after?.());
+  // TODO Move before docker init
+  process.on('SIGINT', () => {
+    if (runner?.isRunning) {
+      // TODO Better handle stop
+      void Promise.race([
+        new Promise((resolve) => setTimeout(resolve, 10000)),
+        new Promise((resolve) => runner?.once('stop', resolve)),
+      ]).then(() => shutdownWorkers());
+      runner?.stop();
+    } else {
+      void shutdownWorkers();
+    }
+  });
+
+  runner = await master(config, options.ui);
+
+  await runner.init();
 
   if (options.saveReport) {
     const reportDataPath = path.join(config.reportDir, 'data.js');
     await copyStatics(config.reportDir);
-    subscribeOn('shutdown', () => writeFileSync(reportDataPath, reportDataModule(runner.status.tests)));
+    subscribeOn('shutdown', () => writeFileSync(reportDataPath, reportDataModule(runner?.status.tests)));
   }
 
   if (options.ui) {
@@ -84,7 +95,7 @@ export default async function (config: Config, options: Options, resolveApi: (ap
       return;
     }
     runner.once('stop', () => {
-      const tests = Object.values(runner.status.tests);
+      const tests = Object.values(runner?.status.tests ?? {});
       const isSuccess = tests
         .filter(isDefined)
         .filter(({ skip }) => !skip)

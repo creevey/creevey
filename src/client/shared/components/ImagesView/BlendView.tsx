@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { ViewPropsWithTheme, getBorderColor, themeBorderColors } from './ImagesView';
 import { styled, withTheme } from '@storybook/theming';
 import { useApplyScale, useCalcScale, useLoadImages } from '../../helpers';
@@ -42,6 +42,10 @@ export const BlendView = withTheme(
 
     useApplyScale(expectImageRef, scale, loaded);
     useApplyScale(actualImageRef, scale, loaded);
+
+    useEffect(() => {
+      if (loaded) window.__CREEVEY_SET_READY_FOR_CAPTURE__?.();
+    }, [loaded]);
 
     return (
       <Container>

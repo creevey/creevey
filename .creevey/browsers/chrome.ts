@@ -1,7 +1,7 @@
-import { BrowserConfig } from '../src/types';
+import { BrowserConfig } from '../../src/types';
 
 const config: BrowserConfig = {
-  browserName: 'firefox',
+  browserName: 'chrome',
   viewport: { width: 1024, height: 768 },
 };
 

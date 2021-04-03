@@ -112,7 +112,7 @@ export const SlideView = withTheme(
     }, [loaded]);
 
     useEffect(() => {
-      if (loaded) window.__CREEVEY_SET_READY_FOR_CAPTURE__();
+      if (loaded) window.__CREEVEY_SET_READY_FOR_CAPTURE__?.();
     }, [loaded]);
 
     return loaded ? (

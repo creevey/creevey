@@ -11,7 +11,7 @@ export default {
   title: 'SwapView',
   parameters: {
     creevey: {
-      delay: 100,
+      waitForReady: true,
       captureElement: '#root > *',
       tests: {
         async click() {
