@@ -12,7 +12,8 @@ const config: CreeveyConfig = {
   browsers: {
     chrome,
     firefox,
-    ie11,
+    // NOTE: Don't work in Github Actions with error `InvalidArgumentError: Missing parameter: script`
+    ...(process.env.CI ? {} : { ie11 }),
   },
   hooks: {
     before: () =>

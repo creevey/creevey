@@ -315,7 +315,7 @@
 - [x] Fix todos in browser.ts and `no-shadow` rule
 - [ ] Improve and approve storybook.examples e2e tests
 - [ ] Test with yarn2
-- [ ] Think about how to test with ESM
+- [ ] Think about how to test with ESM (try to use import() from esm directory)
 - [ ] Research vite bundler
 - [ ] Research webpack 5
 - [x] Be able to run storybook examples e2e in CI
@@ -358,6 +358,7 @@
   - [ ] Next.js
   - [ ] https://nx.dev/
 - [ ] Bugs
+  - [ ] IE don't work in github actions maybe out of sync?
   - [ ] IE fail because out of sync. Add explicit wait for each browser action
   - [ ] We need to define flag when story threw an error. Check flag in selenium and capture screenshot for debug
   - [ ] MDX imported stories missed source parameters in creevey (allow to import such stories)
