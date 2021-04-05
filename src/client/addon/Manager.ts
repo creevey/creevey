@@ -1,5 +1,5 @@
 import { API } from '@storybook/api';
-import { SetStoriesPayload } from '@storybook/api/dist/lib/stories';
+import { SetStoriesPayload } from '@storybook/api/dist/ts3.9/lib/stories';
 import { SET_STORIES, STORY_RENDERED } from '@storybook/core-events';
 import { CreeveyStatus, CreeveyUpdate, isDefined, TestData, TestStatus, StoriesRaw } from '../../types';
 import { initCreeveyClientApi, CreeveyClientApi } from '../shared/creeveyClientApi';

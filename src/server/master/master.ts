@@ -3,7 +3,6 @@ import { Config, TestData, isDefined, ServerTest } from '../../types';
 import { loadTestsFromStories } from '../stories';
 import Runner from './runner';
 import { startWebpackCompiler } from './compiler';
-import { shutdownWorkers } from '../utils';
 
 function mergeTests(
   testsWithReports: Partial<{ [id: string]: TestData }>,
@@ -38,25 +37,6 @@ export default async function master(config: Config, watch: boolean): Promise<Ru
   );
 
   runner.tests = mergeTests(testsFromReport, tests);
-
-  process.on('SIGINT', () => {
-    if (runner.isRunning) {
-      // TODO Better handle stop
-      void Promise.race([
-        new Promise((resolve) => setTimeout(resolve, 10000)),
-        new Promise((resolve) => runner.once('stop', resolve)),
-      ])
-        .then(() => shutdownWorkers())
-        // eslint-disable-next-line no-process-exit
-        .then(() => process.exit());
-      runner.stop();
-    } else {
-      // eslint-disable-next-line no-process-exit
-      void shutdownWorkers().then(() => process.exit());
-    }
-  });
-
-  await runner.init();
 
   return runner;
 }

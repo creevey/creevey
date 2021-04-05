@@ -269,6 +269,8 @@
   - [x] creevey-loader `top-level property access`
   - [x] wait-on doesn't work properly
   - [x] Don't pull docker local images
+  - [ ] MDX docsOnly: true
+  - [ ] Listen to exception before waitForReady
 - [x] Change viewport height to 786 in config
 - [x] Save TeamCity config in repo
 - [x] Gitlab browse report fix
@@ -310,25 +312,16 @@
     - Move webpack/update to separate folder/file
   - [x] Mdx e2e tests
     - Add tests loader and e2e
-- [ ] Fix todos in browser.ts and `no-shadow` rule
+- [x] Fix todos in browser.ts and `no-shadow` rule
 - [ ] Improve and approve storybook.examples e2e tests
+- [ ] Test with yarn2
+- [ ] Think about how to test with ESM (try to use import() from esm directory)
+- [ ] Research vite bundler
+- [ ] Research webpack 5
 - [x] Be able to run storybook examples e2e in CI
 - [x] Improve Docker
   - [x] Private docker images registry
   - [x] Allow use standalone binary instead of Docker image for browser (https://aerokube.com/selenoid/latest/#_standalone_binary)
-
-## First priority (v0.8)
-
-- [ ] Demo Page
-  - [ ] Expose official storybook page with creevey
-  - [ ] Run creevey API somewhere in VPS
-  - [ ] Support changing args (pass new args values to creevey server -> server sends them to browser in docker)
-  - [ ] (Optional) On approve save args values for story
-  - [ ] (Question) How handle multiple users? Github auth? Autoscale docker hosting
-    - Limit session time 5-10 min then stop/remove docker container
-    - Limit 1 session per IP, reuse same container
-    - Start new instance by request from browser
-    - Write nodejs proxy app, that starts creevey on random port
 - [ ] Docs
   - [ ] Add vue3 example
   - [ ] Add github actions for creevey-examples
@@ -344,14 +337,30 @@
     - Avoid write side-effects
     - Don't generate CSF dynamically
     - Do side-effect in separate files (examples)
-  - [x] ~~Fix png logos~~
-  - [ ] Add instruction for various frameworks
-    - [ ] Web components
-    - [ ] Create React App Typescript
-    - [ ] Gatsby
-    - [ ] Next.js
-    - [ ] https://nx.dev/
+- [ ] Demo Page
+  - [ ] Expose official storybook page with creevey
+  - [ ] Run creevey API somewhere in VPS
+  - [ ] Support changing args (pass new args values to creevey server -> server sends them to browser in docker)
+  - [ ] (Optional) On approve save args values for story
+  - [ ] (Question) How handle multiple users? Github auth? Autoscale docker hosting
+    - Limit session time 5-10 min then stop/remove docker container
+    - Limit 1 session per IP, reuse same container
+    - Start new instance by request from browser
+    - Write nodejs proxy app, that starts creevey on random port
+
+## First priority (v0.8)
+
+- [x] ~~Fix png logos~~
+- [ ] Add instruction for various frameworks
+  - [ ] Web components
+  - [ ] Create React App Typescript
+  - [ ] Gatsby
+  - [ ] Next.js
+  - [ ] https://nx.dev/
 - [ ] Bugs
+  - [ ] IE don't work in github actions maybe out of sync?
+  - [ ] IE fail because out of sync. Add explicit wait for each browser action
+  - [ ] We need to define flag when story threw an error. Check flag in selenium and capture screenshot for debug
   - [ ] MDX imported stories missed source parameters in creevey (allow to import such stories)
   - [ ] ERR! Runtime error! Check your browser console. ERR! ResizeObserver loop limit exceeded (in addon)
   - [ ] Creevey nodejs console output `This browser doesn't support requestAnimationFrame.`

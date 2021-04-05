@@ -148,7 +148,6 @@ export default class Pool extends EventEmitter {
     const timeout = setTimeout(() => worker.kill(), 10000);
     worker.on('exit', () => clearTimeout(timeout));
     sendShutdownMessage(worker);
-    worker.disconnect();
   }
 
   private shouldRetry(test: WorkerTest): boolean {

@@ -8,3 +8,12 @@ export const decorators = [
     </ThemeProvider>
   ),
 ];
+
+export const parameters = {
+  creevey: {
+    skip: {
+      in: 'ie11',
+      kinds: ['Docs/ImagesViews', 'ImagesViews', 'BlendView', 'SideBySideView', 'SlideView', 'SwapView'],
+    },
+  },
+};

@@ -1,6 +1,7 @@
 export default {
   stories: ['../stories/**/*.stories.@(md|ts)x'],
   addons: [
+    '@storybook/addon-postcss',
     '@storybook/addon-essentials',
     {
       name: './../src/client/addon/preset',

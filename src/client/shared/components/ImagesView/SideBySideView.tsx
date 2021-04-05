@@ -1,4 +1,4 @@
-import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { ViewPropsWithTheme, getBorderColor, themeBorderColors } from './ImagesView';
 import { styled, withTheme } from '@storybook/theming';
 import { useApplyScale, useLoadImages, useResizeObserver, getBorderSize } from '../../helpers';
@@ -93,6 +93,10 @@ export const SideBySideView = withTheme(
 
     useApplyScale(expectImageRef, scale);
     useApplyScale(actualImageRef, scale);
+
+    useEffect(() => {
+      if (loaded) window.__CREEVEY_SET_READY_FOR_CAPTURE__?.();
+    }, [loaded]);
 
     return (
       <Container ref={containerRef}>

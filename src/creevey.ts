@@ -4,16 +4,18 @@ import chalk from 'chalk';
 import creevey from './server';
 import { Options } from './types';
 import { emitWorkerMessage } from './server/messages';
-import { shutdownWorkers } from './server/utils';
+import { isShuttingDown, shutdownWorkers } from './server/utils';
 
 function shutdown(reason: unknown): void {
+  if (isShuttingDown.current) return;
+
   const error = reason instanceof Error ? reason.stack ?? reason.message : (reason as string);
 
   console.log(chalk`[{red FAIL}{grey :${process.pid}}]`, error);
 
   process.exitCode = -1;
   if (cluster.isWorker) emitWorkerMessage({ type: 'error', payload: { error } });
-  if (cluster.isMaster) void shutdownWorkers();
+  if (cluster.isMaster && !isShuttingDown.current) void shutdownWorkers();
 }
 
 process.on('uncaughtException', shutdown);

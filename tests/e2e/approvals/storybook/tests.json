@@ -35417,6 +35417,105 @@
     },
     "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
   },
+  "0b6cab28420862df1bcf7db6c9684f2539406e66": {
+    "id": "0b6cab28420862df1bcf7db6c9684f2539406e66",
+    "skip": false,
+    "browser": "chrome",
+    "storyPath": [
+      "Addons",
+      "Controls",
+      "Image File Control"
+    ],
+    "storyId": "addons-controls--image-file-control",
+    "story": {
+      "id": "addons-controls--image-file-control",
+      "kind": "Addons/Controls",
+      "name": "Image File Control",
+      "story": "Image File Control",
+      "parameters": {
+        "globals": {
+          "foo": "fooValue"
+        },
+        "globalTypes": {
+          "foo": {
+            "defaultValue": "fooDefaultValue"
+          },
+          "bar": {
+            "defaultValue": "barDefaultValue"
+          },
+          "theme": {
+            "name": "Theme",
+            "description": "Global theme for components",
+            "defaultValue": "light",
+            "toolbar": {
+              "icon": "circlehollow",
+              "items": [
+                {
+                  "value": "light",
+                  "icon": "circlehollow",
+                  "title": "light"
+                },
+                {
+                  "value": "dark",
+                  "icon": "circle",
+                  "title": "dark"
+                },
+                {
+                  "value": "side-by-side",
+                  "icon": "sidebar",
+                  "title": "side by side"
+                },
+                {
+                  "value": "stacked",
+                  "icon": "bottombar",
+                  "title": "stacked"
+                }
+              ]
+            }
+          },
+          "locale": {
+            "name": "Locale",
+            "description": "Internationalization locale",
+            "defaultValue": "en",
+            "toolbar": {
+              "icon": "globe",
+              "items": [
+                {
+                  "value": "en",
+                  "right": "🇺🇸",
+                  "title": "English"
+                },
+                {
+                  "value": "es",
+                  "right": "🇪🇸",
+                  "title": "Español"
+                },
+                {
+                  "value": "zh",
+                  "right": "🇨🇳",
+                  "title": "中文"
+                },
+                {
+                  "value": "kr",
+                  "right": "🇰🇷",
+                  "title": "한국어"
+                }
+              ]
+            }
+          }
+        },
+        "framework": "react",
+        "fileName": "./stories/addon-controls.stories.tsx",
+        "args": {},
+        "argTypes": {},
+        "__id": "addons-controls--image-file-control",
+        "__isArgsStory": false
+      },
+      "args": {},
+      "initialArgs": {}
+    },
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+  },
   "54a3e95844d80fcd66211889e551f62b6884ad5d": {
     "id": "54a3e95844d80fcd66211889e551f62b6884ad5d",
     "skip": false,
@@ -35707,6 +35806,600 @@
         "args": {},
         "argTypes": {},
         "__id": "addons-controls--cyclic-args",
+        "__isArgsStory": false
+      },
+      "args": {},
+      "initialArgs": {}
+    },
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+  },
+  "239b384e7fb3a6b87f9d7ebc325d1731581688ef": {
+    "id": "239b384e7fb3a6b87f9d7ebc325d1731581688ef",
+    "skip": false,
+    "browser": "chrome",
+    "storyPath": [
+      "Addons",
+      "Controls",
+      "Custom Control Matchers"
+    ],
+    "storyId": "addons-controls--custom-control-matchers",
+    "story": {
+      "id": "addons-controls--custom-control-matchers",
+      "kind": "Addons/Controls",
+      "name": "Custom Control Matchers",
+      "story": "Custom Control Matchers",
+      "parameters": {
+        "globals": {
+          "foo": "fooValue"
+        },
+        "globalTypes": {
+          "foo": {
+            "defaultValue": "fooDefaultValue"
+          },
+          "bar": {
+            "defaultValue": "barDefaultValue"
+          },
+          "theme": {
+            "name": "Theme",
+            "description": "Global theme for components",
+            "defaultValue": "light",
+            "toolbar": {
+              "icon": "circlehollow",
+              "items": [
+                {
+                  "value": "light",
+                  "icon": "circlehollow",
+                  "title": "light"
+                },
+                {
+                  "value": "dark",
+                  "icon": "circle",
+                  "title": "dark"
+                },
+                {
+                  "value": "side-by-side",
+                  "icon": "sidebar",
+                  "title": "side by side"
+                },
+                {
+                  "value": "stacked",
+                  "icon": "bottombar",
+                  "title": "stacked"
+                }
+              ]
+            }
+          },
+          "locale": {
+            "name": "Locale",
+            "description": "Internationalization locale",
+            "defaultValue": "en",
+            "toolbar": {
+              "icon": "globe",
+              "items": [
+                {
+                  "value": "en",
+                  "right": "🇺🇸",
+                  "title": "English"
+                },
+                {
+                  "value": "es",
+                  "right": "🇪🇸",
+                  "title": "Español"
+                },
+                {
+                  "value": "zh",
+                  "right": "🇨🇳",
+                  "title": "中文"
+                },
+                {
+                  "value": "kr",
+                  "right": "🇰🇷",
+                  "title": "한국어"
+                }
+              ]
+            }
+          }
+        },
+        "framework": "react",
+        "fileName": "./stories/addon-controls.stories.tsx",
+        "args": {},
+        "argTypes": {},
+        "__id": "addons-controls--custom-control-matchers",
+        "__isArgsStory": false
+      },
+      "args": {},
+      "initialArgs": {}
+    },
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+  },
+  "18359e8536780bf087dbbe1208f5a77eb587bcc6": {
+    "id": "18359e8536780bf087dbbe1208f5a77eb587bcc6",
+    "skip": false,
+    "browser": "chrome",
+    "storyPath": [
+      "Addons",
+      "Controls",
+      "With Disabled Custom Control Matchers"
+    ],
+    "storyId": "addons-controls--with-disabled-custom-control-matchers",
+    "story": {
+      "id": "addons-controls--with-disabled-custom-control-matchers",
+      "kind": "Addons/Controls",
+      "name": "With Disabled Custom Control Matchers",
+      "story": "With Disabled Custom Control Matchers",
+      "parameters": {
+        "globals": {
+          "foo": "fooValue"
+        },
+        "globalTypes": {
+          "foo": {
+            "defaultValue": "fooDefaultValue"
+          },
+          "bar": {
+            "defaultValue": "barDefaultValue"
+          },
+          "theme": {
+            "name": "Theme",
+            "description": "Global theme for components",
+            "defaultValue": "light",
+            "toolbar": {
+              "icon": "circlehollow",
+              "items": [
+                {
+                  "value": "light",
+                  "icon": "circlehollow",
+                  "title": "light"
+                },
+                {
+                  "value": "dark",
+                  "icon": "circle",
+                  "title": "dark"
+                },
+                {
+                  "value": "side-by-side",
+                  "icon": "sidebar",
+                  "title": "side by side"
+                },
+                {
+                  "value": "stacked",
+                  "icon": "bottombar",
+                  "title": "stacked"
+                }
+              ]
+            }
+          },
+          "locale": {
+            "name": "Locale",
+            "description": "Internationalization locale",
+            "defaultValue": "en",
+            "toolbar": {
+              "icon": "globe",
+              "items": [
+                {
+                  "value": "en",
+                  "right": "🇺🇸",
+                  "title": "English"
+                },
+                {
+                  "value": "es",
+                  "right": "🇪🇸",
+                  "title": "Español"
+                },
+                {
+                  "value": "zh",
+                  "right": "🇨🇳",
+                  "title": "中文"
+                },
+                {
+                  "value": "kr",
+                  "right": "🇰🇷",
+                  "title": "한국어"
+                }
+              ]
+            }
+          }
+        },
+        "framework": "react",
+        "fileName": "./stories/addon-controls.stories.tsx",
+        "args": {},
+        "argTypes": {},
+        "__id": "addons-controls--with-disabled-custom-control-matchers",
+        "__isArgsStory": false
+      },
+      "args": {},
+      "initialArgs": {}
+    },
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+  },
+  "fa723bdd524177a1c6c55ce2043d9f5a7197d606": {
+    "id": "fa723bdd524177a1c6c55ce2043d9f5a7197d606",
+    "skip": false,
+    "browser": "chrome",
+    "storyPath": [
+      "Addons",
+      "Controls",
+      "Filtered With Include"
+    ],
+    "storyId": "addons-controls--filtered-with-include",
+    "story": {
+      "id": "addons-controls--filtered-with-include",
+      "kind": "Addons/Controls",
+      "name": "Filtered With Include",
+      "story": "Filtered With Include",
+      "parameters": {
+        "globals": {
+          "foo": "fooValue"
+        },
+        "globalTypes": {
+          "foo": {
+            "defaultValue": "fooDefaultValue"
+          },
+          "bar": {
+            "defaultValue": "barDefaultValue"
+          },
+          "theme": {
+            "name": "Theme",
+            "description": "Global theme for components",
+            "defaultValue": "light",
+            "toolbar": {
+              "icon": "circlehollow",
+              "items": [
+                {
+                  "value": "light",
+                  "icon": "circlehollow",
+                  "title": "light"
+                },
+                {
+                  "value": "dark",
+                  "icon": "circle",
+                  "title": "dark"
+                },
+                {
+                  "value": "side-by-side",
+                  "icon": "sidebar",
+                  "title": "side by side"
+                },
+                {
+                  "value": "stacked",
+                  "icon": "bottombar",
+                  "title": "stacked"
+                }
+              ]
+            }
+          },
+          "locale": {
+            "name": "Locale",
+            "description": "Internationalization locale",
+            "defaultValue": "en",
+            "toolbar": {
+              "icon": "globe",
+              "items": [
+                {
+                  "value": "en",
+                  "right": "🇺🇸",
+                  "title": "English"
+                },
+                {
+                  "value": "es",
+                  "right": "🇪🇸",
+                  "title": "Español"
+                },
+                {
+                  "value": "zh",
+                  "right": "🇨🇳",
+                  "title": "中文"
+                },
+                {
+                  "value": "kr",
+                  "right": "🇰🇷",
+                  "title": "한국어"
+                }
+              ]
+            }
+          }
+        },
+        "framework": "react",
+        "fileName": "./stories/addon-controls.stories.tsx",
+        "args": {},
+        "argTypes": {},
+        "__id": "addons-controls--filtered-with-include",
+        "__isArgsStory": false
+      },
+      "args": {},
+      "initialArgs": {}
+    },
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+  },
+  "68c35c0c25dd8ab263a6c03f1d6fb644700c3b3b": {
+    "id": "68c35c0c25dd8ab263a6c03f1d6fb644700c3b3b",
+    "skip": false,
+    "browser": "chrome",
+    "storyPath": [
+      "Addons",
+      "Controls",
+      "Filtered With Include Regex"
+    ],
+    "storyId": "addons-controls--filtered-with-include-regex",
+    "story": {
+      "id": "addons-controls--filtered-with-include-regex",
+      "kind": "Addons/Controls",
+      "name": "Filtered With Include Regex",
+      "story": "Filtered With Include Regex",
+      "parameters": {
+        "globals": {
+          "foo": "fooValue"
+        },
+        "globalTypes": {
+          "foo": {
+            "defaultValue": "fooDefaultValue"
+          },
+          "bar": {
+            "defaultValue": "barDefaultValue"
+          },
+          "theme": {
+            "name": "Theme",
+            "description": "Global theme for components",
+            "defaultValue": "light",
+            "toolbar": {
+              "icon": "circlehollow",
+              "items": [
+                {
+                  "value": "light",
+                  "icon": "circlehollow",
+                  "title": "light"
+                },
+                {
+                  "value": "dark",
+                  "icon": "circle",
+                  "title": "dark"
+                },
+                {
+                  "value": "side-by-side",
+                  "icon": "sidebar",
+                  "title": "side by side"
+                },
+                {
+                  "value": "stacked",
+                  "icon": "bottombar",
+                  "title": "stacked"
+                }
+              ]
+            }
+          },
+          "locale": {
+            "name": "Locale",
+            "description": "Internationalization locale",
+            "defaultValue": "en",
+            "toolbar": {
+              "icon": "globe",
+              "items": [
+                {
+                  "value": "en",
+                  "right": "🇺🇸",
+                  "title": "English"
+                },
+                {
+                  "value": "es",
+                  "right": "🇪🇸",
+                  "title": "Español"
+                },
+                {
+                  "value": "zh",
+                  "right": "🇨🇳",
+                  "title": "中文"
+                },
+                {
+                  "value": "kr",
+                  "right": "🇰🇷",
+                  "title": "한국어"
+                }
+              ]
+            }
+          }
+        },
+        "framework": "react",
+        "fileName": "./stories/addon-controls.stories.tsx",
+        "args": {},
+        "argTypes": {},
+        "__id": "addons-controls--filtered-with-include-regex",
+        "__isArgsStory": false
+      },
+      "args": {},
+      "initialArgs": {}
+    },
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+  },
+  "ece85289a4809f6b9928fa8c7c6ae855df378d25": {
+    "id": "ece85289a4809f6b9928fa8c7c6ae855df378d25",
+    "skip": false,
+    "browser": "chrome",
+    "storyPath": [
+      "Addons",
+      "Controls",
+      "Filtered With Exclude"
+    ],
+    "storyId": "addons-controls--filtered-with-exclude",
+    "story": {
+      "id": "addons-controls--filtered-with-exclude",
+      "kind": "Addons/Controls",
+      "name": "Filtered With Exclude",
+      "story": "Filtered With Exclude",
+      "parameters": {
+        "globals": {
+          "foo": "fooValue"
+        },
+        "globalTypes": {
+          "foo": {
+            "defaultValue": "fooDefaultValue"
+          },
+          "bar": {
+            "defaultValue": "barDefaultValue"
+          },
+          "theme": {
+            "name": "Theme",
+            "description": "Global theme for components",
+            "defaultValue": "light",
+            "toolbar": {
+              "icon": "circlehollow",
+              "items": [
+                {
+                  "value": "light",
+                  "icon": "circlehollow",
+                  "title": "light"
+                },
+                {
+                  "value": "dark",
+                  "icon": "circle",
+                  "title": "dark"
+                },
+                {
+                  "value": "side-by-side",
+                  "icon": "sidebar",
+                  "title": "side by side"
+                },
+                {
+                  "value": "stacked",
+                  "icon": "bottombar",
+                  "title": "stacked"
+                }
+              ]
+            }
+          },
+          "locale": {
+            "name": "Locale",
+            "description": "Internationalization locale",
+            "defaultValue": "en",
+            "toolbar": {
+              "icon": "globe",
+              "items": [
+                {
+                  "value": "en",
+                  "right": "🇺🇸",
+                  "title": "English"
+                },
+                {
+                  "value": "es",
+                  "right": "🇪🇸",
+                  "title": "Español"
+                },
+                {
+                  "value": "zh",
+                  "right": "🇨🇳",
+                  "title": "中文"
+                },
+                {
+                  "value": "kr",
+                  "right": "🇰🇷",
+                  "title": "한국어"
+                }
+              ]
+            }
+          }
+        },
+        "framework": "react",
+        "fileName": "./stories/addon-controls.stories.tsx",
+        "args": {},
+        "argTypes": {},
+        "__id": "addons-controls--filtered-with-exclude",
+        "__isArgsStory": false
+      },
+      "args": {},
+      "initialArgs": {}
+    },
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+  },
+  "dd76f2d88f66c4cc138cf563bd734de4aee9d74b": {
+    "id": "dd76f2d88f66c4cc138cf563bd734de4aee9d74b",
+    "skip": false,
+    "browser": "chrome",
+    "storyPath": [
+      "Addons",
+      "Controls",
+      "Filtered With Exclude Regex"
+    ],
+    "storyId": "addons-controls--filtered-with-exclude-regex",
+    "story": {
+      "id": "addons-controls--filtered-with-exclude-regex",
+      "kind": "Addons/Controls",
+      "name": "Filtered With Exclude Regex",
+      "story": "Filtered With Exclude Regex",
+      "parameters": {
+        "globals": {
+          "foo": "fooValue"
+        },
+        "globalTypes": {
+          "foo": {
+            "defaultValue": "fooDefaultValue"
+          },
+          "bar": {
+            "defaultValue": "barDefaultValue"
+          },
+          "theme": {
+            "name": "Theme",
+            "description": "Global theme for components",
+            "defaultValue": "light",
+            "toolbar": {
+              "icon": "circlehollow",
+              "items": [
+                {
+                  "value": "light",
+                  "icon": "circlehollow",
+                  "title": "light"
+                },
+                {
+                  "value": "dark",
+                  "icon": "circle",
+                  "title": "dark"
+                },
+                {
+                  "value": "side-by-side",
+                  "icon": "sidebar",
+                  "title": "side by side"
+                },
+                {
+                  "value": "stacked",
+                  "icon": "bottombar",
+                  "title": "stacked"
+                }
+              ]
+            }
+          },
+          "locale": {
+            "name": "Locale",
+            "description": "Internationalization locale",
+            "defaultValue": "en",
+            "toolbar": {
+              "icon": "globe",
+              "items": [
+                {
+                  "value": "en",
+                  "right": "🇺🇸",
+                  "title": "English"
+                },
+                {
+                  "value": "es",
+                  "right": "🇪🇸",
+                  "title": "Español"
+                },
+                {
+                  "value": "zh",
+                  "right": "🇨🇳",
+                  "title": "中文"
+                },
+                {
+                  "value": "kr",
+                  "right": "🇰🇷",
+                  "title": "한국어"
+                }
+              ]
+            }
+          }
+        },
+        "framework": "react",
+        "fileName": "./stories/addon-controls.stories.tsx",
+        "args": {},
+        "argTypes": {},
+        "__id": "addons-controls--filtered-with-exclude-regex",
         "__isArgsStory": false
       },
       "args": {},
@@ -40709,6 +41402,106 @@
     },
     "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
   },
+  "fd987334efcdb38afe5eb0c79bbd3b190ffbe3a6": {
+    "id": "fd987334efcdb38afe5eb0c79bbd3b190ffbe3a6",
+    "skip": false,
+    "browser": "chrome",
+    "storyPath": [
+      "Addons",
+      "Docs",
+      "mdx-in-story",
+      "Dark Mode Docs"
+    ],
+    "storyId": "addons-docs-mdx-in-story--dark-mode-docs",
+    "story": {
+      "id": "addons-docs-mdx-in-story--dark-mode-docs",
+      "kind": "Addons/Docs/mdx-in-story",
+      "name": "Dark Mode Docs",
+      "story": "Dark Mode Docs",
+      "parameters": {
+        "globals": {
+          "foo": "fooValue"
+        },
+        "globalTypes": {
+          "foo": {
+            "defaultValue": "fooDefaultValue"
+          },
+          "bar": {
+            "defaultValue": "barDefaultValue"
+          },
+          "theme": {
+            "name": "Theme",
+            "description": "Global theme for components",
+            "defaultValue": "light",
+            "toolbar": {
+              "icon": "circlehollow",
+              "items": [
+                {
+                  "value": "light",
+                  "icon": "circlehollow",
+                  "title": "light"
+                },
+                {
+                  "value": "dark",
+                  "icon": "circle",
+                  "title": "dark"
+                },
+                {
+                  "value": "side-by-side",
+                  "icon": "sidebar",
+                  "title": "side by side"
+                },
+                {
+                  "value": "stacked",
+                  "icon": "bottombar",
+                  "title": "stacked"
+                }
+              ]
+            }
+          },
+          "locale": {
+            "name": "Locale",
+            "description": "Internationalization locale",
+            "defaultValue": "en",
+            "toolbar": {
+              "icon": "globe",
+              "items": [
+                {
+                  "value": "en",
+                  "right": "🇺🇸",
+                  "title": "English"
+                },
+                {
+                  "value": "es",
+                  "right": "🇪🇸",
+                  "title": "Español"
+                },
+                {
+                  "value": "zh",
+                  "right": "🇨🇳",
+                  "title": "中文"
+                },
+                {
+                  "value": "kr",
+                  "right": "🇰🇷",
+                  "title": "한국어"
+                }
+              ]
+            }
+          }
+        },
+        "framework": "react",
+        "fileName": "./stories/addon-docs/mdx.stories.js",
+        "args": {},
+        "argTypes": {},
+        "__id": "addons-docs-mdx-in-story--dark-mode-docs",
+        "__isArgsStory": false
+      },
+      "args": {},
+      "initialArgs": {}
+    },
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+  },
   "515d9d89aca3777b7f5fd69425f8ad6e0e2d24e6": {
     "id": "515d9d89aca3777b7f5fd69425f8ad6e0e2d24e6",
     "skip": false,
@@ -42213,6 +43006,107 @@
     },
     "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
   },
+  "1ca6a6e8747f0529d4d33b9552a71651992c36ed": {
+    "id": "1ca6a6e8747f0529d4d33b9552a71651992c36ed",
+    "skip": false,
+    "browser": "chrome",
+    "storyPath": [
+      "Addons",
+      "Docs",
+      "StoriesFile",
+      "Page"
+    ],
+    "storyId": "addons-docs-storiesfile--page",
+    "story": {
+      "id": "addons-docs-storiesfile--page",
+      "kind": "Addons/Docs/StoriesFile",
+      "name": "Page",
+      "story": "Page",
+      "parameters": {
+        "globals": {
+          "foo": "fooValue"
+        },
+        "globalTypes": {
+          "foo": {
+            "defaultValue": "fooDefaultValue"
+          },
+          "bar": {
+            "defaultValue": "barDefaultValue"
+          },
+          "theme": {
+            "name": "Theme",
+            "description": "Global theme for components",
+            "defaultValue": "light",
+            "toolbar": {
+              "icon": "circlehollow",
+              "items": [
+                {
+                  "value": "light",
+                  "icon": "circlehollow",
+                  "title": "light"
+                },
+                {
+                  "value": "dark",
+                  "icon": "circle",
+                  "title": "dark"
+                },
+                {
+                  "value": "side-by-side",
+                  "icon": "sidebar",
+                  "title": "side by side"
+                },
+                {
+                  "value": "stacked",
+                  "icon": "bottombar",
+                  "title": "stacked"
+                }
+              ]
+            }
+          },
+          "locale": {
+            "name": "Locale",
+            "description": "Internationalization locale",
+            "defaultValue": "en",
+            "toolbar": {
+              "icon": "globe",
+              "items": [
+                {
+                  "value": "en",
+                  "right": "🇺🇸",
+                  "title": "English"
+                },
+                {
+                  "value": "es",
+                  "right": "🇪🇸",
+                  "title": "Español"
+                },
+                {
+                  "value": "zh",
+                  "right": "🇨🇳",
+                  "title": "中文"
+                },
+                {
+                  "value": "kr",
+                  "right": "🇰🇷",
+                  "title": "한국어"
+                }
+              ]
+            }
+          }
+        },
+        "framework": "react",
+        "fileName": "./stories/addon-docs/stories.mdx",
+        "args": {},
+        "argTypes": {},
+        "docsOnly": true,
+        "__id": "addons-docs-storiesfile--page",
+        "__isArgsStory": false
+      },
+      "args": {},
+      "initialArgs": {}
+    },
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+  },
   "368def0f568166dc672d8c28d641ccb364e4f1bd": {
     "id": "368def0f568166dc672d8c28d641ccb364e4f1bd",
     "skip": false,
@@ -43103,6 +43997,204 @@
         "args": {},
         "argTypes": {},
         "__id": "addons-jest--with-tests",
+        "__isArgsStory": false
+      },
+      "args": {},
+      "initialArgs": {}
+    },
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+  },
+  "d2d3bc7d863199378323c0a9e2ff8ef35ea06819": {
+    "id": "d2d3bc7d863199378323c0a9e2ff8ef35ea06819",
+    "skip": false,
+    "browser": "chrome",
+    "storyPath": [
+      "Addons",
+      "Jest",
+      "With Inferred Tests"
+    ],
+    "storyId": "addons-jest--with-inferred-tests",
+    "story": {
+      "id": "addons-jest--with-inferred-tests",
+      "kind": "Addons/Jest",
+      "name": "With Inferred Tests",
+      "story": "With Inferred Tests",
+      "parameters": {
+        "globals": {
+          "foo": "fooValue"
+        },
+        "globalTypes": {
+          "foo": {
+            "defaultValue": "fooDefaultValue"
+          },
+          "bar": {
+            "defaultValue": "barDefaultValue"
+          },
+          "theme": {
+            "name": "Theme",
+            "description": "Global theme for components",
+            "defaultValue": "light",
+            "toolbar": {
+              "icon": "circlehollow",
+              "items": [
+                {
+                  "value": "light",
+                  "icon": "circlehollow",
+                  "title": "light"
+                },
+                {
+                  "value": "dark",
+                  "icon": "circle",
+                  "title": "dark"
+                },
+                {
+                  "value": "side-by-side",
+                  "icon": "sidebar",
+                  "title": "side by side"
+                },
+                {
+                  "value": "stacked",
+                  "icon": "bottombar",
+                  "title": "stacked"
+                }
+              ]
+            }
+          },
+          "locale": {
+            "name": "Locale",
+            "description": "Internationalization locale",
+            "defaultValue": "en",
+            "toolbar": {
+              "icon": "globe",
+              "items": [
+                {
+                  "value": "en",
+                  "right": "🇺🇸",
+                  "title": "English"
+                },
+                {
+                  "value": "es",
+                  "right": "🇪🇸",
+                  "title": "Español"
+                },
+                {
+                  "value": "zh",
+                  "right": "🇨🇳",
+                  "title": "中文"
+                },
+                {
+                  "value": "kr",
+                  "right": "🇰🇷",
+                  "title": "한국어"
+                }
+              ]
+            }
+          }
+        },
+        "framework": "react",
+        "fileName": "./stories/addon-jest.stories.js",
+        "args": {},
+        "argTypes": {},
+        "__id": "addons-jest--with-inferred-tests",
+        "__isArgsStory": false
+      },
+      "args": {},
+      "initialArgs": {}
+    },
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+  },
+  "28790adc8a5a58bb58a6449b6c68c9b6685d095a": {
+    "id": "28790adc8a5a58bb58a6449b6c68c9b6685d095a",
+    "skip": false,
+    "browser": "chrome",
+    "storyPath": [
+      "Addons",
+      "Jest",
+      "Disabled Tests"
+    ],
+    "storyId": "addons-jest--disabled-tests",
+    "story": {
+      "id": "addons-jest--disabled-tests",
+      "kind": "Addons/Jest",
+      "name": "Disabled Tests",
+      "story": "Disabled Tests",
+      "parameters": {
+        "globals": {
+          "foo": "fooValue"
+        },
+        "globalTypes": {
+          "foo": {
+            "defaultValue": "fooDefaultValue"
+          },
+          "bar": {
+            "defaultValue": "barDefaultValue"
+          },
+          "theme": {
+            "name": "Theme",
+            "description": "Global theme for components",
+            "defaultValue": "light",
+            "toolbar": {
+              "icon": "circlehollow",
+              "items": [
+                {
+                  "value": "light",
+                  "icon": "circlehollow",
+                  "title": "light"
+                },
+                {
+                  "value": "dark",
+                  "icon": "circle",
+                  "title": "dark"
+                },
+                {
+                  "value": "side-by-side",
+                  "icon": "sidebar",
+                  "title": "side by side"
+                },
+                {
+                  "value": "stacked",
+                  "icon": "bottombar",
+                  "title": "stacked"
+                }
+              ]
+            }
+          },
+          "locale": {
+            "name": "Locale",
+            "description": "Internationalization locale",
+            "defaultValue": "en",
+            "toolbar": {
+              "icon": "globe",
+              "items": [
+                {
+                  "value": "en",
+                  "right": "🇺🇸",
+                  "title": "English"
+                },
+                {
+                  "value": "es",
+                  "right": "🇪🇸",
+                  "title": "Español"
+                },
+                {
+                  "value": "zh",
+                  "right": "🇨🇳",
+                  "title": "中文"
+                },
+                {
+                  "value": "kr",
+                  "right": "🇰🇷",
+                  "title": "한국어"
+                }
+              ]
+            }
+          }
+        },
+        "framework": "react",
+        "fileName": "./stories/addon-jest.stories.js",
+        "args": {},
+        "argTypes": {},
+        "__id": "addons-jest--disabled-tests",
         "__isArgsStory": false
       },
       "args": {},
@@ -46596,6 +47688,303 @@
         "args": {},
         "argTypes": {},
         "__id": "addons-viewport--default-fn",
+        "__isArgsStory": false
+      },
+      "args": {},
+      "initialArgs": {}
+    },
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+  },
+  "d1e924856a8db5c41d557fcefd776ba9eceb13d0": {
+    "id": "d1e924856a8db5c41d557fcefd776ba9eceb13d0",
+    "skip": false,
+    "browser": "chrome",
+    "storyPath": [
+      "Addons",
+      "Controls-Sort",
+      "None"
+    ],
+    "storyId": "addons-controls-sort--none",
+    "story": {
+      "id": "addons-controls-sort--none",
+      "kind": "Addons/Controls-Sort",
+      "name": "None",
+      "story": "None",
+      "parameters": {
+        "globals": {
+          "foo": "fooValue"
+        },
+        "globalTypes": {
+          "foo": {
+            "defaultValue": "fooDefaultValue"
+          },
+          "bar": {
+            "defaultValue": "barDefaultValue"
+          },
+          "theme": {
+            "name": "Theme",
+            "description": "Global theme for components",
+            "defaultValue": "light",
+            "toolbar": {
+              "icon": "circlehollow",
+              "items": [
+                {
+                  "value": "light",
+                  "icon": "circlehollow",
+                  "title": "light"
+                },
+                {
+                  "value": "dark",
+                  "icon": "circle",
+                  "title": "dark"
+                },
+                {
+                  "value": "side-by-side",
+                  "icon": "sidebar",
+                  "title": "side by side"
+                },
+                {
+                  "value": "stacked",
+                  "icon": "bottombar",
+                  "title": "stacked"
+                }
+              ]
+            }
+          },
+          "locale": {
+            "name": "Locale",
+            "description": "Internationalization locale",
+            "defaultValue": "en",
+            "toolbar": {
+              "icon": "globe",
+              "items": [
+                {
+                  "value": "en",
+                  "right": "🇺🇸",
+                  "title": "English"
+                },
+                {
+                  "value": "es",
+                  "right": "🇪🇸",
+                  "title": "Español"
+                },
+                {
+                  "value": "zh",
+                  "right": "🇨🇳",
+                  "title": "中文"
+                },
+                {
+                  "value": "kr",
+                  "right": "🇰🇷",
+                  "title": "한국어"
+                }
+              ]
+            }
+          }
+        },
+        "framework": "react",
+        "fileName": "./stories/controls-sort.stories.tsx",
+        "args": {},
+        "argTypes": {},
+        "__id": "addons-controls-sort--none",
+        "__isArgsStory": false
+      },
+      "args": {},
+      "initialArgs": {}
+    },
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+  },
+  "d3589ba44e4f1469ae27172b27fc62709ca835f9": {
+    "id": "d3589ba44e4f1469ae27172b27fc62709ca835f9",
+    "skip": false,
+    "browser": "chrome",
+    "storyPath": [
+      "Addons",
+      "Controls-Sort",
+      "Alpha"
+    ],
+    "storyId": "addons-controls-sort--alpha",
+    "story": {
+      "id": "addons-controls-sort--alpha",
+      "kind": "Addons/Controls-Sort",
+      "name": "Alpha",
+      "story": "Alpha",
+      "parameters": {
+        "globals": {
+          "foo": "fooValue"
+        },
+        "globalTypes": {
+          "foo": {
+            "defaultValue": "fooDefaultValue"
+          },
+          "bar": {
+            "defaultValue": "barDefaultValue"
+          },
+          "theme": {
+            "name": "Theme",
+            "description": "Global theme for components",
+            "defaultValue": "light",
+            "toolbar": {
+              "icon": "circlehollow",
+              "items": [
+                {
+                  "value": "light",
+                  "icon": "circlehollow",
+                  "title": "light"
+                },
+                {
+                  "value": "dark",
+                  "icon": "circle",
+                  "title": "dark"
+                },
+                {
+                  "value": "side-by-side",
+                  "icon": "sidebar",
+                  "title": "side by side"
+                },
+                {
+                  "value": "stacked",
+                  "icon": "bottombar",
+                  "title": "stacked"
+                }
+              ]
+            }
+          },
+          "locale": {
+            "name": "Locale",
+            "description": "Internationalization locale",
+            "defaultValue": "en",
+            "toolbar": {
+              "icon": "globe",
+              "items": [
+                {
+                  "value": "en",
+                  "right": "🇺🇸",
+                  "title": "English"
+                },
+                {
+                  "value": "es",
+                  "right": "🇪🇸",
+                  "title": "Español"
+                },
+                {
+                  "value": "zh",
+                  "right": "🇨🇳",
+                  "title": "中文"
+                },
+                {
+                  "value": "kr",
+                  "right": "🇰🇷",
+                  "title": "한국어"
+                }
+              ]
+            }
+          }
+        },
+        "framework": "react",
+        "fileName": "./stories/controls-sort.stories.tsx",
+        "args": {},
+        "argTypes": {},
+        "__id": "addons-controls-sort--alpha",
+        "__isArgsStory": false
+      },
+      "args": {},
+      "initialArgs": {}
+    },
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+  },
+  "15a69f6e3b47282f255a54808b54dc8f689609df": {
+    "id": "15a69f6e3b47282f255a54808b54dc8f689609df",
+    "skip": false,
+    "browser": "chrome",
+    "storyPath": [
+      "Addons",
+      "Controls-Sort",
+      "Required First"
+    ],
+    "storyId": "addons-controls-sort--required-first",
+    "story": {
+      "id": "addons-controls-sort--required-first",
+      "kind": "Addons/Controls-Sort",
+      "name": "Required First",
+      "story": "Required First",
+      "parameters": {
+        "globals": {
+          "foo": "fooValue"
+        },
+        "globalTypes": {
+          "foo": {
+            "defaultValue": "fooDefaultValue"
+          },
+          "bar": {
+            "defaultValue": "barDefaultValue"
+          },
+          "theme": {
+            "name": "Theme",
+            "description": "Global theme for components",
+            "defaultValue": "light",
+            "toolbar": {
+              "icon": "circlehollow",
+              "items": [
+                {
+                  "value": "light",
+                  "icon": "circlehollow",
+                  "title": "light"
+                },
+                {
+                  "value": "dark",
+                  "icon": "circle",
+                  "title": "dark"
+                },
+                {
+                  "value": "side-by-side",
+                  "icon": "sidebar",
+                  "title": "side by side"
+                },
+                {
+                  "value": "stacked",
+                  "icon": "bottombar",
+                  "title": "stacked"
+                }
+              ]
+            }
+          },
+          "locale": {
+            "name": "Locale",
+            "description": "Internationalization locale",
+            "defaultValue": "en",
+            "toolbar": {
+              "icon": "globe",
+              "items": [
+                {
+                  "value": "en",
+                  "right": "🇺🇸",
+                  "title": "English"
+                },
+                {
+                  "value": "es",
+                  "right": "🇪🇸",
+                  "title": "Español"
+                },
+                {
+                  "value": "zh",
+                  "right": "🇨🇳",
+                  "title": "中文"
+                },
+                {
+                  "value": "kr",
+                  "right": "🇰🇷",
+                  "title": "한국어"
+                }
+              ]
+            }
+          }
+        },
+        "framework": "react",
+        "fileName": "./stories/controls-sort.stories.tsx",
+        "args": {},
+        "argTypes": {},
+        "__id": "addons-controls-sort--required-first",
         "__isArgsStory": false
       },
       "args": {},

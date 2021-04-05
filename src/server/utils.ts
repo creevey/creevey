@@ -6,6 +6,8 @@ import { emitShutdownMessage, sendShutdownMessage } from './messages';
 import findCacheDir from 'find-cache-dir';
 import { get } from 'https';
 
+export const isShuttingDown = { current: false };
+
 export const LOCALHOST_REGEXP = /(localhost|127\.0\.0\.1)/i;
 
 export const extensions = ['.js', '.jsx', '.ts', '.tsx', '.mjs', '.es', '.es6'];
@@ -111,6 +113,7 @@ export function requireConfig<T>(configPath: string): T {
 }
 
 export async function shutdownWorkers(): Promise<void> {
+  isShuttingDown.current = true;
   emitShutdownMessage();
   await Promise.all(
     Object.values(cluster.workers)
@@ -125,7 +128,6 @@ export async function shutdownWorkers(): Promise<void> {
               resolve();
             });
             sendShutdownMessage(worker);
-            worker.disconnect();
           }),
       ),
   );

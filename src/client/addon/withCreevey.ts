@@ -24,7 +24,7 @@ declare global {
     __CREEVEY_UPDATE_GLOBALS__: (globals: StorybookGlobals) => void;
     __CREEVEY_INSERT_IGNORE_STYLES__: (ignoreElements: string[]) => HTMLStyleElement;
     __CREEVEY_REMOVE_IGNORE_STYLES__: (ignoreStyles: HTMLStyleElement) => void;
-    __CREEVEY_SET_READY_FOR_CAPTURE__: () => void;
+    __CREEVEY_SET_READY_FOR_CAPTURE__?: () => void;
   }
 
   interface Document {
@@ -166,6 +166,7 @@ export function withCreevey(): MakeDecoratorResult {
     try {
       await waitForStoryRendered(channel);
       await waitForFontsLoaded();
+      // TODO Listen to STORY_THREW_EXCEPTION and call callback only fo waitForReady
       await waitForReady;
       callback();
     } catch (reason) {

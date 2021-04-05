@@ -8,6 +8,13 @@ import { runSequence, LOCALHOST_REGEXP, isStorybookVersionLessThan } from '../ut
 import { PageLoadStrategy } from 'selenium-webdriver/lib/capabilities';
 import chalk from 'chalk';
 
+type ElementRect = {
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+};
+
 declare global {
   interface Window {
     __CREEVEY_RESTORE_SCROLL__?: () => void;
@@ -91,19 +98,20 @@ async function resetMousePosition(browser: WebDriver): Promise<void> {
     (await browser.getCapabilities()).getBrowserVersion()?.split('.') ??
     ((await browser.getCapabilities()).get('version') as string | undefined)?.split('.') ??
     [];
-  // TODO Fix types
-  const { top, left, width, height } = await browser.executeScript<DOMRect>(function () {
-    // NOTE On storybook >= 4.x already reset scroll
-    // TODO Check this on new storybook
-    window.scrollTo(0, 0);
-    const bodyRect = document.body.getBoundingClientRect();
-
-    return { top: bodyRect.top, left: bodyRect.left, width: bodyRect.width, height: bodyRect.height };
-  });
 
   // NOTE Reset mouse position to support keweb selenium grid browser versions
   if (browserName == 'chrome' && browserVersion == '70') {
-    // NOTE Bridge mode not support move mouse relative viewport
+    const { top, left, width, height } = await browser.executeScript<ElementRect>(function (): ElementRect {
+      const bodyRect = document.body.getBoundingClientRect();
+
+      return {
+        top: bodyRect.top,
+        left: bodyRect.left,
+        width: bodyRect.width,
+        height: bodyRect.height,
+      };
+    });
+    // NOTE Bridge mode doesn't support `Origin.VIEWPORT`, move mouse relative
     await browser
       .actions({ bridge: true })
       .move({
@@ -177,18 +185,18 @@ async function hasScrollBar(browser: WebDriver): Promise<boolean> {
 
 async function takeCompositeScreenshot(
   browser: WebDriver,
-  windowRect: { width: number; height: number; x: number; y: number },
-  elementRect: DOMRect,
+  windowRect: ElementRect,
+  elementRect: ElementRect,
 ): Promise<string> {
   const screens = [];
   const isScreenshotWithoutScrollBar = !(await hasScrollBar(browser));
   const scrollBarWidth = await getScrollBarWidth(browser);
   // NOTE Sometimes viewport has been scrolled somewhere
   const normalizedElementRect = {
-    left: elementRect.left - windowRect.x,
-    right: elementRect.right - windowRect.x,
-    top: elementRect.top - windowRect.y,
-    bottom: elementRect.bottom - windowRect.y,
+    left: elementRect.left - windowRect.left,
+    right: elementRect.left + elementRect.width - windowRect.left,
+    top: elementRect.top - windowRect.top,
+    bottom: elementRect.top + elementRect.height - windowRect.top,
   };
   const isFitHorizontally = windowRect.width >= elementRect.width + normalizedElementRect.left;
   const isFitVertically = windowRect.height >= elementRect.height + normalizedElementRect.top;
@@ -264,41 +272,33 @@ async function takeScreenshot(
     if (!captureElement) {
       screenshot = await browser.takeScreenshot();
     } else {
-      // TODO Fix types
-      const rects = await browser.executeScript<
-        | {
-            elementRect?: DOMRect;
-            // TODO Why we use top/left of x/y. Let's unify it
-            windowRect: { width: number; height: number; x: number; y: number };
-          }
-        | undefined
-        // TODO Check return type
-      >(function (selector: string) {
-        window.scrollTo(0, 0); // TODO Maybe we shold remove same code from `resetMousePosition`
-        // eslint-disable-next-line no-var
-        var element = document.querySelector(selector);
-        if (!element) return;
+      const rects = await browser.executeScript<{ elementRect: ElementRect; windowRect: ElementRect } | undefined>(
+        function (selector: string): { elementRect: ElementRect; windowRect: ElementRect } | undefined {
+          window.scrollTo(0, 0); // TODO Maybe we should remove same code from `resetMousePosition`
+          // eslint-disable-next-line no-var
+          var element = document.querySelector(selector);
+          if (!element) return;
 
-        // eslint-disable-next-line no-var
-        var elementRect = element.getBoundingClientRect();
+          // eslint-disable-next-line no-var
+          var elementRect = element.getBoundingClientRect();
 
-        return {
-          elementRect: {
-            width: elementRect.width,
-            height: elementRect.height,
-            left: elementRect.left,
-            right: elementRect.right,
-            top: elementRect.top,
-            bottom: elementRect.bottom,
-          },
-          windowRect: {
-            width: window.innerWidth,
-            height: window.innerHeight,
-            x: Math.round(window.scrollX || window.pageXOffset),
-            y: Math.round(window.scrollY || window.pageYOffset),
-          },
-        };
-      }, captureElement);
+          return {
+            elementRect: {
+              top: elementRect.top,
+              left: elementRect.left,
+              width: elementRect.width,
+              height: elementRect.height,
+            },
+            windowRect: {
+              top: Math.round(window.scrollY || window.pageYOffset),
+              left: Math.round(window.scrollX || window.pageXOffset),
+              width: window.innerWidth,
+              height: window.innerHeight,
+            },
+          };
+        },
+        captureElement,
+      );
       const { elementRect, windowRect } = rects ?? {};
 
       if (!elementRect || !windowRect) throw new Error(`Couldn't find element with selector: '${captureElement}'`);

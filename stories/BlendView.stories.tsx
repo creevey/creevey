@@ -10,7 +10,7 @@ export default {
   title: 'BlendView',
   parameters: {
     creevey: {
-      delay: 100,
+      waitForReady: true,
       captureElement: '#root > *',
     },
   },
