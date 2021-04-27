@@ -88,7 +88,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/settings/about.stories.js",
+        "fileName": "./lib/ui/src/settings/about.stories.js",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -186,7 +186,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/settings/about.stories.js",
+        "fileName": "./lib/ui/src/settings/about.stories.js",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -284,7 +284,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/settings/about.stories.js",
+        "fileName": "./lib/ui/src/settings/about.stories.js",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -382,7 +382,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/settings/about.stories.js",
+        "fileName": "./lib/ui/src/settings/about.stories.js",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -479,7 +479,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/Badge/Badge.stories.tsx",
+        "fileName": "./lib/components/src/Badge/Badge.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -576,7 +576,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/Button/Button.stories.tsx",
+        "fileName": "./lib/components/src/Button/Button.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -674,7 +674,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/brand/StorybookIcon.stories.tsx",
+        "fileName": "./lib/components/src/brand/StorybookIcon.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -772,7 +772,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/form/form.stories.tsx",
+        "fileName": "./lib/components/src/form/form.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -870,7 +870,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/form/form.stories.tsx",
+        "fileName": "./lib/components/src/form/form.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -968,7 +968,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/form/form.stories.tsx",
+        "fileName": "./lib/components/src/form/form.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -1066,7 +1066,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/form/form.stories.tsx",
+        "fileName": "./lib/components/src/form/form.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -1164,7 +1164,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/form/form.stories.tsx",
+        "fileName": "./lib/components/src/form/form.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -1262,7 +1262,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/form/form.stories.tsx",
+        "fileName": "./lib/components/src/form/form.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -1360,7 +1360,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/form/form.stories.tsx",
+        "fileName": "./lib/components/src/form/form.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -1458,7 +1458,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/form/form.stories.tsx",
+        "fileName": "./lib/components/src/form/form.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -1556,7 +1556,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/form/form.stories.tsx",
+        "fileName": "./lib/components/src/form/form.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -1654,7 +1654,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/form/form.stories.tsx",
+        "fileName": "./lib/components/src/form/form.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -1752,7 +1752,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/form/form.stories.tsx",
+        "fileName": "./lib/components/src/form/form.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -1850,7 +1850,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/form/form.stories.tsx",
+        "fileName": "./lib/components/src/form/form.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -1947,7 +1947,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/icon/icon.stories.tsx",
+        "fileName": "./lib/components/src/icon/icon.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -2044,7 +2044,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/icon/icon.stories.tsx",
+        "fileName": "./lib/components/src/icon/icon.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -2141,7 +2141,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/spaced/Spaced.stories.tsx",
+        "fileName": "./lib/components/src/spaced/Spaced.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -2238,7 +2238,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/spaced/Spaced.stories.tsx",
+        "fileName": "./lib/components/src/spaced/Spaced.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -2335,7 +2335,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/spaced/Spaced.stories.tsx",
+        "fileName": "./lib/components/src/spaced/Spaced.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -2432,7 +2432,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/spaced/Spaced.stories.tsx",
+        "fileName": "./lib/components/src/spaced/Spaced.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -2529,7 +2529,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/spaced/Spaced.stories.tsx",
+        "fileName": "./lib/components/src/spaced/Spaced.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -2626,7 +2626,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/syntaxhighlighter/syntaxhighlighter.stories.tsx",
+        "fileName": "./lib/components/src/syntaxhighlighter/syntaxhighlighter.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -2723,7 +2723,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/syntaxhighlighter/syntaxhighlighter.stories.tsx",
+        "fileName": "./lib/components/src/syntaxhighlighter/syntaxhighlighter.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -2820,7 +2820,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/syntaxhighlighter/syntaxhighlighter.stories.tsx",
+        "fileName": "./lib/components/src/syntaxhighlighter/syntaxhighlighter.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -2917,7 +2917,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/syntaxhighlighter/syntaxhighlighter.stories.tsx",
+        "fileName": "./lib/components/src/syntaxhighlighter/syntaxhighlighter.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -3014,7 +3014,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/syntaxhighlighter/syntaxhighlighter.stories.tsx",
+        "fileName": "./lib/components/src/syntaxhighlighter/syntaxhighlighter.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -3111,7 +3111,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/syntaxhighlighter/syntaxhighlighter.stories.tsx",
+        "fileName": "./lib/components/src/syntaxhighlighter/syntaxhighlighter.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -3208,7 +3208,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/syntaxhighlighter/syntaxhighlighter.stories.tsx",
+        "fileName": "./lib/components/src/syntaxhighlighter/syntaxhighlighter.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -3305,7 +3305,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/syntaxhighlighter/syntaxhighlighter.stories.tsx",
+        "fileName": "./lib/components/src/syntaxhighlighter/syntaxhighlighter.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -3402,7 +3402,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/syntaxhighlighter/syntaxhighlighter.stories.tsx",
+        "fileName": "./lib/components/src/syntaxhighlighter/syntaxhighlighter.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -3499,7 +3499,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/syntaxhighlighter/syntaxhighlighter.stories.tsx",
+        "fileName": "./lib/components/src/syntaxhighlighter/syntaxhighlighter.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -3596,7 +3596,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/syntaxhighlighter/syntaxhighlighter.stories.tsx",
+        "fileName": "./lib/components/src/syntaxhighlighter/syntaxhighlighter.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -3693,7 +3693,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/syntaxhighlighter/syntaxhighlighter.stories.tsx",
+        "fileName": "./lib/components/src/syntaxhighlighter/syntaxhighlighter.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -3790,7 +3790,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/syntaxhighlighter/syntaxhighlighter.stories.tsx",
+        "fileName": "./lib/components/src/syntaxhighlighter/syntaxhighlighter.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -3887,7 +3887,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/syntaxhighlighter/syntaxhighlighter.stories.tsx",
+        "fileName": "./lib/components/src/syntaxhighlighter/syntaxhighlighter.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -3984,7 +3984,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/tabs/tabs.stories.tsx",
+        "fileName": "./lib/components/src/tabs/tabs.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -4081,7 +4081,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/tabs/tabs.stories.tsx",
+        "fileName": "./lib/components/src/tabs/tabs.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -4178,7 +4178,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/tabs/tabs.stories.tsx",
+        "fileName": "./lib/components/src/tabs/tabs.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -4275,7 +4275,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/tabs/tabs.stories.tsx",
+        "fileName": "./lib/components/src/tabs/tabs.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -4372,7 +4372,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/tabs/tabs.stories.tsx",
+        "fileName": "./lib/components/src/tabs/tabs.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -4469,7 +4469,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/tabs/tabs.stories.tsx",
+        "fileName": "./lib/components/src/tabs/tabs.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -4566,7 +4566,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/tabs/tabs.stories.tsx",
+        "fileName": "./lib/components/src/tabs/tabs.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -4663,7 +4663,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/tabs/tabs.stories.tsx",
+        "fileName": "./lib/components/src/tabs/tabs.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -4760,7 +4760,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/tabs/tabs.stories.tsx",
+        "fileName": "./lib/components/src/tabs/tabs.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -4857,7 +4857,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/tabs/tabs.stories.tsx",
+        "fileName": "./lib/components/src/tabs/tabs.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -4955,7 +4955,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/tooltip/ListItem.stories.tsx",
+        "fileName": "./lib/components/src/tooltip/ListItem.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -5053,7 +5053,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/tooltip/ListItem.stories.tsx",
+        "fileName": "./lib/components/src/tooltip/ListItem.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -5151,7 +5151,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/tooltip/ListItem.stories.tsx",
+        "fileName": "./lib/components/src/tooltip/ListItem.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -5249,7 +5249,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/tooltip/ListItem.stories.tsx",
+        "fileName": "./lib/components/src/tooltip/ListItem.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -5347,7 +5347,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/tooltip/ListItem.stories.tsx",
+        "fileName": "./lib/components/src/tooltip/ListItem.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -5445,7 +5445,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/tooltip/ListItem.stories.tsx",
+        "fileName": "./lib/components/src/tooltip/ListItem.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -5543,7 +5543,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/tooltip/ListItem.stories.tsx",
+        "fileName": "./lib/components/src/tooltip/ListItem.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -5641,7 +5641,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/tooltip/ListItem.stories.tsx",
+        "fileName": "./lib/components/src/tooltip/ListItem.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -5739,7 +5739,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/tooltip/Tooltip.stories.tsx",
+        "fileName": "./lib/components/src/tooltip/Tooltip.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -5837,7 +5837,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/tooltip/Tooltip.stories.tsx",
+        "fileName": "./lib/components/src/tooltip/Tooltip.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -5935,7 +5935,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/tooltip/Tooltip.stories.tsx",
+        "fileName": "./lib/components/src/tooltip/Tooltip.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -6033,7 +6033,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/tooltip/Tooltip.stories.tsx",
+        "fileName": "./lib/components/src/tooltip/Tooltip.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -6131,7 +6131,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/tooltip/Tooltip.stories.tsx",
+        "fileName": "./lib/components/src/tooltip/Tooltip.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -6229,7 +6229,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/tooltip/TooltipLinkList.stories.tsx",
+        "fileName": "./lib/components/src/tooltip/TooltipLinkList.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -6327,7 +6327,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/tooltip/TooltipLinkList.stories.tsx",
+        "fileName": "./lib/components/src/tooltip/TooltipLinkList.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -6425,7 +6425,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/tooltip/TooltipMessage.stories.tsx",
+        "fileName": "./lib/components/src/tooltip/TooltipMessage.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -6523,7 +6523,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/tooltip/TooltipMessage.stories.tsx",
+        "fileName": "./lib/components/src/tooltip/TooltipMessage.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -6621,7 +6621,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/tooltip/TooltipMessage.stories.tsx",
+        "fileName": "./lib/components/src/tooltip/TooltipMessage.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -6719,7 +6719,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/tooltip/TooltipMessage.stories.tsx",
+        "fileName": "./lib/components/src/tooltip/TooltipMessage.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -6817,7 +6817,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/tooltip/TooltipNote.stories.tsx",
+        "fileName": "./lib/components/src/tooltip/TooltipNote.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -6915,7 +6915,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/tooltip/WithTooltip.stories.tsx",
+        "fileName": "./lib/components/src/tooltip/WithTooltip.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -7013,7 +7013,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/tooltip/WithTooltip.stories.tsx",
+        "fileName": "./lib/components/src/tooltip/WithTooltip.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -7111,7 +7111,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/tooltip/WithTooltip.stories.tsx",
+        "fileName": "./lib/components/src/tooltip/WithTooltip.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -7209,7 +7209,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/tooltip/WithTooltip.stories.tsx",
+        "fileName": "./lib/components/src/tooltip/WithTooltip.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -7307,7 +7307,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/tooltip/WithTooltip.stories.tsx",
+        "fileName": "./lib/components/src/tooltip/WithTooltip.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -7405,7 +7405,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/tooltip/WithTooltip.stories.tsx",
+        "fileName": "./lib/components/src/tooltip/WithTooltip.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -7502,7 +7502,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/typography/link/link.stories.tsx",
+        "fileName": "./lib/components/src/typography/link/link.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -7599,7 +7599,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/typography/link/link.stories.tsx",
+        "fileName": "./lib/components/src/typography/link/link.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -7696,7 +7696,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/typography/link/link.stories.tsx",
+        "fileName": "./lib/components/src/typography/link/link.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -7793,7 +7793,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/typography/link/link.stories.tsx",
+        "fileName": "./lib/components/src/typography/link/link.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -7890,7 +7890,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/typography/link/link.stories.tsx",
+        "fileName": "./lib/components/src/typography/link/link.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -7987,7 +7987,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/typography/typography.stories.tsx",
+        "fileName": "./lib/components/src/typography/typography.stories.tsx",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -8084,7 +8084,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/unicode.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/unicode.stories.js",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -8181,7 +8181,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/unicode.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/unicode.stories.js",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -8278,7 +8278,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/unicode.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/unicode.stories.js",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -8376,7 +8376,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/unicode.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/unicode.stories.js",
         "argTypes": {},
         "__isArgsStory": false
       },
@@ -8473,7 +8473,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/app.stories.tsx",
+        "fileName": "./lib/ui/src/app.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-app--default",
@@ -8572,7 +8572,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/app.stories.tsx",
+        "fileName": "./lib/ui/src/app.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-app--loading-state",
@@ -8672,7 +8672,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/layout/desktop.stories.tsx",
+        "fileName": "./lib/ui/src/components/layout/desktop.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-layout-desktop--default",
@@ -8772,7 +8772,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/layout/desktop.stories.tsx",
+        "fileName": "./lib/ui/src/components/layout/desktop.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-layout-desktop--no-addons",
@@ -8872,7 +8872,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/layout/desktop.stories.tsx",
+        "fileName": "./lib/ui/src/components/layout/desktop.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-layout-desktop--no-sidebar",
@@ -8972,7 +8972,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/layout/desktop.stories.tsx",
+        "fileName": "./lib/ui/src/components/layout/desktop.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-layout-desktop--no-panel",
@@ -9072,7 +9072,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/layout/desktop.stories.tsx",
+        "fileName": "./lib/ui/src/components/layout/desktop.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-layout-desktop--bottom-panel",
@@ -9172,7 +9172,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/layout/desktop.stories.tsx",
+        "fileName": "./lib/ui/src/components/layout/desktop.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-layout-desktop--fullscreen",
@@ -9272,7 +9272,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/layout/desktop.stories.tsx",
+        "fileName": "./lib/ui/src/components/layout/desktop.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-layout-desktop--no-panel-no-sidebar",
@@ -9372,7 +9372,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/layout/desktop.stories.tsx",
+        "fileName": "./lib/ui/src/components/layout/desktop.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-layout-desktop--page",
@@ -9472,7 +9472,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/layout/mobile.stories.tsx",
+        "fileName": "./lib/ui/src/components/layout/mobile.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-layout-mobile--initial-sidebar",
@@ -9572,7 +9572,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/layout/mobile.stories.tsx",
+        "fileName": "./lib/ui/src/components/layout/mobile.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-layout-mobile--initial-canvas",
@@ -9672,7 +9672,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/layout/mobile.stories.tsx",
+        "fileName": "./lib/ui/src/components/layout/mobile.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-layout-mobile--initial-addons",
@@ -9772,7 +9772,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/layout/mobile.stories.tsx",
+        "fileName": "./lib/ui/src/components/layout/mobile.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-layout-mobile--page",
@@ -9872,7 +9872,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/notifications/NotificationItem.stories.js",
+        "fileName": "./lib/ui/src/components/notifications/NotificationItem.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "ui-notifications-notificationitem--simple",
@@ -9972,7 +9972,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/notifications/NotificationItem.stories.js",
+        "fileName": "./lib/ui/src/components/notifications/NotificationItem.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "ui-notifications-notificationitem--long-headline",
@@ -10072,7 +10072,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/notifications/NotificationItem.stories.js",
+        "fileName": "./lib/ui/src/components/notifications/NotificationItem.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "ui-notifications-notificationitem--link",
@@ -10172,7 +10172,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/notifications/NotificationItem.stories.js",
+        "fileName": "./lib/ui/src/components/notifications/NotificationItem.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "ui-notifications-notificationitem--link-icon-with-color",
@@ -10272,7 +10272,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/notifications/NotificationItem.stories.js",
+        "fileName": "./lib/ui/src/components/notifications/NotificationItem.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "ui-notifications-notificationitem--link-icon-with-color-sub-headline",
@@ -10372,7 +10372,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/notifications/NotificationItem.stories.js",
+        "fileName": "./lib/ui/src/components/notifications/NotificationItem.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "ui-notifications-notificationitem--book-icon",
@@ -10472,7 +10472,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/notifications/NotificationItem.stories.js",
+        "fileName": "./lib/ui/src/components/notifications/NotificationItem.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "ui-notifications-notificationitem--strong-sub-headline",
@@ -10572,7 +10572,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/notifications/NotificationItem.stories.js",
+        "fileName": "./lib/ui/src/components/notifications/NotificationItem.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "ui-notifications-notificationitem--strong-emphasized-sub-headline",
@@ -10672,7 +10672,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/notifications/NotificationItem.stories.js",
+        "fileName": "./lib/ui/src/components/notifications/NotificationItem.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "ui-notifications-notificationitem--book-icon-sub-headline",
@@ -10772,7 +10772,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/notifications/NotificationItem.stories.js",
+        "fileName": "./lib/ui/src/components/notifications/NotificationItem.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "ui-notifications-notificationitem--book-icon-long-sub-headline",
@@ -10872,7 +10872,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/notifications/NotificationItem.stories.js",
+        "fileName": "./lib/ui/src/components/notifications/NotificationItem.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "ui-notifications-notificationitem--accessibility-icon",
@@ -10972,7 +10972,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/notifications/NotificationItem.stories.js",
+        "fileName": "./lib/ui/src/components/notifications/NotificationItem.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "ui-notifications-notificationitem--accessibility-gold-icon",
@@ -11072,7 +11072,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/notifications/NotificationItem.stories.js",
+        "fileName": "./lib/ui/src/components/notifications/NotificationItem.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "ui-notifications-notificationitem--accessibility-gold-icon-long-head-line-no-sub-headline",
@@ -11172,7 +11172,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/notifications/NotificationList.stories.js",
+        "fileName": "./lib/ui/src/components/notifications/NotificationList.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "ui-notifications-notificationlist--single",
@@ -11272,7 +11272,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/notifications/NotificationList.stories.js",
+        "fileName": "./lib/ui/src/components/notifications/NotificationList.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "ui-notifications-notificationlist--all",
@@ -11372,7 +11372,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/notifications/NotificationList.stories.js",
+        "fileName": "./lib/ui/src/components/notifications/NotificationList.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "ui-notifications-notificationlist--placement",
@@ -11471,7 +11471,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/panel/panel.stories.tsx",
+        "fileName": "./lib/ui/src/components/panel/panel.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-panel--default",
@@ -11570,7 +11570,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/panel/panel.stories.tsx",
+        "fileName": "./lib/ui/src/components/panel/panel.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-panel--no-panels",
@@ -11669,7 +11669,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/preview/iframe.stories.tsx",
+        "fileName": "./lib/ui/src/components/preview/iframe.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-iframe--working-story",
@@ -11768,7 +11768,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/preview/iframe.stories.tsx",
+        "fileName": "./lib/ui/src/components/preview/iframe.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-iframe--missing-story",
@@ -11867,7 +11867,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/preview/preview.stories.tsx",
+        "fileName": "./lib/ui/src/components/preview/preview.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-preview--no-tabs",
@@ -11966,7 +11966,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/preview/preview.stories.tsx",
+        "fileName": "./lib/ui/src/components/preview/preview.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-preview--with-tabs",
@@ -12066,7 +12066,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/Explorer.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/Explorer.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-explorer--simple",
@@ -12166,7 +12166,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/Explorer.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/Explorer.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-explorer--with-refs",
@@ -12266,7 +12266,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/Heading.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/Heading.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-heading--menu-highlighted",
@@ -12366,7 +12366,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/Heading.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/Heading.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-heading--standard",
@@ -12466,7 +12466,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/Heading.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/Heading.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-heading--standard-no-link",
@@ -12566,7 +12566,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/Heading.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/Heading.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-heading--link-and-text",
@@ -12666,7 +12666,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/Heading.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/Heading.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-heading--only-text",
@@ -12766,7 +12766,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/Heading.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/Heading.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-heading--long-text",
@@ -12866,7 +12866,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/Heading.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/Heading.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-heading--custom-brand-image",
@@ -12966,7 +12966,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/Heading.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/Heading.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-heading--custom-brand-image-tall",
@@ -13066,7 +13066,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/Heading.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/Heading.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-heading--custom-brand-image-unsized-svg",
@@ -13166,7 +13166,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/Heading.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/Heading.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-heading--no-brand",
@@ -13266,7 +13266,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/Menu.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/Menu.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-menu--items",
@@ -13366,7 +13366,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/Menu.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/Menu.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-menu--real",
@@ -13466,7 +13466,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/Menu.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/Menu.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-menu--expanded",
@@ -13566,7 +13566,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/Menu.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/Menu.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-menu--expanded-without-release-notes",
@@ -13666,7 +13666,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/Refs.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/Refs.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-refs--optimized",
@@ -13766,7 +13766,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/Refs.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/Refs.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-refs--is-empty",
@@ -13866,7 +13866,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/Refs.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/Refs.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-refs--start-injected-unknown",
@@ -13966,7 +13966,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/Refs.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/Refs.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-refs--start-injected-loading",
@@ -14066,7 +14066,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/Refs.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/Refs.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-refs--start-injected-ready",
@@ -14166,7 +14166,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/Refs.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/Refs.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-refs--versions",
@@ -14266,7 +14266,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/Refs.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/Refs.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-refs--versions-missing-current",
@@ -14366,7 +14366,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/Refs.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/Refs.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-refs--errored",
@@ -14466,7 +14466,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/Refs.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/Refs.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-refs--auth",
@@ -14566,7 +14566,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/Refs.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/Refs.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-refs--long",
@@ -14666,7 +14666,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/Search.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/Search.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-search--simple",
@@ -14766,7 +14766,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/Search.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/Search.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-search--filled-in",
@@ -14866,7 +14866,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/Search.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/Search.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-search--last-viewed",
@@ -14966,7 +14966,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/Search.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/Search.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-search--shortcuts-disabled",
@@ -15066,7 +15066,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/SearchResults.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/SearchResults.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-searchresults--searching",
@@ -15166,7 +15166,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/SearchResults.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/SearchResults.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-searchresults--no-results",
@@ -15266,7 +15266,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/SearchResults.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/SearchResults.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-searchresults--last-viewed",
@@ -15366,7 +15366,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/Sidebar.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/Sidebar.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-sidebar--simple",
@@ -15466,7 +15466,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/Sidebar.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/Sidebar.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-sidebar--loading",
@@ -15566,7 +15566,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/Sidebar.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/Sidebar.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-sidebar--empty",
@@ -15666,7 +15666,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/Sidebar.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/Sidebar.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-sidebar--with-refs",
@@ -15766,7 +15766,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/Sidebar.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/Sidebar.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-sidebar--loading-with-refs",
@@ -15866,7 +15866,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/Tree.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/Tree.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-tree--full",
@@ -15966,7 +15966,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/Tree.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/Tree.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-tree--single-story-components",
@@ -16066,7 +16066,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/TreeNode.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/TreeNode.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-treenode--types",
@@ -16166,7 +16166,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/TreeNode.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/TreeNode.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-treenode--expandable",
@@ -16266,7 +16266,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/TreeNode.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/TreeNode.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-treenode--nested",
@@ -16366,7 +16366,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/components/sidebar/TreeNode.stories.tsx",
+        "fileName": "./lib/ui/src/components/sidebar/TreeNode.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-sidebar-treenode--selection",
@@ -16465,7 +16465,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/containers/panel.stories.tsx",
+        "fileName": "./lib/ui/src/containers/panel.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-addon-panel--all-addons",
@@ -16564,7 +16564,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/containers/panel.stories.tsx",
+        "fileName": "./lib/ui/src/containers/panel.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-addon-panel--filtered-addons",
@@ -16664,7 +16664,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/settings/SettingsFooter.stories.tsx",
+        "fileName": "./lib/ui/src/settings/SettingsFooter.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-settings-settingsfooter--basic",
@@ -16764,7 +16764,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/settings/release_notes.stories.tsx",
+        "fileName": "./lib/ui/src/settings/release_notes.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-settings-releasenotes--loading",
@@ -16864,7 +16864,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/settings/release_notes.stories.tsx",
+        "fileName": "./lib/ui/src/settings/release_notes.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-settings-releasenotes--did-hit-max-wait-time",
@@ -16964,7 +16964,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/ui/src/settings/shortcuts.stories.tsx",
+        "fileName": "./lib/ui/src/settings/shortcuts.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "ui-settings-shortcutsscreen--defaults",
@@ -17063,7 +17063,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/ActionBar/ActionBar.stories.tsx",
+        "fileName": "./lib/components/src/ActionBar/ActionBar.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "basics-actionbar--single-item",
@@ -17162,7 +17162,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/ActionBar/ActionBar.stories.tsx",
+        "fileName": "./lib/components/src/ActionBar/ActionBar.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "basics-actionbar--many-items",
@@ -17261,7 +17261,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/Colors/colorpalette.stories.mdx",
+        "fileName": "./lib/components/src/Colors/colorpalette.stories.mdx",
         "args": {},
         "argTypes": {},
         "docsOnly": true,
@@ -17361,7 +17361,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/Loader/Loader.stories.tsx",
+        "fileName": "./lib/components/src/Loader/Loader.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "basics-loader--infinite-state",
@@ -17460,7 +17460,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/Loader/Loader.stories.tsx",
+        "fileName": "./lib/components/src/Loader/Loader.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "basics-loader--size-adjusted",
@@ -17559,7 +17559,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/Loader/Loader.stories.tsx",
+        "fileName": "./lib/components/src/Loader/Loader.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "basics-loader--progress-bar",
@@ -17658,7 +17658,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/Loader/Loader.stories.tsx",
+        "fileName": "./lib/components/src/Loader/Loader.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "basics-loader--progress-error",
@@ -17757,7 +17757,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/ScrollArea/ScrollArea.stories.tsx",
+        "fileName": "./lib/components/src/ScrollArea/ScrollArea.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "basics-scrollarea--vertical",
@@ -17856,7 +17856,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/ScrollArea/ScrollArea.stories.tsx",
+        "fileName": "./lib/components/src/ScrollArea/ScrollArea.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "basics-scrollarea--horizontal",
@@ -17955,7 +17955,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/ScrollArea/ScrollArea.stories.tsx",
+        "fileName": "./lib/components/src/ScrollArea/ScrollArea.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "basics-scrollarea--both",
@@ -18054,7 +18054,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/ScrollArea/ScrollArea.stories.tsx",
+        "fileName": "./lib/components/src/ScrollArea/ScrollArea.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "basics-scrollarea--with-outer-border",
@@ -18153,7 +18153,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/Zoom/Zoom.stories.tsx",
+        "fileName": "./lib/components/src/Zoom/Zoom.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "basics-zoom--element-actual-size",
@@ -18252,7 +18252,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/Zoom/Zoom.stories.tsx",
+        "fileName": "./lib/components/src/Zoom/Zoom.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "basics-zoom--element-zoomed-in",
@@ -18351,7 +18351,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/Zoom/Zoom.stories.tsx",
+        "fileName": "./lib/components/src/Zoom/Zoom.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "basics-zoom--element-zoomed-out",
@@ -18450,7 +18450,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/Zoom/Zoom.stories.tsx",
+        "fileName": "./lib/components/src/Zoom/Zoom.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "basics-zoom--i-frame-actual-size",
@@ -18549,7 +18549,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/Zoom/Zoom.stories.tsx",
+        "fileName": "./lib/components/src/Zoom/Zoom.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "basics-zoom--i-frame-zoomed-in",
@@ -18648,7 +18648,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/Zoom/Zoom.stories.tsx",
+        "fileName": "./lib/components/src/Zoom/Zoom.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "basics-zoom--i-frame-zoomed-out",
@@ -18747,7 +18747,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-argrow--string",
@@ -18846,7 +18846,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-argrow--long-name",
@@ -18945,7 +18945,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-argrow--long-desc",
@@ -19044,7 +19044,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-argrow--boolean",
@@ -19143,7 +19143,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-argrow--color",
@@ -19242,7 +19242,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-argrow--date",
@@ -19341,7 +19341,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-argrow--number",
@@ -19440,7 +19440,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-argrow--range",
@@ -19539,7 +19539,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-argrow--radio",
@@ -19638,7 +19638,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-argrow--inline-radio",
@@ -19737,7 +19737,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-argrow--check",
@@ -19836,7 +19836,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-argrow--inline-check",
@@ -19935,7 +19935,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-argrow--select",
@@ -20034,7 +20034,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-argrow--multi-select",
@@ -20133,7 +20133,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-argrow--object-of",
@@ -20232,7 +20232,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-argrow--array-of",
@@ -20331,7 +20331,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-argrow--complex-object",
@@ -20430,7 +20430,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-argrow--func",
@@ -20529,7 +20529,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-argrow--enum",
@@ -20628,7 +20628,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-argrow--long-enum",
@@ -20727,7 +20727,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-argrow--complex-union",
@@ -20826,7 +20826,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-argrow--markdown",
@@ -20925,7 +20925,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-argrow--string-compact",
@@ -21024,7 +21024,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-argrow--string-no-controls",
@@ -21123,7 +21123,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/ArgRow.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-argrow--string-no-controls-compact",
@@ -21222,7 +21222,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/ArgsTable.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/ArgsTable.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-argstable--normal",
@@ -21321,7 +21321,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/ArgsTable.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/ArgsTable.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-argstable--compact",
@@ -21420,7 +21420,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/ArgsTable.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/ArgsTable.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-argstable--in-addon-panel",
@@ -21519,7 +21519,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/ArgsTable.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/ArgsTable.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-argstable--in-addon-panel-with-warning",
@@ -21618,7 +21618,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/ArgsTable.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/ArgsTable.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-argstable--sections",
@@ -21717,7 +21717,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/ArgsTable.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/ArgsTable.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-argstable--sections-compact",
@@ -21816,7 +21816,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/ArgsTable.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/ArgsTable.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-argstable--sections-and-subsections",
@@ -21915,7 +21915,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/ArgsTable.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/ArgsTable.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-argstable--subsections-only",
@@ -22014,7 +22014,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/ArgsTable.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/ArgsTable.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-argstable--all-controls",
@@ -22113,7 +22113,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/ArgsTable.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/ArgsTable.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-argstable--error",
@@ -22212,7 +22212,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/ArgsTable.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/ArgsTable.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-argstable--empty",
@@ -22311,7 +22311,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/ArgsTable.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/ArgsTable.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-argstable--with-default-expanded-args",
@@ -22410,7 +22410,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/SectionRow.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/SectionRow.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-sectionrow--section",
@@ -22509,7 +22509,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/SectionRow.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/SectionRow.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-sectionrow--subsection",
@@ -22608,7 +22608,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/SectionRow.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/SectionRow.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-sectionrow--collapsed",
@@ -22707,7 +22707,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/SectionRow.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/SectionRow.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-sectionrow--nested",
@@ -22806,7 +22806,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/TabbedArgsTable.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/TabbedArgsTable.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-tabbedargstable--tabs",
@@ -22905,7 +22905,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/TabbedArgsTable.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/TabbedArgsTable.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-tabbedargstable--tabs-in-addon-panel",
@@ -23004,7 +23004,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ArgsTable/TabbedArgsTable.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ArgsTable/TabbedArgsTable.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-tabbedargstable--empty",
@@ -23103,7 +23103,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ColorPalette.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ColorPalette.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-colorpalette--default-style",
@@ -23202,7 +23202,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/ColorPalette.stories.tsx",
+        "fileName": "./lib/components/src/blocks/ColorPalette.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-colorpalette--named-colors",
@@ -23301,7 +23301,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/Description.stories.tsx",
+        "fileName": "./lib/components/src/blocks/Description.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-description--text",
@@ -23400,7 +23400,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/Description.stories.tsx",
+        "fileName": "./lib/components/src/blocks/Description.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-description--markdown",
@@ -23499,7 +23499,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/Description.stories.tsx",
+        "fileName": "./lib/components/src/blocks/Description.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-description--markdown-links",
@@ -23598,7 +23598,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/DocsPage.stories.tsx",
+        "fileName": "./lib/components/src/blocks/DocsPage.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-docspage--with-subtitle",
@@ -23697,7 +23697,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/DocsPage.stories.tsx",
+        "fileName": "./lib/components/src/blocks/DocsPage.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-docspage--empty",
@@ -23796,7 +23796,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/DocsPage.stories.tsx",
+        "fileName": "./lib/components/src/blocks/DocsPage.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-docspage--no-text",
@@ -23895,7 +23895,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/DocsPage.stories.tsx",
+        "fileName": "./lib/components/src/blocks/DocsPage.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-docspage--text",
@@ -23994,7 +23994,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/DocsPage.stories.tsx",
+        "fileName": "./lib/components/src/blocks/DocsPage.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-docspage--markdown",
@@ -24093,7 +24093,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/EmptyBlock.stories.tsx",
+        "fileName": "./lib/components/src/blocks/EmptyBlock.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-emptyblock--error",
@@ -24192,7 +24192,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/IconGallery.stories.tsx",
+        "fileName": "./lib/components/src/blocks/IconGallery.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-icongallery--default-style",
@@ -24291,7 +24291,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/Preview.stories.tsx",
+        "fileName": "./lib/components/src/blocks/Preview.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-preview--code-collapsed",
@@ -24390,7 +24390,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/Preview.stories.tsx",
+        "fileName": "./lib/components/src/blocks/Preview.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-preview--code-expanded",
@@ -24489,7 +24489,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/Preview.stories.tsx",
+        "fileName": "./lib/components/src/blocks/Preview.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-preview--code-error",
@@ -24588,7 +24588,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/Preview.stories.tsx",
+        "fileName": "./lib/components/src/blocks/Preview.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-preview--single",
@@ -24687,7 +24687,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/Preview.stories.tsx",
+        "fileName": "./lib/components/src/blocks/Preview.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-preview--row",
@@ -24786,7 +24786,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/Preview.stories.tsx",
+        "fileName": "./lib/components/src/blocks/Preview.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-preview--column",
@@ -24885,7 +24885,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/Preview.stories.tsx",
+        "fileName": "./lib/components/src/blocks/Preview.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-preview--grid-with-3-columns",
@@ -24984,7 +24984,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/Preview.stories.tsx",
+        "fileName": "./lib/components/src/blocks/Preview.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-preview--with-toolbar",
@@ -25083,7 +25083,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/Preview.stories.tsx",
+        "fileName": "./lib/components/src/blocks/Preview.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-preview--wide",
@@ -25182,7 +25182,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/Preview.stories.tsx",
+        "fileName": "./lib/components/src/blocks/Preview.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-preview--with-toolbar-multi",
@@ -25281,7 +25281,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/Preview.stories.tsx",
+        "fileName": "./lib/components/src/blocks/Preview.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-preview--with-fullscreen-single",
@@ -25380,7 +25380,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/Preview.stories.tsx",
+        "fileName": "./lib/components/src/blocks/Preview.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-preview--with-fullscreen-multi",
@@ -25479,7 +25479,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/Preview.stories.tsx",
+        "fileName": "./lib/components/src/blocks/Preview.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-preview--with-centered-single",
@@ -25578,7 +25578,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/Preview.stories.tsx",
+        "fileName": "./lib/components/src/blocks/Preview.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-preview--with-centered-multi",
@@ -25677,7 +25677,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/Preview.stories.tsx",
+        "fileName": "./lib/components/src/blocks/Preview.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-preview--with-additional-actions",
@@ -25776,7 +25776,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/Source.stories.tsx",
+        "fileName": "./lib/components/src/blocks/Source.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-source--jsx",
@@ -25875,7 +25875,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/Source.stories.tsx",
+        "fileName": "./lib/components/src/blocks/Source.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-source--css",
@@ -25974,7 +25974,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/Source.stories.tsx",
+        "fileName": "./lib/components/src/blocks/Source.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-source--no-story",
@@ -26073,7 +26073,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/Source.stories.tsx",
+        "fileName": "./lib/components/src/blocks/Source.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-source--source-unavailable",
@@ -26172,7 +26172,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/Story.stories.tsx",
+        "fileName": "./lib/components/src/blocks/Story.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-story--inline",
@@ -26271,7 +26271,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/Story.stories.tsx",
+        "fileName": "./lib/components/src/blocks/Story.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-story--error",
@@ -26370,7 +26370,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/Story.stories.tsx",
+        "fileName": "./lib/components/src/blocks/Story.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-story--react-hook",
@@ -26469,7 +26469,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/Typeset.stories.tsx",
+        "fileName": "./lib/components/src/blocks/Typeset.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-typeset--with-font-sizes",
@@ -26568,7 +26568,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/Typeset.stories.tsx",
+        "fileName": "./lib/components/src/blocks/Typeset.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-typeset--with-font-weight",
@@ -26667,7 +26667,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/Typeset.stories.tsx",
+        "fileName": "./lib/components/src/blocks/Typeset.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-typeset--with-font-family",
@@ -26766,7 +26766,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/blocks/Typeset.stories.tsx",
+        "fileName": "./lib/components/src/blocks/Typeset.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "docs-typeset--with-weight-text",
@@ -26866,7 +26866,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/brand/StorybookLogo.stories.tsx",
+        "fileName": "./lib/components/src/brand/StorybookLogo.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "basics-brand-storybooklogo--normal",
@@ -26965,7 +26965,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/controls/Array.stories.tsx",
+        "fileName": "./lib/components/src/controls/Array.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "controls-array--basic",
@@ -27064,7 +27064,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/controls/Array.stories.tsx",
+        "fileName": "./lib/components/src/controls/Array.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "controls-array--undefined",
@@ -27163,7 +27163,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/controls/Boolean.stories.tsx",
+        "fileName": "./lib/components/src/controls/Boolean.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "controls-boolean--basic",
@@ -27262,7 +27262,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/controls/Boolean.stories.tsx",
+        "fileName": "./lib/components/src/controls/Boolean.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "controls-boolean--undefined",
@@ -27361,7 +27361,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/controls/Color.stories.tsx",
+        "fileName": "./lib/components/src/controls/Color.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "controls-color--basic",
@@ -27460,7 +27460,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/controls/Color.stories.tsx",
+        "fileName": "./lib/components/src/controls/Color.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "controls-color--undefined",
@@ -27559,7 +27559,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/controls/Color.stories.tsx",
+        "fileName": "./lib/components/src/controls/Color.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "controls-color--with-preset-colors",
@@ -27658,7 +27658,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/controls/Date.stories.tsx",
+        "fileName": "./lib/components/src/controls/Date.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "controls-date--basic",
@@ -27757,7 +27757,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/controls/Date.stories.tsx",
+        "fileName": "./lib/components/src/controls/Date.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "controls-date--undefined",
@@ -27856,7 +27856,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/controls/Number.stories.tsx",
+        "fileName": "./lib/components/src/controls/Number.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "controls-number--basic",
@@ -27955,7 +27955,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/controls/Number.stories.tsx",
+        "fileName": "./lib/components/src/controls/Number.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "controls-number--undefined",
@@ -28054,7 +28054,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/controls/Object.stories.tsx",
+        "fileName": "./lib/components/src/controls/Object.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "controls-object--basic",
@@ -28153,7 +28153,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/controls/Object.stories.tsx",
+        "fileName": "./lib/components/src/controls/Object.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "controls-object--null",
@@ -28252,7 +28252,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/controls/Object.stories.tsx",
+        "fileName": "./lib/components/src/controls/Object.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "controls-object--undefined",
@@ -28351,7 +28351,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/controls/Object.stories.tsx",
+        "fileName": "./lib/components/src/controls/Object.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "controls-object--validated-as-array",
@@ -28450,7 +28450,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/controls/Range.stories.tsx",
+        "fileName": "./lib/components/src/controls/Range.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "controls-range--basic",
@@ -28549,7 +28549,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/controls/Range.stories.tsx",
+        "fileName": "./lib/components/src/controls/Range.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "controls-range--undefined",
@@ -28648,7 +28648,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/controls/Text.stories.tsx",
+        "fileName": "./lib/components/src/controls/Text.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "controls-text--basic",
@@ -28747,7 +28747,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/controls/Text.stories.tsx",
+        "fileName": "./lib/components/src/controls/Text.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "controls-text--undefined",
@@ -28846,7 +28846,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/controls/options/Options.stories.tsx",
+        "fileName": "./lib/components/src/controls/options/Options.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "controls-options--check-array",
@@ -28945,7 +28945,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/controls/options/Options.stories.tsx",
+        "fileName": "./lib/components/src/controls/options/Options.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "controls-options--inline-check-array",
@@ -29044,7 +29044,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/controls/options/Options.stories.tsx",
+        "fileName": "./lib/components/src/controls/options/Options.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "controls-options--check-object",
@@ -29143,7 +29143,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/controls/options/Options.stories.tsx",
+        "fileName": "./lib/components/src/controls/options/Options.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "controls-options--inline-check-object",
@@ -29242,7 +29242,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/controls/options/Options.stories.tsx",
+        "fileName": "./lib/components/src/controls/options/Options.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "controls-options--array-radio",
@@ -29341,7 +29341,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/controls/options/Options.stories.tsx",
+        "fileName": "./lib/components/src/controls/options/Options.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "controls-options--array-inline-radio",
@@ -29440,7 +29440,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/controls/options/Options.stories.tsx",
+        "fileName": "./lib/components/src/controls/options/Options.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "controls-options--object-radio",
@@ -29539,7 +29539,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/controls/options/Options.stories.tsx",
+        "fileName": "./lib/components/src/controls/options/Options.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "controls-options--object-inline-radio",
@@ -29638,7 +29638,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/controls/options/Options.stories.tsx",
+        "fileName": "./lib/components/src/controls/options/Options.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "controls-options--array-select",
@@ -29737,7 +29737,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/controls/options/Options.stories.tsx",
+        "fileName": "./lib/components/src/controls/options/Options.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "controls-options--array-multi-select",
@@ -29836,7 +29836,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/controls/options/Options.stories.tsx",
+        "fileName": "./lib/components/src/controls/options/Options.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "controls-options--object-select",
@@ -29935,7 +29935,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/controls/options/Options.stories.tsx",
+        "fileName": "./lib/components/src/controls/options/Options.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "controls-options--object-multi-select",
@@ -30034,7 +30034,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/placeholder/placeholder.stories.tsx",
+        "fileName": "./lib/components/src/placeholder/placeholder.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "basics-placeholder--single-child",
@@ -30133,7 +30133,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/placeholder/placeholder.stories.tsx",
+        "fileName": "./lib/components/src/placeholder/placeholder.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "basics-placeholder--two-children",
@@ -30232,7 +30232,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/typography/DocumentWrapper.stories.tsx",
+        "fileName": "./lib/components/src/typography/DocumentWrapper.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "basics-documentformatting--with-markdown",
@@ -30331,7 +30331,7 @@
           }
         },
         "framework": "react",
-        "fileName": "../../lib/components/src/typography/DocumentWrapper.stories.tsx",
+        "fileName": "./lib/components/src/typography/DocumentWrapper.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "basics-documentformatting--with-dom",
@@ -30431,7 +30431,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-a11y/base-button.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-a11y/base-button.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-a11y-basebutton--default",
@@ -30531,7 +30531,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-a11y/base-button.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-a11y/base-button.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-a11y-basebutton--label",
@@ -30631,7 +30631,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-a11y/base-button.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-a11y/base-button.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-a11y-basebutton--disabled",
@@ -30731,7 +30731,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-a11y/base-button.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-a11y/base-button.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-a11y-basebutton--invalid-contrast",
@@ -30831,7 +30831,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-a11y/base-button.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-a11y/base-button.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-a11y-basebutton--delayed-render",
@@ -30931,7 +30931,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-a11y/button.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-a11y/button.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-a11y-button--default",
@@ -31031,7 +31031,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-a11y/button.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-a11y/button.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-a11y-button--content",
@@ -31131,7 +31131,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-a11y/button.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-a11y/button.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-a11y-button--label",
@@ -31231,7 +31231,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-a11y/button.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-a11y/button.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-a11y-button--disabled",
@@ -31331,7 +31331,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-a11y/button.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-a11y/button.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-a11y-button--invalid-contrast",
@@ -31431,7 +31431,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-a11y/form.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-a11y/form.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-a11y-form--without-label",
@@ -31531,7 +31531,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-a11y/form.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-a11y/form.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-a11y-form--with-label",
@@ -31631,7 +31631,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-a11y/form.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-a11y/form.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-a11y-form--with-placeholder",
@@ -31731,7 +31731,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-a11y/highlight.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-a11y/highlight.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-a11y-highlight--passes",
@@ -31831,7 +31831,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-a11y/highlight.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-a11y/highlight.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-a11y-highlight--incomplete",
@@ -31931,7 +31931,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-a11y/highlight.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-a11y/highlight.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-a11y-highlight--violations",
@@ -32031,7 +32031,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-a11y/image.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-a11y/image.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-a11y-image--without-alt",
@@ -32131,7 +32131,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-a11y/image.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-a11y/image.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-a11y-image--without-alt-but-unchecked",
@@ -32231,7 +32231,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-a11y/image.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-a11y/image.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-a11y-image--with-alt",
@@ -32331,7 +32331,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-a11y/image.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-a11y/image.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-a11y-image--presentation",
@@ -32431,7 +32431,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-a11y/typography.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-a11y/typography.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-a11y-typography--correct",
@@ -32531,7 +32531,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-a11y/typography.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-a11y/typography.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-a11y-typography--empty-heading",
@@ -32631,7 +32631,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-a11y/typography.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-a11y/typography.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-a11y-typography--empty-paragraph",
@@ -32731,7 +32731,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-a11y/typography.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-a11y/typography.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-a11y-typography--empty-link",
@@ -32831,7 +32831,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-a11y/typography.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-a11y/typography.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-a11y-typography--link-without-href",
@@ -32931,7 +32931,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-a11y/typography.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-a11y/typography.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-a11y-typography--manual",
@@ -33030,7 +33030,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-actions.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-actions.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-actions--arg-types-example",
@@ -33129,7 +33129,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-actions.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-actions.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-actions--arg-types-regex-example",
@@ -33228,7 +33228,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-actions.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-actions.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-actions--basic-example",
@@ -33327,7 +33327,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-actions.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-actions.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-actions--multiple-actions",
@@ -33426,7 +33426,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-actions.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-actions.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-actions--multiple-actions-config",
@@ -33525,7 +33525,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-actions.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-actions.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-actions--multiple-actions-as-object",
@@ -33624,7 +33624,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-actions.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-actions.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-actions--multiple-actions-object-config",
@@ -33723,7 +33723,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-actions.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-actions.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-actions--circular-payload",
@@ -33822,7 +33822,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-actions.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-actions.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-actions--reserved-keyword-as-name",
@@ -33921,7 +33921,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-actions.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-actions.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-actions--all-types",
@@ -34020,7 +34020,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-actions.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-actions.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-actions--configure-actions-depth",
@@ -34119,7 +34119,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-actions.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-actions.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-actions--persisting-the-action-logger",
@@ -34218,7 +34218,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-actions.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-actions.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-actions--limit-action-output",
@@ -34317,7 +34317,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-actions.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-actions.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-actions--skipped-via-disable-true",
@@ -34416,7 +34416,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-backgrounds.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-backgrounds.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-backgrounds--story-1",
@@ -34515,7 +34515,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-backgrounds.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-backgrounds.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-backgrounds--story-2",
@@ -34614,7 +34614,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-backgrounds.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-backgrounds.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-backgrounds--overridden",
@@ -34713,7 +34713,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-backgrounds.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-backgrounds.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-backgrounds--with-gradient",
@@ -34812,7 +34812,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-backgrounds.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-backgrounds.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-backgrounds--with-image",
@@ -34911,7 +34911,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-backgrounds.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-backgrounds.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-backgrounds--disabled-backgrounds",
@@ -35010,7 +35010,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-backgrounds.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-backgrounds.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-backgrounds--disabled-grid",
@@ -35109,7 +35109,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-backgrounds.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-backgrounds.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-backgrounds--grid-cell-properties",
@@ -35208,7 +35208,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-backgrounds.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-backgrounds.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-backgrounds--aligned-grid-when-full-screen",
@@ -35307,7 +35307,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-controls.stories.tsx",
+        "fileName": "./examples/official-storybook/stories/addon-controls.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "addons-controls--basic",
@@ -35406,7 +35406,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-controls.stories.tsx",
+        "fileName": "./examples/official-storybook/stories/addon-controls.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "addons-controls--action",
@@ -35505,7 +35505,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-controls.stories.tsx",
+        "fileName": "./examples/official-storybook/stories/addon-controls.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "addons-controls--image-file-control",
@@ -35604,7 +35604,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-controls.stories.tsx",
+        "fileName": "./examples/official-storybook/stories/addon-controls.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "addons-controls--custom-controls",
@@ -35703,7 +35703,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-controls.stories.tsx",
+        "fileName": "./examples/official-storybook/stories/addon-controls.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "addons-controls--no-args",
@@ -35802,7 +35802,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-controls.stories.tsx",
+        "fileName": "./examples/official-storybook/stories/addon-controls.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "addons-controls--cyclic-args",
@@ -35901,7 +35901,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-controls.stories.tsx",
+        "fileName": "./examples/official-storybook/stories/addon-controls.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "addons-controls--custom-control-matchers",
@@ -36000,7 +36000,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-controls.stories.tsx",
+        "fileName": "./examples/official-storybook/stories/addon-controls.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "addons-controls--with-disabled-custom-control-matchers",
@@ -36099,7 +36099,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-controls.stories.tsx",
+        "fileName": "./examples/official-storybook/stories/addon-controls.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "addons-controls--filtered-with-include",
@@ -36198,7 +36198,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-controls.stories.tsx",
+        "fileName": "./examples/official-storybook/stories/addon-controls.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "addons-controls--filtered-with-include-regex",
@@ -36297,7 +36297,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-controls.stories.tsx",
+        "fileName": "./examples/official-storybook/stories/addon-controls.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "addons-controls--filtered-with-exclude",
@@ -36396,7 +36396,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-controls.stories.tsx",
+        "fileName": "./examples/official-storybook/stories/addon-controls.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "addons-controls--filtered-with-exclude-regex",
@@ -36495,7 +36495,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-cssresources.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-cssresources.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-cssresources--primary-large-button",
@@ -36594,7 +36594,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-cssresources.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-cssresources.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-cssresources--camera-icon",
@@ -36693,7 +36693,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-design-assets.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-design-assets.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-design-assets--single-image",
@@ -36792,7 +36792,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-design-assets.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-design-assets.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-design-assets--single-webpage",
@@ -36891,7 +36891,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-design-assets.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-design-assets.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-design-assets--youtube-video",
@@ -36990,7 +36990,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-design-assets.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-design-assets.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-design-assets--multiple-images",
@@ -37089,7 +37089,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-design-assets.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-design-assets.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-design-assets--named-assets",
@@ -37188,7 +37188,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-design-assets.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-design-assets.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-design-assets--url-replacement",
@@ -37288,7 +37288,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/addon-docs-blocks.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-docs/addon-docs-blocks.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-stories-docs-blocks--def-docs-page",
@@ -37388,7 +37388,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/addon-docs-blocks.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-docs/addon-docs-blocks.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-stories-docs-blocks--small-docs-page",
@@ -37488,7 +37488,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/addon-docs-blocks.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-docs/addon-docs-blocks.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-stories-docs-blocks--check-box-props",
@@ -37588,7 +37588,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/addon-docs-blocks.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-docs/addon-docs-blocks.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-stories-docs-blocks--custom-labels",
@@ -37688,7 +37688,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/addon-docs-blocks.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-docs/addon-docs-blocks.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-stories-docs-blocks--custom-stories-filter",
@@ -37788,7 +37788,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/addon-docs-blocks.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-docs/addon-docs-blocks.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-stories-docs-blocks--multiple-components",
@@ -37888,7 +37888,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/addon-docs-blocks.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-docs/addon-docs-blocks.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-stories-docs-blocks--components-props",
@@ -37988,7 +37988,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/addon-docs-mdx.stories.mdx",
+        "fileName": "./examples/official-storybook/stories/addon-docs/addon-docs-mdx.stories.mdx",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-mdx-id--hello-story",
@@ -38088,7 +38088,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/addon-docs-mdx.stories.mdx",
+        "fileName": "./examples/official-storybook/stories/addon-docs/addon-docs-mdx.stories.mdx",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-mdx-id--goodbye",
@@ -38188,7 +38188,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/addon-docs-mdx.stories.mdx",
+        "fileName": "./examples/official-storybook/stories/addon-docs/addon-docs-mdx.stories.mdx",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-mdx-id--with-icons",
@@ -38288,7 +38288,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/addon-docs-mdx.stories.mdx",
+        "fileName": "./examples/official-storybook/stories/addon-docs/addon-docs-mdx.stories.mdx",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-mdx-id--notes",
@@ -38388,7 +38388,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/addon-docs-mdx.stories.mdx",
+        "fileName": "./examples/official-storybook/stories/addon-docs/addon-docs-mdx.stories.mdx",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-mdx-id--plaintext",
@@ -38488,7 +38488,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/addon-docs-mdx.stories.mdx",
+        "fileName": "./examples/official-storybook/stories/addon-docs/addon-docs-mdx.stories.mdx",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-mdx-id--solo-story",
@@ -38588,7 +38588,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/addon-docs-mdx.stories.mdx",
+        "fileName": "./examples/official-storybook/stories/addon-docs/addon-docs-mdx.stories.mdx",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-mdx-id--iframe-story",
@@ -38688,7 +38688,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/addon-docs-mdx.stories.mdx",
+        "fileName": "./examples/official-storybook/stories/addon-docs/addon-docs-mdx.stories.mdx",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-mdx-id--decorator-story",
@@ -38788,7 +38788,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/addon-docs-mdx.stories.mdx",
+        "fileName": "./examples/official-storybook/stories/addon-docs/addon-docs-mdx.stories.mdx",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-mdx-id--theme",
@@ -38888,7 +38888,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/addon-docs-mdx.stories.mdx",
+        "fileName": "./examples/official-storybook/stories/addon-docs/addon-docs-mdx.stories.mdx",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-mdx-id--function-story",
@@ -38988,7 +38988,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/addon-docs-mdx.stories.mdx",
+        "fileName": "./examples/official-storybook/stories/addon-docs/addon-docs-mdx.stories.mdx",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-mdx-id--fixed-layout-example",
@@ -39088,7 +39088,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/addon-docs-mdx.stories.mdx",
+        "fileName": "./examples/official-storybook/stories/addon-docs/addon-docs-mdx.stories.mdx",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-mdx-id--no-source-canvas",
@@ -39188,7 +39188,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/addon-docs-mdx.stories.mdx",
+        "fileName": "./examples/official-storybook/stories/addon-docs/addon-docs-mdx.stories.mdx",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-mdx-id--docs-disable",
@@ -39288,7 +39288,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/addon-docs-mdx.stories.mdx",
+        "fileName": "./examples/official-storybook/stories/addon-docs/addon-docs-mdx.stories.mdx",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-mdx-id--story-multiple-children",
@@ -39388,7 +39388,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/addon-docs.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-docs/addon-docs.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-stories--basic",
@@ -39488,7 +39488,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/addon-docs.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-docs/addon-docs.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-stories--no-docs",
@@ -39588,7 +39588,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/addon-docs.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-docs/addon-docs.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-stories--with-notes",
@@ -39688,7 +39688,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/addon-docs.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-docs/addon-docs.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-stories--with-info",
@@ -39788,7 +39788,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/addon-docs.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-docs/addon-docs.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-stories--mdx-override",
@@ -39888,7 +39888,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/addon-docs.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-docs/addon-docs.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-stories--jsx-override",
@@ -39988,7 +39988,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/addon-docs.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-docs/addon-docs.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-stories--docs-disable",
@@ -40088,7 +40088,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/addon-docs.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-docs/addon-docs.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-stories--larger-than-preview",
@@ -40188,7 +40188,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/array-subcomponents.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-docs/array-subcomponents.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-subcomponents-array--basic",
@@ -40288,7 +40288,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/colorpalette.stories.mdx",
+        "fileName": "./examples/official-storybook/stories/addon-docs/colorpalette.stories.mdx",
         "args": {},
         "argTypes": {},
         "docsOnly": true,
@@ -40389,7 +40389,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/container-override.stories.mdx",
+        "fileName": "./examples/official-storybook/stories/addon-docs/container-override.stories.mdx",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-container-override--dummy",
@@ -40489,7 +40489,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/csf-with-mdx-docs.stories.mdx",
+        "fileName": "./examples/official-storybook/stories/addon-docs/csf-with-mdx-docs.stories.mdx",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-csf-with-mdx-docs--with-args",
@@ -40589,7 +40589,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/csf-with-mdx-docs.stories.mdx",
+        "fileName": "./examples/official-storybook/stories/addon-docs/csf-with-mdx-docs.stories.mdx",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-csf-with-mdx-docs--basic",
@@ -40689,7 +40689,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/csf-with-mdx-docs.stories.mdx",
+        "fileName": "./examples/official-storybook/stories/addon-docs/csf-with-mdx-docs.stories.mdx",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-csf-with-mdx-docs--with-template",
@@ -40789,7 +40789,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/docs-only.stories.mdx",
+        "fileName": "./examples/official-storybook/stories/addon-docs/docs-only.stories.mdx",
         "args": {},
         "argTypes": {},
         "docsOnly": true,
@@ -40890,7 +40890,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/dynamic-title.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-docs/dynamic-title.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-dynamic-title--basic",
@@ -40990,7 +40990,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/forward-ref-inner-proptypes.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-docs/forward-ref-inner-proptypes.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-forwardrefinnerproptypes--displays-correctly",
@@ -41090,7 +41090,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/forward-ref-outer-proptypes.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-docs/forward-ref-outer-proptypes.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-forwardrefouterproptypes--displays-correctly",
@@ -41190,7 +41190,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/imported.stories.tsx",
+        "fileName": "./examples/official-storybook/stories/addon-docs/imported.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-imported--basic",
@@ -41290,7 +41290,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/markdown.stories.mdx",
+        "fileName": "./examples/official-storybook/stories/addon-docs/markdown.stories.mdx",
         "args": {},
         "argTypes": {},
         "docsOnly": true,
@@ -41391,7 +41391,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/mdx.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-docs/mdx.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-mdx-in-story--typography",
@@ -41491,7 +41491,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/mdx.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-docs/mdx.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-mdx-in-story--dark-mode-docs",
@@ -41591,7 +41591,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/memo.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-docs/memo.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-memo--displays-correctly",
@@ -41691,7 +41691,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/meta-string-template.stories.mdx",
+        "fileName": "./examples/official-storybook/stories/addon-docs/meta-string-template.stories.mdx",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-template--testing",
@@ -41791,7 +41791,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/meta-title-quotes.stories.mdx",
+        "fileName": "./examples/official-storybook/stories/addon-docs/meta-title-quotes.stories.mdx",
         "args": {},
         "argTypes": {},
         "docsOnly": true,
@@ -41893,7 +41893,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/mixed-leaves-component.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-docs/mixed-leaves-component.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-mixed-leaves-component--b",
@@ -41994,7 +41994,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/mixed-leaves-component.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-docs/mixed-leaves-component.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-mixed-leaves-component--c",
@@ -42094,7 +42094,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/mixed-leaves-folder.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-docs/mixed-leaves-folder.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-mixed-leaves--a",
@@ -42194,7 +42194,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/props-include-exclude.stories.mdx",
+        "fileName": "./examples/official-storybook/stories/addon-docs/props-include-exclude.stories.mdx",
         "args": {},
         "argTypes": {},
         "docsOnly": true,
@@ -42295,7 +42295,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/props.stories.mdx",
+        "fileName": "./examples/official-storybook/stories/addon-docs/props.stories.mdx",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-props--arg-types",
@@ -42395,7 +42395,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/props.stories.mdx",
+        "fileName": "./examples/official-storybook/stories/addon-docs/props.stories.mdx",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-props--args",
@@ -42495,7 +42495,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/props.stories.mdx",
+        "fileName": "./examples/official-storybook/stories/addon-docs/props.stories.mdx",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-props--component",
@@ -42595,7 +42595,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/props.stories.mdx",
+        "fileName": "./examples/official-storybook/stories/addon-docs/props.stories.mdx",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-props--controls",
@@ -42695,7 +42695,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/source.stories.tsx",
+        "fileName": "./examples/official-storybook/stories/addon-docs/source.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-source--basic",
@@ -42795,7 +42795,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/source.stories.tsx",
+        "fileName": "./examples/official-storybook/stories/addon-docs/source.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-source--no-args",
@@ -42895,7 +42895,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/source.stories.tsx",
+        "fileName": "./examples/official-storybook/stories/addon-docs/source.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-source--force-code-source",
@@ -42995,7 +42995,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/source.stories.tsx",
+        "fileName": "./examples/official-storybook/stories/addon-docs/source.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-source--custom-source",
@@ -43095,7 +43095,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/stories.mdx",
+        "fileName": "./examples/official-storybook/stories/addon-docs/stories.mdx",
         "args": {},
         "argTypes": {},
         "docsOnly": true,
@@ -43196,7 +43196,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/subcomponents.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-docs/subcomponents.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-buttongroup--basic",
@@ -43296,7 +43296,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/transform-source.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-docs/transform-source.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-transformsource--code",
@@ -43396,7 +43396,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/transform-source.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-docs/transform-source.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-transformsource--dynamic",
@@ -43496,7 +43496,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/transform-source.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-docs/transform-source.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-transformsource--auto",
@@ -43596,7 +43596,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/ts-button.stories.tsx",
+        "fileName": "./examples/official-storybook/stories/addon-docs/ts-button.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-tsbutton--simple-button",
@@ -43696,7 +43696,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-docs/ts-button.stories.tsx",
+        "fileName": "./examples/official-storybook/stories/addon-docs/ts-button.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "addons-docs-tsbutton--with-type",
@@ -43795,7 +43795,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-events.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-events.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-events--logger",
@@ -43894,7 +43894,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-graphql.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-graphql.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-graphql--get-pikachu",
@@ -43993,7 +43993,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-jest.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-jest.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-jest--with-tests",
@@ -44092,7 +44092,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-jest.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-jest.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-jest--with-inferred-tests",
@@ -44191,7 +44191,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-jest.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-jest.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-jest--disabled-tests",
@@ -44291,7 +44291,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-knobs/with-knobs-decorators.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-knobs/with-knobs-decorators.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-knobs-with-decorators--with-decorator-calling-story-function-more-than-once",
@@ -44391,7 +44391,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-knobs/with-knobs-options.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-knobs/with-knobs-options.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-knobs-withknobs-using-options--accepts-options",
@@ -44491,7 +44491,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-knobs/with-knobs.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-knobs/with-knobs.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-knobs-withknobs--select-knob",
@@ -44591,7 +44591,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-knobs/with-knobs.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-knobs/with-knobs.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-knobs-withknobs--tweaks-static-values",
@@ -44691,7 +44691,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-knobs/with-knobs.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-knobs/with-knobs.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-knobs-withknobs--tweaks-static-values-organized-in-groups",
@@ -44791,7 +44791,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-knobs/with-knobs.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-knobs/with-knobs.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-knobs-withknobs--dynamic-knobs",
@@ -44891,7 +44891,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-knobs/with-knobs.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-knobs/with-knobs.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-knobs-withknobs--complex-select",
@@ -44991,7 +44991,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-knobs/with-knobs.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-knobs/with-knobs.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-knobs-withknobs--options-knob",
@@ -45091,7 +45091,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-knobs/with-knobs.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-knobs/with-knobs.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-knobs-withknobs--triggers-actions-via-button",
@@ -45191,7 +45191,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-knobs/with-knobs.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-knobs/with-knobs.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-knobs-withknobs--button-with-react-use-state",
@@ -45291,7 +45291,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-knobs/with-knobs.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-knobs/with-knobs.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-knobs-withknobs--xss-safety",
@@ -45391,7 +45391,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-knobs/with-knobs.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-knobs/with-knobs.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-knobs-withknobs--accepts-story-parameters",
@@ -45491,7 +45491,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-knobs/with-knobs.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-knobs/with-knobs.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-knobs-withknobs--with-duplicate-decorator",
@@ -45591,7 +45591,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-knobs/with-knobs.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-knobs/with-knobs.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-knobs-withknobs--with-knob-value-to-be-encoded",
@@ -45691,7 +45691,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-links/button.stories.tsx",
+        "fileName": "./examples/official-storybook/stories/addon-links/button.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "addons-links-button--first",
@@ -45791,7 +45791,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-links/button.stories.tsx",
+        "fileName": "./examples/official-storybook/stories/addon-links/button.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "addons-links-button--second",
@@ -45891,7 +45891,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-links/href.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-links/href.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-links-href--log",
@@ -45991,7 +45991,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-links/link.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-links/link.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-links-link--first",
@@ -46091,7 +46091,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-links/link.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-links/link.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-links-link--second",
@@ -46191,7 +46191,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-links/scroll.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-links/scroll.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-links-scroll-position--first",
@@ -46291,7 +46291,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-links/scroll.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-links/scroll.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-links-scroll-position--second",
@@ -46391,7 +46391,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-links/select.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-links/select.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-links-select--index",
@@ -46491,7 +46491,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-links/select.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-links/select.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-links-select--first",
@@ -46591,7 +46591,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-links/select.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-links/select.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-links-select--second",
@@ -46691,7 +46691,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-links/select.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-links/select.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-links-select--third",
@@ -46790,7 +46790,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-options.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-options.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-options--setting-name",
@@ -46889,7 +46889,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-options.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-options.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-options--hiding-addon-panel",
@@ -46988,7 +46988,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-queryparams.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-queryparams.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-queryparams--mock-is-true",
@@ -47087,7 +47087,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-queryparams.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-queryparams.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-queryparams--mock-is-4",
@@ -47186,7 +47186,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-storyshots.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-storyshots.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-storyshots--block",
@@ -47285,7 +47285,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-toolbars.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-toolbars.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-toolbars--locale",
@@ -47385,7 +47385,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-viewport/custom-default.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-viewport/custom-default.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-viewport-custom-default-kindle-fire-2--inherited",
@@ -47485,7 +47485,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-viewport/custom-default.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-viewport/custom-default.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-viewport-custom-default-kindle-fire-2--overridden-via-with-viewport-parameterized-decorator",
@@ -47585,7 +47585,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-viewport/custom-default.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-viewport/custom-default.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-viewport-custom-default-kindle-fire-2--disabled",
@@ -47684,7 +47684,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/addon-viewport/default.stories.js",
+        "fileName": "./examples/official-storybook/stories/addon-viewport/default.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "addons-viewport--default-fn",
@@ -47783,7 +47783,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/controls-sort.stories.tsx",
+        "fileName": "./examples/official-storybook/stories/controls-sort.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "addons-controls-sort--none",
@@ -47882,7 +47882,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/controls-sort.stories.tsx",
+        "fileName": "./examples/official-storybook/stories/controls-sort.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "addons-controls-sort--alpha",
@@ -47981,7 +47981,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/controls-sort.stories.tsx",
+        "fileName": "./examples/official-storybook/stories/controls-sort.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "addons-controls-sort--required-first",
@@ -48080,7 +48080,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/args.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/args.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-args--passed-to-story",
@@ -48179,7 +48179,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/args.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/args.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-args--other-values",
@@ -48278,7 +48278,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/args.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/args.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-args--different-set",
@@ -48377,7 +48377,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/decorators.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/decorators.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-decorators--all",
@@ -48476,7 +48476,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/errors.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/errors.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-errors--exception",
@@ -48575,7 +48575,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/errors.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/errors.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-errors--bad-component",
@@ -48674,7 +48674,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/errors.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/errors.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-errors--bad-story",
@@ -48773,7 +48773,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/events.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/events.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-events--force",
@@ -48872,7 +48872,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/globals.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/globals.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-global-args--passed-to-story",
@@ -48971,7 +48971,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/globals.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/globals.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-global-args--second-story",
@@ -49070,7 +49070,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/interleaved-exports.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/interleaved-exports.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-interleaved-exports--first",
@@ -49169,7 +49169,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/interleaved-exports.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/interleaved-exports.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-interleaved-exports--second",
@@ -49268,7 +49268,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/layout.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/layout.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-layout--default",
@@ -49367,7 +49367,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/layout.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/layout.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-layout--padded-block",
@@ -49466,7 +49466,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/layout.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/layout.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-layout--padded-inline",
@@ -49565,7 +49565,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/layout.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/layout.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-layout--fullscreen-block",
@@ -49664,7 +49664,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/layout.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/layout.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-layout--fullscreen-inline",
@@ -49763,7 +49763,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/layout.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/layout.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-layout--centered-block",
@@ -49862,7 +49862,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/layout.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/layout.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-layout--centered-inline",
@@ -49961,7 +49961,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/layout.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/layout.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-layout--centered-tall",
@@ -50060,7 +50060,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/layout.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/layout.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-layout--centered-wide",
@@ -50159,7 +50159,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/layout.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/layout.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-layout--none",
@@ -50258,7 +50258,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/layout.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/layout.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-layout--invalid",
@@ -50357,7 +50357,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/layout.stories.mdx",
+        "fileName": "./examples/official-storybook/stories/core/layout.stories.mdx",
         "args": {},
         "argTypes": {},
         "__id": "core-layout-mdx--default-value",
@@ -50456,7 +50456,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/layout.stories.mdx",
+        "fileName": "./examples/official-storybook/stories/core/layout.stories.mdx",
         "args": {},
         "argTypes": {},
         "__id": "core-layout-mdx--padded",
@@ -50555,7 +50555,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/layout.stories.mdx",
+        "fileName": "./examples/official-storybook/stories/core/layout.stories.mdx",
         "args": {},
         "argTypes": {},
         "__id": "core-layout-mdx--fullscreen",
@@ -50654,7 +50654,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/layout.stories.mdx",
+        "fileName": "./examples/official-storybook/stories/core/layout.stories.mdx",
         "args": {},
         "argTypes": {},
         "__id": "core-layout-mdx--centered",
@@ -50753,7 +50753,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/loaders.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/loaders.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-loaders--story",
@@ -50852,7 +50852,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/named-export-order.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/named-export-order.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-named-export-order--story-1",
@@ -50951,7 +50951,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/named-export-order.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/named-export-order.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-named-export-order--story-2",
@@ -51050,7 +51050,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/parameters.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/parameters.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-parameters--passed",
@@ -51149,7 +51149,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/prefix.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/prefix.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-prefix--prefix-and-name",
@@ -51248,7 +51248,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/prefix.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/prefix.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-prefix--prefix",
@@ -51347,7 +51347,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/reexport-source-loader.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/reexport-source-loader.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-re-export-source-loader--story-1",
@@ -51446,7 +51446,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/reexport-source-loader.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/reexport-source-loader.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-re-export-source-loader--story-2",
@@ -51545,7 +51545,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/rendering.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/rendering.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-rendering--counter",
@@ -51644,7 +51644,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/scroll.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/scroll.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-scroll--story-1",
@@ -51743,7 +51743,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/scroll.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/scroll.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-scroll--story-2",
@@ -51842,7 +51842,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/scroll.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/scroll.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-scroll--story-3",
@@ -51941,7 +51941,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/core/scroll.stories.js",
+        "fileName": "./examples/official-storybook/stories/core/scroll.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-scroll--story-4",
@@ -52041,7 +52041,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/demo/button.stories.js",
+        "fileName": "./examples/official-storybook/stories/demo/button.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "demo-button-id--with-text",
@@ -52141,7 +52141,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/demo/button.stories.js",
+        "fileName": "./examples/official-storybook/stories/demo/button.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "demo-button-id--with-some-emoji",
@@ -52241,7 +52241,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/demo/button.stories.js",
+        "fileName": "./examples/official-storybook/stories/demo/button.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "demo-button-id--with-counter",
@@ -52341,7 +52341,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/demo/button.stories.mdx",
+        "fileName": "./examples/official-storybook/stories/demo/button.stories.mdx",
         "args": {},
         "argTypes": {},
         "__id": "other-demo-buttonmdx--with-text",
@@ -52441,7 +52441,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/demo/button.stories.mdx",
+        "fileName": "./examples/official-storybook/stories/demo/button.stories.mdx",
         "args": {},
         "argTypes": {},
         "__id": "other-demo-buttonmdx--with-some-emoji",
@@ -52541,7 +52541,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/demo/button.stories.mdx",
+        "fileName": "./examples/official-storybook/stories/demo/button.stories.mdx",
         "args": {},
         "argTypes": {},
         "__id": "other-demo-buttonmdx--with-counter",
@@ -52641,7 +52641,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/demo/typed-button.stories.tsx",
+        "fileName": "./examples/official-storybook/stories/demo/typed-button.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "other-demo-tsbutton--basic",
@@ -52741,7 +52741,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/demo/typed-button.stories.tsx",
+        "fileName": "./examples/official-storybook/stories/demo/typed-button.stories.tsx",
         "args": {},
         "argTypes": {},
         "__id": "other-demo-tsbutton--typed",
@@ -52841,7 +52841,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/demo/welcome.stories.js",
+        "fileName": "./examples/official-storybook/stories/demo/welcome.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "other-demo-welcome--to-storybook",
@@ -52940,7 +52940,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/hooks.stories.js",
+        "fileName": "./examples/official-storybook/stories/hooks.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-hooks--checkbox",
@@ -53039,7 +53039,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/hooks.stories.js",
+        "fileName": "./examples/official-storybook/stories/hooks.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-hooks--input",
@@ -53138,7 +53138,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/hooks.stories.js",
+        "fileName": "./examples/official-storybook/stories/hooks.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-hooks--effect",
@@ -53237,7 +53237,7 @@
           }
         },
         "framework": "react",
-        "fileName": "./stories/hooks.stories.js",
+        "fileName": "./examples/official-storybook/stories/hooks.stories.js",
         "args": {},
         "argTypes": {},
         "__id": "core-hooks--react-hook-checkbox",

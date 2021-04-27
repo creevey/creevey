@@ -39,8 +39,8 @@ describe.skip('Storybook Examples E2E', function () {
           execSync('npm run build-storybook', { cwd: workDir });
         });
 
-        after(function () {
-          updateApprovals(workDir, suiteName);
+        after(async function () {
+          await updateApprovals(workDir, suiteName);
         });
 
         assertExtractedTests(workDir, suiteName);

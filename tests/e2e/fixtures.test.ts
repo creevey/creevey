@@ -28,8 +28,8 @@ describe('Storybook Fixtures E2E', function () {
         prepareWorkDir(workDir);
       });
 
-      after(function () {
-        updateApprovals(workDir, suiteName);
+      after(async function () {
+        await updateApprovals(workDir, suiteName);
         shell.rm('-rf', workDir);
       });
 

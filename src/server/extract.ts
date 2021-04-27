@@ -1,11 +1,11 @@
 import { writeFileSync } from 'fs';
-import { Config, noop, Options, isFunction, isObject } from '../types';
+import { Config, Options, isFunction, isObject } from '../types';
 import { subscribeOn } from './messages';
 import { loadTestsFromStories, storybookApi } from './stories';
 import { removeProps } from './utils';
 
 export default async function extract(config: Config, options: Options): Promise<void> {
-  if (process.env.__CREEVEY_ENV__ != 'test') {
+  if (config.useWebpackToExtractTests && process.env.__CREEVEY_ENV__ != 'test') {
     await new Promise<void>((resolve, reject) => {
       subscribeOn('webpack', (message) => {
         switch (message.type) {
@@ -15,11 +15,11 @@ export default async function extract(config: Config, options: Options): Promise
             return reject();
         }
       });
-      void (async () => (await import('./webpack')).default(config, options))();
+      void (async () => (await import('./loaders/webpack/compile')).default(config, options))();
     });
   }
 
-  const tests = await loadTestsFromStories({ browsers: Object.keys(config.browsers), watch: false }, noop);
+  const tests = await loadTestsFromStories(config, Object.keys(config.browsers), { debug: options.debug });
 
   if (options.extract == 'tests') {
     writeFileSync(

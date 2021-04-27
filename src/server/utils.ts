@@ -1,4 +1,4 @@
-import fs, { createWriteStream, existsSync, readFileSync, unlink } from 'fs';
+import { createWriteStream, existsSync, readFileSync, unlink } from 'fs';
 import path from 'path';
 import cluster from 'cluster';
 import { SkipOptions, isDefined, TestData, noop, isFunction } from '../types';
@@ -10,7 +10,7 @@ export const isShuttingDown = { current: false };
 
 export const LOCALHOST_REGEXP = /(localhost|127\.0\.0\.1)/i;
 
-export const extensions = ['.js', '.jsx', '.ts', '.tsx', '.mjs', '.es', '.es6'];
+export const extensions = ['.js', '.jsx', '.ts', '.tsx'];
 
 export const supportedFrameworks = [
   'react',
@@ -29,18 +29,6 @@ export const supportedFrameworks = [
   'server',
   'web-components',
 ];
-
-const compilers = {
-  '@babel/register': ({ extension }: { extension: string }) => (hook: (...args: unknown[]) => void) =>
-    hook({ rootMode: 'upward-optional', extensions: [extension] }),
-  'ts-node': ({ rootDir }: { rootDir: string }) => (hook: { register: (...args: unknown[]) => void }) => {
-    // NOTE `dir` options are supported only from `ts-node@>=8.6`, but default angular project use older version
-    hook.register({ project: path.join(rootDir, 'tsconfig.json') });
-    // NOTE This need to support tsconfig aliases
-    // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-    require('tsconfig-paths/register').loadConfig(rootDir);
-  },
-};
 
 function matchBy(pattern: string | string[] | RegExp | undefined, value: string): boolean {
   return (
@@ -76,42 +64,6 @@ export function shouldSkip(
   return skipByBrowser && skipByKind && skipByStory && skipByTest && reason;
 }
 
-export function loadCompilers(rootDir: string, extension: string): void {
-  Object.entries(compilers).forEach(([moduleName, register]) => {
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      register({ rootDir, extension })(require(moduleName));
-    } catch (error) {
-      // ignore error
-    }
-  });
-}
-
-export function requireConfig<T>(configPath: string): T {
-  let ext = path.extname(configPath);
-  if (!ext || ext == '.config') {
-    ext = extensions.find((key) => fs.existsSync(`${configPath}${key}`)) || ext;
-    configPath += ext;
-  }
-  try {
-    require(configPath);
-  } catch (error) {
-    const childModules = require.cache[__filename]?.children ?? [];
-    // NOTE If config load failed then the module of config can't have child modules
-    if (childModules.find((child) => child.filename == configPath)?.children.length != 0) {
-      throw error;
-    }
-    const configDir = isDefined(configPath) ? path.parse(configPath).dir : process.cwd();
-
-    loadCompilers(configDir, ext);
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment
-  const configModule = require(configPath);
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
-  return configModule && configModule.__esModule ? configModule.default : configModule;
-}
-
 export async function shutdownWorkers(): Promise<void> {
   isShuttingDown.current = true;
   emitShutdownMessage();
@@ -132,6 +84,16 @@ export async function shutdownWorkers(): Promise<void> {
       ),
   );
 }
+
+export const hasDocsAddon = (() => {
+  try {
+    // eslint-disable-next-line node/no-extraneous-require
+    require.resolve('@storybook/addon-docs');
+    return true;
+  } catch (_) {
+    return false;
+  }
+})();
 
 export function getStorybookParentDirectory(): string {
   return require.resolve('@storybook/core').split('@storybook')[0];

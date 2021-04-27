@@ -129,22 +129,6 @@ export interface DockerAuth {
 
 export interface Config {
   /**
-   * Allows you to start selenoid without docker
-   * And use standalone browsers
-   * @default true
-   */
-  useDocker: boolean;
-  /**
-   * Custom selenoid docker image
-   * @default 'aerokube/selenoid:latest-release'
-   */
-  dockerImage: string;
-  /**
-   * Should Creevey pull docker images or use local ones
-   * @default true
-   */
-  pullImages: boolean;
-  /**
    * Url to Selenium grid hub or standalone selenium.
    * By default creevey will use docker containers
    */
@@ -197,6 +181,38 @@ export interface Config {
    * Works only with `useDocker == false`
    */
   selenoidPath?: string;
+  /**
+   * Creevey extract tests by using babel transformations
+   * and load stories to nodejs directly.
+   * In some edge cases it may fail to load tests.
+   * In that case you can enable this option.
+   * Creevey uses Storybook webpack config to build nodejs bundle with tests.
+   * But it slightly slower and doesn't work if you use custom bundler for Storybook
+   *
+   * Affects only for Storybook 6.2+
+   * @default false
+   */
+  useWebpackToExtractTests: boolean;
+  /**
+   * Define custom babel options for load stories transformation
+   */
+  babelOptions: (options: Record<string, unknown>) => Record<string, unknown>;
+  /**
+   * Allows you to start selenoid without docker
+   * and use standalone browsers
+   * @default true
+   */
+  useDocker: boolean;
+  /**
+   * Custom selenoid docker image
+   * @default 'aerokube/selenoid:latest-release'
+   */
+  dockerImage: string;
+  /**
+   * Should Creevey pull docker images or use local ones
+   * @default true
+   */
+  pullImages: boolean;
   /**
    * Define auth config for private docker registry
    */

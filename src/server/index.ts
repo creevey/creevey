@@ -14,7 +14,7 @@ async function startWebdriverServer(config: Config, options: Options): Promise<v
 }
 
 export default async function (options: Options): Promise<void> {
-  const config = readConfig(options);
+  const config = await readConfig(options);
   const { browser = defaultBrowser, extract, update, webpack, ui, port } = options;
 
   if (!config) return;
@@ -40,7 +40,7 @@ export default async function (options: Options): Promise<void> {
     case webpack: {
       console.log('[CreeveyWebpack]:', `Starting with pid ${process.pid}`);
 
-      return (await import('./webpack')).default(config, options);
+      return (await import('./loaders/webpack/compile')).default(config, options);
     }
     case cluster.isMaster: {
       console.log('[CreeveyMaster]:', `Starting with pid ${process.pid}`);

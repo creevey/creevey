@@ -5,6 +5,7 @@ import { expect } from 'chai';
 import { it } from 'mocha';
 import shell, { ExecOptions } from 'shelljs';
 import { removeProps } from '../../src/server/utils';
+import { ServerTest } from '../../src/types';
 
 function readMainJsBundle(workDir: string): string {
   const mainJsPath = 'node_modules/creevey/node_modules/.cache/creevey/storybook/main.js';
@@ -15,6 +16,18 @@ function readMainJsBundle(workDir: string): string {
     .replace(new RegExp(projectDir.replace(/[-/\s]/g, '_'), 'g'), '')
     .replace(/^\/\*!\*.*$\n\s{2}!\*{3}/gm, '/*')
     .replace(/\*{3}!$\n\s{2}\\\*+\/$/gm, '*/');
+}
+
+async function readTestsJson(workDir: string): Promise<unknown> {
+  const projectDir = workDir.startsWith(storybookDir) ? storybookDir : workDir;
+
+  const tests = ((await import(`${workDir}/tests.json`)) as { default: { [id: string]: ServerTest } }).default;
+  Object.values(tests).forEach(
+    ({ story: { parameters } }) =>
+      (parameters.fileName = parameters.fileName.replace(new RegExp(projectDir, 'g'), '.')),
+  );
+
+  return tests;
 }
 
 export const storybookDir = path.join(__dirname, '../../../storybook');
@@ -34,9 +47,12 @@ export function prepareWorkDir(workDir: string): void {
   execSync('npx creevey --webpack', { cwd: workDir });
 }
 
-export function updateApprovals(workDir: string, suiteName: string): void {
+export async function updateApprovals(workDir: string, suiteName: string): Promise<void> {
   shell.mkdir('-p', `${__dirname}/approvals/${suiteName}`);
-  shell.mv(`${workDir}/tests.json`, `${__dirname}/approvals/${suiteName}/tests.json`);
+  writeFileSync(
+    `${__dirname}/approvals/${suiteName}/tests.json`,
+    JSON.stringify(await readTestsJson(workDir), null, 2),
+  );
   shell.rm('-f', `${workDir}/stories.json`);
   writeFileSync(`${__dirname}/approvals/${suiteName}/main.js`, readMainJsBundle(workDir));
 }
@@ -45,8 +61,8 @@ export function assertExtractedTests(workDir: string, suiteName: string): void {
   it('extract tests', async function () {
     execSync('npx creevey --extract=tests', { cwd: workDir });
 
-    const expected = (await import(`${__dirname}/approvals/${suiteName}/tests.json`)) as unknown;
-    const actual = (await import(`${workDir}/tests.json`)) as unknown;
+    const expected = ((await import(`${__dirname}/approvals/${suiteName}/tests.json`)) as { default: unknown }).default;
+    const actual = await readTestsJson(workDir);
 
     expect(actual).to.eql(expected);
   });

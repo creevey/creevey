@@ -14,6 +14,7 @@ const config: Configuration = {
           options: {
             overrides: [
               {
+                // TODO Don't need, see https://babeljs.io/docs/en/babel-preset-env#usebuiltins-entry
                 presets: [['@babel/preset-env', { useBuiltIns: 'entry', corejs: 3 }]],
               },
             ],

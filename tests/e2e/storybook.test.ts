@@ -21,8 +21,8 @@ describe('Storybook Official E2E', function () {
     execSync('npm run build-storybook', { cwd: workDir });
   });
 
-  after(function () {
-    updateApprovals(workDir, 'storybook');
+  after(async function () {
+    await updateApprovals(workDir, 'storybook');
   });
 
   assertExtractedTests(workDir, 'storybook');

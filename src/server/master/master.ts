@@ -2,7 +2,7 @@ import path from 'path';
 import { Config, TestData, isDefined, ServerTest } from '../../types';
 import { loadTestsFromStories } from '../stories';
 import Runner from './runner';
-import { startWebpackCompiler } from './compiler';
+import { startWebpackCompiler } from '../loaders/webpack/start';
 
 function mergeTests(
   testsWithReports: Partial<{ [id: string]: TestData }>,
@@ -21,8 +21,8 @@ function mergeTests(
   return testsFromStories;
 }
 
-export default async function master(config: Config, watch: boolean): Promise<Runner> {
-  await startWebpackCompiler();
+export default async function master(config: Config, options: { watch: boolean; debug: boolean }): Promise<Runner> {
+  if (config.useWebpackToExtractTests) await startWebpackCompiler();
   const runner = new Runner(config);
   const reportDataPath = path.join(config.reportDir, 'data.js');
   let testsFromReport = {};
@@ -32,9 +32,10 @@ export default async function master(config: Config, watch: boolean): Promise<Ru
     // Ignore error
   }
 
-  const tests = await loadTestsFromStories({ browsers: Object.keys(config.browsers), watch }, (testsDiff) =>
-    runner.updateTests(testsDiff),
-  );
+  const tests = await loadTestsFromStories(config, Object.keys(config.browsers), {
+    ...options,
+    update: (testsDiff) => runner.updateTests(testsDiff),
+  });
 
   runner.tests = mergeTests(testsFromReport, tests);
 

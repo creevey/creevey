@@ -269,6 +269,7 @@
   - [x] creevey-loader `top-level property access`
   - [x] wait-on doesn't work properly
   - [x] Don't pull docker local images
+  - [x] Remove support ts config file version
   - [ ] MDX docsOnly: true
   - [ ] Listen to exception before waitForReady
 - [x] Change viewport height to 786 in config
@@ -313,11 +314,13 @@
   - [x] Mdx e2e tests
     - Add tests loader and e2e
 - [x] Fix todos in browser.ts and `no-shadow` rule
+- [ ] Rename `webpack` to bundler. Move bundler.ts
+- [ ] Add debug output for webdriver build and resolve and story switch
 - [ ] Improve and approve storybook.examples e2e tests
 - [ ] Test with yarn2
 - [ ] Think about how to test with ESM (try to use import() from esm directory)
-- [ ] Research vite bundler
 - [ ] Research webpack 5
+- [ ] Try https://docs.gitlab.com/runner/executors/docker.html#the-privileged-mode
 - [x] Be able to run storybook examples e2e in CI
 - [x] Improve Docker
   - [x] Private docker images registry
@@ -328,6 +331,7 @@
   - [ ] Ignore elements
   - [ ] Describe use cases
     - MDX, animations, CI + docker, custom images (options), sauceLabs, standalone, waitForReady, extract
+    - use `/** @type {import("webpack").Configuration } */` thing for creevey.config
   - [ ] Rewrite config docs to more detail (simple setup, use cases, config description)
   - [ ] How to setup creevey report in TeamCity
   - [ ] Add new options (selenoidPath, webdriverCommand, etc)
@@ -364,8 +368,6 @@
   - [ ] MDX imported stories missed source parameters in creevey (allow to import such stories)
   - [ ] ERR! Runtime error! Check your browser console. ERR! ResizeObserver loop limit exceeded (in addon)
   - [ ] Creevey nodejs console output `This browser doesn't support requestAnimationFrame.`
-  - [ ] Remove support ts config file version
-    - use `/** @type {import("webpack").Configuration } */` thing for creevey.config
   - [ ] webpack config dll references (disable dll plugin)
   - [ ] Scrollbar is not visible on dark theme in ResultPage
   - [ ] Don't have hot reload on preview config storybook

@@ -7,23 +7,15 @@ import {
   getCreeveyCache,
   getStorybookFramework,
   getStorybookParentDirectory,
+  hasDocsAddon,
   isStorybookVersion,
   isStorybookVersionLessThan,
-} from '../utils';
-import { Config, Options, noop } from '../../types';
-import { emitWebpackMessage, subscribeOn } from '../messages';
+} from '../../utils';
+import { Config, Options, noop } from '../../../types';
+import { emitWebpackMessage, subscribeOn } from '../../messages';
 
 let isInitiated = false;
 let dumpStats: (stats: Stats) => void = noop;
-const hasDocsAddon = (() => {
-  try {
-    // eslint-disable-next-line node/no-extraneous-require
-    require.resolve('@storybook/addon-docs');
-    return true;
-  } catch (_) {
-    return false;
-  }
-})();
 
 function handleWebpackBuild(error: Error, stats: Stats): void {
   dumpStats(stats);
@@ -141,11 +133,6 @@ async function getWebpackConfigForStorybook_6_2(
     configType: 'PRODUCTION',
     outputDir,
     configDir,
-    // TODO Check default values
-    // cache: {},
-    // docsMode: '',
-    // ignorePreview: false,
-    // packageJson: { name: 'creevey', version: '' },
     ...storybookFrameworkOptions,
   };
 
@@ -284,8 +271,8 @@ export default async function compile(config: Config, { debug, ui }: Options): P
       .filter(([alias]) => excluded.includes(alias))
       .map(([, aliasPath]) => ({ [aliasPath]: `commonjs ${aliasPath}` })),
 
-    // NOTE Replace `@storybook/${framework}` to ../storybook.ts
-    { [`@storybook/${storybookFramework}`]: `commonjs ${require.resolve('../storybook')}` },
+    // NOTE Replace `@storybook/${framework}` to ../../storybook.ts
+    { [`@storybook/${storybookFramework}`]: `commonjs ${require.resolve('../../storybook')}` },
     nodeExternals({
       includeAbsolutePaths: true,
       allowlist: /(webpack|dummy-hmr|generated-stories-entry|generated-config-entry|generated-other-entry)/,

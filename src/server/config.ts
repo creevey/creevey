@@ -1,12 +1,13 @@
 import fs from 'fs';
 import path from 'path';
 import { Config, Browser, BrowserConfig, Options, isDefined } from '../types';
-import { requireConfig } from './utils';
+import { isStorybookVersionLessThan } from './utils';
 
 export const defaultBrowser = 'chrome';
 
 export const defaultConfig: Omit<Config, 'gridUrl'> = {
   useDocker: true,
+  useWebpackToExtractTests: false,
   dockerImage: 'aerokube/selenoid:latest-release',
   pullImages: true,
   storybookUrl: 'http://localhost:6006',
@@ -17,6 +18,7 @@ export const defaultConfig: Omit<Config, 'gridUrl'> = {
   diffOptions: { threshold: 0, includeAA: true },
   browsers: { [defaultBrowser]: true },
   hooks: {},
+  babelOptions: (_) => _,
 };
 
 function normalizeBrowserConfig(name: string, config: Browser): BrowserConfig {
@@ -41,11 +43,12 @@ function resolveConfigPath(configPath?: string): string | undefined {
   return configPath;
 }
 
-export function readConfig(options: Options): Config | null {
+export async function readConfig(options: Options): Promise<Config | null> {
   const configPath = resolveConfigPath(options.config);
   const userConfig: typeof defaultConfig & Partial<Pick<Config, 'gridUrl'>> = { ...defaultConfig };
 
-  if (isDefined(configPath)) Object.assign(userConfig, requireConfig<Config>(configPath));
+  if (isDefined(configPath)) Object.assign(userConfig, ((await import(configPath)) as { default: Config }).default);
+  if (isStorybookVersionLessThan(6, 2)) userConfig.useWebpackToExtractTests = true;
 
   if (options.reportDir) userConfig.reportDir = path.resolve(options.reportDir);
   if (options.screenDir) userConfig.screenDir = path.resolve(options.screenDir);

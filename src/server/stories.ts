@@ -1,7 +1,8 @@
 import path from 'path';
+import { isWorker, isMaster } from 'cluster';
 import { createHash } from 'crypto';
 import { Context } from 'mocha';
-import chokidar from 'chokidar';
+import chokidar, { FSWatcher } from 'chokidar';
 import addons from '@storybook/addons';
 import Events from '@storybook/core-events';
 import {
@@ -16,10 +17,12 @@ import {
   WebpackMessage,
   CreeveyTestFunction,
   SetStoriesData,
+  Config,
 } from '../types';
 import { shouldSkip, isStorybookVersionLessThan, getCreeveyCache } from './utils';
 import { mergeWith } from 'lodash';
 import { subscribeOn } from './messages';
+import { Parameters } from '@storybook/api';
 
 export let storybookApi: null | typeof import('./storybook') = null;
 
@@ -76,7 +79,7 @@ function convertStories(
 
 async function initStorybookEnvironment(): Promise<typeof import('./storybook')> {
   // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-  require('jsdom-global')(undefined, { url: 'http://localhost' });
+  (await import('jsdom-global')).default(undefined, { url: 'http://localhost' });
 
   // NOTE Cutoff `jsdom` part from userAgent, because storybook check enviroment and create events channel if runs in browser
   // https://github.com/storybookjs/storybook/blob/v5.2.8/lib/core/src/client/preview/start.js#L98
@@ -88,26 +91,28 @@ async function initStorybookEnvironment(): Promise<typeof import('./storybook')>
       .join(' '),
   });
 
-  if (isStorybookVersionLessThan(6)) {
-    // NOTE: disable logger for 5.x storybook
-    ((await import(require.resolve('@storybook/client-logger', { paths: [process.cwd()] }))) as {
-      logger: { debug: unknown };
-    }).logger.debug = noop;
-  }
+  const { logger } = (await import('@storybook/client-logger')) as { logger: { debug: unknown; warn: unknown } };
+  // NOTE: Disable duplication warnings for >=6.2 storybook
+  if (isWorker) logger.warn = noop;
+  // NOTE: disable logger for 5.x storybook
+  logger.debug = noop;
 
   return import('./storybook');
 }
 
-function watchStories(initialFiles: Set<string>): void {
+function watchStories(watcher: FSWatcher, initialFiles: Set<string>): void {
   const watchingFiles = initialFiles;
   let storiesByFiles = new Map<string, StoryInput[]>();
 
-  const watcher = chokidar.watch(Array.from(watchingFiles), { ignoreInitial: true });
-
   subscribeOn('shutdown', () => void watcher.close());
 
-  watcher.on('change', (filePath) => storiesByFiles.set(`./${filePath.replace(/\\/g, '/')}`, []));
-  watcher.on('unlink', (filePath) => storiesByFiles.set(`./${filePath.replace(/\\/g, '/')}`, []));
+  watcher.add(Array.from(watchingFiles));
+  watcher.on('change', (filePath) =>
+    storiesByFiles.set(path.isAbsolute(filePath) ? filePath : `./${filePath.replace(/\\/g, '/')}`, []),
+  );
+  watcher.on('unlink', (filePath) =>
+    storiesByFiles.set(path.isAbsolute(filePath) ? filePath : `./${filePath.replace(/\\/g, '/')}`, []),
+  );
 
   addons.getChannel().on(Events.SET_STORIES, (data: SetStoriesData) => {
     const stories = isStorybookVersionLessThan(6) ? data.stories : flatStories(data);
@@ -119,15 +124,16 @@ function watchStories(initialFiles: Set<string>): void {
       watchingFiles.add(filePath);
       storiesByFiles.set(filePath, []);
     });
-    watcher.unwatch(removedFiles);
     removedFiles.forEach((filePath) => watchingFiles.delete(filePath));
 
     Object.values(stories).forEach((story) => storiesByFiles.get(story.parameters.fileName)?.push(story));
+    console.log(storiesByFiles);
     addons.getChannel().emit('storiesUpdated', storiesByFiles);
     storiesByFiles = new Map<string, StoryInput[]>();
   });
 }
 
+// TODO use the storybook version, after the fix of skip option API
 function flatStories({ globalParameters, kindParameters, stories }: SetStoriesData): StoriesRaw {
   Object.values(stories).forEach((story) => {
     // NOTE: Copy-paste merge parameters from storybook
@@ -143,18 +149,8 @@ function flatStories({ globalParameters, kindParameters, stories }: SetStoriesDa
   return stories;
 }
 
-async function loadStorybookBundle(
-  watch: boolean,
-  storiesListener: (stories: Map<string, StoryInput[]>) => void,
-): Promise<StoriesRaw> {
+function loadStoriesFromBundle(watch: boolean): void {
   const bundlePath = path.join(getCreeveyCache(), 'storybook/main.js');
-
-  storybookApi = await initStorybookEnvironment();
-
-  const { channel } = storybookApi;
-  channel.removeAllListeners(Events.CURRENT_STORY_WAS_SET);
-
-  channel.on('storiesUpdated', storiesListener);
 
   if (watch) {
     subscribeOn('webpack', (message: WebpackMessage) => {
@@ -165,29 +161,131 @@ async function loadStorybookBundle(
         .forEach(({ data, callback }) => callback(data));
 
       delete require.cache[bundlePath];
-      require(bundlePath);
+      import(bundlePath);
     });
   }
 
-  return new Promise((resolve) => {
+  import(bundlePath);
+}
+
+async function loadStoriesDirectly(
+  config: Config,
+  { watcher, debug }: { watcher: FSWatcher | null; debug: boolean },
+): Promise<void> {
+  const { toRequireContext } = await import('@storybook/core-common');
+  const { addParameters, configure } = await import('./storybook');
+  const preview = (() => {
+    try {
+      return require.resolve(`${config.storybookDir}/preview`);
+    } catch (_) {
+      /* noop */
+    }
+  })();
+
+  const requireContext = await (await import('./loaders/babel/register')).default(config, debug);
+  const { stories } = ((await import(require.resolve(`${config.storybookDir}/main`))) as {
+    default: {
+      stories: string[];
+    };
+  }).default;
+  const contexts = stories.map((input) => {
+    const { path: storiesPath, recursive, match } = toRequireContext(input) as {
+      path: string;
+      recursive: boolean;
+      match: string;
+    };
+    watcher?.add(path.resolve(config.storybookDir, storiesPath));
+    return () => requireContext(storiesPath, recursive, new RegExp(match));
+  });
+
+  let disposeCallback = (data: unknown): void => void data;
+
+  Object.assign(module, {
+    hot: {
+      data: {},
+      accept(): void {
+        /* noop */
+      },
+      dispose(callback: (data: unknown) => void): void {
+        disposeCallback = callback;
+      },
+    },
+  });
+
+  async function startStorybook(): Promise<void> {
+    if (preview) {
+      const { parameters, globals, globalTypes } = (await import(preview)) as {
+        parameters?: Parameters;
+        globals?: unknown;
+        globalTypes?: unknown;
+      };
+      if (parameters) addParameters(parameters);
+      if (globals) addParameters({ globals });
+      if (globalTypes) addParameters({ globalTypes });
+    }
+    try {
+      configure(
+        contexts.map((ctx) => ctx()),
+        module,
+        false,
+      );
+    } catch (error) {
+      if (isMaster) console.log(error);
+    }
+  }
+
+  watcher?.add(config.storybookDir);
+  watcher?.on('all', (_event, filename) => {
+    delete require.cache[filename];
+    disposeCallback(module.hot?.data);
+    void startStorybook();
+  });
+
+  void startStorybook();
+}
+
+async function loadStorybook(
+  config: Config,
+  { watch, debug }: { watch: boolean; debug: boolean },
+  storiesListener: (stories: Map<string, StoryInput[]>) => void,
+): Promise<StoriesRaw> {
+  storybookApi = await initStorybookEnvironment();
+
+  const { channel } = storybookApi;
+  channel.removeAllListeners(Events.CURRENT_STORY_WAS_SET);
+  channel.on('storiesUpdated', storiesListener);
+
+  let watcher: FSWatcher | null = null;
+  if (watch) watcher = chokidar.watch([], { ignoreInitial: true });
+
+  const loadPromise = new Promise<StoriesRaw>((resolve) => {
     channel.once(Events.SET_STORIES, (data: SetStoriesData) => {
       const stories = isStorybookVersionLessThan(6) ? data.stories : flatStories(data);
-      if (watch) {
-        watchStories(new Set(Object.values(stories).map((story) => story.parameters.fileName)));
-      }
+      const files = new Set(Object.values(stories).map((story) => story.parameters.fileName));
+
+      if (watcher) watchStories(watcher, files);
+
       resolve(stories);
     });
-
-    require(bundlePath);
   });
+
+  if (config.useWebpackToExtractTests) loadStoriesFromBundle(watch);
+  else void loadStoriesDirectly(config, { watcher, debug });
+
+  return loadPromise;
 }
 
 export async function loadTestsFromStories(
-  { browsers, watch }: { browsers: string[]; watch: boolean },
-  applyTestsDiff: (testsDiff: Partial<{ [id: string]: ServerTest }>) => void,
+  config: Config,
+  browsers: string[],
+  {
+    watch = false,
+    debug = false,
+    update,
+  }: { watch?: boolean; debug?: boolean; update?: (testsDiff: Partial<{ [id: string]: ServerTest }>) => void },
 ): Promise<Partial<{ [id: string]: ServerTest }>> {
   const testIdsByFiles = new Map<string, string[]>();
-  const stories = await loadStorybookBundle(watch, (storiesByFiles) => {
+  const stories = await loadStorybook(config, { debug, watch }, (storiesByFiles) => {
     const testsDiff: Partial<{ [id: string]: ServerTest }> = {};
     Array.from(storiesByFiles.entries()).forEach(([filename, stories]) => {
       const tests = convertStories(browsers, stories);
@@ -199,7 +297,7 @@ export async function loadTestsFromStories(
       Object.assign(testsDiff, tests);
       removed.forEach((testId) => (testsDiff[testId] = undefined));
     });
-    applyTestsDiff(testsDiff);
+    update?.(testsDiff);
   });
 
   const tests = convertStories(browsers, stories);

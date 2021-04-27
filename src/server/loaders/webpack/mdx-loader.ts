@@ -25,16 +25,18 @@ function createBabelOptions({ babelOptions, mdxBabelOptions, configureJSX }: any
   };
 }
 
+const resolveOptions = { paths: [require.resolve('@storybook/addon-docs')] };
+
+const remarkPlugins = ['remark-slug', 'remark-external-links'].map((plugin) =>
+  require(require.resolve(plugin, resolveOptions)),
+);
+
+export const mdxOptions = (options: any = {}) => ({ compilers: [createCompiler(options)], remarkPlugins });
+
 export function webpack(webpackConfig: any = {}, options: any = {}): any {
   // it will reuse babel options that are already in use in storybook
   // also, these babel options are chained with other presets.
   const { babelOptions, mdxBabelOptions, configureJSX = true } = options;
-
-  const resolveOptions = { paths: [require.resolve('@storybook/addon-docs')] };
-
-  const remarkPlugins = ['remark-slug', 'remark-external-links'].map((plugin) =>
-    require(require.resolve(plugin, resolveOptions)),
-  );
 
   mdxLoaders = [
     {
@@ -43,7 +45,7 @@ export function webpack(webpackConfig: any = {}, options: any = {}): any {
     },
     {
       loader: require.resolve('@mdx-js/loader', resolveOptions),
-      options: { compilers: [createCompiler(options)], remarkPlugins },
+      options: mdxOptions(options),
     },
   ];
 
