@@ -127,7 +127,6 @@ function watchStories(watcher: FSWatcher, initialFiles: Set<string>): void {
     removedFiles.forEach((filePath) => watchingFiles.delete(filePath));
 
     Object.values(stories).forEach((story) => storiesByFiles.get(story.parameters.fileName)?.push(story));
-    console.log(storiesByFiles);
     addons.getChannel().emit('storiesUpdated', storiesByFiles);
     storiesByFiles = new Map<string, StoryInput[]>();
   });
