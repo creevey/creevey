@@ -2,7 +2,7 @@
 
 import { storiesOf } from '@storybook/react';
 
-const buttonTests = captureElement => ({
+const buttonTests = (captureElement) => ({
   async click() {
     await this.browser.actions().click(captureElement).perform();
 
