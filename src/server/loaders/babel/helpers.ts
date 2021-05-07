@@ -95,6 +95,29 @@ function cleanUpStoryProps(storyPropAssign: NodePath<t.AssignmentExpression>): v
   removeAllPropsExcept(rightPath, ['name', ['parameters', 'creevey', 'docsOnly']]);
 }
 
+function cleanUpStoriesOfCallChain(storiesOfPath: NodePath): void {
+  let callPath = storiesOfPath;
+  do {
+    const childCallPath = callPath;
+    const { parentPath: memberPath } = childCallPath;
+    const propPath = memberPath.get('property');
+    callPath = memberPath.parentPath;
+    if (!memberPath.isMemberExpression() || !callPath.isCallExpression()) return;
+    if (!Array.isArray(propPath) && propPath.isIdentifier({ name: 'add' })) {
+      const [, storyPath, parametersPath] = callPath.get('arguments');
+      storyPath.replaceWith(t.arrowFunctionExpression([], t.blockStatement([])));
+      if (parametersPath?.isObjectExpression()) removeAllPropsExcept(parametersPath, ['creevey']);
+    }
+    if (!Array.isArray(propPath) && propPath.isIdentifier({ name: 'addDecorator' })) {
+      callPath.replaceWith(childCallPath);
+    }
+    if (!Array.isArray(propPath) && propPath.isIdentifier({ name: 'addParameters' })) {
+      const [parametersPath] = callPath.get('arguments');
+      if (parametersPath?.isObjectExpression()) removeAllPropsExcept(parametersPath, ['creevey']);
+    }
+  } while (callPath.parentPath != null);
+}
+
 function recursivelyRemoveUnreferencedBindings(path: NodePath<t.Program>): void {
   const getUnreferencedBindings = (): Binding[] => {
     path.scope.crawl();
@@ -325,25 +348,17 @@ export const storyVisitor: TraverseOptions<VisitorState> = {
     const rootPath = findRootPath(rootCallPath);
     if (!rootCallPath.get('callee').isIdentifier({ name: 'storiesOf' })) return;
     if (rootPath) this.visitedTopPaths.add(rootPath);
-    let callPath = rootCallPath as NodePath;
-    do {
-      const childCallPath = callPath;
-      const { parentPath: memberPath } = childCallPath;
-      const propPath = memberPath.get('property');
-      callPath = memberPath.parentPath;
-      if (!memberPath.isMemberExpression() || !callPath.isCallExpression()) return;
-      if (!Array.isArray(propPath) && propPath.isIdentifier({ name: 'add' })) {
-        const [, storyPath, parametersPath] = callPath.get('arguments');
-        storyPath.replaceWith(t.arrowFunctionExpression([], t.blockStatement([])));
-        if (parametersPath?.isObjectExpression()) removeAllPropsExcept(parametersPath, ['creevey']);
+    if (rootPath?.isVariableDeclaration()) {
+      const storiesIdPath = rootPath
+        .get('declarations')
+        .find((decl) => decl.get('init') == rootCallPath)
+        ?.get('id');
+      if (storiesIdPath?.isIdentifier()) {
+        (storiesIdPath.scope.getBinding(storiesIdPath.node.name)?.referencePaths ?? []).forEach(
+          cleanUpStoriesOfCallChain,
+        );
       }
-      if (!Array.isArray(propPath) && propPath.isIdentifier({ name: 'addDecorator' })) {
-        callPath.replaceWith(childCallPath);
-      }
-      if (!Array.isArray(propPath) && propPath.isIdentifier({ name: 'addParameters' })) {
-        const [parametersPath] = callPath.get('arguments');
-        if (parametersPath?.isObjectExpression()) removeAllPropsExcept(parametersPath, ['creevey']);
-      }
-    } while (callPath.parentPath != null);
+    }
+    cleanUpStoriesOfCallChain(rootCallPath);
   },
 };

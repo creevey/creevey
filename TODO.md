@@ -314,13 +314,9 @@
   - [x] Mdx e2e tests
     - Add tests loader and e2e
 - [x] Fix todos in browser.ts and `no-shadow` rule
-- [ ] Rename `webpack` to bundler. Move bundler.ts
+- [x] Rename `webpack` to bundler. Move bundler.ts
 - [ ] Add debug output for webdriver build and resolve and story switch
 - [ ] Improve and approve storybook.examples e2e tests
-- [ ] Test with yarn2
-- [ ] Think about how to test with ESM (try to use import() from esm directory)
-- [ ] Research webpack 5
-- [ ] Try https://docs.gitlab.com/runner/executors/docker.html#the-privileged-mode
 - [x] Be able to run storybook examples e2e in CI
 - [x] Improve Docker
   - [x] Private docker images registry
@@ -379,6 +375,10 @@
     - Iterate be screen images and calculate resulting x/y coordinates for composite image
     - If image width/height greater than viewport width/height than scroll bar is captured
 - [x] ~~Support esm/cjs builds~~
+- [ ] Test with yarn2
+- [ ] Think about how to test with ESM (try to use import() from esm directory)
+- [ ] Research webpack 5
+- [ ] Try https://docs.gitlab.com/runner/executors/docker.html#the-privileged-mode
 - [ ] Check latest storybook docs on useful cases
 - [ ] Move docker config options to separate prop `docker`
 - [ ] Move from yarn to npm@7

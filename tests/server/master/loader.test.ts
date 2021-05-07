@@ -35,6 +35,7 @@ const testsToFileTypes: Partial<Record<string, FileType>> = {
   'storiesof-chain': FileType.Story,
   'storiesof-decorators': FileType.Story,
   'storiesof-import-tests': FileType.Story,
+  'storiesof-loop-chain': FileType.Story,
   'storiesof-parameters': FileType.Story,
   'storiesof-simple': FileType.Story,
   'storiesof-tests': FileType.Story,
