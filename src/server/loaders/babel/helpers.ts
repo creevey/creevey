@@ -13,8 +13,8 @@ function getPropertyPath(path: NodePath<t.ObjectExpression>, name: string): Node
   return propertyPath?.isObjectProperty() ? propertyPath : undefined;
 }
 
-function getDeclaratorPath<T>(path: NodePath<T>): NodePath<t.VariableDeclarator> | undefined {
-  if (path.isIdentifier()) {
+function getDeclaratorPath<T>(path?: NodePath<T>): NodePath<t.VariableDeclarator> | undefined {
+  if (path?.isIdentifier()) {
     const { path: bindingPath } = path.scope.getBinding(path.node.name) ?? {};
     if (bindingPath?.isVariableDeclarator()) return bindingPath;
   }
@@ -26,30 +26,56 @@ function getKindObjectNodePath<T>(path: NodePath<T>): NodePath<t.ObjectExpressio
   }
 }
 
+function getIdentifiers(
+  path: NodePath<t.VariableDeclarator>[] | NodePath<t.FunctionDeclaration>,
+): NodePath<t.Identifier>[] {
+  if (Array.isArray(path)) {
+    return path
+      .map((x) => x.get('id'))
+      .map((idPath) => (idPath.isIdentifier() ? idPath : null))
+      .filter(isDefined);
+  }
+  if (path.isFunctionDeclaration()) {
+    const idPath = path.get('id');
+    return idPath.isIdentifier() ? [idPath] : [];
+  }
+  return [];
+}
+
 type NestedPropNames = [string, ...(string | NestedPropNames)[]];
 type PropNames = (string | NestedPropNames)[];
 function removeAllPropsExcept(path: NodePath<t.ObjectExpression>, propNames: PropNames): void {
   path.get('properties').forEach((propPath) => {
     if (propPath.isObjectProperty()) {
-      const propName = propNames.find((name) =>
+      const propName: string | NestedPropNames | undefined = propNames.find((name) =>
         t.isIdentifier(propPath.node.key, { name: Array.isArray(name) ? name[0] : name }),
       );
       if (!propName) return propPath.remove();
       const restNames = Array.isArray(propName) ? propName.slice(1) : [];
       if (restNames.length == 0) return;
-      const propValuePath = propPath?.get('value');
-      if (propValuePath?.isObjectExpression()) removeAllPropsExcept(propValuePath, restNames);
+      removeAllExpressionPropsExcept(propPath?.get('value'), restNames);
     } else if (propPath.isSpreadElement()) {
       const argumentPath = propPath.get('argument');
-      if (argumentPath.isObjectExpression()) return removeAllPropsExcept(argumentPath, propNames);
-      const declaratorPath = getDeclaratorPath(argumentPath);
-      if (declaratorPath) {
-        const rightPath = declaratorPath.get('init');
-        if (rightPath.isObjectExpression()) removeAllPropsExcept(rightPath, propNames);
-        else propPath.remove();
-      } else propPath.remove();
+      removeAllExpressionPropsExcept(argumentPath, propNames);
+      removeAllExpressionPropsExcept(getDeclaratorPath(argumentPath)?.get('init'), propNames);
     } else propPath.remove();
   });
+}
+
+function removeAllPropAssignsExcept(
+  propAssigns: Map<NodePath<t.AssignmentExpression>, string[]>,
+  propNames: PropNames,
+): void {
+  for (const [assignPath, props] of propAssigns.entries() ?? []) {
+    const restNames = props.reduce((names, prop) => {
+      const propName = names.find((name) => (Array.isArray(name) ? name[0] : name) == prop);
+      if (Array.isArray(propName)) return propName.slice(1);
+      if (!propName) assignPath.remove();
+      return [];
+    }, propNames);
+    if (restNames.length == 0) continue;
+    removeAllExpressionPropsExcept(assignPath.get('right'), restNames);
+  }
 }
 
 function replaceStoryFnToNoop(declarations: NodePath<t.VariableDeclarator>[]): void {
@@ -85,11 +111,11 @@ function getPropertyAssignmentPaths(
   return assignPaths;
 }
 
-function cleanUpStoryProps(storyPropAssign: NodePath<t.AssignmentExpression>): void {
-  const rightPath = storyPropAssign.get('right');
-  if (!rightPath?.isObjectExpression()) return;
-
-  removeAllPropsExcept(rightPath, ['name', ['parameters', 'creevey', 'docsOnly']]);
+function removeAllExpressionPropsExcept<T>(expressionPath: NodePath<T> | undefined, propNames: PropNames): void {
+  // TODO Object.assign
+  const resolvedDeclPath = getDeclaratorPath(expressionPath);
+  if (expressionPath?.isObjectExpression()) removeAllPropsExcept(expressionPath, propNames);
+  if (resolvedDeclPath) removeAllExpressionPropsExcept(resolvedDeclPath.get('init'), propNames);
 }
 
 function cleanUpStoriesOfCallChain(storiesOfPath: NodePath): void {
@@ -97,20 +123,19 @@ function cleanUpStoriesOfCallChain(storiesOfPath: NodePath): void {
   do {
     const childCallPath = callPath;
     const { parentPath: memberPath } = childCallPath;
-    const propPath = memberPath.get('property');
     callPath = memberPath.parentPath;
-    if (!memberPath.isMemberExpression() || !callPath.isCallExpression()) return;
-    if (!Array.isArray(propPath) && propPath.isIdentifier({ name: 'add' })) {
+    if (!memberPath.isMemberExpression()) return;
+    const propPath = memberPath.get('property');
+    if (!callPath.isCallExpression()) return;
+    if (propPath.isIdentifier({ name: 'add' })) {
       const [, storyPath, parametersPath] = callPath.get('arguments');
       storyPath.replaceWith(t.arrowFunctionExpression([], t.blockStatement([])));
-      if (parametersPath?.isObjectExpression()) removeAllPropsExcept(parametersPath, ['creevey']);
-    }
-    if (!Array.isArray(propPath) && propPath.isIdentifier({ name: 'addDecorator' })) {
+      removeAllExpressionPropsExcept(parametersPath, ['creevey']);
+    } else if (propPath.isIdentifier({ name: 'addDecorator' })) {
       callPath.replaceWith(childCallPath);
-    }
-    if (!Array.isArray(propPath) && propPath.isIdentifier({ name: 'addParameters' })) {
+    } else if (propPath.isIdentifier({ name: 'addParameters' })) {
       const [parametersPath] = callPath.get('arguments');
-      if (parametersPath?.isObjectExpression()) removeAllPropsExcept(parametersPath, ['creevey']);
+      removeAllExpressionPropsExcept(parametersPath, ['creevey']);
     }
   } while (callPath.parentPath != null);
 }
@@ -221,40 +246,24 @@ export const previewVisitor: TraverseOptions<VisitorState> = {
     this.visitedTopPaths.add(namedPath);
     const declarationPath = namedPath.get('declaration');
     if (!declarationPath.isVariableDeclaration()) return;
-    const declarations = declarationPath.get('declarations');
-    if (!Array.isArray(declarations)) return;
-    declarations.forEach((declPath) => {
+    declarationPath.get('declarations').forEach((declPath: NodePath<t.VariableDeclarator>) => {
       if (!declPath.isVariableDeclarator()) return;
       if (t.isIdentifier(declPath.node.id, { name: 'decorators' })) return declPath.remove();
       if (t.isIdentifier(declPath.node.id, { name: 'parameters' })) {
-        const initPath = declPath.get('init');
-        if (Array.isArray(initPath)) return;
-        if (initPath.isObjectExpression()) return removeAllPropsExcept(initPath, ['creevey']);
-        const resolvedDeclPath = getDeclaratorPath(initPath);
-        if (resolvedDeclPath) {
-          const rightPath = resolvedDeclPath.get('init');
-          if (!rightPath.isObjectExpression()) return;
-          removeAllPropsExcept(rightPath, ['creevey']);
-        }
+        removeAllExpressionPropsExcept(declPath.get('init'), ['creevey']);
       }
     });
   },
   CallExpression(rootCallPath) {
     const rootPath = findRootPath(rootCallPath);
-    if (rootCallPath.get('callee').isIdentifier({ name: 'configure' })) {
-      if (rootPath) this.visitedTopPaths.add(rootPath);
-      return;
-    }
-    if (rootCallPath.get('callee').isIdentifier({ name: 'addDecorator' })) {
-      rootCallPath.remove();
-      return;
-    }
-    if (rootCallPath.get('callee').isIdentifier({ name: 'addParameters' })) {
+    const calleePath = rootCallPath.get('callee');
+    if (calleePath.isIdentifier({ name: 'configure' }) && rootPath) this.visitedTopPaths.add(rootPath);
+    else if (calleePath.isIdentifier({ name: 'addDecorator' })) rootCallPath.remove();
+    else if (calleePath.isIdentifier({ name: 'addParameters' })) {
       const [argPath] = rootCallPath.get('arguments');
       if (!argPath || !argPath.isObjectExpression()) return;
       if (rootPath) this.visitedTopPaths.add(rootPath);
       removeAllPropsExcept(argPath, ['creevey']);
-      return;
     }
   },
 };
@@ -270,37 +279,29 @@ export const mdxVisitor: TraverseOptions<VisitorState> = {
   },
 };
 
+const kindProps: PropNames = ['title', 'id', ['parameters', 'creevey'], 'includeStories', 'excludeStories'];
+const storyProps: PropNames = [
+  'storyName',
+  ['story', 'name', ['parameters', 'creevey', 'docsOnly']],
+  ['parameters', 'creevey', 'docsOnly'],
+];
+
 export const storyVisitor: TraverseOptions<VisitorState> = {
   ExportDefaultDeclaration(defaultPath) {
     const defaultDeclaration = defaultPath.get('declaration');
-    let kindPath = getKindObjectNodePath(defaultDeclaration);
     const declaratorPath = getDeclaratorPath(defaultDeclaration);
-    if (declaratorPath) {
-      const kindInitPath = declaratorPath.get('init');
-      if (!Array.isArray(kindInitPath)) kindPath = getKindObjectNodePath(kindInitPath);
-    }
+    const kindPath = declaratorPath
+      ? getKindObjectNodePath(declaratorPath.get('init'))
+      : getKindObjectNodePath(defaultDeclaration);
     if (!kindPath) return;
 
     this.visitedTopPaths.add(defaultPath);
 
-    removeAllPropsExcept(kindPath, ['title', 'id', ['parameters', 'creevey'], 'includeStories', 'excludeStories']);
+    removeAllPropsExcept(kindPath, kindProps);
 
-    if (declaratorPath) {
-      const idPath = declaratorPath.get('id');
-      if (!idPath.isIdentifier()) return;
-      const kindPropAssigns = getPropertyAssignmentPaths([idPath]);
-      for (const [assignPath, props] of kindPropAssigns?.entries() ?? []) {
-        const [first, second] = props;
-        if (first == 'title' || first == 'id' || first == 'includeStories' || first == 'excludeStories') continue;
-        else if (first == 'parameters') {
-          if (!second) {
-            const rightPath = assignPath.get('right');
-            if (!rightPath?.isObjectExpression()) continue; // TODO it could be reassign
-            removeAllPropsExcept(rightPath, ['creevey']);
-          } else if (second != 'creevey') assignPath.remove();
-        } else assignPath.remove();
-      }
-    }
+    if (!declaratorPath) return;
+
+    removeAllPropAssignsExcept(getPropertyAssignmentPaths(getIdentifiers([declaratorPath])), kindProps);
   },
   ExportAllDeclaration(allPath) {
     const request = allPath.get('source').node.value;
@@ -317,42 +318,12 @@ export const storyVisitor: TraverseOptions<VisitorState> = {
     if (declarationPath.isVariableDeclaration()) {
       const declarations = declarationPath.get('declarations');
       replaceStoryFnToNoop(declarations);
-      storyFnPropAssigns = getPropertyAssignmentPaths(
-        declarations
-          .map((decl) => {
-            const idPath = decl.get('id');
-            return idPath.isIdentifier() ? idPath : null;
-          })
-          .filter(isDefined),
-      );
+      storyFnPropAssigns = getPropertyAssignmentPaths(getIdentifiers(declarations));
     } else if (declarationPath.isFunctionDeclaration()) {
-      const idPath = declarationPath.get('id');
       declarationPath.get('body').replaceWith(t.blockStatement([]));
-      if (idPath.isIdentifier()) storyFnPropAssigns = getPropertyAssignmentPaths([idPath]);
+      storyFnPropAssigns = getPropertyAssignmentPaths(getIdentifiers(declarationPath));
     }
-    // TODO Simplify like this
-    // removeAllPropAssignsExcept(..., ['storyName', ['story', 'name', ['parameters', 'creevey', 'docsOnly']], ['parameters', 'creevey', 'docsOnly']])
-    for (const [assignPath, props] of storyFnPropAssigns.entries()) {
-      const [first, second, third] = props;
-      if (first == 'storyName') continue;
-      else if (first == 'story') {
-        if (!second) cleanUpStoryProps(assignPath);
-        else if (second == 'name') continue;
-        else if (second == 'parameters') {
-          if (!third) {
-            const rightPath = assignPath.get('right');
-            if (!rightPath?.isObjectExpression()) continue;
-            removeAllPropsExcept(rightPath, ['creevey', 'docsOnly']);
-          } else if (third != 'creevey' && third != 'docsOnly') assignPath.remove();
-        } else assignPath.remove();
-      } else if (first == 'parameters') {
-        if (!second) {
-          const rightPath = assignPath.get('right');
-          if (!rightPath?.isObjectExpression()) continue;
-          removeAllPropsExcept(rightPath, ['creevey', 'docsOnly']);
-        } else if (second != 'creevey' && second != 'docsOnly') assignPath.remove();
-      } else assignPath.remove();
-    }
+    removeAllPropAssignsExcept(storyFnPropAssigns, storyProps);
   },
   CallExpression(rootCallPath) {
     const rootPath = findRootPath(rootCallPath);
