@@ -2,8 +2,7 @@ import { NodePath, Binding, TraverseOptions } from '@babel/traverse';
 import * as t from '@babel/types';
 import { isDefined } from '../../../types';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function findRootPath(path: NodePath<any>): NodePath | null {
+function findRootPath<T>(path: NodePath<T>): NodePath | null {
   return path.find((x) => x.parentPath?.isProgram());
 }
 
@@ -53,37 +52,35 @@ function removeAllPropsExcept(path: NodePath<t.ObjectExpression>, propNames: Pro
   });
 }
 
-function replaceStoryFnToNoop(declarations: t.VariableDeclarator[]): void {
-  declarations.forEach((declarator) => (declarator.init = t.arrowFunctionExpression([], t.blockStatement([]))));
+function replaceStoryFnToNoop(declarations: NodePath<t.VariableDeclarator>[]): void {
+  declarations.forEach((declarator) =>
+    declarator.get('init').replaceWith(t.arrowFunctionExpression([], t.blockStatement([]))),
+  );
 }
 
-function getPropertyAssignmentPaths<T>(
-  path: NodePath<T>,
-  declarations: t.VariableDeclarator[],
+function getPropertyAssignmentPaths(
+  idPaths: NodePath<t.Identifier>[],
 ): Map<NodePath<t.AssignmentExpression>, string[]> {
   const assignPaths = new Map<NodePath<t.AssignmentExpression>, string[]>();
 
-  declarations
-    .map(({ id }) => id)
-    .forEach((id) => {
-      if (!t.isIdentifier(id)) return;
-      const referencePaths = path.scope.getBinding(id.name)?.referencePaths ?? [];
+  idPaths.forEach((idPath) => {
+    const referencePaths = idPath.scope.getBinding(idPath.node.name)?.referencePaths ?? [];
 
-      referencePaths.forEach((refPath) => {
-        const assignmentPath = refPath.findParent((parentPath) => parentPath.isAssignmentExpression());
-        if (!assignmentPath?.isAssignmentExpression() || assignPaths.has(assignmentPath)) return;
+    referencePaths.forEach((refPath) => {
+      const assignmentPath = refPath.findParent((parentPath) => parentPath.isAssignmentExpression());
+      if (!assignmentPath?.isAssignmentExpression() || assignPaths.has(assignmentPath)) return;
 
-        const props: string[] = [];
-        for (let propPath = refPath.parentPath; propPath != assignmentPath; propPath = propPath.parentPath) {
-          if (!propPath.isMemberExpression()) return;
-          const propNode = propPath.node.property;
-          if (!t.isIdentifier(propNode)) return;
-          props.push(propNode.name);
-        }
+      const props: string[] = [];
+      for (let propPath = refPath.parentPath; propPath != assignmentPath; propPath = propPath.parentPath) {
+        if (!propPath.isMemberExpression()) return;
+        const propNode = propPath.node.property;
+        if (!t.isIdentifier(propNode)) return;
+        props.push(propNode.name);
+      }
 
-        assignPaths.set(assignmentPath, props);
-      });
+      assignPaths.set(assignmentPath, props);
     });
+  });
 
   return assignPaths;
 }
@@ -289,7 +286,9 @@ export const storyVisitor: TraverseOptions<VisitorState> = {
     removeAllPropsExcept(kindPath, ['title', 'id', ['parameters', 'creevey'], 'includeStories', 'excludeStories']);
 
     if (declaratorPath) {
-      const kindPropAssigns = getPropertyAssignmentPaths(defaultPath, [declaratorPath.node]);
+      const idPath = declaratorPath.get('id');
+      if (!idPath.isIdentifier()) return;
+      const kindPropAssigns = getPropertyAssignmentPaths([idPath]);
       for (const [assignPath, props] of kindPropAssigns?.entries() ?? []) {
         const [first, second] = props;
         if (first == 'title' || first == 'id' || first == 'includeStories' || first == 'excludeStories') continue;
@@ -313,15 +312,26 @@ export const storyVisitor: TraverseOptions<VisitorState> = {
   },
   ExportNamedDeclaration(namedPath) {
     this.visitedTopPaths.add(namedPath);
-    const namedDeclaration = namedPath.node.declaration;
-    if (!t.isVariableDeclaration(namedDeclaration)) {
-      if (t.isFunctionDeclaration(namedDeclaration)) namedDeclaration.body = t.blockStatement([]);
-      return;
+    const declarationPath = namedPath.get('declaration');
+    let storyFnPropAssigns = new Map<NodePath<t.AssignmentExpression>, string[]>();
+    if (declarationPath.isVariableDeclaration()) {
+      const declarations = declarationPath.get('declarations');
+      replaceStoryFnToNoop(declarations);
+      storyFnPropAssigns = getPropertyAssignmentPaths(
+        declarations
+          .map((decl) => {
+            const idPath = decl.get('id');
+            return idPath.isIdentifier() ? idPath : null;
+          })
+          .filter(isDefined),
+      );
+    } else if (declarationPath.isFunctionDeclaration()) {
+      const idPath = declarationPath.get('id');
+      declarationPath.get('body').replaceWith(t.blockStatement([]));
+      if (idPath.isIdentifier()) storyFnPropAssigns = getPropertyAssignmentPaths([idPath]);
     }
-    replaceStoryFnToNoop(namedDeclaration.declarations);
     // TODO Simplify like this
     // removeAllPropAssignsExcept(..., ['storyName', ['story', 'name', ['parameters', 'creevey', 'docsOnly']], ['parameters', 'creevey', 'docsOnly']])
-    const storyFnPropAssigns = getPropertyAssignmentPaths(namedPath, namedDeclaration.declarations);
     for (const [assignPath, props] of storyFnPropAssigns.entries()) {
       const [first, second, third] = props;
       if (first == 'storyName') continue;
