@@ -10,7 +10,12 @@ const testsToFileTypes: Partial<Record<string, FileType>> = {
   addParameters: FileType.Preview,
   'crucial-refs': FileType.Story,
   'csf-as-expression': FileType.Story,
+  'csf-commonjs-loop': FileType.Story,
+  'csf-commonjs': FileType.Story,
+  'csf-commonjs2': FileType.Story,
+  'csf-commonjs3': FileType.Story,
   'csf-component': FileType.Story,
+  'csf-commonjs4': FileType.Story,
   'csf-custom-params': FileType.Story,
   'csf-decorators': FileType.Story,
   'csf-duplicate-assigns': FileType.Story,
@@ -19,12 +24,15 @@ const testsToFileTypes: Partial<Record<string, FileType>> = {
   'csf-kind-as': FileType.Story,
   'csf-kind-props-assign': FileType.Story,
   'csf-multiple-decls': FileType.Story,
+  'csf-object-assign': FileType.Story,
+  'csf-reassign': FileType.Story,
   'csf-side-effects': FileType.Story,
   'csf-simple': FileType.Story,
   'csf-spread-params': FileType.Story,
   'csf-storybook-v6': FileType.Story,
   'csf-tests': FileType.Story,
   'csf-var-kind': FileType.Story,
+  'csf-var-story': FileType.Story,
   'csf-var-tests': FileType.Story,
   destructuring: FileType.Story,
   imports: FileType.Story,
@@ -84,7 +92,7 @@ describe('loader', () => {
   - story decorator + params
   - with non-creevey params
   - with non-story exports
-  - var storiesOf (const Button = storiesOf())
+  x var storiesOf (const Button = storiesOf())
   - function declaration (.add('Text', function Text() {}))
   - function expression (.add('Text', Text))
   - with multiple storiesOf
@@ -95,7 +103,7 @@ describe('loader', () => {
 - MDX
   - MDXContent function
 
-- commonjs
+x commonjs
 
 - Optional
   - Complex example
