@@ -30,6 +30,7 @@ const testsToFileTypes: Partial<Record<string, FileType>> = {
   'csf-simple': FileType.Story,
   'csf-spread-params': FileType.Story,
   'csf-storybook-v6': FileType.Story,
+  'csf-template': FileType.Story,
   'csf-tests': FileType.Story,
   'csf-var-kind': FileType.Story,
   'csf-var-story': FileType.Story,

@@ -35,6 +35,16 @@ function isObjectAssign(path?: NodePath): path is NodePath<t.CallExpression> {
   );
 }
 
+function isTemplateBind(path?: NodePath): path is NodePath<t.CallExpression> {
+  if (!path?.isCallExpression()) return false;
+  const calleePath = path.get('callee');
+  return (
+    calleePath.isMemberExpression() &&
+    calleePath.get('object').isIdentifier() &&
+    calleePath.get('property').isIdentifier({ name: 'bind' })
+  );
+}
+
 function findRootPath<T>(path: NodePath<T>): NodePath | null {
   return path.find((x) => x.parentPath?.isProgram());
 }
@@ -115,19 +125,10 @@ function removeAllPropAssignsExcept(
 }
 
 function replaceStoryFnToNoop(path: NodePath): void {
-  if (path.isArrowFunctionExpression()) {
-    path.get('params').forEach((paramPath) => paramPath.remove());
-    path.get('body').replaceWith(t.blockStatement([]));
-  } else if (path.isFunctionDeclaration()) {
-    path.get('params').forEach((paramPath) => paramPath.remove());
-    path.get('body').replaceWith(t.blockStatement([]));
-  } else if (path.isFunctionExpression()) {
-    path.get('params').forEach((paramPath) => paramPath.remove());
-    path.get('body').replaceWith(t.blockStatement([]));
-  } else if (path.isObjectMethod()) {
-    path.get('params').forEach((paramPath) => paramPath.remove());
-    path.get('body').replaceWith(t.blockStatement([]));
-  }
+  if (path.isArrowFunctionExpression()) path.get('body').replaceWith(t.blockStatement([]));
+  else if (path.isFunctionDeclaration()) path.get('body').replaceWith(t.blockStatement([]));
+  else if (path.isFunctionExpression()) path.get('body').replaceWith(t.blockStatement([]));
+  else if (path.isObjectMethod()) path.get('body').replaceWith(t.blockStatement([]));
 }
 
 function getAssignmentPathWithProps(refPath: NodePath): [NodePath<t.AssignmentExpression>, string[]] | undefined {
@@ -169,6 +170,10 @@ function removeAllExpressionPropsExcept<T>(expressionPath: NodePath<T> | undefin
     (expressionPath as NodePath<t.CallExpression>)
       .get('arguments')
       .forEach((argumentPath) => removeAllExpressionPropsExcept(argumentPath, storyProps));
+  if (expressionPath?.isCallExpression() && isTemplateBind((expressionPath as unknown) as NodePath)) {
+    const calleePath = (expressionPath as NodePath<t.CallExpression>).get('callee');
+    if (calleePath.isMemberExpression()) removeAllExpressionPropsExcept(calleePath.get('object'), propNames);
+  }
   if (
     (expressionPath?.isFunctionExpression() || expressionPath?.isArrowFunctionExpression()) &&
     propNames[0] == 'storyName'
