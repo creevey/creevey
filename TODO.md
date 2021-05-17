@@ -305,6 +305,7 @@
   - [x] Send list of available browsers from api
   - [x] Handle main.js for 6.x+, remove addons from it
   - [x] Add extract command for CLI
+  - [ ] Pass grep option for `update` command
   - [ ] Support `stories.svelte` https://storybook.js.org/blog/storybook-for-svelte/
   - [ ] Add fallback option, load tests from browser (hmr and tests are disabled in this case)
     - [ ] Send PR to Storybook to allow use HMR for stories

@@ -56,12 +56,14 @@ function getPropertyPath(path: NodePath<t.ObjectExpression>, name: string): Node
   return propertyPath?.isObjectProperty() ? propertyPath : undefined;
 }
 
+// TODO Support import and process them
 function getDeclaratorPath<T>(
   path?: NodePath<T>,
-): NodePath<t.VariableDeclarator> | NodePath<t.FunctionDeclaration> | undefined {
+): NodePath<t.VariableDeclarator> | NodePath<t.FunctionDeclaration> | NodePath<t.ImportSpecifier> | undefined {
   if (path?.isIdentifier()) {
     const { path: bindingPath } = path.scope.getBinding(path.node.name) ?? {};
-    if (bindingPath?.isVariableDeclarator() || bindingPath?.isFunctionDeclaration()) return bindingPath;
+    if (bindingPath?.isVariableDeclarator() || bindingPath?.isFunctionDeclaration() || bindingPath?.isImportSpecifier())
+      return bindingPath;
   }
 }
 
@@ -124,11 +126,11 @@ function removeAllPropAssignsExcept(
   }
 }
 
-function replaceStoryFnToNoop(path: NodePath): void {
-  if (path.isArrowFunctionExpression()) path.get('body').replaceWith(t.blockStatement([]));
-  else if (path.isFunctionDeclaration()) path.get('body').replaceWith(t.blockStatement([]));
-  else if (path.isFunctionExpression()) path.get('body').replaceWith(t.blockStatement([]));
-  else if (path.isObjectMethod()) path.get('body').replaceWith(t.blockStatement([]));
+function replaceStoryFnToNoop(path?: NodePath): void {
+  if (path?.isArrowFunctionExpression()) path.get('body').replaceWith(t.blockStatement([]));
+  else if (path?.isFunctionDeclaration()) path.get('body').replaceWith(t.blockStatement([]));
+  else if (path?.isFunctionExpression()) path.get('body').replaceWith(t.blockStatement([]));
+  else if (path?.isObjectMethod()) path.get('body').replaceWith(t.blockStatement([]));
 }
 
 function getAssignmentPathWithProps(refPath: NodePath): [NodePath<t.AssignmentExpression>, string[]] | undefined {
@@ -166,21 +168,27 @@ function getPropertyAssignmentPaths(
 function removeAllExpressionPropsExcept<T>(expressionPath: NodePath<T> | undefined, propNames: PropNames): void {
   const resolvedDeclPath = getDeclaratorPath(expressionPath);
   if (expressionPath?.isObjectExpression()) removeAllPropsExcept(expressionPath, propNames);
-  if (expressionPath?.isCallExpression() && isObjectAssign((expressionPath as unknown) as NodePath))
-    (expressionPath as NodePath<t.CallExpression>)
-      .get('arguments')
-      .forEach((argumentPath) => removeAllExpressionPropsExcept(argumentPath, storyProps));
-  if (expressionPath?.isCallExpression() && isTemplateBind((expressionPath as unknown) as NodePath)) {
-    const calleePath = (expressionPath as NodePath<t.CallExpression>).get('callee');
-    if (calleePath.isMemberExpression()) removeAllExpressionPropsExcept(calleePath.get('object'), propNames);
-  }
-  if (
+  else if (expressionPath?.isCallExpression()) {
+    if (isObjectAssign((expressionPath as unknown) as NodePath))
+      (expressionPath as NodePath<t.CallExpression>)
+        .get('arguments')
+        .forEach((argumentPath) => removeAllExpressionPropsExcept(argumentPath, storyProps));
+    else if (isTemplateBind((expressionPath as unknown) as NodePath)) {
+      const calleePath = (expressionPath as NodePath<t.CallExpression>).get('callee');
+      if (calleePath.isMemberExpression()) removeAllExpressionPropsExcept(calleePath.get('object'), propNames);
+    } else if (propNames[0] == 'storyName') {
+      expressionPath?.replaceWith(t.arrowFunctionExpression([], t.blockStatement([])));
+    }
+  } else if (
     (expressionPath?.isFunctionExpression() || expressionPath?.isArrowFunctionExpression()) &&
     propNames[0] == 'storyName'
   )
     replaceStoryFnToNoop(expressionPath);
+  else if ((!resolvedDeclPath || resolvedDeclPath.isImportSpecifier()) && propNames[0] == 'storyName')
+    expressionPath?.replaceWith(t.arrowFunctionExpression([], t.blockStatement([])));
   if (resolvedDeclPath) {
-    removeAllPropAssignsExcept(getPropertyAssignmentPaths(getIdentifiers([resolvedDeclPath])).entries(), propNames);
+    if (!resolvedDeclPath.isImportSpecifier())
+      removeAllPropAssignsExcept(getPropertyAssignmentPaths(getIdentifiers([resolvedDeclPath])).entries(), propNames);
     if (resolvedDeclPath.isVariableDeclarator())
       removeAllExpressionPropsExcept(resolvedDeclPath.get('init'), propNames);
     if (resolvedDeclPath.isFunctionDeclaration() && propNames[0] == 'storyName') replaceStoryFnToNoop(resolvedDeclPath);
@@ -372,9 +380,8 @@ export const storyVisitor: TraverseOptions<VisitorState> = {
 
     removeAllPropsExcept(kindPath, kindProps);
 
-    if (!declaratorPath) return;
-
-    removeAllPropAssignsExcept(getPropertyAssignmentPaths(getIdentifiers([declaratorPath])).entries(), kindProps);
+    if (declaratorPath && !declaratorPath.isImportSpecifier())
+      removeAllPropAssignsExcept(getPropertyAssignmentPaths(getIdentifiers([declaratorPath])).entries(), kindProps);
   },
   ExportAllDeclaration(allPath) {
     const request = allPath.get('source').node.value;
@@ -426,7 +433,7 @@ export const storyVisitor: TraverseOptions<VisitorState> = {
       if (assignmentPath && props) {
         if (props.length == 1 && props[0] != 'default') {
           const declaratorPath = getDeclaratorPath(assignmentPath.get('right'));
-          if (declaratorPath) {
+          if (declaratorPath && !declaratorPath.isImportSpecifier()) {
             removeAllPropAssignsExcept(
               getPropertyAssignmentPaths(getIdentifiers([declaratorPath])).entries(),
               storyProps,
@@ -452,7 +459,7 @@ export const storyVisitor: TraverseOptions<VisitorState> = {
           removeAllExpressionPropsExcept(assignmentPath.get('right'), exportsProps);
         } else if (props.length == 2 && props[0] == 'exports' && props[1] != 'default') {
           const declaratorPath = getDeclaratorPath(assignmentPath.get('right'));
-          if (declaratorPath) {
+          if (declaratorPath && !declaratorPath.isImportSpecifier()) {
             removeAllPropAssignsExcept(
               getPropertyAssignmentPaths(getIdentifiers([declaratorPath])).entries(),
               storyProps,

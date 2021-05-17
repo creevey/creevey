@@ -20,6 +20,7 @@ const testsToFileTypes: Partial<Record<string, FileType>> = {
   'csf-decorators': FileType.Story,
   'csf-duplicate-assigns': FileType.Story,
   'csf-function': FileType.Story,
+  'csf-import-story': FileType.Story,
   'csf-import-tests': FileType.Story,
   'csf-kind-as': FileType.Story,
   'csf-kind-props-assign': FileType.Story,

@@ -288,16 +288,25 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "iFrameActualSize", function() { return iFrameActualSize; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "iFrameZoomedIn", function() { return iFrameZoomedIn; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "iFrameZoomedOut", function() { return iFrameZoomedOut; });
+/* harmony import */ var _node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/core-js/modules/es.function.bind.js */ "./node_modules/core-js/modules/es.function.bind.js");
+/* harmony import */ var _node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0__);
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   title: 'Basics/Zoom',
   parameters: {}
 });
-var elementActualSize = function elementActualSize() {};
-var elementZoomedIn = function elementZoomedIn() {};
-var elementZoomedOut = function elementZoomedOut() {};
-var iFrameActualSize = function iFrameActualSize() {};
-var iFrameZoomedIn = function iFrameZoomedIn() {};
-var iFrameZoomedOut = function iFrameZoomedOut() {};
+
+var TemplateElement = function TemplateElement(args) {};
+
+var elementActualSize = TemplateElement.bind({});
+var elementZoomedIn = TemplateElement.bind({});
+var elementZoomedOut = TemplateElement.bind({});
+
+var TemplateIFrame = function TemplateIFrame(args) {};
+
+var iFrameActualSize = TemplateIFrame.bind({});
+var iFrameZoomedIn = TemplateIFrame.bind({});
+var iFrameZoomedOut = TemplateIFrame.bind({});
 
 /***/ }),
 
@@ -333,34 +342,40 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "StringCompact", function() { return StringCompact; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "StringNoControls", function() { return StringNoControls; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "StringNoControlsCompact", function() { return StringNoControlsCompact; });
+/* harmony import */ var _node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/core-js/modules/es.function.bind.js */ "./node_modules/core-js/modules/es.function.bind.js");
+/* harmony import */ var _node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0__);
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   title: 'Docs/ArgRow'
 });
-var String = function String() {};
-var LongName = function LongName() {};
-var LongDesc = function LongDesc() {};
-var Boolean = function Boolean() {};
-var Color = function Color() {};
-var Date = function Date() {};
-var Number = function Number() {};
-var Range = function Range() {};
-var Radio = function Radio() {};
-var InlineRadio = function InlineRadio() {};
-var Check = function Check() {};
-var InlineCheck = function InlineCheck() {};
-var Select = function Select() {};
-var MultiSelect = function MultiSelect() {};
-var ObjectOf = function ObjectOf() {};
-var ArrayOf = function ArrayOf() {};
-var ComplexObject = function ComplexObject() {};
-var Func = function Func() {};
-var Enum = function Enum() {};
-var LongEnum = function LongEnum() {};
-var ComplexUnion = function ComplexUnion() {};
-var Markdown = function Markdown() {};
-var StringCompact = function StringCompact() {};
-var StringNoControls = function StringNoControls() {};
-var StringNoControlsCompact = function StringNoControlsCompact() {};
+
+var Template = function Template(args) {};
+
+var String = Template.bind({});
+var LongName = Template.bind({});
+var LongDesc = Template.bind({});
+var Boolean = Template.bind({});
+var Color = Template.bind({});
+var Date = Template.bind({});
+var Number = Template.bind({});
+var Range = Template.bind({});
+var Radio = Template.bind({});
+var InlineRadio = Template.bind({});
+var Check = Template.bind({});
+var InlineCheck = Template.bind({});
+var Select = Template.bind({});
+var MultiSelect = Template.bind({});
+var ObjectOf = Template.bind({});
+var ArrayOf = Template.bind({});
+var ComplexObject = Template.bind({});
+var Func = Template.bind({});
+var Enum = Template.bind({});
+var LongEnum = Template.bind({});
+var ComplexUnion = Template.bind({});
+var Markdown = Template.bind({});
+var StringCompact = Template.bind({});
+var StringNoControls = Template.bind({});
+var StringNoControlsCompact = Template.bind({});
 
 /***/ }),
 
@@ -383,21 +398,27 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Error", function() { return Error; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Empty", function() { return Empty; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WithDefaultExpandedArgs", function() { return WithDefaultExpandedArgs; });
+/* harmony import */ var _node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/core-js/modules/es.function.bind.js */ "./node_modules/core-js/modules/es.function.bind.js");
+/* harmony import */ var _node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0__);
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   title: 'Docs/ArgsTable'
 });
-var Normal = function Normal() {};
-var Compact = function Compact() {};
-var InAddonPanel = function InAddonPanel() {};
-var InAddonPanelWithWarning = function InAddonPanelWithWarning() {};
-var Sections = function Sections() {};
-var SectionsCompact = function SectionsCompact() {};
-var SectionsAndSubsections = function SectionsAndSubsections() {};
-var SubsectionsOnly = function SubsectionsOnly() {};
-var AllControls = function AllControls() {};
-var Error = function Error() {};
-var Empty = function Empty() {};
-var WithDefaultExpandedArgs = function WithDefaultExpandedArgs() {};
+
+var Template = function Template(args) {};
+
+var Normal = Template.bind({});
+var Compact = Template.bind({});
+var InAddonPanel = Template.bind({});
+var InAddonPanelWithWarning = function InAddonPanelWithWarning(args) {};
+var Sections = Template.bind({});
+var SectionsCompact = Template.bind({});
+var SectionsAndSubsections = Template.bind({});
+var SubsectionsOnly = Template.bind({});
+var AllControls = Template.bind({});
+var Error = Template.bind({});
+var Empty = Template.bind({});
+var WithDefaultExpandedArgs = Template.bind({});
 
 /***/ }),
 
@@ -412,12 +433,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Subsection", function() { return Subsection; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Collapsed", function() { return Collapsed; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Nested", function() { return Nested; });
+/* harmony import */ var _node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/core-js/modules/es.function.bind.js */ "./node_modules/core-js/modules/es.function.bind.js");
+/* harmony import */ var _node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0__);
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   title: 'Docs/SectionRow'
 });
-var Section = function Section() {};
-var Subsection = function Subsection() {};
-var Collapsed = function Collapsed() {};
+
+var Template = function Template(args) {};
+
+var Section = Template.bind({});
+var Subsection = Template.bind({});
+var Collapsed = Template.bind({});
 var Nested = function Nested() {};
 
 /***/ }),
@@ -432,12 +459,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tabs", function() { return Tabs; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TabsInAddonPanel", function() { return TabsInAddonPanel; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Empty", function() { return Empty; });
+/* harmony import */ var _node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/core-js/modules/es.function.bind.js */ "./node_modules/core-js/modules/es.function.bind.js");
+/* harmony import */ var _node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0__);
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   title: 'Docs/TabbedArgsTable'
 });
-var Tabs = function Tabs() {};
-var TabsInAddonPanel = function TabsInAddonPanel() {};
-var Empty = function Empty() {};
+
+var Template = function Template(args) {};
+
+var Tabs = Template.bind({});
+var TabsInAddonPanel = Template.bind({});
+var Empty = Template.bind({});
 
 /***/ }),
 
@@ -468,12 +501,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Text", function() { return Text; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Markdown", function() { return Markdown; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MarkdownLinks", function() { return MarkdownLinks; });
+/* harmony import */ var _node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/core-js/modules/es.function.bind.js */ "./node_modules/core-js/modules/es.function.bind.js");
+/* harmony import */ var _node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0__);
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   title: 'Docs/Description'
 });
-var Text = function Text() {};
-var Markdown = function Markdown() {};
-var MarkdownLinks = function MarkdownLinks() {};
+
+var Template = function Template(args) {};
+
+var Text = Template.bind({});
+var Markdown = Template.bind({});
+var MarkdownLinks = Template.bind({});
 
 /***/ }),
 
@@ -588,10 +627,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   title: 'Docs/Source'
 });
-var JSX = function JSX() {};
-var CSS = function CSS() {};
-var NoStory = function NoStory() {};
-var SourceUnavailable = function SourceUnavailable() {};
+var JSX = function JSX(args) {};
+var CSS = function CSS(args) {};
+var NoStory = function NoStory(args) {};
+var SourceUnavailable = function SourceUnavailable(args) {};
 
 /***/ }),
 
@@ -1202,14 +1241,30 @@ __webpack_require__.r(__webpack_exports__);
   title: 'UI/Layout/Desktop',
   parameters: {}
 });
-var Default = function Default() {};
-var NoAddons = function NoAddons() {};
-var NoSidebar = function NoSidebar() {};
-var NoPanel = function NoPanel() {};
-var BottomPanel = function BottomPanel() {};
-var Fullscreen = function Fullscreen() {};
-var NoPanelNoSidebar = function NoPanelNoSidebar() {};
-var Page = function Page() {};
+var Default = function Default(_ref) {
+  var props = _ref.props;
+};
+var NoAddons = function NoAddons(_ref2) {
+  var props = _ref2.props;
+};
+var NoSidebar = function NoSidebar(_ref3) {
+  var props = _ref3.props;
+};
+var NoPanel = function NoPanel(_ref4) {
+  var props = _ref4.props;
+};
+var BottomPanel = function BottomPanel(_ref5) {
+  var props = _ref5.props;
+};
+var Fullscreen = function Fullscreen(_ref6) {
+  var props = _ref6.props;
+};
+var NoPanelNoSidebar = function NoPanelNoSidebar(_ref7) {
+  var props = _ref7.props;
+};
+var Page = function Page(_ref8) {
+  var props = _ref8.props;
+};
 
 /***/ }),
 
@@ -1229,10 +1284,18 @@ __webpack_require__.r(__webpack_exports__);
   title: 'UI/Layout/Mobile',
   parameters: {}
 });
-var InitialSidebar = function InitialSidebar() {};
-var InitialCanvas = function InitialCanvas() {};
-var InitialAddons = function InitialAddons() {};
-var Page = function Page() {};
+var InitialSidebar = function InitialSidebar(_ref) {
+  var props = _ref.props;
+};
+var InitialCanvas = function InitialCanvas(_ref2) {
+  var props = _ref2.props;
+};
+var InitialAddons = function InitialAddons(_ref3) {
+  var props = _ref3.props;
+};
+var Page = function Page(_ref4) {
+  var props = _ref4.props;
+};
 
 /***/ }),
 
@@ -1269,36 +1332,42 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "accessibilityGoldIcon", function() { return accessibilityGoldIcon; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "accessibilityGoldIconLongHeadLineNoSubHeadlineData", function() { return accessibilityGoldIconLongHeadLineNoSubHeadlineData; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "accessibilityGoldIconLongHeadLineNoSubHeadline", function() { return accessibilityGoldIconLongHeadLineNoSubHeadline; });
+/* harmony import */ var _node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/core-js/modules/es.function.bind.js */ "./node_modules/core-js/modules/es.function.bind.js");
+/* harmony import */ var _node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0__);
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   title: 'UI/Notifications/NotificationItem',
   excludeStories: /.*Data$/
 });
-var simpleData = function simpleData() {};
-var simple = function simple() {};
-var longHeadlineData = function longHeadlineData() {};
-var longHeadline = function longHeadline() {};
-var linkData = function linkData() {};
-var link = function link() {};
-var linkIconWithColorData = function linkIconWithColorData() {};
-var linkIconWithColor = function linkIconWithColor() {};
-var linkIconWithColorSubHeadlineData = function linkIconWithColorSubHeadlineData() {};
-var linkIconWithColorSubHeadline = function linkIconWithColorSubHeadline() {};
-var bookIconData = function bookIconData() {};
-var bookIcon = function bookIcon() {};
-var strongSubHeadlineData = function strongSubHeadlineData() {};
-var strongSubHeadline = function strongSubHeadline() {};
-var strongEmphasizedSubHeadlineData = function strongEmphasizedSubHeadlineData() {};
-var strongEmphasizedSubHeadline = function strongEmphasizedSubHeadline() {};
-var bookIconSubHeadlineData = function bookIconSubHeadlineData() {};
-var bookIconSubHeadline = function bookIconSubHeadline() {};
-var bookIconLongSubHeadlineData = function bookIconLongSubHeadlineData() {};
-var bookIconLongSubHeadline = function bookIconLongSubHeadline() {};
-var accessibilityIconData = function accessibilityIconData() {};
-var accessibilityIcon = function accessibilityIcon() {};
-var accessibilityGoldIconData = function accessibilityGoldIconData() {};
-var accessibilityGoldIcon = function accessibilityGoldIcon() {};
-var accessibilityGoldIconLongHeadLineNoSubHeadlineData = function accessibilityGoldIconLongHeadLineNoSubHeadlineData() {};
-var accessibilityGoldIconLongHeadLineNoSubHeadline = function accessibilityGoldIconLongHeadLineNoSubHeadline() {};
+
+var Template = function Template(args) {};
+
+var simpleData = {};
+var simple = Template.bind({});
+var longHeadlineData = {};
+var longHeadline = Template.bind({});
+var linkData = {};
+var link = Template.bind({});
+var linkIconWithColorData = {};
+var linkIconWithColor = Template.bind({});
+var linkIconWithColorSubHeadlineData = {};
+var linkIconWithColorSubHeadline = Template.bind({});
+var bookIconData = {};
+var bookIcon = Template.bind({});
+var strongSubHeadlineData = {};
+var strongSubHeadline = Template.bind({});
+var strongEmphasizedSubHeadlineData = {};
+var strongEmphasizedSubHeadline = Template.bind({});
+var bookIconSubHeadlineData = {};
+var bookIconSubHeadline = Template.bind({});
+var bookIconLongSubHeadlineData = {};
+var bookIconLongSubHeadline = Template.bind({});
+var accessibilityIconData = {};
+var accessibilityIcon = Template.bind({});
+var accessibilityGoldIconData = {};
+var accessibilityGoldIcon = Template.bind({});
+var accessibilityGoldIconLongHeadLineNoSubHeadlineData = {};
+var accessibilityGoldIconLongHeadLineNoSubHeadline = Template.bind({});
 
 /***/ }),
 
@@ -1318,11 +1387,15 @@ __webpack_require__.r(__webpack_exports__);
   title: 'UI/Notifications/NotificationList',
   excludeStories: /.*Data$/
 });
+
+var items = function items() {};
+
 var singleData = function singleData() {};
-var allData = function allData() {};
+var allData = items;
 var single = function single() {};
 var all = function all() {};
-var placement = function placement() {};
+var placement = function placement() // Note: position:absolute is only for QA/testing. Use position:fixed when integrating into the real UI.
+{};
 
 /***/ }),
 
@@ -1420,7 +1493,7 @@ __webpack_require__.r(__webpack_exports__);
   parameters: {}
 });
 var menuHighlighted = function menuHighlighted() {};
-var standardData = function standardData() {};
+var standardData = {};
 var standard = function standard() {};
 var standardNoLink = function standardNoLink() {};
 var linkAndText = function linkAndText() {};
@@ -1478,8 +1551,8 @@ __webpack_require__.r(__webpack_exports__);
   excludeStories: /.*Data$/,
   parameters: {}
 });
-var simpleData = function simpleData() {};
-var loadingData = function loadingData() {};
+var simpleData = {};
+var loadingData = {};
 var Optimized = function Optimized() {};
 var IsEmpty = function IsEmpty() {};
 var StartInjectedUnknown = function StartInjectedUnknown() {};
@@ -1528,14 +1601,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Searching", function() { return Searching; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "NoResults", function() { return NoResults; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "LastViewed", function() { return LastViewed; });
+/* harmony import */ var _node_modules_core_js_modules_es_object_assign_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/core-js/modules/es.object.assign.js */ "./node_modules/core-js/modules/es.object.assign.js");
+/* harmony import */ var _node_modules_core_js_modules_es_object_assign_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_core_js_modules_es_object_assign_js__WEBPACK_IMPORTED_MODULE_0__);
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   title: 'UI/Sidebar/SearchResults',
   includeStories: /^[A-Z]/,
   parameters: {}
 });
-var searching = function searching() {};
-var noResults = function noResults() {};
-var lastViewed = function lastViewed() {};
+var searching = {};
+var noResults = Object.assign({}, searching);
+var lastViewed = {};
 var Searching = function Searching() {};
 var NoResults = function NoResults() {};
 var LastViewed = function LastViewed() {};
@@ -1561,8 +1637,8 @@ __webpack_require__.r(__webpack_exports__);
   excludeStories: /.*Data$/,
   parameters: {}
 });
-var simpleData = function simpleData() {};
-var loadingData = function loadingData() {};
+var simpleData = {};
+var loadingData = {};
 var Simple = function Simple() {};
 var Loading = function Loading() {};
 var Empty = function Empty() {};
@@ -2229,7 +2305,8 @@ __webpack_require__.r(__webpack_exports__);
 var Default = function Default() {};
 var Label = function Label() {};
 var Disabled = function Disabled() {};
-var InvalidContrast = function InvalidContrast() {};
+var InvalidContrast = function InvalidContrast() // FIXME: has no effect on score
+{};
 InvalidContrast.storyName = 'Invalid contrast';
 var delayedRender = function delayedRender() {};
 delayedRender.storyName = 'delayed render';
@@ -2389,8 +2466,11 @@ __webpack_require__.r(__webpack_exports__);
   title: 'Addons/Actions',
   parameters: {}
 });
-var ArgTypesExample = function ArgTypesExample() {};
-var ArgTypesRegexExample = function ArgTypesRegexExample() {};
+var ArgTypesExample = function ArgTypesExample(_ref) {
+  var onClick = _ref.onClick,
+      onFocus = _ref.onFocus;
+};
+var ArgTypesRegexExample = function ArgTypesRegexExample(args, context) {};
 ArgTypesRegexExample.parameters = {};
 var BasicExample = function BasicExample() {};
 BasicExample.storyName = 'Basic example';
@@ -2435,25 +2515,31 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DisabledGrid", function() { return DisabledGrid; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "GridCellProperties", function() { return GridCellProperties; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AlignedGridWhenFullScreen", function() { return AlignedGridWhenFullScreen; });
+/* harmony import */ var _node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/core-js/modules/es.function.bind.js */ "./node_modules/core-js/modules/es.function.bind.js");
+/* harmony import */ var _node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0__);
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   title: 'Addons/Backgrounds',
   parameters: {}
 });
-var Story1 = function Story1() {};
-var Story2 = function Story2() {};
-var Overridden = function Overridden() {};
+
+var Template = function Template(args) {};
+
+var Story1 = Template.bind({});
+var Story2 = Template.bind({});
+var Overridden = Template.bind({});
 Overridden.parameters = {};
-var WithGradient = function WithGradient() {};
+var WithGradient = Template.bind({});
 WithGradient.parameters = {};
-var WithImage = function WithImage() {};
+var WithImage = Template.bind({});
 WithImage.parameters = {};
-var DisabledBackgrounds = function DisabledBackgrounds() {};
+var DisabledBackgrounds = Template.bind({});
 DisabledBackgrounds.parameters = {};
-var DisabledGrid = function DisabledGrid() {};
+var DisabledGrid = Template.bind({});
 DisabledGrid.parameters = {};
-var GridCellProperties = function GridCellProperties() {};
+var GridCellProperties = Template.bind({});
 GridCellProperties.parameters = {};
-var AlignedGridWhenFullScreen = function AlignedGridWhenFullScreen() {};
+var AlignedGridWhenFullScreen = Template.bind({});
 AlignedGridWhenFullScreen.parameters = {};
 
 /***/ }),
@@ -2477,29 +2563,35 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FilteredWithIncludeRegex", function() { return FilteredWithIncludeRegex; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FilteredWithExclude", function() { return FilteredWithExclude; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FilteredWithExcludeRegex", function() { return FilteredWithExcludeRegex; });
+/* harmony import */ var _node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/core-js/modules/es.function.bind.js */ "./node_modules/core-js/modules/es.function.bind.js");
+/* harmony import */ var _node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0__);
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   title: 'Addons/Controls',
   parameters: {}
 });
-var Basic = function Basic() {};
+
+var Template = function Template(args) {};
+
+var Basic = Template.bind({});
 Basic.parameters = {};
-var Action = function Action() {};
-var ImageFileControl = function ImageFileControl() {};
-var CustomControls = function CustomControls() {};
+var Action = Template.bind({});
+var ImageFileControl = function ImageFileControl(args) {};
+var CustomControls = Template.bind({});
 var NoArgs = function NoArgs() {};
-var CyclicArgs = function CyclicArgs() {};
+var CyclicArgs = Template.bind({});
 CyclicArgs.parameters = {};
-var CustomControlMatchers = function CustomControlMatchers() {};
+var CustomControlMatchers = Template.bind({});
 CustomControlMatchers.parameters = {};
-var WithDisabledCustomControlMatchers = function WithDisabledCustomControlMatchers() {};
+var WithDisabledCustomControlMatchers = Template.bind({});
 WithDisabledCustomControlMatchers.parameters = {};
-var FilteredWithInclude = function FilteredWithInclude() {};
+var FilteredWithInclude = Template.bind({});
 FilteredWithInclude.parameters = {};
-var FilteredWithIncludeRegex = function FilteredWithIncludeRegex() {};
+var FilteredWithIncludeRegex = Template.bind({});
 FilteredWithIncludeRegex.parameters = {};
-var FilteredWithExclude = function FilteredWithExclude() {};
+var FilteredWithExclude = Template.bind({});
 FilteredWithExclude.parameters = {};
-var FilteredWithExcludeRegex = function FilteredWithExcludeRegex() {};
+var FilteredWithExcludeRegex = Template.bind({});
 FilteredWithExcludeRegex.parameters = {};
 
 /***/ }),
@@ -2808,6 +2900,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Basic", function() { return Basic; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WithArgs", function() { return WithArgs; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WithTemplate", function() { return WithTemplate; });
+/* harmony import */ var _node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/core-js/modules/es.function.bind.js */ "./node_modules/core-js/modules/es.function.bind.js");
+/* harmony import */ var _node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0__);
+
 // NOTE: commented out default since these stories are re-exported
 // in the primary file './csf-docs-with-mdx-docs.stories.mdx'
 //
@@ -2816,8 +2911,8 @@ __webpack_require__.r(__webpack_exports__);
 //   component: Button,
 // };
 var Basic = function Basic() {};
-var WithArgs = function WithArgs() {};
-var WithTemplate = function WithTemplate() {};
+var WithArgs = function WithArgs(args) {};
+var WithTemplate = WithArgs.bind({});
 
 /***/ }),
 
@@ -2937,7 +3032,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   title: 'Addons/Docs/Imported'
 });
-var Basic = function Basic() {};
+var Basic = function Basic(args) {};
 
 /***/ }),
 
@@ -3130,20 +3225,31 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "args", function() { return args; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "component", function() { return component; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "controls", function() { return controls; });
+/* harmony import */ var _node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/core-js/modules/es.function.bind.js */ "./node_modules/core-js/modules/es.function.bind.js");
+/* harmony import */ var _node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0__);
+
+
 /* @jsxRuntime classic */
 
 /* @jsx mdx */
-var Template = function Template() {};
-var argTypes = function argTypes() {};
+var Template = function Template(args) {};
+var argTypes = Template.bind({});
 argTypes.storyName = 'ArgTypes';
 argTypes.parameters = {};
-var args = function args() {};
+var args = Template.bind({});
 args.storyName = 'Args';
 args.parameters = {};
-var component = function component() {};
+var component = function component(_ref) {
+  var background = _ref.background,
+      children = _ref.children;
+};
 component.storyName = 'Component';
 component.parameters = {};
-var controls = function controls() {};
+var controls = function controls(_ref2) {
+  var background = _ref2.background,
+      label = _ref2.label,
+      count = _ref2.count;
+};
 controls.storyName = 'Controls';
 controls.parameters = {};
 var componentMeta = {
@@ -3167,15 +3273,21 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "NoArgs", function() { return NoArgs; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ForceCodeSource", function() { return ForceCodeSource; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CustomSource", function() { return CustomSource; });
+/* harmony import */ var _node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/core-js/modules/es.function.bind.js */ "./node_modules/core-js/modules/es.function.bind.js");
+/* harmony import */ var _node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0__);
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   title: 'Addons/Docs/Source',
   parameters: {}
 });
-var Basic = function Basic() {};
+
+var Template = function Template(args) {};
+
+var Basic = Template.bind({});
 var NoArgs = function NoArgs() {};
-var ForceCodeSource = function ForceCodeSource() {};
+var ForceCodeSource = Template.bind({});
 ForceCodeSource.parameters = {};
-var CustomSource = function CustomSource() {};
+var CustomSource = Template.bind({});
 CustomSource.parameters = {};
 
 /***/ }),
@@ -3565,7 +3677,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   title: 'Addons/Toolbars'
 });
-var Locale = function Locale() {};
+var Locale = function Locale(_args, _ref) {
+  var locale = _ref.globals.locale;
+};
 
 /***/ }),
 
@@ -3619,15 +3733,21 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "None", function() { return None; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Alpha", function() { return Alpha; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "RequiredFirst", function() { return RequiredFirst; });
+/* harmony import */ var _node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/core-js/modules/es.function.bind.js */ "./node_modules/core-js/modules/es.function.bind.js");
+/* harmony import */ var _node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0__);
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   title: 'Addons/Controls-Sort',
   parameters: {}
 });
-var None = function None() {};
+
+var Template = function Template(args) {};
+
+var None = Template.bind({});
 None.parameters = {};
-var Alpha = function Alpha() {};
+var Alpha = Template.bind({});
 Alpha.parameters = {};
-var RequiredFirst = function RequiredFirst() {};
+var RequiredFirst = Template.bind({});
 RequiredFirst.parameters = {};
 
 /***/ }),
@@ -3642,12 +3762,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PassedToStory", function() { return PassedToStory; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "OtherValues", function() { return OtherValues; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DifferentSet", function() { return DifferentSet; });
+/* harmony import */ var _node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/core-js/modules/es.function.bind.js */ "./node_modules/core-js/modules/es.function.bind.js");
+/* harmony import */ var _node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0__);
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   title: 'Core/Args'
 });
-var PassedToStory = function PassedToStory() {};
-var OtherValues = function OtherValues() {};
-var DifferentSet = function DifferentSet() {};
+
+var Template = function Template(args) {};
+
+var PassedToStory = Template.bind({});
+var OtherValues = Template.bind({});
+var DifferentSet = Template.bind({});
 
 /***/ }),
 
@@ -3721,8 +3847,12 @@ __webpack_require__.r(__webpack_exports__);
   title: 'Core/Global Args',
   parameters: {}
 });
-var PassedToStory = function PassedToStory() {};
-var SecondStory = function SecondStory() {};
+var PassedToStory = function PassedToStory(_ref) {
+  var globals = _ref.globals;
+};
+var SecondStory = function SecondStory(_ref2) {
+  var globals = _ref2.globals;
+};
 
 /***/ }),
 
@@ -3841,7 +3971,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   title: 'Core/Loaders'
 });
-var Story = function Story() {};
+var Story = function Story(args, _ref) {
+  var loaded = _ref.loaded;
+};
 
 /***/ }),
 
@@ -3874,6 +4006,20 @@ var __namedExportsOrder = function __namedExportsOrder() {};
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Passed", function() { return Passed; });
+/* harmony import */ var _node_modules_core_js_modules_es_object_keys_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/core-js/modules/es.object.keys.js */ "./node_modules/core-js/modules/es.object.keys.js");
+/* harmony import */ var _node_modules_core_js_modules_es_object_keys_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_core_js_modules_es_object_keys_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_core_js_modules_es_array_index_of_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./node_modules/core-js/modules/es.array.index-of.js */ "./node_modules/core-js/modules/es.array.index-of.js");
+/* harmony import */ var _node_modules_core_js_modules_es_array_index_of_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_core_js_modules_es_array_index_of_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _node_modules_core_js_modules_es_symbol_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./node_modules/core-js/modules/es.symbol.js */ "./node_modules/core-js/modules/es.symbol.js");
+/* harmony import */ var _node_modules_core_js_modules_es_symbol_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_core_js_modules_es_symbol_js__WEBPACK_IMPORTED_MODULE_2__);
+
+
+
+
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
 // We would need to add this in config.js idiomatically however that would make this file a bit confusing
 /* harmony default export */ __webpack_exports__["default"] = ({
   title: 'Core/Parameters',
@@ -3881,7 +4027,13 @@ __webpack_require__.r(__webpack_exports__);
 }); // I'm not sure what we should recommend regarding propTypes? are they a good idea for examples?
 // Given we sort of control the props, should we export a prop type?
 
-var Passed = function Passed() {};
+var Passed = function Passed(_args, _ref) {
+  var _ref$parameters = _ref.parameters,
+      options = _ref$parameters.options,
+      fileName = _ref$parameters.fileName,
+      parameters = _objectWithoutProperties(_ref$parameters, ["options", "fileName"]),
+      rest = _objectWithoutProperties(_ref, ["parameters"]);
+};
 Passed.storyName = 'passed to story';
 Passed.parameters = {};
 
@@ -3896,13 +4048,19 @@ Passed.parameters = {};
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "prefixAndName", function() { return prefixAndName; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "prefix", function() { return prefix; });
+/* harmony import */ var _node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/core-js/modules/es.function.bind.js */ "./node_modules/core-js/modules/es.function.bind.js");
+/* harmony import */ var _node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0__);
+
 // Very simple stories to show what happens when one story's id is a prefix of another's
 // Repro for https://github.com/storybookjs/storybook/issues/11571
 /* harmony default export */ __webpack_exports__["default"] = ({
   title: 'Core/Prefix'
 });
-var prefixAndName = function prefixAndName() {};
-var prefix = function prefix() {};
+
+var Template = function Template() {};
+
+var prefixAndName = Template.bind({});
+var prefix = Template.bind({});
 
 /***/ }),
 
@@ -4053,11 +4211,20 @@ componentMeta.parameters = componentMeta.parameters || {};
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Basic", function() { return Basic; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Typed", function() { return Typed; });
+/* harmony import */ var _node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/core-js/modules/es.function.bind.js */ "./node_modules/core-js/modules/es.function.bind.js");
+/* harmony import */ var _node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_core_js_modules_es_function_bind_js__WEBPACK_IMPORTED_MODULE_0__);
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   title: 'Other/Demo/TsButton'
 });
-var Basic = function Basic() {};
-var Typed = function Typed() {};
+
+var Template = function Template(args) {};
+
+var Basic = Template.bind({});
+
+var TypedTemplate = function TypedTemplate(args) {};
+
+var Typed = TypedTemplate.bind({});
 
 /***/ }),
 
@@ -4163,6 +4330,24 @@ module.exports = require("./node_modules/core-js/modules/es.array.filter.js");
 /***/ (function(module, exports) {
 
 module.exports = require("./node_modules/core-js/modules/es.array.for-each.js");
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/es.array.index-of.js":
+/* external "./node_modules/core-js/modules/es.array.index-of.js" */
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("./node_modules/core-js/modules/es.array.index-of.js");
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/es.function.bind.js":
+/* external "./node_modules/core-js/modules/es.function.bind.js" */
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("./node_modules/core-js/modules/es.function.bind.js");
 
 /***/ }),
 
