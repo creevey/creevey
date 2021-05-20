@@ -1,3 +1,19 @@
+## [0.7.28](https://github.com/wKich/creevey/compare/v0.7.27...v0.7.28) (2021-05-20)
+
+### Bug Fixes
+
+- 🐛 creevey loader transforms csf funcs with props ([11bbc96](https://github.com/wKich/creevey/commit/11bbc96133edbce3c578a240a0a69c45d2b7a508))
+- 🐛 csf template.bind extract correctly ([ba27817](https://github.com/wKich/creevey/commit/ba27817e9fd91a0515edb3896414c7ac04bfa65d))
+- 🐛 improve babel-plugin to handle storiesOf in loops ([ec6ad03](https://github.com/wKich/creevey/commit/ec6ad03a796c6d25647f30aff75c41c1ec630704))
+- 🐛 improve process exiting with hooks, add ie11 tests ([effa16f](https://github.com/wKich/creevey/commit/effa16f434ac82bbc740be4f2b4ecc67557cba7b))
+- 🐛 remove some non-story and custom expressions ([9fd55dc](https://github.com/wKich/creevey/commit/9fd55dcee25c7cd5ca965629861bd324bdc95612))
+- 🐛 types after update to Storybook 6.2 ([dcf433e](https://github.com/wKich/creevey/commit/dcf433e52ca9a4e595968365061f73708fcc9ab4))
+
+### Features
+
+- 🎸 improve extract stories by using only babel ([6e43452](https://github.com/wKich/creevey/commit/6e43452e8607ce62f8e73387245557812e051160))
+- 🎸 support for extract cjs and object.assign ([1978669](https://github.com/wKich/creevey/commit/1978669c1fcf9f5a9866d9399793d7388bab1680))
+
 ## [0.7.27](https://github.com/wKich/creevey/compare/v0.7.26...v0.7.27) (2021-03-31)
 
 ### Bug Fixes
