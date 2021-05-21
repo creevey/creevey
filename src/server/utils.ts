@@ -48,7 +48,7 @@ export function shouldSkip(
   skipOptions: SkipOptions,
   test?: string,
 ): string | boolean {
-  if (typeof skipOptions == 'string') {
+  if (typeof skipOptions != 'object') {
     return skipOptions;
   }
   if (Array.isArray(skipOptions)) {

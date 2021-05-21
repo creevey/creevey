@@ -156,6 +156,7 @@ Basic.parameters = {
 ### `skip` option examples:
 
 - Skip all stories for all browsers:
+  - `skip: true`
   - `skip: 'Skip reason message'`
   - `skip: { reason: 'Skip reason message' }`
 - Skip all stories for specific browsers:
