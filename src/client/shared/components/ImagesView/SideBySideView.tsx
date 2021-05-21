@@ -47,90 +47,88 @@ const DiffImage = styled(Image)({
   flexShrink: 1,
 });
 
-export const SideBySideView = withTheme(
-  ({ actual, diff, expect, theme }: ViewPropsWithTheme): JSX.Element => {
-    const [layout, setLayout] = useState<LayoutDirection>('horizontal');
-    const [scale, setScale] = useState(1);
+export const SideBySideView = withTheme(({ actual, diff, expect, theme }: ViewPropsWithTheme): JSX.Element => {
+  const [layout, setLayout] = useState<LayoutDirection>('horizontal');
+  const [scale, setScale] = useState(1);
 
-    const containerRef = useRef<HTMLDivElement | null>(null);
-    const expectImageRef = useRef<HTMLImageElement | null>(null);
-    const diffImageRef = useRef<HTMLImageElement | null>(null);
-    const actualImageRef = useRef<HTMLImageElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const expectImageRef = useRef<HTMLImageElement | null>(null);
+  const diffImageRef = useRef<HTMLImageElement | null>(null);
+  const actualImageRef = useRef<HTMLImageElement | null>(null);
 
-    const loaded = useLoadImages(expect, diff, actual);
+  const loaded = useLoadImages(expect, diff, actual);
 
-    const calcScale = useCallback(() => {
-      const containerElement = containerRef.current;
-      const expectImage = expectImageRef.current;
-      const diffImage = diffImageRef.current;
-      const actualImage = actualImageRef.current;
+  const calcScale = useCallback(() => {
+    const containerElement = containerRef.current;
+    const expectImage = expectImageRef.current;
+    const diffImage = diffImageRef.current;
+    const actualImage = actualImageRef.current;
 
-      if (!containerElement || !expectImage || !actualImage || !diffImage || !loaded) return setScale(1);
+    if (!containerElement || !expectImage || !actualImage || !diffImage || !loaded) return setScale(1);
 
-      const borderSize = getBorderSize(diffImage);
+    const borderSize = getBorderSize(diffImage);
 
-      if (layout == 'vertical') {
-        const ratio = (diffImage.getBoundingClientRect().width - borderSize * 2) / diffImage.naturalWidth;
-        setScale(Math.min(1, ratio));
-      }
-      if (layout == 'horizontal') {
-        const ratio =
-          // NOTE: 40px because we have two margins by 20px and 6px for borders
-          (containerElement.getBoundingClientRect().width - 40 - borderSize * 6) /
-          [expectImage, diffImage, actualImage].map((image) => image.naturalWidth).reduce((a, b) => a + b, 0);
-        setScale(Math.min(1, ratio));
-      }
-    }, [loaded, layout]);
+    if (layout == 'vertical') {
+      const ratio = (diffImage.getBoundingClientRect().width - borderSize * 2) / diffImage.naturalWidth;
+      setScale(Math.min(1, ratio));
+    }
+    if (layout == 'horizontal') {
+      const ratio =
+        // NOTE: 40px because we have two margins by 20px and 6px for borders
+        (containerElement.getBoundingClientRect().width - 40 - borderSize * 6) /
+        [expectImage, diffImage, actualImage].map((image) => image.naturalWidth).reduce((a, b) => a + b, 0);
+      setScale(Math.min(1, ratio));
+    }
+  }, [loaded, layout]);
 
-    useResizeObserver(containerRef, calcScale);
-    useLayoutEffect(calcScale, [calcScale]);
-    useLayoutEffect(() => {
-      const diffImage = diffImageRef.current;
-      if (!diffImage || !loaded) return;
-      const ratio = diffImage.naturalWidth / diffImage.naturalHeight;
-      setLayout(ratio >= 2 ? 'vertical' : 'horizontal');
-    }, [loaded]);
+  useResizeObserver(containerRef, calcScale);
+  useLayoutEffect(calcScale, [calcScale]);
+  useLayoutEffect(() => {
+    const diffImage = diffImageRef.current;
+    if (!diffImage || !loaded) return;
+    const ratio = diffImage.naturalWidth / diffImage.naturalHeight;
+    setLayout(ratio >= 2 ? 'vertical' : 'horizontal');
+  }, [loaded]);
 
-    useApplyScale(expectImageRef, scale);
-    useApplyScale(actualImageRef, scale);
+  useApplyScale(expectImageRef, scale);
+  useApplyScale(actualImageRef, scale);
 
-    useEffect(() => {
-      if (loaded) window.__CREEVEY_SET_READY_FOR_CAPTURE__?.();
-    }, [loaded]);
+  useEffect(() => {
+    if (loaded) window.__CREEVEY_SET_READY_FOR_CAPTURE__?.();
+  }, [loaded]);
 
-    return (
-      <Container ref={containerRef}>
-        {loaded ? (
-          <ImagesLayout layout={layout}>
-            <ImageLink href={expect} target="_blank" rel="noopener noreferrer">
-              <Image
-                ref={expectImageRef}
-                borderColor={getBorderColor(theme, themeBorderColors.expect)}
-                alt="expect"
-                src={expect}
-              />
-            </ImageLink>
-            <ImageDiffLink href={diff} target="_blank" rel="noopener noreferrer">
-              <DiffImage
-                ref={diffImageRef}
-                borderColor={getBorderColor(theme, themeBorderColors.diff)}
-                alt="diff"
-                src={diff}
-              />
-            </ImageDiffLink>
-            <ImageLink href={actual} target="_blank" rel="noopener noreferrer">
-              <Image
-                ref={actualImageRef}
-                borderColor={getBorderColor(theme, themeBorderColors.actual)}
-                alt="actual"
-                src={actual}
-              />
-            </ImageLink>
-          </ImagesLayout>
-        ) : (
-          <Loader size={64} />
-        )}
-      </Container>
-    );
-  },
-);
+  return (
+    <Container ref={containerRef}>
+      {loaded ? (
+        <ImagesLayout layout={layout}>
+          <ImageLink href={expect} target="_blank" rel="noopener noreferrer">
+            <Image
+              ref={expectImageRef}
+              borderColor={getBorderColor(theme, themeBorderColors.expect)}
+              alt="expect"
+              src={expect}
+            />
+          </ImageLink>
+          <ImageDiffLink href={diff} target="_blank" rel="noopener noreferrer">
+            <DiffImage
+              ref={diffImageRef}
+              borderColor={getBorderColor(theme, themeBorderColors.diff)}
+              alt="diff"
+              src={diff}
+            />
+          </ImageDiffLink>
+          <ImageLink href={actual} target="_blank" rel="noopener noreferrer">
+            <Image
+              ref={actualImageRef}
+              borderColor={getBorderColor(theme, themeBorderColors.actual)}
+              alt="actual"
+              src={actual}
+            />
+          </ImageLink>
+        </ImagesLayout>
+      ) : (
+        <Loader size={64} />
+      )}
+    </Container>
+  );
+});

@@ -153,7 +153,7 @@ export default function (this: loader.LoaderContext | void, source: string): str
       console.log(
         codeFrameColumns(
           source,
-          { start: ((error as unknown) as { loc: t.SourceLocation['start'] }).loc },
+          { start: (error as unknown as { loc: t.SourceLocation['start'] }).loc },
           { highlightCode: true },
         ),
       );

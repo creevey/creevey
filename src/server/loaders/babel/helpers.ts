@@ -169,11 +169,11 @@ function removeAllExpressionPropsExcept<T>(expressionPath: NodePath<T> | undefin
   const resolvedDeclPath = getDeclaratorPath(expressionPath);
   if (expressionPath?.isObjectExpression()) removeAllPropsExcept(expressionPath, propNames);
   else if (expressionPath?.isCallExpression()) {
-    if (isObjectAssign((expressionPath as unknown) as NodePath))
+    if (isObjectAssign(expressionPath as unknown as NodePath))
       (expressionPath as NodePath<t.CallExpression>)
         .get('arguments')
         .forEach((argumentPath) => removeAllExpressionPropsExcept(argumentPath, storyProps));
-    else if (isTemplateBind((expressionPath as unknown) as NodePath)) {
+    else if (isTemplateBind(expressionPath as unknown as NodePath)) {
       const calleePath = (expressionPath as NodePath<t.CallExpression>).get('callee');
       if (calleePath.isMemberExpression()) removeAllExpressionPropsExcept(calleePath.get('object'), propNames);
     } else if (propNames[0] == 'storyName') {

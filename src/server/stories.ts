@@ -182,13 +182,19 @@ async function loadStoriesDirectly(
   })();
 
   const requireContext = await (await import('./loaders/babel/register')).default(config, debug);
-  const { stories } = ((await import(require.resolve(`${config.storybookDir}/main`))) as {
-    default: {
-      stories: string[];
-    };
-  }).default;
+  const { stories } = (
+    (await import(require.resolve(`${config.storybookDir}/main`))) as {
+      default: {
+        stories: string[];
+      };
+    }
+  ).default;
   const contexts = stories.map((input) => {
-    const { path: storiesPath, recursive, match } = toRequireContext(input) as {
+    const {
+      path: storiesPath,
+      recursive,
+      match,
+    } = toRequireContext(input) as {
       path: string;
       recursive: boolean;
       match: string;
@@ -303,9 +309,15 @@ export async function loadTestsFromStories(
 
   Object.values(tests)
     .filter(isDefined)
-    .forEach(({ id, story: { parameters: { fileName } } }) =>
-      // TODO Don't use filename as a key, due possible collisions if two require.context with same structure of modules are defined
-      testIdsByFiles.set(fileName, [...(testIdsByFiles.get(fileName) ?? []), id]),
+    .forEach(
+      ({
+        id,
+        story: {
+          parameters: { fileName },
+        },
+      }) =>
+        // TODO Don't use filename as a key, due possible collisions if two require.context with same structure of modules are defined
+        testIdsByFiles.set(fileName, [...(testIdsByFiles.get(fileName) ?? []), id]),
     );
 
   return tests;

@@ -98,7 +98,7 @@ async function getWebpackConfigForStorybook_pre6_2(
   };
 
   //@ts-expect-error: This module exists in Storybook <= 6.1
-  // eslint-disable-next-line node/no-missing-import, @typescript-eslint/no-unsafe-assignment
+  // eslint-disable-next-line node/no-missing-import, @typescript-eslint/no-unsafe-assignment, import/no-unresolved
   const { default: getConfig } = await import('@storybook/core/dist/server/config');
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
