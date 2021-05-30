@@ -1,8 +1,8 @@
 import { writeFileSync } from 'fs';
-import { Config, Options, isFunction, isObject } from '../types';
+import { Config, Options, isObject } from '../types';
 import { subscribeOn } from './messages';
 import { loadTestsFromStories, storybookApi } from './stories';
-import { removeProps } from './utils';
+import { removeProps, saveTestJson } from './utils';
 
 export default async function extract(config: Config, options: Options): Promise<void> {
   if (config.useWebpackToExtractTests && process.env.__CREEVEY_ENV__ != 'test') {
@@ -22,13 +22,10 @@ export default async function extract(config: Config, options: Options): Promise
   const tests = await loadTestsFromStories(config, Object.keys(config.browsers), { debug: options.debug });
 
   if (options.extract == 'tests') {
-    writeFileSync(
-      'tests.json',
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      JSON.stringify(tests, (_, value) => (isFunction(value) ? value.toString() : value), 2),
-    );
+    saveTestJson(tests);
   } else {
     const storiesData = storybookApi?.clientApi.store().getStoriesJsonData();
+    // TODO Fix args stories
     removeProps(storiesData ?? {}, ['stories', () => true, 'parameters', '__isArgsStory']);
     Object.values(storiesData?.stories ?? {}).forEach(
       (story) =>

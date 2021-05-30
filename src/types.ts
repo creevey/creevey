@@ -225,7 +225,7 @@ export interface Options {
   config?: string;
   port: number;
   ui: boolean;
-  update: boolean;
+  update: boolean | string;
   webpack: boolean;
   debug: boolean;
   extract: boolean | 'stories' | 'tests';

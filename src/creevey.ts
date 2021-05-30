@@ -23,7 +23,7 @@ process.on('unhandledRejection', shutdown);
 
 const argv = minimist<Options>(process.argv.slice(2), {
   string: ['browser', 'config', 'reporter', 'reportDir', 'screenDir'],
-  boolean: ['debug', 'ui', 'update', 'saveReport', 'webpack'],
+  boolean: ['debug', 'ui', 'saveReport', 'webpack'],
   default: { port: 3000, saveReport: true, extract: false },
   alias: { port: 'p', config: 'c', debug: 'd', update: 'u', extract: 'e' },
 });

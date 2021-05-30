@@ -34,8 +34,8 @@ export default async function (options: Options): Promise<void> {
     case Boolean(extract): {
       return (await import('./extract')).default(config, options);
     }
-    case update: {
-      return (await import('./update')).default(config);
+    case Boolean(update): {
+      return (await import('./update')).default(config, typeof update == 'string' ? update : undefined);
     }
     case webpack: {
       console.log('[CreeveyWebpack]:', `Starting with pid ${process.pid}`);

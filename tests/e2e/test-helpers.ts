@@ -86,6 +86,7 @@ export function assertExtractedStories(workDir: string): void {
     const actual = (await import(`${workDir}/stories.json`)) as unknown;
 
     [expected, actual].forEach((data) => {
+      // TODO Fix args stories
       const excludedParams = ['fileName', '__isArgsStory'];
       removeProps(data as Record<string, unknown>, ['kindParameters', () => true, 'fileName']);
       removeProps(data as Record<string, unknown>, [
