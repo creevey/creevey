@@ -1,4 +1,4 @@
-import { createWriteStream, existsSync, readFileSync, unlink, writeFileSync } from 'fs';
+import { createWriteStream, existsSync, mkdirSync, readFileSync, unlink, writeFileSync } from 'fs';
 import path from 'path';
 import cluster from 'cluster';
 import { SkipOptions, isDefined, TestData, noop, isFunction } from '../types';
@@ -215,6 +215,7 @@ export function removeProps(obj: Record<string, unknown>, propPath: (string | ((
 }
 
 export function saveTestJson(tests: Record<string, unknown>, dstPath: string = process.cwd()): void {
+  mkdirSync(dstPath, { recursive: true });
   writeFileSync(
     path.join(dstPath, 'tests.json'),
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
