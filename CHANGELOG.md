@@ -1,3 +1,13 @@
+## [0.7.29](https://github.com/wKich/creevey/compare/v0.7.28...v0.7.29) (2021-05-30)
+
+### Bug Fixes
+
+- 🐛 allow pass boolean value to skip parameter ([9e36eec](https://github.com/wKich/creevey/commit/9e36eecce9d7df352ced159c1ec5b0de86fa7257)), closes [#147](https://github.com/wKich/creevey/issues/147)
+
+### Features
+
+- 🎸 improve `update` command allow to pass match pattern ([4cf79f4](https://github.com/wKich/creevey/commit/4cf79f4d7693686be86c4bec5ae7e5736f900615))
+
 ## [0.7.28](https://github.com/wKich/creevey/compare/v0.7.27...v0.7.28) (2021-05-20)
 
 ### Bug Fixes
