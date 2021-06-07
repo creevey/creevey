@@ -4,9 +4,10 @@ import { Builder, By, WebDriver, Origin, Capabilities, WebElement } from 'seleni
 import { Config, BrowserConfig, StoryInput, CreeveyStoryParams, noop, isDefined, StorybookGlobals } from '../../types';
 import { subscribeOn } from '../messages';
 import { networkInterfaces } from 'os';
-import { runSequence, LOCALHOST_REGEXP, isStorybookVersionLessThan } from '../utils';
+import { runSequence, LOCALHOST_REGEXP } from '../utils';
 import { PageLoadStrategy } from 'selenium-webdriver/lib/capabilities';
 import chalk from 'chalk';
+import { isStorybookVersionLessThan } from '../storybook/helpers';
 
 type ElementRect = {
   top: number;

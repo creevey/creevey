@@ -12,24 +12,6 @@ export const LOCALHOST_REGEXP = /(localhost|127\.0\.0\.1)/i;
 
 export const extensions = ['.js', '.jsx', '.ts', '.tsx'];
 
-export const supportedFrameworks = [
-  'react',
-  'vue',
-  'angular',
-  'marionette',
-  'mithril',
-  'marko',
-  'html',
-  'svelte',
-  'riot',
-  'ember',
-  'preact',
-  'rax',
-  'aurelia',
-  'server',
-  'web-components',
-];
-
 function matchBy(pattern: string | string[] | RegExp | undefined, value: string): boolean {
   return (
     (typeof pattern == 'string' && pattern == value) ||
@@ -83,61 +65,6 @@ export async function shutdownWorkers(): Promise<void> {
           }),
       ),
   );
-}
-
-export const hasDocsAddon = (() => {
-  try {
-    // eslint-disable-next-line node/no-extraneous-require
-    require.resolve('@storybook/addon-docs');
-    return true;
-  } catch (_) {
-    return false;
-  }
-})();
-
-export function getStorybookParentDirectory(): string {
-  return require.resolve('@storybook/core').split('@storybook')[0];
-}
-
-export function getStorybookVersion(): string {
-  const parentDir = getStorybookParentDirectory();
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { version } = require(path.join(parentDir, '@storybook', 'core', 'package.json')) as { version: string };
-
-  return version;
-}
-
-export function isStorybookVersionLessThan(major: number, minor?: number): boolean {
-  const [sbMajor, sbMinor] = (process.env.__CREEVEY_STORYBOOK_VERSION__ ?? getStorybookVersion()).split('.');
-
-  return Number(sbMajor) < major || (minor != undefined && Number(sbMajor) == major && Number(sbMinor) < minor);
-}
-
-export function isStorybookVersion(major: number, minor?: number): boolean {
-  const [sbMajor, sbMinor] = (process.env.__CREEVEY_STORYBOOK_VERSION__ ?? getStorybookVersion()).split('.');
-
-  return Number(sbMajor) == major || (minor != undefined && Number(sbMajor) == major && Number(sbMinor) == minor);
-}
-
-export function getStorybookFramework(): string {
-  const parentDir = getStorybookParentDirectory();
-
-  const framework =
-    process.env.__CREEVEY_STORYBOOK_FRAMEWORK__ ??
-    supportedFrameworks.find((framework) => {
-      try {
-        return require.resolve(path.join(parentDir, `@storybook/${framework}`));
-      } catch (_) {
-        return false;
-      }
-    });
-
-  if (!framework)
-    throw new Error(
-      "Couldn't detect used Storybook framework. Please ensure that you install `@storybook/<framework>` package",
-    );
-
-  return framework;
 }
 
 export function getCreeveyCache(): string {

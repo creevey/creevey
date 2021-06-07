@@ -2,15 +2,14 @@ import { rmdirSync, writeFile } from 'fs';
 import path from 'path';
 import webpack, { Configuration, RuleSetUse, Stats } from 'webpack';
 import nodeExternals from 'webpack-node-externals';
+import { extensions as fallbackExtensions, getCreeveyCache } from '../../utils';
 import {
-  extensions as fallbackExtensions,
-  getCreeveyCache,
   getStorybookFramework,
-  getStorybookParentDirectory,
   hasDocsAddon,
   isStorybookVersion,
   isStorybookVersionLessThan,
-} from '../../utils';
+  resolveFromStorybook,
+} from '../../storybook/helpers';
 import { Config, Options, noop } from '../../../types';
 import { emitWebpackMessage, subscribeOn } from '../../messages';
 
@@ -93,13 +92,14 @@ async function getWebpackConfigForStorybook_pre6_2(
   configDir: string,
   outputDir: string,
 ): Promise<Configuration> {
-  const { default: storybookFrameworkOptions } = (await import(`@storybook/${framework}/dist/server/options`)) as {
+  const { default: storybookFrameworkOptions } = (await import(
+    resolveFromStorybook(`@storybook/${framework}/dist/server/options`)
+  )) as {
     default: { framework: string; frameworkPresets: string[] };
   };
 
-  //@ts-expect-error: This module exists in Storybook <= 6.1
   // eslint-disable-next-line node/no-missing-import, @typescript-eslint/no-unsafe-assignment, import/no-unresolved
-  const { default: getConfig } = await import('@storybook/core/dist/server/config');
+  const { default: getConfig } = await import(resolveFromStorybook('@storybook/core/dist/server/config'));
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
   return getConfig({
@@ -109,11 +109,11 @@ async function getWebpackConfigForStorybook_pre6_2(
     outputDir,
     cache: {},
     // eslint-disable-next-line node/no-missing-require
-    corePresets: [require.resolve('@storybook/core/dist/server/preview/preview-preset')],
+    corePresets: [resolveFromStorybook('@storybook/core/dist/server/preview/preview-preset')],
     overridePresets: [
-      ...(hasDocsAddon ? [require.resolve('./mdx-loader')] : []),
+      ...(hasDocsAddon() ? [require.resolve('./mdx-loader')] : []),
       // eslint-disable-next-line node/no-missing-require
-      require.resolve('@storybook/core/dist/server/preview/custom-webpack-preset'),
+      resolveFromStorybook('@storybook/core/dist/server/preview/custom-webpack-preset'),
     ],
     ...storybookFrameworkOptions,
     configDir,
@@ -125,7 +125,9 @@ async function getWebpackConfigForStorybook_6_2(
   configDir: string,
   outputDir: string,
 ): Promise<Configuration> {
-  const { default: storybookFrameworkOptions } = (await import(`@storybook/${framework}/dist/cjs/server/options`)) as {
+  const { default: storybookFrameworkOptions } = (await import(
+    resolveFromStorybook(`@storybook/${framework}/dist/cjs/server/options`)
+  )) as {
     default: { framework: string; frameworkPresets: string[] };
   };
   const options = {
@@ -136,11 +138,12 @@ async function getWebpackConfigForStorybook_6_2(
     ...storybookFrameworkOptions,
   };
 
-  //@ts-expect-error missing import
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const { getPreviewBuilder } = await import('@storybook/core-server/dist/cjs/utils/get-preview-builder');
+  const { getPreviewBuilder } = await import(
+    resolveFromStorybook('@storybook/core-server/dist/cjs/utils/get-preview-builder')
+  );
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const { loadAllPresets } = await import('@storybook/core-common');
+  const { loadAllPresets } = await import(resolveFromStorybook('@storybook/core-common'));
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
   const builder = await getPreviewBuilder(configDir);
@@ -150,16 +153,18 @@ async function getWebpackConfigForStorybook_6_2(
   const presets = loadAllPresets({
     corePresets: [
       // eslint-disable-next-line node/no-missing-require
-      require.resolve('@storybook/core-server/dist/cjs/presets/common-preset'),
-      // // eslint-disable-next-line node/no-missing-require
-      // require.resolve('@storybook/core-server/dist/cjs/presets/manager-preset'),
+      resolveFromStorybook('@storybook/core-server/dist/cjs/presets/common-preset'),
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
       ...builder.corePresets,
       // eslint-disable-next-line node/no-missing-require
-      require.resolve('@storybook/core-server/dist/cjs/presets/babel-cache-preset'),
+      resolveFromStorybook('@storybook/core-server/dist/cjs/presets/babel-cache-preset'),
     ] as string[],
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-    overridePresets: [...(hasDocsAddon ? [require.resolve('./mdx-loader')] : []), ...builder.overridePresets],
+    overridePresets: [
+      ...(hasDocsAddon() ? [require.resolve('./mdx-loader')] : []),
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+      ...builder.overridePresets,
+    ],
     ...options,
   } as Parameters<typeof loadAllPresets>[0]);
 
@@ -174,9 +179,9 @@ async function removeAddons(configDir: string): Promise<boolean> {
   const serverRequireModule = isStorybookVersionLessThan(6, 2) ? 'server-require' : 'interpret-require';
   try {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const { getInterpretedFile } = await import(`${storybookUtilsPath}/interpret-files`);
+    const { getInterpretedFile } = await import(resolveFromStorybook(`${storybookUtilsPath}/interpret-files`));
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const { serverRequire } = await import(`${storybookUtilsPath}/${serverRequireModule}`);
+    const { serverRequire } = await import(resolveFromStorybook(`${storybookUtilsPath}/${serverRequireModule}`));
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const mainConfigFile = isStorybookVersion(6)
@@ -240,7 +245,7 @@ export default async function compile(config: Config, { debug, ui }: Options): P
   Array.isArray(storybookWebpackConfig.entry) && storybookWebpackConfig.entry.unshift(require.resolve('./dummy-hmr'));
 
   // NOTE apply creevey loader to output from mdx loader
-  if (hasDocsAddon) await applyMdxLoader(storybookWebpackConfig, areAddonsRemoved, creeveyLoader);
+  if (hasDocsAddon()) await applyMdxLoader(storybookWebpackConfig, areAddonsRemoved, creeveyLoader);
 
   // NOTE Add creevey-loader to cut off all unnecessary code except stories meta and tests
   storybookWebpackConfig.module?.rules.unshift({
@@ -272,14 +277,14 @@ export default async function compile(config: Config, { debug, ui }: Options): P
       .map(([, aliasPath]) => ({ [aliasPath]: `commonjs ${aliasPath}` })),
 
     // NOTE Replace `@storybook/${framework}` to ../../storybook.ts
-    { [`@storybook/${storybookFramework}`]: `commonjs ${require.resolve('../../storybook')}` },
+    { [`@storybook/${storybookFramework}`]: `commonjs ${require.resolve('../../storybook/entry')}` },
     nodeExternals({
       includeAbsolutePaths: true,
       allowlist: /(webpack|dummy-hmr|generated-stories-entry|generated-config-entry|generated-other-entry)/,
     }),
     // TODO Don't work well with monorepos
     nodeExternals({
-      modulesDir: getStorybookParentDirectory(),
+      modulesDir: resolveFromStorybook('@storybook/core').split('@storybook')[0],
       includeAbsolutePaths: true,
       allowlist: /(webpack|dummy-hmr|generated-stories-entry|generated-config-entry|generated-other-entry)/,
     }),

@@ -3,8 +3,9 @@ import fs, { Dirent } from 'fs';
 import { isAbsolute, join, relative, resolve } from 'path';
 import { addHook } from 'pirates';
 import { Config, isDefined } from '../../../types';
-import { extensions, hasDocsAddon } from '../../utils';
+import { extensions } from '../../utils';
 import plugin from './creevey-plugin';
+import { hasDocsAddon, resolveFromStorybookAddonDocs } from '../../storybook/helpers';
 
 let parents: string[] | null = null;
 let story: string | null = null;
@@ -86,8 +87,8 @@ export default async function register(config: Config, debug = false): Promise<R
   const requireContext = getRequireContext(config.storybookDir);
   const preview = resolve(config.storybookDir, 'preview');
 
-  if (hasDocsAddon) {
-    const mdx = (await import('@mdx-js/mdx')).default;
+  if (hasDocsAddon()) {
+    const mdx = ((await import(resolveFromStorybookAddonDocs('@mdx-js/mdx'))) as typeof import('@mdx-js/mdx')).default;
     const { mdxOptions } = await import('../webpack/mdx-loader');
     addHook(
       (code, filename) => {
@@ -104,7 +105,7 @@ export default async function register(config: Config, debug = false): Promise<R
       babelrc: false,
       rootMode: 'upward-optional',
       ignore: [/node_modules/],
-      extensions: hasDocsAddon ? [...extensions, '.mdx'] : extensions,
+      extensions: hasDocsAddon() ? [...extensions, '.mdx'] : extensions,
       parserOpts: {
         sourceType: 'module',
         plugins: ['classProperties', 'decorators-legacy', 'jsx', 'typescript'],

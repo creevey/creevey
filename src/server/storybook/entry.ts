@@ -1,8 +1,9 @@
-import { StoryApi } from '@storybook/addons';
-import * as core from '@storybook/core';
-import { getStorybookFramework, isStorybookVersionLessThan } from './utils';
+import type { StoryApi } from '@storybook/addons';
+import { getStorybookFramework, isStorybookVersionLessThan, resolveFromStorybook } from './helpers';
 
 const framework = getStorybookFramework();
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const core = require(resolveFromStorybook('@storybook/core')) as typeof import('@storybook/core');
 
 //@ts-expect-error: 6.2 use named exports
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access

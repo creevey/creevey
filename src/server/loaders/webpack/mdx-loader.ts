@@ -1,7 +1,11 @@
 /* eslint-disable */
-/* @ts-expect-error Copy-paste from storybook/addons/docs/src/frameworks/common/preset.ts */
+/* Copy-paste from storybook/addons/docs/src/frameworks/common/preset.ts */
 
-import createCompiler from '@storybook/addon-docs/mdx-compiler-plugin';
+import {
+  resolveFromStorybook,
+  resolveFromStorybookAddonDocs,
+  resolveFromStorybookBuilderWebpack4,
+} from '../../storybook/helpers';
 
 export let mdxLoaders: any[] = [];
 
@@ -11,7 +15,7 @@ export let mdxLoaders: any[] = [];
 function createBabelOptions({ babelOptions, mdxBabelOptions, configureJSX }: any) {
   const babelPlugins = mdxBabelOptions?.plugins || babelOptions?.plugins || [];
   const jsxPlugin = [
-    require.resolve('@babel/plugin-transform-react-jsx'),
+    resolveFromStorybookAddonDocs('@babel/plugin-transform-react-jsx'),
     { pragma: 'React.createElement', pragmaFrag: 'React.Fragment' },
   ];
   const plugins = configureJSX ? [...babelPlugins, jsxPlugin] : babelPlugins;
@@ -25,11 +29,11 @@ function createBabelOptions({ babelOptions, mdxBabelOptions, configureJSX }: any
   };
 }
 
-const resolveOptions = { paths: [require.resolve('@storybook/addon-docs')] };
-
 const remarkPlugins = ['remark-slug', 'remark-external-links'].map((plugin) =>
-  require(require.resolve(plugin, resolveOptions)),
+  require(resolveFromStorybookAddonDocs(plugin)),
 );
+
+const createCompiler = require(resolveFromStorybook('@storybook/addon-docs/mdx-compiler-plugin'));
 
 export const mdxOptions = (options: any = {}) => ({ compilers: [createCompiler(options)], remarkPlugins });
 
@@ -40,11 +44,11 @@ export function webpack(webpackConfig: any = {}, options: any = {}): any {
 
   mdxLoaders = [
     {
-      loader: require.resolve('babel-loader', { paths: [require.resolve('@storybook/core')] }),
+      loader: resolveFromStorybookBuilderWebpack4('babel-loader'),
       options: createBabelOptions({ babelOptions, mdxBabelOptions, configureJSX }),
     },
     {
-      loader: require.resolve('@mdx-js/loader', resolveOptions),
+      loader: resolveFromStorybookAddonDocs('@mdx-js/loader'),
       options: mdxOptions(options),
     },
   ];

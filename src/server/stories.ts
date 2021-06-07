@@ -1,16 +1,12 @@
 import path from 'path';
 import { isWorker, isMaster } from 'cluster';
 import { createHash } from 'crypto';
-import { Context } from 'mocha';
+import type { Context } from 'mocha';
 import chokidar, { FSWatcher } from 'chokidar';
-import addons from '@storybook/addons';
-import Events from '@storybook/core-events';
-import {
-  isDefined,
+import type {
   TestData,
   CreeveyStoryParams,
   StoriesRaw,
-  noop,
   SkipOptions,
   ServerTest,
   StoryInput,
@@ -19,12 +15,20 @@ import {
   SetStoriesData,
   Config,
 } from '../types';
-import { shouldSkip, isStorybookVersionLessThan, getCreeveyCache } from './utils';
+import { isDefined, noop } from '../types';
+import { shouldSkip, getCreeveyCache } from './utils';
 import { mergeWith } from 'lodash';
 import { subscribeOn } from './messages';
-import { Parameters } from '@storybook/api';
+import type { Parameters } from '@storybook/api';
+import type Channel from '@storybook/channels';
+import {
+  importStorybookClientLogger,
+  importStorybookCoreCommon,
+  importStorybookCoreEvents,
+  isStorybookVersionLessThan,
+} from './storybook/helpers';
 
-export let storybookApi: null | typeof import('./storybook') = null;
+export let storybookApi: null | typeof import('./storybook/entry') = null;
 
 function storyTestFabric(delay?: number, testFn?: CreeveyTestFunction) {
   return async function storyTest(this: Context) {
@@ -77,7 +81,7 @@ function convertStories(
   return tests;
 }
 
-async function initStorybookEnvironment(): Promise<typeof import('./storybook')> {
+async function initStorybookEnvironment(): Promise<typeof import('./storybook/entry')> {
   // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
   (await import('jsdom-global')).default(undefined, { url: 'http://localhost' });
 
@@ -91,16 +95,16 @@ async function initStorybookEnvironment(): Promise<typeof import('./storybook')>
       .join(' '),
   });
 
-  const { logger } = (await import('@storybook/client-logger')) as { logger: { debug: unknown; warn: unknown } };
+  const { logger } = await importStorybookClientLogger();
   // NOTE: Disable duplication warnings for >=6.2 storybook
-  if (isWorker) logger.warn = noop;
+  if (isWorker) (logger.warn as unknown) = noop;
   // NOTE: disable logger for 5.x storybook
-  logger.debug = noop;
+  (logger.debug as unknown) = noop;
 
-  return import('./storybook');
+  return import('./storybook/entry');
 }
 
-function watchStories(watcher: FSWatcher, initialFiles: Set<string>): void {
+function watchStories(channel: Channel, watcher: FSWatcher, initialFiles: Set<string>): (data: SetStoriesData) => void {
   const watchingFiles = initialFiles;
   let storiesByFiles = new Map<string, StoryInput[]>();
 
@@ -114,7 +118,7 @@ function watchStories(watcher: FSWatcher, initialFiles: Set<string>): void {
     storiesByFiles.set(path.isAbsolute(filePath) ? filePath : `./${filePath.replace(/\\/g, '/')}`, []),
   );
 
-  addons.getChannel().on(Events.SET_STORIES, (data: SetStoriesData) => {
+  return (data: SetStoriesData) => {
     const stories = isStorybookVersionLessThan(6) ? data.stories : flatStories(data);
     const files = new Set(Object.values(stories).map((story) => story.parameters.fileName));
     const addedFiles = Array.from(files).filter((filePath) => !watchingFiles.has(filePath));
@@ -127,9 +131,9 @@ function watchStories(watcher: FSWatcher, initialFiles: Set<string>): void {
     removedFiles.forEach((filePath) => watchingFiles.delete(filePath));
 
     Object.values(stories).forEach((story) => storiesByFiles.get(story.parameters.fileName)?.push(story));
-    addons.getChannel().emit('storiesUpdated', storiesByFiles);
+    channel.emit('storiesUpdated', storiesByFiles);
     storiesByFiles = new Map<string, StoryInput[]>();
-  });
+  };
 }
 
 // TODO use the storybook version, after the fix of skip option API
@@ -171,8 +175,8 @@ async function loadStoriesDirectly(
   config: Config,
   { watcher, debug }: { watcher: FSWatcher | null; debug: boolean },
 ): Promise<void> {
-  const { toRequireContext } = await import('@storybook/core-common');
-  const { addParameters, configure } = await import('./storybook');
+  const { toRequireContext } = await importStorybookCoreCommon();
+  const { addParameters, configure } = await import('./storybook/entry');
   const preview = (() => {
     try {
       return require.resolve(`${config.storybookDir}/preview`);
@@ -255,6 +259,7 @@ async function loadStorybook(
   storiesListener: (stories: Map<string, StoryInput[]>) => void,
 ): Promise<StoriesRaw> {
   storybookApi = await initStorybookEnvironment();
+  const Events = await importStorybookCoreEvents();
 
   const { channel } = storybookApi;
   channel.removeAllListeners(Events.CURRENT_STORY_WAS_SET);
@@ -268,7 +273,7 @@ async function loadStorybook(
       const stories = isStorybookVersionLessThan(6) ? data.stories : flatStories(data);
       const files = new Set(Object.values(stories).map((story) => story.parameters.fileName));
 
-      if (watcher) watchStories(watcher, files);
+      if (watcher) channel.on(Events.SET_STORIES, watchStories(channel, watcher, files));
 
       resolve(stories);
     });

@@ -1,10 +1,10 @@
-import { API as StorybookAPI } from '@storybook/api';
-import { DecoratorFunction } from '@storybook/addons';
-import { IKey } from 'selenium-webdriver/lib/input';
-import { Worker as ClusterWorker } from 'cluster';
-import { WebDriver, WebElementPromise } from 'selenium-webdriver';
-import Pixelmatch from 'pixelmatch';
-import { Context } from 'mocha';
+import type { API as StorybookAPI } from '@storybook/api';
+import type { DecoratorFunction } from '@storybook/addons';
+import type { IKey } from 'selenium-webdriver/lib/input';
+import type { Worker as ClusterWorker } from 'cluster';
+import type { WebDriver, WebElementPromise } from 'selenium-webdriver';
+import type Pixelmatch from 'pixelmatch';
+import type { Context } from 'mocha';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type DiffOptions = typeof Pixelmatch extends (

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
+import { isStorybookVersionLessThan, storybookDirRef } from './storybook/helpers';
 import { Config, Browser, BrowserConfig, Options, isDefined } from '../types';
-import { isStorybookVersionLessThan } from './utils';
 
 export const defaultBrowser = 'chrome';
 
@@ -43,7 +43,7 @@ function resolveConfigPath(configPath?: string): string | undefined {
   return configPath;
 }
 
-export async function readConfig(options: Options): Promise<Config | null> {
+export async function readConfig(options: Options): Promise<Config> {
   const configPath = resolveConfigPath(options.config);
   const userConfig: typeof defaultConfig & Partial<Pick<Config, 'gridUrl'>> = { ...defaultConfig };
 
@@ -59,6 +59,8 @@ export async function readConfig(options: Options): Promise<Config | null> {
   Object.entries(config.browsers).forEach(
     ([browser, browserConfig]) => (config.browsers[browser] = normalizeBrowserConfig(browser, browserConfig)),
   );
+
+  storybookDirRef.current = config.storybookDir;
 
   return config;
 }

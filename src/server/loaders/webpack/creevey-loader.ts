@@ -9,7 +9,7 @@ import generate from '@babel/generator';
 import * as t from '@babel/types';
 import { loader } from 'webpack';
 import chalk from 'chalk';
-import { isStorybookVersionLessThan } from '../../utils';
+import { isStorybookVersionLessThan } from '../../storybook/helpers';
 import { commonVisitor, mdxVisitor, previewVisitor, storyVisitor, FileType } from '../babel/helpers';
 
 function transform(ast: t.File): string {
