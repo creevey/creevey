@@ -1,3 +1,11 @@
+## [0.7.30](https://github.com/wKich/creevey/compare/v0.7.29...v0.7.30) (2021-06-10)
+
+### Bug Fixes
+
+- 🐛 import the same webpack as used for storybook manager ([ae3c6b7](https://github.com/wKich/creevey/commit/ae3c6b712a8e41a7d3f4396b269d471c578d9408))
+- 🐛 resolving storybook modules ([d30274d](https://github.com/wKich/creevey/commit/d30274d3dc12e77cea21ea170a9e03fc35892671))
+- package.json & yarn.lock to reduce vulnerabilities ([b1f8697](https://github.com/wKich/creevey/commit/b1f869758bb6b41165748de15f897a4bee22545b))
+
 ## [0.7.29](https://github.com/wKich/creevey/compare/v0.7.28...v0.7.29) (2021-05-30)
 
 ### Bug Fixes
