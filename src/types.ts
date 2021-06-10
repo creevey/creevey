@@ -2,7 +2,7 @@ import { API as StorybookAPI } from '@storybook/api';
 import { DecoratorFunction } from '@storybook/addons';
 import { IKey } from 'selenium-webdriver/lib/input';
 import { Worker as ClusterWorker } from 'cluster';
-import { WebDriver, WebElementPromise } from 'selenium-webdriver';
+import { until, WebDriver, WebElementPromise } from 'selenium-webdriver';
 import Pixelmatch from 'pixelmatch';
 import { Context } from 'mocha';
 
@@ -307,6 +307,7 @@ export type SkipOptions = string | SkipOption | SkipOption[];
 
 export type CreeveyTestFunction = (this: {
   browser: WebDriver;
+  until: typeof until;
   keys: IKey;
   expect: Chai.ExpectStatic;
   takeScreenshot: () => Promise<string>;
