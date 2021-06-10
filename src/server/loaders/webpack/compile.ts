@@ -12,6 +12,7 @@ import {
 } from '../../storybook/helpers';
 import { Config, Options, noop } from '../../../types';
 import { emitWebpackMessage, subscribeOn } from '../../messages';
+import chalk from 'chalk';
 
 let isInitiated = false;
 let dumpStats: (stats: Stats) => void = noop;
@@ -190,9 +191,16 @@ async function removeAddons(configDir: string): Promise<boolean> {
         getInterpretedFile(path.join(configDir, 'main'));
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
     const config = serverRequire(mainConfigFile) as {
+      core?: { builder?: string };
       stories: string[];
       addons?: (string | { name: string })[];
     };
+    if (config.core?.builder == 'webpack5') {
+      console.log(
+        chalk`[{yellow WARN}{grey :CreeveyWebpack}]`,
+        "Be aware Creevey doesn't fully support webpack@5, some feature might not work well",
+      );
+    }
     if (config.addons && config.stories) {
       config.addons = [];
       return true;

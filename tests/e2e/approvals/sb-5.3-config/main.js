@@ -276,11 +276,11 @@ module.exports = __webpack_require__(/*! ./.storybook/config.js */"./.storybook/
 /***/ }),
 
 /***/ "@storybook/react":
-/* external "./node_modules/creevey/lib/server/storybook.js" */
+/* external "./node_modules/creevey/lib/server/storybook/entry.js" */
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = require("./node_modules/creevey/lib/server/storybook.js");
+module.exports = require("./node_modules/creevey/lib/server/storybook/entry.js");
 
 /***/ })
 

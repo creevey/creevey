@@ -86,29 +86,33 @@
 /************************************************************************/
 /******/ ({
 
-/***/ "./.storybook/generated-entry.js":
-/* ./.storybook/generated-entry.js */
+/***/ "./.storybook/generated-stories-entry.js":
+/* ./.storybook/generated-stories-entry.js */
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(module) {
+
+var _frameworkImportPath = __webpack_require__(/*! @storybook/react */ "@storybook/react");
+/* eslint-disable import/no-unresolved */
+
+
+(0, _frameworkImportPath.configure)([__webpack_require__("./stories sync recursive ^\\.(?:(?:^|\\/|(?:(?:(?!(?:^|\\/)\\.).)*?)\\/)(?!\\.)(?=.)[^/]*?\\.stories\\.tsx)$")], module, false);
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../node_modules/webpack/buildin/module.js */ "./node_modules/webpack/buildin/module.js")(module)))
+
+/***/ }),
+
+/***/ "./.storybook/storybook-init-framework-entry.js":
+/* ./.storybook/storybook-init-framework-entry.js */
 /*! no exports provided */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* WEBPACK VAR INJECTION */(function(module) {/* harmony import */ var _storybook_react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @storybook/react */ "@storybook/react");
+/* harmony import */ var _storybook_react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @storybook/react */ "@storybook/react");
 /* harmony import */ var _storybook_react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_storybook_react__WEBPACK_IMPORTED_MODULE_0__);
-module._StorybookPreserveDecorators=!0;Object(_storybook_react__WEBPACK_IMPORTED_MODULE_0__["configure"])([__webpack_require__("./stories sync recursive ^\\.\\/(?:(?:(?!\\.)(?:(?:(?!(?:|\\/)\\.).)*?)\\/)?(?!\\.)(?=.)[^/]*?\\.stories\\.jsx\\/?)$")],module);
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../node_modules/webpack/buildin/harmony-module.js */ "./node_modules/webpack/buildin/harmony-module.js")(module)))
 
-/***/ }),
-
-/***/ "./.storybook/preview.js":
-/* ./.storybook/preview.js */
-/*! exports provided: parameters */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "parameters", function() { return parameters; });
-var parameters={creevey:{captureElement:"root"}};
 
 /***/ }),
 
@@ -165,14 +169,15 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ "./node_modules/webpack/buildin/harmony-module.js":
-/* (webpack)/buildin/harmony-module.js */
+/***/ "./node_modules/webpack/buildin/module.js":
+/* (webpack)/buildin/module.js */
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = function(originalModule) {
-	if (!originalModule.webpackPolyfill) {
-		var module = Object.create(originalModule);
+module.exports = function(module) {
+	if (!module.webpackPolyfill) {
+		module.deprecate = function() {};
+		module.paths = [];
 		// module.parent = undefined by default
 		if (!module.children) module.children = [];
 		Object.defineProperty(module, "loaded", {
@@ -187,9 +192,6 @@ module.exports = function(originalModule) {
 				return module.i;
 			}
 		});
-		Object.defineProperty(module, "exports", {
-			enumerable: true
-		});
 		module.webpackPolyfill = 1;
 	}
 	return module;
@@ -198,13 +200,13 @@ module.exports = function(originalModule) {
 
 /***/ }),
 
-/***/ "./stories sync recursive ^\\.\\/(?:(?:(?!\\.)(?:(?:(?!(?:|\\/)\\.).)*?)\\/)?(?!\\.)(?=.)[^/]*?\\.stories\\.jsx\\/?)$":
-/* ./stories sync ^\.\/(?:(?:(?!\.)(?:(?:(?!(?:|\/)\.).)*?)\/)?(?!\.)(?=.)[^/]*?\.stories\.jsx\/?)$ */
+/***/ "./stories sync recursive ^\\.(?:(?:^|\\/|(?:(?:(?!(?:^|\\/)\\.).)*?)\\/)(?!\\.)(?=.)[^/]*?\\.stories\\.tsx)$":
+/* ./stories sync ^\.(?:(?:^|\/|(?:(?:(?!(?:^|\/)\.).)*?)\/)(?!\.)(?=.)[^/]*?\.stories\.tsx)$ */
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./KindA.stories.jsx": "./stories/KindA.stories.jsx"
+	"./KindA.stories.tsx": "./stories/KindA.stories.tsx"
 };
 
 
@@ -225,50 +227,53 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = "./stories sync recursive ^\\.\\/(?:(?:(?!\\.)(?:(?:(?!(?:|\\/)\\.).)*?)\\/)?(?!\\.)(?=.)[^/]*?\\.stories\\.jsx\\/?)$";
+webpackContext.id = "./stories sync recursive ^\\.(?:(?:^|\\/|(?:(?:(?!(?:^|\\/)\\.).)*?)\\/)(?!\\.)(?=.)[^/]*?\\.stories\\.tsx)$";
 
 /***/ }),
 
-/***/ "./stories/KindA.stories.jsx":
-/* ./stories/KindA.stories.jsx */
+/***/ "./stories/KindA.stories.tsx":
+/* ./stories/KindA.stories.tsx */
 /*! exports provided: default, StoryA */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "StoryA", function() { return StoryA; });
-/* harmony default export */ __webpack_exports__["default"] = ({title:"KindA"});var StoryA=function(){};
+/* harmony default export */ __webpack_exports__["default"] = ({
+  title: 'KindA'
+});
+var StoryA = function StoryA() {};
 
 /***/ }),
 
-/***/ "./node_modules/@storybook/core/dist/server/common/polyfills.js":
-/* external "./node_modules/@storybook/core/dist/server/common/polyfills.js" */
+/***/ "./node_modules/@storybook/core-client/dist/esm/globals/globals.js":
+/* external "./node_modules/@storybook/core-client/dist/esm/globals/globals.js" */
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = require("./node_modules/@storybook/core/dist/server/common/polyfills.js");
+module.exports = require("./node_modules/@storybook/core-client/dist/esm/globals/globals.js");
 
 /***/ }),
 
-/***/ "./node_modules/@storybook/core/dist/server/preview/globals.js":
-/* external "./node_modules/@storybook/core/dist/server/preview/globals.js" */
+/***/ "./node_modules/@storybook/core-client/dist/esm/globals/polyfills.js":
+/* external "./node_modules/@storybook/core-client/dist/esm/globals/polyfills.js" */
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = require("./node_modules/@storybook/core/dist/server/preview/globals.js");
+module.exports = require("./node_modules/@storybook/core-client/dist/esm/globals/polyfills.js");
 
 /***/ }),
 
 /***/ 0:
-/* multi ./node_modules/creevey/lib/server/loaders/webpack/dummy-hmr.js ./node_modules/@storybook/core/dist/server/common/polyfills.js ./node_modules/@storybook/core/dist/server/preview/globals.js ./.storybook/preview.js ./.storybook/generated-entry.js */
+/* multi ./node_modules/creevey/lib/server/loaders/webpack/dummy-hmr.js ./node_modules/@storybook/core-client/dist/esm/globals/polyfills.js ./node_modules/@storybook/core-client/dist/esm/globals/globals.js ./.storybook/storybook-init-framework-entry.js ./.storybook/generated-stories-entry.js */
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(/*! ./node_modules/creevey/lib/server/loaders/webpack/dummy-hmr.js */"./node_modules/creevey/lib/server/loaders/webpack/dummy-hmr.js");
-__webpack_require__(/*! ./node_modules/@storybook/core/dist/server/common/polyfills.js */"./node_modules/@storybook/core/dist/server/common/polyfills.js");
-__webpack_require__(/*! ./node_modules/@storybook/core/dist/server/preview/globals.js */"./node_modules/@storybook/core/dist/server/preview/globals.js");
-__webpack_require__(/*! ./.storybook/preview.js */"./.storybook/preview.js");
-module.exports = __webpack_require__(/*! ./.storybook/generated-entry.js */"./.storybook/generated-entry.js");
+__webpack_require__(/*! ./node_modules/@storybook/core-client/dist/esm/globals/polyfills.js */"./node_modules/@storybook/core-client/dist/esm/globals/polyfills.js");
+__webpack_require__(/*! ./node_modules/@storybook/core-client/dist/esm/globals/globals.js */"./node_modules/@storybook/core-client/dist/esm/globals/globals.js");
+__webpack_require__(/*! ./.storybook/storybook-init-framework-entry.js */"./.storybook/storybook-init-framework-entry.js");
+module.exports = __webpack_require__(/*! ./.storybook/generated-stories-entry.js */"./.storybook/generated-stories-entry.js");
 
 
 /***/ }),

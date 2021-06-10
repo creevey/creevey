@@ -48,6 +48,9 @@ export async function readConfig(options: Options): Promise<Config> {
   const userConfig: typeof defaultConfig & Partial<Pick<Config, 'gridUrl'>> = { ...defaultConfig };
 
   if (isDefined(configPath)) Object.assign(userConfig, ((await import(configPath)) as { default: Config }).default);
+
+  storybookDirRef.current = userConfig.storybookDir;
+
   if (isStorybookVersionLessThan(6, 2)) userConfig.useWebpackToExtractTests = true;
 
   if (options.reportDir) userConfig.reportDir = path.resolve(options.reportDir);
@@ -59,8 +62,6 @@ export async function readConfig(options: Options): Promise<Config> {
   Object.entries(config.browsers).forEach(
     ([browser, browserConfig]) => (config.browsers[browser] = normalizeBrowserConfig(browser, browserConfig)),
   );
-
-  storybookDirRef.current = config.storybookDir;
 
   return config;
 }

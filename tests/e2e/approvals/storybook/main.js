@@ -4457,11 +4457,11 @@ module.exports = __webpack_require__(/*! ./examples/official-storybook/generated
 /***/ }),
 
 /***/ "@storybook/react":
-/* external "./examples/official-storybook/node_modules/creevey/lib/server/storybook.js" */
+/* external "./examples/official-storybook/node_modules/creevey/lib/server/storybook/entry.js" */
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = require("./examples/official-storybook/node_modules/creevey/lib/server/storybook.js");
+module.exports = require("./examples/official-storybook/node_modules/creevey/lib/server/storybook/entry.js");
 
 /***/ }),
 
