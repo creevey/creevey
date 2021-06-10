@@ -1,4 +1,5 @@
-import { Configuration, DefinePlugin } from 'webpack';
+import { Configuration, DefinePlugin as FallbackDefinePlugin } from 'webpack';
+import { resolveFromStorybookCoreServer } from '../../server/storybook/helpers';
 
 export function config(entry: string[] = []): string[] {
   return [...entry, require.resolve('./decorator')];
@@ -15,13 +16,20 @@ declare global {
 export interface CreeveyAddonOptions {
   creeveyPort?: number;
   clientPort?: number;
+  presets?: { apply: <T>(preset: string) => Promise<T | undefined> };
 }
-export function managerWebpack(config: Configuration, options: CreeveyAddonOptions): Configuration {
-  config.plugins?.push(
-    new DefinePlugin({
-      __CREEVEY_SERVER_PORT__: options.creeveyPort ?? 3000,
-      __CREEVEY_CLIENT_PORT__: options.clientPort,
-    }),
-  );
-  return config;
+
+export function managerWebpack(config: Configuration, options: CreeveyAddonOptions): Promise<Configuration> {
+  return (options.presets?.apply<typeof import('webpack')>('webpackInstance') ?? Promise.resolve(undefined))
+    .then((webpack) => webpack ?? import(resolveFromStorybookCoreServer('webpack')))
+    .then((webpack: typeof import('webpack')) => {
+      const { DefinePlugin = FallbackDefinePlugin } = webpack ?? {};
+      config.plugins?.push(
+        new DefinePlugin({
+          __CREEVEY_SERVER_PORT__: options.creeveyPort ?? 3000,
+          __CREEVEY_CLIENT_PORT__: options.clientPort,
+        }),
+      );
+      return config;
+    });
 }
