@@ -3,6 +3,7 @@ declare namespace Mocha {
   interface Context {
     config: import('creevey').Config;
     browser: import('selenium-webdriver').WebDriver;
+    until: import('selenium-webdriver/lib/until');
     keys: import('selenium-webdriver/lib/input').IKey;
     expect: Chai.ExpectStatic;
     takeScreenshot: () => Promise<string>;
