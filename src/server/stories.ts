@@ -57,6 +57,9 @@ function convertStories(
   const tests: { [testId: string]: ServerTest } = {};
 
   (Array.isArray(stories) ? stories : Object.values(stories)).forEach((storyMeta) => {
+    // TODO Skip docsOnly stories for now
+    if (storyMeta.parameters.docsOnly) return;
+
     browsers.forEach((browserName) => {
       const { delay, tests: storyTests, skip } = (storyMeta.parameters.creevey ?? {}) as CreeveyStoryParams;
 

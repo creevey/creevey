@@ -270,7 +270,7 @@
   - [x] wait-on doesn't work properly
   - [x] Don't pull docker local images
   - [x] Remove support ts config file version
-  - [ ] MDX docsOnly: true
+  - [x] MDX docsOnly: true
   - [ ] Listen to exception before waitForReady
   - [ ] SKB Kontur Selenium Grid resolve url timeout
 - [x] Change viewport height to 786 in config
@@ -307,6 +307,7 @@
   - [x] Handle main.js for 6.x+, remove addons from it
   - [x] Add extract command for CLI
   - [x] Pass grep option for `update` command
+  - [ ] Implement chromatic capture element resolving logic
   - [ ] Extract stories.json as a part of build storybook
   - [ ] Support `stories.svelte` https://storybook.js.org/blog/storybook-for-svelte/
   - [ ] Add fallback option, load tests from browser (hmr and tests are disabled in this case)
@@ -408,6 +409,9 @@
   - [ ] Playwright
   - [ ] Puppeteer
 - [ ] Features
+  - [ ] Capture storybook docs pages (where should be defined creevey parameters?)
+    - Listen event `Events.DOCS_RENDERED`
+    - The root element is `#docs-root`
   - [ ] Add test editor inside the addon (user be able to write/change tests for story)
   - [ ] Support JUnit mocha reporter
   - [ ] Improve `waitForReady` for interaction tests
