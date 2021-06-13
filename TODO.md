@@ -272,6 +272,7 @@
   - [x] Remove support ts config file version
   - [ ] MDX docsOnly: true
   - [ ] Listen to exception before waitForReady
+  - [ ] SKB Kontur Selenium Grid resolve url timeout
 - [x] Change viewport height to 786 in config
 - [x] Save TeamCity config in repo
 - [x] Gitlab browse report fix
@@ -305,7 +306,8 @@
   - [x] Send list of available browsers from api
   - [x] Handle main.js for 6.x+, remove addons from it
   - [x] Add extract command for CLI
-  - [ ] Pass grep option for `update` command
+  - [x] Pass grep option for `update` command
+  - [ ] Extract stories.json as a part of build storybook
   - [ ] Support `stories.svelte` https://storybook.js.org/blog/storybook-for-svelte/
   - [ ] Add fallback option, load tests from browser (hmr and tests are disabled in this case)
     - [ ] Send PR to Storybook to allow use HMR for stories
@@ -323,11 +325,12 @@
   - [x] Private docker images registry
   - [x] Allow use standalone binary instead of Docker image for browser (https://aerokube.com/selenoid/latest/#_standalone_binary)
 - [ ] Docs
+  - [ ] Example link
   - [ ] Add vue3 example
   - [ ] Add github actions for creevey-examples
   - [ ] Ignore elements
   - [ ] Describe use cases
-    - MDX, animations, CI + docker, custom images (options), sauceLabs, standalone, waitForReady, extract
+    - MDX, animations, CI + docker, custom images (options), sauceLabs, standalone, waitForReady, extract, etc
     - use `/** @type {import("webpack").Configuration } */` thing for creevey.config
   - [ ] Rewrite config docs to more detail (simple setup, use cases, config description)
   - [ ] How to setup creevey report in TeamCity
@@ -348,6 +351,7 @@
     - Limit 1 session per IP, reuse same container
     - Start new instance by request from browser
     - Write nodejs proxy app, that starts creevey on random port
+    - Use Google cloud k8s
 
 ## First priority (v0.8)
 
