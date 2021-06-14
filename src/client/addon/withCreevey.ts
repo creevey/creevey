@@ -85,34 +85,43 @@ async function resetCurrentStory(channel: Channel): Promise<void> {
   return new Promise<void>((resolve) => channel.once(Events.STORY_MISSING, resolve));
 }
 
-function waitForStoryRendered(channel: Channel): Promise<void> {
-  return new Promise<void>((resolve, reject) => {
-    function removeHandlers(): void {
-      /* eslint-disable @typescript-eslint/no-use-before-define */
-      channel.off(Events.STORY_RENDERED, renderHandler);
-      channel.off(Events.STORY_ERRORED, errorHandler);
-      channel.off(Events.STORY_THREW_EXCEPTION, errorHandler);
-      /* eslint-enable @typescript-eslint/no-use-before-define */
-    }
-    function renderHandler(): void {
-      removeHandlers();
-      resolve();
-    }
-    function errorHandler({ title, description }: { title: string; description: string }): void {
-      removeHandlers();
-      reject({
-        message: title,
-        stack: description,
-      });
-    }
-    function exceptionHandler(exception: Error): void {
-      removeHandlers();
-      reject(exception);
-    }
-    channel.once(Events.STORY_RENDERED, renderHandler);
-    channel.once(Events.STORY_ERRORED, errorHandler);
-    channel.once(Events.STORY_THREW_EXCEPTION, exceptionHandler);
-  });
+function catchRenderError(channel: Channel): Promise<void> & { cancel: () => void } {
+  let rejectCallback: (reason?: unknown) => void;
+  const promise = new Promise<void>((_resolve, reject) => (rejectCallback = reject));
+
+  function errorHandler({ title, description }: { title: string; description: string }): void {
+    rejectCallback({
+      message: title,
+      stack: description,
+    });
+  }
+  function exceptionHandler(exception: Error): void {
+    rejectCallback(exception);
+  }
+  function removeHandlers(): void {
+    channel.off(Events.STORY_ERRORED, errorHandler);
+    channel.off(Events.STORY_THREW_EXCEPTION, errorHandler);
+  }
+
+  channel.once(Events.STORY_ERRORED, errorHandler);
+  channel.once(Events.STORY_THREW_EXCEPTION, exceptionHandler);
+
+  return Object.assign(promise, { cancel: removeHandlers });
+}
+
+function waitForStoryRendered(channel: Channel): Promise<void> & { cancel: () => void } {
+  let resolveCallback: () => void;
+  const promise = new Promise<void>((resolve) => (resolveCallback = resolve));
+  function renderHandler(): void {
+    resolveCallback();
+  }
+  function removeHandlers(): void {
+    channel.off(Events.STORY_RENDERED, renderHandler);
+  }
+
+  channel.once(Events.STORY_RENDERED, renderHandler);
+
+  return Object.assign(promise, { cancel: removeHandlers });
 }
 
 function waitForFontsLoaded(): Promise<void> | void {
@@ -161,13 +170,20 @@ export function withCreevey(): MakeDecoratorResult {
     if (storyId == currentStory) await resetCurrentStory(channel);
     else currentStory = storyId;
 
+    const renderPromise = waitForStoryRendered(channel);
+    const errorPromise = catchRenderError(channel);
+
     setTimeout(() => channel.emit(Events.SET_CURRENT_STORY, { storyId, name, kind }), 0);
 
     try {
-      await waitForStoryRendered(channel);
-      await waitForFontsLoaded();
-      // TODO Listen to STORY_THREW_EXCEPTION and call callback only fo waitForReady
-      await waitForReady;
+      await Promise.race([
+        (async () => {
+          await waitForStoryRendered(channel);
+          await waitForFontsLoaded();
+          await waitForReady;
+        })(),
+        errorPromise,
+      ]);
       callback();
     } catch (reason) {
       // NOTE Event `STORY_THREW_EXCEPTION` triggered only in react and vue frameworks and return Error instance
@@ -179,6 +195,9 @@ export function withCreevey(): MakeDecoratorResult {
           ? `${reason.message as string}\n    ${reason.stack as string}`
           : (reason as string);
       callback(errorMessage);
+    } finally {
+      renderPromise.cancel();
+      errorPromise.cancel();
     }
   }
 
@@ -220,7 +239,6 @@ export function withCreevey(): MakeDecoratorResult {
   return makeDecorator({
     name: 'withCreevey',
     parameterName: 'creevey',
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    wrapper: (getStory, context) => getStory(context),
+    wrapper: (getStory, context) => getStory(context) as unknown,
   });
 }

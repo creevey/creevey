@@ -271,7 +271,7 @@
   - [x] Don't pull docker local images
   - [x] Remove support ts config file version
   - [x] MDX docsOnly: true
-  - [ ] Listen to exception before waitForReady
+  - [x] Listen to exception before waitForReady
   - [ ] SKB Kontur Selenium Grid resolve url timeout
 - [x] Change viewport height to 786 in config
 - [x] Save TeamCity config in repo
