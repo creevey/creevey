@@ -152,6 +152,17 @@ export const SimpleSideBar: Story & CreeveyStory = () => {
 SimpleSideBar.parameters = {
   creevey: {
     tests: {
+      ...Array(1000)
+        .fill(null)
+        .reduce(
+          (acc, _, i) => ({
+            ...acc,
+            [`test_${i}`]: async () => {
+              await this.expect(await this.takeScreenshot()).to.matchImage();
+            },
+          }),
+          {},
+        ),
       async hover() {
         await this.browser
           .actions()
