@@ -27,6 +27,8 @@ export const resolveFromStorybookAddonDocs = (modulePath: string): string =>
   resolveFrom(resolveFromStorybook('@storybook/addon-docs'), modulePath);
 export const resolveFromStorybookBuilderWebpack4 = (modulePath: string): string =>
   resolveFrom(resolveFromStorybook('@storybook/builder-webpack4'), modulePath);
+export const resolveFromStorybookCore = (modulePath: string): string =>
+  resolveFrom(resolveFromStorybook('@storybook/core'), modulePath);
 export const resolveFromStorybookCoreServer = (modulePath: string): string =>
   resolveFrom(resolveFromStorybook('@storybook/core-server'), modulePath);
 

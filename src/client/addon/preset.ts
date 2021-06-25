@@ -1,5 +1,9 @@
 import { Configuration, DefinePlugin as FallbackDefinePlugin } from 'webpack';
-import { resolveFromStorybookCoreServer } from '../../server/storybook/helpers';
+import {
+  isStorybookVersionLessThan,
+  resolveFromStorybookCore,
+  resolveFromStorybookCoreServer,
+} from '../../server/storybook/helpers';
 
 export function config(entry: string[] = []): string[] {
   return [...entry, require.resolve('./decorator')];
@@ -21,7 +25,15 @@ export interface CreeveyAddonOptions {
 
 export function managerWebpack(config: Configuration, options: CreeveyAddonOptions): Promise<Configuration> {
   return (options.presets?.apply<typeof import('webpack')>('webpackInstance') ?? Promise.resolve(undefined))
-    .then((webpack) => webpack ?? import(resolveFromStorybookCoreServer('webpack')))
+    .then(
+      (webpack) =>
+        webpack ??
+        import(
+          isStorybookVersionLessThan(6, 2)
+            ? resolveFromStorybookCore('webpack')
+            : resolveFromStorybookCoreServer('webpack')
+        ),
+    )
     .then((webpack: typeof import('webpack')) => {
       const { DefinePlugin = FallbackDefinePlugin } = webpack ?? {};
       config.plugins?.push(
