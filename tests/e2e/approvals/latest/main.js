@@ -252,6 +252,18 @@ Object.keys(_storybook_preview_js__WEBPACK_IMPORTED_MODULE_11__).forEach(functio
         });
       }
 
+    case 'argsEnhancers':
+      {
+        return value.forEach(function (enhancer) {
+          return Object(_node_modules_storybook_client_api__WEBPACK_IMPORTED_MODULE_9__["addArgsEnhancer"])(enhancer);
+        });
+      }
+
+    case 'render':
+      {
+        return Object(_node_modules_storybook_client_api__WEBPACK_IMPORTED_MODULE_9__["setGlobalRender"])(value);
+      }
+
     case 'globals':
     case 'globalTypes':
       {
@@ -581,21 +593,21 @@ module.exports = require("./node_modules/@storybook/client-logger");
 
 /***/ }),
 
-/***/ "./node_modules/@storybook/core-server/dist/cjs/globals/globals.js":
-/* external "./node_modules/@storybook/core-server/dist/cjs/globals/globals.js" */
+/***/ "./node_modules/@storybook/core-client/dist/esm/globals/globals.js":
+/* external "./node_modules/@storybook/core-client/dist/esm/globals/globals.js" */
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = require("./node_modules/@storybook/core-server/dist/cjs/globals/globals.js");
+module.exports = require("./node_modules/@storybook/core-client/dist/esm/globals/globals.js");
 
 /***/ }),
 
-/***/ "./node_modules/@storybook/core-server/dist/cjs/globals/polyfills.js":
-/* external "./node_modules/@storybook/core-server/dist/cjs/globals/polyfills.js" */
+/***/ "./node_modules/@storybook/core-client/dist/esm/globals/polyfills.js":
+/* external "./node_modules/@storybook/core-client/dist/esm/globals/polyfills.js" */
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = require("./node_modules/@storybook/core-server/dist/cjs/globals/polyfills.js");
+module.exports = require("./node_modules/@storybook/core-client/dist/esm/globals/polyfills.js");
 
 /***/ }),
 
@@ -708,13 +720,13 @@ module.exports = require("./node_modules/core-js/modules/web.dom-collections.for
 /***/ }),
 
 /***/ 0:
-/* multi ./node_modules/creevey/lib/server/loaders/webpack/dummy-hmr.js ./node_modules/@storybook/core-server/dist/cjs/globals/polyfills.js ./node_modules/@storybook/core-server/dist/cjs/globals/globals.js ./.storybook/storybook-init-framework-entry.js ./.storybook/preview.js-generated-config-entry.js ./.storybook/generated-stories-entry.js */
+/* multi ./node_modules/creevey/lib/server/loaders/webpack/dummy-hmr.js ./node_modules/@storybook/core-client/dist/esm/globals/polyfills.js ./node_modules/@storybook/core-client/dist/esm/globals/globals.js ./.storybook/storybook-init-framework-entry.js ./.storybook/preview.js-generated-config-entry.js ./.storybook/generated-stories-entry.js */
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(/*! ./node_modules/creevey/lib/server/loaders/webpack/dummy-hmr.js */"./node_modules/creevey/lib/server/loaders/webpack/dummy-hmr.js");
-__webpack_require__(/*! ./node_modules/@storybook/core-server/dist/cjs/globals/polyfills.js */"./node_modules/@storybook/core-server/dist/cjs/globals/polyfills.js");
-__webpack_require__(/*! ./node_modules/@storybook/core-server/dist/cjs/globals/globals.js */"./node_modules/@storybook/core-server/dist/cjs/globals/globals.js");
+__webpack_require__(/*! ./node_modules/@storybook/core-client/dist/esm/globals/polyfills.js */"./node_modules/@storybook/core-client/dist/esm/globals/polyfills.js");
+__webpack_require__(/*! ./node_modules/@storybook/core-client/dist/esm/globals/globals.js */"./node_modules/@storybook/core-client/dist/esm/globals/globals.js");
 __webpack_require__(/*! ./.storybook/storybook-init-framework-entry.js */"./.storybook/storybook-init-framework-entry.js");
 __webpack_require__(/*! ./.storybook/preview.js-generated-config-entry.js */"./.storybook/preview.js-generated-config-entry.js");
 module.exports = __webpack_require__(/*! ./.storybook/generated-stories-entry.js */"./.storybook/generated-stories-entry.js");

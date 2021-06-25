@@ -272,6 +272,8 @@
   - [x] Remove support ts config file version
   - [x] MDX docsOnly: true
   - [x] Listen to exception before waitForReady
+  - [ ] 0.7.30 did not compile for us (Cannot find module '@storybook/builder-webpack4'). https://github.com/iTwin/iTwinUI-react
+  - [ ] Creevey update should update only failed images
   - [ ] SKB Kontur Selenium Grid resolve url timeout
 - [x] Change viewport height to 786 in config
 - [x] Save TeamCity config in repo
@@ -357,6 +359,7 @@
 ## First priority (v0.8)
 
 - [x] ~~Fix png logos~~
+- [ ] Remove report on each start
 - [ ] Add instruction for various frameworks
   - [ ] Web components
   - [ ] Create React App Typescript

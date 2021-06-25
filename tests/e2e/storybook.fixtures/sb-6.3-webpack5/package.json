@@ -4,9 +4,9 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "@storybook/builder-webpack5": "6.3.0-rc.2",
-    "@storybook/manager-webpack5": "6.3.0-rc.2",
-    "@storybook/react": "6.3.0-rc.2",
+    "@storybook/builder-webpack5": "~6.3.0",
+    "@storybook/manager-webpack5": "~6.3.0",
+    "@storybook/react": "~6.3.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   }
