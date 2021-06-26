@@ -273,9 +273,10 @@
   - [x] MDX docsOnly: true
   - [x] Listen to exception before waitForReady
   - [x] 0.7.30 did not compile for us (Cannot find module '@storybook/builder-webpack4'). https://github.com/iTwin/iTwinUI-react
-  - [ ] Add docs addon and mdx stories for old storybooks in e2e tests
-  - [ ] Creevey update should update only failed images
-  - [ ] SKB Kontur Selenium Grid resolve url timeout
+  - [x] Take a look on preview.tsx in react-ui, it isn't transpile
+  - [x] Creevey update should update only failed images
+- [x] Add docs addon and mdx stories for old storybooks in e2e tests
+- [x] Add extract stories to e2e tests
 - [x] Change viewport height to 786 in config
 - [x] Save TeamCity config in repo
 - [x] Gitlab browse report fix
@@ -368,6 +369,7 @@
   - [ ] Next.js
   - [ ] https://nx.dev/
 - [ ] Bugs
+  - [ ] SKB Kontur Selenium Grid resolve url timeout
   - [ ] IE don't work in github actions maybe out of sync?
   - [ ] IE fail because out of sync. Add explicit wait for each browser action
   - [ ] We need to define flag when story threw an error. Check flag in selenium and capture screenshot for debug

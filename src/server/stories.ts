@@ -180,6 +180,7 @@ async function loadStoriesDirectly(
 ): Promise<void> {
   const { toRequireContext } = await importStorybookCoreCommon();
   const { addParameters, configure } = await import('./storybook/entry');
+  const requireContext = await (await import('./loaders/babel/register')).default(config, debug);
   const preview = (() => {
     try {
       return require.resolve(`${config.storybookDir}/preview`);
@@ -188,7 +189,6 @@ async function loadStoriesDirectly(
     }
   })();
 
-  const requireContext = await (await import('./loaders/babel/register')).default(config, debug);
   const { stories } = (
     (await import(require.resolve(`${config.storybookDir}/main`))) as {
       default: {
