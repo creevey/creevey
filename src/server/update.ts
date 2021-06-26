@@ -70,6 +70,7 @@ export default function update(config: Config, grepPattern?: string): void {
   if (tests) {
     testPaths = Object.values(tests)
       .filter(isDefined)
+      .filter(({ status }) => status == 'failed')
       .map(({ storyPath, testName, browser }) => [...storyPath, ...(testName ? [testName] : []), browser]);
   }
 
