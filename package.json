@@ -13,7 +13,7 @@
     "addon",
     "test"
   ],
-  "version": "0.7.30",
+  "version": "0.7.31",
   "bin": {
     "creevey": "./lib/cli.js"
   },

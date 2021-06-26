@@ -1,3 +1,17 @@
+## [0.7.31](https://github.com/wKich/creevey/compare/v0.7.30...v0.7.31) (2021-06-26)
+
+### Bug Fixes
+
+- 🐛 ignore docsOnly stories for now ([2fda22b](https://github.com/wKich/creevey/commit/2fda22b333929306c2ad31243f1a0fd1900bbd7f))
+- 🐛 improve listen story render error with `waitForReady` ([dda7948](https://github.com/wKich/creevey/commit/dda7948c3496a7ef7a8e9fc4ce50d774b470bd94))
+- 🐛 improve update to approve only failed images ([f0e5719](https://github.com/wKich/creevey/commit/f0e5719f1b8d1b0fb105bacb5619cd903eadced6))
+- 🐛 resolve storybook preview config after babel/register ([cb3f46c](https://github.com/wKich/creevey/commit/cb3f46c0502264cdd5aefc2dc397da1892938eb5))
+- 🐛 resolving storybook modules for version less than 6.2 ([bd84c5f](https://github.com/wKich/creevey/commit/bd84c5f87a3c271665c3fd283ae09cabc2851120))
+
+### Features
+
+- 🎸 add `until` selenium helpers to test context ([4f29eca](https://github.com/wKich/creevey/commit/4f29eca9e829c68d765da88fbb3ab327278fefe3))
+
 ## [0.7.30](https://github.com/wKich/creevey/compare/v0.7.29...v0.7.30) (2021-06-10)
 
 ### Bug Fixes
