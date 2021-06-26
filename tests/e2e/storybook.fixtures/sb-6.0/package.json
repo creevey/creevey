@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "@storybook/addon-essentials": "~6.0.28",
     "@storybook/react": "~6.0.28",
     "react": "^16.14.0",
     "react-dom": "^16.14.0"

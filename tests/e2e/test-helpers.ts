@@ -42,19 +42,19 @@ export function execSync(command: string, options?: ExecOptions): void {
   if (result.code != 0) throw new Error(result.stderr);
 }
 
-export function prepareWorkDir(workDir: string): void {
+export function prepareWorkDir(workDir: string, buildWebpack = true): void {
   execSync(`npm install serve ${path.join(__dirname, '/../../creevey.tgz')} --no-save`, { cwd: workDir });
-  execSync('npx creevey --webpack', { cwd: workDir });
+  if (buildWebpack) execSync('npx creevey --webpack', { cwd: workDir });
 }
 
-export async function updateApprovals(workDir: string, suiteName: string): Promise<void> {
+export async function updateApprovals(workDir: string, suiteName: string, updateMainJS = true): Promise<void> {
   shell.mkdir('-p', `${__dirname}/approvals/${suiteName}`);
   writeFileSync(
     `${__dirname}/approvals/${suiteName}/tests.json`,
     JSON.stringify(await readTestsJson(workDir), null, 2),
   );
+  if (updateMainJS) writeFileSync(`${__dirname}/approvals/${suiteName}/main.js`, readMainJsBundle(workDir));
   shell.rm('-f', `${workDir}/stories.json`);
-  writeFileSync(`${__dirname}/approvals/${suiteName}/main.js`, readMainJsBundle(workDir));
 }
 
 export function assertExtractedTests(workDir: string, suiteName: string): void {

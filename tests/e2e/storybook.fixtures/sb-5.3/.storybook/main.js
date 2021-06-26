@@ -1,3 +1,4 @@
 module.exports = {
-  stories: ['../stories/**/*.stories.jsx'],
+  stories: ['../stories/**/*.stories.@(md|js)x'],
+  addons: ['@storybook/addon-docs', 'creevey']
 };

@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "@storybook/addon-essentials": "~6.3.0",
     "@storybook/builder-webpack5": "~6.3.0",
     "@storybook/manager-webpack5": "~6.3.0",
     "@storybook/react": "~6.3.0",

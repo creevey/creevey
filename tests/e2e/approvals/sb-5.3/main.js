@@ -95,7 +95,7 @@
 __webpack_require__.r(__webpack_exports__);
 /* WEBPACK VAR INJECTION */(function(module) {/* harmony import */ var _storybook_react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @storybook/react */ "@storybook/react");
 /* harmony import */ var _storybook_react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_storybook_react__WEBPACK_IMPORTED_MODULE_0__);
-module._StorybookPreserveDecorators=!0;Object(_storybook_react__WEBPACK_IMPORTED_MODULE_0__["configure"])([__webpack_require__("./stories sync recursive ^\\.\\/(?:(?:(?!\\.)(?:(?:(?!(?:|\\/)\\.).)*?)\\/)?(?!\\.)(?=.)[^/]*?\\.stories\\.jsx\\/?)$")],module);
+module._StorybookPreserveDecorators=!0;Object(_storybook_react__WEBPACK_IMPORTED_MODULE_0__["configure"])([__webpack_require__("./stories sync recursive ^\\.\\/(?:(?:|\\/|(?:(?:(?!(?:|\\/)\\.).)*?)\\/)(?!\\.)(?=.)[^/]*?\\.stories\\.(md|js)x)$")],module);
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../node_modules/webpack/buildin/harmony-module.js */ "./node_modules/webpack/buildin/harmony-module.js")(module)))
 
 /***/ }),
@@ -198,13 +198,14 @@ module.exports = function(originalModule) {
 
 /***/ }),
 
-/***/ "./stories sync recursive ^\\.\\/(?:(?:(?!\\.)(?:(?:(?!(?:|\\/)\\.).)*?)\\/)?(?!\\.)(?=.)[^/]*?\\.stories\\.jsx\\/?)$":
-/* ./stories sync ^\.\/(?:(?:(?!\.)(?:(?:(?!(?:|\/)\.).)*?)\/)?(?!\.)(?=.)[^/]*?\.stories\.jsx\/?)$ */
+/***/ "./stories sync recursive ^\\.\\/(?:(?:|\\/|(?:(?:(?!(?:|\\/)\\.).)*?)\\/)(?!\\.)(?=.)[^/]*?\\.stories\\.(md|js)x)$":
+/* ./stories sync ^\.\/(?:(?:|\/|(?:(?:(?!(?:|\/)\.).)*?)\/)(?!\.)(?=.)[^/]*?\.stories\.(md|js)x)$ */
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./KindA.stories.jsx": "./stories/KindA.stories.jsx"
+	"./KindA.stories.jsx": "./stories/KindA.stories.jsx",
+	"./KindB.stories.mdx": "./stories/KindB.stories.mdx"
 };
 
 
@@ -225,7 +226,7 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = "./stories sync recursive ^\\.\\/(?:(?:(?!\\.)(?:(?:(?!(?:|\\/)\\.).)*?)\\/)?(?!\\.)(?=.)[^/]*?\\.stories\\.jsx\\/?)$";
+webpackContext.id = "./stories sync recursive ^\\.\\/(?:(?:|\\/|(?:(?:(?!(?:|\\/)\\.).)*?)\\/)(?!\\.)(?=.)[^/]*?\\.stories\\.(md|js)x)$";
 
 /***/ }),
 
@@ -238,6 +239,38 @@ webpackContext.id = "./stories sync recursive ^\\.\\/(?:(?:(?!\\.)(?:(?:(?!(?:|\
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "StoryA", function() { return StoryA; });
 /* harmony default export */ __webpack_exports__["default"] = ({title:"KindA"});var StoryA=function(){};
+
+/***/ }),
+
+/***/ "./stories/KindB.stories.mdx":
+/* ./stories/KindB.stories.mdx */
+/*! exports provided: storyA, default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "storyA", function() { return storyA; });
+/* harmony import */ var core_js_modules_es_function_name_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core-js/modules/es.function.name.js */ "core-js/modules/es.function.name.js");
+/* harmony import */ var core_js_modules_es_function_name_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_function_name_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var core_js_modules_es_object_define_property_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core-js/modules/es.object.define-property.js */ "core-js/modules/es.object.define-property.js");
+/* harmony import */ var core_js_modules_es_object_define_property_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_object_define_property_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var core_js_modules_es_object_keys_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! core-js/modules/es.object.keys.js */ "core-js/modules/es.object.keys.js");
+/* harmony import */ var core_js_modules_es_object_keys_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_object_keys_js__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var core_js_modules_es_symbol_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core-js/modules/es.symbol.js */ "core-js/modules/es.symbol.js");
+/* harmony import */ var core_js_modules_es_symbol_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_symbol_js__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var core_js_modules_es_array_filter_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! core-js/modules/es.array.filter.js */ "core-js/modules/es.array.filter.js");
+/* harmony import */ var core_js_modules_es_array_filter_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_array_filter_js__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var core_js_modules_es_object_get_own_property_descriptor_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! core-js/modules/es.object.get-own-property-descriptor.js */ "core-js/modules/es.object.get-own-property-descriptor.js");
+/* harmony import */ var core_js_modules_es_object_get_own_property_descriptor_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_object_get_own_property_descriptor_js__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var core_js_modules_es_array_for_each_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! core-js/modules/es.array.for-each.js */ "core-js/modules/es.array.for-each.js");
+/* harmony import */ var core_js_modules_es_array_for_each_js__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_array_for_each_js__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var core_js_modules_web_dom_collections_for_each_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! core-js/modules/web.dom-collections.for-each.js */ "core-js/modules/web.dom-collections.for-each.js");
+/* harmony import */ var core_js_modules_web_dom_collections_for_each_js__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_web_dom_collections_for_each_js__WEBPACK_IMPORTED_MODULE_7__);
+/* harmony import */ var core_js_modules_es_object_get_own_property_descriptors_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! core-js/modules/es.object.get-own-property-descriptors.js */ "core-js/modules/es.object.get-own-property-descriptors.js");
+/* harmony import */ var core_js_modules_es_object_get_own_property_descriptors_js__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_object_get_own_property_descriptors_js__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var core_js_modules_es_object_define_properties_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! core-js/modules/es.object.define-properties.js */ "core-js/modules/es.object.define-properties.js");
+/* harmony import */ var core_js_modules_es_object_define_properties_js__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_object_define_properties_js__WEBPACK_IMPORTED_MODULE_9__);
+function ownKeys(object,enumerableOnly){var keys=Object.keys(object);if(Object.getOwnPropertySymbols){var symbols=Object.getOwnPropertySymbols(object);if(enumerableOnly){symbols=symbols.filter(function(sym){return Object.getOwnPropertyDescriptor(object,sym).enumerable})}keys.push.apply(keys,symbols)}return keys}function _objectSpread(target){for(var i=1,source;i<arguments.length;i++){source=null!=arguments[i]?arguments[i]:{};if(i%2){ownKeys(Object(source),!0).forEach(function(key){_defineProperty(target,key,source[key])})}else if(Object.getOwnPropertyDescriptors){Object.defineProperties(target,Object.getOwnPropertyDescriptors(source))}else{ownKeys(Object(source)).forEach(function(key){Object.defineProperty(target,key,Object.getOwnPropertyDescriptor(source,key))})}}return target}function _defineProperty(obj,key,value){if(key in obj){Object.defineProperty(obj,key,{value:value,enumerable:!0,configurable:!0,writable:!0})}else{obj[key]=value}return obj}/* @jsxRuntime classic */ /* @jsx mdx */var storyA=function(){};storyA.story={};storyA.story.name="StoryA";storyA.story.parameters=_objectSpread({},{creevey:{captureElement:"mdx-by-children"}});var componentMeta={title:"Docs/KindB",parameters:{creevey:{ignoreElements:["img"]}},includeStories:["storyA"]};componentMeta.parameters=componentMeta.parameters||{};/* harmony default export */ __webpack_exports__["default"] = (componentMeta);
 
 /***/ }),
 
@@ -259,8 +292,17 @@ module.exports = require("./node_modules/@storybook/core/dist/server/preview/glo
 
 /***/ }),
 
+/***/ "./node_modules/creevey/lib/client/addon/decorator.js":
+/* external "./node_modules/creevey/lib/client/addon/decorator.js" */
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("./node_modules/creevey/lib/client/addon/decorator.js");
+
+/***/ }),
+
 /***/ 0:
-/* multi ./node_modules/creevey/lib/server/loaders/webpack/dummy-hmr.js ./node_modules/@storybook/core/dist/server/common/polyfills.js ./node_modules/@storybook/core/dist/server/preview/globals.js ./.storybook/preview.js ./.storybook/generated-entry.js */
+/* multi ./node_modules/creevey/lib/server/loaders/webpack/dummy-hmr.js ./node_modules/@storybook/core/dist/server/common/polyfills.js ./node_modules/@storybook/core/dist/server/preview/globals.js ./.storybook/preview.js ./node_modules/creevey/lib/client/addon/decorator.js ./.storybook/generated-entry.js */
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -268,6 +310,7 @@ __webpack_require__(/*! ./node_modules/creevey/lib/server/loaders/webpack/dummy-
 __webpack_require__(/*! ./node_modules/@storybook/core/dist/server/common/polyfills.js */"./node_modules/@storybook/core/dist/server/common/polyfills.js");
 __webpack_require__(/*! ./node_modules/@storybook/core/dist/server/preview/globals.js */"./node_modules/@storybook/core/dist/server/preview/globals.js");
 __webpack_require__(/*! ./.storybook/preview.js */"./.storybook/preview.js");
+__webpack_require__(/*! ./node_modules/creevey/lib/client/addon/decorator.js */"./node_modules/creevey/lib/client/addon/decorator.js");
 module.exports = __webpack_require__(/*! ./.storybook/generated-entry.js */"./.storybook/generated-entry.js");
 
 
@@ -279,6 +322,96 @@ module.exports = __webpack_require__(/*! ./.storybook/generated-entry.js */"./.s
 /***/ (function(module, exports) {
 
 module.exports = require("./node_modules/creevey/lib/server/storybook/entry.js");
+
+/***/ }),
+
+/***/ "core-js/modules/es.array.filter.js":
+/* external "core-js/modules/es.array.filter.js" */
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("core-js/modules/es.array.filter.js");
+
+/***/ }),
+
+/***/ "core-js/modules/es.array.for-each.js":
+/* external "core-js/modules/es.array.for-each.js" */
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("core-js/modules/es.array.for-each.js");
+
+/***/ }),
+
+/***/ "core-js/modules/es.function.name.js":
+/* external "core-js/modules/es.function.name.js" */
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("core-js/modules/es.function.name.js");
+
+/***/ }),
+
+/***/ "core-js/modules/es.object.define-properties.js":
+/* external "core-js/modules/es.object.define-properties.js" */
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("core-js/modules/es.object.define-properties.js");
+
+/***/ }),
+
+/***/ "core-js/modules/es.object.define-property.js":
+/* external "core-js/modules/es.object.define-property.js" */
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("core-js/modules/es.object.define-property.js");
+
+/***/ }),
+
+/***/ "core-js/modules/es.object.get-own-property-descriptor.js":
+/* external "core-js/modules/es.object.get-own-property-descriptor.js" */
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("core-js/modules/es.object.get-own-property-descriptor.js");
+
+/***/ }),
+
+/***/ "core-js/modules/es.object.get-own-property-descriptors.js":
+/* external "core-js/modules/es.object.get-own-property-descriptors.js" */
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("core-js/modules/es.object.get-own-property-descriptors.js");
+
+/***/ }),
+
+/***/ "core-js/modules/es.object.keys.js":
+/* external "core-js/modules/es.object.keys.js" */
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("core-js/modules/es.object.keys.js");
+
+/***/ }),
+
+/***/ "core-js/modules/es.symbol.js":
+/* external "core-js/modules/es.symbol.js" */
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("core-js/modules/es.symbol.js");
+
+/***/ }),
+
+/***/ "core-js/modules/web.dom-collections.for-each.js":
+/* external "core-js/modules/web.dom-collections.for-each.js" */
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("core-js/modules/web.dom-collections.for-each.js");
 
 /***/ })
 
