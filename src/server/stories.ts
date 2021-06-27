@@ -1,4 +1,5 @@
 import path from 'path';
+import { mkdirSync, writeFileSync } from 'fs';
 import { isWorker, isMaster } from 'cluster';
 import { createHash } from 'crypto';
 import type { Context } from 'mocha';
@@ -15,8 +16,8 @@ import type {
   SetStoriesData,
   Config,
 } from '../types';
-import { isDefined, noop } from '../types';
-import { shouldSkip, getCreeveyCache } from './utils';
+import { isDefined, isFunction, isObject, noop } from '../types';
+import { shouldSkip, getCreeveyCache, removeProps } from './utils';
 import { mergeWith } from 'lodash';
 import { subscribeOn } from './messages';
 import type { Parameters } from '@storybook/api';
@@ -329,4 +330,26 @@ export async function loadTestsFromStories(
     );
 
   return tests;
+}
+
+export function saveStoriesJson(extract: string | boolean): void {
+  const outputDir = typeof extract == 'boolean' ? 'storybook-static' : extract;
+  const storiesData = storybookApi?.clientApi.store().getStoriesJsonData();
+  // TODO Fix args stories
+  removeProps(storiesData ?? {}, ['stories', () => true, 'parameters', '__isArgsStory']);
+  Object.values(storiesData?.stories ?? {}).forEach(
+    (story) =>
+      isObject(story) && 'parameters' in story && isObject(story.parameters) && delete story.parameters.__isArgsStory,
+  );
+  mkdirSync(outputDir, { recursive: true });
+  writeFileSync(path.join(outputDir, 'stories.json'), JSON.stringify(storiesData, null, 2));
+}
+
+export function saveTestsJson(tests: Record<string, unknown>, dstPath: string = process.cwd()): void {
+  mkdirSync(dstPath, { recursive: true });
+  writeFileSync(
+    path.join(dstPath, 'tests.json'),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    JSON.stringify(tests, (_, value) => (isFunction(value) ? value.toString() : value), 2),
+  );
 }

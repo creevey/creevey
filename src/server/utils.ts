@@ -1,5 +1,4 @@
-import { createWriteStream, existsSync, mkdirSync, readFileSync, unlink, writeFileSync } from 'fs';
-import path from 'path';
+import { createWriteStream, existsSync, readFileSync, unlink } from 'fs';
 import cluster from 'cluster';
 import { SkipOptions, isDefined, TestData, noop, isFunction } from '../types';
 import { emitShutdownMessage, sendShutdownMessage } from './messages';
@@ -139,13 +138,4 @@ export function removeProps(obj: Record<string, unknown>, propPath: (string | ((
         .filter(prop)
         .forEach((key) => delete obj[key]);
   }
-}
-
-export function saveTestJson(tests: Record<string, unknown>, dstPath: string = process.cwd()): void {
-  mkdirSync(dstPath, { recursive: true });
-  writeFileSync(
-    path.join(dstPath, 'tests.json'),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    JSON.stringify(tests, (_, value) => (isFunction(value) ? value.toString() : value), 2),
-  );
 }

@@ -1,9 +1,8 @@
 import path from 'path';
 import { Config, TestData, isDefined, ServerTest } from '../../types';
-import { loadTestsFromStories } from '../stories';
+import { loadTestsFromStories, saveTestsJson } from '../stories';
 import Runner from './runner';
 import { startWebpackCompiler } from '../loaders/webpack/start';
-import { saveTestJson } from '../utils';
 
 function mergeTests(
   testsWithReports: Partial<{ [id: string]: TestData }>,
@@ -37,12 +36,12 @@ export default async function master(config: Config, options: { watch: boolean; 
     ...options,
     update: (testsDiff) => {
       runner.updateTests(testsDiff);
-      saveTestJson(runner.tests, config.reportDir);
+      saveTestsJson(runner.tests, config.reportDir);
     },
   });
 
   runner.tests = mergeTests(testsFromReport, tests);
-  saveTestJson(runner.tests, config.reportDir);
+  saveTestsJson(runner.tests, config.reportDir);
 
   return runner;
 }

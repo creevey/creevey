@@ -1,3 +1,5 @@
+import path from 'path';
+import { exec } from 'shelljs';
 import { Configuration, DefinePlugin as FallbackDefinePlugin } from 'webpack';
 import {
   isStorybookVersionLessThan,
@@ -18,12 +20,27 @@ declare global {
   const __CREEVEY_CLIENT_PORT__: number | null;
 }
 export interface CreeveyAddonOptions {
+  creeveyConfigPath?: string;
+  creeveyPreExtract?: string;
   creeveyPort?: number;
   clientPort?: number;
+  configType: string;
+  configDir: string;
+  outputDir: string;
+  skipExtract?: boolean;
   presets?: { apply: <T>(preset: string) => Promise<T | undefined> };
 }
 
 export function managerWebpack(config: Configuration, options: CreeveyAddonOptions): Promise<Configuration> {
+  if (options.configType == 'PRODUCTION' && !isStorybookVersionLessThan(6, 2) && options.skipExtract != true) {
+    const args: string[] = [];
+    if (options.creeveyPreExtract) args.push(`--require "${options.creeveyPreExtract}"`);
+    args.push(path.join(__dirname, '../../cli'));
+    args.push(`--extract "${options.outputDir}"`);
+    if (options.creeveyConfigPath) args.push(`--config "${options.creeveyConfigPath}"`);
+
+    exec(`node ${args.join(' ')}`, { async: true });
+  }
   return (options.presets?.apply<typeof import('webpack')>('webpackInstance') ?? Promise.resolve(undefined))
     .then(
       (webpack) =>

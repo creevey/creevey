@@ -311,8 +311,8 @@
   - [x] Handle main.js for 6.x+, remove addons from it
   - [x] Add extract command for CLI
   - [x] Pass grep option for `update` command
-  - [ ] Implement chromatic capture element resolving logic
-  - [ ] Extract stories.json as a part of build storybook
+  - [ ] `update` should remove unnecessary images
+  - [x] Extract stories.json as a part of build storybook
   - [ ] Support `stories.svelte` https://storybook.js.org/blog/storybook-for-svelte/
   - [ ] Add fallback option, load tests from browser (hmr and tests are disabled in this case)
     - [ ] Send PR to Storybook to allow use HMR for stories
@@ -384,8 +384,8 @@
     - Don't use scrollBarWidth or hasScrollBar helpers
     - Take `document.documentElement.clientWidth/Height` instead of window rect
     - For each screenshot after scroll, take elementRect coordinates
-    - Iterate be screen images and calculate resulting x/y coordinates for composite image
-    - If image width/height greater than viewport width/height than scroll bar is captured
+    - Iterate by screen images and calculate resulting x/y coordinates for composite image
+    - If image width/height greater than viewport width/height then scroll bar is captured
 - [x] ~~Support esm/cjs builds~~
 - [ ] Test with yarn2
 - [ ] Think about how to test with ESM (try to use import() from esm directory)
@@ -415,6 +415,10 @@
   - [ ] Playwright
   - [ ] Puppeteer
 - [ ] Features
+  - [ ] Implement chromatic capture element resolving logic
+    - If only one child inside `#root` node => capture `#root > *`
+    - If more children => capture `#root`
+    - Else capture viewport
   - [ ] Capture storybook docs pages (where should be defined creevey parameters?)
     - Listen event `Events.DOCS_RENDERED`
     - The root element is `#docs-root`
@@ -439,10 +443,6 @@
     - [ ] Correctly cutoff re-exported stories/parameters
   - [ ] Merge stories from nodejs bundle and browser, output warning to user if some stories are missing in nodejs
   - [ ] Add `HTML` diff view
-  - [ ] Improve how works takeScreenshot with default captureElement
-    - If only one child inside `#root` node => capture `#root > *`
-    - If more children => capture `#root`
-    - Else capture viewport
   - [ ] Move creevey config inside addon
     - Describe storybook config dir in args
     - How to deal with fallback option?

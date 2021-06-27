@@ -59,7 +59,7 @@ export async function updateApprovals(workDir: string, suiteName: string, update
 
 export function assertExtractedTests(workDir: string, suiteName: string): void {
   it('extract tests', async function () {
-    execSync('npx creevey --extract=tests', { cwd: workDir });
+    execSync('npx creevey --tests', { cwd: workDir });
 
     const expected = ((await import(`${__dirname}/approvals/${suiteName}/tests.json`)) as { default: unknown }).default;
     const actual = await readTestsJson(workDir);
@@ -79,7 +79,7 @@ export function assertWebpackBundle(workDir: string, suiteName: string): void {
 
 export function assertExtractedStories(workDir: string): void {
   it('extract stories', async function () {
-    execSync('npx creevey --extract=stories', { cwd: workDir });
+    execSync('npx creevey --extract ./', { cwd: workDir });
     execSync('npx sb extract storybook-static', { cwd: workDir });
 
     const expected = (await import(`${workDir}/storybook-static/stories.json`)) as unknown;

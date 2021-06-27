@@ -228,7 +228,8 @@ export interface Options {
   update: boolean | string;
   webpack: boolean;
   debug: boolean;
-  extract: boolean | 'stories' | 'tests';
+  extract: boolean | string;
+  tests: boolean;
   browser?: string;
   reporter?: string;
   screenDir?: string;

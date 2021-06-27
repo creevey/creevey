@@ -71,3 +71,4 @@ report
 
 /chromedriver.exe
 /geckodriver.exe
+/storybook-static

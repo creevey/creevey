@@ -15,7 +15,7 @@ async function startWebdriverServer(config: Config, options: Options): Promise<v
 
 export default async function (options: Options): Promise<void> {
   const config = await readConfig(options);
-  const { browser = defaultBrowser, extract, update, webpack, ui, port } = options;
+  const { browser = defaultBrowser, extract, tests, update, webpack, ui, port } = options;
 
   if (!config) return;
 
@@ -31,7 +31,7 @@ export default async function (options: Options): Promise<void> {
   }
 
   switch (true) {
-    case Boolean(extract): {
+    case Boolean(extract) || tests: {
       return (await import('./extract')).default(config, options);
     }
     case Boolean(update): {
