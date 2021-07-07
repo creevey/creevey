@@ -32,6 +32,7 @@ export interface CreeveyAddonOptions {
 }
 
 export function managerWebpack(config: Configuration, options: CreeveyAddonOptions): Promise<Configuration> {
+  // TODO How to execute with non-webpack bundlers
   if (options.configType == 'PRODUCTION' && !isStorybookVersionLessThan(6, 2) && options.skipExtract != true) {
     const args: string[] = [];
     if (options.creeveyPreExtract) args.push(`--require "${options.creeveyPreExtract}"`);

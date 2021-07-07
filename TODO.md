@@ -275,6 +275,7 @@
   - [x] 0.7.30 did not compile for us (Cannot find module '@storybook/builder-webpack4'). https://github.com/iTwin/iTwinUI-react
   - [x] Take a look on preview.tsx in react-ui, it isn't transpile
   - [x] Creevey update should update only failed images
+  - [ ] Stories with restricted characters
 - [x] Add docs addon and mdx stories for old storybooks in e2e tests
 - [x] Add extract stories to e2e tests
 - [x] Change viewport height to 786 in config
@@ -311,9 +312,11 @@
   - [x] Handle main.js for 6.x+, remove addons from it
   - [x] Add extract command for CLI
   - [x] Pass grep option for `update` command
+  - [ ] Execute extract with custom bundlers
   - [ ] `update` should remove unnecessary images
   - [x] Extract stories.json as a part of build storybook
   - [ ] Support `stories.svelte` https://storybook.js.org/blog/storybook-for-svelte/
+    - https://github.com/storybookjs/addon-svelte-csf/blob/main/src/parser/svelte-stories-loader.ts
   - [ ] Add fallback option, load tests from browser (hmr and tests are disabled in this case)
     - [ ] Send PR to Storybook to allow use HMR for stories
   - [ ] Allow run creevey against static-storybook folder (Depends on fallback tests loading)
@@ -369,6 +372,7 @@
   - [ ] Next.js
   - [ ] https://nx.dev/
 - [ ] Bugs
+  - [ ] Stop stdout from workers after shutdown event
   - [ ] SKB Kontur Selenium Grid resolve url timeout
   - [ ] IE don't work in github actions maybe out of sync?
   - [ ] IE fail because out of sync. Add explicit wait for each browser action

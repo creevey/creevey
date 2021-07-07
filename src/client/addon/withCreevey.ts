@@ -179,7 +179,7 @@ export function withCreevey(): MakeDecoratorResult {
     try {
       await Promise.race([
         (async () => {
-          await waitForStoryRendered(channel);
+          await renderPromise;
           await waitForFontsLoaded();
           await waitForReady;
         })(),

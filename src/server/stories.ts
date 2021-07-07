@@ -100,6 +100,7 @@ async function initStorybookEnvironment(): Promise<typeof import('./storybook/en
       .join(' '),
   });
 
+  // TODO Look at creevey debug flag
   const { logger } = await importStorybookClientLogger();
   // NOTE: Disable duplication warnings for >=6.2 storybook
   if (isWorker) (logger.warn as unknown) = noop;
@@ -250,8 +251,8 @@ async function loadStoriesDirectly(
 
   watcher?.add(config.storybookDir);
   watcher?.on('all', (_event, filename) => {
-    delete require.cache[filename];
     disposeCallback(module.hot?.data);
+    delete require.cache[filename];
     void startStorybook();
   });
 

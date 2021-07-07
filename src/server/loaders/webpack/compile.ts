@@ -6,7 +6,6 @@ import { extensions as fallbackExtensions, getCreeveyCache } from '../../utils';
 import {
   getStorybookFramework,
   hasDocsAddon,
-  isStorybookVersion,
   isStorybookVersionLessThan,
   resolveFromStorybook,
 } from '../../storybook/helpers';
@@ -60,9 +59,9 @@ async function applyMdxLoader(config: Configuration, areAddonsRemoved: boolean, 
 
   if (areAddonsRemoved) {
     mdRegexps.forEach((test) =>
-      config.module?.rules.push({ test, exclude: /(stories|story)\.mdx$/, use: require.resolve('null-loader') }),
+      config.module?.rules.unshift({ test, exclude: /(stories|story)\.mdx$/, use: require.resolve('null-loader') }),
     );
-    config.module?.rules.push({ test: /(stories|story)\.mdx$/, use: mdxLoaders });
+    config.module?.rules.unshift({ test: /(stories|story)\.mdx$/, use: mdxLoaders });
   } else {
     // NOTE Exclude addons' entry points
     config.entry = Array.isArray(config.entry)
@@ -182,10 +181,12 @@ async function removeAddons(configDir: string): Promise<boolean> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const { getInterpretedFile } = await import(resolveFromStorybook(`${storybookUtilsPath}/interpret-files`));
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const { serverRequire } = await import(resolveFromStorybook(`${storybookUtilsPath}/${serverRequireModule}`));
+    const { default: serverRequireFallback, serverRequire = serverRequireFallback } = await import(
+      resolveFromStorybook(`${storybookUtilsPath}/${serverRequireModule}`)
+    );
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const mainConfigFile = isStorybookVersion(6)
+    const mainConfigFile = isStorybookVersionLessThan(6, 1)
       ? path.join(configDir, 'main')
       : // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         getInterpretedFile(path.join(configDir, 'main'));
@@ -223,6 +224,8 @@ export default async function compile(config: Config, { debug, ui }: Options): P
     loader: require.resolve('./creevey-loader'),
     options: { debug, storybookDir: config.storybookDir },
   };
+
+  process.env.NODE_ENV = 'production';
 
   // NOTE Remove addons by monkey patching, only for new config file (main.js)
   const areAddonsRemoved = await removeAddons(config.storybookDir);
