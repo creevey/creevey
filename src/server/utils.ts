@@ -47,7 +47,6 @@ export function shouldSkip(
 
 export async function shutdownWorkers(): Promise<void> {
   isShuttingDown.current = true;
-  emitShutdownMessage();
   await Promise.all(
     Object.values(cluster.workers)
       .filter(isDefined)
@@ -64,6 +63,7 @@ export async function shutdownWorkers(): Promise<void> {
           }),
       ),
   );
+  emitShutdownMessage();
 }
 
 export function getCreeveyCache(): string {

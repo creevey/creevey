@@ -11,6 +11,7 @@ import chaiImage from './chai-image';
 import { getBrowser, switchStory } from '../selenium';
 import { CreeveyReporter, TeamcityReporter } from './reporter';
 import { addTestsFromStories } from './helpers';
+import { logger } from '../logger';
 
 const statAsync = promisify(fs.stat);
 const readdirAsync = promisify(fs.readdir);
@@ -123,8 +124,15 @@ export default async function worker(config: Config, options: Options & { browse
     reporterOptions: {
       reportDir: config.reportDir,
       topLevelSuite: options.browser,
-      willRetry: () => retries < config.maxRetries,
-      images: () => images,
+      get willRetry() {
+        return retries < config.maxRetries;
+      },
+      get images() {
+        return images;
+      },
+      get sessionId() {
+        return sessionId;
+      },
     },
   };
   const mocha = new Mocha(mochaOptions);
@@ -142,6 +150,7 @@ export default async function worker(config: Config, options: Options & { browse
 
   const browserConfig = config.browsers[options.browser] as BrowserConfig;
   const browser = await getBrowser(config, browserConfig);
+  const sessionId = (await browser?.getSession())?.getId();
 
   if (browser == null) return;
 
@@ -149,7 +158,7 @@ export default async function worker(config: Config, options: Options & { browse
     () =>
       void browser.getCurrentUrl().then((url) => {
         if (options.debug)
-          console.log(chalk`[{blue WORKER}{grey :${options.browser}:${process.pid}}] {grey current url} ${url}`);
+          logger.debug(`${options.browser}:${chalk.gray(sessionId)}`, 'current url', chalk.magenta(url));
       }),
     10 * 1000,
   );
@@ -199,7 +208,7 @@ export default async function worker(config: Config, options: Options & { browse
     });
   });
 
-  console.log('[CreeveyWorker]:', `Ready ${options.browser}:${process.pid}`);
+  logger.info(`${options.browser}:${chalk.gray(sessionId)} is ready`);
 
   emitWorkerMessage({ type: 'ready' });
 }

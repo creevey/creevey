@@ -1,6 +1,7 @@
 import WebSocket from 'ws';
 import Runner from './runner';
 import { Request, Response, CreeveyUpdate } from '../../types';
+import { logger } from '../logger';
 
 export interface CreeveyApi {
   subscribe: (wss: WebSocket.Server) => void;
@@ -23,7 +24,7 @@ export default function creeveyApi(runner: Runner): CreeveyApi {
 
     handleMessage(ws: WebSocket, message: WebSocket.Data) {
       if (typeof message != 'string') {
-        console.log('[WebSocket]:', 'unhandled message', message);
+        logger.info('unhandled message', message);
         return;
       }
 

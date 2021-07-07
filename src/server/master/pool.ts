@@ -10,7 +10,8 @@ import {
   isWorkerMessage,
   isTestMessage,
 } from '../../types';
-import { subscribeOn, sendTestMessage, sendShutdownMessage } from '../messages';
+import { sendTestMessage, sendShutdownMessage } from '../messages';
+import { isShuttingDown } from '../utils';
 
 const FORK_RETRIES = 5;
 
@@ -22,7 +23,6 @@ export default class Pool extends EventEmitter {
   private workers: Worker[] = [];
   private queue: WorkerTest[] = [];
   private forcedStop = false;
-  private shuttingDown = false;
   public get isRunning(): boolean {
     return this.workers.length !== this.freeWorkers.length;
   }
@@ -31,8 +31,6 @@ export default class Pool extends EventEmitter {
 
     this.maxRetries = config.maxRetries;
     this.config = config.browsers[browser] as BrowserConfig;
-
-    subscribeOn('shutdown', () => (this.shuttingDown = true));
   }
 
   async init(): Promise<void> {
@@ -131,7 +129,7 @@ export default class Pool extends EventEmitter {
   private exitHandler(worker: Worker): void {
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     worker.once('exit', async () => {
-      if (this.shuttingDown) return;
+      if (isShuttingDown.current) return;
 
       const workerOrError = await this.forkWorker();
 

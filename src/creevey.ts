@@ -1,17 +1,18 @@
 import cluster from 'cluster';
 import minimist from 'minimist';
-import chalk from 'chalk';
 import creevey from './server';
-import { Options } from './types';
-import { emitWorkerMessage } from './server/messages';
+import { noop, Options } from './types';
+import { emitShutdownMessage, emitWorkerMessage } from './server/messages';
 import { isShuttingDown, shutdownWorkers } from './server/utils';
+import { setDefaultLevel, levels } from 'loglevel';
+import { logger } from './server/logger';
 
 function shutdown(reason: unknown): void {
   if (isShuttingDown.current) return;
 
   const error = reason instanceof Error ? reason.stack ?? reason.message : (reason as string);
 
-  console.log(chalk`[{red FAIL}{grey :${process.pid}}]`, error);
+  logger.error(error);
 
   process.exitCode = -1;
   if (cluster.isWorker) emitWorkerMessage({ type: 'error', payload: { error } });
@@ -20,6 +21,8 @@ function shutdown(reason: unknown): void {
 
 process.on('uncaughtException', shutdown);
 process.on('unhandledRejection', shutdown);
+if (cluster.isWorker) process.on('SIGINT', noop);
+if (cluster.isMaster) process.on('SIGINT', emitShutdownMessage);
 
 const argv = minimist<Options>(process.argv.slice(2), {
   string: ['browser', 'config', 'reporter', 'reportDir', 'screenDir'],
@@ -30,5 +33,12 @@ const argv = minimist<Options>(process.argv.slice(2), {
 
 // @ts-expect-error: define log level for storybook
 global.LOGLEVEL = argv.debug ? 'debug' : 'warn';
+if (argv.debug) {
+  logger.setDefaultLevel(levels.DEBUG);
+  setDefaultLevel(levels.DEBUG);
+} else {
+  logger.setDefaultLevel(levels.INFO);
+  setDefaultLevel(levels.INFO);
+}
 
 void creevey(argv);

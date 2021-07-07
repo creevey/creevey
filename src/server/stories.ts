@@ -28,6 +28,7 @@ import {
   importStorybookCoreEvents,
   isStorybookVersionLessThan,
 } from './storybook/helpers';
+import { logger } from './logger';
 
 export let storybookApi: null | typeof import('./storybook/entry') = null;
 
@@ -243,7 +244,7 @@ async function loadStoriesDirectly(
         false,
       );
     } catch (error) {
-      if (isMaster) console.log(error);
+      if (isMaster) logger.error(error);
     }
   }
 

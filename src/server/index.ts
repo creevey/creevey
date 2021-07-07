@@ -1,6 +1,7 @@
 import cluster from 'cluster';
 import { readConfig, defaultBrowser } from './config';
 import { Options, noop, Config, BrowserConfig } from '../types';
+import { logger } from './logger';
 
 // NOTE: Impure function, mutate config by adding gridUrl prop
 async function startWebdriverServer(config: Config, options: Options): Promise<void> {
@@ -38,19 +39,17 @@ export default async function (options: Options): Promise<void> {
       return (await import('./update')).default(config, typeof update == 'string' ? update : undefined);
     }
     case webpack: {
-      console.log('[CreeveyWebpack]:', `Starting with pid ${process.pid}`);
+      logger.info('Starting Webpack Compiler');
 
       return (await import('./loaders/webpack/compile')).default(config, options);
     }
     case cluster.isMaster: {
-      console.log('[CreeveyMaster]:', `Starting with pid ${process.pid}`);
+      logger.info('Starting Master Process');
 
       return (await import('./master')).default(config, options, resolveApi);
     }
     default: {
-      console.log('[CreeveyWorker]:', `Starting ${browser}:${process.pid}`);
-
-      process.on('SIGINT', noop);
+      logger.info(`Starting Worker for ${browser}`);
 
       return (await import('./worker')).default(config, { ...options, browser });
     }

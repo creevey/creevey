@@ -1,31 +1,42 @@
 import chalk from 'chalk';
 import { Runner, reporters, MochaOptions } from 'mocha';
+import prefix from 'loglevel-plugin-prefix';
 import { Images, isDefined, isImageError } from '../../types';
+import { getLogger } from '../logger';
 
 interface ReporterOptions {
   reportDir: string;
+  sessionId: string;
   topLevelSuite: string;
-  willRetry: () => boolean;
-  images: () => Partial<{
+  willRetry: boolean;
+  images: Partial<{
     [name: string]: Partial<Images>;
   }>;
 }
+
+const testLevels: { [level: string]: string } = {
+  INFO: chalk.green('PASS'),
+  WARN: chalk.yellow('START'),
+  ERROR: chalk.red('FAIL'),
+};
 
 export class CreeveyReporter extends reporters.Base {
   constructor(runner: Runner, options: MochaOptions) {
     super(runner);
 
-    const { topLevelSuite } = options.reporterOptions as ReporterOptions;
+    const { sessionId, topLevelSuite } = options.reporterOptions as ReporterOptions;
+    const testLogger = getLogger(topLevelSuite);
 
-    runner.on('test', (test) =>
-      console.log(`[${chalk.yellow('START')}:${topLevelSuite}:${process.pid}]`, chalk.cyan(test.titlePath().join('/'))),
-    );
-    runner.on('pass', (test) =>
-      console.log(`[${chalk.green('PASS')}:${topLevelSuite}:${process.pid}]`, chalk.cyan(test.titlePath().join('/'))),
-    );
-    runner.on('fail', (test, error) => {
-      console.log(
-        `[${chalk.red('FAIL')}:${topLevelSuite}:${process.pid}]`,
+    prefix.apply(testLogger, {
+      format(level) {
+        return `${testLevels[level]} => (${topLevelSuite}:${chalk.gray(sessionId)})`;
+      },
+    });
+
+    runner.on('test', (test) => testLogger.warn(chalk.cyan(test.titlePath().join('/'))));
+    runner.on('pass', (test) => testLogger.info(chalk.cyan(test.titlePath().join('/'))));
+    runner.on('fail', (test, error) =>
+      testLogger.error(
         chalk.cyan(test.titlePath().join('/')),
         '\n  ',
         getErrors(
@@ -33,8 +44,8 @@ export class CreeveyReporter extends reporters.Base {
           (error, imageName) => `${chalk.bold(imageName ?? topLevelSuite)}:${error}`,
           (error) => `${error.stack ?? error.message}`,
         ).join('\n  '),
-      );
-    });
+      ),
+    );
   }
 }
 
@@ -56,7 +67,7 @@ export class TeamcityReporter extends reporters.Base {
     );
 
     runner.on('fail', (test, error: Error) => {
-      Object.entries(images()).forEach(([name, image]) => {
+      Object.entries(images).forEach(([name, image]) => {
         if (!image) return;
         const filePath = test
           .titlePath()
@@ -65,20 +76,22 @@ export class TeamcityReporter extends reporters.Base {
           .join('/');
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { error, ...rest } = image;
-        (Object.values(rest) as Array<string | undefined>).filter(isDefined).forEach((fileName) => {
-          console.log(`##teamcity[publishArtifacts '${reportDir}/${filePath}/${fileName} => report/${filePath}']`);
-          console.log(
-            `##teamcity[testMetadata testName='${this.escape(
-              test.title,
-            )}' type='image' value='report/${filePath}/${fileName}' flowId='${process.pid}']`,
-          );
-        });
+        Object.values(rest as Partial<Images>)
+          .filter(isDefined)
+          .forEach((fileName) => {
+            console.log(`##teamcity[publishArtifacts '${reportDir}/${filePath}/${fileName} => report/${filePath}']`);
+            console.log(
+              `##teamcity[testMetadata testName='${this.escape(
+                test.title,
+              )}' type='image' value='report/${filePath}/${fileName}' flowId='${process.pid}']`,
+            );
+          });
       });
 
       // Output failed test as passed due TC don't support retry mechanic
       // https://teamcity-support.jetbrains.com/hc/en-us/community/posts/207216829-Count-test-as-successful-if-at-least-one-try-is-successful?page=1#community_comment_207394125
 
-      willRetry()
+      willRetry
         ? console.log(`##teamcity[testFinished name='${this.escape(test.title)}' flowId='${process.pid}']`)
         : console.log(
             `##teamcity[testFailed name='${this.escape(test.title)}' message='${this.escape(

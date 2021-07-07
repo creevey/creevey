@@ -1,13 +1,18 @@
+import http from 'http';
+import https from 'https';
 import { PNG } from 'pngjs';
+import { getLogger } from 'loglevel';
+import prefix from 'loglevel-plugin-prefix';
 import { Context, Test, Suite } from 'mocha';
 import { Builder, By, WebDriver, Origin, Capabilities, WebElement } from 'selenium-webdriver';
 import { Config, BrowserConfig, StoryInput, CreeveyStoryParams, noop, isDefined, StorybookGlobals } from '../../types';
 import { subscribeOn } from '../messages';
 import { networkInterfaces } from 'os';
-import { runSequence, LOCALHOST_REGEXP } from '../utils';
+import { runSequence, LOCALHOST_REGEXP, isShuttingDown } from '../utils';
 import { PageLoadStrategy } from 'selenium-webdriver/lib/capabilities';
-import chalk from 'chalk';
 import { isStorybookVersionLessThan } from '../storybook/helpers';
+import { colors, logger } from '../logger';
+import chalk from 'chalk';
 
 type ElementRect = {
   top: number;
@@ -26,8 +31,41 @@ declare global {
 }
 
 const DOCKER_INTERNAL = 'host.docker.internal';
+let browserLogger = logger;
+
+function getSessionData(grid: string, sessionId = ''): Promise<Record<string, unknown>> {
+  const gridUrl = new URL(grid);
+  gridUrl.pathname = `/host/${sessionId}`;
+
+  return new Promise((resolve, reject) =>
+    (gridUrl.protocol == 'https:' ? https : http).get(gridUrl.toString(), (res) => {
+      if (res.statusCode !== 200) {
+        return reject(
+          new Error(`Couldn't get session data for ${sessionId}. Status code: ${res.statusCode ?? 'Unknown'}`),
+        );
+      }
+
+      let data = '';
+
+      res.setEncoding('utf8');
+      res.on('data', (chunk) => (data += chunk));
+      res.on('end', () => {
+        try {
+          resolve(JSON.parse(data));
+        } catch (error) {
+          reject(
+            `Couldn't get session data for ${sessionId}. ${
+              error instanceof Error ? error.stack ?? error.message : (error as string)
+            }`,
+          );
+        }
+      });
+    }),
+  );
+}
 
 async function resolveStorybookUrl(storybookUrl: string, checkUrl: (url: string) => Promise<boolean>): Promise<string> {
+  browserLogger.debug('Resolving storybook url');
   const addresses = [DOCKER_INTERNAL].concat(
     ...Object.values(networkInterfaces())
       .filter(isDefined)
@@ -35,7 +73,9 @@ async function resolveStorybookUrl(storybookUrl: string, checkUrl: (url: string)
   );
   for (const ip of addresses) {
     const resolvedUrl = storybookUrl.replace(LOCALHOST_REGEXP, ip);
+    browserLogger.debug(`Checking storybook availability on ${chalk.magenta(resolvedUrl)}`);
     if (await checkUrl(resolvedUrl)) {
+      browserLogger.debug(`Resolved storybook url ${chalk.magenta(resolvedUrl)}`);
       return resolvedUrl;
     }
   }
@@ -65,7 +105,9 @@ function getUrlChecker(browser: WebDriver): (url: string) => Promise<boolean> {
   return async (url: string): Promise<boolean> => {
     try {
       // NOTE: Before trying a new url, reset the current one
+      browserLogger.debug(`Opening ${chalk.magenta('about:blank')} page`);
       await openUrlAndWaitForPageSource(browser, 'about:blank', (source: string) => !source.includes('<body></body>'));
+      browserLogger.debug(`Opening ${chalk.magenta(url)} and checking the page source`);
       const source = await openUrlAndWaitForPageSource(
         browser,
         url,
@@ -77,6 +119,7 @@ function getUrlChecker(browser: WebDriver): (url: string) => Promise<boolean> {
       // because other add significant delay and some of them don't work in earlier chrome versions
       // Browsers always load page successful even it's failed
       // So we just check `#root` element
+      browserLogger.debug(`Checking ${chalk.cyan('#root')} existence on ${chalk.magenta(url)}`);
       return source.includes('<div id="root"></div>');
     } catch (error) {
       return false;
@@ -85,6 +128,7 @@ function getUrlChecker(browser: WebDriver): (url: string) => Promise<boolean> {
 }
 
 function waitForStorybook(browser: WebDriver): Promise<void> {
+  browserLogger.debug('Waiting for `load` event to make sure that storybook is initiated');
   return browser.executeAsyncScript(function (callback: () => void): void {
     if (document.readyState == 'complete') return callback();
     window.addEventListener('load', function () {
@@ -94,6 +138,7 @@ function waitForStorybook(browser: WebDriver): Promise<void> {
 }
 
 async function resetMousePosition(browser: WebDriver): Promise<void> {
+  browserLogger.debug('Resetting mouse position to the top-left corner');
   const browserName = (await browser.getCapabilities()).getBrowserName();
   const [browserVersion] =
     (await browser.getCapabilities()).getBrowserVersion()?.split('.') ??
@@ -140,6 +185,9 @@ async function resizeViewport(browser: WebDriver, viewport: { width: number; hei
       };
     },
   );
+
+  browserLogger.debug(`Resizing viewport from ${innerWidth}x${innerHeight} to ${viewport.width}x${viewport.height}`);
+
   const dWidth = windowRect.width - innerWidth;
   const dHeight = windowRect.height - innerHeight;
   await browser
@@ -271,8 +319,11 @@ async function takeScreenshot(
 
   try {
     if (!captureElement) {
+      browserLogger.debug('Capturing viewport screenshot');
       screenshot = await browser.takeScreenshot();
+      browserLogger.debug('Viewport screenshot is captured');
     } else {
+      browserLogger.debug(`Checking is element ${chalk.cyan(captureElement)} fit into viewport`);
       const rects = await browser.executeScript<{ elementRect: ElementRect; windowRect: ElementRect } | undefined>(
         function (selector: string): { elementRect: ElementRect; windowRect: ElementRect } | undefined {
           window.scrollTo(0, 0); // TODO Maybe we should remove same code from `resetMousePosition`
@@ -308,10 +359,15 @@ async function takeScreenshot(
         elementRect.width + elementRect.left <= windowRect.width &&
         elementRect.height + elementRect.top <= windowRect.height;
 
+      if (isFitIntoViewport) browserLogger.debug(`Capturing ${chalk.cyan(captureElement)}`);
+      else browserLogger.debug(`Capturing composite screenshot image of ${chalk.cyan(captureElement)}`);
+
       screenshot = isFitIntoViewport
         ? await browser.findElement(By.css(captureElement)).takeScreenshot()
         : // TODO pointer-events: none, need to research
           await takeCompositeScreenshot(browser, windowRect, elementRect);
+
+      browserLogger.debug(`${chalk.cyan(captureElement)} is captured`);
     }
   } finally {
     await removeIgnoreStyles(browser, ignoreStyles);
@@ -325,6 +381,7 @@ async function selectStory(
   { id, kind, name }: { id: string; kind: string; name: string },
   waitForReady = false,
 ): Promise<void> {
+  browserLogger.debug(`Triggering 'SetCurrentStory' event with storyId ${chalk.magenta(id)}`);
   const errorMessage = await browser.executeAsyncScript<string | undefined>(
     function (id: string, kind: string, name: string, shouldWaitForReady: boolean, callback: (error?: string) => void) {
       if (typeof window.__CREEVEY_SELECT_STORY__ == 'undefined') {
@@ -344,11 +401,10 @@ async function selectStory(
 
 export async function updateStorybookGlobals(browser: WebDriver, globals: StorybookGlobals): Promise<void> {
   if (isStorybookVersionLessThan(6)) {
-    console.log(
-      chalk`[{yellow WARN}{gray :${process.pid}}] Globals are not supported by Storybook versions less than 6`,
-    );
+    browserLogger.warn('Globals are not supported by Storybook versions less than 6');
     return;
   }
+  browserLogger.debug('Applying storybook globals');
   await browser.executeScript(function (globals: StorybookGlobals) {
     window.__CREEVEY_UPDATE_GLOBALS__(globals);
   }, globals);
@@ -369,16 +425,18 @@ async function openStorybookPage(
 
   try {
     if (resolver) {
-      return browser.get(appendIframePath(await resolver()));
+      browserLogger.debug('Resolving storybook url with custom resolver');
+
+      const resolvedUrl = await resolver();
+
+      browserLogger.debug(`Resolver storybook url ${resolvedUrl}`);
+
+      return browser.get(appendIframePath(resolvedUrl));
     }
     // NOTE: getUrlChecker already calls `browser.get` so we don't need another one
     return void (await resolveStorybookUrl(appendIframePath(storybookUrl), getUrlChecker(browser)));
   } catch (error) {
-    console.log(
-      chalk`[{yellow WARN}{grey :${process.pid}}]`,
-      'Failed to resolve storybook URL',
-      error instanceof Error ? error.message : '',
-    );
+    browserLogger.error('Failed to resolve storybook URL', error instanceof Error ? error.message : '');
     throw error;
   }
 }
@@ -393,22 +451,54 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
     ...userCapabilities
   } = browserConfig;
   void limit;
+  const { browserName } = userCapabilities;
   const realAddress = address;
   let browser: WebDriver | null = null;
-  let shuttingDown = false;
 
   // TODO Define some capabilities explicitly and define typings
   const capabilities = new Capabilities(userCapabilities);
   capabilities.setPageLoadStrategy(PageLoadStrategy.NONE);
 
   subscribeOn('shutdown', () => {
-    shuttingDown = true;
-    browser?.quit().catch(noop);
+    browser?.quit().finally(() =>
+      // eslint-disable-next-line no-process-exit
+      process.exit(),
+    );
     browser = null;
   });
 
   try {
+    const url = new URL(gridUrl);
+    url.username = url.username ? '********' : '';
+    url.password = url.password ? '********' : '';
+    browserLogger.debug(`(${browserName}) Connecting to Selenium ${chalk.magenta(url.toString())}`);
+
     browser = await new Builder().usingServer(gridUrl).withCapabilities(capabilities).build();
+
+    const sessionId = (await browser.getSession())?.getId();
+    let browserHost = '';
+
+    try {
+      const { Name } = await getSessionData(gridUrl, sessionId);
+      if (typeof Name == 'string') browserHost = Name;
+    } catch (_) {
+      /* noop */
+    }
+
+    browserLogger.debug(
+      `(${browserName}) Connected successful with ${[chalk.green(browserHost), chalk.magenta(sessionId)]
+        .filter(Boolean)
+        .join(':')}`,
+    );
+
+    browserLogger = getLogger(sessionId);
+
+    prefix.apply(browserLogger, {
+      format(level) {
+        const levelColor = colors[level.toUpperCase()];
+        return `[${browserName}:${chalk.gray(browserHost || sessionId)}] ${levelColor(level)} =>`;
+      },
+    });
 
     await runSequence(
       [
@@ -417,10 +507,10 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
         () => browser && openStorybookPage(browser, realAddress, config.resolveStorybookUrl),
         () => browser && waitForStorybook(browser),
       ],
-      () => !shuttingDown,
+      () => !isShuttingDown.current,
     );
   } catch (originalError) {
-    if (shuttingDown) {
+    if (isShuttingDown.current) {
       browser?.quit().catch(noop);
       return null;
     }
@@ -455,8 +545,12 @@ export async function switchStory(this: Context): Promise<void> {
   const { id, kind, name, parameters } = story;
   const { captureElement = '#root', waitForReady, ignoreElements } = (parameters.creevey ?? {}) as CreeveyStoryParams;
 
+  browserLogger.debug(`Switching to story ${chalk.cyan(kind)}/${chalk.cyan(name)} by id ${chalk.magenta(id)}`);
+
   await resetMousePosition(this.browser);
   await selectStory(this.browser, { id, kind, name }, waitForReady);
+
+  browserLogger.debug(`Story ${chalk.magenta(id)} ready for capturing`);
 
   if (captureElement)
     Object.defineProperty(this, 'captureElement', {
@@ -478,6 +572,8 @@ async function insertIgnoreStyles(
   const ignoreSelectors = Array.prototype.concat(ignoreElements).filter(Boolean);
   if (!ignoreSelectors.length) return null;
 
+  browserLogger.debug('Hiding ignored elements before capturing');
+
   return await browser.executeScript(function (ignoreSelectors: string[]) {
     return window.__CREEVEY_INSERT_IGNORE_STYLES__(ignoreSelectors);
   }, ignoreSelectors);
@@ -485,6 +581,7 @@ async function insertIgnoreStyles(
 
 async function removeIgnoreStyles(browser: WebDriver, ignoreStyles: WebElement | null): Promise<void> {
   if (ignoreStyles) {
+    browserLogger.debug('Revert hiding ignored elements');
     await browser.executeScript(function (ignoreStyles: HTMLStyleElement) {
       window.__CREEVEY_REMOVE_IGNORE_STYLES__(ignoreStyles);
     }, ignoreStyles);

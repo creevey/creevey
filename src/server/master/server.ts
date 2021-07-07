@@ -7,6 +7,7 @@ import WebSocket from 'ws';
 import { CreeveyApi } from './api';
 import { subscribeOn } from '../messages';
 import { noop } from '../../types';
+import { logger } from '../logger';
 
 export default function server(reportDir: string, port: number): (api: CreeveyApi) => void {
   let resolveApi: (api: CreeveyApi) => void = noop;
@@ -23,7 +24,7 @@ export default function server(reportDir: string, port: number): (api: CreeveyAp
   app.use(serve(path.join(__dirname, '../../client/web')));
   app.use(mount('/report', serve(reportDir)));
 
-  wss.on('error', (error) => console.log('[WebSocketServer]:', error));
+  wss.on('error', (error) => logger.error(error));
 
   server.listen(port);
 
@@ -36,11 +37,6 @@ export default function server(reportDir: string, port: number): (api: CreeveyAp
     api.subscribe(wss);
 
     wss.on('connection', (ws) => {
-      console.log('[WebSocketServer]:', 'Connection open');
-
-      ws.on('error', (error) => console.log('[WebSocket]:', error));
-      ws.on('open', () => console.log('[WebSocket]:', 'Connection open'));
-      ws.on('close', () => console.log('[WebSocket]:', 'Connection close'));
       ws.on('message', (message: WebSocket.Data) => api.handleMessage(ws, message));
     });
   });

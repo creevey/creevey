@@ -8,9 +8,9 @@ import traverse, { NodePath, Binding } from '@babel/traverse';
 import generate from '@babel/generator';
 import * as t from '@babel/types';
 import { loader } from 'webpack';
-import chalk from 'chalk';
 import { isStorybookVersionLessThan } from '../../storybook/helpers';
 import { commonVisitor, mdxVisitor, previewVisitor, storyVisitor, FileType } from '../babel/helpers';
+import { logger } from '../../logger';
 
 function transform(ast: t.File): string {
   traverse(
@@ -127,13 +127,7 @@ export default function (this: loader.LoaderContext | void, source: string): str
       entries.add(this.resourcePath);
       return source;
     } else if (issuerResource && stories.has(issuerResource) && options.debug) {
-      console.log(
-        chalk`[{yellow WARN}:CreeveyWebpack]`,
-        'Trying to transform possible non-story file',
-        this.resourcePath,
-        'Please check the',
-        issuerResource,
-      );
+      logger.warn('Trying to transform possible non-story file', this.resourcePath, 'Please check the', issuerResource);
       // TODO Add link to docs, how creevey works and what user should do in this situation
     }
   }
@@ -148,9 +142,9 @@ export default function (this: loader.LoaderContext | void, source: string): str
     });
     return transform(ast);
   } catch (error) {
-    this && console.log(chalk`[{yellow WARN}{grey :CreeveyWebpack}]`, 'Failed to transform file', this.resourcePath);
+    this && logger.warn('Failed to transform file', this.resourcePath);
     if ('loc' in error) {
-      console.log(
+      logger.warn(
         codeFrameColumns(
           source,
           { start: (error as unknown as { loc: t.SourceLocation['start'] }).loc },
@@ -158,7 +152,7 @@ export default function (this: loader.LoaderContext | void, source: string): str
         ),
       );
     } else {
-      console.log(error);
+      logger.warn(error);
     }
     return source;
   }

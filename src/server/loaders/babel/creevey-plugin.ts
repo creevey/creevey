@@ -1,7 +1,7 @@
 import path from 'path';
 import { NodePath, Binding, TraverseOptions } from '@babel/traverse';
 import { commonVisitor, FileType, mdxVisitor, previewVisitor, storyVisitor, VisitorState } from './helpers';
-import chalk from 'chalk';
+import { logger } from '../../logger';
 
 let lastStoryFile: string | null = null;
 const stories = new Set<string>();
@@ -36,8 +36,7 @@ export default function (): unknown {
         stories.add(this.filename);
       } else if (this.filename.startsWith(this.opts.preview)) this.fileType = FileType.Preview;
       else if (lastStoryFile && this.opts.debug) {
-        console.log(
-          chalk`[{yellow WARN}:CreeveyBabel]`,
+        logger.warn(
           'Trying to transform possible non-story file',
           this.resourcePath,
           'Please check the',

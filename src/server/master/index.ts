@@ -5,8 +5,9 @@ import master from './master';
 import creeveyApi, { CreeveyApi } from './api';
 import { Config, Options, isDefined } from '../../types';
 import { shutdownWorkers, testsToImages } from '../utils';
-import { subscribeOn } from '../messages';
+import { emitShutdownMessage, subscribeOn } from '../messages';
 import Runner from './runner';
+import { logger } from '../logger';
 
 const copyFileAsync = promisify(copyFile);
 const readdirAsync = promisify(readdir);
@@ -49,8 +50,7 @@ function outputUnnecessaryImages(imagesDir: string, images: Set<string>): void {
     .map((imagePath) => path.posix.relative(imagesDir, imagePath))
     .filter((imagePath) => !images.has(imagePath));
   if (unnecessaryImages.length > 0) {
-    console.log('We found unnecessary screenshot images, that can be freely removed:');
-    unnecessaryImages.forEach((imagePath) => console.log(imagePath));
+    logger.warn('We found unnecessary screenshot images, those can be safely removed:\n', unnecessaryImages.join('\n'));
   }
 }
 
@@ -60,8 +60,9 @@ export default async function (config: Config, options: Options, resolveApi: (ap
     await config.hooks.before();
   }
   subscribeOn('shutdown', () => config.hooks.after?.());
-  // TODO Move before docker init
+  process.removeListener('SIGINT', emitShutdownMessage);
   process.on('SIGINT', () => {
+    runner?.removeAllListeners('stop');
     if (runner?.isRunning) {
       // TODO Better handle stop
       void Promise.race([
@@ -86,10 +87,10 @@ export default async function (config: Config, options: Options, resolveApi: (ap
 
   if (options.ui) {
     resolveApi(creeveyApi(runner));
-    console.log('[Creevey]:', `Started on http://localhost:${options.port}`);
+    logger.info(`Started on http://localhost:${options.port}`);
   } else {
     if (Object.values(runner.status.tests).filter((test) => test && !test.skip).length == 0) {
-      console.log('[Creevey]:', "Don't have any tests to run");
+      logger.warn("Don't have any tests to run");
       // eslint-disable-next-line no-process-exit
       void shutdownWorkers().then(() => process.exit());
       return;

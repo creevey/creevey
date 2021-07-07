@@ -5,6 +5,7 @@ import { isInsideDocker, LOCALHOST_REGEXP } from './utils';
 import Dockerode, { Container } from 'dockerode';
 import { Writable } from 'stream';
 import ora from 'ora';
+import { logger } from './logger';
 
 const docker = new Dockerode();
 
@@ -15,7 +16,7 @@ class DevNull extends Writable {
 }
 
 export async function pullImages(images: string[], auth?: DockerAuth): Promise<void> {
-  console.log('[CreeveyMaster]: Pull docker images');
+  logger.info('Pull docker images');
   for (const image of images) {
     await new Promise<void>((resolve, reject) => {
       const spinner = ora(`${image}: Pull start`).start();
