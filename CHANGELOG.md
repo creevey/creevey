@@ -1,3 +1,10 @@
+## [0.7.32](https://github.com/wKich/creevey/compare/v0.7.31...v0.7.32) (2021-07-07)
+
+### Features
+
+- 🎸 add webdriver debug logging ([6124a43](https://github.com/wKich/creevey/commit/6124a43b79d2761c3f04f6f3f118599ecb517c27))
+- 🎸 run extract stories.json on storybook-build ([803a1d1](https://github.com/wKich/creevey/commit/803a1d1b9b774121e1a611dfbbe1a3ad041339af))
+
 ## [0.7.31](https://github.com/wKich/creevey/compare/v0.7.30...v0.7.31) (2021-06-26)
 
 ### Bug Fixes
