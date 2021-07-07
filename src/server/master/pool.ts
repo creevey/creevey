@@ -174,9 +174,10 @@ export default class Pool extends EventEmitter {
         this.queue.push(test);
       }
 
+      this.sendStatus({ id: test.id, status: result.status, result });
+
       worker.isRunning = false;
 
-      this.sendStatus({ id: test.id, status: result.status, result });
       this.process();
     });
   }

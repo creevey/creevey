@@ -235,6 +235,7 @@ export interface Options {
   screenDir?: string;
   reportDir?: string;
   saveReport: boolean;
+  failFast: boolean;
 }
 
 export type WorkerMessage = { type: 'ready'; payload?: never } | { type: 'error'; payload: { error: string } };

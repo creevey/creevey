@@ -75,7 +75,7 @@ export default async function (config: Config, options: Options, resolveApi: (ap
     }
   });
 
-  runner = await master(config, { watch: options.ui, debug: options.debug });
+  runner = await master(config, { watch: options.ui, debug: options.debug, failFast: options.failFast });
 
   await runner.init();
 
@@ -103,7 +103,7 @@ export default async function (config: Config, options: Options, resolveApi: (ap
         .every(({ status }) => status == 'success');
       // TODO output summary
       process.exitCode = isSuccess ? 0 : -1;
-      outputUnnecessaryImages(config.screenDir, testsToImages(tests));
+      if (!options.failFast) outputUnnecessaryImages(config.screenDir, testsToImages(tests));
       // eslint-disable-next-line no-process-exit
       void shutdownWorkers().then(() => process.exit());
     });

@@ -26,7 +26,7 @@ if (cluster.isMaster) process.on('SIGINT', emitShutdownMessage);
 
 const argv = minimist<Options>(process.argv.slice(2), {
   string: ['browser', 'config', 'reporter', 'reportDir', 'screenDir'],
-  boolean: ['debug', 'ui', 'saveReport', 'webpack', 'tests'],
+  boolean: ['debug', 'ui', 'saveReport', 'webpack', 'tests', 'failFast'],
   default: { port: 3000, saveReport: true },
   alias: { port: 'p', config: 'c', debug: 'd', update: 'u', extract: 'e' },
 });

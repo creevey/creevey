@@ -27,7 +27,7 @@ export default class Runner extends EventEmitter {
   public get isRunning(): boolean {
     return Object.values(this.pools).some((pool) => pool.isRunning);
   }
-  constructor(config: Config) {
+  constructor(config: Config, private failFast: boolean) {
     super();
 
     this.screenDir = config.screenDir;
@@ -55,6 +55,8 @@ export default class Runner extends EventEmitter {
     test.results.push(result);
 
     this.sendUpdate({ tests: { [id]: { id, browser, testName, storyPath, status, results: [result], storyId } } });
+
+    if (this.failFast && status == 'failed') this.stop();
   };
 
   private handlePoolStop = (): void => {
