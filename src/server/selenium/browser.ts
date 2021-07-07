@@ -10,7 +10,7 @@ import { subscribeOn } from '../messages';
 import { networkInterfaces } from 'os';
 import { runSequence, LOCALHOST_REGEXP, isShuttingDown } from '../utils';
 import { PageLoadStrategy } from 'selenium-webdriver/lib/capabilities';
-import { isStorybookVersionLessThan } from '../storybook/helpers';
+import { importStorybookCoreEvents, isStorybookVersionLessThan } from '../storybook/helpers';
 import { colors, logger } from '../logger';
 import chalk from 'chalk';
 
@@ -54,9 +54,11 @@ function getSessionData(grid: string, sessionId = ''): Promise<Record<string, un
           resolve(JSON.parse(data));
         } catch (error) {
           reject(
-            `Couldn't get session data for ${sessionId}. ${
-              error instanceof Error ? error.stack ?? error.message : (error as string)
-            }`,
+            new Error(
+              `Couldn't get session data for ${sessionId}. ${
+                error instanceof Error ? error.stack ?? error.message : (error as string)
+              }`,
+            ),
           );
         }
       });
@@ -127,14 +129,34 @@ function getUrlChecker(browser: WebDriver): (url: string) => Promise<boolean> {
   };
 }
 
-function waitForStorybook(browser: WebDriver): Promise<void> {
-  browserLogger.debug('Waiting for `load` event to make sure that storybook is initiated');
-  return browser.executeAsyncScript(function (callback: () => void): void {
-    if (document.readyState == 'complete') return callback();
-    window.addEventListener('load', function () {
-      callback();
+async function waitForStorybook(browser: WebDriver): Promise<void> {
+  // NOTE: Storybook 5.x doesn't have the `last` method
+  if (isStorybookVersionLessThan(6)) {
+    browserLogger.debug('Waiting for `load` event to make sure that storybook is initiated');
+    return browser.executeAsyncScript(function (callback: () => void): void {
+      if (document.readyState == 'complete') return callback();
+      window.addEventListener('load', function () {
+        callback();
+      });
     });
-  });
+  }
+  browserLogger.debug('Waiting for `setStories` event to make sure that storybook is initiated');
+  let wait = true;
+  let isTimeout = false;
+  const Events = await importStorybookCoreEvents();
+  const initiateTimeout = setTimeout(() => {
+    wait = false;
+    isTimeout = true;
+  }, 60000);
+  while (wait) {
+    wait = await browser.executeAsyncScript(function (SET_STORIES: string, callback: (wait: boolean) => void): void {
+      if (typeof window.__STORYBOOK_ADDONS_CHANNEL__ == 'undefined') return callback(true);
+      if (window.__STORYBOOK_ADDONS_CHANNEL__.last(SET_STORIES) == undefined) return callback(true);
+      return callback(false);
+    }, Events.SET_STORIES);
+    if (!wait) clearTimeout(initiateTimeout);
+  }
+  if (isTimeout) throw new Error('Failed to wait `setStories` event');
 }
 
 async function resetMousePosition(browser: WebDriver): Promise<void> {

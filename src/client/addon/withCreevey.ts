@@ -25,6 +25,7 @@ declare global {
     __CREEVEY_INSERT_IGNORE_STYLES__: (ignoreElements: string[]) => HTMLStyleElement;
     __CREEVEY_REMOVE_IGNORE_STYLES__: (ignoreStyles: HTMLStyleElement) => void;
     __CREEVEY_SET_READY_FOR_CAPTURE__?: () => void;
+    __STORYBOOK_ADDONS_CHANNEL__: Channel;
   }
 
   interface Document {
