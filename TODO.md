@@ -276,6 +276,7 @@
   - [x] Take a look on preview.tsx in react-ui, it isn't transpile
   - [x] Creevey update should update only failed images
   - [ ] Stories with restricted characters
+  - [ ] Run creevey with Vite
 - [x] Add docs addon and mdx stories for old storybooks in e2e tests
 - [x] Add extract stories to e2e tests
 - [x] Change viewport height to 786 in config
@@ -317,6 +318,7 @@
   - [x] Extract stories.json as a part of build storybook
   - [ ] Support `stories.svelte` https://storybook.js.org/blog/storybook-for-svelte/
     - https://github.com/storybookjs/addon-svelte-csf/blob/main/src/parser/svelte-stories-loader.ts
+    - Write transformation to extract parameters from compiled svelte code
   - [ ] Add fallback option, load tests from browser (hmr and tests are disabled in this case)
     - [ ] Send PR to Storybook to allow use HMR for stories
   - [ ] Allow run creevey against static-storybook folder (Depends on fallback tests loading)
@@ -419,6 +421,7 @@
   - [ ] Playwright
   - [ ] Puppeteer
 - [ ] Features
+  - [ ] Get other storybook options, like babel configs from main.js
   - [ ] Implement chromatic capture element resolving logic
     - If only one child inside `#root` node => capture `#root > *`
     - If more children => capture `#root`

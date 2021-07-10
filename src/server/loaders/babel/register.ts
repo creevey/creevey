@@ -5,7 +5,7 @@ import { addHook } from 'pirates';
 import { Config, isDefined } from '../../../types';
 import { extensions } from '../../utils';
 import plugin from './creevey-plugin';
-import { hasDocsAddon, resolveFromStorybookAddonDocs } from '../../storybook/helpers';
+import { hasDocsAddon, hasSvelteCSFAddon } from '../../storybook/helpers';
 
 let parents: string[] | null = null;
 let story: string | null = null;
@@ -87,17 +87,8 @@ export default async function register(config: Config, debug = false): Promise<R
   const requireContext = getRequireContext(config.storybookDir);
   const preview = resolve(config.storybookDir, 'preview');
 
-  if (hasDocsAddon()) {
-    const mdx = ((await import(resolveFromStorybookAddonDocs('@mdx-js/mdx'))) as typeof import('@mdx-js/mdx')).default;
-    const { mdxOptions } = await import('../webpack/mdx-loader');
-    addHook(
-      (code, filename) => {
-        if (!story || !filename.startsWith(story)) return code;
-        return mdx.sync(code, mdxOptions());
-      },
-      { exts: ['.mdx'] },
-    );
-  }
+  if (hasDocsAddon()) await (await import('../hooks/mdx')).addMDXHook(() => story);
+  if (hasSvelteCSFAddon()) await (await import('../hooks/svelte')).addSvelteHook(() => story);
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
   (await import('@babel/register')).default(
@@ -105,7 +96,7 @@ export default async function register(config: Config, debug = false): Promise<R
       babelrc: false,
       rootMode: 'upward-optional',
       ignore: [/node_modules/],
-      extensions: hasDocsAddon() ? [...extensions, '.mdx'] : extensions,
+      extensions: [...extensions, ...(hasDocsAddon() ? ['.mdx'] : []), ...(hasSvelteCSFAddon() ? ['.svelte'] : [])],
       parserOpts: {
         sourceType: 'module',
         plugins: ['classProperties', 'decorators-legacy', 'jsx', 'typescript'],

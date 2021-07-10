@@ -22,14 +22,18 @@ import {
 
 // 6.1 https://github.com/storybookjs/storybook/blob/next/MIGRATION.md#single-story-hoisting
 
-const skipWebpackAssertion = ['sb-6.3-webpack5'];
+const skipWebpackAssertion = ['sb-6.2-svelte', 'sb-6.3-webpack5'];
 const skipStorybookBuild = ['sb-5.0', 'sb-5.0-require', 'sb-5.1', 'sb-5.2', 'sb-5.3-config'];
 const skipExtractedStoriesAssertion = [...skipStorybookBuild, 'sb-5.3'];
+const frameworks: Record<string, string> = {
+  'sb-6.2-svelte': 'svelte',
+};
 
 describe('Storybook Fixtures E2E', function () {
   this.timeout('300s');
 
   readdirSync(`${__dirname}/storybook.fixtures`).forEach((suiteName) => {
+    if (suiteName == 'sb-6.2-svelte') return; // NOTE Skip it for now
     describe(suiteName, function () {
       const shouldAssertWebpack = !skipWebpackAssertion.includes(suiteName);
       const shouldBuildStorybook = !skipStorybookBuild.includes(suiteName);
@@ -39,7 +43,7 @@ describe('Storybook Fixtures E2E', function () {
       before(function () {
         shell.cp('-r', `${__dirname}/storybook.fixtures/${suiteName}/{.,}*`, workDir);
         execSync('npm install', { cwd: workDir });
-        execSync('npm ls @storybook/react', { cwd: workDir });
+        execSync(`npm ls @storybook/${frameworks[suiteName] ?? 'react'}`, { cwd: workDir });
         prepareWorkDir(workDir, shouldAssertWebpack);
       });
 

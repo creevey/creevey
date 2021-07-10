@@ -26,6 +26,7 @@ export default async function (options: Options): Promise<void> {
     !(config.gridUrl || (Object.values(config.browsers) as BrowserConfig[]).every(({ gridUrl }) => gridUrl)) &&
     !extract &&
     !webpack &&
+    !tests &&
     !update
   ) {
     await startWebdriverServer(config, options);

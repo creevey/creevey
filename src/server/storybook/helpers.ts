@@ -1,3 +1,4 @@
+import type { StorybookConfig } from '@storybook/core-common';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -52,6 +53,14 @@ export function hasDocsAddon(): boolean {
     return false;
   }
 }
+export function hasSvelteCSFAddon(): boolean {
+  try {
+    resolveFromStorybook('@storybook/addon-svelte-csf');
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
 
 export function getStorybookVersion(): string {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -91,4 +100,12 @@ export function getStorybookFramework(): string {
     );
 
   return framework;
+}
+
+export const storybookConfigRef: { current: StorybookConfig } = { current: { stories: [] } };
+
+export async function importStorybookConfig(): Promise<StorybookConfig> {
+  return (storybookConfigRef.current = (
+    (await import(require.resolve(`${storybookDirRef.current}/main`))) as { default: StorybookConfig }
+  ).default);
 }

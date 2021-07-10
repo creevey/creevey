@@ -24,6 +24,7 @@ import type { Parameters } from '@storybook/api';
 import type Channel from '@storybook/channels';
 import {
   importStorybookClientLogger,
+  importStorybookConfig,
   importStorybookCoreCommon,
   importStorybookCoreEvents,
   isStorybookVersionLessThan,
@@ -192,13 +193,7 @@ async function loadStoriesDirectly(
     }
   })();
 
-  const { stories } = (
-    (await import(require.resolve(`${config.storybookDir}/main`))) as {
-      default: {
-        stories: string[];
-      };
-    }
-  ).default;
+  const { stories } = await importStorybookConfig();
   const contexts = stories.map((input) => {
     const {
       path: storiesPath,
