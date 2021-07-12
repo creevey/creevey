@@ -10,6 +10,7 @@ export const defaultConfig: Omit<Config, 'gridUrl'> = {
   useWebpackToExtractTests: false,
   dockerImage: 'aerokube/selenoid:latest-release',
   pullImages: true,
+  failFast: false,
   storybookUrl: 'http://localhost:6006',
   screenDir: path.resolve('images'),
   reportDir: path.resolve('report'),
@@ -53,6 +54,7 @@ export async function readConfig(options: Options): Promise<Config> {
 
   if (isStorybookVersionLessThan(6, 2)) userConfig.useWebpackToExtractTests = true;
 
+  if (options.failFast != undefined) userConfig.failFast = Boolean(options.failFast);
   if (options.reportDir) userConfig.reportDir = path.resolve(options.reportDir);
   if (options.screenDir) userConfig.screenDir = path.resolve(options.screenDir);
 

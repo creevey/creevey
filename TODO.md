@@ -275,6 +275,7 @@
   - [x] 0.7.30 did not compile for us (Cannot find module '@storybook/builder-webpack4'). https://github.com/iTwin/iTwinUI-react
   - [x] Take a look on preview.tsx in react-ui, it isn't transpile
   - [x] Creevey update should update only failed images
+  - [ ] NPM Ctrl+C doesn't exit creevey
   - [ ] Creevey addon ui don't work with storybook 5.3
   - [ ] Stories with restricted characters
   - [ ] Output error that can't find storybook dir or you forgot to add creevey as an addon
@@ -316,6 +317,7 @@
   - [x] Handle main.js for 6.x+, remove addons from it
   - [x] Add extract command for CLI
   - [x] Pass grep option for `update` command
+  - [ ] Simplify work with monorepos https://github.com/adiun/vite-monorepo
   - [ ] Execute extract with custom bundlers
   - [ ] `update` should remove unnecessary images
   - [x] Extract stories.json as a part of build storybook

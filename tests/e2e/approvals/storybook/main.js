@@ -1872,8 +1872,8 @@ var _frameworkImportPath = __webpack_require__(/*! @storybook/react */ "@storybo
 
 /***/ }),
 
-/***/ "./node_modules/creevey/lib/server/loaders/webpack/dummy-hmr.js":
-/* ./node_modules/creevey/lib/server/loaders/webpack/dummy-hmr.js */
+/***/ "./node_modules/creevey/lib/cjs/server/loaders/webpack/dummy-hmr.js":
+/* ./node_modules/creevey/lib/cjs/server/loaders/webpack/dummy-hmr.js */
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -4442,11 +4442,11 @@ module.exports = require("./node_modules/core-js/modules/web.dom-collections.for
 /***/ }),
 
 /***/ 0:
-/* multi ./node_modules/creevey/lib/server/loaders/webpack/dummy-hmr.js ./lib/core-server/dist/cjs/globals/polyfills.js ./lib/core-server/dist/cjs/globals/globals.js ./storybook-init-framework-entry.js ./preview.js-generated-config-entry.js ./generated-stories-entry.js */
+/* multi ./node_modules/creevey/lib/cjs/server/loaders/webpack/dummy-hmr.js ./lib/core-server/dist/cjs/globals/polyfills.js ./lib/core-server/dist/cjs/globals/globals.js ./storybook-init-framework-entry.js ./preview.js-generated-config-entry.js ./generated-stories-entry.js */
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! ./examples/official-storybook/node_modules/creevey/lib/server/loaders/webpack/dummy-hmr.js */"./node_modules/creevey/lib/server/loaders/webpack/dummy-hmr.js");
+__webpack_require__(/*! ./examples/official-storybook/node_modules/creevey/lib/cjs/server/loaders/webpack/dummy-hmr.js */"./node_modules/creevey/lib/cjs/server/loaders/webpack/dummy-hmr.js");
 __webpack_require__(/*! ./lib/core-server/dist/cjs/globals/polyfills.js */"../../lib/core-server/dist/cjs/globals/polyfills.js");
 __webpack_require__(/*! ./lib/core-server/dist/cjs/globals/globals.js */"../../lib/core-server/dist/cjs/globals/globals.js");
 __webpack_require__(/*! ./examples/official-storybook/storybook-init-framework-entry.js */"./storybook-init-framework-entry.js");
@@ -4457,11 +4457,11 @@ module.exports = __webpack_require__(/*! ./examples/official-storybook/generated
 /***/ }),
 
 /***/ "@storybook/react":
-/* external "./examples/official-storybook/node_modules/creevey/lib/server/storybook/entry.js" */
+/* external "./examples/official-storybook/node_modules/creevey/lib/cjs/server/storybook/entry.js" */
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = require("./examples/official-storybook/node_modules/creevey/lib/server/storybook/entry.js");
+module.exports = require("./examples/official-storybook/node_modules/creevey/lib/cjs/server/storybook/entry.js");
 
 /***/ }),
 

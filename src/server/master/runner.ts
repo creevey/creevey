@@ -19,6 +19,7 @@ const copyFileAsync = promisify(copyFile);
 const mkdirAsync = promisify(mkdir);
 
 export default class Runner extends EventEmitter {
+  private failFast: boolean;
   private screenDir: string;
   private reportDir: string;
   private browsers: string[];
@@ -27,9 +28,10 @@ export default class Runner extends EventEmitter {
   public get isRunning(): boolean {
     return Object.values(this.pools).some((pool) => pool.isRunning);
   }
-  constructor(config: Config, private failFast: boolean) {
+  constructor(config: Config) {
     super();
 
+    this.failFast = config.failFast;
     this.screenDir = config.screenDir;
     this.reportDir = config.reportDir;
     this.browsers = Object.keys(config.browsers);

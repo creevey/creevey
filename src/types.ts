@@ -217,6 +217,11 @@ export interface Config {
    * Define auth config for private docker registry
    */
   dockerAuth?: DockerAuth;
+  /**
+   * Enable to stop tests running right after the first failed test.
+   * The `--ui` CLI option ignores this option
+   */
+  failFast: boolean;
 }
 
 export type CreeveyConfig = Partial<Config>;
@@ -235,7 +240,7 @@ export interface Options {
   screenDir?: string;
   reportDir?: string;
   saveReport: boolean;
-  failFast: boolean;
+  failFast?: boolean;
 }
 
 export type WorkerMessage = { type: 'ready'; payload?: never } | { type: 'error'; payload: { error: string } };

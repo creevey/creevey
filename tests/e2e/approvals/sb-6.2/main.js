@@ -116,8 +116,8 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./node_modules/creevey/lib/server/loaders/webpack/dummy-hmr.js":
-/* ./node_modules/creevey/lib/server/loaders/webpack/dummy-hmr.js */
+/***/ "./node_modules/creevey/lib/cjs/server/loaders/webpack/dummy-hmr.js":
+/* ./node_modules/creevey/lib/cjs/server/loaders/webpack/dummy-hmr.js */
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -311,11 +311,11 @@ module.exports = require("./node_modules/core-js/modules/es.object.assign.js");
 /***/ }),
 
 /***/ 0:
-/* multi ./node_modules/creevey/lib/server/loaders/webpack/dummy-hmr.js ./node_modules/@storybook/core-server/dist/cjs/globals/polyfills.js ./node_modules/@storybook/core-server/dist/cjs/globals/globals.js ./.storybook/storybook-init-framework-entry.js ./.storybook/generated-stories-entry.js */
+/* multi ./node_modules/creevey/lib/cjs/server/loaders/webpack/dummy-hmr.js ./node_modules/@storybook/core-server/dist/cjs/globals/polyfills.js ./node_modules/@storybook/core-server/dist/cjs/globals/globals.js ./.storybook/storybook-init-framework-entry.js ./.storybook/generated-stories-entry.js */
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! ./node_modules/creevey/lib/server/loaders/webpack/dummy-hmr.js */"./node_modules/creevey/lib/server/loaders/webpack/dummy-hmr.js");
+__webpack_require__(/*! ./node_modules/creevey/lib/cjs/server/loaders/webpack/dummy-hmr.js */"./node_modules/creevey/lib/cjs/server/loaders/webpack/dummy-hmr.js");
 __webpack_require__(/*! ./node_modules/@storybook/core-server/dist/cjs/globals/polyfills.js */"./node_modules/@storybook/core-server/dist/cjs/globals/polyfills.js");
 __webpack_require__(/*! ./node_modules/@storybook/core-server/dist/cjs/globals/globals.js */"./node_modules/@storybook/core-server/dist/cjs/globals/globals.js");
 __webpack_require__(/*! ./.storybook/storybook-init-framework-entry.js */"./.storybook/storybook-init-framework-entry.js");
@@ -325,11 +325,11 @@ module.exports = __webpack_require__(/*! ./.storybook/generated-stories-entry.js
 /***/ }),
 
 /***/ "@storybook/react":
-/* external "./node_modules/creevey/lib/server/storybook/entry.js" */
+/* external "./node_modules/creevey/lib/cjs/server/storybook/entry.js" */
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = require("./node_modules/creevey/lib/server/storybook/entry.js");
+module.exports = require("./node_modules/creevey/lib/cjs/server/storybook/entry.js");
 
 /***/ })
 
