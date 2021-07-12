@@ -1,4 +1,5 @@
 import Events from '@storybook/core-events';
+import * as polyfill from 'event-source-polyfill';
 import { addons, MakeDecoratorResult, makeDecorator, Channel } from '@storybook/addons';
 import { isObject, noop, StorybookGlobals } from '../../types';
 
@@ -6,8 +7,8 @@ if (typeof process != 'object' || typeof process.version != 'string') {
   // NOTE If you don't use babel-polyfill or any other polyfills that add EventSource for IE11
   // You don't get hot reload in IE11. So put polyfill for that to better UX
   // Don't load in nodejs environment
-  // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment
-  const { NativeEventSource, EventSourcePolyfill } = require('event-source-polyfill');
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const { NativeEventSource, EventSourcePolyfill } = polyfill;
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   window.EventSource = NativeEventSource || EventSourcePolyfill;
 }

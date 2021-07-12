@@ -3,7 +3,7 @@ import { Configuration, DefinePlugin } from 'webpack';
 
 const config: Configuration = {
   entry: [require.resolve('core-js'), require.resolve('regenerator-runtime/runtime'), './src/client/web/index.tsx'],
-  output: { path: path.join(__dirname, './lib/client/web') },
+  output: { path: path.join(__dirname, './lib/cjs/client/web') },
   module: {
     rules: [
       {

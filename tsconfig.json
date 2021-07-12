@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "declarationDir": "./lib",
+    "declarationDir": "./lib/types",
     "sourceMap": true,
     "declaration": true,
     "module": "esnext",

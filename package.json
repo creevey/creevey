@@ -15,10 +15,11 @@
   ],
   "version": "0.7.32",
   "bin": {
-    "creevey": "./lib/cli.js"
+    "creevey": "./lib/cjs/cli.js"
   },
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "lib/cjs/index.js",
+  "module": "lib/esm/index.js",
+  "types": "lib/types/index.d.ts",
   "author": "Dmitriy Lazarev <w@kich.dev>",
   "repository": {
     "type": "git",
@@ -51,11 +52,13 @@
     "prebuild": "yarn clean && mkdir lib",
     "build": "run-p --continue-on-error build:*",
     "build:types": "tsc --emitDeclarationOnly -p scripts/tsconfig.prod.json",
-    "build:creevey": "babel src --out-dir lib --extensions .ts,.tsx --ignore src/client/web",
+    "build:creevey": "run-p \"build:creevey:* --extensions .ts,.tsx --ignore src/client/web\"",
+    "build:creevey:cjs": "BABEL_MODE=cjs babel src --out-dir lib/cjs",
+    "build:creevey:esm": "BABEL_MODE=esm babel src --out-dir lib/esm",
     "build:client": "webpack --mode production",
-    "copy:index": "cp scripts/dist/* lib/",
-    "copy:html": "cp src/client/web/index.html lib/client/web",
     "postbuild": "run-p copy:*",
+    "copy:index": "cp scripts/dist/types/* lib/types/",
+    "copy:html": "cp src/client/web/index.html lib/cjs/client/web",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
     "build-storybook": "build-storybook",
     "chromatic": "npx chromatic --project-token t3010eknrh",

@@ -275,8 +275,11 @@
   - [x] 0.7.30 did not compile for us (Cannot find module '@storybook/builder-webpack4'). https://github.com/iTwin/iTwinUI-react
   - [x] Take a look on preview.tsx in react-ui, it isn't transpile
   - [x] Creevey update should update only failed images
+  - [ ] Creevey addon ui don't work with storybook 5.3
   - [ ] Stories with restricted characters
-  - [ ] Run creevey with Vite
+  - [ ] Output error that can't find storybook dir or you forgot to add creevey as an addon
+  - [ ] Make work extract without defining creevey as an addon
+  - [x] Run creevey with Vite
 - [x] Add docs addon and mdx stories for old storybooks in e2e tests
 - [x] Add extract stories to e2e tests
 - [x] Change viewport height to 786 in config
@@ -422,6 +425,7 @@
   - [ ] Puppeteer
 - [ ] Features
   - [ ] Get other storybook options, like babel configs from main.js
+    - https://storybook.js.org/docs/react/configure/babel
   - [ ] Implement chromatic capture element resolving logic
     - If only one child inside `#root` node => capture `#root > *`
     - If more children => capture `#root`

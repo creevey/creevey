@@ -14,7 +14,7 @@ export default function server(reportDir: string, port: number): (api: CreeveyAp
   const creeveyApi = new Promise<CreeveyApi>((resolve) => (resolveApi = resolve));
   const app = new Koa();
   const server = http.createServer(app.callback());
-  const wss = new WebSocket.Server({ server, noServer: true });
+  const wss = new WebSocket.Server({ server });
 
   app.use(async (_, next) => {
     await creeveyApi;
