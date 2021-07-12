@@ -1,3 +1,15 @@
+## [0.7.33](https://github.com/wKich/creevey/compare/v0.7.32...v0.7.33) (2021-07-12)
+
+### Bug Fixes
+
+- 🐛 improve `waitForStorybook` wait for `setStories` event ([8431918](https://github.com/wKich/creevey/commit/8431918656378b6760a60da8570fb18952de210c))
+- 🐛 make creevey work with vite ([0d576c6](https://github.com/wKich/creevey/commit/0d576c6e2660fd4f29ba4efd440d4af9ee590ac2))
+- 🐛 some issues for storybook 5.3 and create-react-preset ([c1e20b3](https://github.com/wKich/creevey/commit/c1e20b31234875d3ef961ce3804e3384d858f94d))
+
+### Features
+
+- 🎸 add `failFast` CLI option. Terminates on first fail ([0023bbb](https://github.com/wKich/creevey/commit/0023bbb022e71b7b3cb60fd7cea9bdb89a7e87bc))
+
 ## [0.7.32](https://github.com/wKich/creevey/compare/v0.7.31...v0.7.32) (2021-07-07)
 
 ### Features
