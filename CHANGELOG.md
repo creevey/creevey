@@ -1,3 +1,9 @@
+## [0.7.34](https://github.com/wKich/creevey/compare/v0.7.33...v0.7.34) (2021-07-12)
+
+### Features
+
+- 🎸 add `failFat` parameter to the config ([c4fe538](https://github.com/wKich/creevey/commit/c4fe538569311cc7ca3c0c9e8e93916cf4a3cb8b))
+
 ## [0.7.33](https://github.com/wKich/creevey/compare/v0.7.32...v0.7.33) (2021-07-12)
 
 ### Bug Fixes
