@@ -156,7 +156,7 @@ object Tests : BuildType({
     dependencies {
         artifacts(Build) {
             buildRule = lastSuccessful()
-            artifactRules = "creevey-*.tgz!/package/lib/client/web/*.js => report"
+            artifactRules = "creevey-*.tgz!/package/lib/cjs/client/web/*.js => report"
         }
     }
 })

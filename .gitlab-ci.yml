@@ -36,6 +36,6 @@ ui:
       - report/
   script:
     - mkdir report
-    - cp lib/client/web/*.js report/
+    - cp lib/cjs/client/web/*.js report/
     - yarn start:storybook &
     - yarn creevey:gitlab
