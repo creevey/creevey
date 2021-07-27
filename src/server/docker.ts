@@ -15,14 +15,21 @@ class DevNull extends Writable {
   }
 }
 
-export async function pullImages(images: string[], auth?: DockerAuth): Promise<void> {
+export async function pullImages(
+  images: string[],
+  { auth, platform }: { auth?: DockerAuth; platform?: string } = {},
+): Promise<void> {
+  const args: Record<string, unknown> = {};
+  if (auth) args.authconfig = auth;
+  if (platform) args.platform = platform;
+
   logger.info('Pull docker images');
   for (const image of images) {
     await new Promise<void>((resolve, reject) => {
       const spinner = ora(`${image}: Pull start`).start();
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      docker.pull(image, { authconfig: auth }, function (pullError: unknown, stream: ReadableStream) {
+      docker.pull(image, args, function (pullError: unknown, stream: ReadableStream) {
         if (pullError) {
           spinner.fail();
           return reject(pullError);

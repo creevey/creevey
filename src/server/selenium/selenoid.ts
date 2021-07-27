@@ -124,9 +124,10 @@ export async function startSelenoidContainer(config: Config, debug: boolean): Pr
   );
 
   const selenoidImage = config.dockerImage;
+  const pullOptions = { auth: config.dockerAuth, platform: config.dockerImagePlatform };
   if (config.pullImages) {
-    await pullImages([selenoidImage]);
-    await pullImages(images, config.dockerAuth);
+    await pullImages([selenoidImage], pullOptions);
+    await pullImages(images, pullOptions);
   }
 
   // TODO Allow pass custom options

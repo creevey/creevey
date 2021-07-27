@@ -275,6 +275,7 @@
   - [x] 0.7.30 did not compile for us (Cannot find module '@storybook/builder-webpack4'). https://github.com/iTwin/iTwinUI-react
   - [x] Take a look on preview.tsx in react-ui, it isn't transpile
   - [x] Creevey update should update only failed images
+  - [ ] Creevey update doesn't work on source repo
   - [ ] NPM Ctrl+C doesn't exit creevey
   - [ ] Creevey addon ui don't work with storybook 5.3
   - [ ] Stories with restricted characters

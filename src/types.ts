@@ -222,6 +222,10 @@ export interface Config {
    * The `--ui` CLI option ignores this option
    */
   failFast: boolean;
+  /**
+   * Specify platform for docker images
+   */
+  dockerImagePlatform: string;
 }
 
 export type CreeveyConfig = Partial<Config>;

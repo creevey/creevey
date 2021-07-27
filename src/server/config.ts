@@ -9,6 +9,7 @@ export const defaultConfig: Omit<Config, 'gridUrl'> = {
   useDocker: true,
   useWebpackToExtractTests: false,
   dockerImage: 'aerokube/selenoid:latest-release',
+  dockerImagePlatform: '',
   pullImages: true,
   failFast: false,
   storybookUrl: 'http://localhost:6006',

@@ -518,7 +518,7 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
     prefix.apply(browserLogger, {
       format(level) {
         const levelColor = colors[level.toUpperCase()];
-        return `[${browserName}:${chalk.gray(browserHost || sessionId)}] ${levelColor(level)} =>`;
+        return `[${browserName}:${chalk.gray(sessionId)}] ${levelColor(level)} =>`;
       },
     });
 
