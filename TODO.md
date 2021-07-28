@@ -275,11 +275,11 @@
   - [x] 0.7.30 did not compile for us (Cannot find module '@storybook/builder-webpack4'). https://github.com/iTwin/iTwinUI-react
   - [x] Take a look on preview.tsx in react-ui, it isn't transpile
   - [x] Creevey update should update only failed images
+  - [ ] Teamcity reporter doesn't output failed test with maxRetries > 0
+  - [ ] Angular stop working with babel-loader
   - [ ] Creevey update doesn't work on source repo
   - [ ] NPM Ctrl+C doesn't exit creevey
-  - [ ] Creevey addon ui don't work with storybook 5.3
-  - [ ] Stories with restricted characters
-  - [ ] Output error that can't find storybook dir or you forgot to add creevey as an addon
+  - [x] ~~Creevey addon ui don't work with storybook 5.3~~ (Drop Storybook 5.x in Creevey 0.8)
   - [ ] Make work extract without defining creevey as an addon
   - [x] Run creevey with Vite
 - [x] Add docs addon and mdx stories for old storybooks in e2e tests
@@ -318,13 +318,7 @@
   - [x] Handle main.js for 6.x+, remove addons from it
   - [x] Add extract command for CLI
   - [x] Pass grep option for `update` command
-  - [ ] Simplify work with monorepos https://github.com/adiun/vite-monorepo
-  - [ ] Execute extract with custom bundlers
-  - [ ] `update` should remove unnecessary images
   - [x] Extract stories.json as a part of build storybook
-  - [ ] Support `stories.svelte` https://storybook.js.org/blog/storybook-for-svelte/
-    - https://github.com/storybookjs/addon-svelte-csf/blob/main/src/parser/svelte-stories-loader.ts
-    - Write transformation to extract parameters from compiled svelte code
   - [ ] Add fallback option, load tests from browser (hmr and tests are disabled in this case)
     - [ ] Send PR to Storybook to allow use HMR for stories
   - [ ] Allow run creevey against static-storybook folder (Depends on fallback tests loading)
@@ -334,8 +328,9 @@
     - Add tests loader and e2e
 - [x] Fix todos in browser.ts and `no-shadow` rule
 - [x] Rename `webpack` to bundler. Move bundler.ts
-- [ ] Add debug output for webdriver build and resolve and story switch
+- [x] Add debug output for webdriver build and resolve and story switch
 - [ ] Improve and approve storybook.examples e2e tests
+- [ ] Fix github actions for forked storybook repo
 - [x] Be able to run storybook examples e2e in CI
 - [x] Improve Docker
   - [x] Private docker images registry
@@ -371,8 +366,71 @@
 
 ## First priority (v0.8)
 
-- [x] ~~Fix png logos~~
 - [ ] Remove report on each start
+- [ ] Bugs
+  - [ ] Stories with restricted characters
+  - [ ] Output error that can't find storybook dir or you forgot to add creevey as an addon
+  - [ ] Fix taking composite screenshots with hidden scrollbar
+    - Don't use scrollBarWidth or hasScrollBar helpers
+    - Take `document.documentElement.clientWidth/Height` instead of window rect
+    - For each screenshot after scroll, take elementRect coordinates
+    - Iterate by screen images and calculate resulting x/y coordinates for composite image
+    - If image width/height greater than viewport width/height then scroll bar is captured
+  - [x] ~~Stop stdout from workers after shutdown event~~ (Issue with yarn: https://github.com/yarnpkg/yarn/issues/4667)
+- [ ] Test with yarn2
+- [ ] Think about how to test with ESM (try to use import() from esm directory)
+- [ ] Try https://docs.gitlab.com/runner/executors/docker.html#the-privileged-mode
+- [ ] Move docker config options to separate prop `docker`
+- [ ] Move from yarn to npm@7
+- [ ] Drop support nodejs 10
+- [ ] Download webdriver binary automatically (see bigtest as example)
+- [ ] Rename `screenDir` config option
+- [ ] Drop storiesOf and Storybook v5.x support
+  - [x] ~~Could we drop more entry points from webpack config? (generated entry for example)~~ (Nope)
+- [x] ~~Fix png logos~~
+- [x] Support GitLab CI (used services and standalone selenoid)
+- [x] ~~Add edge cases for e2e tests~~ (Add on demand)
+- [x] ~~Figure out if I need use my own react and setup this https://reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html or I need to use react from storybook~~ (Storybook uses optional react deps, so it's better to leave as-is)
+- [x] ~~Support esm/cjs builds~~
+- [x] ~~Research webpack 5~~ (Doesn't need after using babel for building)
+- [x] ~~Bring all examples from storybook repo and test with creevey~~ (It's too expensive, e2e tests are pretty enough)
+  - Save here images/configs/bundle/stories.json
+  - Grab storybook examples from same version as installed here
+- [x] ~~Annotate types for storybook 6.2~~ (It seems like was needed for webpack config builder)
+- [ ] Features
+  - [ ] CSFv3 + Interactors => PoC run tests in browser
+    - [ ] Add `capture` command for Creevey websocket server
+  - [ ] Create/Update stories directly from Storybook (by changing args)
+    - [ ] Sync Args values with remote browsers
+  - [ ] `update` should remove unnecessary images
+  - [ ] Use native composite screenshots for browsers which support it
+  - [ ] Get other storybook options, like babel configs from main.js
+    - https://storybook.js.org/docs/react/configure/babel
+  - [ ] Implement chromatic capture element resolving logic
+    - If only one child inside `#root` node => capture `#root > *`
+    - If more children => capture `#root`
+    - Else capture viewport
+  - [ ] Capture storybook docs pages (where should be defined creevey parameters?)
+    - Listen event `Events.DOCS_RENDERED`
+    - The root element is `#docs-root`
+  - [ ] Support JUnit mocha reporter
+  - [ ] Change `skip` option API (described somewhere in telegram, like object with keys or other format)
+  - [ ] Move creevey config inside addon
+    - Describe storybook config dir in args
+    - How to deal with fallback option?
+    - Load addons from storybook api
+  - [ ] Try to use odiff tool (https://github.com/dmtrKovalenko/odiff)
+  - [ ] Run extract command as part of storybook building process (Think about storybook built-in extract command)
+    - [ ] Execute extract with custom bundlers
+  - [ ] Support Storybook Composition https://storybook.js.org/docs/react/workflows/storybook-composition
+  - [ ] Support `stories.svelte` https://storybook.js.org/blog/storybook-for-svelte/
+    - https://github.com/storybookjs/addon-svelte-csf/blob/main/src/parser/svelte-stories-loader.ts
+    - Write transformation to extract parameters from compiled svelte code
+  - [x] ~~Webpack 5 support~~ (Doesn't need after using babel for building)
+  - [x] ~~Allow defined params for knobs and args to capture story with different states~~ (Doesn't need with CSFv3)
+
+## Second priority (v0.8.x)
+
 - [ ] Add instruction for various frameworks
   - [ ] Web components
   - [ ] Create React App Typescript
@@ -380,7 +438,6 @@
   - [ ] Next.js
   - [ ] https://nx.dev/
 - [ ] Bugs
-  - [ ] Stop stdout from workers after shutdown event
   - [ ] SKB Kontur Selenium Grid resolve url timeout
   - [ ] IE don't work in github actions maybe out of sync?
   - [ ] IE fail because out of sync. Add explicit wait for each browser action
@@ -391,62 +448,30 @@
   - [ ] webpack config dll references (disable dll plugin)
   - [ ] Scrollbar is not visible on dark theme in ResultPage
   - [ ] Don't have hot reload on preview config storybook
-  - [ ] Use native composite screenshots for browsers which support it
-  - [ ] Fix taking composite screenshots with hidden scrollbar
-    - Don't use scrollBarWidth or hasScrollBar helpers
-    - Take `document.documentElement.clientWidth/Height` instead of window rect
-    - For each screenshot after scroll, take elementRect coordinates
-    - Iterate by screen images and calculate resulting x/y coordinates for composite image
-    - If image width/height greater than viewport width/height then scroll bar is captured
-- [x] ~~Support esm/cjs builds~~
-- [ ] Test with yarn2
-- [ ] Think about how to test with ESM (try to use import() from esm directory)
-- [ ] Research webpack 5
-- [ ] Try https://docs.gitlab.com/runner/executors/docker.html#the-privileged-mode
 - [ ] Check latest storybook docs on useful cases
-- [ ] Move docker config options to separate prop `docker`
-- [ ] Move from yarn to npm@7
-- [ ] Bring all examples from storybook repo and test with creevey
-  - Save here images/configs/bundle/stories.json
-  - Grab storybook examples from same version as installed here
-- [ ] Annotate types for storybook 6.2
 - [ ] Add google analytics (send reports, versions, addons, framework, configs, package.json?)
-- [ ] Drop support nodejs 10
 - [ ] Test standalone selenoid + webdriver work
 - [ ] Add more tests on different esnext features (test babel-parser + plugins)
 - [ ] Add custom docker images with node+selenoid+browser (We won't need them, if we make creevey-as-a-service image)
-  - [x] Support GitLab CI (used services and standalone selenoid)
-- [ ] Download webdriver binary automatically (see bigtest as example)
-- [ ] Add edge cases for e2e tests
-- [x] ~~Figure out if I need use my own react and setup this https://reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html or I need to use react from storybook~~
-  - Storybook uses optional react deps, so it's better to leave as-is
-- [ ] Rename `screenDir` config option
-- [ ] Drop storiesOf and Storybook v5.x support
-  - [ ] Could we drop more entry points from webpack config? (generated entry for example)
-- [ ] Support other browser automation tools
-  - [ ] Playwright
-  - [ ] Puppeteer
 - [ ] Features
-  - [ ] Get other storybook options, like babel configs from main.js
-    - https://storybook.js.org/docs/react/configure/babel
-  - [ ] Implement chromatic capture element resolving logic
-    - If only one child inside `#root` node => capture `#root > *`
-    - If more children => capture `#root`
-    - Else capture viewport
-  - [ ] Capture storybook docs pages (where should be defined creevey parameters?)
-    - Listen event `Events.DOCS_RENDERED`
-    - The root element is `#docs-root`
-  - [ ] Add test editor inside the addon (user be able to write/change tests for story)
-  - [ ] Support JUnit mocha reporter
+  - [ ] Simplify work with monorepos https://github.com/adiun/vite-monorepo
+  - [ ] Support other browser automation tools
+    - [ ] Playwright
+    - [ ] Puppeteer
   - [ ] Improve `waitForReady` for interaction tests
     - `await this.waitForReady(() => this.browser.sendKeys().perform())`
     - `await this.takeScreenshot()`
-  - [ ] Webpack 5 support
   - [ ] Stop gif animations (investigate)
   - [ ] Add status approved, apply after approve and reset after run
   - [ ] Output browser logs for debug
   - [ ] Support switch between globals https://github.com/wKich/creevey/discussions/108
-  - [ ] Change `skip` option API (described somewhere in telegram, like object with keys)
+  - [ ] Merge stories from nodejs bundle and browser, output warning to user if some stories are missing in nodejs
+  - [ ] Add `HTML` diff view
+  - [ ] Add option to apply custom styles to #root or something else
+  - [ ] Improve creevey-addon webpack config to allow use `import { By } from 'selenium'` and maybe other stuff (add creevey-selenium or improve creevey-loader)
+  - [ ] Wait for resources loaded (~~fonts~~, images, etc) How?
+  - [ ] Allow set viewport sizes for story (use width x height as postfix for browser name in UI)
+  - [ ] Add fuzzy search and highlight
   - [ ] Improve creevey-loader
     - [x] Support re-export stories
     - [ ] Don't warn user on imported tests
@@ -455,25 +480,10 @@
     - [ ] Remove unused side-effects from nested scopes
     - [x] Support exclude/include stories parameter
     - [ ] Correctly cutoff re-exported stories/parameters
-  - [ ] Merge stories from nodejs bundle and browser, output warning to user if some stories are missing in nodejs
-  - [ ] Add `HTML` diff view
-  - [ ] Move creevey config inside addon
-    - Describe storybook config dir in args
-    - How to deal with fallback option?
-    - Load addons from storybook api
-  - [ ] Add option to apply custom styles to #root or something else
-  - [ ] Try to use odiff tool (https://github.com/dmtrKovalenko/odiff)
-  - [ ] Wait for resources loaded (~~fonts~~, images, etc) How?
-  - [ ] Integrate build nodejs bundle into storybook (use webpackFinal in addon)
-  - [ ] Improve creevey-addon webpack config to allow use `import { By } from 'selenium'` and maybe other stuff (add creevey-selenium or improve creevey-loader)
-  - [ ] Support Storybook Composition https://storybook.js.org/docs/react/workflows/storybook-composition
-  - [ ] Support mdx documentation page
-  - [ ] Allow defined params for knobs and args to capture story with different states
-  - [ ] Allow set viewport sizes for story (use width x height as postfix for browser name in UI)
-  - [ ] Add fuzzy search and highlight
 
-## Second priority (v0.9)
+## Third priority (v0.9)
 
+- [ ] Integrate effection https://github.com/thefrontside/effection
 - [ ] Experiment with html2canvas
 - [ ] Update Readme
   - [ ] How to deal with animations (CREEVEY_ENV)
@@ -486,6 +496,7 @@
   - [ ] creevey-storybook
   - [ ] examples
 - [ ] Features
+  - [ ] Add test editor inside the addon (user be able to write/change tests for story)
   - [ ] Allow save approved screenshots in separate storage, like S3
   - [ ] Add API to allow to use third party "stories" resolvers to support not only storybook
   - [ ] Allow to extend this.browser API
