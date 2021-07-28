@@ -66,6 +66,11 @@ export async function shutdownWorkers(): Promise<void> {
   emitShutdownMessage();
 }
 
+export function shutdown(): void {
+  // eslint-disable-next-line no-process-exit
+  process.exit();
+}
+
 export function getCreeveyCache(): string {
   return findCacheDir({ name: 'creevey', cwd: __dirname }) as string;
 }

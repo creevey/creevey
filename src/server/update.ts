@@ -3,14 +3,15 @@ import fs, { Dirent, mkdirSync } from 'fs';
 import micromatch from 'micromatch';
 import { Config, isDefined, ServerTest } from '../types';
 
-function tryToLoadTestsMeta(reportDir: string): Partial<{ [id: string]: ServerTest }> | undefined {
+function tryToLoadTestsData(filename: string): Partial<{ [id: string]: ServerTest }> | undefined {
   try {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    return require(`${reportDir}/tests.json`) as Partial<{ [id: string]: ServerTest }>;
+    return require(filename) as Partial<{ [id: string]: ServerTest }>;
   } catch (_) {
     /* noop */
   }
 }
+
 const actualRegex = /^(.*)-actual-(\d+)\.png$/i;
 
 function approve(
@@ -26,7 +27,7 @@ function approve(
     .filter(isDefined)
     .filter(
       ([fileName, imageName]) =>
-        testPaths?.find(([token]) => token == imageName) && isMatch(path.join(srcPath, fileName)),
+        !testPaths || (testPaths.find(([token]) => token == imageName) && isMatch(path.join(srcPath, fileName))),
     )
     .reduce(
       (images, [, imageName, retry]) =>
@@ -64,13 +65,14 @@ export default function update(config: Config, grepPattern?: string): void {
   const { reportDir, screenDir } = config;
   const isMatch = grepPattern ? micromatch.matcher(grepPattern, { contains: true }) : () => true;
 
-  const tests = tryToLoadTestsMeta(reportDir);
+  const testsMeta = tryToLoadTestsData(`${reportDir}/tests.json`);
+  const testsReport = tryToLoadTestsData(`${reportDir}/data`);
   let testPaths: string[][] | null = null;
 
-  if (tests) {
-    testPaths = Object.values(tests)
+  if (testsMeta && testsReport) {
+    testPaths = Object.values(testsMeta)
       .filter(isDefined)
-      .filter(({ status }) => status == 'failed')
+      .filter(({ id }) => testsReport[id]?.status == 'failed')
       .map(({ storyPath, testName, browser }) => [...storyPath, ...(testName ? [testName] : []), browser]);
   }
 

@@ -2,12 +2,12 @@ import cluster from 'cluster';
 import minimist from 'minimist';
 import creevey from './server';
 import { noop, Options } from './types';
-import { emitShutdownMessage, emitWorkerMessage } from './server/messages';
-import { isShuttingDown, shutdownWorkers } from './server/utils';
+import { emitWorkerMessage } from './server/messages';
+import { isShuttingDown, shutdown, shutdownWorkers } from './server/utils';
 import { setDefaultLevel, levels } from 'loglevel';
 import { logger } from './server/logger';
 
-function shutdown(reason: unknown): void {
+function shutdownOnException(reason: unknown): void {
   if (isShuttingDown.current) return;
 
   const error = reason instanceof Error ? reason.stack ?? reason.message : (reason as string);
@@ -19,10 +19,10 @@ function shutdown(reason: unknown): void {
   if (cluster.isMaster && !isShuttingDown.current) void shutdownWorkers();
 }
 
-process.on('uncaughtException', shutdown);
-process.on('unhandledRejection', shutdown);
+process.on('uncaughtException', shutdownOnException);
+process.on('unhandledRejection', shutdownOnException);
 if (cluster.isWorker) process.on('SIGINT', noop);
-if (cluster.isMaster) process.on('SIGINT', emitShutdownMessage);
+if (cluster.isMaster) process.on('SIGINT', shutdown);
 
 const argv = minimist<Options>(process.argv.slice(2), {
   string: ['browser', 'config', 'reporter', 'reportDir', 'screenDir'],

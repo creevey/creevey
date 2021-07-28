@@ -4,8 +4,8 @@ import { promisify } from 'util';
 import master from './master';
 import creeveyApi, { CreeveyApi } from './api';
 import { Config, Options, isDefined } from '../../types';
-import { shutdownWorkers, testsToImages } from '../utils';
-import { emitShutdownMessage, subscribeOn } from '../messages';
+import { shutdown, shutdownWorkers, testsToImages } from '../utils';
+import { subscribeOn } from '../messages';
 import Runner from './runner';
 import { logger } from '../logger';
 
@@ -60,7 +60,7 @@ export default async function (config: Config, options: Options, resolveApi: (ap
     await config.hooks.before();
   }
   subscribeOn('shutdown', () => config.hooks.after?.());
-  process.removeListener('SIGINT', emitShutdownMessage);
+  process.removeListener('SIGINT', shutdown);
   process.on('SIGINT', () => {
     runner?.removeAllListeners('stop');
     if (runner?.isRunning) {
