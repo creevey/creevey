@@ -1,3 +1,13 @@
+## [0.7.35](https://github.com/wKich/creevey/compare/v0.7.34...v0.7.35) (2021-07-28)
+
+### Bug Fixes
+
+- 🐛 update didn't use report data to approve failed tests ([107d0fa](https://github.com/wKich/creevey/commit/107d0faf4c717bbb7a547422e9baf7105389d0bd))
+
+### Features
+
+- 🎸 add `dockerImagePlatform` config option ([f52de6c](https://github.com/wKich/creevey/commit/f52de6c31ab41012ce127702d0967c8f40fb7c20))
+
 ## [0.7.34](https://github.com/wKich/creevey/compare/v0.7.33...v0.7.34) (2021-07-12)
 
 ### Features
