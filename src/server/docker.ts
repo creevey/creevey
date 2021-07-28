@@ -3,7 +3,7 @@ import { Config, BrowserConfig, isDockerMessage, DockerAuth } from '../types';
 import { subscribeOn, sendDockerMessage, emitDockerMessage } from './messages';
 import { isInsideDocker, LOCALHOST_REGEXP } from './utils';
 import Dockerode, { Container } from 'dockerode';
-import { Writable } from 'stream';
+import { Writable, Stream } from 'stream';
 import ora from 'ora';
 import { logger } from './logger';
 
@@ -29,7 +29,7 @@ export async function pullImages(
       const spinner = ora(`${image}: Pull start`).start();
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      docker.pull(image, args, function (pullError: unknown, stream: ReadableStream) {
+      docker.pull(image, args, function (pullError: unknown, stream: Stream) {
         if (pullError) {
           spinner.fail();
           return reject(pullError);

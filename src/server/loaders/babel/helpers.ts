@@ -46,7 +46,7 @@ function isTemplateBind(path?: NodePath): path is NodePath<t.CallExpression> {
 }
 
 function findRootPath<T>(path: NodePath<T>): NodePath | null {
-  return path.find((x) => x.parentPath?.isProgram());
+  return path.find((x) => Boolean(x.parentPath?.isProgram()));
 }
 
 function getPropertyPath(path: NodePath<t.ObjectExpression>, name: string): NodePath<t.ObjectProperty> | undefined {
@@ -139,7 +139,7 @@ function getAssignmentPathWithProps(refPath: NodePath): [NodePath<t.AssignmentEx
 
   const props: string[] = [];
   for (let propPath = refPath.parentPath; propPath != assignmentPath; propPath = propPath.parentPath) {
-    if (!propPath.isMemberExpression()) return;
+    if (!propPath?.isMemberExpression()) return;
     const propNode = propPath.node.property;
     if (!t.isIdentifier(propNode)) return;
     props.push(propNode.name);
@@ -200,8 +200,8 @@ function cleanUpStoriesOfCallChain(storiesOfPath: NodePath): void {
   do {
     const childCallPath = callPath;
     const { parentPath: memberPath } = childCallPath;
+    if (!memberPath || !memberPath.isMemberExpression()) return;
     callPath = memberPath.parentPath;
-    if (!memberPath.isMemberExpression()) return;
     const propPath = memberPath.get('property');
     if (!callPath.isCallExpression()) return;
     if (propPath.isIdentifier({ name: 'add' })) {
