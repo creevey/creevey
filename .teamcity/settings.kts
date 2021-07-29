@@ -69,6 +69,13 @@ object Build : BuildType({
 
     steps {
         script {
+            name = "install yarn"
+            scriptContent = """
+                npm install yarn
+                export PATH="${'$'}PATH:./node_modules/.bin"
+            """.trimIndent()
+        }
+        script {
             name = "install"
             scriptContent = "yarn"
         }
@@ -83,13 +90,6 @@ object Build : BuildType({
         script {
             name = "pack"
             scriptContent = "yarn pack"
-        }
-        script {
-            name = "install yarn"
-            scriptContent = """
-                npm install yarn
-                export PATH="${'$'}PATH:./node_modules/.bin"
-            """.trimIndent()
         }
     }
 
