@@ -85,7 +85,7 @@ object Build : BuildType({
             scriptContent = "yarn pack"
         }
         script {
-            name = "install yarn (1)"
+            name = "install yarn"
             scriptContent = """
                 npm install yarn
                 export PATH="${'$'}PATH:./node_modules/.bin"
