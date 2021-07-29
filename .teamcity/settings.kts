@@ -85,13 +85,6 @@ object Build : BuildType({
             scriptContent = "yarn pack"
         }
         script {
-            name = "install yarn"
-            scriptContent = """
-                npm install yarn
-                setx /M PATH "%PATH%;node_modules\\.bin"
-            """.trimIndent()
-        }
-        script {
             name = "install yarn (1)"
             scriptContent = """
                 npm install yarn
