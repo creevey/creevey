@@ -91,6 +91,13 @@ object Build : BuildType({
                 setx /M PATH "%PATH%;node_modules\\.bin"
             """.trimIndent()
         }
+        script {
+            name = "install yarn (1)"
+            scriptContent = """
+                npm install yarn
+                export PATH="${'$'}PATH:./node_modules/.bin"
+            """.trimIndent()
+        }
     }
 
     triggers {
