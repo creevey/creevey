@@ -1,5 +1,6 @@
 import jetbrains.buildServer.configs.kotlin.v2019_2.*
 import jetbrains.buildServer.configs.kotlin.v2019_2.buildFeatures.commitStatusPublisher
+import jetbrains.buildServer.configs.kotlin.v2019_2.buildSteps.nodeJS
 import jetbrains.buildServer.configs.kotlin.v2019_2.buildSteps.script
 import jetbrains.buildServer.configs.kotlin.v2019_2.projectFeatures.buildReportTab
 import jetbrains.buildServer.configs.kotlin.v2019_2.triggers.vcs
@@ -68,12 +69,9 @@ object Build : BuildType({
     }
 
     steps {
-        script {
+        nodeJS {
             name = "install yarn"
-            scriptContent = """
-                npm install yarn
-                export PATH="${'$'}PATH:./node_modules/.bin"
-            """.trimIndent()
+            shellScript = "yarn"
         }
         script {
             name = "install"
