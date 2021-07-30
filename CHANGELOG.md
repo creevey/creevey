@@ -1,3 +1,9 @@
+## [0.7.36](https://github.com/wKich/creevey/compare/v0.7.35...v0.7.36) (2021-07-30)
+
+### Bug Fixes
+
+- 🐛 report test as a failed for teamcity reporter ([0e58915](https://github.com/wKich/creevey/commit/0e58915b6d14441e14851c7c3bc888fe0759ddce))
+
 ## [0.7.35](https://github.com/wKich/creevey/compare/v0.7.34...v0.7.35) (2021-07-28)
 
 ### Bug Fixes
