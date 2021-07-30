@@ -54,7 +54,7 @@ export class TeamcityReporter extends reporters.Base {
     super(runner);
 
     const topLevelSuite = this.escape((options.reporterOptions as ReporterOptions).topLevelSuite);
-    const { reportDir, willRetry, images } = options.reporterOptions as ReporterOptions;
+    const reporterOptions = options.reporterOptions as ReporterOptions;
 
     runner.on('suite', (suite) =>
       suite.root
@@ -67,7 +67,7 @@ export class TeamcityReporter extends reporters.Base {
     );
 
     runner.on('fail', (test, error: Error) => {
-      Object.entries(images).forEach(([name, image]) => {
+      Object.entries(reporterOptions.images).forEach(([name, image]) => {
         if (!image) return;
         const filePath = test
           .titlePath()
@@ -79,7 +79,9 @@ export class TeamcityReporter extends reporters.Base {
         Object.values(rest as Partial<Images>)
           .filter(isDefined)
           .forEach((fileName) => {
-            console.log(`##teamcity[publishArtifacts '${reportDir}/${filePath}/${fileName} => report/${filePath}']`);
+            console.log(
+              `##teamcity[publishArtifacts '${reporterOptions.reportDir}/${filePath}/${fileName} => report/${filePath}']`,
+            );
             console.log(
               `##teamcity[testMetadata testName='${this.escape(
                 test.title,
@@ -91,7 +93,7 @@ export class TeamcityReporter extends reporters.Base {
       // Output failed test as passed due TC don't support retry mechanic
       // https://teamcity-support.jetbrains.com/hc/en-us/community/posts/207216829-Count-test-as-successful-if-at-least-one-try-is-successful?page=1#community_comment_207394125
 
-      willRetry
+      reporterOptions.willRetry
         ? console.log(`##teamcity[testFinished name='${this.escape(test.title)}' flowId='${process.pid}']`)
         : console.log(
             `##teamcity[testFailed name='${this.escape(test.title)}' message='${this.escape(
