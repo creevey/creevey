@@ -1,3 +1,15 @@
+## [0.7.37](https://github.com/wKich/creevey/compare/v0.7.36...v0.7.37) (2021-08-27)
+
+### Bug Fixes
+
+- 🐛 save report data after each tests run ([86c6c2e](https://github.com/wKich/creevey/commit/86c6c2ee1261bdc38fc3b7c6ebb1753348339a0a))
+- 🐛 selenium url path to '/' for webkit browsers ([748d896](https://github.com/wKich/creevey/commit/748d8968c645ee684cec5dcd899d2de749d5e2c6)), closes [#176](https://github.com/wKich/creevey/issues/176)
+
+### Features
+
+- 🎸 failFast doesn't disable maxRetries option ([c81c637](https://github.com/wKich/creevey/commit/c81c63784aecea890596647225ce8278d7383df5)), closes [#175](https://github.com/wKich/creevey/issues/175)
+- 🎸 improve delay option to allow specify browsers ([4bec3b5](https://github.com/wKich/creevey/commit/4bec3b5a4ddca2e2610db4ecf79f0e859202da65)), closes [#174](https://github.com/wKich/creevey/issues/174)
+
 ## [0.7.36](https://github.com/wKich/creevey/compare/v0.7.35...v0.7.36) (2021-07-30)
 
 ### Bug Fixes
