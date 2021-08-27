@@ -287,7 +287,7 @@ export interface Images {
   error?: string;
 }
 
-export type TestStatus = 'unknown' | 'pending' | 'running' | 'failed' | 'success';
+export type TestStatus = 'unknown' | 'pending' | 'running' | 'failed' | 'success' | 'retrying';
 
 export interface TestResult {
   status: 'failed' | 'success';

@@ -46,9 +46,10 @@ export default class Runner extends EventEmitter {
 
     if (!test) return;
     const { browser, testName, storyPath, storyId } = test;
-    test.status = status;
+    // TODO Handle 'retrying' status
+    test.status = status == 'retrying' ? 'failed' : status;
     if (!result) {
-      this.sendUpdate({ tests: { [id]: { id, browser, testName, storyPath, status, storyId } } });
+      this.sendUpdate({ tests: { [id]: { id, browser, testName, storyPath, status: test.status, storyId } } });
       return;
     }
     if (!test.results) {
@@ -56,7 +57,9 @@ export default class Runner extends EventEmitter {
     }
     test.results.push(result);
 
-    this.sendUpdate({ tests: { [id]: { id, browser, testName, storyPath, status, results: [result], storyId } } });
+    this.sendUpdate({
+      tests: { [id]: { id, browser, testName, storyPath, status: test.status, results: [result], storyId } },
+    });
 
     if (this.failFast && status == 'failed') this.stop();
   };

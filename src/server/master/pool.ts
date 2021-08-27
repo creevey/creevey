@@ -23,12 +23,14 @@ export default class Pool extends EventEmitter {
   private workers: Worker[] = [];
   private queue: WorkerTest[] = [];
   private forcedStop = false;
+  private failFast: boolean;
   public get isRunning(): boolean {
     return this.workers.length !== this.freeWorkers.length;
   }
   constructor(config: Config, private browser: string) {
     super();
 
+    this.failFast = config.failFast;
     this.maxRetries = config.maxRetries;
     this.config = config.browsers[browser] as BrowserConfig;
   }
@@ -171,10 +173,10 @@ export default class Pool extends EventEmitter {
 
       if (shouldRetry) {
         test.retries += 1;
-        this.queue.push(test);
+        this.queue[this.failFast ? 'unshift' : 'push'](test);
       }
 
-      this.sendStatus({ id: test.id, status: result.status, result });
+      this.sendStatus({ id: test.id, status: shouldRetry ? 'retrying' : result.status, result });
 
       worker.isRunning = false;
 
