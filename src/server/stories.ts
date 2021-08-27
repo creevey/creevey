@@ -64,7 +64,9 @@ function convertStories(
     if (storyMeta.parameters.docsOnly) return;
 
     browsers.forEach((browserName) => {
-      const { delay, tests: storyTests, skip } = (storyMeta.parameters.creevey ?? {}) as CreeveyStoryParams;
+      const { delay: delayParam, tests: storyTests, skip } = (storyMeta.parameters.creevey ?? {}) as CreeveyStoryParams;
+      const delay =
+        typeof delayParam == 'number' ? delayParam : delayParam?.for.includes(browserName) ? delayParam.ms : 0;
 
       // typeof tests === "undefined" => rootSuite -> kindSuite -> storyTest -> [browsers.png]
       // typeof tests === "function"  => rootSuite -> kindSuite -> storyTest -> browser -> [images.png]

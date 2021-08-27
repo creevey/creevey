@@ -357,7 +357,7 @@ export interface CreeveyStoryParams {
   captureElement?: string | null;
   ignoreElements?: string | string[] | null;
   waitForReady?: boolean;
-  delay?: number;
+  delay?: number | { for: string[]; ms: number };
   skip?: SkipOptions;
   tests?: {
     // TODO Define browserName, story
