@@ -80,9 +80,10 @@ export default async function (config: Config, options: Options, resolveApi: (ap
   await runner.init();
 
   if (options.saveReport) {
-    const reportDataPath = path.join(config.reportDir, 'data.js');
     await copyStatics(config.reportDir);
-    subscribeOn('shutdown', () => writeFileSync(reportDataPath, reportDataModule(runner?.status.tests)));
+    runner.on('stop', () =>
+      writeFileSync(path.join(config.reportDir, 'data.js'), reportDataModule(runner?.status.tests)),
+    );
   }
 
   if (options.ui) {

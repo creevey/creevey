@@ -275,7 +275,7 @@
   - [x] 0.7.30 did not compile for us (Cannot find module '@storybook/builder-webpack4'). https://github.com/iTwin/iTwinUI-react
   - [x] Take a look on preview.tsx in react-ui, it isn't transpile
   - [x] Creevey update should update only failed images
-  - [ ] Teamcity reporter doesn't output failed test with maxRetries > 0
+  - [x] Teamcity reporter doesn't output failed test with maxRetries > 0
   - [ ] Angular stop working with babel-loader
   - [ ] Creevey update doesn't work on source repo
   - [ ] NPM Ctrl+C doesn't exit creevey
@@ -319,6 +319,7 @@
   - [x] Add extract command for CLI
   - [x] Pass grep option for `update` command
   - [x] Extract stories.json as a part of build storybook
+  - [ ] Update `data.js` right after tests finish even in `--ui`
   - [ ] Add fallback option, load tests from browser (hmr and tests are disabled in this case)
     - [ ] Send PR to Storybook to allow use HMR for stories
   - [ ] Allow run creevey against static-storybook folder (Depends on fallback tests loading)
@@ -399,6 +400,10 @@
 - [x] ~~Annotate types for storybook 6.2~~ (It seems like was needed for webpack config builder)
 - [ ] Features
   - [ ] CSFv3 + Interactors => PoC run tests in browser
+    - [ ] Require support static storybook
+    - [ ] Add config option to switch using play method
+    - [ ] Check the story events story render and play finish
+    - [ ] Can we catch play method errors?
     - [ ] Add `capture` command for Creevey websocket server
   - [ ] Create/Update stories directly from Storybook (by changing args)
     - [ ] Sync Args values with remote browsers
