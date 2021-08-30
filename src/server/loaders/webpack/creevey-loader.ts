@@ -143,7 +143,7 @@ export default function (this: loader.LoaderContext | void, source: string): str
     return transform(ast);
   } catch (error) {
     this && logger.warn('Failed to transform file', this.resourcePath);
-    if ('loc' in error) {
+    if (typeof error == 'object' && error && 'loc' in error) {
       logger.warn(
         codeFrameColumns(
           source,

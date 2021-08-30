@@ -23,8 +23,7 @@ async function getStat(filePath: string): Promise<Stats | null> {
   try {
     return await statAsync(filePath);
   } catch (error) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (error.code === 'ENOENT') {
+    if (typeof error == 'object' && error && (error as { code?: unknown }).code === 'ENOENT') {
       return null;
     }
     throw error;

@@ -1,4 +1,4 @@
-import Events from '@storybook/core-events';
+import * as Events from '@storybook/core-events';
 import * as polyfill from 'event-source-polyfill';
 import { addons, MakeDecoratorResult, makeDecorator, Channel } from '@storybook/addons';
 import { isObject, noop, StorybookGlobals } from '../../types';
@@ -27,44 +27,6 @@ declare global {
     __CREEVEY_REMOVE_IGNORE_STYLES__: (ignoreStyles: HTMLStyleElement) => void;
     __CREEVEY_SET_READY_FOR_CAPTURE__?: () => void;
     __STORYBOOK_ADDONS_CHANNEL__: Channel;
-  }
-
-  interface Document {
-    fonts: FontFaceSet;
-  }
-
-  type CSSOMString = string;
-  type FontFaceLoadStatus = 'unloaded' | 'loading' | 'loaded' | 'error';
-  type FontFaceSetStatus = 'loading' | 'loaded';
-
-  class FontFace extends FontFaceDescriptors {
-    constructor(family: string, source: string | ArrayBuffer, descriptors?: FontFaceDescriptors);
-    readonly status: FontFaceLoadStatus;
-    readonly loaded: Promise<FontFace>;
-    variationSettings: CSSOMString;
-    display: CSSOMString;
-    load(): Promise<FontFace>;
-  }
-
-  class FontFaceDescriptors {
-    family: CSSOMString;
-    style: CSSOMString;
-    weight: CSSOMString;
-    stretch: CSSOMString;
-    unicodeRange: CSSOMString;
-    variant: CSSOMString;
-    featureSettings: CSSOMString;
-  }
-
-  interface FontFaceSet extends Iterable<FontFace>, EventTarget {
-    readonly status: FontFaceSetStatus;
-    readonly ready: Promise<FontFaceSet>;
-    readonly size: number;
-    add(font: FontFace): void;
-    check(font: string, text?: string): boolean; // throws exception
-    load(font: string, text?: string): Promise<FontFace[]>;
-    delete(font: FontFace): void;
-    clear(): void;
   }
 }
 

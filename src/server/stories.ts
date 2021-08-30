@@ -21,7 +21,7 @@ import { shouldSkip, getCreeveyCache, removeProps } from './utils';
 import { mergeWith } from 'lodash';
 import { subscribeOn } from './messages';
 import type { Parameters } from '@storybook/api';
-import type Channel from '@storybook/channels';
+import type { default as Channel } from '@storybook/channels';
 import {
   importStorybookClientLogger,
   importStorybookConfig,
