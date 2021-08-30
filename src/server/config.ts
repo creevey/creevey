@@ -1,11 +1,13 @@
 import fs from 'fs';
 import path from 'path';
-import { isStorybookVersionLessThan, storybookDirRef } from './storybook/helpers';
+import { isCSFv3Enabled, isStorybookVersionLessThan, storybookDirRef } from './storybook/helpers';
+import { loadStories as nodejsStoriesProvider } from './storybook/nodejs-provider';
+// import { loadStories as browserStoriesProvider } from './storybook/browser-provider';
 import { Config, Browser, BrowserConfig, Options, isDefined } from '../types';
 
 export const defaultBrowser = 'chrome';
 
-export const defaultConfig: Omit<Config, 'gridUrl'> = {
+export const defaultConfig: Omit<Config, 'gridUrl' | 'storiesProvider'> = {
   useDocker: true,
   useWebpackToExtractTests: false,
   dockerImage: 'aerokube/selenoid:latest-release',
@@ -47,13 +49,15 @@ function resolveConfigPath(configPath?: string): string | undefined {
 
 export async function readConfig(options: Options): Promise<Config> {
   const configPath = resolveConfigPath(options.config);
-  const userConfig: typeof defaultConfig & Partial<Pick<Config, 'gridUrl'>> = { ...defaultConfig };
+  const userConfig: typeof defaultConfig & Partial<Pick<Config, 'gridUrl' | 'storiesProvider'>> = { ...defaultConfig };
 
   if (isDefined(configPath)) Object.assign(userConfig, ((await import(configPath)) as { default: Config }).default);
 
   storybookDirRef.current = userConfig.storybookDir;
 
   if (isStorybookVersionLessThan(6, 2)) userConfig.useWebpackToExtractTests = true;
+  if (!userConfig.storiesProvider)
+    userConfig.storiesProvider = (await isCSFv3Enabled()) ? nodejsStoriesProvider : nodejsStoriesProvider;
 
   if (options.failFast != undefined) userConfig.failFast = Boolean(options.failFast);
   if (options.reportDir) userConfig.reportDir = path.resolve(options.reportDir);

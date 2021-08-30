@@ -105,7 +105,33 @@ export function getStorybookFramework(): string {
 export const storybookConfigRef: { current: StorybookConfig } = { current: { stories: [] } };
 
 export async function importStorybookConfig(): Promise<StorybookConfig> {
-  return (storybookConfigRef.current = (
-    (await import(require.resolve(`${storybookDirRef.current}/main`))) as { default: StorybookConfig }
-  ).default);
+  const configPath = `${storybookDirRef.current}/main`;
+  try {
+    return (storybookConfigRef.current = (
+      (await import(require.resolve(configPath))) as { default: StorybookConfig }
+    ).default);
+  } catch (_) {
+    const storybookUtilsPath = isStorybookVersionLessThan(6, 2)
+      ? '@storybook/core/dist/server/utils'
+      : '@storybook/core-common/dist/cjs/utils';
+    const serverRequireModule = isStorybookVersionLessThan(6, 2) ? 'server-require' : 'interpret-require';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const { getInterpretedFile } = await import(resolveFromStorybook(`${storybookUtilsPath}/interpret-files`));
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const { default: serverRequireFallback, serverRequire = serverRequireFallback } = await import(
+      resolveFromStorybook(`${storybookUtilsPath}/${serverRequireModule}`)
+    );
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const mainConfigFile = isStorybookVersionLessThan(6, 1)
+      ? configPath
+      : // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        getInterpretedFile(configPath);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+    return (storybookConfigRef.current = serverRequire(mainConfigFile) as StorybookConfig);
+  }
+}
+
+export async function isCSFv3Enabled(): Promise<boolean> {
+  return (await importStorybookConfig())?.features?.previewCsfV3 ?? false;
 }

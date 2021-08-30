@@ -6,6 +6,7 @@ import { extensions as fallbackExtensions, getCreeveyCache } from '../../utils';
 import {
   getStorybookFramework,
   hasDocsAddon,
+  importStorybookConfig,
   isStorybookVersionLessThan,
   resolveFromStorybook,
 } from '../../storybook/helpers';
@@ -172,30 +173,9 @@ async function getWebpackConfigForStorybook_6_2(
   return builder.getConfig({ ...options, presets });
 }
 
-async function removeAddons(configDir: string): Promise<boolean> {
-  const storybookUtilsPath = isStorybookVersionLessThan(6, 2)
-    ? '@storybook/core/dist/server/utils'
-    : '@storybook/core-common/dist/cjs/utils';
-  const serverRequireModule = isStorybookVersionLessThan(6, 2) ? 'server-require' : 'interpret-require';
+async function removeAddons(): Promise<boolean> {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const { getInterpretedFile } = await import(resolveFromStorybook(`${storybookUtilsPath}/interpret-files`));
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const { default: serverRequireFallback, serverRequire = serverRequireFallback } = await import(
-      resolveFromStorybook(`${storybookUtilsPath}/${serverRequireModule}`)
-    );
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const mainConfigFile = isStorybookVersionLessThan(6, 1)
-      ? path.join(configDir, 'main')
-      : // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        getInterpretedFile(path.join(configDir, 'main'));
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-    const config = serverRequire(mainConfigFile) as {
-      core?: { builder?: string };
-      stories: string[];
-      addons?: (string | { name: string })[];
-    };
+    const config = await importStorybookConfig();
     if (config.core?.builder == 'webpack5') {
       logger.warn("Be aware Creevey doesn't fully support webpack@5, some feature might not work well");
     }
@@ -228,7 +208,7 @@ export default async function compile(config: Config, { debug, ui }: Options): P
   process.env.NODE_ENV = 'production';
 
   // NOTE Remove addons by monkey patching, only for new config file (main.js)
-  const areAddonsRemoved = await removeAddons(config.storybookDir);
+  const areAddonsRemoved = await removeAddons();
 
   const getWebpackConfig = isStorybookVersionLessThan(6, 2)
     ? getWebpackConfigForStorybook_pre6_2

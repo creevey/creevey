@@ -17,9 +17,12 @@ export default async function extract(config: Config, options: Options): Promise
     });
   }
 
-  const tests = await loadTestsFromStories(config, Object.keys(config.browsers), { debug: options.debug });
+  const tests = await loadTestsFromStories(Object.keys(config.browsers), async (listener) => {
+    const stories = await config.storiesProvider(config, { watch: false, debug: options.debug }, listener);
+    if (options.extract) saveStoriesJson(stories, options.extract);
+    return stories;
+  });
 
-  if (options.extract) saveStoriesJson(options.extract);
   if (options.tests) saveTestsJson(tests);
 
   // eslint-disable-next-line no-process-exit

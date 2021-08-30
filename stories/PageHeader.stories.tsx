@@ -1,6 +1,6 @@
 import React from 'react';
 import { PageHeader } from '../src/client/shared/components/PageHeader/PageHeader';
-import { noop } from '../src';
+import { noop } from '../src/types';
 
 export default { title: 'PageHeader' };
 

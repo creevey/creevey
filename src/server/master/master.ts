@@ -32,13 +32,14 @@ export default async function master(config: Config, options: { watch: boolean; 
     // Ignore error
   }
 
-  const tests = await loadTestsFromStories(config, Object.keys(config.browsers), {
-    ...options,
-    update: (testsDiff) => {
+  const tests = await loadTestsFromStories(
+    Object.keys(config.browsers),
+    (listener) => config.storiesProvider(config, options, listener),
+    (testsDiff) => {
       runner.updateTests(testsDiff);
       saveTestsJson(runner.tests, config.reportDir);
     },
-  });
+  );
 
   runner.tests = mergeTests(testsFromReport, tests);
   saveTestsJson(runner.tests, config.reportDir);

@@ -194,6 +194,40 @@ export interface Config {
    */
   useWebpackToExtractTests: boolean;
   /**
+   * Creevey has two built-in stories providers.
+   *
+   * `nodejsStoriesProvider` - The first one is used by default except if CSFv3 is enabled in Storybook.
+   * This provider builds and runs storybook in nodejs env, that allows write interaction tests by using Selenium API.
+   * The downside is it depends from project build specific and slightly increases init time.
+   *
+   * `browserStoriesProvider` - The second one is used by default with CSFv3 storybook feature.
+   * It load stories from storybook which is running in browser, like storyshots or loki do it.
+   * The downside of this, you can't use interaction tests in Creevey, unless you use CSFv3.
+   * Where you can define `play` method for each story
+   *
+   * Usage
+   * ``` typescript
+   * import { nodejsStoriesProvider as provider } from 'creevey'
+   * // or
+   * import { browserStoriesProvider as provider } from 'creevey'
+   *
+   * // Creevey config
+   * module.exports = {
+   *   storiesProvider: provider
+   * }
+   */
+  storiesProvider: (
+    config: Config,
+    {
+      watch,
+      debug,
+    }: {
+      watch: boolean;
+      debug: boolean;
+    },
+    storiesListener: (stories: Map<string, StoryInput[]>) => void,
+  ) => Promise<SetStoriesData>;
+  /**
    * Define custom babel options for load stories transformation
    */
   babelOptions: (options: Record<string, unknown>) => Record<string, unknown>;

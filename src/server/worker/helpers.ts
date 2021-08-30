@@ -42,17 +42,25 @@ export async function addTestsFromStories(
   { browser, watch, debug }: { browser: string; watch: boolean; debug: boolean },
 ): Promise<void> {
   const mochaTestsById = new Map<string, Test>();
-  const tests = await loadTestsFromStories(config, [browser], {
-    watch,
-    debug,
-    update: (testsDiff) =>
+  const tests = await loadTestsFromStories(
+    [browser],
+    (listener) =>
+      config.storiesProvider(
+        config,
+        {
+          watch,
+          debug,
+        },
+        listener,
+      ),
+    (testsDiff) =>
       Object.entries(testsDiff).forEach(([id, newTest]) => {
         const oldTest = mochaTestsById.get(id);
         mochaTestsById.delete(id);
         if (oldTest) removeTestOrSuite(oldTest);
         if (newTest) mochaTestsById.set(id, addTest(rootSuite, newTest));
       }),
-  });
+  );
 
   Object.values(tests)
     .filter(isDefined)
