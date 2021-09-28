@@ -1,3 +1,9 @@
+## [0.7.38](https://github.com/wKich/creevey/compare/v0.7.37...v0.7.38) (2021-09-28)
+
+### Features
+
+- 🎸 add storiesProvider config option ([7cf7454](https://github.com/wKich/creevey/commit/7cf74542d527bcfd5b41b17026464a4f9298e1f5))
+
 ## [0.7.37](https://github.com/wKich/creevey/compare/v0.7.36...v0.7.37) (2021-08-27)
 
 ### Bug Fixes
