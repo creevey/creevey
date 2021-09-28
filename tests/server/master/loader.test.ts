@@ -66,7 +66,7 @@ describe('loader', () => {
     .forEach(({ testName, input, output }) =>
       it(testName, () => {
         process.env.CREEVEY_LOADER_FILE_TYPE = String(testsToFileTypes[testName] ?? FileType.Invalid);
-        expect(loader(input)).to.equal(output);
+        expect(loader(input).replace(/\r/g, '')).to.equal(output);
       }),
     );
 });
