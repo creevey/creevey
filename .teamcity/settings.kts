@@ -159,4 +159,8 @@ object Tests : BuildType({
             artifactRules = "creevey-*.tgz!/package/lib/cjs/client/web/*.js => report"
         }
     }
+
+    requirements {
+        contains("docker.server.osType", "linux")
+    }
 })
