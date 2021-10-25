@@ -7,6 +7,7 @@ declare namespace Mocha {
     keys: import('selenium-webdriver/lib/input').IKey;
     expect: Chai.ExpectStatic;
     takeScreenshot: () => Promise<string>;
+    updateStoryArgs: <Args extends Record<string, unknown>>(updatedArgs: Args) => Promise<string | undefined>;
     readonly captureElement?: import('selenium-webdriver').WebElementPromise;
     browserName: string;
     testScope: string[];

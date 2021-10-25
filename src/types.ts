@@ -384,6 +384,7 @@ export type CreeveyTestFunction = (this: {
   keys: IKey;
   expect: Chai.ExpectStatic;
   takeScreenshot: () => Promise<string>;
+  updateStoryArgs: <Args extends Record<string, unknown>>(updatedArgs: Args) => Promise<string | undefined>;
   readonly captureElement?: WebElementPromise;
 }) => Promise<void>;
 
