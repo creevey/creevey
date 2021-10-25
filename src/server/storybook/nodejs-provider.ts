@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/ban-ts-comment */
 import path from 'path';
 import { isWorker, isMaster } from 'cluster';
 import chokidar, { FSWatcher } from 'chokidar';
@@ -18,8 +19,8 @@ import { logger } from '../logger';
 import { flatStories } from '../stories';
 
 async function initStorybookEnvironment(): Promise<typeof import('./entry')> {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-  (await import('jsdom-global')).default(undefined, { url: 'http://localhost' });
+  // @ts-ignore
+  (await import('global-jsdom')).default(undefined, { url: 'http://localhost' });
 
   // NOTE Cutoff `jsdom` part from userAgent, because storybook check enviroment and create events channel if runs in browser
   // https://github.com/storybookjs/storybook/blob/v5.2.8/lib/core/src/client/preview/start.js#L98
