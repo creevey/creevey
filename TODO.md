@@ -276,6 +276,7 @@
   - [x] Take a look on preview.tsx in react-ui, it isn't transpile
   - [x] Creevey update should update only failed images
   - [x] Teamcity reporter doesn't output failed test with maxRetries > 0
+  - [ ] hot-reloading doesn't work with re-exported stories
   - [ ] Angular stop working with babel-loader
   - [ ] Creevey update doesn't work on source repo
   - [ ] NPM Ctrl+C doesn't exit creevey

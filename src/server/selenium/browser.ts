@@ -550,21 +550,17 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
   return browser;
 }
 
-async function updateStoryArgs(browser: WebDriver, story: StoryInput, updatedArgs: Args): Promise<string | undefined> {
+async function updateStoryArgs(browser: WebDriver, story: StoryInput, updatedArgs: Args): Promise<void> {
   const Events = await importStorybookCoreEvents();
-  const error = await browser.executeAsyncScript<string | undefined>(
+  await browser.executeAsyncScript<undefined>(
     function (
       storyId: string,
       updatedArgs: Args,
       UPDATE_STORY_ARGS: string,
       STORY_RENDERED: string,
-      callback: (error?: string) => void,
+      callback: () => void,
     ) {
-      window.__STORYBOOK_ADDONS_CHANNEL__.once(STORY_RENDERED, (renderedId: string) => {
-        if (renderedId === storyId) {
-          callback();
-        }
-      });
+      window.__STORYBOOK_ADDONS_CHANNEL__.once(STORY_RENDERED, callback);
       window.__STORYBOOK_ADDONS_CHANNEL__.emit(UPDATE_STORY_ARGS, {
         storyId,
         updatedArgs,
@@ -575,8 +571,6 @@ async function updateStoryArgs(browser: WebDriver, story: StoryInput, updatedArg
     Events.UPDATE_STORY_ARGS,
     Events.STORY_RENDERED,
   );
-  if (error) throw new Error(error);
-  return 'ok';
 }
 
 export async function switchStory(this: Context): Promise<void> {
