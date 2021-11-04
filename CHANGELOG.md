@@ -1,3 +1,9 @@
+## [0.7.39](https://github.com/wKich/creevey/compare/v0.7.38...v0.7.39) (2021-11-04)
+
+### Features
+
+- 🎸 add ability to update story arguments from test cases ([18d8ecb](https://github.com/wKich/creevey/commit/18d8ecb909097b585282a04bfb0b0c721ad45e22))
+
 ## [0.7.38](https://github.com/wKich/creevey/compare/v0.7.37...v0.7.38) (2021-09-28)
 
 ### Features
