@@ -1,6 +1,7 @@
 *.log
 *.tgz
 .env
+.idea
 .husky
 .babel*
 .github

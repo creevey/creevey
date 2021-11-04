@@ -23,7 +23,7 @@ import {
 // 6.1 https://github.com/storybookjs/storybook/blob/next/MIGRATION.md#single-story-hoisting
 
 const skipWebpackAssertion = ['sb-6.2-svelte', 'sb-6.3-webpack5'];
-const skipStorybookBuild = ['sb-5.0', 'sb-5.0-require', 'sb-5.1', 'sb-5.2', 'sb-5.3-config'];
+const skipStorybookBuild = ['sb-5.0', 'sb-5.0-require', 'sb-5.1', 'sb-5.2', 'sb-5.3', 'sb-5.3-config'];
 const skipExtractedStoriesAssertion = [...skipStorybookBuild, 'sb-5.3'];
 const frameworks: Record<string, string> = {
   'sb-6.2-svelte': 'svelte',

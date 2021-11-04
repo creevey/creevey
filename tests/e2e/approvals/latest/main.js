@@ -415,16 +415,27 @@ webpackContext.id = "./stories sync recursive ^\\.(?:(?:^|\\/|(?:(?:(?!(?:^|\\/)
 
 /***/ "./stories/KindA.stories.tsx":
 /* ./stories/KindA.stories.tsx */
-/*! exports provided: default, ImportedTests, SkippedTests, decorators, parameters */
+/*! exports provided: default, ImportedTests, SkippedTests, DynamicStoryTests, decorators, parameters */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ImportedTests", function() { return ImportedTests; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SkippedTests", function() { return SkippedTests; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DynamicStoryTests", function() { return DynamicStoryTests; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "decorators", function() { return decorators; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "parameters", function() { return parameters; });
-/* harmony import */ var _tests_click__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./tests/click */ "./stories/tests/click.ts");
+/* harmony import */ var _node_modules_core_js_modules_es_promise_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/core-js/modules/es.promise.js */ "./node_modules/core-js/modules/es.promise.js");
+/* harmony import */ var _node_modules_core_js_modules_es_promise_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_core_js_modules_es_promise_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_core_js_modules_es_object_to_string_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./node_modules/core-js/modules/es.object.to-string.js */ "./node_modules/core-js/modules/es.object.to-string.js");
+/* harmony import */ var _node_modules_core_js_modules_es_object_to_string_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_core_js_modules_es_object_to_string_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _tests_click__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./tests/click */ "./stories/tests/click.ts");
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   title: 'KindA'
@@ -432,7 +443,7 @@ __webpack_require__.r(__webpack_exports__);
 var ImportedTests = function ImportedTests() {};
 ImportedTests.parameters = {
   creevey: {
-    tests: _tests_click__WEBPACK_IMPORTED_MODULE_0__["clickTests"]
+    tests: _tests_click__WEBPACK_IMPORTED_MODULE_2__["clickTests"]
   }
 };
 var SkippedTests = function SkippedTests() {};
@@ -442,6 +453,38 @@ SkippedTests.parameters = {
       "in": 'browser',
       tests: ['testB']
     }]
+  }
+};
+var DynamicStoryTests = function DynamicStoryTests(props) {};
+DynamicStoryTests.parameters = {
+  creevey: {
+    tests: {
+      updateArgs: function () {
+        var _updateArgs = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+          return regeneratorRuntime.wrap(function _callee$(_context) {
+            while (1) {
+              switch (_context.prev = _context.next) {
+                case 0:
+                  _context.next = 2;
+                  return this.updateStoryArgs({
+                    content: 'test'
+                  });
+
+                case 2:
+                case "end":
+                  return _context.stop();
+              }
+            }
+          }, _callee, this);
+        }));
+
+        function updateArgs() {
+          return _updateArgs.apply(this, arguments);
+        }
+
+        return updateArgs;
+      }()
+    }
   }
 };
 var decorators = function decorators() {};

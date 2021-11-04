@@ -1,18 +1,19 @@
+import { Args } from '@storybook/api';
+import chalk from 'chalk';
 import http from 'http';
 import https from 'https';
-import { PNG } from 'pngjs';
 import { getLogger } from 'loglevel';
 import prefix from 'loglevel-plugin-prefix';
-import { Context, Test, Suite } from 'mocha';
-import { Builder, By, WebDriver, Origin, Capabilities, WebElement } from 'selenium-webdriver';
-import { Config, BrowserConfig, StoryInput, CreeveyStoryParams, noop, isDefined, StorybookGlobals } from '../../types';
-import { subscribeOn } from '../messages';
+import { Context, Suite, Test } from 'mocha';
 import { networkInterfaces } from 'os';
-import { runSequence, LOCALHOST_REGEXP, isShuttingDown } from '../utils';
+import { PNG } from 'pngjs';
+import { Builder, By, Capabilities, Origin, WebDriver, WebElement } from 'selenium-webdriver';
 import { PageLoadStrategy } from 'selenium-webdriver/lib/capabilities';
-import { importStorybookCoreEvents, isStorybookVersionLessThan } from '../storybook/helpers';
+import { BrowserConfig, Config, CreeveyStoryParams, isDefined, noop, StorybookGlobals, StoryInput } from '../../types';
 import { colors, logger } from '../logger';
-import chalk from 'chalk';
+import { subscribeOn } from '../messages';
+import { importStorybookCoreEvents, isStorybookVersionLessThan } from '../storybook/helpers';
+import { isShuttingDown, LOCALHOST_REGEXP, runSequence } from '../utils';
 
 type ElementRect = {
   top: number;
@@ -549,6 +550,29 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
   return browser;
 }
 
+async function updateStoryArgs(browser: WebDriver, story: StoryInput, updatedArgs: Args): Promise<void> {
+  const Events = await importStorybookCoreEvents();
+  await browser.executeAsyncScript<undefined>(
+    function (
+      storyId: string,
+      updatedArgs: Args,
+      UPDATE_STORY_ARGS: string,
+      STORY_RENDERED: string,
+      callback: () => void,
+    ) {
+      window.__STORYBOOK_ADDONS_CHANNEL__.once(STORY_RENDERED, callback);
+      window.__STORYBOOK_ADDONS_CHANNEL__.emit(UPDATE_STORY_ARGS, {
+        storyId,
+        updatedArgs,
+      });
+    },
+    story.id,
+    updatedArgs,
+    Events.UPDATE_STORY_ARGS,
+    Events.STORY_RENDERED,
+  );
+}
+
 export async function switchStory(this: Context): Promise<void> {
   let testOrSuite: Test | Suite | undefined = this.currentTest;
 
@@ -583,6 +607,8 @@ export async function switchStory(this: Context): Promise<void> {
   else Reflect.deleteProperty(this, 'captureElement');
 
   this.takeScreenshot = () => takeScreenshot(this.browser, captureElement, ignoreElements);
+
+  this.updateStoryArgs = (updatedArgs: Args) => updateStoryArgs(this.browser, story, updatedArgs);
 
   this.testScope.reverse();
 }

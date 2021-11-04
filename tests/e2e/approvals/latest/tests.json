@@ -1,4 +1,51 @@
 {
+  "5b01bc03a9ecf3274d24591f068de4ffce9d8748": {
+    "id": "5b01bc03a9ecf3274d24591f068de4ffce9d8748",
+    "skip": false,
+    "browser": "chrome",
+    "testName": "updateArgs",
+    "storyPath": [
+      "KindA",
+      "Dynamic Story Tests"
+    ],
+    "storyId": "kinda--dynamic-story-tests",
+    "story": {
+      "id": "kinda--dynamic-story-tests",
+      "kind": "KindA",
+      "name": "Dynamic Story Tests",
+      "story": "Dynamic Story Tests",
+      "parameters": {
+        "creevey": {
+          "skip": [
+            {
+              "in": "browser",
+              "tests": [
+                "TestA"
+              ]
+            },
+            {
+              "in": "browser",
+              "tests": [
+                "TestA"
+              ]
+            }
+          ],
+          "tests": {
+            "updateArgs": "async updateArgs() {\n        await this.updateStoryArgs({\n          content: 'test'\n        });\n      }"
+          }
+        },
+        "framework": "react",
+        "fileName": "./stories/KindA.stories.tsx",
+        "args": {},
+        "argTypes": {},
+        "__id": "kinda--dynamic-story-tests",
+        "__isArgsStory": true
+      },
+      "args": {},
+      "initialArgs": {}
+    },
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+  },
   "7fa6eb0e6d7b60bdff1a989521881e1476cb2e66": {
     "id": "7fa6eb0e6d7b60bdff1a989521881e1476cb2e66",
     "skip": false,
@@ -17,6 +64,12 @@
       "parameters": {
         "creevey": {
           "skip": [
+            {
+              "in": "browser",
+              "tests": [
+                "TestA"
+              ]
+            },
             {
               "in": "browser",
               "tests": [
@@ -66,6 +119,12 @@
             {
               "in": "browser",
               "tests": [
+                "TestA"
+              ]
+            },
+            {
+              "in": "browser",
+              "tests": [
                 "testB"
               ]
             }
@@ -105,6 +164,12 @@
               "tests": [
                 "TestA"
               ]
+            },
+            {
+              "in": "browser",
+              "tests": [
+                "TestA"
+              ]
             }
           ]
         },
@@ -137,6 +202,12 @@
       "parameters": {
         "creevey": {
           "skip": [
+            {
+              "in": "browser",
+              "tests": [
+                "TestA"
+              ]
+            },
             {
               "in": "browser",
               "tests": [
@@ -180,6 +251,12 @@
               "tests": [
                 "TestA"
               ]
+            },
+            {
+              "in": "browser",
+              "tests": [
+                "TestA"
+              ]
             }
           ]
         },
@@ -217,6 +294,12 @@
               "tests": [
                 "TestA"
               ]
+            },
+            {
+              "in": "browser",
+              "tests": [
+                "TestA"
+              ]
             }
           ]
         },
@@ -225,47 +308,6 @@
         "args": {},
         "argTypes": {},
         "__id": "kindc--story-a",
-        "__isArgsStory": false
-      },
-      "args": {},
-      "initialArgs": {}
-    },
-    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
-  },
-  "e25dd97ad95fc95e9fdf9ab1f55311333f08e890": {
-    "id": "e25dd97ad95fc95e9fdf9ab1f55311333f08e890",
-    "skip": false,
-    "browser": "chrome",
-    "storyPath": [
-      "Docs",
-      "KindD",
-      "Skipped Tests"
-    ],
-    "storyId": "docs-kindd--skipped-tests",
-    "story": {
-      "id": "docs-kindd--skipped-tests",
-      "kind": "Docs/KindD",
-      "name": "Skipped Tests",
-      "story": "Skipped Tests",
-      "parameters": {
-        "creevey": {
-          "skip": [
-            {
-              "in": "browser",
-              "tests": [
-                "TestA"
-              ]
-            }
-          ],
-          "ignoreElements": [
-            "img"
-          ]
-        },
-        "framework": "react",
-        "fileName": "./stories/KindD.stories.mdx",
-        "args": {},
-        "argTypes": {},
-        "__id": "docs-kindd--skipped-tests",
         "__isArgsStory": false
       },
       "args": {},
@@ -296,9 +338,16 @@
               "tests": [
                 "TestA"
               ]
+            },
+            {
+              "in": "browser",
+              "tests": [
+                "TestA"
+              ]
             }
           ],
           "ignoreElements": [
+            "img",
             "img"
           ]
         },
@@ -307,6 +356,54 @@
         "args": {},
         "argTypes": {},
         "__id": "docs-kindd--external-story",
+        "__isArgsStory": false
+      },
+      "args": {},
+      "initialArgs": {}
+    },
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+  },
+  "e25dd97ad95fc95e9fdf9ab1f55311333f08e890": {
+    "id": "e25dd97ad95fc95e9fdf9ab1f55311333f08e890",
+    "skip": false,
+    "browser": "chrome",
+    "storyPath": [
+      "Docs",
+      "KindD",
+      "Skipped Tests"
+    ],
+    "storyId": "docs-kindd--skipped-tests",
+    "story": {
+      "id": "docs-kindd--skipped-tests",
+      "kind": "Docs/KindD",
+      "name": "Skipped Tests",
+      "story": "Skipped Tests",
+      "parameters": {
+        "creevey": {
+          "skip": [
+            {
+              "in": "browser",
+              "tests": [
+                "TestA"
+              ]
+            },
+            {
+              "in": "browser",
+              "tests": [
+                "TestA"
+              ]
+            }
+          ],
+          "ignoreElements": [
+            "img",
+            "img"
+          ]
+        },
+        "framework": "react",
+        "fileName": "./stories/KindD.stories.mdx",
+        "args": {},
+        "argTypes": {},
+        "__id": "docs-kindd--skipped-tests",
         "__isArgsStory": false
       },
       "args": {},
@@ -337,9 +434,16 @@
               "tests": [
                 "TestA"
               ]
+            },
+            {
+              "in": "browser",
+              "tests": [
+                "TestA"
+              ]
             }
           ],
           "ignoreElements": [
+            "img",
             "img"
           ],
           "captureElement": "mdx-by-children"

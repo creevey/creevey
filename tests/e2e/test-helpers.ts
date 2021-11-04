@@ -82,12 +82,14 @@ export function assertExtractedStories(workDir: string): void {
     execSync('npx creevey --extract ./', { cwd: workDir });
     execSync('npx sb extract storybook-static', { cwd: workDir });
 
-    const expected = (await import(`${workDir}/storybook-static/stories.json`)) as unknown;
-    const actual = (await import(`${workDir}/stories.json`)) as unknown;
+    const { default: expected } = (await import(`${workDir}/storybook-static/stories.json`)) as { default: unknown };
+    const { default: actual } = (await import(`${workDir}/stories.json`)) as { default: unknown };
 
     [expected, actual].forEach((data) => {
       // TODO Fix args stories
-      const excludedParams = ['fileName', '__isArgsStory'];
+      const excludedParams = ['fileName', '__isArgsStory', 'framework'];
+      removeProps(data as Record<string, unknown>, ['error']);
+      removeProps(data as Record<string, unknown>, ['globals']);
       removeProps(data as Record<string, unknown>, ['kindParameters', () => true, 'fileName']);
       removeProps(data as Record<string, unknown>, [
         'stories',

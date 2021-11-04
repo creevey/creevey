@@ -46,6 +46,7 @@
         "fileName": "./stories/KindB.stories.mdx",
         "creevey": {
           "ignoreElements": [
+            "img",
             "img"
           ],
           "captureElement": "mdx-by-children"
