@@ -1,16 +1,16 @@
 import React from 'react';
+import { ComponentMeta, ComponentStoryObj } from '@storybook/react';
+import { fireEvent, within } from '@storybook/testing-library';
 
+import { capture } from '../src/client/addon/withCreevey';
 import { ImagesView as ImagesViewBase } from '../src/client/shared/components/ImagesView';
-import { ImagesViewMode, CreeveyStory } from '../src/types';
+import { ImagesViewMode } from '../src/types';
 
 import octocatExpect from './fixtures/octocat-expect.png';
 import octocatDiff from './fixtures/octocat-diff.png';
 import octocatActual from './fixtures/octocat-actual.png';
-import { Story } from '@storybook/react';
 
-export default { title: 'ImagesViews' };
-
-const ImagesView = (mode: ImagesViewMode): JSX.Element => (
+const ImagesView = ({ mode }: { mode: ImagesViewMode }): JSX.Element => (
   <ImagesViewBase
     image={{ expect: octocatExpect, diff: octocatDiff, actual: octocatActual }}
     url=""
@@ -19,26 +19,26 @@ const ImagesView = (mode: ImagesViewMode): JSX.Element => (
   />
 );
 
-export const SideBySide = (): JSX.Element => ImagesView('side-by-side');
-export const Swap: Story & CreeveyStory = () => ImagesView('swap');
-export const Slide: Story & CreeveyStory = () => ImagesView('slide');
-export const Blend = (): JSX.Element => ImagesView('blend');
+export default { title: 'ImagesViews', component: ImagesView } as ComponentMeta<typeof ImagesView>;
 
-Swap.parameters = { creevey: { waitForReady: true } };
+export const SideBySide: ComponentStoryObj<typeof ImagesView> = { args: { mode: 'side-by-side' } };
 
-Slide.parameters = {
-  creevey: {
-    waitForReady: true,
-    tests: {
-      async click() {
-        const idle = await this.takeScreenshot();
+export const Swap: ComponentStoryObj<typeof ImagesView> = {
+  args: { mode: 'swap' },
+  parameters: { creevey: { waitForReady: true } },
+};
 
-        await this.browser.actions().click(this.captureElement).perform();
+export const Slide: ComponentStoryObj<typeof ImagesView> = {
+  args: { mode: 'slide' },
+  parameters: { creevey: { waitForReady: true } },
+  async play({ canvasElement }) {
+    await capture({ imageName: 'idle' });
 
-        const click = await this.takeScreenshot();
+    const slider = await within(canvasElement).findByTestId('slider');
+    fireEvent.change(slider, { target: { value: 50 } });
 
-        await this.expect({ idle, click }).to.matchImages();
-      },
-    },
+    await capture({ imageName: 'click' });
   },
 };
+
+export const Blend: ComponentStoryObj<typeof ImagesView> = { args: { mode: 'blend' } };

@@ -15,13 +15,22 @@ import type {
 } from '../types';
 import { isDefined, isFunction, isObject } from '../types';
 import { shouldSkip, removeProps } from './utils';
-import { isStorybookVersionGreaterThan, isStorybookVersionLessThan } from './storybook/helpers';
-import { denormalizeStoryParameters } from '../shared';
+import { isStorybookVersionLessThan } from './storybook/helpers';
 
 function storyTestFabric(delay?: number, testFn?: CreeveyTestFunction) {
   return async function storyTest(this: Context) {
     delay ? await new Promise((resolve) => setTimeout(resolve, delay)) : void 0;
-    await (testFn?.call(this) ?? this.expect(await this.takeScreenshot()).to.matchImage());
+    await (testFn?.call(this) ?? this.screenshots.length > 0
+      ? this.expect(
+          this.screenshots.reduce(
+            (screenshots, { imageName, screenshot }, index) => ({
+              ...screenshots,
+              [imageName ?? `screenshot_${index}`]: screenshot,
+            }),
+            {},
+          ),
+        ).to.matchImages()
+      : this.expect(await this.takeScreenshot()).to.matchImage());
   };
 }
 
@@ -39,7 +48,7 @@ function createCreeveyTest(
 }
 
 function convertStories(
-  browsers: string[],
+  browserName: string,
   stories: StoriesRaw | StoryInput[],
 ): Partial<{ [testId: string]: ServerTest }> {
   const tests: { [testId: string]: ServerTest } = {};
@@ -48,26 +57,24 @@ function convertStories(
     // TODO Skip docsOnly stories for now
     if (storyMeta.parameters.docsOnly) return;
 
-    browsers.forEach((browserName) => {
-      const { delay: delayParam, tests: storyTests, skip } = (storyMeta.parameters.creevey ?? {}) as CreeveyStoryParams;
-      const delay =
-        typeof delayParam == 'number' ? delayParam : delayParam?.for.includes(browserName) ? delayParam.ms : 0;
+    const { delay: delayParam, tests: storyTests, skip } = (storyMeta.parameters.creevey ?? {}) as CreeveyStoryParams;
+    const delay =
+      typeof delayParam == 'number' ? delayParam : delayParam?.for.includes(browserName) ? delayParam.ms : 0;
 
-      // typeof tests === "undefined" => rootSuite -> kindSuite -> storyTest -> [browsers.png]
-      // typeof tests === "function"  => rootSuite -> kindSuite -> storyTest -> browser -> [images.png]
-      // typeof tests === "object"    => rootSuite -> kindSuite -> storySuite -> test -> [browsers.png]
-      // typeof tests === "object"    => rootSuite -> kindSuite -> storySuite -> test -> browser -> [images.png]
+    // typeof tests === "undefined" => rootSuite -> kindSuite -> storyTest -> [browsers.png]
+    // typeof tests === "function"  => rootSuite -> kindSuite -> storyTest -> browser -> [images.png]
+    // typeof tests === "object"    => rootSuite -> kindSuite -> storySuite -> test -> [browsers.png]
+    // typeof tests === "object"    => rootSuite -> kindSuite -> storySuite -> test -> browser -> [images.png]
 
-      if (!storyTests) {
-        const test = createCreeveyTest(browserName, storyMeta, skip);
-        tests[test.id] = { ...test, storyId: storyMeta.id, story: storyMeta, fn: storyTestFabric(delay) };
-        return;
-      }
+    if (!storyTests) {
+      const test = createCreeveyTest(browserName, storyMeta, skip);
+      tests[test.id] = { ...test, storyId: storyMeta.id, story: storyMeta, fn: storyTestFabric(delay) };
+      return;
+    }
 
-      Object.entries(storyTests).forEach(([testName, testFn]) => {
-        const test = createCreeveyTest(browserName, storyMeta, skip, testName);
-        tests[test.id] = { ...test, storyId: storyMeta.id, story: storyMeta, fn: storyTestFabric(delay, testFn) };
-      });
+    Object.entries(storyTests).forEach(([testName, testFn]) => {
+      const test = createCreeveyTest(browserName, storyMeta, skip, testName);
+      tests[test.id] = { ...test, storyId: storyMeta.id, story: storyMeta, fn: storyTestFabric(delay, testFn) };
     });
   });
 
@@ -76,30 +83,33 @@ function convertStories(
 
 export async function loadTestsFromStories(
   browsers: string[],
-  provider: (storiesListener: (stories: Map<string, StoryInput[]>) => void) => Promise<SetStoriesData>,
+  provider: (storiesListener: (stories: Map<string, StoryInput[]>) => void) => Promise<StoriesRaw>,
   update?: (testsDiff: Partial<{ [id: string]: ServerTest }>) => void,
 ): Promise<Partial<{ [id: string]: ServerTest }>> {
   const testIdsByFiles = new Map<string, string[]>();
-  const data = await provider((storiesByFiles) => {
+  const stories = await provider((storiesByFiles) => {
     const testsDiff: Partial<{ [id: string]: ServerTest }> = {};
-    Array.from(storiesByFiles.entries()).forEach(([filename, stories]) => {
-      const tests = convertStories(browsers, stories);
-      const changed = Object.keys(tests);
-      const removed = testIdsByFiles.get(filename)?.filter((testId) => !tests[testId]) ?? [];
-      if (changed.length == 0) testIdsByFiles.delete(filename);
-      else testIdsByFiles.set(filename, changed);
+    const tests: Partial<{ [id: string]: ServerTest }> = {};
+    browsers.forEach((browser) => {
+      Array.from(storiesByFiles.entries()).forEach(([filename, stories]) => {
+        Object.assign(tests, convertStories(browser, stories));
+        const changed = Object.keys(tests);
+        const removed = testIdsByFiles.get(filename)?.filter((testId) => !tests[testId]) ?? [];
+        if (changed.length == 0) testIdsByFiles.delete(filename);
+        else testIdsByFiles.set(filename, changed);
 
-      Object.assign(testsDiff, tests);
-      removed.forEach((testId) => (testsDiff[testId] = undefined));
+        Object.assign(testsDiff, tests);
+        removed.forEach((testId) => (testsDiff[testId] = undefined));
+      });
     });
     update?.(testsDiff);
   });
 
-  const stories =
-    isStorybookVersionLessThan(6) || isStorybookVersionGreaterThan(6, 3)
-      ? data.stories
-      : denormalizeStoryParameters(data);
-  const tests = convertStories(browsers, stories);
+  const tests = browsers.reduce(
+    (tests: Partial<{ [testId: string]: ServerTest }>, browser) =>
+      Object.assign(tests, convertStories(browser, stories)),
+    {},
+  );
 
   Object.values(tests)
     .filter(isDefined)

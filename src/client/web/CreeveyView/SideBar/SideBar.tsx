@@ -104,14 +104,14 @@ export function SideBar({ rootSuite, openedTest, onOpenTest, filter, setFilter }
               <Divider />
               {/* TODO Output message when nothing found */}
               <SelectAllContainer>
-                <SuiteLink title="Select all" suite={rootSuite} data-tid="selectAll" />
+                <SuiteLink title="Select all" suite={rootSuite} data-testid="selectAll" />
               </SelectAllContainer>
               {suiteList.map(({ title, suite }) =>
                 // TODO Update components without re-mount
                 isTest(suite) ? (
                   <TestLink key={suite.id} title={title} opened={suite.id == openedTest?.id} test={suite} />
                 ) : (
-                  <SuiteLink key={suite.path.join('/')} title={title} suite={suite} data-tid={title} />
+                  <SuiteLink key={suite.path.join('/')} title={title} suite={suite} data-testid={title} />
                 ),
               )}
             </TestsContainer>

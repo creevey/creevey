@@ -369,7 +369,13 @@
 
 ## First priority (v0.8)
 
+- [ ] Expose new API for captureElement and ComponentStoryFn/Obj with creevey params
+- [ ] Wrap creevey capture inside storybook instrumenter
+  - [ ] Assert images on capture
 - [ ] Check `storyStoreV7` feature
+- [ ] Migrate to Vite
+- [ ] Can't use play function in mdx
+- [ ] Update don't work with docs? check
 - [ ] Remove report on each start
 - [ ] Bugs
   - [ ] Stories with restricted characters

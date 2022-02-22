@@ -3,6 +3,7 @@ import { styled, withTheme } from '@storybook/theming';
 import { getBorderColor, themeBorderColors, ViewPropsWithTheme } from './ImagesView';
 import { useApplyScale, useCalcScale, useLoadImages } from '../../helpers';
 import { Loader } from '@storybook/components';
+import { readyForCapture } from '../../../addon/readyForCapture';
 
 const Container = styled.div({
   position: 'relative',
@@ -111,12 +112,12 @@ export const SlideView = withTheme(({ actual, diff, expect, theme }: ViewPropsWi
   }, [loaded]);
 
   useEffect(() => {
-    if (loaded) window.__CREEVEY_SET_READY_FOR_CAPTURE__?.();
+    if (loaded) readyForCapture();
   }, [loaded]);
 
   return loaded ? (
     <Container>
-      <Input type="range" min={0} max={100} defaultValue={0} step={step} onChange={handleSlide} />
+      <Input data-testid="slider" type="range" min={0} max={100} defaultValue={0} step={step} onChange={handleSlide} />
       <ImageContainer>
         <ImageWrapper>
           <Image

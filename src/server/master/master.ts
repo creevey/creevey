@@ -21,7 +21,10 @@ function mergeTests(
   return testsFromStories;
 }
 
-export default async function master(config: Config, options: { watch: boolean; debug: boolean }): Promise<Runner> {
+export default async function master(
+  config: Config,
+  options: { watch: boolean; debug: boolean; port: number },
+): Promise<Runner> {
   if (config.useWebpackToExtractTests) await startWebpackCompiler();
   const runner = new Runner(config);
   const reportDataPath = path.join(config.reportDir, 'data.js');
@@ -31,6 +34,8 @@ export default async function master(config: Config, options: { watch: boolean; 
   } catch (error) {
     // Ignore error
   }
+
+  await runner.init();
 
   const tests = await loadTestsFromStories(
     Object.keys(config.browsers),

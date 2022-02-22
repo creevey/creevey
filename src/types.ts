@@ -215,18 +215,13 @@ export interface Config {
    * module.exports = {
    *   storiesProvider: provider
    * }
+   * ```
    */
   storiesProvider: (
     config: Config,
-    {
-      watch,
-      debug,
-    }: {
-      watch: boolean;
-      debug: boolean;
-    },
+    options: { watch: boolean; debug: boolean; port: number },
     storiesListener: (stories: Map<string, StoryInput[]>) => void,
-  ) => Promise<SetStoriesData>;
+  ) => Promise<StoriesRaw>;
   /**
    * Define custom babel options for load stories transformation
    */
@@ -283,6 +278,12 @@ export interface Options {
 
 export type WorkerMessage = { type: 'ready'; payload?: never } | { type: 'error'; payload: { error: string } };
 
+export type StoriesMessage =
+  | { type: 'get'; payload?: never }
+  | { type: 'set'; payload: { stories: StoriesRaw; oldTests: string[] } }
+  | { type: 'update'; payload: [string, StoryInput[]][] }
+  | { type: 'capture'; payload?: CaptureOptions };
+
 export type TestMessage =
   | { type: 'start'; payload: { id: string; path: string[]; retries: number } }
   | { type: 'end'; payload: TestResult };
@@ -299,12 +300,14 @@ export type ShutdownMessage = unknown;
 
 export type ProcessMessage =
   | (WorkerMessage & { scope: 'worker' })
+  | (StoriesMessage & { scope: 'stories' })
   | (TestMessage & { scope: 'test' })
   | (WebpackMessage & { scope: 'webpack' })
   | (DockerMessage & { scope: 'docker' })
   | (ShutdownMessage & { scope: 'shutdown' });
 
 export type WorkerHandler = (message: WorkerMessage) => void;
+export type StoriesHandler = (message: StoriesMessage) => void;
 export type TestHandler = (message: TestMessage) => void;
 export type WebpackHandler = (message: WebpackMessage) => void;
 export type DockerHandler = (message: DockerMessage) => void;
@@ -388,9 +391,13 @@ export type CreeveyTestFunction = (this: {
   readonly captureElement?: WebElementPromise;
 }) => Promise<void>;
 
-export interface CreeveyStoryParams {
+export interface CaptureOptions {
+  imageName?: string;
   captureElement?: string | null;
   ignoreElements?: string | string[] | null;
+}
+
+export interface CreeveyStoryParams extends CaptureOptions {
   waitForReady?: boolean;
   delay?: number | { for: string[]; ms: number };
   skip?: SkipOptions;
@@ -412,7 +419,10 @@ export type Request =
   | { type: 'stop' }
   | { type: 'approve'; payload: ApprovePayload };
 
-export type Response = { type: 'status'; payload: CreeveyStatus } | { type: 'update'; payload: CreeveyUpdate };
+export type Response =
+  | { type: 'status'; payload: CreeveyStatus }
+  | { type: 'update'; payload: CreeveyUpdate }
+  | { type: 'capture' };
 
 export interface CreeveyTest extends TestData {
   checked: boolean;
@@ -465,6 +475,10 @@ export function isProcessMessage(message: unknown): message is ProcessMessage {
 
 export function isWorkerMessage(message: unknown): message is WorkerMessage {
   return isProcessMessage(message) && message.scope == 'worker';
+}
+
+export function isStoriesMessage(message: unknown): message is StoriesMessage {
+  return isProcessMessage(message) && message.scope == 'stories';
 }
 
 export function isTestMessage(message: unknown): message is TestMessage {

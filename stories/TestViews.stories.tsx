@@ -1,10 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { styled } from '@storybook/theming';
-
-export default {
-  title: 'TestViews',
-  parameters: { creevey: { captureElement: '[data-tid="CaptureElement"]' } },
-};
+import { ComponentMeta, ComponentStoryObj } from '@storybook/react';
 
 const CHUNK_SIZE = 250;
 const DIAG_LENGTH = (2 * CHUNK_SIZE ** 2) ** (1 / 2);
@@ -39,8 +35,8 @@ const Wrapper = styled.span({
 });
 
 const ComponentChunk: FunctionComponent = (props) => (
-  <ChunkContainer data-tid="Tile">
-    <Wrapper data-tid="TileContent">{props.children}</Wrapper>
+  <ChunkContainer data-testid="Tile">
+    <Wrapper data-testid="TileContent">{props.children}</Wrapper>
   </ChunkContainer>
 );
 
@@ -52,20 +48,28 @@ const ChunkTilesContainer = styled.div<{ offset: number; size: number }>(({ offs
 }));
 
 const ChunkTiles: FunctionComponent<{ size: number; offset: number }> = (props) => (
-  <ChunkTilesContainer data-tid="CaptureElement" offset={props.offset} size={props.size}>
+  <ChunkTilesContainer data-testid="CaptureElement" offset={props.offset} size={props.size}>
     {Array.from({ length: props.size ** 2 }).map((_, index) => (
       <ComponentChunk key={index}>{index}</ComponentChunk>
     ))}
   </ChunkTilesContainer>
 );
 
-export const ViewportFit = (): JSX.Element => <ChunkTiles size={2} offset={0} />;
-export const Overflow = (): JSX.Element => <ChunkTiles size={6} offset={0} />;
-export const ViewportFitOffset = (): JSX.Element => <ChunkTiles size={2} offset={4} />;
-export const OverflowOffset = (): JSX.Element => <ChunkTiles size={6} offset={4} />;
-export const IgnoreElements = (): JSX.Element => <ChunkTiles size={3} offset={0} />;
-IgnoreElements.parameters = {
-  creevey: {
-    ignoreElements: '[data-tid=Tile]:nth-of-type(even) [data-tid=TileContent]',
+export default {
+  title: 'TestViews',
+  component: ChunkTiles,
+  parameters: { creevey: { captureElement: '[data-testid="CaptureElement"]' } },
+} as ComponentMeta<typeof ChunkTiles>;
+
+export const ViewportFit: ComponentStoryObj<typeof ChunkTiles> = { args: { size: 2, offset: 0 } };
+export const Overflow: ComponentStoryObj<typeof ChunkTiles> = { args: { size: 6, offset: 0 } };
+export const ViewportFitOffset: ComponentStoryObj<typeof ChunkTiles> = { args: { size: 2, offset: 4 } };
+export const OverflowOffset: ComponentStoryObj<typeof ChunkTiles> = { args: { size: 6, offset: 4 } };
+export const IgnoreElements: ComponentStoryObj<typeof ChunkTiles> = {
+  args: { size: 3, offset: 0 },
+  parameters: {
+    creevey: {
+      ignoreElements: '[data-testid=Tile]:nth-of-type(even) [data-testid=TileContent]',
+    },
   },
 };

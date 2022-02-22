@@ -1,10 +1,25 @@
 import React from 'react';
 import { ThemeProvider, themes, ensure } from '@storybook/theming';
+import { CreeveyContext } from '../src/client/web/CreeveyContext';
+import { noop } from '../src/types';
+import { DecoratorFunction } from '@storybook/addons';
 
-export const decorators = [
-  (Story: React.ComponentClass): JSX.Element => (
+export const decorators: DecoratorFunction<JSX.Element>[] = [
+  (Story, context): JSX.Element => (
     <ThemeProvider theme={ensure(themes.light)}>
-      <Story />
+      <CreeveyContext.Provider
+        value={{
+          isReport: false,
+          isRunning: false,
+          onStart: noop,
+          onStop: noop,
+          onSuiteOpen: noop,
+          onSuiteToggle: noop,
+          ...context.parameters?.context
+        }}
+      >
+        <Story />
+      </CreeveyContext.Provider>
     </ThemeProvider>
   ),
 ];

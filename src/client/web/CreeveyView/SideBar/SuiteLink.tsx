@@ -10,7 +10,7 @@ import { styled, withTheme, Theme } from '@storybook/theming';
 export interface SuiteLinkProps {
   title: string;
   suite: CreeveySuite;
-  'data-tid'?: string;
+  'data-testid'?: string;
 }
 
 export const Container = withTheme(
@@ -36,7 +36,8 @@ export const Button = withTheme(
     color: active ? theme.color.inverseText : 'inherit',
     outline: focused ? `1px solid ${theme.color.ancillary}` : 'none',
 
-    '&:hover': active
+    // NOTE There is no way to trigger hover from js, so we add `.hover` class for testing purpose
+    '&:hover, &.hover': active
       ? {}
       : {
           background: theme.background.hoverable,
@@ -56,7 +57,7 @@ export const SuiteContainer = styled.span<{ padding: number }>(({ padding }) => 
   whiteSpace: 'normal',
 }));
 
-export function SuiteLink({ title, suite, 'data-tid': dataTid }: SuiteLinkProps): JSX.Element {
+export function SuiteLink({ title, suite, 'data-testid': dataTid }: SuiteLinkProps): JSX.Element {
   const { onSuiteOpen, onSuiteToggle } = useContext(CreeveyContext);
   const { sidebarFocusedItem, setSidebarFocusedItem } = useContext(KeyboardEventsContext);
   const checkboxRef = useRef<Checkbox>(null);
@@ -87,7 +88,7 @@ export function SuiteLink({ title, suite, 'data-tid': dataTid }: SuiteLinkProps)
 
   return (
     <Container>
-      <Button onClick={handleOpen} data-tid={dataTid} focused={isSuiteFocused} ref={buttonRef}>
+      <Button onClick={handleOpen} data-testid={dataTid} focused={isSuiteFocused} ref={buttonRef}>
         <TestStatusIcon status={suite.status} skip={suite.skip} />
         <SuiteContainer padding={Math.max(48, (suite.path.length + 5) * 8)}>
           {isTest(suite) ||

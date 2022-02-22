@@ -20,7 +20,7 @@ export default async function (options: Options): Promise<void> {
 
   if (!config) return;
 
-  const resolveApi = ui && cluster.isMaster ? (await import('./master/server')).default(config.reportDir, port) : noop;
+  const resolveApi = cluster.isMaster ? (await import('./master/server')).default(config.reportDir, port, ui) : noop;
   // NOTE: We don't need docker nor selenoid for webpack or update options
   if (
     !(config.gridUrl || (Object.values(config.browsers) as BrowserConfig[]).every(({ gridUrl }) => gridUrl)) &&

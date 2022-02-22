@@ -8,4 +8,7 @@ export default {
       options: { clientPort: 8000, creeveyPreExtract: './scripts/babel-register' },
     },
   ],
+  features: {
+    previewCsfV3: true,
+  },
 };

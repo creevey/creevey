@@ -1,5 +1,7 @@
 import { Meta, Story, Canvas } from '@storybook/addon-docs';
+import { fireEvent, within } from '@storybook/testing-library';
 
+import { capture } from '../src/client/addon/withCreevey';
 import { ImagesView as ImagesViewBase } from '../src/client/shared/components/ImagesView';
 import { ImagesViewMode, CSFStory } from '../src/types';
 
@@ -47,19 +49,7 @@ Most powerful view, allow to see differences using slider on expected and actual
 <Canvas>
   <Story
     name="Slide"
-    parameters={{
-      creevey: {
-        waitForReady: true,
-        tests: {
-          async click() {
-            const idle = await this.takeScreenshot();
-            await this.browser.actions().click(this.captureElement).perform();
-            const click = await this.takeScreenshot();
-            await this.expect({ idle, click }).to.matchImages();
-          },
-        },
-      },
-    }}
+    parameters={{ creevey: { waitForReady: true } }}
   >
     {() => ImagesView('slide')}
   </Story>

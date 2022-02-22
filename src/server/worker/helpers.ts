@@ -39,20 +39,12 @@ function removeTestOrSuite(testOrSuite: Test | Suite): void {
 export async function addTestsFromStories(
   rootSuite: Suite,
   config: Config,
-  { browser, watch, debug }: { browser: string; watch: boolean; debug: boolean },
+  { browser, ...options }: { browser: string; watch: boolean; debug: boolean; port: number },
 ): Promise<void> {
   const mochaTestsById = new Map<string, Test>();
   const tests = await loadTestsFromStories(
     [browser],
-    (listener) =>
-      config.storiesProvider(
-        config,
-        {
-          watch,
-          debug,
-        },
-        listener,
-      ),
+    (listener) => config.storiesProvider(config, options, listener),
     (testsDiff) =>
       Object.entries(testsDiff).forEach(([id, newTest]) => {
         const oldTest = mochaTestsById.get(id);

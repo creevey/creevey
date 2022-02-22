@@ -75,9 +75,7 @@ export default async function (config: Config, options: Options, resolveApi: (ap
     }
   });
 
-  runner = await master(config, { watch: options.ui, debug: options.debug });
-
-  await runner.init();
+  runner = await master(config, { watch: options.ui, debug: options.debug, port: options.port });
 
   if (options.saveReport) {
     await copyStatics(config.reportDir);
