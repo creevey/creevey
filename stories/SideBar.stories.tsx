@@ -1,12 +1,11 @@
-import React, { ReactNode } from 'react';
-import { StoryFn } from '@storybook/addons';
+import React from 'react';
 import { CreeveyContext } from '../src/client/web/CreeveyContext';
 import { SideBar } from '../src/client/web/CreeveyView/SideBar';
 import { SideBarHeader } from '../src/client/web/CreeveyView/SideBar/SideBarHeader';
 import { treeifyTests, checkSuite, getTestByPath } from '../src/client/shared/helpers';
 import { noop, CreeveySuite, CreeveyStatus, isDefined, isTest, CreeveyStory } from '../src/types';
 import { ensure, styled, ThemeProvider, themes } from '@storybook/theming';
-import { Story } from '@storybook/react';
+import { Story, DecoratorFn } from '@storybook/react';
 
 function openSuites(suite: CreeveySuite): CreeveySuite {
   suite.opened = true;
@@ -63,7 +62,7 @@ const HeaderContainer = styled.div({
   width: 300,
 });
 
-const headerDecorator = (storyFn: StoryFn<ReactNode>): JSX.Element => <HeaderContainer>{storyFn()}</HeaderContainer>;
+const headerDecorator: DecoratorFn = (Story) => <HeaderContainer>{<Story />}</HeaderContainer>;
 
 export default {
   title: 'SideBar',

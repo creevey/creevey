@@ -6,8 +6,9 @@ import type { StoryInput, WebpackMessage, SetStoriesData, Config } from '../../t
 import { noop } from '../../types';
 import { getCreeveyCache } from '../utils';
 import { subscribeOn } from '../messages';
-import type { Parameters } from '@storybook/api';
+import type { Parameters as StorybookParameters } from '@storybook/api';
 import type { default as Channel } from '@storybook/channels';
+import type { StoriesEntry } from '@storybook/core-common';
 import {
   importStorybookClientLogger,
   importStorybookConfig,
@@ -97,7 +98,7 @@ async function loadStoriesDirectly(
   config: Config,
   { watcher, debug }: { watcher: FSWatcher | null; debug: boolean },
 ): Promise<void> {
-  const { toRequireContext } = await importStorybookCoreCommon();
+  const { toRequireContext, normalizeStoriesEntry } = await importStorybookCoreCommon();
   const { addParameters, configure } = await import('./entry');
   const requireContext = await (await import('../loaders/babel/register')).default(config, debug);
   const preview = (() => {
@@ -109,16 +110,19 @@ async function loadStoriesDirectly(
   })();
 
   const { stories } = await importStorybookConfig();
-  const contexts = stories.map((input) => {
+  const contexts = stories.map((entry) => {
     const {
       path: storiesPath,
       recursive,
       match,
-    } = toRequireContext(input) as {
-      path: string;
-      recursive: boolean;
-      match: string;
-    };
+    } = isStorybookVersionLessThan(6, 4)
+      ? (toRequireContext as unknown as (a: StoriesEntry) => { path: string; recursive: boolean; match: string })(entry)
+      : toRequireContext(
+          normalizeStoriesEntry(entry, {
+            configDir: config.storybookDir,
+            workingDir: process.cwd(),
+          }),
+        );
     watcher?.add(path.resolve(config.storybookDir, storiesPath));
     return () => requireContext(storiesPath, recursive, new RegExp(match));
   });
@@ -140,9 +144,9 @@ async function loadStoriesDirectly(
   async function startStorybook(): Promise<void> {
     if (preview) {
       const { parameters, globals, globalTypes } = (await import(preview)) as {
-        parameters?: Parameters;
-        globals?: unknown;
-        globalTypes?: unknown;
+        parameters?: StorybookParameters;
+        globals?: NonNullable<Parameters<typeof addParameters>['0']>['globals'];
+        globalTypes?: NonNullable<Parameters<typeof addParameters>['0']>['globalTypes'];
       };
       if (parameters) addParameters(parameters);
       if (globals) addParameters({ globals });
@@ -150,6 +154,7 @@ async function loadStoriesDirectly(
     }
     try {
       configure(
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         contexts.map((ctx) => ctx()),
         module,
         false,
