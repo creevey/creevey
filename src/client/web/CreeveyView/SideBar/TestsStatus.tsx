@@ -43,6 +43,8 @@ const Divider = styled.div({
 });
 
 const Button = styled(IconButton)({
+  marginTop: 0,
+  padding: 0,
   height: '24px',
 });
 

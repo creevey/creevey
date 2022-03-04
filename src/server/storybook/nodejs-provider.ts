@@ -8,7 +8,6 @@ import { getCreeveyCache } from '../utils';
 import { subscribeOn } from '../messages';
 import type { Parameters as StorybookParameters } from '@storybook/api';
 import type { default as Channel } from '@storybook/channels';
-import type { StoriesEntry } from '@storybook/core-common';
 import {
   importStorybookClientLogger,
   importStorybookConfig,
@@ -111,18 +110,14 @@ async function loadStoriesDirectly(
 
   const { stories } = await importStorybookConfig();
   const contexts = stories.map((entry) => {
+    const normalizedEntry = isStorybookVersionLessThan(6, 4)
+      ? entry
+      : normalizeStoriesEntry(entry, { configDir: config.storybookDir, workingDir: process.cwd() });
     const {
       path: storiesPath,
       recursive,
       match,
-    } = isStorybookVersionLessThan(6, 4)
-      ? (toRequireContext as unknown as (a: StoriesEntry) => { path: string; recursive: boolean; match: string })(entry)
-      : toRequireContext(
-          normalizeStoriesEntry(entry, {
-            configDir: config.storybookDir,
-            workingDir: process.cwd(),
-          }),
-        );
+    } = toRequireContext(normalizedEntry as Parameters<typeof toRequireContext>['0']);
     watcher?.add(path.resolve(config.storybookDir, storiesPath));
     return () => requireContext(storiesPath, recursive, new RegExp(match));
   });
@@ -154,7 +149,6 @@ async function loadStoriesDirectly(
     }
     try {
       configure(
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         contexts.map((ctx) => ctx()),
         module,
         false,
