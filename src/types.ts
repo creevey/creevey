@@ -398,6 +398,8 @@ export interface CreeveyStoryParams {
     // TODO Define browserName, story
     [name: string]: CreeveyTestFunction;
   };
+  global?: Omit<CreeveyStoryParams, 'global' | 'kind'>;
+  kind?: Omit<CreeveyStoryParams, 'global' | 'kind'>;
 }
 
 export interface ApprovePayload {

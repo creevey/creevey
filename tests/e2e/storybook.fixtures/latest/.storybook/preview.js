@@ -1,8 +1,10 @@
 export const parameters = {
   creevey: {
-    skip: [{
-      in: 'browser',
-      tests: ['TestA']
-    }]
+    global: { 
+      skip: [{
+        in: 'browser',
+        tests: ['TestA']
+      }]
+    }
   }
 }

@@ -1,7 +1,7 @@
 import path from 'path';
 import { mkdirSync, writeFileSync } from 'fs';
 import { createHash } from 'crypto';
-import { mapValues, mergeWith, pick } from 'lodash';
+import { mapValues, mergeWith, MergeWithCustomizer, pick } from 'lodash';
 import type { Context } from 'mocha';
 import type {
   TestData,
@@ -75,14 +75,17 @@ function convertStories(
 
 // TODO use the storybook version, after the fix of skip option API
 export function flatStories({ globalParameters, kindParameters, stories }: SetStoriesData): StoriesRaw {
+  const mergeFn: MergeWithCustomizer = (objValue, srcValue) =>
+    Array.isArray(objValue) ? objValue.concat(srcValue) : undefined;
   Object.values(stories).forEach((story) => {
     // NOTE: Copy-paste merge parameters from storybook
+    const creeveyParameters = story.parameters.creevey as CreeveyStoryParams;
     story.parameters = mergeWith(
       {},
-      globalParameters,
-      kindParameters[story.kind],
+      mergeWith({}, globalParameters, { creevey: creeveyParameters?.global }, mergeFn),
+      mergeWith({}, kindParameters[story.kind], { creevey: creeveyParameters?.kind }, mergeFn),
       story.parameters,
-      (objValue: unknown, srcValue: unknown) => (Array.isArray(objValue) ? objValue.concat(srcValue) : undefined),
+      mergeFn,
     );
   });
 
