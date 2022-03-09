@@ -10,8 +10,11 @@
     ],
     "storyId": "kinda--dynamic-story-tests",
     "story": {
-      "id": "kinda--dynamic-story-tests",
+      "args": {},
+      "componentId": "kinda",
+      "title": "KindA",
       "kind": "KindA",
+      "id": "kinda--dynamic-story-tests",
       "name": "Dynamic Story Tests",
       "story": "Dynamic Story Tests",
       "parameters": {
@@ -30,19 +33,29 @@
               ]
             }
           ],
+          "global": {
+            "skip": [
+              {
+                "in": "browser",
+                "tests": [
+                  "TestA"
+                ]
+              }
+            ]
+          },
           "tests": {
             "updateArgs": "async updateArgs() {\n        await this.updateStoryArgs({\n          content: 'test'\n        });\n      }"
           }
         },
         "framework": "react",
         "fileName": "./stories/KindA.stories.tsx",
-        "args": {},
-        "argTypes": {},
+        "__isArgsStory": true,
         "__id": "kinda--dynamic-story-tests",
-        "__isArgsStory": true
+        "args": {},
+        "argTypes": {}
       },
-      "args": {},
-      "initialArgs": {}
+      "initialArgs": {},
+      "argTypes": {}
     },
     "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
   },
@@ -57,8 +70,11 @@
     ],
     "storyId": "kinda--imported-tests",
     "story": {
-      "id": "kinda--imported-tests",
+      "args": {},
+      "componentId": "kinda",
+      "title": "KindA",
       "kind": "KindA",
+      "id": "kinda--imported-tests",
       "name": "Imported Tests",
       "story": "Imported Tests",
       "parameters": {
@@ -77,19 +93,29 @@
               ]
             }
           ],
+          "global": {
+            "skip": [
+              {
+                "in": "browser",
+                "tests": [
+                  "TestA"
+                ]
+              }
+            ]
+          },
           "tests": {
             "click": "async click() {}"
           }
         },
         "framework": "react",
         "fileName": "./stories/KindA.stories.tsx",
-        "args": {},
-        "argTypes": {},
+        "__isArgsStory": false,
         "__id": "kinda--imported-tests",
-        "__isArgsStory": false
+        "args": {},
+        "argTypes": {}
       },
-      "args": {},
-      "initialArgs": {}
+      "initialArgs": {},
+      "argTypes": {}
     },
     "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
   },
@@ -103,8 +129,11 @@
     ],
     "storyId": "kinda--skipped-tests",
     "story": {
-      "id": "kinda--skipped-tests",
+      "args": {},
+      "componentId": "kinda",
+      "title": "KindA",
       "kind": "KindA",
+      "id": "kinda--skipped-tests",
       "name": "Skipped Tests",
       "story": "Skipped Tests",
       "parameters": {
@@ -128,17 +157,27 @@
                 "testB"
               ]
             }
-          ]
+          ],
+          "global": {
+            "skip": [
+              {
+                "in": "browser",
+                "tests": [
+                  "TestA"
+                ]
+              }
+            ]
+          }
         },
         "framework": "react",
         "fileName": "./stories/KindA.stories.tsx",
-        "args": {},
-        "argTypes": {},
+        "__isArgsStory": false,
         "__id": "kinda--skipped-tests",
-        "__isArgsStory": false
+        "args": {},
+        "argTypes": {}
       },
-      "args": {},
-      "initialArgs": {}
+      "initialArgs": {},
+      "argTypes": {}
     },
     "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
   },
@@ -152,8 +191,11 @@
     ],
     "storyId": "kinda--decorators",
     "story": {
-      "id": "kinda--decorators",
+      "args": {},
+      "componentId": "kinda",
+      "title": "KindA",
       "kind": "KindA",
+      "id": "kinda--decorators",
       "name": "Decorators",
       "story": "Decorators",
       "parameters": {
@@ -171,17 +213,27 @@
                 "TestA"
               ]
             }
-          ]
+          ],
+          "global": {
+            "skip": [
+              {
+                "in": "browser",
+                "tests": [
+                  "TestA"
+                ]
+              }
+            ]
+          }
         },
         "framework": "react",
         "fileName": "./stories/KindA.stories.tsx",
-        "args": {},
-        "argTypes": {},
+        "__isArgsStory": false,
         "__id": "kinda--decorators",
-        "__isArgsStory": false
+        "args": {},
+        "argTypes": {}
       },
-      "args": {},
-      "initialArgs": {}
+      "initialArgs": {},
+      "argTypes": {}
     },
     "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
   },
@@ -195,8 +247,11 @@
     ],
     "storyId": "kinda--parameters",
     "story": {
-      "id": "kinda--parameters",
+      "args": {},
+      "componentId": "kinda",
+      "title": "KindA",
       "kind": "KindA",
+      "id": "kinda--parameters",
       "name": "Parameters",
       "story": "Parameters",
       "parameters": {
@@ -214,17 +269,27 @@
                 "TestA"
               ]
             }
-          ]
+          ],
+          "global": {
+            "skip": [
+              {
+                "in": "browser",
+                "tests": [
+                  "TestA"
+                ]
+              }
+            ]
+          }
         },
         "framework": "react",
         "fileName": "./stories/KindA.stories.tsx",
-        "args": {},
-        "argTypes": {},
+        "__isArgsStory": false,
         "__id": "kinda--parameters",
-        "__isArgsStory": false
+        "args": {},
+        "argTypes": {}
       },
-      "args": {},
-      "initialArgs": {}
+      "initialArgs": {},
+      "argTypes": {}
     },
     "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
   },
@@ -239,8 +304,11 @@
     ],
     "storyId": "kindb-subkind--story-a",
     "story": {
-      "id": "kindb-subkind--story-a",
+      "args": {},
+      "componentId": "kindb-subkind",
+      "title": "KindB / SubKind",
       "kind": "KindB / SubKind",
+      "id": "kindb-subkind--story-a",
       "name": "Story A",
       "story": "Story A",
       "parameters": {
@@ -258,17 +326,27 @@
                 "TestA"
               ]
             }
-          ]
+          ],
+          "global": {
+            "skip": [
+              {
+                "in": "browser",
+                "tests": [
+                  "TestA"
+                ]
+              }
+            ]
+          }
         },
         "framework": "react",
         "fileName": "./stories/KindB.stories.tsx",
-        "args": {},
-        "argTypes": {},
+        "__isArgsStory": false,
         "__id": "kindb-subkind--story-a",
-        "__isArgsStory": false
+        "args": {},
+        "argTypes": {}
       },
-      "args": {},
-      "initialArgs": {}
+      "initialArgs": {},
+      "argTypes": {}
     },
     "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
   },
@@ -282,8 +360,11 @@
     ],
     "storyId": "kindc--story-a",
     "story": {
-      "id": "kindc--story-a",
+      "args": {},
+      "componentId": "kindc",
+      "title": "KindC",
       "kind": "KindC",
+      "id": "kindc--story-a",
       "name": "Story A",
       "story": "Story A",
       "parameters": {
@@ -301,17 +382,27 @@
                 "TestA"
               ]
             }
-          ]
+          ],
+          "global": {
+            "skip": [
+              {
+                "in": "browser",
+                "tests": [
+                  "TestA"
+                ]
+              }
+            ]
+          }
         },
         "framework": "react",
         "fileName": "./stories/KindC.stories.tsx",
-        "args": {},
-        "argTypes": {},
+        "__isArgsStory": false,
         "__id": "kindc--story-a",
-        "__isArgsStory": false
+        "args": {},
+        "argTypes": {}
       },
-      "args": {},
-      "initialArgs": {}
+      "initialArgs": {},
+      "argTypes": {}
     },
     "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
   },
@@ -326,8 +417,11 @@
     ],
     "storyId": "docs-kindd--external-story",
     "story": {
-      "id": "docs-kindd--external-story",
+      "args": {},
+      "componentId": "docs-kindd",
+      "title": "Docs/KindD",
       "kind": "Docs/KindD",
+      "id": "docs-kindd--external-story",
       "name": "External Story",
       "story": "External Story",
       "parameters": {
@@ -349,17 +443,32 @@
           "ignoreElements": [
             "img",
             "img"
-          ]
+          ],
+          "global": {
+            "skip": [
+              {
+                "in": "browser",
+                "tests": [
+                  "TestA"
+                ]
+              }
+            ]
+          },
+          "kind": {
+            "ignoreElements": [
+              "img"
+            ]
+          }
         },
         "framework": "react",
         "fileName": "./stories/KindD.stories.mdx",
-        "args": {},
-        "argTypes": {},
+        "__isArgsStory": false,
         "__id": "docs-kindd--external-story",
-        "__isArgsStory": false
+        "args": {},
+        "argTypes": {}
       },
-      "args": {},
-      "initialArgs": {}
+      "initialArgs": {},
+      "argTypes": {}
     },
     "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
   },
@@ -374,8 +483,11 @@
     ],
     "storyId": "docs-kindd--skipped-tests",
     "story": {
-      "id": "docs-kindd--skipped-tests",
+      "args": {},
+      "componentId": "docs-kindd",
+      "title": "Docs/KindD",
       "kind": "Docs/KindD",
+      "id": "docs-kindd--skipped-tests",
       "name": "Skipped Tests",
       "story": "Skipped Tests",
       "parameters": {
@@ -397,17 +509,32 @@
           "ignoreElements": [
             "img",
             "img"
-          ]
+          ],
+          "global": {
+            "skip": [
+              {
+                "in": "browser",
+                "tests": [
+                  "TestA"
+                ]
+              }
+            ]
+          },
+          "kind": {
+            "ignoreElements": [
+              "img"
+            ]
+          }
         },
         "framework": "react",
         "fileName": "./stories/KindD.stories.mdx",
-        "args": {},
-        "argTypes": {},
+        "__isArgsStory": false,
         "__id": "docs-kindd--skipped-tests",
-        "__isArgsStory": false
+        "args": {},
+        "argTypes": {}
       },
-      "args": {},
-      "initialArgs": {}
+      "initialArgs": {},
+      "argTypes": {}
     },
     "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
   },
@@ -422,8 +549,11 @@
     ],
     "storyId": "docs-kindd--story-a",
     "story": {
-      "id": "docs-kindd--story-a",
+      "args": {},
+      "componentId": "docs-kindd",
+      "title": "Docs/KindD",
       "kind": "Docs/KindD",
+      "id": "docs-kindd--story-a",
       "name": "StoryA",
       "story": "StoryA",
       "parameters": {
@@ -446,17 +576,32 @@
             "img",
             "img"
           ],
+          "global": {
+            "skip": [
+              {
+                "in": "browser",
+                "tests": [
+                  "TestA"
+                ]
+              }
+            ]
+          },
+          "kind": {
+            "ignoreElements": [
+              "img"
+            ]
+          },
           "captureElement": "mdx-by-children"
         },
         "framework": "react",
         "fileName": "./stories/KindD.stories.mdx",
-        "args": {},
-        "argTypes": {},
+        "__isArgsStory": false,
         "__id": "docs-kindd--story-a",
-        "__isArgsStory": false
+        "args": {},
+        "argTypes": {}
       },
-      "args": {},
-      "initialArgs": {}
+      "initialArgs": {},
+      "argTypes": {}
     },
     "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
   }

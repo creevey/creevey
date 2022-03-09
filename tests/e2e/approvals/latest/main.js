@@ -86,23 +86,6 @@
 /************************************************************************/
 /******/ ({
 
-/***/ "./.storybook/generated-stories-entry.js":
-/* ./.storybook/generated-stories-entry.js */
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(module) {
-
-var _frameworkImportPath = __webpack_require__(/*! @storybook/react */ "@storybook/react");
-/* eslint-disable import/no-unresolved */
-
-
-(0, _frameworkImportPath.configure)([__webpack_require__("./stories sync recursive ^\\.(?:(?:^|\\/|(?:(?:(?!(?:^|\\/)\\.).)*?)\\/)(?!\\.)(?=.)[^/]*?\\.stories\\.(md|ts)x)$")], module, false);
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../node_modules/webpack/buildin/module.js */ "./node_modules/webpack/buildin/module.js")(module)))
-
-/***/ }),
-
 /***/ "./.storybook/preview.js":
 /* ./.storybook/preview.js */
 /*! exports provided: parameters */
@@ -113,10 +96,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "parameters", function() { return parameters; });
 var parameters = {
   creevey: {
-    skip: [{
-      "in": 'browser',
-      tests: ['TestA']
-    }]
+    global: {
+      skip: [{
+        "in": 'browser',
+        tests: ['TestA']
+      }]
+    }
   }
 };
 
@@ -272,6 +257,13 @@ Object.keys(_storybook_preview_js__WEBPACK_IMPORTED_MODULE_11__).forEach(functio
         return Object(_node_modules_storybook_client_api__WEBPACK_IMPORTED_MODULE_9__["addParameters"])(v, false);
       }
 
+    case '__namedExportsOrder':
+    case 'decorateStory':
+    case 'renderToDOM':
+      {
+        return null; // This key is not handled directly in v6 mode.
+      }
+
     default:
       {
         // eslint-disable-next-line prefer-template
@@ -282,16 +274,116 @@ Object.keys(_storybook_preview_js__WEBPACK_IMPORTED_MODULE_11__).forEach(functio
 
 /***/ }),
 
-/***/ "./.storybook/storybook-init-framework-entry.js":
-/* ./.storybook/storybook-init-framework-entry.js */
+/***/ "./generated-stories-entry.js":
+/* ./generated-stories-entry.js */
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(module) {
+
+var _frameworkImportPath = __webpack_require__(/*! @storybook/react */ "@storybook/react");
+/* eslint-disable import/no-unresolved */
+
+
+(0, _frameworkImportPath.configure)([__webpack_require__("./stories sync recursive ^\\.(?:(?:^|\\/|(?:(?:(?!(?:^|\\/)\\.).)*?)\\/)(?!\\.)(?=.)[^/]*?\\.stories\\.(md|ts)x)$")], module, false);
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/webpack/buildin/module.js */ "./node_modules/webpack/buildin/module.js")(module)))
+
+/***/ }),
+
+/***/ "./node_modules/@storybook/react/dist/esm/client/preview/config-generated-config-entry.js":
+/* ./node_modules/@storybook/react/dist/esm/client/preview/config-generated-config-entry.js */
 /*! no exports provided */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _storybook_react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @storybook/react */ "@storybook/react");
-/* harmony import */ var _storybook_react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_storybook_react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_storybook_client_api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/@storybook/client-api */ "./node_modules/@storybook/client-api");
+/* harmony import */ var _node_modules_storybook_client_api__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_storybook_client_api__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_storybook_client_logger__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./node_modules/@storybook/client-logger */ "./node_modules/@storybook/client-logger");
+/* harmony import */ var _node_modules_storybook_client_logger__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_storybook_client_logger__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _node_modules_storybook_react_dist_esm_client_preview_config__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./node_modules/@storybook/react/dist/esm/client/preview/config */ "./node_modules/@storybook/react/dist/esm/client/preview/config");
+/* harmony import */ var _node_modules_storybook_react_dist_esm_client_preview_config__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_storybook_react_dist_esm_client_preview_config__WEBPACK_IMPORTED_MODULE_2__);
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/* eslint-disable import/no-unresolved */
+
+
+
+Object.keys(_node_modules_storybook_react_dist_esm_client_preview_config__WEBPACK_IMPORTED_MODULE_2__).forEach(function (key) {
+  var value = _node_modules_storybook_react_dist_esm_client_preview_config__WEBPACK_IMPORTED_MODULE_2__[key];
+
+  switch (key) {
+    case 'args':
+    case 'argTypes':
+      {
+        return _node_modules_storybook_client_logger__WEBPACK_IMPORTED_MODULE_1__["logger"].warn('Invalid args/argTypes in config, ignoring.', JSON.stringify(value));
+      }
+
+    case 'decorators':
+      {
+        return value.forEach(function (decorator) {
+          return Object(_node_modules_storybook_client_api__WEBPACK_IMPORTED_MODULE_0__["addDecorator"])(decorator, false);
+        });
+      }
+
+    case 'loaders':
+      {
+        return value.forEach(function (loader) {
+          return Object(_node_modules_storybook_client_api__WEBPACK_IMPORTED_MODULE_0__["addLoader"])(loader, false);
+        });
+      }
+
+    case 'parameters':
+      {
+        return Object(_node_modules_storybook_client_api__WEBPACK_IMPORTED_MODULE_0__["addParameters"])(_objectSpread({}, value), false);
+      }
+
+    case 'argTypesEnhancers':
+      {
+        return value.forEach(function (enhancer) {
+          return Object(_node_modules_storybook_client_api__WEBPACK_IMPORTED_MODULE_0__["addArgTypesEnhancer"])(enhancer);
+        });
+      }
+
+    case 'argsEnhancers':
+      {
+        return value.forEach(function (enhancer) {
+          return Object(_node_modules_storybook_client_api__WEBPACK_IMPORTED_MODULE_0__["addArgsEnhancer"])(enhancer);
+        });
+      }
+
+    case 'render':
+      {
+        return Object(_node_modules_storybook_client_api__WEBPACK_IMPORTED_MODULE_0__["setGlobalRender"])(value);
+      }
+
+    case 'globals':
+    case 'globalTypes':
+      {
+        var v = {};
+        v[key] = value;
+        return Object(_node_modules_storybook_client_api__WEBPACK_IMPORTED_MODULE_0__["addParameters"])(v, false);
+      }
+
+    case '__namedExportsOrder':
+    case 'decorateStory':
+    case 'renderToDOM':
+      {
+        return null; // This key is not handled directly in v6 mode.
+      }
+
+    default:
+      {
+        // eslint-disable-next-line prefer-template
+        return console.log(key + ' was not supported :( !');
+      }
+  }
+});
 
 /***/ }),
 
@@ -566,7 +658,9 @@ var componentMeta = {
   title: 'Docs/KindD',
   parameters: {
     creevey: {
-      ignoreElements: ['img']
+      kind: {
+        ignoreElements: ['img']
+      }
     }
   },
   includeStories: ["_SkippedTests_", "_ExternalStory_", "storyA"]
@@ -618,6 +712,19 @@ var clickTests = {
 
 /***/ }),
 
+/***/ "./storybook-init-framework-entry.js":
+/* ./storybook-init-framework-entry.js */
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _storybook_react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @storybook/react */ "@storybook/react");
+/* harmony import */ var _storybook_react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_storybook_react__WEBPACK_IMPORTED_MODULE_0__);
+
+
+/***/ }),
+
 /***/ "./node_modules/@storybook/client-api":
 /* external "./node_modules/@storybook/client-api" */
 /*! no static exports found */
@@ -651,6 +758,15 @@ module.exports = require("./node_modules/@storybook/core-client/dist/esm/globals
 /***/ (function(module, exports) {
 
 module.exports = require("./node_modules/@storybook/core-client/dist/esm/globals/polyfills.js");
+
+/***/ }),
+
+/***/ "./node_modules/@storybook/react/dist/esm/client/preview/config":
+/* external "./node_modules/@storybook/react/dist/esm/client/preview/config" */
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("./node_modules/@storybook/react/dist/esm/client/preview/config");
 
 /***/ }),
 
@@ -763,16 +879,17 @@ module.exports = require("./node_modules/core-js/modules/web.dom-collections.for
 /***/ }),
 
 /***/ 0:
-/* multi ./node_modules/creevey/lib/cjs/server/loaders/webpack/dummy-hmr.js ./node_modules/@storybook/core-client/dist/esm/globals/polyfills.js ./node_modules/@storybook/core-client/dist/esm/globals/globals.js ./.storybook/storybook-init-framework-entry.js ./.storybook/preview.js-generated-config-entry.js ./.storybook/generated-stories-entry.js */
+/* multi ./node_modules/creevey/lib/cjs/server/loaders/webpack/dummy-hmr.js ./node_modules/@storybook/core-client/dist/esm/globals/polyfills.js ./node_modules/@storybook/core-client/dist/esm/globals/globals.js ./storybook-init-framework-entry.js ./node_modules/@storybook/react/dist/esm/client/preview/config-generated-config-entry.js ./.storybook/preview.js-generated-config-entry.js ./generated-stories-entry.js */
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(/*! ./node_modules/creevey/lib/cjs/server/loaders/webpack/dummy-hmr.js */"./node_modules/creevey/lib/cjs/server/loaders/webpack/dummy-hmr.js");
 __webpack_require__(/*! ./node_modules/@storybook/core-client/dist/esm/globals/polyfills.js */"./node_modules/@storybook/core-client/dist/esm/globals/polyfills.js");
 __webpack_require__(/*! ./node_modules/@storybook/core-client/dist/esm/globals/globals.js */"./node_modules/@storybook/core-client/dist/esm/globals/globals.js");
-__webpack_require__(/*! ./.storybook/storybook-init-framework-entry.js */"./.storybook/storybook-init-framework-entry.js");
+__webpack_require__(/*! ./storybook-init-framework-entry.js */"./storybook-init-framework-entry.js");
+__webpack_require__(/*! ./node_modules/@storybook/react/dist/esm/client/preview/config-generated-config-entry.js */"./node_modules/@storybook/react/dist/esm/client/preview/config-generated-config-entry.js");
 __webpack_require__(/*! ./.storybook/preview.js-generated-config-entry.js */"./.storybook/preview.js-generated-config-entry.js");
-module.exports = __webpack_require__(/*! ./.storybook/generated-stories-entry.js */"./.storybook/generated-stories-entry.js");
+module.exports = __webpack_require__(/*! ./generated-stories-entry.js */"./generated-stories-entry.js");
 
 
 /***/ }),
