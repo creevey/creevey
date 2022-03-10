@@ -10,8 +10,10 @@ export default {
   title: 'SideBySideView',
   parameters: {
     creevey: {
-      waitForReady: true,
-      captureElement: '#root > *',
+      kind: {
+        waitForReady: true,
+        captureElement: '#root > *',
+      },
     },
   },
 } as Meta;

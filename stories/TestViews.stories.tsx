@@ -3,7 +3,7 @@ import { styled } from '@storybook/theming';
 
 export default {
   title: 'TestViews',
-  parameters: { creevey: { captureElement: '[data-tid="CaptureElement"]' } },
+  parameters: { creevey: { kind: { captureElement: '[data-tid="CaptureElement"]' } } },
 };
 
 const CHUNK_SIZE = 250;

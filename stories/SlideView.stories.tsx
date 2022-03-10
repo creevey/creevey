@@ -11,17 +11,19 @@ export default {
   title: 'SlideView',
   parameters: {
     creevey: {
-      waitForReady: true,
-      captureElement: '#root > *',
-      tests: {
-        async click() {
-          const actual = await this.takeScreenshot();
+      kind: {
+        waitForReady: true,
+        captureElement: '#root > *',
+        tests: {
+          async click() {
+            const actual = await this.takeScreenshot();
 
-          await this.browser.actions().click(this.captureElement).perform();
+            await this.browser.actions().click(this.captureElement).perform();
 
-          const expect = await this.takeScreenshot();
+            const expect = await this.takeScreenshot();
 
-          await this.expect({ actual, expect }).to.matchImages();
+            await this.expect({ actual, expect }).to.matchImages();
+          },
         },
       },
     },
