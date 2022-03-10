@@ -112,7 +112,21 @@ module.exports = {
 
 ### Storybook parameters
 
-Also you could define parameters on `kind` or `story` levels. All these parameters are deeply merged by storybook for each story.
+Also you could define parameters on `global`, `kind` or `story` levels. All these parameters are deeply merged by storybook for each story.
+For `global` and `kind` parameters use corresponding creevey parameters fields.
+
+```tsx
+// preview.tsx
+export const parameters = {
+  creevey: {
+    global: {
+        // Skip all *hover tests in IE11 on the global level
+        skip: [{ in: 'ie11', tests: /.*hover$/, }]
+      },
+    },
+  },
+};
+```
 
 ```tsx
 import React from 'react';
@@ -124,16 +138,18 @@ export default {
   title: 'MyComponent'
   parameters: {
     creevey: {
-      // You could skip some browsers/stories or even specific tests
-      skip: [
-        { in: 'ie11', reason: '`MyComponent` do not support IE11' },
-        { in: 'firefox', stories: 'Loading' },
-        {
-          in: ['firefox', 'chrome'],
-          tests: /.*hover$/,
-          reason: 'For some reason `MyComponent` hovering do not work correctly',
-        },
-      ],
+      kind: {
+        // You could skip some browsers/stories or even specific tests
+        skip: [
+          { in: 'ie11', reason: '`MyComponent` do not support IE11' },
+          { in: 'firefox', stories: 'Loading' },
+          {
+            in: ['firefox', 'chrome'],
+            tests: /.*hover$/,
+            reason: 'For some reason `MyComponent` hovering do not work correctly',
+          },
+        ],
+      }
     },
   },
 } as Meta & CreeveyMeta;
