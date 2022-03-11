@@ -1,5 +1,5 @@
 import path from 'path';
-import { writeFileSync, readFileSync } from 'fs';
+import { writeFileSync, readFileSync, existsSync } from 'fs';
 import { ChildProcess } from 'child_process';
 import { expect } from 'chai';
 import { it } from 'mocha';
@@ -80,7 +80,9 @@ export function assertWebpackBundle(workDir: string, suiteName: string): void {
 export function assertExtractedStories(workDir: string): void {
   it('extract stories', async function () {
     execSync('npx creevey --extract ./', { cwd: workDir });
-    execSync('npx sb extract storybook-static', { cwd: workDir });
+    if (!existsSync(`${workDir}/storybook-static/stories.json`)) {
+      execSync('npx sb extract storybook-static', { cwd: workDir });
+    }
 
     const { default: expected } = (await import(`${workDir}/storybook-static/stories.json`)) as { default: unknown };
     const { default: actual } = (await import(`${workDir}/stories.json`)) as { default: unknown };
