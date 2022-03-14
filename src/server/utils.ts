@@ -1,9 +1,10 @@
 import { createWriteStream, existsSync, readFileSync, unlink } from 'fs';
-import cluster from 'cluster';
+import cluster, { isMaster } from 'cluster';
 import { SkipOptions, isDefined, TestData, noop, isFunction } from '../types';
 import { emitShutdownMessage, sendShutdownMessage } from './messages';
 import findCacheDir from 'find-cache-dir';
 import { get } from 'https';
+import { logger } from './logger';
 
 export const isShuttingDown = { current: false };
 
@@ -20,6 +21,9 @@ function matchBy(pattern: string | string[] | RegExp | undefined, value: string)
   );
 }
 
+let isWarnedForArray = false;
+let isWarnedForObject = false;
+
 export function shouldSkip(
   browser: string,
   meta: {
@@ -33,16 +37,35 @@ export function shouldSkip(
     return skipOptions;
   }
   if (Array.isArray(skipOptions)) {
+    if (isMaster && !isWarnedForArray) {
+      isWarnedForArray = true;
+      logger.warn(
+        "Using arrays for the `skip` parameter is deprecated and isn't supported by Storybook since 6.4. Please use new format https://github.com/wKich/creevey/blob/master/docs/config.md#storybook-parameters",
+      );
+    }
     return skipOptions.map((skipOption) => shouldSkip(browser, meta, skipOption, test)).find(Boolean) || false;
   }
-  const { in: browsers, kinds, stories, tests, reason = true } = skipOptions;
-  const { kind, story } = meta;
-  const skipByBrowser = matchBy(browsers, browser);
-  const skipByKind = matchBy(kinds, kind);
-  const skipByStory = matchBy(stories, story);
-  const skipByTest = !isDefined(test) || matchBy(tests, test);
+  if (
+    isMaster &&
+    !isWarnedForObject &&
+    ['in', 'kinds', 'stories', 'tests', 'reason'].some((key) => key in skipOptions)
+  ) {
+    isWarnedForObject = true;
+    logger.warn(
+      'Directly passing skip options to the `skip` parameter might lead to unpredictable behavior and has been deprecated. Please use new format https://github.com/wKich/creevey/blob/master/docs/config.md#storybook-parameters',
+    );
+  }
+  return (
+    Object.entries(skipOptions).find(([, { in: browsers, kinds, stories, tests }]) => {
+      const { kind, story } = meta;
+      const skipByBrowser = matchBy(browsers, browser);
+      const skipByKind = matchBy(kinds, kind);
+      const skipByStory = matchBy(stories, story);
+      const skipByTest = !isDefined(test) || matchBy(tests, test);
 
-  return skipByBrowser && skipByKind && skipByStory && skipByTest && reason;
+      return skipByBrowser && skipByKind && skipByStory && skipByTest;
+    })?.[0] ?? false
+  );
 }
 
 export async function shutdownWorkers(): Promise<void> {

@@ -112,17 +112,15 @@ module.exports = {
 
 ### Storybook parameters
 
-Also you could define parameters on `global`, `kind` or `story` levels. All these parameters are deeply merged by storybook for each story.
-For `global` and `kind` parameters use corresponding creevey parameters fields.
+Also you could define parameters on `global`, `kind` or `story` levels. All these parameters are deeply merged by Storybook for each story. Bear in mind if you define different skip parameters on the same key, Storybook will merge them and you probably will get incorrect skip behavior. So try to use different keys for different skips. Also Storybook treats arrays as primitive values and doesn't merge them.
 
 ```tsx
-// preview.tsx
+// .storybook/preview.tsx
 export const parameters = {
   creevey: {
-    global: {
-        // Skip all *hover tests in IE11 on the global level
-        skip: [{ in: 'ie11', tests: /.*hover$/, }]
-      },
+    // Skip all *hover tests in IE11 on the global level
+    skip: {
+      "Tests with hover don't work well in ie11": { in: 'ie11', tests: /.*hover$/ },
     },
   },
 };
@@ -138,18 +136,16 @@ export default {
   title: 'MyComponent'
   parameters: {
     creevey: {
-      kind: {
-        // You could skip some browsers/stories or even specific tests
-        skip: [
-          { in: 'ie11', reason: '`MyComponent` do not support IE11' },
-          { in: 'firefox', stories: 'Loading' },
-          {
-            in: ['firefox', 'chrome'],
-            tests: /.*hover$/,
-            reason: 'For some reason `MyComponent` hovering do not work correctly',
-          },
-        ],
-      }
+      // You could skip some browsers/stories or even specific tests
+      skip: {
+        "`MyComponent` doesn't support ie11": { in: 'ie11' },
+        'Loading stories are flaky in firefox': { in: 'firefox', stories: 'Loading' },
+        "For some reason `MyComponent` hovering doesn't work correctly": {
+          in: ['firefox', 'chrome'],
+          tests: /.*hover$/,
+          reason: '',
+        },
+      },
     },
   },
 } as Meta & CreeveyMeta;
@@ -191,6 +187,12 @@ Basic.parameters = {
   - `skip: { tests: 'click' }`
   - `skip: { tests: ['hover', 'click'] }`
   - `skip: { tests: /^press.*$/ }`
-- Multiple skip options: `skip: [{ /* ... */ }]`
+- Multiple skip options:
+  ```
+  skip: {
+    foo: { /* ... */ },
+    bar: { /* ... */ },
+  }
+  ```
 
 NOTE: If you try to skip stories by story name, the storybook name format will be used (For more info see [storybook-export-vs-name-handling](https://storybook.js.org/docs/formats/component-story-format/#storybook-export-vs-name-handling))

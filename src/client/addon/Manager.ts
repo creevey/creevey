@@ -1,11 +1,12 @@
 import { API } from '@storybook/api';
 import { SetStoriesPayload } from '@storybook/api/dist/ts3.9/lib/stories';
 import { SET_STORIES, STORY_RENDERED } from '@storybook/core-events';
-import { CreeveyStatus, CreeveyUpdate, isDefined, TestData, TestStatus, StoriesRaw } from '../../types';
+import { denormalizeStoryParameters } from '../../shared';
+import { CreeveyStatus, CreeveyUpdate, isDefined, TestData, TestStatus, StoriesRaw, SetStoriesData } from '../../types';
 import { initCreeveyClientApi, CreeveyClientApi } from '../shared/creeveyClientApi';
 import { calcStatus } from '../shared/helpers';
 import { ADDON_ID } from './register';
-import { getEmojiByTestStatus, denormalizeStoryParameters } from './utils';
+import { getEmojiByTestStatus } from './utils';
 
 export class CreeveyManager {
   storyId = '';
@@ -124,7 +125,7 @@ export class CreeveyManager {
   };
   onSetStories = (data: SetStoriesPayload): void => {
     // TODO: Send PR to storybook to fix this
-    const stories = data.v ? denormalizeStoryParameters(data) : (data as StoriesRaw);
+    const stories = data.v ? denormalizeStoryParameters(data as unknown as SetStoriesData) : data.stories;
     this.stories = stories;
   };
 

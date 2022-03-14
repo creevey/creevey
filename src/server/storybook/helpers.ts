@@ -77,6 +77,12 @@ export function isStorybookVersionLessThan(major: number, minor?: number): boole
   return Number(sbMajor) < major || (minor != undefined && Number(sbMajor) == major && Number(sbMinor) < minor);
 }
 
+export function isStorybookVersionGreaterThan(major: number, minor?: number): boolean {
+  const [sbMajor, sbMinor] = (process.env.__CREEVEY_STORYBOOK_VERSION__ ?? getStorybookVersion()).split('.');
+
+  return Number(sbMajor) > major || (minor != undefined && Number(sbMajor) == major && Number(sbMinor) > minor);
+}
+
 export function isStorybookVersion(major: number, minor?: number): boolean {
   const [sbMajor, sbMinor] = (process.env.__CREEVEY_STORYBOOK_VERSION__ ?? getStorybookVersion()).split('.');
 

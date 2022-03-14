@@ -10,8 +10,9 @@ describe('shouldSkip', () => {
         'chrome',
         { kind: 'Button', story: 'with Error' },
         {
-          kinds: ['Button'],
-          reason: 'Skip all buttons',
+          'Skip all buttons': {
+            kinds: ['Button'],
+          },
         },
       );
 
@@ -22,8 +23,9 @@ describe('shouldSkip', () => {
         'chrome',
         { kind: 'Input', story: 'with Error' },
         {
-          kinds: ['Button'],
-          reason: 'Skip all buttons',
+          'Skip all buttons': {
+            kinds: ['Button'],
+          },
         },
       );
 

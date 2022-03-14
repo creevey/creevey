@@ -13,10 +13,11 @@ import {
   importStorybookConfig,
   importStorybookCoreCommon,
   importStorybookCoreEvents,
+  isStorybookVersionGreaterThan,
   isStorybookVersionLessThan,
 } from './helpers';
 import { logger } from '../logger';
-import { flatStories } from '../stories';
+import { denormalizeStoryParameters } from '../../shared';
 
 async function initStorybookEnvironment(): Promise<typeof import('./entry')> {
   // @ts-ignore
@@ -57,7 +58,10 @@ function watchStories(channel: Channel, watcher: FSWatcher, initialFiles: Set<st
   );
 
   return (data: SetStoriesData) => {
-    const stories = isStorybookVersionLessThan(6) ? data.stories : flatStories(data);
+    const stories =
+      isStorybookVersionLessThan(6) || isStorybookVersionGreaterThan(6, 3)
+        ? data.stories
+        : denormalizeStoryParameters(data);
     const files = new Set(Object.values(stories).map((story) => story.parameters.fileName));
     const addedFiles = Array.from(files).filter((filePath) => !watchingFiles.has(filePath));
     const removedFiles = Array.from(watchingFiles).filter((filePath) => !files.has(filePath));
@@ -185,7 +189,10 @@ export async function loadStories(
 
   const loadPromise = new Promise<SetStoriesData>((resolve) => {
     channel.once(Events.SET_STORIES, (data: SetStoriesData) => {
-      const stories = isStorybookVersionLessThan(6) ? data.stories : flatStories(data);
+      const stories =
+        isStorybookVersionLessThan(6) || isStorybookVersionGreaterThan(6, 3)
+          ? data.stories
+          : denormalizeStoryParameters(data);
       const files = new Set(Object.values(stories).map((story) => story.parameters.fileName));
 
       if (watcher) channel.on(Events.SET_STORIES, watchStories(channel, watcher, files));

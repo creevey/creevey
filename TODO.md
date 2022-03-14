@@ -369,6 +369,7 @@
 
 ## First priority (v0.8)
 
+- [ ] Check `storyStoreV7` feature
 - [ ] Remove report on each start
 - [ ] Bugs
   - [ ] Stories with restricted characters

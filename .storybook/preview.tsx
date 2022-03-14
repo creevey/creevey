@@ -11,8 +11,8 @@ export const decorators = [
 
 export const parameters = {
   creevey: {
-    global: {
-      skip: {
+    skip: {
+      'Unsupported IE11 Stories': {
         in: 'ie11',
         kinds: ['Docs/ImagesViews', 'ImagesViews', 'BlendView', 'SideBySideView', 'SlideView', 'SwapView'],
       },

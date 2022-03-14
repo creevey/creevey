@@ -1,7 +1,7 @@
 import path from 'path';
 import { mkdirSync, writeFileSync } from 'fs';
 import { createHash } from 'crypto';
-import { mapValues, mergeWith, MergeWithCustomizer, pick } from 'lodash';
+import { mapValues, pick } from 'lodash';
 import type { Context } from 'mocha';
 import type {
   TestData,
@@ -15,7 +15,8 @@ import type {
 } from '../types';
 import { isDefined, isFunction, isObject } from '../types';
 import { shouldSkip, removeProps } from './utils';
-import { isStorybookVersionLessThan } from './storybook/helpers';
+import { isStorybookVersionGreaterThan, isStorybookVersionLessThan } from './storybook/helpers';
+import { denormalizeStoryParameters } from '../shared';
 
 function storyTestFabric(delay?: number, testFn?: CreeveyTestFunction) {
   return async function storyTest(this: Context) {
@@ -73,25 +74,6 @@ function convertStories(
   return tests;
 }
 
-// TODO use the storybook version, after the fix of skip option API
-export function flatStories({ globalParameters, kindParameters, stories }: SetStoriesData): StoriesRaw {
-  const mergeFn: MergeWithCustomizer = (objValue, srcValue) =>
-    Array.isArray(objValue) ? objValue.concat(srcValue) : undefined;
-  Object.values(stories).forEach((story) => {
-    // NOTE: Copy-paste merge parameters from storybook
-    const creeveyParameters = story.parameters.creevey as CreeveyStoryParams;
-    story.parameters = mergeWith(
-      {},
-      mergeWith({}, globalParameters, { creevey: creeveyParameters?.global }, mergeFn),
-      mergeWith({}, kindParameters[story.kind], { creevey: creeveyParameters?.kind }, mergeFn),
-      story.parameters,
-      mergeFn,
-    );
-  });
-
-  return stories;
-}
-
 export async function loadTestsFromStories(
   browsers: string[],
   provider: (storiesListener: (stories: Map<string, StoryInput[]>) => void) => Promise<SetStoriesData>,
@@ -113,7 +95,10 @@ export async function loadTestsFromStories(
     update?.(testsDiff);
   });
 
-  const stories = isStorybookVersionLessThan(6) ? data.stories : flatStories(data);
+  const stories =
+    isStorybookVersionLessThan(6) || isStorybookVersionGreaterThan(6, 3)
+      ? data.stories
+      : denormalizeStoryParameters(data);
   const tests = convertStories(browsers, stories);
 
   Object.values(tests)

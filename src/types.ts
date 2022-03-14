@@ -369,14 +369,13 @@ export interface CreeveyUpdate {
 }
 
 export interface SkipOption {
-  reason?: string;
   in?: string | string[] | RegExp;
   kinds?: string | string[] | RegExp;
   stories?: string | string[] | RegExp;
   tests?: string | string[] | RegExp;
 }
 
-export type SkipOptions = boolean | string | SkipOption | SkipOption[];
+export type SkipOptions = boolean | string | Record<string, SkipOption>;
 
 export type CreeveyTestFunction = (this: {
   browser: WebDriver;
@@ -398,8 +397,6 @@ export interface CreeveyStoryParams {
     // TODO Define browserName, story
     [name: string]: CreeveyTestFunction;
   };
-  global?: Omit<CreeveyStoryParams, 'global' | 'kind'>;
-  kind?: Omit<CreeveyStoryParams, 'global' | 'kind'>;
 }
 
 export interface ApprovePayload {

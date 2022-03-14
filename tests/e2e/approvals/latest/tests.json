@@ -19,29 +19,13 @@
       "story": "Dynamic Story Tests",
       "parameters": {
         "creevey": {
-          "skip": [
-            {
-              "in": "browser",
-              "tests": [
-                "TestA"
-              ]
-            },
-            {
+          "skip": {
+            "TestA in browser": {
               "in": "browser",
               "tests": [
                 "TestA"
               ]
             }
-          ],
-          "global": {
-            "skip": [
-              {
-                "in": "browser",
-                "tests": [
-                  "TestA"
-                ]
-              }
-            ]
           },
           "tests": {
             "updateArgs": "async updateArgs() {\n        await this.updateStoryArgs({\n          content: 'test'\n        });\n      }"
@@ -79,29 +63,13 @@
       "story": "Imported Tests",
       "parameters": {
         "creevey": {
-          "skip": [
-            {
-              "in": "browser",
-              "tests": [
-                "TestA"
-              ]
-            },
-            {
-              "in": "browser",
-              "tests": [
-                "TestA"
-              ]
-            }
-          ],
-          "global": {
-            "skip": [
-              {
+          "skip": {
+            "TestA in browser": {
                 "in": "browser",
                 "tests": [
                   "TestA"
                 ]
               }
-            ]
           },
           "tests": {
             "click": "async click() {}"
@@ -138,35 +106,19 @@
       "story": "Skipped Tests",
       "parameters": {
         "creevey": {
-          "skip": [
-            {
+          "skip": {
+            "TestA in browser": {
               "in": "browser",
               "tests": [
                 "TestA"
               ]
             },
-            {
-              "in": "browser",
-              "tests": [
-                "TestA"
-              ]
-            },
-            {
+            "testB in browser": {
               "in": "browser",
               "tests": [
                 "testB"
               ]
             }
-          ],
-          "global": {
-            "skip": [
-              {
-                "in": "browser",
-                "tests": [
-                  "TestA"
-                ]
-              }
-            ]
           }
         },
         "framework": "react",
@@ -200,29 +152,13 @@
       "story": "Decorators",
       "parameters": {
         "creevey": {
-          "skip": [
-            {
-              "in": "browser",
-              "tests": [
-                "TestA"
-              ]
-            },
-            {
+          "skip": {
+            "TestA in browser": {
               "in": "browser",
               "tests": [
                 "TestA"
               ]
             }
-          ],
-          "global": {
-            "skip": [
-              {
-                "in": "browser",
-                "tests": [
-                  "TestA"
-                ]
-              }
-            ]
           }
         },
         "framework": "react",
@@ -256,29 +192,13 @@
       "story": "Parameters",
       "parameters": {
         "creevey": {
-          "skip": [
-            {
-              "in": "browser",
-              "tests": [
-                "TestA"
-              ]
-            },
-            {
-              "in": "browser",
-              "tests": [
-                "TestA"
-              ]
-            }
-          ],
-          "global": {
-            "skip": [
-              {
+          "skip": {
+            "TestA in browser": {
                 "in": "browser",
                 "tests": [
                   "TestA"
                 ]
               }
-            ]
           }
         },
         "framework": "react",
@@ -313,29 +233,13 @@
       "story": "Story A",
       "parameters": {
         "creevey": {
-          "skip": [
-            {
-              "in": "browser",
-              "tests": [
-                "TestA"
-              ]
-            },
-            {
+          "skip": {
+            "TestA in browser": {
               "in": "browser",
               "tests": [
                 "TestA"
               ]
             }
-          ],
-          "global": {
-            "skip": [
-              {
-                "in": "browser",
-                "tests": [
-                  "TestA"
-                ]
-              }
-            ]
           }
         },
         "framework": "react",
@@ -369,29 +273,13 @@
       "story": "Story A",
       "parameters": {
         "creevey": {
-          "skip": [
-            {
-              "in": "browser",
-              "tests": [
-                "TestA"
-              ]
-            },
-            {
+          "skip": {
+            "TestA in browser": {
               "in": "browser",
               "tests": [
                 "TestA"
               ]
             }
-          ],
-          "global": {
-            "skip": [
-              {
-                "in": "browser",
-                "tests": [
-                  "TestA"
-                ]
-              }
-            ]
           }
         },
         "framework": "react",
@@ -426,39 +314,17 @@
       "story": "External Story",
       "parameters": {
         "creevey": {
-          "skip": [
-            {
-              "in": "browser",
-              "tests": [
-                "TestA"
-              ]
-            },
-            {
-              "in": "browser",
-              "tests": [
-                "TestA"
-              ]
-            }
-          ],
-          "ignoreElements": [
-            "img",
-            "img"
-          ],
-          "global": {
-            "skip": [
-              {
+          "skip": {
+            "TestA in browser": {
                 "in": "browser",
                 "tests": [
                   "TestA"
                 ]
               }
-            ]
           },
-          "kind": {
             "ignoreElements": [
               "img"
             ]
-          }
         },
         "framework": "react",
         "fileName": "./stories/KindD.stories.mdx",
@@ -492,39 +358,17 @@
       "story": "Skipped Tests",
       "parameters": {
         "creevey": {
-          "skip": [
-            {
-              "in": "browser",
-              "tests": [
-                "TestA"
-              ]
-            },
-            {
-              "in": "browser",
-              "tests": [
-                "TestA"
-              ]
-            }
-          ],
-          "ignoreElements": [
-            "img",
-            "img"
-          ],
-          "global": {
-            "skip": [
-              {
+          "skip": {
+            "TestA in browser": {
                 "in": "browser",
                 "tests": [
                   "TestA"
                 ]
               }
-            ]
           },
-          "kind": {
             "ignoreElements": [
               "img"
             ]
-          }
         },
         "framework": "react",
         "fileName": "./stories/KindD.stories.mdx",
@@ -558,39 +402,17 @@
       "story": "StoryA",
       "parameters": {
         "creevey": {
-          "skip": [
-            {
-              "in": "browser",
-              "tests": [
-                "TestA"
-              ]
-            },
-            {
+          "skip": {
+            "TestA in browser": {
               "in": "browser",
               "tests": [
                 "TestA"
               ]
             }
-          ],
+            },
           "ignoreElements": [
-            "img",
             "img"
           ],
-          "global": {
-            "skip": [
-              {
-                "in": "browser",
-                "tests": [
-                  "TestA"
-                ]
-              }
-            ]
-          },
-          "kind": {
-            "ignoreElements": [
-              "img"
-            ]
-          },
           "captureElement": "mdx-by-children"
         },
         "framework": "react",

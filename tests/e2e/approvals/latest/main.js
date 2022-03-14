@@ -96,11 +96,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "parameters", function() { return parameters; });
 var parameters = {
   creevey: {
-    global: {
-      skip: [{
+    skip: {
+      'TestA in browser': {
         "in": 'browser',
         tests: ['TestA']
-      }]
+      }
     }
   }
 };
@@ -541,10 +541,12 @@ ImportedTests.parameters = {
 var SkippedTests = function SkippedTests() {};
 SkippedTests.parameters = {
   creevey: {
-    skip: [{
+    skip: {
+      'testB in browser': {
       "in": 'browser',
       tests: ['testB']
-    }]
+      }
+    }
   }
 };
 var DynamicStoryTests = function DynamicStoryTests(props) {};
@@ -658,9 +660,7 @@ var componentMeta = {
   title: 'Docs/KindD',
   parameters: {
     creevey: {
-      kind: {
         ignoreElements: ['img']
-      }
     }
   },
   includeStories: ["_SkippedTests_", "_ExternalStory_", "storyA"]

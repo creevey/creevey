@@ -17,10 +17,12 @@ ImportedTests.parameters = {
 export const SkippedTests: Story = () => <div />
 SkippedTests.parameters = {
   creevey: {
-    skip: [{
-      in: 'browser',
-      tests: ['testB']
-    }]
+    skip: {
+      'testB in browser': {
+        in: 'browser',
+        tests: ['testB']
+      }
+    }
   }
 }
 

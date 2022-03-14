@@ -1,7 +1,4 @@
-import { Parameters } from '@storybook/api';
-import { SetStoriesPayload } from '@storybook/api/dist/ts3.9/lib/stories';
-import { mapValues, mergeWith } from 'lodash';
-import { StoriesRaw, TestStatus } from '../../types';
+import { TestStatus } from '../../types';
 
 export function getEmojiByTestStatus(status: TestStatus | undefined, skip: string | boolean = false): string {
   switch (status) {
@@ -23,25 +20,3 @@ export function getEmojiByTestStatus(status: TestStatus | undefined, skip: strin
     }
   }
 }
-
-// NOTE: Copy-paste from storybook/api
-export const combineParameters = (...parameterSets: Parameters[]): Parameters =>
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  mergeWith({}, ...parameterSets, (_: unknown, srcValue: unknown) => {
-    // Treat arrays as scalars:
-    if (Array.isArray(srcValue)) return srcValue as unknown[];
-
-    return undefined;
-  });
-
-// NOTE: Copy-paste from storybook/api
-export const denormalizeStoryParameters = ({
-  globalParameters,
-  kindParameters,
-  stories,
-}: SetStoriesPayload): StoriesRaw => {
-  return mapValues(stories, (storyData) => ({
-    ...storyData,
-    parameters: combineParameters(globalParameters, kindParameters[storyData.kind], storyData.parameters as Parameters),
-  })) as StoriesRaw;
-};

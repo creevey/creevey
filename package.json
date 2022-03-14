@@ -53,8 +53,8 @@
     "build": "run-p --continue-on-error build:*",
     "build:types": "tsc --emitDeclarationOnly -p scripts/tsconfig.prod.json",
     "build:creevey": "run-p \"build:creevey:* --extensions .ts,.tsx --ignore src/client/web\"",
-    "build:creevey:cjs": "cross-env BABEL_MODE=cjs babel src --out-dir lib/cjs",
-    "build:creevey:esm": "cross-env BABEL_MODE=esm babel src --out-dir lib/esm",
+    "build:creevey:cjs": "cross-env BABEL_MODE=cjs \"babel src --out-dir lib/cjs\"",
+    "build:creevey:esm": "cross-env BABEL_MODE=esm \"babel src --out-dir lib/esm\"",
     "build:client": "webpack --mode production",
     "postbuild": "run-p copy:*",
     "copy:index": "cpx scripts/dist/types/* lib/types/",
@@ -218,5 +218,9 @@
   },
   "storybook": {
     "displayName": "Creevey"
+  },
+  "volta": {
+    "node": "14.19.0",
+    "yarn": "1.22.17"
   }
 }

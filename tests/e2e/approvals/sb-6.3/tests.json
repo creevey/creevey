@@ -42,15 +42,14 @@
       "name": "StoryA",
       "story": "StoryA",
       "parameters": {
+        "framework": "react",
+        "fileName": "./stories/KindB.stories.mdx",
         "creevey": {
           "ignoreElements": [
-            "img",
             "img"
           ],
           "captureElement": "mdx-by-children"
         },
-        "framework": "react",
-        "fileName": "./stories/KindB.stories.mdx",
         "args": {},
         "argTypes": {},
         "__id": "docs-kindb--story-a",
