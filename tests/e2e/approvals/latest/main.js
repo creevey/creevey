@@ -543,8 +543,8 @@ SkippedTests.parameters = {
   creevey: {
     skip: {
       'testB in browser': {
-      "in": 'browser',
-      tests: ['testB']
+        "in": 'browser',
+        tests: ['testB']
       }
     }
   }
@@ -660,7 +660,7 @@ var componentMeta = {
   title: 'Docs/KindD',
   parameters: {
     creevey: {
-        ignoreElements: ['img']
+      ignoreElements: ['img']
     }
   },
   includeStories: ["_SkippedTests_", "_ExternalStory_", "storyA"]

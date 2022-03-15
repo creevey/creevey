@@ -65,11 +65,11 @@
         "creevey": {
           "skip": {
             "TestA in browser": {
-                "in": "browser",
-                "tests": [
-                  "TestA"
-                ]
-              }
+              "in": "browser",
+              "tests": [
+                "TestA"
+              ]
+            }
           },
           "tests": {
             "click": "async click() {}"
@@ -194,11 +194,11 @@
         "creevey": {
           "skip": {
             "TestA in browser": {
-                "in": "browser",
-                "tests": [
-                  "TestA"
-                ]
-              }
+              "in": "browser",
+              "tests": [
+                "TestA"
+              ]
+            }
           }
         },
         "framework": "react",
@@ -316,15 +316,15 @@
         "creevey": {
           "skip": {
             "TestA in browser": {
-                "in": "browser",
-                "tests": [
-                  "TestA"
-                ]
-              }
+              "in": "browser",
+              "tests": [
+                "TestA"
+              ]
+            }
           },
-            "ignoreElements": [
-              "img"
-            ]
+          "ignoreElements": [
+            "img"
+          ]
         },
         "framework": "react",
         "fileName": "./stories/KindD.stories.mdx",
@@ -360,15 +360,15 @@
         "creevey": {
           "skip": {
             "TestA in browser": {
-                "in": "browser",
-                "tests": [
-                  "TestA"
-                ]
-              }
+              "in": "browser",
+              "tests": [
+                "TestA"
+              ]
+            }
           },
-            "ignoreElements": [
-              "img"
-            ]
+          "ignoreElements": [
+            "img"
+          ]
         },
         "framework": "react",
         "fileName": "./stories/KindD.stories.mdx",
@@ -409,7 +409,7 @@
                 "TestA"
               ]
             }
-            },
+          },
           "ignoreElements": [
             "img"
           ],
