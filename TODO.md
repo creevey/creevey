@@ -491,6 +491,7 @@
 
 ## Third priority (v0.9)
 
+- [ ] Rename `in` skip option to `browsers`
 - [ ] Integrate effection https://github.com/thefrontside/effection
 - [ ] Experiment with html2canvas
 - [ ] Update Readme
