@@ -193,5 +193,18 @@ describe('shouldSkip', () => {
 
       expect(result).to.equal('Skip click tests');
     });
+    it('merged old and new formats', () => {
+      const skipOptions = {
+        Button: { in: 'chrome', tests: 'click', reason: 'Skip click tests' },
+        in: 'firefox',
+        tests: 'fillIn',
+        reason: 'Skip fillIn tests',
+      };
+      const result1 = shouldSkip('chrome', { kind: 'Button', story: 'with Error' }, skipOptions, 'click');
+      const result2 = shouldSkip('firefox', { kind: 'Input', story: 'with Error' }, skipOptions, 'fillIn');
+
+      expect(result1).to.equal('Skip click tests');
+      expect(result2).to.equal('Skip fillIn tests');
+    });
   });
 });
