@@ -369,6 +369,7 @@
 
 ## First priority (v0.8)
 
+- [ ] Check `storyStoreV7` feature
 - [ ] Remove report on each start
 - [ ] Bugs
   - [ ] Stories with restricted characters
@@ -490,6 +491,7 @@
 
 ## Third priority (v0.9)
 
+- [ ] Rename `in` skip option to `browsers`
 - [ ] Integrate effection https://github.com/thefrontside/effection
 - [ ] Experiment with html2canvas
 - [ ] Update Readme

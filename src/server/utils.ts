@@ -1,6 +1,6 @@
 import { createWriteStream, existsSync, readFileSync, unlink } from 'fs';
 import cluster from 'cluster';
-import { SkipOptions, isDefined, TestData, noop, isFunction } from '../types';
+import { SkipOptions, SkipOption, isDefined, TestData, noop, isFunction } from '../types';
 import { emitShutdownMessage, sendShutdownMessage } from './messages';
 import findCacheDir from 'find-cache-dir';
 import { get } from 'https';
@@ -10,6 +10,8 @@ export const isShuttingDown = { current: false };
 export const LOCALHOST_REGEXP = /(localhost|127\.0\.0\.1)/i;
 
 export const extensions = ['.js', '.jsx', '.ts', '.tsx'];
+
+export const skipOptionKeys = ['in', 'kinds', 'stories', 'tests', 'reason'];
 
 function matchBy(pattern: string | string[] | RegExp | undefined, value: string): boolean {
   return (
@@ -33,9 +35,29 @@ export function shouldSkip(
     return skipOptions;
   }
   if (Array.isArray(skipOptions)) {
-    return skipOptions.map((skipOption) => shouldSkip(browser, meta, skipOption, test)).find(Boolean) || false;
+    for (const skip of skipOptions) {
+      const reason = shouldSkip(browser, meta, skip, test);
+      if (reason) return reason;
+    }
+    return false;
   }
-  const { in: browsers, kinds, stories, tests, reason = true } = skipOptions;
+  let hasSkipOptionKeys = false;
+  for (const skipKey in skipOptions) {
+    if (skipOptionKeys.includes(skipKey)) {
+      hasSkipOptionKeys = true;
+      continue;
+    }
+    const reason = shouldSkip(
+      browser,
+      meta,
+      { reason: skipKey, ...(skipOptions as Record<string, SkipOption | SkipOption[]>)[skipKey] },
+      test,
+    );
+    if (reason) return reason;
+  }
+  if (!hasSkipOptionKeys) return false;
+
+  const { in: browsers, kinds, stories, tests, reason = true } = skipOptions as SkipOption;
   const { kind, story } = meta;
   const skipByBrowser = matchBy(browsers, browser);
   const skipByKind = matchBy(kinds, kind);

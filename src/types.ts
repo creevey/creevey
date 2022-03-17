@@ -376,7 +376,7 @@ export interface SkipOption {
   tests?: string | string[] | RegExp;
 }
 
-export type SkipOptions = boolean | string | SkipOption | SkipOption[];
+export type SkipOptions = boolean | string | SkipOption | SkipOption[] | Record<string, SkipOption | SkipOption[]>;
 
 export type CreeveyTestFunction = (this: {
   browser: WebDriver;

@@ -203,6 +203,6 @@ export function withCreevey(): MakeDecoratorResult {
   return makeDecorator({
     name: 'withCreevey',
     parameterName: 'creevey',
-    wrapper: (getStory, context) => getStory(context) as unknown,
+    wrapper: (getStory, context) => getStory(context),
   });
 }

@@ -112,7 +112,19 @@ module.exports = {
 
 ### Storybook parameters
 
-Also you could define parameters on `kind` or `story` levels. All these parameters are deeply merged by storybook for each story.
+Also you could define parameters on `global`, `kind` or `story` levels. All these parameters are deeply merged by Storybook for each story. But bear in mind when you define skip option as an array Storybook treats it as primitive value and doesn't merge with other skip options.
+
+```tsx
+// .storybook/preview.tsx
+export const parameters = {
+  creevey: {
+    // Skip all *hover tests in IE11 on the global level
+    skip: {
+      ie11: { in: 'ie11', tests: /.*hover$/ },
+    },
+  },
+};
+```
 
 ```tsx
 import React from 'react';
@@ -126,12 +138,12 @@ export default {
     creevey: {
       // You could skip some browsers/stories or even specific tests
       skip: [
-        { in: 'ie11', reason: '`MyComponent` do not support IE11' },
-        { in: 'firefox', stories: 'Loading' },
+        { in: 'ie11', reason: "`MyComponent` doesn't support ie11" },
+        { in: 'firefox', stories: 'Loading', reason: "Loading stories are flaky in firefox" },
         {
           in: ['firefox', 'chrome'],
           tests: /.*hover$/,
-          reason: 'For some reason `MyComponent` hovering do not work correctly',
+          reason: "For some reason `MyComponent` hovering doesn't work correctly",
         },
       ],
     },
@@ -155,6 +167,18 @@ Basic.parameters = {
 
 ### `skip` option examples:
 
+```ts
+interface SkipOption {
+  reason?: string;
+  in?: string | string[] | RegExp;
+  kinds?: string | string[] | RegExp;
+  stories?: string | string[] | RegExp;
+  tests?: string | string[] | RegExp;
+}
+
+type SkipOptions = SkipOption | SkipOption[] | Record<string, SkipOption | SkipOption[]>;
+```
+
 - Skip all stories for all browsers:
   - `skip: true`
   - `skip: 'Skip reason message'`
@@ -175,6 +199,14 @@ Basic.parameters = {
   - `skip: { tests: 'click' }`
   - `skip: { tests: ['hover', 'click'] }`
   - `skip: { tests: /^press.*$/ }`
-- Multiple skip options: `skip: [{ /* ... */ }]`
+- Multiple skip options:
+  - as an array `skip: [{ /* ... */ }]`
+  - as an object
+    ```
+    skip: {
+      foo: { /* ... */ },
+      bar: { /* ... */ },
+    }
+    ```
 
 NOTE: If you try to skip stories by story name, the storybook name format will be used (For more info see [storybook-export-vs-name-handling](https://storybook.js.org/docs/formats/component-story-format/#storybook-export-vs-name-handling))

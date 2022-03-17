@@ -57,7 +57,7 @@ describe('Storybook Fixtures E2E', function () {
       if (shouldAssertWebpack) assertWebpackBundle(workDir, suiteName);
 
       if (shouldBuildStorybook) {
-        it('Storybook build should not fail', () => execSync('npx build-storybook', { cwd: workDir }));
+        it('Storybook build should not fail', () => execSync('npx build-storybook --quiet', { cwd: workDir }));
 
         if (shouldAssertExtractedStories) assertExtractedStories(workDir);
       }

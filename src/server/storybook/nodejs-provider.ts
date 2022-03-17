@@ -6,17 +6,18 @@ import type { StoryInput, WebpackMessage, SetStoriesData, Config } from '../../t
 import { noop } from '../../types';
 import { getCreeveyCache } from '../utils';
 import { subscribeOn } from '../messages';
-import type { Parameters } from '@storybook/api';
+import type { Parameters as StorybookParameters } from '@storybook/api';
 import type { default as Channel } from '@storybook/channels';
 import {
   importStorybookClientLogger,
   importStorybookConfig,
   importStorybookCoreCommon,
   importStorybookCoreEvents,
+  isStorybookVersionGreaterThan,
   isStorybookVersionLessThan,
 } from './helpers';
 import { logger } from '../logger';
-import { flatStories } from '../stories';
+import { denormalizeStoryParameters } from '../../shared';
 
 async function initStorybookEnvironment(): Promise<typeof import('./entry')> {
   // @ts-ignore
@@ -57,7 +58,10 @@ function watchStories(channel: Channel, watcher: FSWatcher, initialFiles: Set<st
   );
 
   return (data: SetStoriesData) => {
-    const stories = isStorybookVersionLessThan(6) ? data.stories : flatStories(data);
+    const stories =
+      isStorybookVersionLessThan(6) || isStorybookVersionGreaterThan(6, 3)
+        ? data.stories
+        : denormalizeStoryParameters(data);
     const files = new Set(Object.values(stories).map((story) => story.parameters.fileName));
     const addedFiles = Array.from(files).filter((filePath) => !watchingFiles.has(filePath));
     const removedFiles = Array.from(watchingFiles).filter((filePath) => !files.has(filePath));
@@ -97,7 +101,7 @@ async function loadStoriesDirectly(
   config: Config,
   { watcher, debug }: { watcher: FSWatcher | null; debug: boolean },
 ): Promise<void> {
-  const { toRequireContext } = await importStorybookCoreCommon();
+  const { toRequireContext, normalizeStoriesEntry } = await importStorybookCoreCommon();
   const { addParameters, configure } = await import('./entry');
   const requireContext = await (await import('../loaders/babel/register')).default(config, debug);
   const preview = (() => {
@@ -109,16 +113,15 @@ async function loadStoriesDirectly(
   })();
 
   const { stories } = await importStorybookConfig();
-  const contexts = stories.map((input) => {
+  const contexts = stories.map((entry) => {
+    const normalizedEntry = isStorybookVersionLessThan(6, 4)
+      ? entry
+      : normalizeStoriesEntry(entry, { configDir: config.storybookDir, workingDir: process.cwd() });
     const {
       path: storiesPath,
       recursive,
       match,
-    } = toRequireContext(input) as {
-      path: string;
-      recursive: boolean;
-      match: string;
-    };
+    } = toRequireContext(normalizedEntry as Parameters<typeof toRequireContext>['0']);
     watcher?.add(path.resolve(config.storybookDir, storiesPath));
     return () => requireContext(storiesPath, recursive, new RegExp(match));
   });
@@ -140,9 +143,9 @@ async function loadStoriesDirectly(
   async function startStorybook(): Promise<void> {
     if (preview) {
       const { parameters, globals, globalTypes } = (await import(preview)) as {
-        parameters?: Parameters;
-        globals?: unknown;
-        globalTypes?: unknown;
+        parameters?: StorybookParameters;
+        globals?: NonNullable<Parameters<typeof addParameters>['0']>['globals'];
+        globalTypes?: NonNullable<Parameters<typeof addParameters>['0']>['globalTypes'];
       };
       if (parameters) addParameters(parameters);
       if (globals) addParameters({ globals });
@@ -186,7 +189,10 @@ export async function loadStories(
 
   const loadPromise = new Promise<SetStoriesData>((resolve) => {
     channel.once(Events.SET_STORIES, (data: SetStoriesData) => {
-      const stories = isStorybookVersionLessThan(6) ? data.stories : flatStories(data);
+      const stories =
+        isStorybookVersionLessThan(6) || isStorybookVersionGreaterThan(6, 3)
+          ? data.stories
+          : denormalizeStoryParameters(data);
       const files = new Set(Object.values(stories).map((story) => story.parameters.fileName));
 
       if (watcher) channel.on(Events.SET_STORIES, watchStories(channel, watcher, files));
