@@ -4,7 +4,7 @@ import { shouldSkip } from '../src/server/utils';
 
 describe('shouldSkip', () => {
   describe('browsers', () => {
-    it('match story by array of browsers', () => {
+    it('match story by browser', () => {
       const result = shouldSkip(
         'chrome',
         { kind: 'Button', story: 'with Error' },
@@ -17,7 +17,7 @@ describe('shouldSkip', () => {
 
       expect(result).to.equal('Skip stories for chrome');
     });
-    it('skip story by array of browsers', () => {
+    it('skip story by browser', () => {
       const result = shouldSkip(
         'firefox',
         { kind: 'Input', story: 'with Error' },
@@ -32,7 +32,7 @@ describe('shouldSkip', () => {
     });
   });
   describe('kinds', () => {
-    it('match story by array of kinds', () => {
+    it('match story by kind', () => {
       const result = shouldSkip(
         'chrome',
         { kind: 'Button', story: 'with Error' },
@@ -45,7 +45,7 @@ describe('shouldSkip', () => {
 
       expect(result).to.equal('Skip all buttons');
     });
-    it('skip story by array of kinds', () => {
+    it('skip story by kind', () => {
       const result = shouldSkip(
         'chrome',
         { kind: 'Input', story: 'with Error' },
@@ -60,7 +60,7 @@ describe('shouldSkip', () => {
     });
   });
   describe('stories', () => {
-    it('match story by array of stories', () => {
+    it('match story by story', () => {
       const result = shouldSkip(
         'chrome',
         { kind: 'Button', story: 'with Error' },
@@ -73,7 +73,7 @@ describe('shouldSkip', () => {
 
       expect(result).to.equal('Skip `with Error` stories');
     });
-    it('skip story by array of stories', () => {
+    it('skip story by story', () => {
       const result = shouldSkip(
         'chrome',
         { kind: 'Input', story: 'without Error' },
@@ -88,7 +88,7 @@ describe('shouldSkip', () => {
     });
   });
   describe('tests', () => {
-    it('match story by array of tests', () => {
+    it('match story by test', () => {
       const result = shouldSkip(
         'chrome',
         { kind: 'Button', story: 'with Error' },
@@ -102,7 +102,7 @@ describe('shouldSkip', () => {
 
       expect(result).to.equal('Skip click tests');
     });
-    it('skip story by array of tests', () => {
+    it('skip story by test', () => {
       const result = shouldSkip(
         'chrome',
         { kind: 'Input', story: 'with Error' },
