@@ -116,7 +116,7 @@
     "resolve-from": "^5.0.0",
     "schema-utils": "^3.0.0",
     "selenium-webdriver": "^4.0.0-beta.3",
-    "shelljs": "^0.8.4",
+    "shelljs": "^0.8.5",
     "tsconfig-paths": "^3.11.0",
     "webpack-node-externals": "^3.0.0",
     "ws": "^7.4.6"
