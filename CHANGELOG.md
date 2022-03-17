@@ -1,3 +1,16 @@
+# [0.8.0-beta.0](https://github.com/wKich/creevey/compare/v0.7.39...v0.8.0-beta.0) (2022-03-17)
+
+### Bug Fixes
+
+- 🐛 revert cross-env scripts, as they not work in unix ([92b04a5](https://github.com/wKich/creevey/commit/92b04a5bed56191b7ee6bd169f5327e30a1c2232))
+
+### Features
+
+- 🎸 change format for `skip` parameter ([f244b7c](https://github.com/wKich/creevey/commit/f244b7cd344b276762408a1df841e5afc3853fad))
+- 🎸 Improve skip options ([2fcc624](https://github.com/wKich/creevey/commit/2fcc624a9b2ab1dcdce3927779c8f58bb0a0d02c))
+- new creevey params: "global" and "kind" ([7d7c885](https://github.com/wKich/creevey/commit/7d7c88521a28c91586bfdd663500bea576845292))
+- support storybook 6.4 ([74010e5](https://github.com/wKich/creevey/commit/74010e53d93ff1815427cd7ee818481ce6e21288))
+
 ## [0.7.39](https://github.com/wKich/creevey/compare/v0.7.38...v0.7.39) (2021-11-04)
 
 ### Features
