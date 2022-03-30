@@ -8,13 +8,15 @@ const SwapView = (image: { expect: string; diff: string; actual: string }): JSX.
   <ImagesViewBase image={image} url="https://images.placeholders.dev" canApprove mode={'swap'} />
 );
 
-async function play({ canvasElement }: Parameters<NonNullable<ComponentStoryObj<typeof SwapView>['play']>>['0']) {
-  await capture({ imageName: 'actual' })
+async function play({
+  canvasElement,
+}: Parameters<NonNullable<ComponentStoryObj<typeof SwapView>['play']>>['0']): Promise<void> {
+  await capture({ imageName: 'actual' });
 
-  const diffImage = await within(canvasElement).findByAltText('diff')
-  fireEvent.click(diffImage)
+  const diffImage = await within(canvasElement).findByAltText('diff');
+  fireEvent.click(diffImage);
 
-  await capture({ imageName: 'expect' })
+  await capture({ imageName: 'expect' });
 }
 
 export default {

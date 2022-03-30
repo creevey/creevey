@@ -137,7 +137,7 @@ function waitForCaptureCall(): Promise<void> {
 }
 
 function initCreeveyState(): void {
-  const prevState: CreeveyTestsState = JSON.parse(window.localStorage.getItem('Creevey_Tests') ?? '{}');
+  const prevState = JSON.parse(window.localStorage.getItem('Creevey_Tests') ?? '{}') as CreeveyTestsState;
 
   if (prevState.creeveyHost) window.__CREEVEY_SERVER_HOST__ = prevState.creeveyHost;
   if (prevState.creeveyPort) window.__CREEVEY_SERVER_PORT__ = prevState.creeveyPort;
@@ -205,7 +205,7 @@ export function withCreevey(): MakeDecoratorResult {
         if (storiesFromFile) storiesFromFile.push(story);
         else storiesByFiles.set(story.parameters.fileName, [story]);
       });
-      fetch(`http://${getConnectionUrl()}/stories`, {
+      void fetch(`http://${getConnectionUrl()}/stories`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ setStoriesCounter, stories: [...storiesByFiles.entries()] }),
@@ -295,18 +295,18 @@ export function withCreevey(): MakeDecoratorResult {
     ignoreStyles.parentNode?.removeChild(ignoreStyles);
   }
 
-  function hasPlayCompletedYet(callback: (isPlayCompleted: boolean) => void) {
+  function hasPlayCompletedYet(callback: (isPlayCompleted: boolean) => void): void {
     creeveyReady();
     let isCaptureCalled = false;
     let isPlayCompleted = false;
 
     const channel = addons.getChannel();
-    waitForStoryRendered(channel).then(() => {
+    void waitForStoryRendered(channel).then(() => {
       if (isCaptureCalled) return;
       isPlayCompleted = true;
       callback(true);
     });
-    waitForCaptureCall().then(() => {
+    void waitForCaptureCall().then(() => {
       if (isPlayCompleted) return;
       isCaptureCalled = true;
       callback(false);
@@ -321,10 +321,10 @@ export function withCreevey(): MakeDecoratorResult {
   window.__CREEVEY_HAS_PLAY_COMPLETED_YET__ = hasPlayCompletedYet;
   window.__CREEVEY_SET_READY_FOR_CAPTURE__ = noop;
 
-  const queryAllByQuery = (container: HTMLElement, query: string) =>
+  const queryAllByQuery = (container: HTMLElement, query: string): HTMLElement[] =>
     [...container.querySelectorAll(query)].filter((e) => e instanceof HTMLElement) as HTMLElement[];
-  const getMultipleError = (_: Element | null, query: string) => `Found multiple elements by query: ${query}`;
-  const getMissingError = (_: Element | null, query: string) => `Unable to find an element by query: ${query}`;
+  const getMultipleError = (_: Element | null, query: string): string => `Found multiple elements by query: ${query}`;
+  const getMissingError = (_: Element | null, query: string): string => `Unable to find an element by query: ${query}`;
 
   const [queryByQuery, getAllByQuery, getByQuery, findAllByQuery, findByQuery] = buildQueries(
     queryAllByQuery,
@@ -345,7 +345,8 @@ export function withCreevey(): MakeDecoratorResult {
 
     wrapper: (getStory, context) => {
       // TODO Define proper types, like captureElement is a promise
-      const { captureElement } = (context.parameters.creevey = context.parameters.creevey ?? {}) as CreeveyStoryParams;
+      const { captureElement } = (context.parameters.creevey =
+        (context.parameters.creevey as CreeveyStoryParams) ?? {});
       Object.defineProperty(context.parameters.creevey, 'captureElement', {
         get() {
           switch (true) {

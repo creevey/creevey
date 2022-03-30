@@ -1,5 +1,5 @@
 import { ComponentMeta, ComponentStoryObj } from '@storybook/react';
-import { within } from '@storybook/testing-library'
+import { within } from '@storybook/testing-library';
 import { SideBar } from '../src/client/web/CreeveyView/SideBar';
 import { treeifyTests, checkSuite, getTestByPath } from '../src/client/shared/helpers';
 import { noop, CreeveySuite, CreeveyStatus, isDefined, isTest } from '../src/types';
@@ -78,14 +78,14 @@ export const SimpleSideBar: ComponentStoryObj<typeof SideBar> = {
     };
   })(),
   async play({ canvasElement }) {
-    const rootSuite = await within(canvasElement).findByTestId('root')
-    rootSuite.classList.add('hover')
-  }
+    const rootSuite = await within(canvasElement).findByTestId('root');
+    rootSuite.classList.add('hover');
+  },
 };
 
 export const StatusSideBar: ComponentStoryObj<typeof SideBar> = {
   args: {
     rootSuite: openSuites(treeifyTests(statusTests())),
     openedTest: null,
-  }
-}
+  },
+};

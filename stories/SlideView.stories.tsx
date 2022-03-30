@@ -3,13 +3,14 @@ import { ComponentMeta, ComponentStoryObj } from '@storybook/react';
 import { fireEvent, within } from '@storybook/testing-library';
 import { ImagesView as ImagesViewBase } from '../src/client/shared/components/ImagesView';
 import { capture } from '../src/client/addon/withCreevey';
-import { StoryContext } from '@storybook/addons';
 
 const SlideView = (image: { expect: string; diff: string; actual: string }): JSX.Element => (
   <ImagesViewBase image={image} url="https://images.placeholders.dev" canApprove mode={'slide'} />
 );
 
-async function play({ canvasElement }: Parameters<NonNullable<ComponentStoryObj<typeof SlideView>['play']>>['0']) {
+async function play({
+  canvasElement,
+}: Parameters<NonNullable<ComponentStoryObj<typeof SlideView>['play']>>['0']): Promise<void> {
   await capture({ imageName: 'idle' });
 
   const slider = await within(canvasElement).findByTestId('slider');
