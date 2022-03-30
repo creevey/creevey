@@ -15,7 +15,7 @@ export const decorators: DecoratorFunction<JSX.Element>[] = [
           onStop: noop,
           onSuiteOpen: noop,
           onSuiteToggle: noop,
-          ...context.parameters?.context
+          ...context.parameters?.context,
         }}
       >
         <Story />

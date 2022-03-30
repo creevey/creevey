@@ -34,32 +34,32 @@ jobs:
         run: yarn
       - name: tests
         run: yarn test:e2e --grep Fixtures
-  e2e-storybook:
-    name: Storybook Official E2E Tests
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: creevey
-    steps:
-      - name: Checkout Creevey
-        uses: actions/checkout@v2
-        with:
-          path: creevey
-      - name: Checkout Storybook
-        uses: actions/checkout@v2
-        with:
-          repository: creevey/storybook
-          ref: creevey
-          path: storybook
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 14.x
-      - name: install
-        run: yarn
-      - name: bootstrap
-        run: yarn bootstrap:storybook
-      - name: tests
-        run: yarn test:e2e --grep Official
+  # e2e-storybook:
+  #   name: Storybook Official E2E Tests
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: creevey
+  #   steps:
+  #     - name: Checkout Creevey
+  #       uses: actions/checkout@v2
+  #       with:
+  #         path: creevey
+  #     - name: Checkout Storybook
+  #       uses: actions/checkout@v2
+  #       with:
+  #         repository: creevey/storybook
+  #         ref: creevey
+  #         path: storybook
+  #     - uses: actions/setup-node@v1
+  #       with:
+  #         node-version: 14.x
+  #     - name: install
+  #       run: yarn
+  #     - name: bootstrap
+  #       run: yarn bootstrap:storybook
+  #     - name: tests
+  #       run: yarn test:e2e --grep Official
   tests:
     name: Tests
     runs-on: ubuntu-latest
