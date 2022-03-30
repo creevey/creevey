@@ -1,6 +1,6 @@
 import cluster from 'cluster';
 import { readConfig, defaultBrowser } from './config';
-import { Options, noop, Config, BrowserConfig } from '../types';
+import { Options, Config, BrowserConfig } from '../types';
 import { logger } from './logger';
 
 // NOTE: Impure function, mutate config by adding gridUrl prop
@@ -20,7 +20,6 @@ export default async function (options: Options): Promise<void> {
 
   if (!config) return;
 
-  const resolveApi = cluster.isMaster ? (await import('./master/server')).default(config.reportDir, port, ui) : noop;
   // NOTE: We don't need docker nor selenoid for webpack or update options
   if (
     !(config.gridUrl || (Object.values(config.browsers) as BrowserConfig[]).every(({ gridUrl }) => gridUrl)) &&
@@ -46,6 +45,8 @@ export default async function (options: Options): Promise<void> {
     }
     case cluster.isMaster: {
       logger.info('Starting Master Process');
+
+      const resolveApi = (await import('./master/server')).default(config.reportDir, port, ui);
 
       return (await import('./master')).default(config, options, resolveApi);
     }

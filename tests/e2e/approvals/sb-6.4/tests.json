@@ -41,7 +41,7 @@
       "initialArgs": {},
       "argTypes": {}
     },
-    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await (((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.screenshots.length > 0) ? this.expect(this.screenshots.reduce((screenshots, {\n      imageName,\n      screenshot\n    }, index) => ({ ...screenshots,\n      [imageName !== null && imageName !== void 0 ? imageName : `screenshot_${index}`]: screenshot\n    }), {})).to.matchImages() : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
   },
   "7fa6eb0e6d7b60bdff1a989521881e1476cb2e66": {
     "id": "7fa6eb0e6d7b60bdff1a989521881e1476cb2e66",
@@ -85,7 +85,7 @@
       "initialArgs": {},
       "argTypes": {}
     },
-    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await (((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.screenshots.length > 0) ? this.expect(this.screenshots.reduce((screenshots, {\n      imageName,\n      screenshot\n    }, index) => ({ ...screenshots,\n      [imageName !== null && imageName !== void 0 ? imageName : `screenshot_${index}`]: screenshot\n    }), {})).to.matchImages() : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
   },
   "2fd0264d599e219a5bcd0e0f057c46eb3c0fb138": {
     "id": "2fd0264d599e219a5bcd0e0f057c46eb3c0fb138",
@@ -131,7 +131,7 @@
       "initialArgs": {},
       "argTypes": {}
     },
-    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await (((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.screenshots.length > 0) ? this.expect(this.screenshots.reduce((screenshots, {\n      imageName,\n      screenshot\n    }, index) => ({ ...screenshots,\n      [imageName !== null && imageName !== void 0 ? imageName : `screenshot_${index}`]: screenshot\n    }), {})).to.matchImages() : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
   },
   "ee4c11585e510cce9e2c9544454fb39072535a35": {
     "id": "ee4c11585e510cce9e2c9544454fb39072535a35",
@@ -171,7 +171,7 @@
       "initialArgs": {},
       "argTypes": {}
     },
-    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await (((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.screenshots.length > 0) ? this.expect(this.screenshots.reduce((screenshots, {\n      imageName,\n      screenshot\n    }, index) => ({ ...screenshots,\n      [imageName !== null && imageName !== void 0 ? imageName : `screenshot_${index}`]: screenshot\n    }), {})).to.matchImages() : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
   },
   "230cf78513493eab436dc46cd4267575680140f3": {
     "id": "230cf78513493eab436dc46cd4267575680140f3",
@@ -211,7 +211,7 @@
       "initialArgs": {},
       "argTypes": {}
     },
-    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await (((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.screenshots.length > 0) ? this.expect(this.screenshots.reduce((screenshots, {\n      imageName,\n      screenshot\n    }, index) => ({ ...screenshots,\n      [imageName !== null && imageName !== void 0 ? imageName : `screenshot_${index}`]: screenshot\n    }), {})).to.matchImages() : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
   },
   "d23da9824993be60b86d13beca3e430979e12b2b": {
     "id": "d23da9824993be60b86d13beca3e430979e12b2b",
@@ -252,7 +252,7 @@
       "initialArgs": {},
       "argTypes": {}
     },
-    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await (((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.screenshots.length > 0) ? this.expect(this.screenshots.reduce((screenshots, {\n      imageName,\n      screenshot\n    }, index) => ({ ...screenshots,\n      [imageName !== null && imageName !== void 0 ? imageName : `screenshot_${index}`]: screenshot\n    }), {})).to.matchImages() : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
   },
   "547f2235f9a2d7631362bf318922cb4307a5b4d4": {
     "id": "547f2235f9a2d7631362bf318922cb4307a5b4d4",
@@ -292,7 +292,7 @@
       "initialArgs": {},
       "argTypes": {}
     },
-    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await (((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.screenshots.length > 0) ? this.expect(this.screenshots.reduce((screenshots, {\n      imageName,\n      screenshot\n    }, index) => ({ ...screenshots,\n      [imageName !== null && imageName !== void 0 ? imageName : `screenshot_${index}`]: screenshot\n    }), {})).to.matchImages() : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
   },
   "b15d4d73bc867905a8cb706131c4eeac53d99f2a": {
     "id": "b15d4d73bc867905a8cb706131c4eeac53d99f2a",
@@ -336,7 +336,7 @@
       "initialArgs": {},
       "argTypes": {}
     },
-    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await (((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.screenshots.length > 0) ? this.expect(this.screenshots.reduce((screenshots, {\n      imageName,\n      screenshot\n    }, index) => ({ ...screenshots,\n      [imageName !== null && imageName !== void 0 ? imageName : `screenshot_${index}`]: screenshot\n    }), {})).to.matchImages() : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
   },
   "e25dd97ad95fc95e9fdf9ab1f55311333f08e890": {
     "id": "e25dd97ad95fc95e9fdf9ab1f55311333f08e890",
@@ -380,7 +380,7 @@
       "initialArgs": {},
       "argTypes": {}
     },
-    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await (((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.screenshots.length > 0) ? this.expect(this.screenshots.reduce((screenshots, {\n      imageName,\n      screenshot\n    }, index) => ({ ...screenshots,\n      [imageName !== null && imageName !== void 0 ? imageName : `screenshot_${index}`]: screenshot\n    }), {})).to.matchImages() : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
   },
   "4e2e625edcb3a9432873556e51246b9526d2660a": {
     "id": "4e2e625edcb3a9432873556e51246b9526d2660a",
@@ -425,6 +425,6 @@
       "initialArgs": {},
       "argTypes": {}
     },
-    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await ((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
+    "fn": "async function storyTest() {\n    var _testFn$call;\n\n    delay ? await new Promise(resolve => setTimeout(resolve, delay)) : void 0;\n    await (((_testFn$call = testFn === null || testFn === void 0 ? void 0 : testFn.call(this)) !== null && _testFn$call !== void 0 ? _testFn$call : this.screenshots.length > 0) ? this.expect(this.screenshots.reduce((screenshots, {\n      imageName,\n      screenshot\n    }, index) => ({ ...screenshots,\n      [imageName !== null && imageName !== void 0 ? imageName : `screenshot_${index}`]: screenshot\n    }), {})).to.matchImages() : this.expect(await this.takeScreenshot()).to.matchImage());\n  }"
   }
 }

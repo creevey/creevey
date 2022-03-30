@@ -3,6 +3,7 @@ import * as polyfill from 'event-source-polyfill';
 import type { PreviewWeb } from '@storybook/preview-web';
 import type { AnyFramework } from '@storybook/csf';
 import type { StoryStore } from '@storybook/client-api';
+import { buildQueries, within } from '@storybook/testing-library';
 import { addons, MakeDecoratorResult, makeDecorator, Channel } from '@storybook/addons';
 import {
   CaptureOptions,
@@ -15,7 +16,6 @@ import {
 } from '../../types';
 import { denormalizeStoryParameters } from '../../shared';
 import { getConnectionUrl } from '../shared/helpers';
-import { buildQueries, within } from '@storybook/testing-library';
 
 if (typeof process != 'object' || typeof process.version != 'string') {
   // NOTE If you don't use babel-polyfill or any other polyfills that add EventSource for IE11
