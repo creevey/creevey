@@ -124,7 +124,6 @@ export class CreeveyManager {
     this.creeveyApi?.start(ids);
   };
   onSetStories = (data: SetStoriesPayload): void => {
-    // TODO: Send PR to storybook to fix this
     const stories = data.v ? denormalizeStoryParameters(data as unknown as SetStoriesData) : data.stories;
     this.stories = stories;
   };

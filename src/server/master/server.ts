@@ -1,23 +1,82 @@
 import path from 'path';
 import http from 'http';
+import cluster from 'cluster';
 import Koa from 'koa';
+import cors from '@koa/cors';
 import serve from 'koa-static';
 import mount from 'koa-mount';
+import body from 'koa-bodyparser';
 import WebSocket from 'ws';
 import { CreeveyApi } from './api';
-import { subscribeOn } from '../messages';
-import { noop } from '../../types';
+import { emitStoriesMessage, sendStoriesMessage, subscribeOn, subscribeOnWorker } from '../messages';
+import { CaptureOptions, isDefined, noop, StoryInput } from '../../types';
 import { logger } from '../logger';
 
-export default function server(reportDir: string, port: number): (api: CreeveyApi) => void {
+export default function server(reportDir: string, port: number, ui: boolean): (api: CreeveyApi) => void {
   let resolveApi: (api: CreeveyApi) => void = noop;
+  let setStoriesCounter = 0;
   const creeveyApi = new Promise<CreeveyApi>((resolve) => (resolveApi = resolve));
   const app = new Koa();
   const server = http.createServer(app.callback());
   const wss = new WebSocket.Server({ server });
 
-  app.use(async (_, next) => {
-    await creeveyApi;
+  app.use(cors());
+  app.use(body());
+
+  app.use(async (ctx, next) => {
+    if (ctx.method == 'GET' && ctx.path == '/ping') {
+      ctx.body = 'pong';
+      return;
+    }
+    await next();
+  });
+
+  if (ui) {
+    app.use(async (_, next) => {
+      await creeveyApi;
+      await next();
+    });
+  }
+
+  app.use(async (ctx, next) => {
+    if (ctx.method == 'POST' && ctx.path == '/stories') {
+      const { setStoriesCounter: counter, stories } = ctx.request.body as {
+        setStoriesCounter: number;
+        stories: [string, StoryInput[]][];
+      };
+      if (setStoriesCounter >= counter) return;
+
+      setStoriesCounter = counter;
+      emitStoriesMessage({ type: 'update', payload: stories });
+      Object.values(cluster.workers)
+        .filter(isDefined)
+        .filter((worker) => worker.isConnected())
+        .forEach((worker) => sendStoriesMessage(worker, { type: 'update', payload: stories }));
+      return;
+    }
+    await next();
+  });
+
+  app.use(async (ctx, next) => {
+    if (ctx.method == 'POST' && ctx.path == '/capture') {
+      const { workerId, options } = ctx.request.body as { workerId: number; options?: CaptureOptions };
+      const worker = Object.values(cluster.workers)
+        .filter(isDefined)
+        .find((worker) => worker.process.pid == workerId);
+      // NOTE: Hypothetical case when someone send to us capture req and we don't have a worker with browser session for it
+      if (!worker) return;
+      await new Promise<void>((resolve) => {
+        const unsubscribe = subscribeOnWorker(worker, 'stories', (message) => {
+          if (message.type != 'capture') return;
+          unsubscribe();
+          resolve();
+        });
+        sendStoriesMessage(worker, { type: 'capture', payload: options });
+      });
+      // TODO Pass screenshot result to show it in inspector
+      ctx.body = 'Ok';
+      return;
+    }
     await next();
   });
 

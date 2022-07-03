@@ -23,7 +23,7 @@ jobs:
       - persist_to_workspace:
           root: lib
           paths:
-            - "*"
+            - '*'
       - store_artifacts:
           path: creevey.tgz
 

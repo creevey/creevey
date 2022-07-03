@@ -16,12 +16,14 @@ export function managerEntries(entry: string[] = []): string[] {
 }
 
 declare global {
+  const __CREEVEY_SERVER_HOST__: string;
   const __CREEVEY_SERVER_PORT__: number;
   const __CREEVEY_CLIENT_PORT__: number | null;
 }
 export interface CreeveyAddonOptions {
   creeveyConfigPath?: string;
   creeveyPreExtract?: string;
+  creeveyHost?: string;
   creeveyPort?: number;
   clientPort?: number;
   configType: string;
@@ -56,6 +58,7 @@ export function managerWebpack(config: Configuration, options: CreeveyAddonOptio
       const { DefinePlugin = FallbackDefinePlugin } = webpack ?? {};
       config.plugins?.push(
         new DefinePlugin({
+          __CREEVEY_SERVER_HOST__: options.creeveyHost,
           __CREEVEY_SERVER_PORT__: options.creeveyPort ?? 3000,
           __CREEVEY_CLIENT_PORT__: options.clientPort,
         }),

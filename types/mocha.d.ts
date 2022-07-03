@@ -11,6 +11,7 @@ declare namespace Mocha {
     readonly captureElement?: import('selenium-webdriver').WebElementPromise;
     browserName: string;
     testScope: string[];
+    screenshots: { imageName?: string; screenshot: string }[];
   }
 
   interface Test {

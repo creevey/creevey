@@ -270,7 +270,7 @@ export function countTestsStatus(suite: CreeveySuite): CreeveyTestsStatus {
 
 export function getConnectionUrl(): string {
   return [
-    window.location.hostname,
+    typeof __CREEVEY_SERVER_HOST__ == 'undefined' ? window.location.hostname : __CREEVEY_SERVER_HOST__,
     typeof __CREEVEY_SERVER_PORT__ == 'undefined' ? window.location.port : __CREEVEY_SERVER_PORT__,
   ]
     .filter(Boolean)

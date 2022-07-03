@@ -1,53 +1,49 @@
-import React from 'react';
+import { ComponentMeta, ComponentStoryObj } from '@storybook/react';
 import { PageHeader } from '../src/client/shared/components/PageHeader/PageHeader';
 import { noop } from '../src/types';
 
-export default { title: 'PageHeader' };
+export default {
+  title: 'PageHeader',
+  component: PageHeader,
+  args: {
+    showTitle: true,
+    onImageChange: noop,
+    onViewModeChange: noop,
+  },
+} as ComponentMeta<typeof PageHeader>;
 
-export const Simple = (): JSX.Element => (
-  <PageHeader
-    showTitle
-    title={['chrome', 'title', '1']}
-    showViewModes
-    viewMode={'side-by-side'}
-    onImageChange={noop}
-    onViewModeChange={noop}
-  />
-);
+export const Simple: ComponentStoryObj<typeof PageHeader> = {
+  args: {
+    title: ['chrome', 'title', '1'],
+    showViewModes: true,
+    viewMode: 'side-by-side',
+  },
+};
 
-export const WithError = (): JSX.Element => (
-  <PageHeader
-    showTitle
-    title={['chrome', 'title', '2']}
-    errorMessage={'errorMessage'}
-    showViewModes={false}
-    viewMode={'swap'}
-    onImageChange={noop}
-    onViewModeChange={noop}
-  />
-);
-export const WithImagePreview = (): JSX.Element => (
-  <PageHeader
-    showTitle
-    title={['chrome', 'title', '3']}
-    showViewModes={false}
-    viewMode={'swap'}
-    onImageChange={noop}
-    onViewModeChange={noop}
-    images={{ click: { actual: '1' }, idle: { actual: '2', error: 'error' } }}
-    imagesWithError={['idle']}
-  />
-);
+export const WithError: ComponentStoryObj<typeof PageHeader> = {
+  args: {
+    title: ['chrome', 'title', '2'],
+    errorMessage: 'errorMessage',
+    showViewModes: false,
+    viewMode: 'swap',
+  },
+};
+export const WithImagePreview: ComponentStoryObj<typeof PageHeader> = {
+  args: {
+    title: ['chrome', 'title', '3'],
+    showViewModes: false,
+    viewMode: 'swap',
+    images: { click: { actual: '1' }, idle: { actual: '2', error: 'error' } },
+    imagesWithError: ['idle'],
+  },
+};
 
-export const Full = (): JSX.Element => (
-  <PageHeader
-    showTitle
-    title={['chrome', 'title', '4']}
-    showViewModes
-    viewMode={'swap'}
-    onImageChange={noop}
-    onViewModeChange={noop}
-    images={{ click: { actual: '1', error: 'error' }, idle: { actual: '2', error: 'error' } }}
-    imagesWithError={['idle', 'click']}
-  />
-);
+export const Full: ComponentStoryObj<typeof PageHeader> = {
+  args: {
+    title: ['chrome', 'title', '4'],
+    showViewModes: true,
+    viewMode: 'swap',
+    images: { click: { actual: '1', error: 'error' }, idle: { actual: '2', error: 'error' } },
+    imagesWithError: ['idle', 'click'],
+  },
+};

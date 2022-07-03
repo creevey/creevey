@@ -9,9 +9,18 @@ import { networkInterfaces } from 'os';
 import { PNG } from 'pngjs';
 import { Builder, By, Capabilities, Origin, WebDriver, WebElement } from 'selenium-webdriver';
 import { PageLoadStrategy } from 'selenium-webdriver/lib/capabilities';
-import { BrowserConfig, Config, CreeveyStoryParams, isDefined, noop, StorybookGlobals, StoryInput } from '../../types';
+import {
+  BrowserConfig,
+  Config,
+  CreeveyStoryParams,
+  isDefined,
+  noop,
+  StorybookGlobals,
+  StoryInput,
+  StoriesRaw,
+} from '../../types';
 import { colors, logger } from '../logger';
-import { subscribeOn } from '../messages';
+import { emitStoriesMessage, subscribeOn } from '../messages';
 import { importStorybookCoreEvents, isStorybookVersionLessThan } from '../storybook/helpers';
 import { isShuttingDown, LOCALHOST_REGEXP, runSequence } from '../utils';
 
@@ -33,6 +42,9 @@ declare global {
 
 const DOCKER_INTERNAL = 'host.docker.internal';
 let browserLogger = logger;
+let browserName = '';
+let browser: WebDriver | null = null;
+let creeveyServerHost: string | null = null;
 
 function getSessionData(grid: string, sessionId = ''): Promise<Record<string, unknown>> {
   const gridUrl = new URL(grid);
@@ -67,13 +79,17 @@ function getSessionData(grid: string, sessionId = ''): Promise<Record<string, un
   );
 }
 
-async function resolveStorybookUrl(storybookUrl: string, checkUrl: (url: string) => Promise<boolean>): Promise<string> {
-  browserLogger.debug('Resolving storybook url');
-  const addresses = [DOCKER_INTERNAL].concat(
+function getAddresses(): string[] {
+  return [DOCKER_INTERNAL].concat(
     ...Object.values(networkInterfaces())
       .filter(isDefined)
       .map((network) => network.filter((info) => info.family == 'IPv4').map((info) => info.address)),
   );
+}
+
+async function resolveStorybookUrl(storybookUrl: string, checkUrl: (url: string) => Promise<boolean>): Promise<string> {
+  browserLogger.debug('Resolving storybook url');
+  const addresses = getAddresses();
   for (const ip of addresses) {
     const resolvedUrl = storybookUrl.replace(LOCALHOST_REGEXP, ip);
     browserLogger.debug(`Checking storybook availability on ${chalk.magenta(resolvedUrl)}`);
@@ -331,7 +347,7 @@ async function takeCompositeScreenshot(
   return PNG.sync.write(compositeImage).toString('base64');
 }
 
-async function takeScreenshot(
+export async function takeScreenshot(
   browser: WebDriver,
   captureElement?: string | null,
   ignoreElements?: string | string[] | null,
@@ -403,14 +419,22 @@ async function selectStory(
   browser: WebDriver,
   { id, kind, name }: { id: string; kind: string; name: string },
   waitForReady = false,
-): Promise<void> {
+): Promise<boolean> {
   browserLogger.debug(`Triggering 'SetCurrentStory' event with storyId ${chalk.magenta(id)}`);
-  const errorMessage = await browser.executeAsyncScript<string | undefined>(
-    function (id: string, kind: string, name: string, shouldWaitForReady: boolean, callback: (error?: string) => void) {
+  const [errorMessage, isCaptureCalled = false] = await browser.executeAsyncScript<
+    [error?: string | null, isCaptureCalled?: boolean]
+  >(
+    function (
+      id: string,
+      kind: string,
+      name: string,
+      shouldWaitForReady: boolean,
+      callback: (response: [error?: string | null, isCaptureCalled?: boolean]) => void,
+    ) {
       if (typeof window.__CREEVEY_SELECT_STORY__ == 'undefined') {
-        return callback(
+        return callback([
           "Creevey can't switch story. This may happened if forget to add `creevey` addon to your storybook config, or storybook not loaded in browser due syntax error.",
-        );
+        ]);
       }
       window.__CREEVEY_SELECT_STORY__(id, kind, name, shouldWaitForReady, callback);
     },
@@ -420,6 +444,8 @@ async function selectStory(
     waitForReady,
   );
   if (errorMessage) throw new Error(errorMessage);
+
+  return isCaptureCalled;
 }
 
 export async function updateStorybookGlobals(browser: WebDriver, globals: StorybookGlobals): Promise<void> {
@@ -464,7 +490,68 @@ async function openStorybookPage(
   }
 }
 
-export async function getBrowser(config: Config, browserConfig: BrowserConfig): Promise<WebDriver | null> {
+async function resolveCreeveyHost(browser: WebDriver, port: number): Promise<string> {
+  if (creeveyServerHost != null) return creeveyServerHost;
+
+  const addresses = getAddresses();
+
+  creeveyServerHost = await browser.executeAsyncScript(
+    function (hosts: string[], port: number, callback: (host?: string | null) => void) {
+      void Promise.all(
+        hosts.map(function (host) {
+          return fetch(`http://${host}:${port}/ping`)
+            .then(function (response) {
+              return response.text();
+            })
+            .then(function (pong) {
+              return pong == 'pong' ? host : null;
+            })
+            .catch(function () {
+              return null;
+            });
+        }),
+      ).then(function (hosts) {
+        callback(
+          hosts.find(function (host) {
+            return host != null;
+          }),
+        );
+      });
+    },
+    addresses,
+    port,
+  );
+
+  if (creeveyServerHost == null) throw new Error("Can't reach creevey server from a browser");
+
+  return creeveyServerHost;
+}
+
+export async function loadStoriesFromBrowser(port: number): Promise<StoriesRaw> {
+  if (!browser) throw new Error("Can't get stories from browser if webdriver isn't connected");
+
+  const host = await resolveCreeveyHost(browser, port);
+
+  const stories = await browser.executeAsyncScript<StoriesRaw | void>(
+    function (creeveyHost: string, creeveyPort: number, callback: (stories: StoriesRaw | void) => void) {
+      window.__CREEVEY_SERVER_HOST__ = creeveyHost;
+      window.__CREEVEY_SERVER_PORT__ = creeveyPort;
+      void window.__CREEVEY_GET_STORIES__().then(callback);
+    },
+    host,
+    port,
+  );
+
+  if (!stories) throw new Error("Can't get stories, it seems creevey or storybook API isn't available");
+
+  return stories;
+}
+
+export async function getBrowser(config: Config, name: string): Promise<WebDriver | null> {
+  if (browser) return browser;
+
+  browserName = name;
+  const browserConfig = config.browsers[browserName] as BrowserConfig;
   const {
     gridUrl = config.gridUrl,
     storybookUrl: address = config.storybookUrl,
@@ -474,9 +561,7 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
     ...userCapabilities
   } = browserConfig;
   void limit;
-  const { browserName } = userCapabilities;
   const realAddress = address;
-  let browser: WebDriver | null = null;
 
   // TODO Define some capabilities explicitly and define typings
   const capabilities = new Capabilities(userCapabilities);
@@ -494,7 +579,7 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
     const url = new URL(gridUrl);
     url.username = url.username ? '********' : '';
     url.password = url.password ? '********' : '';
-    browserLogger.debug(`(${browserName}) Connecting to Selenium ${chalk.magenta(url.toString())}`);
+    browserLogger.debug(`(${name}) Connecting to Selenium ${chalk.magenta(url.toString())}`);
 
     browser = await new Builder().usingServer(gridUrl).withCapabilities(capabilities).build();
 
@@ -509,7 +594,7 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
     }
 
     browserLogger.debug(
-      `(${browserName}) Connected successful with ${[chalk.green(browserHost), chalk.magenta(sessionId)]
+      `(${name}) Connected successful with ${[chalk.green(browserHost), chalk.magenta(sessionId)]
         .filter(Boolean)
         .join(':')}`,
     );
@@ -519,7 +604,7 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
     prefix.apply(browserLogger, {
       format(level) {
         const levelColor = colors[level.toUpperCase()];
-        return `[${browserName}:${chalk.gray(sessionId)}] ${levelColor(level)} =>`;
+        return `[${name}:${chalk.gray(sessionId)}] ${levelColor(level)} =>`;
       },
     });
 
@@ -535,6 +620,7 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
   } catch (originalError) {
     if (isShuttingDown.current) {
       browser?.quit().catch(noop);
+      browser = null;
       return null;
     }
     if (originalError instanceof Error && originalError.name == 'ResolveUrlError') throw originalError;
@@ -546,6 +632,10 @@ export async function getBrowser(config: Config, browserConfig: BrowserConfig): 
   if (_storybookGlobals) {
     await updateStorybookGlobals(browser, _storybookGlobals);
   }
+
+  await browser.executeScript(function (workerId: number) {
+    window.__CREEVEY_WORKER_ID__ = workerId;
+  }, process.pid);
 
   return browser;
 }
@@ -573,12 +663,22 @@ async function updateStoryArgs(browser: WebDriver, story: StoryInput, updatedArg
   );
 }
 
+export async function closeBrowser(): Promise<void> {
+  if (!browser) return;
+  try {
+    await browser.quit();
+  } finally {
+    browser = null;
+  }
+}
+
 export async function switchStory(this: Context): Promise<void> {
   let testOrSuite: Test | Suite | undefined = this.currentTest;
 
   if (!testOrSuite) throw new Error("Can't switch story, because test context doesn't have 'currentTest' field");
 
   this.testScope.length = 0;
+  this.screenshots.length = 0;
   this.testScope.push(this.browserName);
   while (testOrSuite?.title) {
     this.testScope.push(testOrSuite.title);
@@ -593,11 +693,6 @@ export async function switchStory(this: Context): Promise<void> {
 
   browserLogger.debug(`Switching to story ${chalk.cyan(kind)}/${chalk.cyan(name)} by id ${chalk.magenta(id)}`);
 
-  await resetMousePosition(this.browser);
-  await selectStory(this.browser, { id, kind, name }, waitForReady);
-
-  browserLogger.debug(`Story ${chalk.magenta(id)} ready for capturing`);
-
   if (captureElement)
     Object.defineProperty(this, 'captureElement', {
       enumerable: true,
@@ -607,10 +702,44 @@ export async function switchStory(this: Context): Promise<void> {
   else Reflect.deleteProperty(this, 'captureElement');
 
   this.takeScreenshot = () => takeScreenshot(this.browser, captureElement, ignoreElements);
-
   this.updateStoryArgs = (updatedArgs: Args) => updateStoryArgs(this.browser, story, updatedArgs);
 
   this.testScope.reverse();
+
+  let storyPlayResolver: (isCompleted: boolean) => void;
+  let waitForComplete = new Promise<boolean>((resolve) => (storyPlayResolver = resolve));
+  const unsubscribe = subscribeOn('stories', (message) => {
+    if (message.type != 'capture') return;
+    const { payload = {}, payload: { imageName } = {} } = message;
+    void takeScreenshot(
+      this.browser,
+      payload.captureElement ?? captureElement,
+      payload.ignoreElements ?? ignoreElements,
+    ).then((screenshot) => {
+      this.screenshots.push({ imageName, screenshot });
+
+      void this.browser
+        .executeAsyncScript<boolean>(function (callback: (isCompleted: boolean) => void) {
+          window.__CREEVEY_HAS_PLAY_COMPLETED_YET__(callback);
+        })
+        .then((isCompleted) => storyPlayResolver(isCompleted));
+
+      emitStoriesMessage({ type: 'capture' });
+    });
+  });
+
+  await resetMousePosition(this.browser);
+  const isCaptureCalled = await selectStory(this.browser, { id, kind, name }, waitForReady);
+
+  if (isCaptureCalled) {
+    while (!(await waitForComplete)) {
+      waitForComplete = new Promise<boolean>((resolve) => (storyPlayResolver = resolve));
+    }
+  }
+
+  unsubscribe();
+
+  browserLogger.debug(`Story ${chalk.magenta(id)} ready for capturing`);
 }
 
 async function insertIgnoreStyles(

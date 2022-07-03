@@ -3,6 +3,7 @@ import { ViewPropsWithTheme, getBorderColor, themeBorderColors } from './ImagesV
 import { styled, withTheme } from '@storybook/theming';
 import { useApplyScale, useLoadImages, useResizeObserver, getBorderSize } from '../../helpers';
 import { Loader } from '@storybook/components';
+import { readyForCapture } from '../../../addon/readyForCapture';
 
 type LayoutDirection = 'horizontal' | 'vertical';
 
@@ -94,7 +95,7 @@ export const SideBySideView = withTheme(({ actual, diff, expect, theme }: ViewPr
   useApplyScale(actualImageRef, scale);
 
   useEffect(() => {
-    if (loaded) window.__CREEVEY_SET_READY_FOR_CAPTURE__?.();
+    if (loaded) readyForCapture();
   }, [loaded]);
 
   return (

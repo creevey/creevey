@@ -1,11 +1,8 @@
-import React from 'react';
-import { CreeveyContext } from '../src/client/web/CreeveyContext';
+import { ComponentMeta, ComponentStoryObj } from '@storybook/react';
+import { within } from '@storybook/testing-library';
 import { SideBar } from '../src/client/web/CreeveyView/SideBar';
-import { SideBarHeader } from '../src/client/web/CreeveyView/SideBar/SideBarHeader';
 import { treeifyTests, checkSuite, getTestByPath } from '../src/client/shared/helpers';
-import { noop, CreeveySuite, CreeveyStatus, isDefined, isTest, CreeveyStory } from '../src/types';
-import { ensure, styled, ThemeProvider, themes } from '@storybook/theming';
-import { Story, DecoratorFn } from '@storybook/react';
+import { noop, CreeveySuite, CreeveyStatus, isDefined, isTest } from '../src/types';
 
 function openSuites(suite: CreeveySuite): CreeveySuite {
   suite.opened = true;
@@ -58,118 +55,37 @@ const statusTests: () => CreeveyStatus['tests'] = () => ({
   12: { id: '12', browser: 'pending', storyPath: ['root', 'running'], storyId: '', skip: false, status: 'pending' },
 });
 
-const HeaderContainer = styled.div({
-  width: 300,
-});
-
-const headerDecorator: DecoratorFn = (Story) => <HeaderContainer>{<Story />}</HeaderContainer>;
-
 export default {
   title: 'SideBar',
-  decorators: [
-    (Story: React.ComponentClass): JSX.Element => (
-      <ThemeProvider theme={ensure(themes.light)}>
-        <CreeveyContext.Provider
-          value={{
-            isReport: false,
-            isRunning: false,
-            onStart: noop,
-            onStop: noop,
-            onSuiteOpen: noop,
-            onSuiteToggle: noop,
-          }}
-        >
-          <Story />
-        </CreeveyContext.Provider>
-      </ThemeProvider>
-    ),
-  ],
-};
+  component: SideBar,
+  args: {
+    filter: { status: null, subStrings: [] },
+    onOpenTest: noop,
+    setFilter: noop,
+  },
+} as ComponentMeta<typeof SideBar>;
 
-export const HeaderStopped = (): JSX.Element => (
-  <SideBarHeader
-    testsStatus={{ pendingCount: 0, successCount: 1, failedCount: 2, skippedCount: 3 }}
-    filter={{ status: null, subStrings: [] }}
-    onFilterChange={noop}
-    onStart={noop}
-    onStop={noop}
-  />
-);
-HeaderStopped.decorators = [headerDecorator];
+export const SimpleSideBar: ComponentStoryObj<typeof SideBar> = {
+  args: (() => {
+    const rootSuite = openSuites(treeifyTests(simpleTests()));
+    const testPath = ['root', 'simple', 'hasResult'];
 
-export const HeaderRunning = (): JSX.Element => (
-  <CreeveyContext.Provider
-    value={{
-      isReport: false,
-      isRunning: true,
-      onStart: noop,
-      onStop: noop,
-      onSuiteOpen: noop,
-      onSuiteToggle: noop,
-    }}
-  >
-    <SideBarHeader
-      testsStatus={{ pendingCount: 1, successCount: 2, failedCount: 3, skippedCount: 4 }}
-      filter={{ status: null, subStrings: [] }}
-      onFilterChange={noop}
-      onStart={noop}
-      onStop={noop}
-    />
-  </CreeveyContext.Provider>
-);
-HeaderRunning.decorators = [headerDecorator];
+    checkSuite(rootSuite, testPath, false);
 
-export const HeaderDisabled = (): JSX.Element => (
-  <SideBarHeader
-    testsStatus={{ pendingCount: 0, successCount: 1, failedCount: 2, skippedCount: 3 }}
-    filter={{ status: null, subStrings: [] }}
-    onFilterChange={noop}
-    onStart={noop}
-    onStop={noop}
-    canStart={false}
-  />
-);
-HeaderDisabled.decorators = [headerDecorator];
-
-export const SimpleSideBar: Story & CreeveyStory = () => {
-  const simpleSuites = openSuites(treeifyTests(simpleTests()));
-  const testPath = ['root', 'simple', 'hasResult'];
-
-  checkSuite(simpleSuites, testPath, false);
-
-  return (
-    <SideBar
-      rootSuite={simpleSuites}
-      openedTest={getTestByPath(simpleSuites, testPath)}
-      onOpenTest={noop}
-      filter={{ status: null, subStrings: [] }}
-      setFilter={noop}
-    />
-  );
-};
-
-SimpleSideBar.parameters = {
-  creevey: {
-    tests: {
-      async hover() {
-        await this.browser
-          .actions()
-          .move({ origin: this.browser.findElement({ css: '[data-tid="root"]' }) })
-          .perform();
-        const hover = await this.takeScreenshot();
-
-        await this.expect(hover).to.matchImage();
-      },
-    },
+    return {
+      rootSuite,
+      openedTest: getTestByPath(rootSuite, testPath),
+    };
+  })(),
+  async play({ canvasElement }) {
+    const rootSuite = await within(canvasElement).findByTestId('root');
+    rootSuite.classList.add('hover');
   },
 };
 
-export const StatusSideBar = (): JSX.Element => (
-  <SideBar
-    rootSuite={openSuites(treeifyTests(statusTests()))}
-    openedTest={null}
-    onOpenTest={noop}
-    filter={{ status: null, subStrings: [] }}
-    setFilter={noop}
-  />
-);
+export const StatusSideBar: ComponentStoryObj<typeof SideBar> = {
+  args: {
+    rootSuite: openSuites(treeifyTests(statusTests())),
+    openedTest: null,
+  },
+};

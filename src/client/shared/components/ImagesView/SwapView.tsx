@@ -3,6 +3,7 @@ import { ViewPropsWithTheme, getBorderColor, themeBorderColors } from './ImagesV
 import { styled, withTheme } from '@storybook/theming';
 import { useApplyScale, useCalcScale, useLoadImages } from '../../helpers';
 import { Loader } from '@storybook/components';
+import { readyForCapture } from '../../../addon/readyForCapture';
 
 type ImageState = keyof typeof themeBorderColors;
 
@@ -47,7 +48,7 @@ export const SwapView = withTheme(({ theme, expect, actual, diff }: ViewPropsWit
   );
 
   useEffect(() => {
-    if (loaded) window.__CREEVEY_SET_READY_FOR_CAPTURE__?.();
+    if (loaded) readyForCapture();
   }, [loaded]);
 
   return loaded ? (

@@ -1,16 +1,7 @@
 import cluster from 'cluster';
 import { EventEmitter } from 'events';
-import {
-  Worker,
-  Config,
-  TestResult,
-  BrowserConfig,
-  WorkerMessage,
-  TestStatus,
-  isWorkerMessage,
-  isTestMessage,
-} from '../../types';
-import { sendTestMessage, sendShutdownMessage } from '../messages';
+import { Worker, Config, TestResult, BrowserConfig, WorkerMessage, TestStatus, isWorkerMessage } from '../../types';
+import { sendTestMessage, sendShutdownMessage, subscribeOnWorker } from '../messages';
 import { isShuttingDown } from '../utils';
 
 const FORK_RETRIES = 5;
@@ -154,33 +145,39 @@ export default class Pool extends EventEmitter {
     return test.retries < this.maxRetries && !this.forcedStop;
   }
 
+  private handleTestResult(worker: Worker, test: WorkerTest, result: TestResult): void {
+    const shouldRetry = result.status == 'failed' && this.shouldRetry(test);
+
+    if (shouldRetry) {
+      test.retries += 1;
+      this.queue[this.failFast ? 'unshift' : 'push'](test);
+    }
+
+    this.sendStatus({ id: test.id, status: shouldRetry ? 'retrying' : result.status, result });
+
+    worker.isRunning = false;
+
+    setImmediate(() => this.process());
+  }
+
   private subscribe(worker: Worker, test: WorkerTest): void {
-    worker.once('message', (message: unknown) => {
-      if (!isWorkerMessage(message) && !isTestMessage(message)) return;
-      if (message.type != 'end' && message.type != 'error') return;
+    const subscriptions = [
+      subscribeOnWorker(worker, 'worker', (message) => {
+        if (message.type != 'error') return;
 
-      let result: TestResult;
+        subscriptions.forEach((unsubscribe) => unsubscribe());
 
-      if (message.type == 'error') {
         this.gracefullyKill(worker);
 
-        result = { status: 'failed', ...message.payload };
-      } else {
-        result = message.payload;
-      }
+        this.handleTestResult(worker, test, { status: 'failed', ...message.payload });
+      }),
+      subscribeOnWorker(worker, 'test', (message) => {
+        if (message.type != 'end') return;
 
-      const shouldRetry = result.status == 'failed' && this.shouldRetry(test);
+        subscriptions.forEach((unsubscribe) => unsubscribe());
 
-      if (shouldRetry) {
-        test.retries += 1;
-        this.queue[this.failFast ? 'unshift' : 'push'](test);
-      }
-
-      this.sendStatus({ id: test.id, status: shouldRetry ? 'retrying' : result.status, result });
-
-      worker.isRunning = false;
-
-      this.process();
-    });
+        this.handleTestResult(worker, test, message.payload);
+      }),
+    ];
   }
 }
