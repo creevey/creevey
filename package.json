@@ -93,7 +93,7 @@
     "chokidar": "^3.5.1",
     "core-js": "^3.16.3",
     "dockerode": "^3.2.1",
-    "event-source-polyfill": "^1.0.25",
+    "event-source-polyfill": "1.0.25",
     "find-cache-dir": "^3.3.1",
     "global-jsdom": "8.3.0",
     "jsdom": "^16.5.2",
