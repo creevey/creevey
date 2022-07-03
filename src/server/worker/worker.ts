@@ -136,8 +136,6 @@ export default async function worker(config: Config, options: Options & { browse
     },
   };
   const mocha = new Mocha(mochaOptions);
-  // @ts-expect-error: @types/mocha has out-dated types
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   mocha.cleanReferencesAfterRun(false);
 
   chai.use(chaiImage(getExpected, config.diffOptions));

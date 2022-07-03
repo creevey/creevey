@@ -57,7 +57,7 @@ interface Handlers {
 }
 
 function createHandlers(): Handlers {
-  return Object.assign(Object.create(null) as unknown, {
+  return Object.assign(Object.create(null) as Handlers, {
     worker: new Set<WorkerHandler>(),
     stories: new Set<StoriesHandler>(),
     test: new Set<TestHandler>(),
