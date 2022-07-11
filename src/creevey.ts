@@ -16,13 +16,13 @@ function shutdownOnException(reason: unknown): void {
 
   process.exitCode = -1;
   if (cluster.isWorker) emitWorkerMessage({ type: 'error', payload: { error } });
-  if (cluster.isMaster && !isShuttingDown.current) void shutdownWorkers();
+  if (cluster.isPrimary && !isShuttingDown.current) void shutdownWorkers();
 }
 
 process.on('uncaughtException', shutdownOnException);
 process.on('unhandledRejection', shutdownOnException);
 if (cluster.isWorker) process.on('SIGINT', noop);
-if (cluster.isMaster) process.on('SIGINT', shutdown);
+if (cluster.isPrimary) process.on('SIGINT', shutdown);
 
 const argv = minimist<Options>(process.argv.slice(2), {
   string: ['browser', 'config', 'reporter', 'reportDir', 'screenDir'],

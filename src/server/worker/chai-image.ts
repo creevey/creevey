@@ -110,20 +110,22 @@ export default function (
     utils.addMethod(Assertion.prototype, 'matchImages', async function matchImages(this: Record<string, unknown>) {
       const errors: { [imageName: string]: string } = {};
       await Promise.all(
-        Object.entries<string | Buffer>(utils.flag(this, 'object')).map(async ([imageName, imageOrBase64]) => {
-          let errorMessage: string | void;
-          try {
-            errorMessage = await assertImage(
-              typeof imageOrBase64 == 'string' ? Buffer.from(imageOrBase64, 'base64') : imageOrBase64,
-              imageName,
-            );
-          } catch (error) {
-            errorMessage = (error as Error).stack;
-          }
-          if (errorMessage) {
-            errors[imageName] = errorMessage;
-          }
-        }),
+        Object.entries<string | Buffer>(utils.flag(this, 'object') as Record<string, string | Buffer>).map(
+          async ([imageName, imageOrBase64]) => {
+            let errorMessage: string | void;
+            try {
+              errorMessage = await assertImage(
+                typeof imageOrBase64 == 'string' ? Buffer.from(imageOrBase64, 'base64') : imageOrBase64,
+                imageName,
+              );
+            } catch (error) {
+              errorMessage = (error as Error).stack;
+            }
+            if (errorMessage) {
+              errors[imageName] = errorMessage;
+            }
+          },
+        ),
       );
       if (Object.keys(errors).length > 0) {
         throw createImageError(errors);

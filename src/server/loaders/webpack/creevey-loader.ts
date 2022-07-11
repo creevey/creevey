@@ -2,15 +2,16 @@ import path from 'path';
 import { codeFrameColumns } from '@babel/code-frame';
 import { getOptions, OptionObject } from 'loader-utils';
 import { validate } from 'schema-utils';
-import { JSONSchema7 } from 'schema-utils/declarations/validate';
 import { parse } from '@babel/parser';
 import traverse, { NodePath, Binding } from '@babel/traverse';
 import generate from '@babel/generator';
 import * as t from '@babel/types';
-import { loader } from 'webpack';
 import { isStorybookVersionLessThan } from '../../storybook/helpers';
 import { commonVisitor, mdxVisitor, previewVisitor, storyVisitor, FileType } from '../babel/helpers';
 import { logger } from '../../logger';
+import type { JSONSchema7 } from 'schema-utils/declarations/validate';
+
+type LoaderContext = Parameters<typeof getOptions>[0];
 
 function transform(ast: t.File): string {
   traverse(
@@ -43,21 +44,21 @@ function toPosix(filePath: string): string {
     .replace(/^[a-z]:/i, '');
 }
 
-function getIssuerResource(context: loader.LoaderContext): string | undefined {
+function getIssuerResource(context: LoaderContext): string | undefined {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
   return context._module?.issuer?.resource;
 }
 
-function getIssuerConstructorName(context: loader.LoaderContext): string | undefined {
+function getIssuerConstructorName(context: LoaderContext): string | undefined {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
   return context._module?.issuer?.constructor?.name;
 }
 
-function isEntry(context: loader.LoaderContext): boolean {
+function isEntry(context: LoaderContext): boolean {
   return getIssuerConstructorName(context) == 'MultiModule';
 }
 
-function isPreview(context: loader.LoaderContext, options: Options | Readonly<OptionObject>): boolean {
+function isPreview(context: LoaderContext, options: Options | Readonly<OptionObject>): boolean {
   const { dir: resourceDir, name: resourceName } = path.posix.parse(toPosix(context.resourcePath));
   const storybookDir = typeof options.storybookDir == 'string' ? toPosix(options.storybookDir) : '';
   const isConfigFile = resourceDir == storybookDir && (resourceName == 'preview' || resourceName == 'config');
@@ -68,7 +69,7 @@ function isPreview(context: loader.LoaderContext, options: Options | Readonly<Op
   return Boolean(issuerResource && entries.has(issuerResource) && isConfigFile);
 }
 
-function isStoryFile(context: loader.LoaderContext): boolean {
+function isStoryFile(context: LoaderContext): boolean {
   const issuerResource = getIssuerResource(context);
   return (
     getIssuerConstructorName(context) == 'ContextModule' ||
@@ -106,7 +107,7 @@ const defaultOptions: Options = {
   storybookDir: process.cwd(),
 };
 
-export default function (this: loader.LoaderContext | void, source: string): string {
+export default function loader(this: LoaderContext | void, source: string): string {
   const options = this ? getOptions(this) || defaultOptions : defaultOptions;
   validate(schema, options, { name: 'Creevey Stories Loader' });
 

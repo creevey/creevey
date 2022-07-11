@@ -1,4 +1,4 @@
-import cluster from 'cluster';
+import cluster, { Worker } from 'cluster';
 import {
   WorkerMessage,
   StoriesMessage,
@@ -87,16 +87,16 @@ const handler = (message: ProcessMessage): void => {
 };
 process.on('message', handler);
 
-export function sendStoriesMessage(target: NodeJS.Process | cluster.Worker, message: StoriesMessage): void {
+export function sendStoriesMessage(target: NodeJS.Process | Worker, message: StoriesMessage): void {
   target.send?.({ scope: 'stories', ...message });
 }
-export function sendTestMessage(target: NodeJS.Process | cluster.Worker, message: TestMessage): void {
+export function sendTestMessage(target: NodeJS.Process | Worker, message: TestMessage): void {
   target.send?.({ scope: 'test', ...message });
 }
-export function sendDockerMessage(target: NodeJS.Process | cluster.Worker, message: DockerMessage): void {
+export function sendDockerMessage(target: NodeJS.Process | Worker, message: DockerMessage): void {
   target.send?.({ scope: 'docker', ...message });
 }
-export function sendShutdownMessage(target: NodeJS.Process | cluster.Worker): void {
+export function sendShutdownMessage(target: NodeJS.Process | Worker): void {
   target.send?.({ scope: 'shutdown' });
 }
 
@@ -149,22 +149,22 @@ export function subscribeOn(
   }
 }
 
-const workers = new Map<cluster.Worker, Handlers>();
+const workers = new Map<Worker, Handlers>();
 
-export function subscribeOnWorker(worker: cluster.Worker, scope: 'worker', handler: WorkerHandler): () => void;
-export function subscribeOnWorker(worker: cluster.Worker, scope: 'stories', handler: StoriesHandler): () => void;
-export function subscribeOnWorker(worker: cluster.Worker, scope: 'test', handler: TestHandler): () => void;
-export function subscribeOnWorker(worker: cluster.Worker, scope: 'webpack', handler: WebpackHandler): () => void;
-export function subscribeOnWorker(worker: cluster.Worker, scope: 'docker', handler: DockerHandler): () => void;
-export function subscribeOnWorker(worker: cluster.Worker, scope: 'shutdown', handler: ShutdownHandler): () => void;
+export function subscribeOnWorker(worker: Worker, scope: 'worker', handler: WorkerHandler): () => void;
+export function subscribeOnWorker(worker: Worker, scope: 'stories', handler: StoriesHandler): () => void;
+export function subscribeOnWorker(worker: Worker, scope: 'test', handler: TestHandler): () => void;
+export function subscribeOnWorker(worker: Worker, scope: 'webpack', handler: WebpackHandler): () => void;
+export function subscribeOnWorker(worker: Worker, scope: 'docker', handler: DockerHandler): () => void;
+export function subscribeOnWorker(worker: Worker, scope: 'shutdown', handler: ShutdownHandler): () => void;
 export function subscribeOnWorker(
-  worker: cluster.Worker,
+  worker: Worker,
   scope: 'worker' | 'stories' | 'test' | 'webpack' | 'docker' | 'shutdown',
   handler: WorkerHandler | StoriesHandler | TestHandler | WebpackHandler | DockerHandler | ShutdownHandler,
 ): () => void;
 
 export function subscribeOnWorker(
-  worker: cluster.Worker,
+  worker: Worker,
   scope: 'worker' | 'stories' | 'test' | 'webpack' | 'docker' | 'shutdown',
   handler: WorkerHandler | StoriesHandler | TestHandler | WebpackHandler | DockerHandler | ShutdownHandler,
 ): () => void {

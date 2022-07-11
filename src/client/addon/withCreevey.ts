@@ -10,6 +10,7 @@ import {
   CreeveyStoryParams,
   isObject,
   noop,
+  SetStoriesData,
   StoriesRaw,
   StorybookGlobals,
   StoryInput,
@@ -39,7 +40,7 @@ declare global {
       name: string,
       shouldWaitForReady: boolean,
       callback: (response: [error?: string | null, isCaptureCalled?: boolean]) => void,
-    ) => void;
+    ) => Promise<void>;
     __CREEVEY_UPDATE_GLOBALS__: (globals: StorybookGlobals) => void;
     __CREEVEY_INSERT_IGNORE_STYLES__: (ignoreElements: string[]) => HTMLStyleElement;
     __CREEVEY_REMOVE_IGNORE_STYLES__: (ignoreStyles: HTMLStyleElement) => void;
@@ -180,7 +181,7 @@ export function withCreevey(): MakeDecoratorResult {
 
   async function getStories(): Promise<StoriesRaw | void> {
     const storiesPromise = new Promise<StoriesRaw>((resolve) =>
-      addons.getChannel().once(Events.SET_STORIES, (data) => resolve(denormalizeStoryParameters(data))),
+      addons.getChannel().once(Events.SET_STORIES, (data: SetStoriesData) => resolve(denormalizeStoryParameters(data))),
     );
 
     const store = window.__STORYBOOK_STORY_STORE__ ?? {};
@@ -194,7 +195,7 @@ export function withCreevey(): MakeDecoratorResult {
       addons.getChannel().emit(Events.SET_STORIES, store.getSetStoriesPayload());
     } else return;
 
-    addons.getChannel().on(Events.SET_STORIES, (data) => {
+    addons.getChannel().on(Events.SET_STORIES, (data: SetStoriesData) => {
       // TODO Figure out how to get only updated stories
       // TODO Subscribe on hmr? like use dummy-hmr
       setStoriesCounter += 1;
