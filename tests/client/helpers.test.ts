@@ -1,4 +1,3 @@
-import { describe, it } from 'mocha';
 import { expect } from 'chai';
 import { checkSuite } from '../../src/client/shared/helpers';
 import { CreeveySuite, TestData } from '../../src/types';

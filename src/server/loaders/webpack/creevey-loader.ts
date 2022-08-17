@@ -101,9 +101,11 @@ let resourcePath = '';
 const entries = new Set<string>();
 const stories = new Set<string>();
 const reexportedStories = new Map<string, Set<string>>();
-const isTest = process.env.__CREEVEY_ENV__ == 'test';
+const isTest = (): boolean => process.env.__CREEVEY_ENV__ == 'test';
 const defaultOptions: Options = {
-  debug: isTest,
+  get debug() {
+    return isTest();
+  },
   storybookDir: process.cwd(),
 };
 
@@ -132,7 +134,7 @@ export default function loader(this: LoaderContext | void, source: string): stri
       // TODO Add link to docs, how creevey works and what user should do in this situation
     }
   }
-  if (isTest && !Number.isNaN(Number(process.env.CREEVEY_LOADER_FILE_TYPE))) {
+  if (isTest() && !Number.isNaN(Number(process.env.CREEVEY_LOADER_FILE_TYPE))) {
     fileType = Number(process.env.CREEVEY_LOADER_FILE_TYPE);
   }
 
