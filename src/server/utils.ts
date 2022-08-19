@@ -1,4 +1,4 @@
-import { createWriteStream, existsSync, readFileSync, unlink } from 'fs';
+import { createWriteStream, existsSync, readFileSync, readdirSync, unlink } from 'fs';
 import cluster from 'cluster';
 import { SkipOptions, SkipOption, isDefined, TestData, noop, isFunction } from '../types';
 import { emitShutdownMessage, sendShutdownMessage } from './messages';
@@ -165,4 +165,12 @@ export function removeProps(obj: Record<string, unknown>, propPath: (string | ((
         .filter(prop)
         .forEach((key) => delete obj[key]);
   }
+}
+
+export function readDirRecursive(dirPath: string): string[] {
+  return ([] as string[]).concat(
+    ...readdirSync(dirPath, { withFileTypes: true }).map((dirent) =>
+      dirent.isDirectory() ? readDirRecursive(`${dirPath}/${dirent.name}`) : [`${dirPath}/${dirent.name}`],
+    ),
+  );
 }
