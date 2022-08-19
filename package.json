@@ -46,6 +46,7 @@
     "creevey": "node --require ./scripts/babel-register -- src/cli",
     "creevey:github": "yarn creevey --config .creevey/github.config.ts",
     "creevey:gitlab": "yarn creevey --config .creevey/gitlab.config.ts",
+    "creevey:hybrid": "yarn creevey --config .creevey/hybrid.config.ts",
     "fix": "run-s fix:*",
     "fix:eslint": "eslint --fix ./",
     "fix:prettier": "prettier --write .",
