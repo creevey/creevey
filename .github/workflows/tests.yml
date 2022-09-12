@@ -9,7 +9,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: 14.x
+          node-version: 16.x
       - name: install
         run: yarn
       - name: lint
@@ -22,44 +22,6 @@ jobs:
         with:
           name: creevey
           path: creevey-*.tgz
-  e2e-fixtures:
-    name: Storybook Fixtures E2E Tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 14.x
-      - name: install
-        run: yarn
-      - name: tests
-        run: yarn test:e2e --grep Fixtures
-  # e2e-storybook:
-  #   name: Storybook Official E2E Tests
-  #   runs-on: ubuntu-latest
-  #   defaults:
-  #     run:
-  #       working-directory: creevey
-  #   steps:
-  #     - name: Checkout Creevey
-  #       uses: actions/checkout@v2
-  #       with:
-  #         path: creevey
-  #     - name: Checkout Storybook
-  #       uses: actions/checkout@v2
-  #       with:
-  #         repository: creevey/storybook
-  #         ref: creevey
-  #         path: storybook
-  #     - uses: actions/setup-node@v1
-  #       with:
-  #         node-version: 14.x
-  #     - name: install
-  #       run: yarn
-  #     - name: bootstrap
-  #       run: yarn bootstrap:storybook
-  #     - name: tests
-  #       run: yarn test:e2e --grep Official
   tests:
     name: Tests
     runs-on: ubuntu-latest
@@ -72,7 +34,7 @@ jobs:
           lfs: true
       - uses: actions/setup-node@v1
         with:
-          node-version: 14.x
+          node-version: 16.x
       - name: checkout lfs
         run: git lfs checkout
       - name: install

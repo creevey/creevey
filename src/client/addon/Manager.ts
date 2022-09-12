@@ -1,5 +1,4 @@
 import { API } from '@storybook/api';
-import { SetStoriesPayload } from '@storybook/api/dist/ts3.9/lib/stories';
 import { SET_STORIES, STORY_RENDERED } from '@storybook/core-events';
 import { denormalizeStoryParameters } from '../../shared';
 import { CreeveyStatus, CreeveyUpdate, isDefined, TestData, TestStatus, StoriesRaw, SetStoriesData } from '../../types';
@@ -123,7 +122,7 @@ export class CreeveyManager {
       .map((x) => x.id);
     this.creeveyApi?.start(ids);
   };
-  onSetStories = (data: SetStoriesPayload): void => {
+  onSetStories = (data: Parameters<typeof denormalizeStoryParameters>['0']): void => {
     const stories = data.v ? denormalizeStoryParameters(data as unknown as SetStoriesData) : data.stories;
     this.stories = stories;
   };

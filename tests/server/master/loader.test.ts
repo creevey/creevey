@@ -1,6 +1,5 @@
 import fs from 'fs';
 import path from 'path';
-import { describe, it } from 'mocha';
 import { expect } from 'chai';
 import loader from '../../../src/server/loaders/webpack/creevey-loader';
 import { FileType } from '../../../src/server/loaders/babel/helpers';
@@ -65,6 +64,7 @@ describe('loader', () => {
     })
     .forEach(({ testName, input, output }) =>
       it(testName, () => {
+        process.env.__CREEVEY_ENV__ = 'test';
         process.env.CREEVEY_LOADER_FILE_TYPE = String(testsToFileTypes[testName] ?? FileType.Invalid);
         expect(loader(input).replace(/\r/g, '')).to.equal(output.replace(/\r/g, ''));
       }),

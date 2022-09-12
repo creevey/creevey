@@ -1,7 +1,8 @@
 import path from 'path';
-import { Configuration, DefinePlugin } from 'webpack';
+import { Configuration as WebpackConfiguration, DefinePlugin } from 'webpack';
+import { Configuration as WebpackDevServerConfiguration } from 'webpack-dev-server';
 
-const config: Configuration = {
+const config: WebpackConfiguration & WebpackDevServerConfiguration = {
   entry: [require.resolve('core-js'), require.resolve('regenerator-runtime/runtime'), './src/client/web/index.tsx'],
   output: { path: path.join(__dirname, './lib/cjs/client/web') },
   module: {

@@ -64,7 +64,7 @@ function getSessionData(grid: string, sessionId = ''): Promise<Record<string, un
       res.on('data', (chunk) => (data += chunk));
       res.on('end', () => {
         try {
-          resolve(JSON.parse(data));
+          resolve(JSON.parse(data) as Record<string, unknown>);
         } catch (error) {
           reject(
             new Error(
@@ -436,7 +436,7 @@ async function selectStory(
           "Creevey can't switch story. This may happened if forget to add `creevey` addon to your storybook config, or storybook not loaded in browser due syntax error.",
         ]);
       }
-      window.__CREEVEY_SELECT_STORY__(id, kind, name, shouldWaitForReady, callback);
+      void window.__CREEVEY_SELECT_STORY__(id, kind, name, shouldWaitForReady, callback);
     },
     id,
     kind,
@@ -603,7 +603,7 @@ export async function getBrowser(config: Config, name: string): Promise<WebDrive
 
     prefix.apply(browserLogger, {
       format(level) {
-        const levelColor = colors[level.toUpperCase()];
+        const levelColor = colors[level.toUpperCase() as keyof typeof colors];
         return `[${name}:${chalk.gray(sessionId)}] ${levelColor(level)} =>`;
       },
     });
