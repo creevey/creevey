@@ -1,6 +1,6 @@
 import React from 'react';
-import { TestStatus } from '../../../../types';
-import { CreeveyTestsStatus } from '../../../shared/helpers';
+import { TestStatus } from '../../../../types.js';
+import { CreeveyTestsStatus } from '../../../shared/helpers.js';
 import { styled, withTheme, Theme } from '@storybook/theming';
 import { IconButton, Icons } from '@storybook/components';
 

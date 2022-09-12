@@ -1,13 +1,13 @@
 import path from 'path';
 import { writeFileSync, copyFile, readdir, mkdir, readdirSync, existsSync } from 'fs';
 import { promisify } from 'util';
-import master from './master';
-import creeveyApi, { CreeveyApi } from './api';
-import { Config, Options, isDefined } from '../../types';
-import { shutdown, shutdownWorkers, testsToImages } from '../utils';
-import { subscribeOn } from '../messages';
-import Runner from './runner';
-import { logger } from '../logger';
+import master from './master.js';
+import creeveyApi, { CreeveyApi } from './api.js';
+import { Config, Options, isDefined } from '../../types.js';
+import { shutdown, shutdownWorkers, testsToImages } from '../utils.js';
+import { subscribeOn } from '../messages.js';
+import Runner from './runner.js';
+import { logger } from '../logger.js';
 
 const copyFileAsync = promisify(copyFile);
 const readdirAsync = promisify(readdir);

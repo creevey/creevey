@@ -3,13 +3,13 @@ import { codeFrameColumns } from '@babel/code-frame';
 import { getOptions, OptionObject } from 'loader-utils';
 import { validate } from 'schema-utils';
 import { parse } from '@babel/parser';
-import traverse, { NodePath, Binding } from '@babel/traverse';
-import generate from '@babel/generator';
+import { default as traverse, NodePath, Binding } from '@babel/traverse';
+import { default as generate } from '@babel/generator';
 import * as t from '@babel/types';
-import { isStorybookVersionLessThan } from '../../storybook/helpers';
-import { commonVisitor, mdxVisitor, previewVisitor, storyVisitor, FileType } from '../babel/helpers';
-import { logger } from '../../logger';
-import type { JSONSchema7 } from 'schema-utils/declarations/validate';
+import { isStorybookVersionLessThan } from '../../storybook/helpers.js';
+import { commonVisitor, mdxVisitor, previewVisitor, storyVisitor, FileType } from '../babel/helpers.js';
+import { logger } from '../../logger.js';
+import { JSONSchema7 } from 'schema-utils/declarations/validate.js';
 
 type LoaderContext = Parameters<typeof getOptions>[0];
 

@@ -1,6 +1,6 @@
 import { addHook } from 'pirates';
-import { logger } from '../../logger';
-import { resolveFromStorybook, storybookConfigRef } from '../../storybook/helpers';
+import { logger } from '../../logger.js';
+import { resolveFromStorybook, storybookConfigRef } from '../../storybook/helpers.js';
 
 export const addSvelteHook = async (getStory: () => string | null): Promise<void> => {
   const { compile, preprocess } = (await import(resolveFromStorybook('svelte/compiler'))) as {

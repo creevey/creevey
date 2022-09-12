@@ -1,5 +1,5 @@
-import { Response, Request, CreeveyUpdate, CreeveyStatus, noop } from '../../types';
-import { getConnectionUrl } from './helpers';
+import { Response, Request, CreeveyUpdate, CreeveyStatus, noop } from '../../types.js';
+import { getConnectionUrl } from './helpers.js';
 
 export interface CreeveyClientApi {
   start: (ids: string[]) => void;

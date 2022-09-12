@@ -5,7 +5,7 @@ import {
   isStorybookVersionLessThan,
   resolveFromStorybookCore,
   resolveFromStorybookCoreServer,
-} from '../../server/storybook/helpers';
+} from '../../server/storybook/helpers.js';
 
 export function config(entry: string[] = []): string[] {
   return [...entry, require.resolve('./decorator')];

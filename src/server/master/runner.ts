@@ -12,8 +12,8 @@ import {
   TestStatus,
   ServerTest,
   TestMeta,
-} from '../../types';
-import Pool from './pool';
+} from '../../types.js';
+import Pool from './pool.js';
 
 const copyFileAsync = promisify(copyFile);
 const mkdirAsync = promisify(mkdir);

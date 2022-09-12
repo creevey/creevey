@@ -1,6 +1,6 @@
 import React from 'react';
 import { styled, withTheme, Theme, keyframes, ensure, ThemeProvider, themes } from '@storybook/theming';
-import { useTheme } from '../shared/helpers';
+import { useTheme } from '../shared/helpers.js';
 
 const Container = withTheme(
   styled.div(({ theme }) => ({

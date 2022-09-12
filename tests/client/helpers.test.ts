@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import { checkSuite } from '../../src/client/shared/helpers';
-import { CreeveySuite, TestData } from '../../src/types';
+import { checkSuite } from '../../src/client/shared/helpers.js';
+import { CreeveySuite, TestData } from '../../src/types.js';
 
 function mockTest(): TestData {
   return {

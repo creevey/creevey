@@ -1,11 +1,11 @@
 import cluster from 'cluster';
 import minimist from 'minimist';
-import creevey from './server';
-import { noop, Options } from './types';
-import { emitWorkerMessage } from './server/messages';
-import { isShuttingDown, shutdown, shutdownWorkers } from './server/utils';
+import creevey from './server/index.js';
+import { noop, Options } from './types.js';
+import { emitWorkerMessage } from './server/messages.js';
+import { isShuttingDown, shutdown, shutdownWorkers } from './server/utils.js';
 import { setDefaultLevel, levels } from 'loglevel';
-import { logger } from './server/logger';
+import { logger } from './server/logger.js';
 
 function shutdownOnException(reason: unknown): void {
   if (isShuttingDown.current) return;

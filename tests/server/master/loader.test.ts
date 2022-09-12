@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 import { expect } from 'chai';
-import loader from '../../../src/server/loaders/webpack/creevey-loader';
-import { FileType } from '../../../src/server/loaders/babel/helpers';
+import loader from '../../../src/server/loaders/webpack/creevey-loader.js';
+import { FileType } from '../../../src/server/loaders/babel/helpers.js';
 
 const testsToFileTypes: Partial<Record<string, FileType>> = {
   addDecorator: FileType.Preview,

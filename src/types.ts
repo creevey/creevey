@@ -1,6 +1,6 @@
 import type { API as StorybookAPI } from '@storybook/api';
 import type { DecoratorFunction } from '@storybook/addons';
-import type { IKey } from 'selenium-webdriver/lib/input';
+import type { IKey } from 'selenium-webdriver/lib/input.js';
 import type { Worker as ClusterWorker } from 'cluster';
 import type { until, WebDriver, WebElementPromise } from 'selenium-webdriver';
 import type Pixelmatch from 'pixelmatch';

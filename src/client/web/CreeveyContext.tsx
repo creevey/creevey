@@ -1,5 +1,5 @@
-import React from 'react';
-import { CreeveySuite, noop } from '../../types';
+import { createContext } from 'react';
+import { CreeveySuite, noop } from '../../types.js';
 
 export interface CreeveyContextType {
   isReport: boolean;
@@ -10,7 +10,7 @@ export interface CreeveyContextType {
   onSuiteToggle: (path: string[], checked: boolean) => void;
 }
 
-export const CreeveyContext = React.createContext<CreeveyContextType>({
+export const CreeveyContext = createContext<CreeveyContextType>({
   isReport: true,
   isRunning: false,
   onStop: noop,

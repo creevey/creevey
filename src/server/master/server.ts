@@ -7,10 +7,10 @@ import serve from 'koa-static';
 import mount from 'koa-mount';
 import body from 'koa-bodyparser';
 import WebSocket from 'ws';
-import { CreeveyApi } from './api';
-import { emitStoriesMessage, sendStoriesMessage, subscribeOn, subscribeOnWorker } from '../messages';
-import { CaptureOptions, isDefined, noop, StoryInput } from '../../types';
-import { logger } from '../logger';
+import { CreeveyApi } from './api.js';
+import { emitStoriesMessage, sendStoriesMessage, subscribeOn, subscribeOnWorker } from '../messages.js';
+import { CaptureOptions, isDefined, noop, StoryInput } from '../../types.js';
+import { logger } from '../logger.js';
 
 export default function server(reportDir: string, port: number, ui: boolean): (api: CreeveyApi) => void {
   let resolveApi: (api: CreeveyApi) => void = noop;

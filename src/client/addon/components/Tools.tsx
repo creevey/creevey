@@ -1,11 +1,11 @@
 import React, { Fragment, useState, useEffect } from 'react';
 import { IconButton, Icons, Separator } from '@storybook/components';
-import { ForwardIcon, NextIcon } from './Icons';
+import { ForwardIcon, NextIcon } from './Icons.js';
 import { stringify } from 'qs';
 import { styled } from '@storybook/theming';
-import { isDefined, TestData } from '../../../types';
-import { getTestPath, useForceUpdate } from '../../shared/helpers';
-import { CreeveyManager } from '../Manager';
+import { isDefined, TestData } from '../../../types.js';
+import { getTestPath, useForceUpdate } from '../../shared/helpers.js';
+import { CreeveyManager } from '../Manager.js';
 
 interface ToolsProps {
   manager: CreeveyManager;

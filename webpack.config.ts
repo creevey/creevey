@@ -25,6 +25,9 @@ const config: WebpackConfiguration & WebpackDevServerConfiguration = {
     ],
   },
   resolve: {
+    extensionAlias: {
+      '.js': ['.ts', '.tsx', '.js'],
+    },
     extensions: ['.tsx', '.ts', '.jsx', '.js'],
   },
   devServer: { port: 8000, proxy: { '/': { target: 'http://localhost:3000' } } },

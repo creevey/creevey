@@ -1,5 +1,5 @@
-export { ImagesView } from './ImagesView';
-export { BlendView } from './BlendView';
-export { SideBySideView } from './SideBySideView';
-export { SlideView } from './SlideView';
-export { SwapView } from './SwapView';
+export { ImagesView } from './ImagesView.js';
+export { BlendView } from './BlendView.js';
+export { SideBySideView } from './SideBySideView.js';
+export { SlideView } from './SlideView.js';
+export { SwapView } from './SwapView.js';

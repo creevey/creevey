@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 
 import { styled, Theme, withTheme } from '@storybook/theming';
 import { Icons } from '@storybook/components';
@@ -76,7 +76,7 @@ export const CheckboxContainer = styled.div({
   zIndex: 2,
 });
 
-export class Checkbox extends React.Component<BooleanProps, CheckboxState> {
+export class Checkbox extends Component<BooleanProps, CheckboxState> {
   state: CheckboxState = { indeterminate: false };
 
   handleIndeterminateChange = (value: boolean): void => {

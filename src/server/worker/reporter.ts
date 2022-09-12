@@ -1,8 +1,8 @@
 import chalk from 'chalk';
 import { Runner, reporters, MochaOptions } from 'mocha';
 import prefix from 'loglevel-plugin-prefix';
-import { Images, isDefined, isImageError } from '../../types';
-import { getLogger } from '../logger';
+import { Images, isDefined, isImageError } from '../../types.js';
+import { getLogger } from '../logger.js';
 
 interface ReporterOptions {
   reportDir: string;

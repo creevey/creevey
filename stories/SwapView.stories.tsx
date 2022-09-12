@@ -1,8 +1,8 @@
 import React from 'react';
 import { ComponentMeta, ComponentStoryObj } from '@storybook/react';
 import { fireEvent, within } from '@storybook/testing-library';
-import { ImagesView as ImagesViewBase } from '../src/client/shared/components/ImagesView';
-import { capture } from '../src/client/addon/withCreevey';
+import { ImagesView as ImagesViewBase } from '../src/client/shared/components/ImagesView/index.js';
+import { capture } from '../src/client/addon/withCreevey.js';
 
 const SwapView = (image: { expect: string; diff: string; actual: string }): JSX.Element => (
   <ImagesViewBase image={image} url="https://images.placeholders.dev" canApprove mode={'swap'} />

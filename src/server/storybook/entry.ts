@@ -1,7 +1,7 @@
 import type { StoryApi } from '@storybook/addons';
 import type { Channel } from '@storybook/channels';
 import { addons } from '@storybook/addons';
-import { getStorybookFramework, isStorybookVersionLessThan, resolveFromStorybook } from './helpers';
+import { getStorybookFramework, isStorybookVersionLessThan, resolveFromStorybook } from './helpers.js';
 
 const framework = getStorybookFramework();
 // eslint-disable-next-line @typescript-eslint/no-var-requires

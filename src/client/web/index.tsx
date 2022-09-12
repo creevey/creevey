@@ -1,11 +1,11 @@
-import React, { Suspense } from 'react';
-import ReactDOM from 'react-dom';
-import { CreeveyApp } from './CreeveyApp';
+import React, { Suspense, lazy } from 'react';
+import { render } from 'react-dom';
+import { CreeveyApp } from './CreeveyApp.js';
 
-import { initCreeveyClientApi, CreeveyClientApi } from '../shared/creeveyClientApi';
-import { CreeveyStatus, noop } from '../../types';
-import { treeifyTests } from '../shared/helpers';
-import { CreeveyLoader } from './CreeveyLoader';
+import { initCreeveyClientApi, CreeveyClientApi } from '../shared/creeveyClientApi.js';
+import { CreeveyStatus, noop } from '../../types.js';
+import { treeifyTests } from '../shared/helpers.js';
+import { CreeveyLoader } from './CreeveyLoader.js';
 
 declare global {
   const __CREEVEY_DATA__: CreeveyStatus['tests'];
@@ -22,7 +22,7 @@ function loadCreeveyData(): Promise<CreeveyStatus['tests']> {
   });
 }
 
-const CreeveyAppAsync = React.lazy(async () => {
+const CreeveyAppAsync = lazy(async () => {
   let isReport = false;
   let creeveyStatus: CreeveyStatus;
   let creeveyApi: CreeveyClientApi | undefined;
@@ -53,7 +53,7 @@ const CreeveyAppAsync = React.lazy(async () => {
   };
 });
 
-ReactDOM.render(
+render(
   <Suspense fallback={<CreeveyLoader />}>
     <CreeveyAppAsync />
   </Suspense>,

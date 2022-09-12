@@ -1,5 +1,5 @@
 import React from 'react';
-import { Paging } from './Paging';
+import { Paging } from './Paging.js';
 import { styled, withTheme } from '@storybook/theming';
 import { Button } from '@storybook/components';
 

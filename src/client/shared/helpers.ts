@@ -1,7 +1,7 @@
 import { themes, ThemeVars } from '@storybook/theming';
 import { parse, stringify } from 'qs';
 import { RefObject, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { TestData, isTest, isDefined, TestStatus, CreeveySuite, CreeveyTest, CreeveyStatus } from '../../types';
+import { TestData, isTest, isDefined, TestStatus, CreeveySuite, CreeveyTest, CreeveyStatus } from '../../types.js';
 
 export interface CreeveyViewFilter {
   status: TestStatus | null;

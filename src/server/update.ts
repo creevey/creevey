@@ -1,7 +1,7 @@
 import path from 'path';
 import fs, { Dirent, mkdirSync } from 'fs';
 import micromatch from 'micromatch';
-import { Config, isDefined, ServerTest } from '../types';
+import { Config, isDefined, ServerTest } from '../types.js';
 
 function tryToLoadTestsData(filename: string): Partial<{ [id: string]: ServerTest }> | undefined {
   try {

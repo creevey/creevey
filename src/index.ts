@@ -1,5 +1,5 @@
-export * from './types';
-export * from './client/addon/withCreevey';
-export * from './client/addon/readyForCapture';
-export { loadStories as browserStoriesProvider } from './server/storybook/providers/browser';
-export { loadStories as nodejsStoriesProvider } from './server/storybook/providers/nodejs';
+export * from './types.js';
+export * from './client/addon/withCreevey.js';
+export * from './client/addon/readyForCapture.js';
+export { loadStories as browserStoriesProvider } from './server/storybook/providers/browser.js';
+export { loadStories as nodejsStoriesProvider } from './server/storybook/providers/nodejs.js';

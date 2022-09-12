@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/ban-ts-comment */
 import path from 'path';
 import cluster from 'cluster';
-import chokidar, { FSWatcher } from 'chokidar';
-import type { StoryInput, WebpackMessage, SetStoriesData, Config, StoriesRaw } from '../../../types';
-import { noop } from '../../../types';
-import { getCreeveyCache } from '../../utils';
-import { subscribeOn } from '../../messages';
+import { watch as fileWatch, FSWatcher } from 'chokidar';
+import type { StoryInput, WebpackMessage, SetStoriesData, Config, StoriesRaw } from '../../../types.js';
+import { noop } from '../../../types.js';
+import { getCreeveyCache } from '../../utils.js';
+import { subscribeOn } from '../../messages.js';
 import type { Parameters as StorybookParameters } from '@storybook/api';
 import type { default as Channel } from '@storybook/channels';
 import {
@@ -15,11 +15,11 @@ import {
   importStorybookCoreEvents,
   isStorybookVersionGreaterThan,
   isStorybookVersionLessThan,
-} from '../helpers';
-import { logger } from '../../logger';
-import { denormalizeStoryParameters } from '../../../shared';
+} from '../helpers.js';
+import { logger } from '../../logger.js';
+import { denormalizeStoryParameters } from '../../../shared.js';
 
-async function initStorybookEnvironment(): Promise<typeof import('../entry')> {
+async function initStorybookEnvironment(): Promise<typeof import('../entry.js')> {
   // @ts-expect-error There is no @types/global-jsdom package
   (await import('global-jsdom')).default(undefined, { url: 'http://localhost' });
 
@@ -40,7 +40,7 @@ async function initStorybookEnvironment(): Promise<typeof import('../entry')> {
   // NOTE: disable logger for 5.x storybook
   (logger.debug as unknown) = noop;
 
-  return import('../entry');
+  return import('../entry.js');
 }
 
 function watchStories(channel: Channel, watcher: FSWatcher, initialFiles: Set<string>): (data: SetStoriesData) => void {
@@ -102,8 +102,8 @@ async function loadStoriesDirectly(
   { watcher, debug }: { watcher?: FSWatcher; debug: boolean },
 ): Promise<void> {
   const { toRequireContext, normalizeStoriesEntry } = await importStorybookCoreCommon();
-  const { addParameters, configure } = await import('../entry');
-  const requireContext = await (await import('../../loaders/babel/register')).default(config, debug);
+  const { addParameters, configure } = await import('../entry.js');
+  const requireContext = await (await import('../../loaders/babel/register.js')).default(config, debug);
   const preview = (() => {
     try {
       return require.resolve(`${config.storybookDir}/preview`);
@@ -186,7 +186,7 @@ export async function loadStories(
   channel.on('storiesUpdated', storiesListener);
 
   let watcher: FSWatcher | undefined;
-  if (watch) watcher = chokidar.watch([], { ignoreInitial: true });
+  if (watch) watcher = fileWatch([], { ignoreInitial: true });
 
   const loadPromise = new Promise<StoriesRaw>((resolve) => {
     channel.once(Events.SET_STORIES, (data: SetStoriesData) => {

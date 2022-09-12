@@ -1,9 +1,9 @@
 import React, { FunctionComponent } from 'react';
-import { SideBySideView } from './SideBySideView';
-import { SwapView } from './SwapView';
-import { SlideView } from './SlideView';
-import { BlendView } from './BlendView';
-import { Images, ImagesViewMode } from '../../../../types';
+import { SideBySideView } from './SideBySideView.js';
+import { SwapView } from './SwapView.js';
+import { SlideView } from './SlideView.js';
+import { BlendView } from './BlendView.js';
+import { Images, ImagesViewMode } from '../../../../types.js';
 import { Color, styled, Theme, withTheme } from '@storybook/theming';
 
 export const themeBorderColors = {

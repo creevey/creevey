@@ -1,7 +1,7 @@
 import { createWriteStream, existsSync, readFileSync, unlink } from 'fs';
 import cluster from 'cluster';
-import { SkipOptions, SkipOption, isDefined, TestData, noop, isFunction } from '../types';
-import { emitShutdownMessage, sendShutdownMessage } from './messages';
+import { SkipOptions, SkipOption, isDefined, TestData, noop, isFunction } from '../types.js';
+import { emitShutdownMessage, sendShutdownMessage } from './messages.js';
 import findCacheDir from 'find-cache-dir';
 import { get } from 'https';
 

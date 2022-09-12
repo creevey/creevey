@@ -5,10 +5,10 @@ import {
   isStorybookVersionGreaterThan,
   isStorybookVersionLessThan,
   storybookDirRef,
-} from './storybook/helpers';
-import { loadStories as nodejsStoriesProvider } from './storybook/providers/nodejs';
-import { loadStories as browserStoriesProvider } from './storybook/providers/browser';
-import { Config, Browser, BrowserConfig, Options, isDefined } from '../types';
+} from './storybook/helpers.js';
+import { loadStories as nodejsStoriesProvider } from './storybook/providers/nodejs.js';
+import { loadStories as browserStoriesProvider } from './storybook/providers/browser.js';
+import { Config, Browser, BrowserConfig, Options, isDefined } from '../types.js';
 
 export const defaultBrowser = 'chrome';
 

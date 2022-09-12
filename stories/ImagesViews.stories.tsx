@@ -2,9 +2,9 @@ import React from 'react';
 import { ComponentMeta, ComponentStoryObj } from '@storybook/react';
 import { fireEvent, within } from '@storybook/testing-library';
 
-import { capture } from '../src/client/addon/withCreevey';
-import { ImagesView as ImagesViewBase } from '../src/client/shared/components/ImagesView';
-import { ImagesViewMode } from '../src/types';
+import { capture } from '../src/client/addon/withCreevey.js';
+import { ImagesView as ImagesViewBase } from '../src/client/shared/components/ImagesView/index.js';
+import { ImagesViewMode } from '../src/types.js';
 
 import octocatExpect from './fixtures/octocat-expect.png';
 import octocatDiff from './fixtures/octocat-diff.png';
