@@ -86,7 +86,7 @@
     "@storybook/testing-library": "^0.0.9",
     "@storybook/theming": "^6.4.19",
     "@types/chai": "^4.2.15",
-    "@types/selenium-webdriver": "^4.0.12",
+    "@types/selenium-webdriver": "^4.1.5",
     "airbnb-js-shims": "^2.2.1",
     "chai": "^4.3.4",
     "chalk": "^4.1.2",
