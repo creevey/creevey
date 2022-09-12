@@ -20,6 +20,7 @@ export type DiffOptions = typeof Pixelmatch extends (
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
 export type SetStoriesData = {
+  v?: number;
   globalParameters: { creevey?: CreeveyStoryParams };
   kindParameters: Partial<{ [kind: string]: { fileName: string; creevey?: CreeveyStoryParams } }>;
   stories: StoriesRaw;

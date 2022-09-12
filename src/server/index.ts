@@ -43,7 +43,7 @@ export default async function (options: Options): Promise<void> {
 
       return (await import('./loaders/webpack/compile')).default(config, options);
     }
-    case cluster.isMaster: {
+    case cluster.isPrimary: {
       logger.info('Starting Master Process');
 
       const resolveApi = (await import('./master/server')).default(config.reportDir, port, ui);

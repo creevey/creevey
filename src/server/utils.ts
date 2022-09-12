@@ -70,7 +70,7 @@ export function shouldSkip(
 export async function shutdownWorkers(): Promise<void> {
   isShuttingDown.current = true;
   await Promise.all(
-    Object.values(cluster.workers)
+    Object.values(cluster.workers ?? {})
       .filter(isDefined)
       .filter((worker) => worker.isConnected())
       .map(

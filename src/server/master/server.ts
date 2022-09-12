@@ -48,7 +48,7 @@ export default function server(reportDir: string, port: number, ui: boolean): (a
 
       setStoriesCounter = counter;
       emitStoriesMessage({ type: 'update', payload: stories });
-      Object.values(cluster.workers)
+      Object.values(cluster.workers ?? {})
         .filter(isDefined)
         .filter((worker) => worker.isConnected())
         .forEach((worker) => sendStoriesMessage(worker, { type: 'update', payload: stories }));
@@ -60,7 +60,7 @@ export default function server(reportDir: string, port: number, ui: boolean): (a
   app.use(async (ctx, next) => {
     if (ctx.method == 'POST' && ctx.path == '/capture') {
       const { workerId, options } = ctx.request.body as { workerId: number; options?: CaptureOptions };
-      const worker = Object.values(cluster.workers)
+      const worker = Object.values(cluster.workers ?? {})
         .filter(isDefined)
         .find((worker) => worker.process.pid == workerId);
       // NOTE: Hypothetical case when someone send to us capture req and we don't have a worker with browser session for it

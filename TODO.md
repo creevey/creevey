@@ -369,6 +369,7 @@
 
 ## First priority (v0.8)
 
+- [ ] Support es modules
 - [ ] Expose new API for captureElement and ComponentStoryFn/Obj with creevey params
 - [ ] Wrap creevey capture inside storybook instrumenter
   - [ ] Assert images on capture

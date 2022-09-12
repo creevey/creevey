@@ -94,7 +94,7 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
       updateTests((draft) => {
         const state = event.state as unknown;
         if (state && typeof state == 'object' && 'testPath' in state) {
-          const { testPath } = state as { testPath: unknown };
+          const { testPath } = state as { testPath?: string[] };
           if (Array.isArray(testPath)) {
             // TODO Add validations
             openSuite(draft, testPath, true);
