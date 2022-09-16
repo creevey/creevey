@@ -45,7 +45,7 @@ export async function initCreeveyClientApi(): Promise<CreeveyClientApi> {
       },
     });
   });
-  ws.addEventListener('message', (message: MessageEvent) => {
+  ws.addEventListener('message', (message: MessageEvent<string>) => {
     const data = JSON.parse(message.data) as Response;
 
     if (data.type == 'update') updateListeners.forEach((fn) => fn(data.payload));

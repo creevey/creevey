@@ -6,7 +6,7 @@ import { downloadBinary, getCreeveyCache } from '../utils';
 import { pullImages, runImage } from '../docker';
 import { Octokit } from '@octokit/core';
 import { subscribeOn } from '../messages';
-import { isWorker } from 'cluster';
+import cluster from 'cluster';
 import { chmod, exec } from 'shelljs';
 
 const mkdirAsync = promisify(mkdir);
@@ -75,7 +75,7 @@ async function downloadSelenoidBinary(destination: string): Promise<void> {
 export async function startSelenoidStandalone(config: Config, debug: boolean): Promise<void> {
   config.gridUrl = 'http://localhost:4444/wd/hub';
 
-  if (isWorker) return;
+  if (cluster.isWorker) return;
 
   const browsers = (Object.values(config.browsers) as BrowserConfig[]).filter((browser) => !browser.gridUrl);
   const selenoidConfigDir = await createSelenoidConfig(browsers, { useDocker: false });

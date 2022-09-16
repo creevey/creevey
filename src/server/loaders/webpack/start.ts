@@ -10,7 +10,7 @@ export function startWebpackCompiler(): Promise<void> {
     webpackCompiler.on('message', (message: unknown) => {
       if (!isWebpackMessage(message)) return;
 
-      Object.values(cluster.workers)
+      Object.values(cluster.workers ?? {})
         .filter((worker) => worker != webpackCompiler)
         .forEach((worker) => worker?.send(message));
       switch (message.type) {
