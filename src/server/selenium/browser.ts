@@ -565,8 +565,7 @@ export async function getBrowser(config: Config, name: string): Promise<WebDrive
   const realAddress = address;
 
   // TODO Define some capabilities explicitly and define typings
-  const capabilities = new Capabilities(userCapabilities);
-  capabilities.setPageLoadStrategy(PageLoadStrategy.NONE);
+  const capabilities = new Capabilities({ ...userCapabilities, pageLoadStrategy: PageLoadStrategy.NONE });
 
   subscribeOn('shutdown', () => {
     browser?.quit().finally(() =>
