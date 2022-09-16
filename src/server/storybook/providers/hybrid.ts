@@ -5,6 +5,7 @@ import type { Config, StoriesRaw, StoryInput, CreeveyStoryParams, CreeveyStory }
 import { logger } from '../../logger';
 import parse, { CreeveyParamsByStoryId } from '../../parser';
 import { readDirRecursive } from '../../../server/utils';
+import { combineParameters } from '../../../shared';
 
 export async function loadStories(
   _config: Config,
@@ -13,14 +14,18 @@ export async function loadStories(
 ): Promise<StoriesRaw> {
   let creeveyParamsByStoryId: CreeveyParamsByStoryId = {};
 
+  const mergeParamsFromTestsToStory = (story: CreeveyStory, creeveyParams: CreeveyStoryParams): void => {
+    if (story.parameters) {
+      story.parameters.creevey = combineParameters(story.parameters.creevey || {}, creeveyParams);
+    }
+  };
+
   const stories = await browserProvider(_config, { port }, (updatedStoriesByFiles) => {
     Array.from(updatedStoriesByFiles.entries()).forEach(([, storiesArray]) => {
       storiesArray.forEach((story) => {
         const creeveyParams = creeveyParamsByStoryId[story.id];
         if (creeveyParams) {
-          story.parameters = Object.assign({}, story.parameters, {
-            creevey: Object.assign({}, (story as CreeveyStory).parameters?.creevey, creeveyParams),
-          });
+          mergeParamsFromTestsToStory(story, creeveyParams);
         }
       });
     });
@@ -30,13 +35,8 @@ export async function loadStories(
   // TODO fix test files hot reloading
   creeveyParamsByStoryId = await parseParams(_config /*, (data) => console.log(data) */);
 
-  Object.entries<CreeveyStoryParams>(creeveyParamsByStoryId).forEach(([storyId, creeveyParams]) => {
-    const story: CreeveyStory = stories[storyId];
-    if (story) {
-      story.parameters = Object.assign({}, story.parameters, {
-        creevey: Object.assign({}, story.parameters?.creevey, creeveyParams),
-      });
-    }
+  Object.entries(stories).forEach(([storyId, story]) => {
+    mergeParamsFromTestsToStory(story, creeveyParamsByStoryId[storyId]);
   });
 
   return stories;
