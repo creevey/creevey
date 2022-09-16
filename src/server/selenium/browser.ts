@@ -421,9 +421,7 @@ async function selectStory(
   waitForReady = false,
 ): Promise<boolean> {
   browserLogger.debug(`Triggering 'SetCurrentStory' event with storyId ${chalk.magenta(id)}`);
-  const [errorMessage, isCaptureCalled = false] = await browser.executeAsyncScript<
-    [error?: string | null, isCaptureCalled?: boolean]
-  >(
+  const result = await browser.executeAsyncScript<[error?: string | null, isCaptureCalled?: boolean] | null>(
     function (
       id: string,
       kind: string,
@@ -443,6 +441,9 @@ async function selectStory(
     name,
     waitForReady,
   );
+
+  const [errorMessage, isCaptureCalled = false] = result ?? [];
+
   if (errorMessage) throw new Error(errorMessage);
 
   return isCaptureCalled;
