@@ -499,7 +499,8 @@ async function resolveCreeveyHost(browser: WebDriver, port: number): Promise<str
     function (hosts: string[], port: number, callback: (host?: string | null) => void) {
       void Promise.all(
         hosts.map(function (host) {
-          return fetch(`http://${host}:${port}/ping`)
+          // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+          return fetch('http://' + host + ':' + port + '/ping')
             .then(function (response) {
               return response.text();
             })
