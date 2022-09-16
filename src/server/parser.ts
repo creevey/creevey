@@ -1,3 +1,4 @@
+import { toId, storyNameFromExport } from '@storybook/csf';
 import { CreeveyStoryParams, CreeveyTestFunction } from '../types';
 
 export type CreeveyParamsByStoryId = { [storyId: string]: CreeveyStoryParams };
@@ -21,7 +22,7 @@ const setStoryParameters = (params: CreeveyStoryParams): void => {
 };
 
 const getStoryId = (kindTitle: string, storyTitle: string): string => {
-  return (kindTitle.split('/').join('-') + '--' + storyTitle).toLowerCase();
+  return toId(kindTitle, storyNameFromExport(storyTitle));
 };
 
 export const kind = (title: string, kindFn: () => void): void => {
