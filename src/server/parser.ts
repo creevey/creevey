@@ -39,7 +39,7 @@ export const story = (
   storyParams = null;
   storyFn({ setStoryParameters });
   const storyId = getStoryId(kindTitle, storyTitle);
-  result[storyId] = Object.assign({}, storyParams, { tests: result[storyId].tests });
+  result[storyId] = Object.assign({}, storyParams, { tests: result[storyId]?.tests });
   storyTitle = '';
   storyParams = null;
 };

@@ -257,6 +257,7 @@ export interface Config {
   dockerImagePlatform: string;
   testRegex?: RegExp;
   testDir?: string;
+  tsConfig?: string;
 }
 
 export type CreeveyConfig = Partial<Config>;
