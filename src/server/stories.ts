@@ -20,7 +20,7 @@ import { isStorybookVersionLessThan } from './storybook/helpers';
 function storyTestFabric(delay?: number, testFn?: CreeveyTestFunction) {
   return async function storyTest(this: Context) {
     delay ? await new Promise((resolve) => setTimeout(resolve, delay)) : void 0;
-    await (testFn?.call(this) ??
+    testFn?.call(this) ??
       (this.screenshots.length > 0
         ? this.expect(
             this.screenshots.reduce(
@@ -31,7 +31,7 @@ function storyTestFabric(delay?: number, testFn?: CreeveyTestFunction) {
               {},
             ),
           ).to.matchImages()
-        : this.expect(await this.takeScreenshot()).to.matchImage()));
+        : this.expect(await this.takeScreenshot()).to.matchImage());
   };
 }
 
