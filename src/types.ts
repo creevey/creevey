@@ -255,8 +255,8 @@ export interface Config {
    * Specify platform for docker images
    */
   dockerImagePlatform: string;
-  testRegex?: RegExp;
-  testDir?: string;
+  testsRegex?: RegExp;
+  testsDir?: string;
   tsConfig?: string;
 }
 

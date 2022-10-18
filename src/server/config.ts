@@ -12,7 +12,7 @@ import { Config, Browser, BrowserConfig, Options, isDefined } from '../types';
 
 export const defaultBrowser = 'chrome';
 
-export const defaultConfig: Omit<Config, 'gridUrl' | 'storiesProvider' | 'testDir' | 'tsConfig'> = {
+export const defaultConfig: Omit<Config, 'gridUrl' | 'storiesProvider' | 'testsDir' | 'tsConfig'> = {
   useDocker: true,
   useWebpackToExtractTests: false,
   dockerImage: 'aerokube/selenoid:latest-release',
@@ -28,7 +28,7 @@ export const defaultConfig: Omit<Config, 'gridUrl' | 'storiesProvider' | 'testDi
   browsers: { [defaultBrowser]: true },
   hooks: {},
   babelOptions: (_) => _,
-  testRegex: /.creevey.(t|j)s$/,
+  testsRegex: /\.creevey\.(t|j)s$/,
 };
 
 function normalizeBrowserConfig(name: string, config: Browser): BrowserConfig {

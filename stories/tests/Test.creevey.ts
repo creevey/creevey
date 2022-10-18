@@ -1,4 +1,4 @@
-import { kind, story, test } from '../../src/server/parser';
+import { kind, story, test } from '../../src/server/testsFiles/parser';
 
 kind('TestKind', () => {
   story('Story', ({ setStoryParameters }) => {

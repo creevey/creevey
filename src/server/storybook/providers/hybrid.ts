@@ -3,7 +3,7 @@ import chokidar from 'chokidar';
 import { loadStories as browserProvider } from './browser';
 import type { Config, StoriesRaw, StoryInput, CreeveyStoryParams, CreeveyStory } from '../../../types';
 import { logger } from '../../logger';
-import parse, { CreeveyParamsByStoryId } from '../../parser';
+import parse, { CreeveyParamsByStoryId } from '../../testsFiles/parser';
 import { readDirRecursive } from '../../../server/utils';
 import { combineParameters } from '../../../shared';
 
@@ -46,11 +46,11 @@ async function parseParams(
   config: Config,
   listener?: (data: CreeveyParamsByStoryId) => void,
 ): Promise<CreeveyParamsByStoryId> {
-  if (!config.testDir) {
+  if (!config.testsDir) {
     return Promise.resolve({});
   }
 
-  const testFiles = readDirRecursive(config.testDir).filter((file) => config.testRegex?.test(file));
+  const testFiles = readDirRecursive(config.testsDir).filter((file) => config.testsRegex?.test(file));
 
   await (await import('../../testsFiles/register')).default(config);
 
