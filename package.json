@@ -17,6 +17,12 @@
   "bin": {
     "creevey": "./lib/cjs/cli.js"
   },
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/cjs/index.js"
+    }
+  },
   "main": "lib/cjs/index.js",
   "module": "lib/esm/index.js",
   "types": "lib/types/index.d.ts",
