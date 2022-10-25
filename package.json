@@ -21,6 +21,10 @@
     ".": {
       "types": "./lib/types/index.d.ts",
       "default": "./lib/cjs/index.js"
+    },
+    "./addon": {
+      "types": "./lib/types/client/addon/index.d.ts",
+      "default": "./lib/cjs/client/addon/index.js"
     }
   },
   "main": "lib/cjs/index.js",
