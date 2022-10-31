@@ -1,6 +1,7 @@
 import { Parameters } from '@storybook/api';
 import { mapValues, mergeWith, cloneDeepWith } from 'lodash';
-import { SetStoriesData, StoriesRaw, CreeveyStoryParams, StoryInput } from './types';
+import { SetStoriesData, StoriesRaw, CreeveyStoryParams, StoryInput } from '../types';
+import { deserializeRegExp, isSerializedRegExp, isRegExp, serializeRegExp } from './serializeRegExp';
 
 // NOTE: Copy-paste from storybook/api
 export const combineParameters = (...parameterSets: Parameters[]): Parameters =>
@@ -28,29 +29,6 @@ export const denormalizeStoryParameters = ({
   })) as StoriesRaw;
 };
 
-interface SerializedRegExp {
-  __regexp: true;
-  source: string;
-  flags: string;
-}
-
-export const isSerializedRegExp = (exp: unknown): exp is SerializedRegExp => {
-  return typeof exp === 'object' && exp !== null && Reflect.get(exp, '__regexp') === true;
-};
-
-export const serializeRegExp = (exp: RegExp): SerializedRegExp => {
-  const { source, flags } = exp;
-  return {
-    __regexp: true,
-    source,
-    flags,
-  };
-};
-
-export const deserializeRegExp = ({ source, flags }: SerializedRegExp): RegExp => {
-  return new RegExp(source, flags);
-};
-
 export const serializeRawStories = (stories: StoriesRaw): StoriesRaw => {
   return mapValues(stories, (storyData) => {
     const creevey = storyData.parameters.creevey as CreeveyStoryParams | undefined;
@@ -62,7 +40,7 @@ export const serializeRawStories = (stories: StoriesRaw): StoriesRaw => {
           creevey: {
             ...creevey,
             skip: cloneDeepWith(creevey.skip, (value) => {
-              if (value instanceof RegExp) {
+              if (isRegExp(value)) {
                 return serializeRegExp(value);
               }
               return undefined;
