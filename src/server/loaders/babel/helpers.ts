@@ -1,6 +1,6 @@
 import { NodePath, Binding, TraverseOptions } from '@babel/traverse';
 import * as t from '@babel/types';
-import { isDefined } from '../../../types';
+import { isDefined } from '../../../types.js';
 
 function isExports(path: NodePath<t.Identifier>): boolean {
   const { parentPath } = path;

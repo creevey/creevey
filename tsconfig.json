@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
+    "rootDir": ".",
     "declarationDir": "./lib/types",
     "sourceMap": true,
     "declaration": true,
-    "module": "esnext",
-    "moduleResolution": "node",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "strict": true,
     "jsx": "react",
     "target": "esnext",

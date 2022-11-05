@@ -1,6 +1,6 @@
 import React from 'react';
-import { SideBarHeader } from '../src/client/web/CreeveyView/SideBar/SideBarHeader';
-import { noop } from '../src/types';
+import { SideBarHeader } from '../src/client/web/CreeveyView/SideBar/SideBarHeader.js';
+import { noop } from '../src/types.js';
 import { styled } from '@storybook/theming';
 import { ComponentMeta, ComponentStoryObj } from '@storybook/react';
 

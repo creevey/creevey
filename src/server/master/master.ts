@@ -1,8 +1,8 @@
 import path from 'path';
-import { Config, TestData, isDefined, ServerTest } from '../../types';
-import { loadTestsFromStories, saveTestsJson } from '../stories';
-import Runner from './runner';
-import { startWebpackCompiler } from '../loaders/webpack/start';
+import { Config, TestData, isDefined, ServerTest } from '../../types.js';
+import { loadTestsFromStories, saveTestsJson } from '../stories.js';
+import Runner from './runner.js';
+import { startWebpackCompiler } from '../loaders/webpack/start.js';
 
 function mergeTests(
   testsWithReports: Partial<{ [id: string]: TestData }>,

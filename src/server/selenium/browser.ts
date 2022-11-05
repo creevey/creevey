@@ -8,7 +8,7 @@ import { Context, Suite, Test } from 'mocha';
 import { networkInterfaces } from 'os';
 import { PNG } from 'pngjs';
 import { Builder, By, Capabilities, Origin, WebDriver, WebElement } from 'selenium-webdriver';
-import { PageLoadStrategy } from 'selenium-webdriver/lib/capabilities';
+import { PageLoadStrategy } from 'selenium-webdriver/lib/capabilities.js';
 import {
   BrowserConfig,
   Config,
@@ -18,11 +18,11 @@ import {
   StorybookGlobals,
   StoryInput,
   StoriesRaw,
-} from '../../types';
-import { colors, logger } from '../logger';
-import { emitStoriesMessage, subscribeOn } from '../messages';
-import { importStorybookCoreEvents, isStorybookVersionLessThan } from '../storybook/helpers';
-import { isShuttingDown, LOCALHOST_REGEXP, runSequence } from '../utils';
+} from '../../types.js';
+import { colors, logger } from '../logger.js';
+import { emitStoriesMessage, subscribeOn } from '../messages.js';
+import { importStorybookCoreEvents, isStorybookVersionLessThan } from '../storybook/helpers.js';
+import { isShuttingDown, LOCALHOST_REGEXP, runSequence } from '../utils.js';
 
 type ElementRect = {
   top: number;

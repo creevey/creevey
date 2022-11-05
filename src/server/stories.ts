@@ -12,10 +12,10 @@ import type {
   StoryInput,
   CreeveyTestFunction,
   SetStoriesData,
-} from '../types';
-import { isDefined, isFunction, isObject } from '../types';
-import { shouldSkip, removeProps } from './utils';
-import { isStorybookVersionLessThan } from './storybook/helpers';
+} from '../types.js';
+import { isDefined, isFunction, isObject } from '../types.js';
+import { shouldSkip, removeProps } from './utils.js';
+import { isStorybookVersionLessThan } from './storybook/helpers.js';
 
 function storyTestFabric(delay?: number, testFn?: CreeveyTestFunction) {
   return async function storyTest(this: Context) {

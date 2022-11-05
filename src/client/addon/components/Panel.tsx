@@ -1,10 +1,10 @@
 import React from 'react';
-import { TestData } from '../../../types';
+import { TestData } from '../../../types.js';
 import { Loader } from '@storybook/components';
-import { ResultsPage } from '../../shared/components/ResultsPage';
+import { ResultsPage } from '../../shared/components/ResultsPage.js';
 import { styled } from '@storybook/theming';
-import { getTestPath } from '../../shared/helpers';
-import TestSelect from './TestSelect';
+import { getTestPath } from '../../shared/helpers.js';
+import TestSelect from './TestSelect.js';
 interface PanelProps {
   tests: TestData[];
   selectedTestId: string;

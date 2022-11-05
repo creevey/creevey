@@ -1,7 +1,7 @@
 import React from 'react';
 import { styled, withTheme, Theme } from '@storybook/theming';
 import { Icons, Loader } from '@storybook/components';
-import { TestStatus } from '../../../../types';
+import { TestStatus } from '../../../../types.js';
 
 export interface TestStatusIconProps {
   inverted?: boolean;

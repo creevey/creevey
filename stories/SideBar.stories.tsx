@@ -1,8 +1,8 @@
 import { ComponentMeta, ComponentStoryObj } from '@storybook/react';
 import { within } from '@storybook/testing-library';
-import { SideBar } from '../src/client/web/CreeveyView/SideBar';
-import { treeifyTests, checkSuite, getTestByPath } from '../src/client/shared/helpers';
-import { noop, CreeveySuite, CreeveyStatus, isDefined, isTest } from '../src/types';
+import { SideBar } from '../src/client/web/CreeveyView/SideBar/index.js';
+import { treeifyTests, checkSuite, getTestByPath } from '../src/client/shared/helpers.js';
+import { noop, CreeveySuite, CreeveyStatus, isDefined, isTest } from '../src/types.js';
 
 function openSuites(suite: CreeveySuite): CreeveySuite {
   suite.opened = true;

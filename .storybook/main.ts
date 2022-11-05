@@ -5,7 +5,7 @@ export default {
     '@storybook/addon-essentials',
     {
       name: './../src/client/addon/preset',
-      options: { clientPort: 8000, creeveyPreExtract: './scripts/babel-register' },
+      options: { clientPort: 8000, creeveyPreExtract: './scripts/babel-register.cjs' },
     },
   ],
   features: {

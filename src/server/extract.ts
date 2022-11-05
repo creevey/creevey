@@ -1,9 +1,9 @@
-import { denormalizeStoryParameters } from '../shared';
-import { Config, Options } from '../types';
-import { subscribeOn } from './messages';
-import { loadTestsFromStories, saveStoriesJson, saveTestsJson } from './stories';
-import { isStorybookVersionGreaterThan, isStorybookVersionLessThan } from './storybook/helpers';
-import { extractStoriesData } from './storybook/providers/nodejs';
+import { denormalizeStoryParameters } from '../shared.js';
+import { Config, Options } from '../types.js';
+import { subscribeOn } from './messages.js';
+import { loadTestsFromStories, saveStoriesJson, saveTestsJson } from './stories.js';
+import { isStorybookVersionGreaterThan, isStorybookVersionLessThan } from './storybook/helpers.js';
+import { extractStoriesData } from './storybook/providers/nodejs.js';
 
 export default async function extract(config: Config, options: Options): Promise<void> {
   if (config.useWebpackToExtractTests && process.env.__CREEVEY_ENV__ != 'test') {
@@ -16,7 +16,7 @@ export default async function extract(config: Config, options: Options): Promise
             return reject();
         }
       });
-      void (async () => (await import('./loaders/webpack/compile')).default(config, options))();
+      void (async () => (await import('./loaders/webpack/compile.js')).default(config, options))();
     });
   }
 

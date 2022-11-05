@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ViewPropsWithTheme, getBorderColor, themeBorderColors } from './ImagesView';
+import { ViewPropsWithTheme, getBorderColor, themeBorderColors } from './ImagesView.js';
 import { styled, withTheme } from '@storybook/theming';
-import { useApplyScale, useCalcScale, useLoadImages } from '../../helpers';
+import { useApplyScale, useCalcScale, useLoadImages } from '../../helpers.js';
 import { Loader } from '@storybook/components';
-import { readyForCapture } from '../../../addon/readyForCapture';
+import { readyForCapture } from '../../../addon/readyForCapture.js';
 
 type ImageState = keyof typeof themeBorderColors;
 

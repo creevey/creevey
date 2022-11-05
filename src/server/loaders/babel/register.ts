@@ -2,10 +2,10 @@ import Module from 'module';
 import fs, { Dirent } from 'fs';
 import { isAbsolute, join, relative, resolve } from 'path';
 import { addHook } from 'pirates';
-import { Config, isDefined } from '../../../types';
-import { extensions } from '../../utils';
-import plugin from './creevey-plugin';
-import { hasDocsAddon, hasSvelteCSFAddon, isStorybookVersionLessThan } from '../../storybook/helpers';
+import { Config, isDefined } from '../../../types.js';
+import { extensions } from '../../utils.js';
+import plugin from './creevey-plugin.js';
+import { hasDocsAddon, hasSvelteCSFAddon, isStorybookVersionLessThan } from '../../storybook/helpers.js';
 
 let parents: string[] | null = null;
 let story: string | null = null;
@@ -88,8 +88,8 @@ export default async function register(config: Config, debug = false): Promise<R
   const requireContext = getRequireContext(rootDir);
   const preview = resolve(config.storybookDir, 'preview');
 
-  if (hasDocsAddon()) await (await import('../hooks/mdx')).addMDXHook(() => story);
-  if (hasSvelteCSFAddon()) await (await import('../hooks/svelte')).addSvelteHook(() => story);
+  if (hasDocsAddon()) await (await import('../hooks/mdx.js')).addMDXHook(() => story);
+  if (hasSvelteCSFAddon()) await (await import('../hooks/svelte.js')).addSvelteHook(() => story);
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
   (await import('@babel/register')).default(

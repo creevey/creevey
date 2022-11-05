@@ -1,9 +1,9 @@
 import { addons, types } from '@storybook/addons';
 import { API } from '@storybook/api';
-import React from 'react';
-import { Addon } from './components/Addon';
-import { Tools } from './components/Tools';
-import { CreeveyManager } from './Manager';
+import { createElement } from 'react';
+import { Addon } from './components/Addon.js';
+import { Tools } from './components/Tools.js';
+import { CreeveyManager } from './Manager.js';
 
 export const ADDON_ID = 'creevey';
 
@@ -19,7 +19,7 @@ export async function registerCreeveyPanels(storybookApi: API): Promise<void> {
     match: ({ viewMode }) => !!(viewMode && /^story$/.exec(viewMode)),
     type: types.TOOL,
     // eslint-disable-next-line react/display-name
-    render: () => React.createElement(Tools, { manager }),
+    render: () => createElement(Tools, { manager }),
   });
   await manager.initAll();
   const browsers = manager.getBrowsers();
@@ -35,7 +35,7 @@ export async function registerCreeveyPanels(storybookApi: API): Promise<void> {
       // NOTE key = PANEL_ID needs to correct render button in addons panel
       // eslint-disable-next-line react/display-name
       render: ({ active, key }) =>
-        React.createElement(Addon, {
+        createElement(Addon, {
           active,
           key,
           manager,

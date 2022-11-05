@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStoryObj } from '@storybook/react';
-import { PageHeader } from '../src/client/shared/components/PageHeader/PageHeader';
-import { noop } from '../src/types';
+import { PageHeader } from '../src/client/shared/components/PageHeader/PageHeader.js';
+import { noop } from '../src/types.js';
 
 export default {
   title: 'PageHeader',

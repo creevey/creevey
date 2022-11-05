@@ -1,6 +1,6 @@
 import { Parameters } from '@storybook/api';
 import { mapValues, mergeWith } from 'lodash';
-import { SetStoriesData, StoriesRaw } from './types';
+import { SetStoriesData, StoriesRaw } from './types.js';
 
 // NOTE: Copy-paste from storybook/api
 export const combineParameters = (...parameterSets: Parameters[]): Parameters =>

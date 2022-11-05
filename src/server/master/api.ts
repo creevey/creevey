@@ -1,7 +1,7 @@
 import WebSocket from 'ws';
-import Runner from './runner';
-import { Request, Response, CreeveyUpdate } from '../../types';
-import { logger } from '../logger';
+import Runner from './runner.js';
+import { Request, Response, CreeveyUpdate } from '../../types.js';
+import { logger } from '../logger.js';
 
 export interface CreeveyApi {
   subscribe: (wss: WebSocket.Server) => void;

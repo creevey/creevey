@@ -1,7 +1,7 @@
 import path from 'path';
 import { NodePath, Binding, TraverseOptions } from '@babel/traverse';
-import { commonVisitor, FileType, mdxVisitor, previewVisitor, storyVisitor, VisitorState } from './helpers';
-import { logger } from '../../logger';
+import { commonVisitor, FileType, mdxVisitor, previewVisitor, storyVisitor, VisitorState } from './helpers.js';
+import { logger } from '../../logger.js';
 
 let lastStoryFile: string | null = null;
 const stories = new Set<string>();

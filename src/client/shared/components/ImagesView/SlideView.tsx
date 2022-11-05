@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { styled, withTheme } from '@storybook/theming';
-import { getBorderColor, themeBorderColors, ViewPropsWithTheme } from './ImagesView';
-import { useApplyScale, useCalcScale, useLoadImages } from '../../helpers';
+import { getBorderColor, themeBorderColors, ViewPropsWithTheme } from './ImagesView.js';
+import { useApplyScale, useCalcScale, useLoadImages } from '../../helpers.js';
 import { Loader } from '@storybook/components';
-import { readyForCapture } from '../../../addon/readyForCapture';
+import { readyForCapture } from '../../../addon/readyForCapture.js';
 
 const Container = styled.div({
   position: 'relative',

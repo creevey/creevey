@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { shouldSkip } from '../src/server/utils';
+import { shouldSkip } from '../src/server/utils.js';
 
 describe('shouldSkip', () => {
   describe('browsers', () => {

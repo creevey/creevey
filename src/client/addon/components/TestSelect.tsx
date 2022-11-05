@@ -1,8 +1,8 @@
 import { Button, Icons, TooltipLinkList, WithTooltip } from '@storybook/components';
 import { styled } from '@storybook/theming';
 import React from 'react';
-import { TestData } from '../../../types';
-import { getEmojiByTestStatus } from '../utils';
+import { TestData } from '../../../types.js';
+import { getEmojiByTestStatus } from '../utils.js';
 
 interface TestSelectProps {
   tests: TestData[];

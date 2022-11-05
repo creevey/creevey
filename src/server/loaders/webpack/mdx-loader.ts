@@ -7,7 +7,7 @@ import {
   resolveFromStorybookAddonDocs,
   resolveFromStorybookBuilderWebpack4,
   resolveFromStorybookCore,
-} from '../../storybook/helpers';
+} from '../../storybook/helpers.js';
 
 export let mdxLoaders: any[] = [];
 

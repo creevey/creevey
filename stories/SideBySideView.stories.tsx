@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStoryObj } from '@storybook/react';
 import React from 'react';
-import { ImagesView as ImagesViewBase } from '../src/client/shared/components/ImagesView';
+import { ImagesView as ImagesViewBase } from '../src/client/shared/components/ImagesView/index.js';
 
 const SideBySideView = (image: { expect: string; diff: string; actual: string }): JSX.Element => (
   <ImagesViewBase image={image} url="https://images.placeholders.dev" canApprove mode={'side-by-side'} />

@@ -1,11 +1,11 @@
 import cluster from 'cluster';
-import { Config, BrowserConfig, isDockerMessage, DockerAuth } from '../types';
-import { subscribeOn, sendDockerMessage, emitDockerMessage } from './messages';
-import { isInsideDocker, LOCALHOST_REGEXP } from './utils';
+import { Config, BrowserConfig, isDockerMessage, DockerAuth } from '../types.js';
+import { subscribeOn, sendDockerMessage, emitDockerMessage } from './messages.js';
+import { isInsideDocker, LOCALHOST_REGEXP } from './utils.js';
 import Dockerode, { Container } from 'dockerode';
 import { Writable, Stream } from 'stream';
 import ora from 'ora';
-import { logger } from './logger';
+import { logger } from './logger.js';
 
 const docker = new Dockerode();
 

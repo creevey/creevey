@@ -14,9 +14,9 @@ import {
   StoriesRaw,
   StorybookGlobals,
   StoryInput,
-} from '../../types';
-import { denormalizeStoryParameters } from '../../shared';
-import { getConnectionUrl } from '../shared/helpers';
+} from '../../types.js';
+import { denormalizeStoryParameters } from '../../shared.js';
+import { getConnectionUrl } from '../shared/helpers.js';
 
 if (typeof process != 'object' || typeof process.version != 'string') {
   // NOTE If you don't use babel-polyfill or any other polyfills that add EventSource for IE11

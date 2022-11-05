@@ -1,11 +1,11 @@
 import path from 'path';
 import { promisify } from 'util';
 import { mkdir, writeFile, copyFile, lstatSync, existsSync } from 'fs';
-import { Config, BrowserConfig } from '../../types';
-import { downloadBinary, getCreeveyCache } from '../utils';
-import { pullImages, runImage } from '../docker';
+import { Config, BrowserConfig } from '../../types.js';
+import { downloadBinary, getCreeveyCache } from '../utils.js';
+import { pullImages, runImage } from '../docker.js';
 import { Octokit } from '@octokit/core';
-import { subscribeOn } from '../messages';
+import { subscribeOn } from '../messages.js';
 import cluster from 'cluster';
 import { chmod, exec } from 'shelljs';
 

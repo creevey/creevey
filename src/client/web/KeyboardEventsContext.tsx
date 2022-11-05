@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useCallback, useContext } from 'react';
-import { CreeveySuite, isTest, noop } from '../../types';
-import { CreeveyViewFilter, filterTests, flattenSuite, getSuiteByPath, getTestPath } from '../shared/helpers';
-import { CreeveyContext } from './CreeveyContext';
+import React, { createContext, useState, useEffect, useCallback, useContext } from 'react';
+import { CreeveySuite, isTest, noop } from '../../types.js';
+import { CreeveyViewFilter, filterTests, flattenSuite, getSuiteByPath, getTestPath } from '../shared/helpers.js';
+import { CreeveyContext } from './CreeveyContext.js';
 
 export interface KeyboardEventsContextType {
   sidebarFocusedItem: string[];
   setSidebarFocusedItem: (path: string[]) => void;
 }
 
-export const KeyboardEventsContext = React.createContext<KeyboardEventsContextType>({
+export const KeyboardEventsContext = createContext<KeyboardEventsContextType>({
   sidebarFocusedItem: [],
   setSidebarFocusedItem: noop,
 });

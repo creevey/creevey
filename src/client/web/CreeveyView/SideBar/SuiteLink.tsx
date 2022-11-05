@@ -1,11 +1,11 @@
 import React, { useRef, useContext, useEffect, useMemo } from 'react';
-import { Checkbox, CheckboxContainer } from './Checkbox';
 import { Icons } from '@storybook/components';
-import { TestStatusIcon } from './TestStatusIcon';
-import { CreeveySuite, isTest } from '../../../../types';
-import { CreeveyContext } from '../../CreeveyContext';
-import { KeyboardEventsContext } from '../../KeyboardEventsContext';
 import { styled, withTheme, Theme } from '@storybook/theming';
+import { Checkbox, CheckboxContainer } from './Checkbox.js';
+import { TestStatusIcon } from './TestStatusIcon.js';
+import { CreeveySuite, isTest } from '../../../../types.js';
+import { CreeveyContext } from '../../CreeveyContext.js';
+import { KeyboardEventsContext } from '../../KeyboardEventsContext.js';
 
 export interface SuiteLinkProps {
   title: string;

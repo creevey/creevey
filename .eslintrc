@@ -21,6 +21,10 @@
     }
   },
   "settings": {
+    "import/resolver": {
+      "typescript": true,
+      "node": true
+    },
     "react": {
       "version": "detect"
     }
@@ -33,6 +37,7 @@
     "react-hooks/rules-of-hooks": "error", // Checks rules of Hooks
     "react-hooks/exhaustive-deps": "warn", // Checks effect dependencies,
     "react/prop-types": "off",
+    "node/no-missing-import": "off",
     "@typescript-eslint/explicit-function-return-type": [
       "warn",
       {
@@ -41,12 +46,6 @@
       }
     ],
     "node/no-unsupported-features/es-syntax": "off",
-    "node/no-missing-import": [
-      "error",
-      {
-        "tryExtensions": [".d.ts", ".ts", ".tsx", ".js", ".jsx", ".json", ".node"]
-      }
-    ],
     "node/no-missing-require": [
       "error",
       {

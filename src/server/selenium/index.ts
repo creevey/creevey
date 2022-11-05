@@ -1,2 +1,2 @@
-export * from './browser';
-export * from './selenoid';
+export * from './browser.js';
+export * from './selenoid.js';

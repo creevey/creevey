@@ -1,11 +1,19 @@
 import { API } from '@storybook/api';
 import { SET_STORIES, STORY_RENDERED } from '@storybook/core-events';
-import { denormalizeStoryParameters } from '../../shared';
-import { CreeveyStatus, CreeveyUpdate, isDefined, TestData, TestStatus, StoriesRaw, SetStoriesData } from '../../types';
-import { initCreeveyClientApi, CreeveyClientApi } from '../shared/creeveyClientApi';
-import { calcStatus } from '../shared/helpers';
-import { ADDON_ID } from './register';
-import { getEmojiByTestStatus } from './utils';
+import { denormalizeStoryParameters } from '../../shared.js';
+import {
+  CreeveyStatus,
+  CreeveyUpdate,
+  isDefined,
+  TestData,
+  TestStatus,
+  StoriesRaw,
+  SetStoriesData,
+} from '../../types.js';
+import { initCreeveyClientApi, CreeveyClientApi } from '../shared/creeveyClientApi.js';
+import { calcStatus } from '../shared/helpers.js';
+import { ADDON_ID } from './register.js';
+import { getEmojiByTestStatus } from './utils.js';
 
 export class CreeveyManager {
   storyId = '';

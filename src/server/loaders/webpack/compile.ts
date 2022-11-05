@@ -1,18 +1,18 @@
 import { rmdirSync, writeFile } from 'fs';
 import path from 'path';
-import webpack, { Configuration, RuleSetUse, Stats } from 'webpack';
+import { webpack, Configuration, RuleSetUse, Stats } from 'webpack';
 import nodeExternals from 'webpack-node-externals';
-import { extensions as fallbackExtensions, getCreeveyCache } from '../../utils';
+import { extensions as fallbackExtensions, getCreeveyCache } from '../../utils.js';
 import {
   getStorybookFramework,
   hasDocsAddon,
   importStorybookConfig,
   isStorybookVersionLessThan,
   resolveFromStorybook,
-} from '../../storybook/helpers';
-import { Config, Options, noop } from '../../../types';
-import { emitWebpackMessage, subscribeOn } from '../../messages';
-import { logger } from '../../logger';
+} from '../../storybook/helpers.js';
+import { Config, Options, noop } from '../../../types.js';
+import { emitWebpackMessage, subscribeOn } from '../../messages.js';
+import { logger } from '../../logger.js';
 
 let isInitiated = false;
 let dumpStats: (stats?: Stats) => void = noop;
@@ -47,7 +47,7 @@ function handleWebpackBuild(error?: Error | null, stats?: Stats): void {
 }
 
 async function applyMdxLoader(config: Configuration, areAddonsRemoved: boolean, loader: RuleSetUse): Promise<void> {
-  const { mdxLoaders } = await import('./mdx-loader');
+  const { mdxLoaders } = await import('./mdx-loader.js');
 
   mdxLoaders.splice(1, 0, loader);
 

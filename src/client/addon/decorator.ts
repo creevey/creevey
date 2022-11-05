@@ -1,3 +1,3 @@
-import { withCreevey } from './withCreevey';
+import { withCreevey } from './withCreevey.js';
 
 export const decorators = [withCreevey()];

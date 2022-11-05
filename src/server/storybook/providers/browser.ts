@@ -1,9 +1,9 @@
 import cluster from 'cluster';
-import type { Config, CreeveyStory, StoriesRaw, StoryInput } from '../../../types';
-import { loadStoriesFromBrowser } from '../../selenium';
-import { emitStoriesMessage, sendStoriesMessage, subscribeOn, subscribeOnWorker } from '../../messages';
-import { isDefined } from '../../../types';
-import { logger } from '../../logger';
+import type { Config, CreeveyStory, StoriesRaw, StoryInput } from '../../../types.js';
+import { loadStoriesFromBrowser } from '../../selenium/index.js';
+import { emitStoriesMessage, sendStoriesMessage, subscribeOn, subscribeOnWorker } from '../../messages.js';
+import { isDefined } from '../../../types.js';
+import { logger } from '../../logger.js';
 
 export async function loadStories(
   _config: Config,

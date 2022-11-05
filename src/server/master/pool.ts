@@ -1,8 +1,8 @@
 import cluster, { Worker as ClusterWorker } from 'cluster';
 import { EventEmitter } from 'events';
-import { Worker, Config, TestResult, BrowserConfig, WorkerMessage, TestStatus, isWorkerMessage } from '../../types';
-import { sendTestMessage, sendShutdownMessage, subscribeOnWorker } from '../messages';
-import { isShuttingDown } from '../utils';
+import { Worker, Config, TestResult, BrowserConfig, WorkerMessage, TestStatus, isWorkerMessage } from '../../types.js';
+import { sendTestMessage, sendShutdownMessage, subscribeOnWorker } from '../messages.js';
+import { isShuttingDown } from '../utils.js';
 
 const FORK_RETRIES = 5;
 
