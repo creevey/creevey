@@ -15,7 +15,7 @@ import {
   StorybookGlobals,
   StoryInput,
 } from '../../types';
-import { denormalizeStoryParameters } from '../../shared';
+import { denormalizeStoryParameters, serializeRawStories } from '../../shared';
 import { getConnectionUrl } from '../shared/helpers';
 
 if (typeof process != 'object' || typeof process.version != 'string') {
@@ -181,7 +181,11 @@ export function withCreevey(): MakeDecoratorResult {
 
   async function getStories(): Promise<StoriesRaw | void> {
     const storiesPromise = new Promise<StoriesRaw>((resolve) =>
-      addons.getChannel().once(Events.SET_STORIES, (data: SetStoriesData) => resolve(denormalizeStoryParameters(data))),
+      addons
+        .getChannel()
+        .once(Events.SET_STORIES, (data: SetStoriesData) =>
+          resolve(serializeRawStories(denormalizeStoryParameters(data))),
+        ),
     );
 
     const store = window.__STORYBOOK_STORY_STORE__ ?? {};
@@ -199,7 +203,7 @@ export function withCreevey(): MakeDecoratorResult {
       // TODO Figure out how to get only updated stories
       // TODO Subscribe on hmr? like use dummy-hmr
       setStoriesCounter += 1;
-      const stories = denormalizeStoryParameters(data);
+      const stories = serializeRawStories(denormalizeStoryParameters(data));
       const storiesByFiles = new Map<string, StoryInput[]>();
       Object.values(stories).forEach((story) => {
         const storiesFromFile = storiesByFiles.get(story.parameters.fileName);
