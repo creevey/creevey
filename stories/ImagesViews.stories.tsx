@@ -2,7 +2,7 @@ import React from 'react';
 import { ComponentMeta, ComponentStoryObj } from '@storybook/react';
 import { fireEvent, within } from '@storybook/testing-library';
 
-import { capture } from '../src/client/addon/withCreevey';
+import { capture } from '../src/client/addon';
 import { ImagesView as ImagesViewBase } from '../src/client/shared/components/ImagesView';
 import { ImagesViewMode } from '../src/types';
 

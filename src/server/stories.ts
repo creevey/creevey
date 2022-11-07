@@ -20,7 +20,9 @@ import { isStorybookVersionLessThan } from './storybook/helpers';
 function storyTestFabric(delay?: number, testFn?: CreeveyTestFunction) {
   return async function storyTest(this: Context) {
     delay ? await new Promise((resolve) => setTimeout(resolve, delay)) : void 0;
-    await (testFn?.call(this) ?? this.screenshots.length > 0
+    await (testFn
+      ? testFn.call(this)
+      : this.screenshots.length > 0
       ? this.expect(
           this.screenshots.reduce(
             (screenshots, { imageName, screenshot }, index) => ({

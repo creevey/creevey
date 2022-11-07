@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React from 'react';
-import { withCreevey } from 'creevey';
+import { withCreevey } from 'creevey/addon';
 import { addDecorator } from '@storybook/react';
 import { withA11y } from '@storybook/addon-a11y';
 

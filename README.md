@@ -6,6 +6,7 @@ Cross-browser screenshot testing tool for [Storybook](https://storybook.js.org/)
 
 [![Creevey downloads](https://img.shields.io/npm/dt/creevey)](https://www.npmjs.com/package/creevey)
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FwKich%2Fcreevey.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FwKich%2Fcreevey?ref=badge_shield)
 
 ![Creevey Demo](https://user-images.githubusercontent.com/6397708/100863723-cd6b8500-34b6-11eb-94e1-849590bc8066.gif)
 
@@ -147,3 +148,7 @@ Because tests defined in story parameters and `selenium-webdriver` depends on no
 
 | [![Whisk](https://raw.githubusercontent.com/wKich/creevey/master/.github/images/whisk.svg)](https://whisk.com/) | [![SKB Kontur](https://kontur.ru/Files/userfiles/image/brandbook/logo-skb-kontur-eng.png)](https://kontur.ru/) | [![ABBYY](https://raw.githubusercontent.com/wKich/creevey/master/.github/images/abbyy.svg)](https://www.abbyy.com/) |
 | --------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FwKich%2Fcreevey.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FwKich%2Fcreevey?ref=badge_large)

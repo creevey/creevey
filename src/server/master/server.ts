@@ -11,6 +11,7 @@ import { CreeveyApi } from './api';
 import { emitStoriesMessage, sendStoriesMessage, subscribeOn, subscribeOnWorker } from '../messages';
 import { CaptureOptions, isDefined, noop, StoryInput } from '../../types';
 import { logger } from '../logger';
+import { deserializeStory } from '../../shared';
 
 export default function server(reportDir: string, port: number, ui: boolean): (api: CreeveyApi) => void {
   let resolveApi: (api: CreeveyApi) => void = noop;
@@ -46,12 +47,17 @@ export default function server(reportDir: string, port: number, ui: boolean): (a
       };
       if (setStoriesCounter >= counter) return;
 
+      const deserializedStories = stories.map<[string, StoryInput[]]>(([file, stories]) => [
+        file,
+        stories.map(deserializeStory),
+      ]);
+
       setStoriesCounter = counter;
-      emitStoriesMessage({ type: 'update', payload: stories });
+      emitStoriesMessage({ type: 'update', payload: deserializedStories });
       Object.values(cluster.workers ?? {})
         .filter(isDefined)
         .filter((worker) => worker.isConnected())
-        .forEach((worker) => sendStoriesMessage(worker, { type: 'update', payload: stories }));
+        .forEach((worker) => sendStoriesMessage(worker, { type: 'update', payload: deserializedStories }));
       return;
     }
     await next();

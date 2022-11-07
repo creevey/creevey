@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { configure, addDecorator, addParameters } from '@storybook/react';
-import { withCreevey } from 'creevey';
+import { withCreevey } from 'creevey/addon';
 import { hasChildren } from './helpers';
 
 const selector = '#root';
