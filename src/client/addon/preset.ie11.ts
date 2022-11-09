@@ -29,8 +29,18 @@ export const managerWebpack = (webpackConfig: Configuration = {}): Configuration
 
 export const webpack = (webpackConfig: Configuration = {}): Configuration => {
   const { entry } = webpackConfig;
+  const polyfills = [require.resolve('whatwg-fetch')];
+
+  if (Array.isArray(entry)) {
+    polyfills.forEach((polyfill) => {
+      if (!entry.includes(polyfill)) {
+        entry.unshift(polyfill);
+      }
+    });
+  }
+
   return {
     ...webpackConfig,
-    entry: Array.isArray(entry) ? ['whatwg-fetch', ...entry] : entry,
+    entry,
   };
 };
