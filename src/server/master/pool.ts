@@ -1,4 +1,4 @@
-import cluster from 'cluster';
+import cluster, { Worker as ClusterWorker } from 'cluster';
 import { EventEmitter } from 'events';
 import { Worker, Config, TestResult, BrowserConfig, WorkerMessage, TestStatus, isWorkerMessage } from '../../types';
 import { sendTestMessage, sendShutdownMessage, subscribeOnWorker } from '../messages';
@@ -29,7 +29,7 @@ export default class Pool extends EventEmitter {
   async init(): Promise<void> {
     const poolSize = this.config.limit || 1;
     this.workers = (await Promise.all(Array.from({ length: poolSize }).map(() => this.forkWorker()))).filter(
-      (workerOrError): workerOrError is Worker => workerOrError instanceof cluster.Worker,
+      (workerOrError): workerOrError is Worker => workerOrError instanceof ClusterWorker,
     );
     if (this.workers.length != poolSize)
       throw new Error(`Can't instantiate workers for ${this.browser} due many errors`);
@@ -126,7 +126,7 @@ export default class Pool extends EventEmitter {
 
       const workerOrError = await this.forkWorker();
 
-      if (!(workerOrError instanceof cluster.Worker))
+      if (!(workerOrError instanceof ClusterWorker))
         throw new Error(`Can't instantiate worker for ${this.browser} due many errors`);
 
       this.exitHandler(workerOrError);

@@ -1,4 +1,4 @@
-import cluster, { isMaster } from 'cluster';
+import cluster from 'cluster';
 import { Config, BrowserConfig, isDockerMessage, DockerAuth } from '../types';
 import { subscribeOn, sendDockerMessage, emitDockerMessage } from './messages';
 import { isInsideDocker, LOCALHOST_REGEXP } from './utils';
@@ -106,7 +106,7 @@ export default async function (
   browser: string | undefined,
   startContainer: () => Promise<string>,
 ): Promise<void> {
-  if (isMaster) {
+  if (cluster.isPrimary) {
     const host = await startContainer();
     let gridUrl = 'http://localhost:4444/wd/hub';
     gridUrl = isInsideDocker ? gridUrl.replace(LOCALHOST_REGEXP, host) : gridUrl;

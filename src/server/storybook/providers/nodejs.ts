@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/ban-ts-comment */
 import path from 'path';
-import { isWorker, isMaster } from 'cluster';
+import cluster from 'cluster';
 import chokidar, { FSWatcher } from 'chokidar';
 import type { StoryInput, WebpackMessage, SetStoriesData, Config, StoriesRaw } from '../../../types';
 import { noop } from '../../../types';
@@ -36,7 +36,7 @@ async function initStorybookEnvironment(): Promise<typeof import('../entry')> {
   // TODO Look at creevey debug flag
   const { logger } = await importStorybookClientLogger();
   // NOTE: Disable duplication warnings for >=6.2 storybook
-  if (isWorker) (logger.warn as unknown) = noop;
+  if (cluster.isWorker) (logger.warn as unknown) = noop;
   // NOTE: disable logger for 5.x storybook
   (logger.debug as unknown) = noop;
 
@@ -158,7 +158,7 @@ async function loadStoriesDirectly(
         false,
       );
     } catch (error) {
-      if (isMaster) logger.error(error);
+      if (cluster.isPrimary) logger.error(error);
     }
   }
 

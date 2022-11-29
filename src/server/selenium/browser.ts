@@ -64,7 +64,7 @@ function getSessionData(grid: string, sessionId = ''): Promise<Record<string, un
       res.on('data', (chunk) => (data += chunk));
       res.on('end', () => {
         try {
-          resolve(JSON.parse(data));
+          resolve(JSON.parse(data) as Record<string, unknown>);
         } catch (error) {
           reject(
             new Error(
@@ -421,9 +421,7 @@ async function selectStory(
   waitForReady = false,
 ): Promise<boolean> {
   browserLogger.debug(`Triggering 'SetCurrentStory' event with storyId ${chalk.magenta(id)}`);
-  const [errorMessage, isCaptureCalled = false] = await browser.executeAsyncScript<
-    [error?: string | null, isCaptureCalled?: boolean]
-  >(
+  const result = await browser.executeAsyncScript<[error?: string | null, isCaptureCalled?: boolean] | null>(
     function (
       id: string,
       kind: string,
@@ -436,13 +434,16 @@ async function selectStory(
           "Creevey can't switch story. This may happened if forget to add `creevey` addon to your storybook config, or storybook not loaded in browser due syntax error.",
         ]);
       }
-      window.__CREEVEY_SELECT_STORY__(id, kind, name, shouldWaitForReady, callback);
+      void window.__CREEVEY_SELECT_STORY__(id, kind, name, shouldWaitForReady, callback);
     },
     id,
     kind,
     name,
     waitForReady,
   );
+
+  const [errorMessage, isCaptureCalled = false] = result ?? [];
+
   if (errorMessage) throw new Error(errorMessage);
 
   return isCaptureCalled;
@@ -499,7 +500,8 @@ async function resolveCreeveyHost(browser: WebDriver, port: number): Promise<str
     function (hosts: string[], port: number, callback: (host?: string | null) => void) {
       void Promise.all(
         hosts.map(function (host) {
-          return fetch(`http://${host}:${port}/ping`)
+          // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+          return fetch('http://' + host + ':' + port + '/ping')
             .then(function (response) {
               return response.text();
             })
@@ -564,8 +566,7 @@ export async function getBrowser(config: Config, name: string): Promise<WebDrive
   const realAddress = address;
 
   // TODO Define some capabilities explicitly and define typings
-  const capabilities = new Capabilities(userCapabilities);
-  capabilities.setPageLoadStrategy(PageLoadStrategy.NONE);
+  const capabilities = new Capabilities({ ...userCapabilities, pageLoadStrategy: PageLoadStrategy.NONE });
 
   subscribeOn('shutdown', () => {
     browser?.quit().finally(() =>
@@ -603,7 +604,7 @@ export async function getBrowser(config: Config, name: string): Promise<WebDrive
 
     prefix.apply(browserLogger, {
       format(level) {
-        const levelColor = colors[level.toUpperCase()];
+        const levelColor = colors[level.toUpperCase() as keyof typeof colors];
         return `[${name}:${chalk.gray(sessionId)}] ${levelColor(level)} =>`;
       },
     });

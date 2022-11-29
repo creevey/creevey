@@ -1,10 +1,10 @@
-import chalk, { Chalk } from 'chalk';
+import chalk from 'chalk';
 import { default as Logger } from 'loglevel';
 import prefix from 'loglevel-plugin-prefix';
 
 export { getLogger } from 'loglevel';
 
-export const colors: { [level: string]: Chalk } = {
+export const colors = {
   TRACE: chalk.magenta,
   DEBUG: chalk.cyan,
   INFO: chalk.blue,
@@ -15,7 +15,7 @@ export const colors: { [level: string]: Chalk } = {
 prefix.reg(Logger);
 prefix.apply(Logger, {
   format(level, name = 'Creevey') {
-    const levelColor = colors[level.toUpperCase()];
+    const levelColor = colors[level.toUpperCase() as keyof typeof colors];
     return `[${name}:${chalk.gray(process.pid)}] ${levelColor(level)} =>`;
   },
 });
