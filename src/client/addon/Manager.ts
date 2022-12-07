@@ -13,11 +13,12 @@ export class CreeveyManager {
   selectedTestId = '';
   status: CreeveyStatus = { isRunning: false, tests: {}, browsers: [] };
   creeveyApi: CreeveyClientApi | null = null;
+  storybookApi: API;
   stories: StoriesRaw = {};
 
   updateStatusListeners: Array<(update: CreeveyUpdate) => void> = [];
   changeTestListeners: Array<(testId: string) => void> = [];
-  constructor(public storybookApi: API) {
+  constructor(storybookApi: API) {
     this.storybookApi = storybookApi;
   }
   initAll = async (): Promise<void> => {

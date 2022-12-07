@@ -33,7 +33,7 @@ export interface CreeveyAddonOptions {
   presets?: { apply: <T>(preset: string) => Promise<T | undefined> };
 }
 
-export function managerWebpack(config: Configuration, options: CreeveyAddonOptions): Promise<Configuration> {
+export function _managerWebpack(config: Configuration, options: CreeveyAddonOptions): Promise<Configuration> {
   // TODO How to execute with non-webpack bundlers
   if (options.configType == 'PRODUCTION' && !isStorybookVersionLessThan(6, 2) && options.skipExtract != true) {
     const args: string[] = [];

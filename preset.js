@@ -4,6 +4,6 @@ module.exports = {
   ...require('./lib/cjs/client/addon/preset'),
   /** @type {(entry: string[]) => string[]} */
   config(entry) {
-    return [...entry, require.resolve('./lib/esm/client/addon/decorator')];
+    return [...entry, require.resolve('./lib/cjs/client/addon/decorator')];
   },
 };

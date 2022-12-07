@@ -23,8 +23,12 @@ export default function creeveyApi(runner: Runner): CreeveyApi {
     },
 
     handleMessage(ws: WebSocket, message: WebSocket.Data) {
+      if (typeof message === 'object') {
+        message = message.toString();
+      }
+
       if (typeof message != 'string') {
-        logger.info('unhandled message', message);
+        logger.info('unhandled message');
         return;
       }
 

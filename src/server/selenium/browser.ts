@@ -21,7 +21,11 @@ import {
 } from '../../types';
 import { colors, logger } from '../logger';
 import { emitStoriesMessage, subscribeOn } from '../messages';
-import { importStorybookCoreEvents, isStorybookVersionLessThan } from '../storybook/helpers';
+import {
+  importStorybookCoreEvents,
+  isStorybookVersionGreaterThan,
+  isStorybookVersionLessThan,
+} from '../storybook/helpers';
 import { isShuttingDown, LOCALHOST_REGEXP, runSequence } from '../utils';
 
 type ElementRect = {
@@ -148,7 +152,7 @@ function getUrlChecker(browser: WebDriver): (url: string) => Promise<boolean> {
 
 async function waitForStorybook(browser: WebDriver): Promise<void> {
   // NOTE: Storybook 5.x doesn't have the `last` method
-  if (isStorybookVersionLessThan(6)) {
+  if (isStorybookVersionLessThan(6) || isStorybookVersionGreaterThan(6, 4)) {
     browserLogger.debug('Waiting for `load` event to make sure that storybook is initiated');
     return browser.executeAsyncScript(function (callback: () => void): void {
       if (document.readyState == 'complete') return callback();
