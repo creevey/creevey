@@ -26,7 +26,8 @@
       "types": "./lib/types/client/addon/index.d.ts",
       "default": "./lib/cjs/client/addon/index.js"
     },
-    "./preset/*": "./preset/*.js"
+    "./preset": "./preset/index.js",
+    "./preset/ie11": "./preset/ie11.js"
   },
   "main": "lib/cjs/index.js",
   "module": "lib/esm/index.js",
