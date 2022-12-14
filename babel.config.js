@@ -6,4 +6,10 @@ module.exports = {
     '@babel/preset-typescript',
     ['@babel/preset-env', { targets: { node: '16' }, modules }],
   ],
+  overrides: [
+    {
+      test: ['./src/client', './src/shared'],
+      presets: [['@babel/preset-env', { targets: 'defaults', modules }]],
+    },
+  ],
 };
