@@ -3,7 +3,7 @@ import * as polyfill from 'event-source-polyfill';
 import type { PreviewWeb } from '@storybook/preview-web';
 import type { AnyFramework } from '@storybook/csf';
 import type { StoryStore } from '@storybook/client-api';
-import { buildQueries, within } from '@storybook/testing-library';
+import { buildQueries, within } from '@testing-library/dom';
 import { addons, MakeDecoratorResult, makeDecorator, Channel } from '@storybook/addons';
 import {
   CaptureOptions,

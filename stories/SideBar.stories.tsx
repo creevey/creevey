@@ -1,5 +1,5 @@
 import { ComponentMeta, ComponentStoryObj } from '@storybook/react';
-import { within } from '@storybook/testing-library';
+import { within } from '@testing-library/dom';
 import { SideBar } from '../src/client/web/CreeveyView/SideBar';
 import { treeifyTests, checkSuite, getTestByPath } from '../src/client/shared/helpers';
 import { noop, CreeveySuite, CreeveyStatus, isDefined, isTest } from '../src/types';

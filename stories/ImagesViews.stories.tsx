@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentMeta, ComponentStoryObj } from '@storybook/react';
-import { fireEvent, within } from '@storybook/testing-library';
+import { fireEvent, within } from '@testing-library/dom';
 
 import { capture } from '../src/client/addon';
 import { ImagesView as ImagesViewBase } from '../src/client/shared/components/ImagesView';
