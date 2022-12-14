@@ -102,7 +102,9 @@ export default function server(reportDir: string, port: number, ui: boolean): (a
     api.subscribe(wss);
 
     wss.on('connection', (ws) => {
-      ws.on('message', (message: WebSocket.Data) => api.handleMessage(ws, message));
+      ws.on('message', (message: WebSocket.RawData, isBinary: boolean) => {
+        api.handleMessage(ws, isBinary ? message : message.toString());
+      });
     });
   });
 
