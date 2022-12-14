@@ -1,10 +1,28 @@
 import type { Configuration } from 'webpack';
+import { PluginItem } from '@babel/core';
+
+interface BabelOptions {
+  extends: string | null;
+  presets: PluginItem[] | null;
+}
+
+const ie11Preset = [
+  '@babel/preset-env',
+  {
+    targets: {
+      ie: '11',
+    },
+  },
+];
+
+export const babel = (config: BabelOptions): BabelOptions => {
+  const { presets = [] } = config;
+  return { ...config, presets: [...(presets || []), ie11Preset] };
+};
 
 const nodeModulesThatNeedToBeParsedBecauseTheyExposeES6 = ['creevey', '@testing-library'];
 
-const include = new RegExp(
-  `[\\\\/]node_modules[\\\\/](${nodeModulesThatNeedToBeParsedBecauseTheyExposeES6.join('|')})`,
-);
+const include = new RegExp(`[\\\\/](${nodeModulesThatNeedToBeParsedBecauseTheyExposeES6.join('|')})`);
 
 const es6Loader = {
   test: /\.js$/,
@@ -12,7 +30,7 @@ const es6Loader = {
     {
       loader: require.resolve('babel-loader'),
       options: {
-        presets: [['@babel/preset-env', { targets: { ie: '11' } }]],
+        presets: [ie11Preset],
       },
     },
   ],
@@ -42,5 +60,9 @@ export const webpack = (webpackConfig: Configuration = {}): Configuration => {
   return {
     ...webpackConfig,
     entry,
+    module: {
+      ...webpackConfig.module,
+      rules: [...(webpackConfig.module?.rules ?? []), es6Loader],
+    },
   };
 };
