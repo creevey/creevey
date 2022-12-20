@@ -25,7 +25,9 @@
     "./addon": {
       "types": "./lib/types/client/addon/index.d.ts",
       "default": "./lib/cjs/client/addon/index.js"
-    }
+    },
+    "./preset": "./preset/index.js",
+    "./preset/ie11": "./preset/ie11.js"
   },
   "main": "lib/cjs/index.js",
   "module": "lib/esm/index.js",
@@ -131,6 +133,7 @@
     "shelljs": "^0.8.5",
     "tsconfig-paths": "^4.0.0",
     "webpack-node-externals": "^3.0.0",
+    "whatwg-fetch": "^3.6.2",
     "ws": "^8.8.0"
   },
   "devDependencies": {

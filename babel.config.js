@@ -8,8 +8,8 @@ module.exports = {
   ],
   overrides: [
     {
-      test: './src/client',
-      presets: [['@babel/preset-env', { targets: { ie: '11' }, modules }]],
+      test: ['./src/client', './src/shared'],
+      presets: [['@babel/preset-env', { targets: 'defaults', modules }]],
     },
   ],
 };
