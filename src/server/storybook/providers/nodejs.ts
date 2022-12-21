@@ -13,11 +13,8 @@ import {
   importStorybookConfig,
   importStorybookCoreCommon,
   importStorybookCoreEvents,
-  isStorybookVersionGreaterThan,
-  isStorybookVersionLessThan,
 } from '../helpers';
 import { logger } from '../../logger';
-import { denormalizeStoryParameters } from '../../../shared';
 
 async function initStorybookEnvironment(): Promise<typeof import('../entry')> {
   // @ts-expect-error There is no @types/global-jsdom package
@@ -58,10 +55,7 @@ function watchStories(channel: Channel, watcher: FSWatcher, initialFiles: Set<st
   );
 
   return (data: SetStoriesData) => {
-    const stories =
-      isStorybookVersionLessThan(6) || isStorybookVersionGreaterThan(6, 3)
-        ? data.stories
-        : denormalizeStoryParameters(data);
+    const stories = data.stories;
     const files = new Set(Object.values(stories).map((story) => story.parameters.fileName));
     const addedFiles = Array.from(files).filter((filePath) => !watchingFiles.has(filePath));
     const removedFiles = Array.from(watchingFiles).filter((filePath) => !files.has(filePath));
@@ -114,14 +108,8 @@ async function loadStoriesDirectly(
 
   const { stories } = await importStorybookConfig();
   const contexts = stories.map((entry) => {
-    const normalizedEntry = isStorybookVersionLessThan(6, 4)
-      ? entry
-      : normalizeStoriesEntry(entry, { configDir: config.storybookDir, workingDir: process.cwd() });
-    const {
-      path: storiesPath,
-      recursive,
-      match,
-    } = toRequireContext(normalizedEntry as Parameters<typeof toRequireContext>['0']);
+    const normalizedEntry = normalizeStoriesEntry(entry, { configDir: config.storybookDir, workingDir: process.cwd() });
+    const { path: storiesPath, recursive, match } = toRequireContext(normalizedEntry);
     watcher?.add(path.resolve(config.storybookDir, storiesPath));
     return () => requireContext(storiesPath, recursive, new RegExp(match));
   });
@@ -190,10 +178,7 @@ export async function loadStories(
 
   const loadPromise = new Promise<StoriesRaw>((resolve) => {
     channel.once(Events.SET_STORIES, (data: SetStoriesData) => {
-      const stories =
-        isStorybookVersionLessThan(6) || isStorybookVersionGreaterThan(6, 3)
-          ? data.stories
-          : denormalizeStoryParameters(data);
+      const stories = data.stories;
       const files = new Set(Object.values(stories).map((story) => story.parameters.fileName));
 
       if (watcher) channel.on(Events.SET_STORIES, watchStories(channel, watcher, files));

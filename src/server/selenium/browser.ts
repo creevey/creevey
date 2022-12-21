@@ -21,7 +21,7 @@ import {
 } from '../../types';
 import { colors, logger } from '../logger';
 import { emitStoriesMessage, subscribeOn } from '../messages';
-import { importStorybookCoreEvents, isStorybookVersionLessThan } from '../storybook/helpers';
+import { importStorybookCoreEvents } from '../storybook/helpers';
 import { isShuttingDown, LOCALHOST_REGEXP, runSequence } from '../utils';
 
 type ElementRect = {
@@ -147,16 +147,6 @@ function getUrlChecker(browser: WebDriver): (url: string) => Promise<boolean> {
 }
 
 async function waitForStorybook(browser: WebDriver): Promise<void> {
-  // NOTE: Storybook 5.x doesn't have the `last` method
-  if (isStorybookVersionLessThan(6)) {
-    browserLogger.debug('Waiting for `load` event to make sure that storybook is initiated');
-    return browser.executeAsyncScript(function (callback: () => void): void {
-      if (document.readyState == 'complete') return callback();
-      window.addEventListener('load', function () {
-        callback();
-      });
-    });
-  }
   browserLogger.debug('Waiting for `setStories` event to make sure that storybook is initiated');
   let wait = true;
   let isTimeout = false;
@@ -450,10 +440,6 @@ async function selectStory(
 }
 
 export async function updateStorybookGlobals(browser: WebDriver, globals: StorybookGlobals): Promise<void> {
-  if (isStorybookVersionLessThan(6)) {
-    browserLogger.warn('Globals are not supported by Storybook versions less than 6');
-    return;
-  }
   browserLogger.debug('Applying storybook globals');
   await browser.executeScript(function (globals: StorybookGlobals) {
     window.__CREEVEY_UPDATE_GLOBALS__(globals);

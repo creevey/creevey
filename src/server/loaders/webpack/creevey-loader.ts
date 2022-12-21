@@ -6,7 +6,6 @@ import { parse } from '@babel/parser';
 import traverse, { NodePath, Binding } from '@babel/traverse';
 import generate from '@babel/generator';
 import * as t from '@babel/types';
-import { isStorybookVersionLessThan } from '../../storybook/helpers';
 import { commonVisitor, mdxVisitor, previewVisitor, storyVisitor, FileType } from '../babel/helpers';
 import { logger } from '../../logger';
 import type { JSONSchema7 } from 'schema-utils/declarations/validate';
@@ -62,9 +61,6 @@ function isPreview(context: LoaderContext, options: Options | Readonly<OptionObj
   const { dir: resourceDir, name: resourceName } = path.posix.parse(toPosix(context.resourcePath));
   const storybookDir = typeof options.storybookDir == 'string' ? toPosix(options.storybookDir) : '';
   const isConfigFile = resourceDir == storybookDir && (resourceName == 'preview' || resourceName == 'config');
-  if (isStorybookVersionLessThan(6)) {
-    return isEntry(context) && isConfigFile;
-  }
   const issuerResource = getIssuerResource(context);
   return Boolean(issuerResource && entries.has(issuerResource) && isConfigFile);
 }
