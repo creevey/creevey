@@ -40,6 +40,7 @@ It named after [Colin Creevey](https://harrypotter.fandom.com/wiki/Colin_Creevey
 ## Pre-requisites
 
 - Make sure you have installed [Docker](https://www.docker.com/products/docker-desktop). But if you going to use your own separate Selenium Grid, you don't need `Docker`.
+- Supported Storybook versions: `^6.4.0`.
 
 ## How to start
 
@@ -149,6 +150,6 @@ Because tests defined in story parameters and `selenium-webdriver` depends on no
 | [![Whisk](https://raw.githubusercontent.com/wKich/creevey/master/.github/images/whisk.svg)](https://whisk.com/) | [![SKB Kontur](https://kontur.ru/Files/userfiles/image/brandbook/logo-skb-kontur-eng.png)](https://kontur.ru/) | [![ABBYY](https://raw.githubusercontent.com/wKich/creevey/master/.github/images/abbyy.svg)](https://www.abbyy.com/) |
 | --------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
 
-
 ## License
+
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FwKich%2Fcreevey.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FwKich%2Fcreevey?ref=badge_large)
