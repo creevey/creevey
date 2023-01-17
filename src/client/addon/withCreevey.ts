@@ -17,6 +17,7 @@ import {
 } from '../../types';
 import { denormalizeStoryParameters, serializeRawStories } from '../../shared';
 import { getConnectionUrl } from '../shared/helpers';
+import { isInternetExplorer } from './utils';
 
 if (typeof process != 'object' || typeof process.version != 'string') {
   // NOTE If you don't use babel-polyfill or any other polyfills that add EventSource for IE11
@@ -360,7 +361,9 @@ export function withCreevey(): MakeDecoratorResult {
             case captureElement === null:
               return Promise.resolve(document.documentElement);
             case typeof captureElement == 'string':
-              return within<typeof queries>(context.canvasElement, queries).findByQuery(captureElement as string);
+              return isInternetExplorer // some code from testing-library makes IE hang
+                ? Promise.resolve(context.canvasElement.querySelector(captureElement as string))
+                : within<typeof queries>(context.canvasElement, queries).findByQuery(captureElement as string);
             case typeof captureElement == 'function':
               // TODO Define type for it
               return Promise.resolve(
