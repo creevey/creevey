@@ -15,7 +15,6 @@ import type {
 } from '../types';
 import { isDefined, isFunction, isObject } from '../types';
 import { shouldSkip, removeProps } from './utils';
-import { isStorybookVersionLessThan } from './storybook/helpers';
 
 function storyTestFabric(delay?: number, testFn?: CreeveyTestFunction) {
   return async function storyTest(this: Context) {
@@ -132,18 +131,16 @@ export async function loadTestsFromStories(
 export function saveStoriesJson(storiesData: SetStoriesData, extract: string | boolean): void {
   const outputDir = typeof extract == 'boolean' ? 'storybook-static' : extract;
 
-  if (!isStorybookVersionLessThan(6)) {
-    // NOTE Copy-pasted from Storybook's `getStoriesJsonData` method
-    const allowed = ['fileName', 'docsOnly', 'framework', '__id', '__isArgsStory'];
-    storiesData.globalParameters = pick(storiesData.globalParameters, allowed);
-    // @ts-expect-error ignore error
-    storiesData.kindParameters = mapValues(storiesData.kindParameters, (v) => pick(v, allowed));
-    // @ts-expect-error ignore error
-    storiesData.stories = mapValues(storiesData.stories, (v) => ({
-      ...pick(v, ['id', 'name', 'kind', 'story']),
-      parameters: pick(v.parameters, allowed),
-    }));
-  }
+  // NOTE Copy-pasted from Storybook's `getStoriesJsonData` method
+  const allowed = ['fileName', 'docsOnly', 'framework', '__id', '__isArgsStory'];
+  storiesData.globalParameters = pick(storiesData.globalParameters, allowed);
+  // @ts-expect-error ignore error
+  storiesData.kindParameters = mapValues(storiesData.kindParameters, (v) => pick(v, allowed));
+  // @ts-expect-error ignore error
+  storiesData.stories = mapValues(storiesData.stories, (v) => ({
+    ...pick(v, ['id', 'name', 'kind', 'story']),
+    parameters: pick(v.parameters, allowed),
+  }));
 
   // TODO Fix args stories
   removeProps(storiesData ?? {}, ['stories', () => true, 'parameters', '__isArgsStory']);

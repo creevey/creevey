@@ -1,11 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import {
-  isCSFv3Enabled,
-  isStorybookVersionGreaterThan,
-  isStorybookVersionLessThan,
-  storybookDirRef,
-} from './storybook/helpers';
+import { isCSFv3Enabled, storybookDirRef } from './storybook/helpers';
 import { loadStories as nodejsStoriesProvider } from './storybook/providers/nodejs';
 import { loadStories as browserStoriesProvider } from './storybook/providers/browser';
 import { Config, Browser, BrowserConfig, Options, isDefined } from '../types';
@@ -60,13 +55,8 @@ export async function readConfig(options: Options): Promise<Config> {
 
   storybookDirRef.current = userConfig.storybookDir;
 
-  if (isStorybookVersionLessThan(6, 2)) userConfig.useWebpackToExtractTests = true;
   if (!userConfig.storiesProvider)
-    userConfig.storiesProvider =
-      (await isCSFv3Enabled()) && isStorybookVersionGreaterThan(5) ? browserStoriesProvider : nodejsStoriesProvider;
-
-  if (userConfig.storiesProvider == browserStoriesProvider && isStorybookVersionLessThan(6))
-    throw new Error("Creevey browser stories provider doesn't support Storybook 5.x or older versions");
+    userConfig.storiesProvider = (await isCSFv3Enabled()) ? browserStoriesProvider : nodejsStoriesProvider;
 
   if (options.failFast != undefined) userConfig.failFast = Boolean(options.failFast);
   if (options.reportDir) userConfig.reportDir = path.resolve(options.reportDir);

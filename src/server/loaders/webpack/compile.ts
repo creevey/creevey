@@ -7,7 +7,6 @@ import {
   getStorybookFramework,
   hasDocsAddon,
   importStorybookConfig,
-  isStorybookVersionLessThan,
   resolveFromStorybook,
 } from '../../storybook/helpers';
 import { Config, Options, noop } from '../../../types';
@@ -51,9 +50,7 @@ async function applyMdxLoader(config: Configuration, areAddonsRemoved: boolean, 
 
   mdxLoaders.splice(1, 0, loader);
 
-  const mdxRegexps = isStorybookVersionLessThan(6, 2)
-    ? [/\.(stories|story).mdx$/, /\.(stories|story)\.mdx$/]
-    : [/(stories|story)\.mdx$/];
+  const mdxRegexps = [/(stories|story)\.mdx$/];
 
   // NOTE replace md/mdx to null loader
   const mdRegexps = [/\.md$/, /\.mdx$/];
@@ -89,39 +86,6 @@ async function applyMdxLoader(config: Configuration, areAddonsRemoved: boolean, 
         [],
     };
   }
-}
-
-async function getWebpackConfigForStorybook_pre6_2(
-  framework: string,
-  configDir: string,
-  outputDir: string,
-): Promise<Configuration> {
-  const { default: storybookFrameworkOptions } = (await import(
-    resolveFromStorybook(`@storybook/${framework}/dist/server/options`)
-  )) as {
-    default: { framework: string; frameworkPresets: string[] };
-  };
-
-  // eslint-disable-next-line node/no-missing-import, @typescript-eslint/no-unsafe-assignment, import/no-unresolved
-  const { default: getConfig } = await import(resolveFromStorybook('@storybook/core/dist/server/config'));
-
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
-  return getConfig({
-    // NOTE: 6.1 storybook don't support quite any more. But we still have older versions
-    quiet: true,
-    configType: 'PRODUCTION',
-    outputDir,
-    cache: {},
-    // eslint-disable-next-line node/no-missing-require
-    corePresets: [resolveFromStorybook('@storybook/core/dist/server/preview/preview-preset')],
-    overridePresets: [
-      ...(hasDocsAddon() ? [require.resolve('./mdx-loader')] : []),
-      // eslint-disable-next-line node/no-missing-require
-      resolveFromStorybook('@storybook/core/dist/server/preview/custom-webpack-preset'),
-    ],
-    ...storybookFrameworkOptions,
-    configDir,
-  });
 }
 
 async function getWebpackConfigForStorybook_6_2(
@@ -213,9 +177,7 @@ export default async function compile(config: Config, { debug, ui }: Options): P
   // NOTE Remove addons by monkey patching, only for new config file (main.js)
   const areAddonsRemoved = await removeAddons();
 
-  const getWebpackConfig = isStorybookVersionLessThan(6, 2)
-    ? getWebpackConfigForStorybook_pre6_2
-    : getWebpackConfigForStorybook_6_2;
+  const getWebpackConfig = getWebpackConfigForStorybook_6_2;
 
   const storybookWebpackConfig = await getWebpackConfig(storybookFramework, config.storybookDir, outputDir);
 

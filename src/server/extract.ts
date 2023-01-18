@@ -1,8 +1,6 @@
-import { denormalizeStoryParameters } from '../shared';
 import { Config, Options } from '../types';
 import { subscribeOn } from './messages';
 import { loadTestsFromStories, saveStoriesJson, saveTestsJson } from './stories';
-import { isStorybookVersionGreaterThan, isStorybookVersionLessThan } from './storybook/helpers';
 import { extractStoriesData } from './storybook/providers/nodejs';
 
 export default async function extract(config: Config, options: Options): Promise<void> {
@@ -22,10 +20,7 @@ export default async function extract(config: Config, options: Options): Promise
 
   const tests = await loadTestsFromStories(Object.keys(config.browsers), async () => {
     const data = await extractStoriesData(config, { watch: false, debug: options.debug });
-    const stories =
-      isStorybookVersionLessThan(6) || isStorybookVersionGreaterThan(6, 3)
-        ? data.stories
-        : denormalizeStoryParameters(data);
+    const stories = data.stories;
 
     if (options.extract) saveStoriesJson(data, options.extract);
 

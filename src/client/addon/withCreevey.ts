@@ -190,12 +190,7 @@ export function withCreevey(): MakeDecoratorResult {
     );
 
     const store = window.__STORYBOOK_STORY_STORE__ ?? {};
-    // @ts-expect-error `pushToManager` exists only in Storybook 6.0 - 6.3
-    if (store.pushToManager) {
-      // @ts-expect-error `pushToManager` exists only in Storybook 6.0 - 6.3
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-      store.pushToManager();
-    } else if (store.cacheAllCSFFiles) {
+    if (store.cacheAllCSFFiles) {
       await store.cacheAllCSFFiles();
       addons.getChannel().emit(Events.SET_STORIES, store.getSetStoriesPayload());
     } else return;

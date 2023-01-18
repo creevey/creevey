@@ -2,11 +2,9 @@
 /* Copy-paste from storybook/addons/docs/src/frameworks/common/preset.ts */
 
 import {
-  isStorybookVersionLessThan,
   resolveFromStorybook,
   resolveFromStorybookAddonDocs,
   resolveFromStorybookBuilderWebpack4,
-  resolveFromStorybookCore,
 } from '../../storybook/helpers';
 
 export let mdxLoaders: any[] = [];
@@ -46,9 +44,7 @@ export function webpack(webpackConfig: any = {}, options: any = {}): any {
 
   mdxLoaders = [
     {
-      loader: isStorybookVersionLessThan(6, 2)
-        ? resolveFromStorybookCore('babel-loader')
-        : resolveFromStorybookBuilderWebpack4('babel-loader'),
+      loader: resolveFromStorybookBuilderWebpack4('babel-loader'),
       options: createBabelOptions({ babelOptions, mdxBabelOptions, configureJSX }),
     },
     {

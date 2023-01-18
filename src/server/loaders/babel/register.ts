@@ -5,7 +5,7 @@ import { addHook } from 'pirates';
 import { Config, isDefined } from '../../../types';
 import { extensions } from '../../utils';
 import plugin from './creevey-plugin';
-import { hasDocsAddon, hasSvelteCSFAddon, isStorybookVersionLessThan } from '../../storybook/helpers';
+import { hasDocsAddon, hasSvelteCSFAddon } from '../../storybook/helpers';
 
 let parents: string[] | null = null;
 let story: string | null = null;
@@ -84,7 +84,7 @@ function getRequireContext(rootDir: string) {
 }
 
 export default async function register(config: Config, debug = false): Promise<ReturnType<typeof getRequireContext>> {
-  const rootDir = isStorybookVersionLessThan(6, 4) ? config.storybookDir : process.cwd();
+  const rootDir = process.cwd();
   const requireContext = getRequireContext(rootDir);
   const preview = resolve(config.storybookDir, 'preview');
 
