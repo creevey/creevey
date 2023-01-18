@@ -20,3 +20,5 @@ export function getEmojiByTestStatus(status: TestStatus | undefined, skip: strin
     }
   }
 }
+
+export const isInternetExplorer = navigator.userAgent.includes('Trident/');
