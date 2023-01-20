@@ -149,16 +149,11 @@ describe('shouldSkip', () => {
     });
   });
   describe('object', () => {
-    it('plain object without reason', () => {
-      const result = shouldSkip('chrome', { kind: 'Button', story: 'with Error' }, { tests: 'click' }, 'click');
-
-      expect(result).to.equal(true);
-    });
-    it('plain object with reason', () => {
+    it('plain object', () => {
       const result = shouldSkip(
         'chrome',
         { kind: 'Button', story: 'with Error' },
-        { tests: 'click', reason: 'Skip click tests' },
+        { 'Skip click tests': { tests: 'click' } },
         'click',
       );
 
@@ -169,10 +164,7 @@ describe('shouldSkip', () => {
         'chrome',
         { kind: 'Button', story: 'with Error' },
         {
-          Stories: [
-            { tests: 'click', reason: 'Skip click tests' },
-            { tests: 'fillIn', reason: 'Skip fillIn tests' },
-          ],
+          'Skip click tests': [{ tests: 'click' }, { tests: 'fillIn' }],
         },
         'click',
       );
@@ -184,26 +176,13 @@ describe('shouldSkip', () => {
         'chrome',
         { kind: 'Button', story: 'with Error' },
         {
-          Button: { tests: 'click', reason: 'Skip click tests' },
-          Input: { tests: 'fillIn', reason: 'Skip fillIn tests' },
+          'Skip click tests': { tests: 'click' },
+          'Skip fillIn tests': { tests: 'fillIn' },
         },
         'click',
       );
 
       expect(result).to.equal('Skip click tests');
-    });
-    it('merged old and new formats', () => {
-      const skipOptions = {
-        Button: { in: 'chrome', tests: 'click', reason: 'Skip click tests' },
-        in: 'firefox',
-        tests: 'fillIn',
-        reason: 'Skip fillIn tests',
-      };
-      const result1 = shouldSkip('chrome', { kind: 'Button', story: 'with Error' }, skipOptions, 'click');
-      const result2 = shouldSkip('firefox', { kind: 'Input', story: 'with Error' }, skipOptions, 'fillIn');
-
-      expect(result1).to.equal('Skip click tests');
-      expect(result2).to.equal('Skip fillIn tests');
     });
   });
 });
