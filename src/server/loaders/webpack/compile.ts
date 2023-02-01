@@ -241,7 +241,7 @@ export default async function compile(config: Config, { debug, ui }: Options): P
     }),
     // TODO Don't work well with monorepos
     nodeExternals({
-      modulesDir: resolveFromStorybook('@storybook/core').split('@storybook')[0],
+      modulesDir: resolveFromStorybook('@storybook/core-client').split('@storybook')[0],
       includeAbsolutePaths: true,
       allowlist: /(webpack|dummy-hmr|generated-stories-entry|generated-config-entry|generated-other-entry)/,
     }),

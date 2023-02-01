@@ -2330,7 +2330,7 @@
     ws "^8.2.3"
     x-default-browser "^0.4.0"
 
-"@storybook/core@6.5.9", "@storybook/core@^6.5.9":
+"@storybook/core@6.5.9":
   version "6.5.9"
   resolved "https://registry.yarnpkg.com/@storybook/core/-/core-6.5.9.tgz#da4f237391d99aed1228323f24b335cafbdf3499"
   integrity sha512-Mt3TTQnjQt2/pa60A+bqDsAOrYpohapdtt4DDZEbS8h0V6u11KyYYh3w7FCySlL+sPEyogj63l5Ec76Jah3l2w==

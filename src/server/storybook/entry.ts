@@ -4,7 +4,7 @@ import { getStorybookFramework, resolveFromStorybook } from './helpers';
 
 const framework = getStorybookFramework();
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const core = require(resolveFromStorybook('@storybook/core')) as typeof import('@storybook/core');
+const core = require(resolveFromStorybook('@storybook/core-client')) as typeof import('@storybook/core-client');
 
 const start = core.start;
 const api = start(() => void 0);
