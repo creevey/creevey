@@ -150,7 +150,6 @@
     "@storybook/channels": "^6.5.9",
     "@storybook/client-api": "^6.5.9",
     "@storybook/client-logger": "^6.5.9",
-    "@storybook/core": "^6.5.9",
     "@storybook/core-client": "^6.5.9",
     "@storybook/core-common": "^6.5.9",
     "@storybook/core-events": "^6.5.9",
