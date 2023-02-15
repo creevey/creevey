@@ -198,11 +198,18 @@ type SkipOptions = boolean | string | Record<string, SkipOption | SkipOption[]>;
   - `skip: { 'Skip reason message': { tests: ['hover', 'click'] } }`
   - `skip: { 'Skip reason message': { tests: /^press.*$/ } }`
 - Multiple skip options:
-  ```
-  skip: {
-    "reason 1": { /* ... */ },
-    "reason 2": { /* ... */ },
-  }
-  ```
+  - for one reason
+    ```
+    skip: {
+      "reason": [{ /* ... */ }, { /* ... */ }],
+    }
+    ```
+  - for several reasons
+    ```
+    skip: {
+      "reason 1": { /* ... */ },
+      "reason 2": { /* ... */ },
+    }
+    ```
 
 NOTE: If you try to skip stories by story name, the storybook name format will be used (For more info see [storybook-export-vs-name-handling](https://storybook.js.org/docs/formats/component-story-format/#storybook-export-vs-name-handling))
