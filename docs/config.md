@@ -120,7 +120,7 @@ export const parameters = {
   creevey: {
     // Skip all *hover tests in IE11 on the global level
     skip: {
-      ie11: { in: 'ie11', tests: /.*hover$/ },
+      "hovers don't work in ie11": { in: 'ie11', tests: /.*hover$/ },
     },
   },
 };
@@ -137,15 +137,14 @@ export default {
   parameters: {
     creevey: {
       // You could skip some browsers/stories or even specific tests
-      skip: [
-        { in: 'ie11', reason: "`MyComponent` doesn't support ie11" },
-        { in: 'firefox', stories: 'Loading', reason: "Loading stories are flaky in firefox" },
-        {
+      skip: {
+        "`MyComponent` doesn't support ie11": { in: 'ie11' },
+        "Loading stories are flaky in firefox": { in: 'firefox', stories: 'Loading' },
+        "`MyComponent` hovering doesn't work correctly": {
           in: ['firefox', 'chrome'],
           tests: /.*hover$/,
-          reason: "For some reason `MyComponent` hovering doesn't work correctly",
         },
-      ],
+      },
     },
   },
 } as Meta & CreeveyMeta;
@@ -169,44 +168,41 @@ Basic.parameters = {
 
 ```ts
 interface SkipOption {
-  reason?: string;
   in?: string | string[] | RegExp;
   kinds?: string | string[] | RegExp;
   stories?: string | string[] | RegExp;
   tests?: string | string[] | RegExp;
 }
 
-type SkipOptions = SkipOption | SkipOption[] | Record<string, SkipOption | SkipOption[]>;
+type SkipOptions = boolean | string | Record<string, SkipOption | SkipOption[]>;
 ```
 
 - Skip all stories for all browsers:
   - `skip: true`
   - `skip: 'Skip reason message'`
-  - `skip: { reason: 'Skip reason message' }`
+  - `skip: { 'Skip reason message': true }`
 - Skip all stories for specific browsers:
-  - `skip: { in: 'ie11' }`
-  - `skip: { in: ['ie11', 'chrome'] }`
-  - `skip: { in: /^fire.*/ }`
+  - `skip: { 'Skip reason message': { in: 'ie11' } }`
+  - `skip: { 'Skip reason message': { in: ['ie11', 'chrome'] } }`
+  - `skip: { 'Skip reason message': { in: /^fire.*/ } }`
 - Skip all stories in specific kinds:
-  - `skip: { kinds: 'Button' }`
-  - `skip: { kinds: ['Button', 'Input'] }`
-  - `skip: { kinds: /.*Modal$/ }`
+  - `skip: { 'Skip reason message': { kinds: 'Button' } }`
+  - `skip: { 'Skip reason message': { kinds: ['Button', 'Input'] } }`
+  - `skip: { 'Skip reason message': { kinds: /.*Modal$/ } }`
 - Skip all tests in specific stories:
-  - `skip: { stories: 'simple' }`
-  - `skip: { stories: ['simple', 'special'] }`
-  - `skip: { stories: /.*large$/ }`
+  - `skip: { 'Skip reason message': { stories: 'simple' } }`
+  - `skip: { 'Skip reason message': { stories: ['simple', 'special'] } }`
+  - `skip: { 'Skip reason message': { stories: /.*large$/ } }`
 - Skip specific tests:
-  - `skip: { tests: 'click' }`
-  - `skip: { tests: ['hover', 'click'] }`
-  - `skip: { tests: /^press.*$/ }`
+  - `skip: { 'Skip reason message': { tests: 'click' } }`
+  - `skip: { 'Skip reason message': { tests: ['hover', 'click'] } }`
+  - `skip: { 'Skip reason message': { tests: /^press.*$/ } }`
 - Multiple skip options:
-  - as an array `skip: [{ /* ... */ }]`
-  - as an object
-    ```
-    skip: {
-      foo: { /* ... */ },
-      bar: { /* ... */ },
-    }
-    ```
+  ```
+  skip: {
+    "reason 1": { /* ... */ },
+    "reason 2": { /* ... */ },
+  }
+  ```
 
 NOTE: If you try to skip stories by story name, the storybook name format will be used (For more info see [storybook-export-vs-name-handling](https://storybook.js.org/docs/formats/component-story-format/#storybook-export-vs-name-handling))
