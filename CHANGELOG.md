@@ -1,3 +1,9 @@
+# [0.8.0](https://github.com/wKich/creevey/compare/v0.8.0-beta.1...v0.8.0) (2023-03-07)
+
+### Bug Fixes
+
+- drop support of SkipOption on root skip level ([31be1bf](https://github.com/wKich/creevey/commit/31be1bf4d67f464ea6790e6e218ca75674366711))
+
 # [0.8.0-beta.1](https://github.com/wKich/creevey/compare/v0.8.0-beta.0...v0.8.0-beta.1) (2023-01-18)
 
 ### Bug Fixes
