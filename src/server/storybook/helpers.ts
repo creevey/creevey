@@ -28,8 +28,8 @@ export const resolveFromStorybookAddonDocs = (modulePath: string): string =>
   resolveFrom(resolveFromStorybook('@storybook/addon-docs'), modulePath);
 export const resolveFromStorybookBuilderWebpack4 = (modulePath: string): string =>
   resolveFrom(resolveFromStorybook('@storybook/builder-webpack4'), modulePath);
-export const resolveFromStorybookCore = (modulePath: string): string =>
-  resolveFrom(resolveFromStorybook('@storybook/core'), modulePath);
+export const resolveFromStorybookCoreClient = (modulePath: string): string =>
+  resolveFrom(resolveFromStorybook('@storybook/core-client'), modulePath);
 export const resolveFromStorybookCoreServer = (modulePath: string): string =>
   resolveFrom(resolveFromStorybook('@storybook/core-server'), modulePath);
 
@@ -117,10 +117,8 @@ export async function importStorybookConfig(): Promise<StorybookConfig> {
       (await import(require.resolve(configPath))) as { default: StorybookConfig }
     ).default);
   } catch (_) {
-    const storybookUtilsPath = isStorybookVersionLessThan(6, 2)
-      ? '@storybook/core/dist/server/utils'
-      : '@storybook/core-common/dist/cjs/utils';
-    const serverRequireModule = isStorybookVersionLessThan(6, 2) ? 'server-require' : 'interpret-require';
+    const storybookUtilsPath = '@storybook/core-common/dist/cjs/utils';
+    const serverRequireModule = 'interpret-require';
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const { getInterpretedFile } = await import(resolveFromStorybook(`${storybookUtilsPath}/interpret-files`));
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -128,11 +126,8 @@ export async function importStorybookConfig(): Promise<StorybookConfig> {
       resolveFromStorybook(`${storybookUtilsPath}/${serverRequireModule}`)
     );
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const mainConfigFile = isStorybookVersionLessThan(6, 1)
-      ? configPath
-      : // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        getInterpretedFile(configPath);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+    const mainConfigFile = getInterpretedFile(configPath);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
     return (storybookConfigRef.current = serverRequire(mainConfigFile) as StorybookConfig);
   }

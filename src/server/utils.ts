@@ -34,30 +34,32 @@ export function shouldSkip(
   if (typeof skipOptions != 'object') {
     return skipOptions;
   }
-  if (Array.isArray(skipOptions)) {
-    for (const skip of skipOptions) {
-      const reason = shouldSkip(browser, meta, skip, test);
-      if (reason) return reason;
+  for (const skipKey in skipOptions) {
+    const reason = shouldSkipByOption(browser, meta, skipOptions[skipKey], skipKey, test);
+    if (reason) return reason;
+  }
+  return false;
+}
+
+export function shouldSkipByOption(
+  browser: string,
+  meta: {
+    kind: string;
+    story: string;
+  },
+  skipOption: SkipOption | SkipOption[],
+  reason: string,
+  test?: string,
+): string | boolean {
+  if (Array.isArray(skipOption)) {
+    for (const skip of skipOption) {
+      const result = shouldSkipByOption(browser, meta, skip, reason, test);
+      if (result) return result;
     }
     return false;
   }
-  let hasSkipOptionKeys = false;
-  for (const skipKey in skipOptions) {
-    if (skipOptionKeys.includes(skipKey)) {
-      hasSkipOptionKeys = true;
-      continue;
-    }
-    const reason = shouldSkip(
-      browser,
-      meta,
-      { reason: skipKey, ...(skipOptions as Record<string, SkipOption | SkipOption[]>)[skipKey] },
-      test,
-    );
-    if (reason) return reason;
-  }
-  if (!hasSkipOptionKeys) return false;
 
-  const { in: browsers, kinds, stories, tests, reason = true } = skipOptions as SkipOption;
+  const { in: browsers, kinds, stories, tests } = skipOption;
   const { kind, story } = meta;
   const skipByBrowser = matchBy(browsers, browser);
   const skipByKind = matchBy(kinds, kind);
@@ -70,7 +72,7 @@ export function shouldSkip(
 export async function shutdownWorkers(): Promise<void> {
   isShuttingDown.current = true;
   await Promise.all(
-    Object.values(cluster.workers)
+    Object.values(cluster.workers ?? {})
       .filter(isDefined)
       .filter((worker) => worker.isConnected())
       .map(

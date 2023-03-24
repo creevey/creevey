@@ -20,6 +20,7 @@ export type DiffOptions = typeof Pixelmatch extends (
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
 export type SetStoriesData = {
+  v?: number;
   globalParameters: { creevey?: CreeveyStoryParams };
   kindParameters: Partial<{ [kind: string]: { fileName: string; creevey?: CreeveyStoryParams } }>;
   stories: StoriesRaw;
@@ -375,14 +376,13 @@ export interface CreeveyUpdate {
 }
 
 export interface SkipOption {
-  reason?: string;
   in?: string | string[] | RegExp;
   kinds?: string | string[] | RegExp;
   stories?: string | string[] | RegExp;
   tests?: string | string[] | RegExp;
 }
 
-export type SkipOptions = boolean | string | SkipOption | SkipOption[] | Record<string, SkipOption | SkipOption[]>;
+export type SkipOptions = boolean | string | Record<string, SkipOption | SkipOption[]>;
 
 export type CreeveyTestFunction = (this: {
   browser: WebDriver;

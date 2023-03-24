@@ -7,7 +7,6 @@ import {
   getStorybookFramework,
   hasDocsAddon,
   importStorybookConfig,
-  isStorybookVersionLessThan,
   resolveFromStorybook,
 } from '../../storybook/helpers';
 import { Config, Options, noop } from '../../../types';
@@ -15,9 +14,9 @@ import { emitWebpackMessage, subscribeOn } from '../../messages';
 import { logger } from '../../logger';
 
 let isInitiated = false;
-let dumpStats: (stats: Stats) => void = noop;
+let dumpStats: (stats?: Stats) => void = noop;
 
-function handleWebpackBuild(error: Error, stats: Stats): void {
+function handleWebpackBuild(error?: Error | null, stats?: Stats): void {
   dumpStats(stats);
 
   if (error || !stats || stats.hasErrors()) {
@@ -26,15 +25,15 @@ function handleWebpackBuild(error: Error, stats: Stats): void {
 
     if (error) return console.error(error.message);
     if (stats && (stats.hasErrors() || stats.hasWarnings())) {
-      const { warnings, errors } = stats.toJson();
+      const statsJson = stats.toJson();
 
-      errors.forEach((e) => console.error(e));
-      warnings.forEach((e) => console.error(e));
+      statsJson.errors?.forEach((e) => console.error(e));
+      statsJson.warnings?.forEach((e) => console.error(e));
 
       return;
     }
   }
-  stats.toJson().warnings.forEach((e) => console.warn(e));
+  stats?.toJson().warnings?.forEach((e) => console.warn(e));
 
   if (!isInitiated) {
     isInitiated = true;
@@ -51,18 +50,16 @@ async function applyMdxLoader(config: Configuration, areAddonsRemoved: boolean, 
 
   mdxLoaders.splice(1, 0, loader);
 
-  const mdxRegexps = isStorybookVersionLessThan(6, 2)
-    ? [/\.(stories|story).mdx$/, /\.(stories|story)\.mdx$/]
-    : [/(stories|story)\.mdx$/];
+  const mdxRegexps = [/(stories|story)\.mdx$/];
 
   // NOTE replace md/mdx to null loader
   const mdRegexps = [/\.md$/, /\.mdx$/];
 
   if (areAddonsRemoved) {
     mdRegexps.forEach((test) =>
-      config.module?.rules.unshift({ test, exclude: /(stories|story)\.mdx$/, use: require.resolve('null-loader') }),
+      config.module?.rules?.unshift({ test, exclude: /(stories|story)\.mdx$/, use: require.resolve('null-loader') }),
     );
-    config.module?.rules.unshift({ test: /(stories|story)\.mdx$/, use: mdxLoaders });
+    config.module?.rules?.unshift({ test: /(stories|story)\.mdx$/, use: mdxLoaders });
   } else {
     // NOTE Exclude addons' entry points
     config.entry = Array.isArray(config.entry)
@@ -70,10 +67,12 @@ async function applyMdxLoader(config: Configuration, areAddonsRemoved: boolean, 
       : config.entry;
 
     config.module?.rules
+      ?.flatMap((rule) => (typeof rule == 'object' && 'test' in rule ? rule : []))
       .filter((rule) => mdRegexps.some((test) => rule.test?.toString() == test.toString()))
       .forEach((rule) => (rule.use = require.resolve('null-loader')));
 
     config.module?.rules
+      ?.flatMap((rule) => (typeof rule == 'object' && 'test' in rule ? rule : []))
       .filter((rule) => mdxRegexps.some((test) => rule.test?.toString() == test.toString()))
       .forEach((rule) => (rule.use = mdxLoaders as RuleSetUse));
 
@@ -81,44 +80,12 @@ async function applyMdxLoader(config: Configuration, areAddonsRemoved: boolean, 
     config.module = {
       ...config.module,
       rules:
-        config.module?.rules.filter(
-          (rule) => !(typeof rule.loader == 'string' && /@storybook(\/|\\)source-loader/.test(rule.loader)),
-        ) ?? [],
+        config.module?.rules
+          ?.flatMap((rule) => (typeof rule == 'object' && 'test' in rule ? rule : []))
+          .filter((rule) => !(typeof rule.loader == 'string' && /@storybook(\/|\\)source-loader/.test(rule.loader))) ??
+        [],
     };
   }
-}
-
-async function getWebpackConfigForStorybook_pre6_2(
-  framework: string,
-  configDir: string,
-  outputDir: string,
-): Promise<Configuration> {
-  const { default: storybookFrameworkOptions } = (await import(
-    resolveFromStorybook(`@storybook/${framework}/dist/server/options`)
-  )) as {
-    default: { framework: string; frameworkPresets: string[] };
-  };
-
-  // eslint-disable-next-line node/no-missing-import, @typescript-eslint/no-unsafe-assignment, import/no-unresolved
-  const { default: getConfig } = await import(resolveFromStorybook('@storybook/core/dist/server/config'));
-
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
-  return getConfig({
-    // NOTE: 6.1 storybook don't support quite any more. But we still have older versions
-    quiet: true,
-    configType: 'PRODUCTION',
-    outputDir,
-    cache: {},
-    // eslint-disable-next-line node/no-missing-require
-    corePresets: [resolveFromStorybook('@storybook/core/dist/server/preview/preview-preset')],
-    overridePresets: [
-      ...(hasDocsAddon() ? [require.resolve('./mdx-loader')] : []),
-      // eslint-disable-next-line node/no-missing-require
-      resolveFromStorybook('@storybook/core/dist/server/preview/custom-webpack-preset'),
-    ],
-    ...storybookFrameworkOptions,
-    configDir,
-  });
 }
 
 async function getWebpackConfigForStorybook_6_2(
@@ -210,9 +177,7 @@ export default async function compile(config: Config, { debug, ui }: Options): P
   // NOTE Remove addons by monkey patching, only for new config file (main.js)
   const areAddonsRemoved = await removeAddons();
 
-  const getWebpackConfig = isStorybookVersionLessThan(6, 2)
-    ? getWebpackConfigForStorybook_pre6_2
-    : getWebpackConfigForStorybook_6_2;
+  const getWebpackConfig = getWebpackConfigForStorybook_6_2;
 
   const storybookWebpackConfig = await getWebpackConfig(storybookFramework, config.storybookDir, outputDir);
 
@@ -236,7 +201,7 @@ export default async function compile(config: Config, { debug, ui }: Options): P
   if (hasDocsAddon()) await applyMdxLoader(storybookWebpackConfig, areAddonsRemoved, creeveyLoader);
 
   // NOTE Add creevey-loader to cut off all unnecessary code except stories meta and tests
-  storybookWebpackConfig.module?.rules.unshift({
+  storybookWebpackConfig.module?.rules?.unshift({
     enforce: 'pre',
     test: new RegExp(`\\.(${extensions.map((x) => x.slice(1))?.join('|')})$`),
     exclude: /node_modules/,
@@ -260,9 +225,13 @@ export default async function compile(config: Config, { debug, ui }: Options): P
 
   // NOTE Exclude from bundle all modules from node_modules
   storybookWebpackConfig.externals = [
-    ...Object.entries(aliases)
-      .filter(([alias]) => excluded.includes(alias))
-      .map(([, aliasPath]) => ({ [aliasPath]: `commonjs ${aliasPath}` })),
+    ...(Array.isArray(aliases) ? aliases.map(({ name, alias }) => [name, alias]) : Object.entries(aliases))
+      .filter(([alias]) => excluded.includes(alias as string))
+      .flatMap(([, aliasPath]) =>
+        aliasPath == false
+          ? []
+          : (Array.isArray(aliasPath) ? aliasPath : [aliasPath]).map((x) => ({ [x]: `commonjs ${x}` })),
+      ),
 
     // NOTE Replace `@storybook/${framework}` to ../../storybook.ts
     { [`@storybook/${storybookFramework}`]: `commonjs ${require.resolve('../../storybook/entry')}` },
@@ -272,7 +241,7 @@ export default async function compile(config: Config, { debug, ui }: Options): P
     }),
     // TODO Don't work well with monorepos
     nodeExternals({
-      modulesDir: resolveFromStorybook('@storybook/core').split('@storybook')[0],
+      modulesDir: resolveFromStorybook('@storybook/core-client').split('@storybook')[0],
       includeAbsolutePaths: true,
       allowlist: /(webpack|dummy-hmr|generated-stories-entry|generated-config-entry|generated-other-entry)/,
     }),
@@ -287,8 +256,10 @@ export default async function compile(config: Config, { debug, ui }: Options): P
   const storybookWebpackCompiler = webpack(storybookWebpackConfig);
 
   if (debug) {
-    dumpStats = (stats: Stats) =>
+    dumpStats = (stats?: Stats) => {
+      if (!stats) return;
       writeFile(path.join(config.reportDir, 'stats.json'), JSON.stringify(stats.toJson(), null, 2), noop);
+    };
   }
 
   if (ui) {

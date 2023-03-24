@@ -10,12 +10,14 @@ import {
   CreeveyStoryParams,
   isObject,
   noop,
+  SetStoriesData,
   StoriesRaw,
   StorybookGlobals,
   StoryInput,
 } from '../../types';
-import { denormalizeStoryParameters } from '../../shared';
+import { denormalizeStoryParameters, serializeRawStories } from '../../shared';
 import { getConnectionUrl } from '../shared/helpers';
+import { isInternetExplorer } from './utils';
 
 if (typeof process != 'object' || typeof process.version != 'string') {
   // NOTE If you don't use babel-polyfill or any other polyfills that add EventSource for IE11
@@ -39,7 +41,7 @@ declare global {
       name: string,
       shouldWaitForReady: boolean,
       callback: (response: [error?: string | null, isCaptureCalled?: boolean]) => void,
-    ) => void;
+    ) => Promise<void>;
     __CREEVEY_UPDATE_GLOBALS__: (globals: StorybookGlobals) => void;
     __CREEVEY_INSERT_IGNORE_STYLES__: (ignoreElements: string[]) => HTMLStyleElement;
     __CREEVEY_REMOVE_IGNORE_STYLES__: (ignoreStyles: HTMLStyleElement) => void;
@@ -180,25 +182,24 @@ export function withCreevey(): MakeDecoratorResult {
 
   async function getStories(): Promise<StoriesRaw | void> {
     const storiesPromise = new Promise<StoriesRaw>((resolve) =>
-      addons.getChannel().once(Events.SET_STORIES, (data) => resolve(denormalizeStoryParameters(data))),
+      addons
+        .getChannel()
+        .once(Events.SET_STORIES, (data: SetStoriesData) =>
+          resolve(serializeRawStories(denormalizeStoryParameters(data))),
+        ),
     );
 
     const store = window.__STORYBOOK_STORY_STORE__ ?? {};
-    // @ts-expect-error `pushToManager` exists only in Storybook 6.0 - 6.3
-    if (store.pushToManager) {
-      // @ts-expect-error `pushToManager` exists only in Storybook 6.0 - 6.3
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-      store.pushToManager();
-    } else if (store.cacheAllCSFFiles) {
+    if (store.cacheAllCSFFiles) {
       await store.cacheAllCSFFiles();
       addons.getChannel().emit(Events.SET_STORIES, store.getSetStoriesPayload());
     } else return;
 
-    addons.getChannel().on(Events.SET_STORIES, (data) => {
+    addons.getChannel().on(Events.SET_STORIES, (data: SetStoriesData) => {
       // TODO Figure out how to get only updated stories
       // TODO Subscribe on hmr? like use dummy-hmr
       setStoriesCounter += 1;
-      const stories = denormalizeStoryParameters(data);
+      const stories = serializeRawStories(denormalizeStoryParameters(data));
       const storiesByFiles = new Map<string, StoryInput[]>();
       Object.values(stories).forEach((story) => {
         const storiesFromFile = storiesByFiles.get(story.parameters.fileName);
@@ -355,7 +356,9 @@ export function withCreevey(): MakeDecoratorResult {
             case captureElement === null:
               return Promise.resolve(document.documentElement);
             case typeof captureElement == 'string':
-              return within<typeof queries>(context.canvasElement, queries).findByQuery(captureElement as string);
+              return isInternetExplorer // some code from testing-library makes IE hang
+                ? Promise.resolve(context.canvasElement.querySelector(captureElement as string))
+                : within<typeof queries>(context.canvasElement, queries).findByQuery(captureElement as string);
             case typeof captureElement == 'function':
               // TODO Define type for it
               return Promise.resolve(

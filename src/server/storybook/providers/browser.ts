@@ -1,4 +1,4 @@
-import cluster, { isMaster } from 'cluster';
+import cluster from 'cluster';
 import type { Config, CreeveyStory, StoriesRaw, StoryInput } from '../../../types';
 import { loadStoriesFromBrowser } from '../../selenium';
 import { emitStoriesMessage, sendStoriesMessage, subscribeOn, subscribeOnWorker } from '../../messages';
@@ -10,9 +10,9 @@ export async function loadStories(
   { port }: { port: number },
   storiesListener: (stories: Map<string, StoryInput[]>) => void,
 ): Promise<StoriesRaw> {
-  if (isMaster) {
+  if (cluster.isPrimary) {
     return new Promise<StoriesRaw>((resolve) => {
-      const worker = Object.values(cluster.workers)
+      const worker = Object.values(cluster.workers ?? {})
         .filter(isDefined)
         .find((worker) => worker.isConnected());
 

@@ -4,13 +4,12 @@ module.exports = {
   presets: [
     '@babel/preset-react',
     '@babel/preset-typescript',
-    ['@babel/preset-env', { targets: { node: '10' }, modules }],
+    ['@babel/preset-env', { targets: { node: '16' }, modules }],
   ],
-  plugins: ['@babel/plugin-proposal-class-properties'],
   overrides: [
     {
-      test: './src/client',
-      presets: [['@babel/preset-env', { targets: { ie: '11' }, modules }]],
+      test: ['./src/client', './src/shared'],
+      presets: [['@babel/preset-env', { targets: 'defaults', modules }]],
     },
   ],
 };

@@ -11,6 +11,7 @@ import { CreeveyApi } from './api';
 import { emitStoriesMessage, sendStoriesMessage, subscribeOn, subscribeOnWorker } from '../messages';
 import { CaptureOptions, isDefined, noop, StoryInput } from '../../types';
 import { logger } from '../logger';
+import { deserializeStory } from '../../shared';
 
 export default function server(reportDir: string, port: number, ui: boolean): (api: CreeveyApi) => void {
   let resolveApi: (api: CreeveyApi) => void = noop;
@@ -46,12 +47,17 @@ export default function server(reportDir: string, port: number, ui: boolean): (a
       };
       if (setStoriesCounter >= counter) return;
 
+      const deserializedStories = stories.map<[string, StoryInput[]]>(([file, stories]) => [
+        file,
+        stories.map(deserializeStory),
+      ]);
+
       setStoriesCounter = counter;
-      emitStoriesMessage({ type: 'update', payload: stories });
-      Object.values(cluster.workers)
+      emitStoriesMessage({ type: 'update', payload: deserializedStories });
+      Object.values(cluster.workers ?? {})
         .filter(isDefined)
         .filter((worker) => worker.isConnected())
-        .forEach((worker) => sendStoriesMessage(worker, { type: 'update', payload: stories }));
+        .forEach((worker) => sendStoriesMessage(worker, { type: 'update', payload: deserializedStories }));
       return;
     }
     await next();
@@ -60,7 +66,7 @@ export default function server(reportDir: string, port: number, ui: boolean): (a
   app.use(async (ctx, next) => {
     if (ctx.method == 'POST' && ctx.path == '/capture') {
       const { workerId, options } = ctx.request.body as { workerId: number; options?: CaptureOptions };
-      const worker = Object.values(cluster.workers)
+      const worker = Object.values(cluster.workers ?? {})
         .filter(isDefined)
         .find((worker) => worker.process.pid == workerId);
       // NOTE: Hypothetical case when someone send to us capture req and we don't have a worker with browser session for it
@@ -96,7 +102,9 @@ export default function server(reportDir: string, port: number, ui: boolean): (a
     api.subscribe(wss);
 
     wss.on('connection', (ws) => {
-      ws.on('message', (message: WebSocket.Data) => api.handleMessage(ws, message));
+      ws.on('message', (message: WebSocket.RawData, isBinary: boolean) => {
+        api.handleMessage(ws, isBinary ? message : message.toString());
+      });
     });
   });
 

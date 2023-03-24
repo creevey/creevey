@@ -306,7 +306,7 @@ export const commonVisitor: TraverseOptions<VisitorState> = {
         },
       });
 
-      let refs = [...this.visitedTopPaths];
+      let refs = [...this.visitedTopPaths] as NodePath[];
       while (refs.length > 0) {
         refs = getUnvisitedRefs(refs, this);
       }

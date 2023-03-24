@@ -1,3 +1,30 @@
+# [0.8.0](https://github.com/wKich/creevey/compare/v0.8.0-beta.1...v0.8.0) (2023-03-07)
+
+### Bug Fixes
+
+- drop support of SkipOption on root skip level ([31be1bf](https://github.com/wKich/creevey/commit/31be1bf4d67f464ea6790e6e218ca75674366711))
+
+# [0.8.0-beta.1](https://github.com/wKich/creevey/compare/v0.8.0-beta.0...v0.8.0-beta.1) (2023-01-18)
+
+### Bug Fixes
+
+- **addon:** restore IE11 support ([94f452f](https://github.com/wKich/creevey/commit/94f452fff4225e974c9efdff21f982d5155de4f8))
+- allow setting timeouts via capabilities ([72de9e5](https://github.com/wKich/creevey/commit/72de9e50b818587309f665c782637ae43c3e4864))
+- infinite UI loading ([4f7b47d](https://github.com/wKich/creevey/commit/4f7b47db3ff1274217b044ce608e34d22148fe32))
+- **addon:** restore and move ie11 support to separate addon ([3ba2cc7](https://github.com/wKich/creevey/commit/3ba2cc7fde281037406f1705c0abc616c576e641))
+- browser-node regexp parameters transfering ([737670e](https://github.com/wKich/creevey/commit/737670e18aa5d0ce416fe12b765406116b453e31))
+- correct call of the test fn ([98c03ad](https://github.com/wKich/creevey/commit/98c03ad1700486bfd75170f4517970717250f6d8))
+- handle null from selectStory ([1895602](https://github.com/wKich/creevey/commit/1895602143b3236ab195e11fcfa162df2a01af03))
+- ie11 support ([523e35b](https://github.com/wKich/creevey/commit/523e35b6950d978ca3aaa77dd4f072a835053687))
+- move addon to the separate entry point ([f3fc59f](https://github.com/wKich/creevey/commit/f3fc59f980a56f87f882507c3a0367ed6a356d33))
+- prevent importing browser-specific code to node ([37706ef](https://github.com/wKich/creevey/commit/37706efbb49dd5bd1d6ec06821fac52480a0e132))
+- **selenium-webdriver:** bump [@types](https://github.com/types) package version ([ca4b369](https://github.com/wKich/creevey/commit/ca4b369046e2c56e0548f5cbb6f98c17b0125228))
+
+### Features
+
+- 🎸 add support `play()` story method ([318ac62](https://github.com/wKich/creevey/commit/318ac628cb14fb0de7a89c088ae241df520df1e7))
+- drop support for storybook < 6.4 ([fb8c0f5](https://github.com/wKich/creevey/commit/fb8c0f5158ab7c0495949eaa61ba52049c3d66cf))
+
 # [0.8.0-beta.0](https://github.com/wKich/creevey/compare/v0.7.39...v0.8.0-beta.0) (2022-03-17)
 
 ### Bug Fixes

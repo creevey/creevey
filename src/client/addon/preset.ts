@@ -1,11 +1,7 @@
 import path from 'path';
 import { exec } from 'shelljs';
 import { Configuration, DefinePlugin as FallbackDefinePlugin } from 'webpack';
-import {
-  isStorybookVersionLessThan,
-  resolveFromStorybookCore,
-  resolveFromStorybookCoreServer,
-} from '../../server/storybook/helpers';
+import { resolveFromStorybookCoreServer } from '../../server/storybook/helpers';
 
 export function config(entry: string[] = []): string[] {
   return [...entry, require.resolve('./decorator')];
@@ -35,7 +31,7 @@ export interface CreeveyAddonOptions {
 
 export function managerWebpack(config: Configuration, options: CreeveyAddonOptions): Promise<Configuration> {
   // TODO How to execute with non-webpack bundlers
-  if (options.configType == 'PRODUCTION' && !isStorybookVersionLessThan(6, 2) && options.skipExtract != true) {
+  if (options.configType == 'PRODUCTION' && options.skipExtract != true) {
     const args: string[] = [];
     if (options.creeveyPreExtract) args.push(`--require "${options.creeveyPreExtract}"`);
     args.push(path.join(__dirname, '../../cli'));
@@ -45,15 +41,7 @@ export function managerWebpack(config: Configuration, options: CreeveyAddonOptio
     exec(`node ${args.join(' ')}`, { async: true });
   }
   return (options.presets?.apply<typeof import('webpack')>('webpackInstance') ?? Promise.resolve(undefined))
-    .then(
-      (webpack) =>
-        webpack ??
-        import(
-          isStorybookVersionLessThan(6, 2)
-            ? resolveFromStorybookCore('webpack')
-            : resolveFromStorybookCoreServer('webpack')
-        ),
-    )
+    .then((webpack) => webpack ?? import(resolveFromStorybookCoreServer('webpack')))
     .then((webpack: typeof import('webpack')) => {
       const { DefinePlugin = FallbackDefinePlugin } = webpack ?? {};
       config.plugins?.push(
