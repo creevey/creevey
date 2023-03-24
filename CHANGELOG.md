@@ -1,3 +1,5 @@
+# [0.9.0-beta.4](https://github.com/wKich/creevey/compare/v0.9.0-beta.3...v0.9.0-beta.4) (2023-03-24)
+
 # [0.9.0-beta.3](https://github.com/wKich/creevey/compare/v0.8.0...v0.9.0-beta.3) (2023-03-24)
 
 ### Features
