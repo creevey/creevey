@@ -1,3 +1,9 @@
+# [0.9.0-beta.3](https://github.com/wKich/creevey/compare/v0.8.0...v0.9.0-beta.3) (2023-03-24)
+
+### Features
+
+- hybrid stories provider ([89d9c73](https://github.com/wKich/creevey/commit/89d9c7357369dffb320ea06fe158b4113f57034c))
+
 # [0.8.0](https://github.com/wKich/creevey/compare/v0.8.0-beta.1...v0.8.0) (2023-03-07)
 
 ### Bug Fixes
