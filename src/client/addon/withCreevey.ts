@@ -3,7 +3,7 @@ import * as polyfill from 'event-source-polyfill';
 import type { PreviewWeb } from '@storybook/preview-web';
 import type { AnyFramework } from '@storybook/csf';
 import type { StoryStore } from '@storybook/client-api';
-import { buildQueries, within } from '@storybook/testing-library';
+// import { buildQueries, within } from '@storybook/testing-library';
 import { addons, MakeDecoratorResult, makeDecorator, Channel } from '@storybook/addons';
 import {
   CaptureOptions,
@@ -17,7 +17,7 @@ import {
 } from '../../types';
 import { denormalizeStoryParameters, serializeRawStories } from '../../shared';
 import { getConnectionUrl } from '../shared/helpers';
-import { isInternetExplorer } from './utils';
+// import { isInternetExplorer } from './utils';
 
 if (typeof process != 'object' || typeof process.version != 'string') {
   // NOTE If you don't use babel-polyfill or any other polyfills that add EventSource for IE11
@@ -322,23 +322,23 @@ export function withCreevey(): MakeDecoratorResult {
   window.__CREEVEY_HAS_PLAY_COMPLETED_YET__ = hasPlayCompletedYet;
   window.__CREEVEY_SET_READY_FOR_CAPTURE__ = noop;
 
-  const queryAllByQuery = (container: HTMLElement, query: string): HTMLElement[] =>
-    [...container.querySelectorAll(query)].filter((e) => e instanceof HTMLElement) as HTMLElement[];
-  const getMultipleError = (_: Element | null, query: string): string => `Found multiple elements by query: ${query}`;
-  const getMissingError = (_: Element | null, query: string): string => `Unable to find an element by query: ${query}`;
+  // const queryAllByQuery = (container: HTMLElement, query: string): HTMLElement[] =>
+  //   [...container.querySelectorAll(query)].filter((e) => e instanceof HTMLElement) as HTMLElement[];
+  // const getMultipleError = (_: Element | null, query: string): string => `Found multiple elements by query: ${query}`;
+  // const getMissingError = (_: Element | null, query: string): string => `Unable to find an element by query: ${query}`;
 
-  const [queryByQuery, getAllByQuery, getByQuery, findAllByQuery, findByQuery] = buildQueries(
-    queryAllByQuery,
-    getMultipleError,
-    getMissingError,
-  );
-  const queries = {
-    queryByQuery,
-    getAllByQuery,
-    getByQuery,
-    findAllByQuery,
-    findByQuery,
-  };
+  // const [queryByQuery, getAllByQuery, getByQuery, findAllByQuery, findByQuery] = buildQueries(
+  //   queryAllByQuery,
+  //   getMultipleError,
+  //   getMissingError,
+  // );
+  // const queries = {
+  //   queryByQuery,
+  //   getAllByQuery,
+  //   getByQuery,
+  //   findAllByQuery,
+  //   findByQuery,
+  // };
 
   return makeDecorator({
     name: 'withCreevey',
@@ -356,9 +356,10 @@ export function withCreevey(): MakeDecoratorResult {
             case captureElement === null:
               return Promise.resolve(document.documentElement);
             case typeof captureElement == 'string':
-              return isInternetExplorer // some code from testing-library makes IE hang
-                ? Promise.resolve(context.canvasElement.querySelector(captureElement as string))
-                : within<typeof queries>(context.canvasElement, queries).findByQuery(captureElement as string);
+              return Promise.resolve(context.canvasElement.querySelector(captureElement as string));
+            // return isInternetExplorer // some code from testing-library makes IE hang
+            //   ? Promise.resolve(context.canvasElement.querySelector(captureElement as string))
+            //   : within<typeof queries>(context.canvasElement, queries).findByQuery(captureElement as string);
             case typeof captureElement == 'function':
               // TODO Define type for it
               return Promise.resolve(

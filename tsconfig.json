@@ -18,5 +18,10 @@
     },
     "skipLibCheck": true
   },
-  "exclude": ["./report", "./lib", "./scripts/dist", "./examples", "./tests/**/*.fixtures"]
+  "exclude": ["./report", "./lib", "./scripts/dist", "./examples", "./tests/**/*.fixtures"],
+  "ts-node": {
+    "compilerOptions": {
+      "module": "CommonJS"
+    }
+  }
 }

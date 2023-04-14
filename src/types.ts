@@ -256,6 +256,9 @@ export interface Config {
    * Specify platform for docker images
    */
   dockerImagePlatform: string;
+  testsRegex?: RegExp;
+  testsDir?: string;
+  tsConfig?: string;
 }
 
 export type CreeveyConfig = Partial<Config>;

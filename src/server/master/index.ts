@@ -1,10 +1,10 @@
 import path from 'path';
-import { writeFileSync, copyFile, readdir, mkdir, readdirSync, existsSync } from 'fs';
+import { writeFileSync, copyFile, readdir, mkdir, existsSync } from 'fs';
 import { promisify } from 'util';
 import master from './master';
 import creeveyApi, { CreeveyApi } from './api';
 import { Config, Options, isDefined } from '../../types';
-import { shutdown, shutdownWorkers, testsToImages } from '../utils';
+import { shutdown, shutdownWorkers, testsToImages, readDirRecursive } from '../utils';
 import { subscribeOn } from '../messages';
 import Runner from './runner';
 import { logger } from '../logger';
@@ -34,14 +34,6 @@ function reportDataModule<T>(data: T): string {
   }
 }(this, function () { return ${JSON.stringify(data)} }));
 `;
-}
-
-function readDirRecursive(dirPath: string): string[] {
-  return ([] as string[]).concat(
-    ...readdirSync(dirPath, { withFileTypes: true }).map((dirent) =>
-      dirent.isDirectory() ? readDirRecursive(`${dirPath}/${dirent.name}`) : [`${dirPath}/${dirent.name}`],
-    ),
-  );
 }
 
 function outputUnnecessaryImages(imagesDir: string, images: Set<string>): void {
