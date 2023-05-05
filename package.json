@@ -13,7 +13,7 @@
     "addon",
     "test"
   ],
-  "version": "0.8.0",
+  "version": "0.8.1-beta.0",
   "bin": {
     "creevey": "./lib/cjs/cli.js"
   },
@@ -24,6 +24,7 @@
     },
     "./addon": {
       "types": "./lib/types/client/addon/index.d.ts",
+      "module": "./lib/esm/client/addon/index.js",
       "default": "./lib/cjs/client/addon/index.js"
     },
     "./preset": "./preset/index.js",

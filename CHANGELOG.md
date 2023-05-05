@@ -1,3 +1,9 @@
+## [0.8.1-beta.0](https://github.com/wKich/creevey/compare/v0.8.0...v0.8.1-beta.0) (2023-04-11)
+
+### Bug Fixes
+
+- **addon:** make bundlers to load esm version of addon ([f2937ca](https://github.com/wKich/creevey/commit/f2937caccca158e68c8be45d0882ec9b62eb05b2))
+
 # [0.8.0](https://github.com/wKich/creevey/compare/v0.8.0-beta.1...v0.8.0) (2023-03-07)
 
 ### Bug Fixes
