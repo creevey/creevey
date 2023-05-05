@@ -1,3 +1,9 @@
+## [0.8.1-beta.1](https://github.com/wKich/creevey/compare/v0.8.1-beta.0...v0.8.1-beta.1) (2023-05-05)
+
+### Bug Fixes
+
+- **providers:** set creevey port for all providers ([79e8aae](https://github.com/wKich/creevey/commit/79e8aae629d79260f93a93057486bab659801a46))
+
 ## [0.8.1-beta.0](https://github.com/wKich/creevey/compare/v0.8.0...v0.8.1-beta.0) (2023-04-11)
 
 ### Bug Fixes
