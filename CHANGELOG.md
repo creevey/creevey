@@ -1,3 +1,5 @@
+## [0.8.1](https://github.com/wKich/creevey/compare/v0.8.1-beta.1...v0.8.1) (2023-05-29)
+
 ## [0.8.1-beta.1](https://github.com/wKich/creevey/compare/v0.8.1-beta.0...v0.8.1-beta.1) (2023-05-05)
 
 ### Bug Fixes
