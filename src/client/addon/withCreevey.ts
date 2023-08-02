@@ -3,11 +3,11 @@ import * as polyfill from 'event-source-polyfill';
 import type { PreviewWeb } from '@storybook/preview-web';
 import type { AnyFramework } from '@storybook/csf';
 import type { StoryStore } from '@storybook/client-api';
-import { buildQueries, within } from '@storybook/testing-library';
+// import { buildQueries, within } from '@storybook/testing-library';
 import { addons, MakeDecoratorResult, makeDecorator, Channel } from '@storybook/addons';
 import {
   CaptureOptions,
-  CreeveyStoryParams,
+  // CreeveyStoryParams,
   isObject,
   noop,
   SetStoriesData,
@@ -326,51 +326,51 @@ export function withCreevey(): MakeDecoratorResult {
   window.__CREEVEY_HAS_PLAY_COMPLETED_YET__ = hasPlayCompletedYet;
   window.__CREEVEY_SET_READY_FOR_CAPTURE__ = noop;
 
-  const queryAllByQuery = (container: HTMLElement, query: string): HTMLElement[] =>
-    [...container.querySelectorAll(query)].filter((e) => e instanceof HTMLElement) as HTMLElement[];
-  const getMultipleError = (_: Element | null, query: string): string => `Found multiple elements by query: ${query}`;
-  const getMissingError = (_: Element | null, query: string): string => `Unable to find an element by query: ${query}`;
+  // const queryAllByQuery = (container: HTMLElement, query: string): HTMLElement[] =>
+  //   [...container.querySelectorAll(query)].filter((e) => e instanceof HTMLElement) as HTMLElement[];
+  // const getMultipleError = (_: Element | null, query: string): string => `Found multiple elements by query: ${query}`;
+  // const getMissingError = (_: Element | null, query: string): string => `Unable to find an element by query: ${query}`;
 
-  const [queryByQuery, getAllByQuery, getByQuery, findAllByQuery, findByQuery] = buildQueries(
-    queryAllByQuery,
-    getMultipleError,
-    getMissingError,
-  );
-  const queries = {
-    queryByQuery,
-    getAllByQuery,
-    getByQuery,
-    findAllByQuery,
-    findByQuery,
-  };
+  // const [queryByQuery, getAllByQuery, getByQuery, findAllByQuery, findByQuery] = buildQueries(
+  //   queryAllByQuery,
+  //   getMultipleError,
+  //   getMissingError,
+  // );
+  // const queries = {
+  //   queryByQuery,
+  //   getAllByQuery,
+  //   getByQuery,
+  //   findAllByQuery,
+  //   findByQuery,
+  // };
 
   return makeDecorator({
     name: 'withCreevey',
     parameterName: 'creevey',
 
     wrapper: (getStory, context) => {
-      // TODO Define proper types, like captureElement is a promise
-      const { captureElement } = (context.parameters.creevey =
-        (context.parameters.creevey as CreeveyStoryParams) ?? {});
-      Object.defineProperty(context.parameters.creevey, 'captureElement', {
-        get() {
-          switch (true) {
-            case captureElement === undefined:
-              return Promise.resolve(context.canvasElement);
-            case captureElement === null:
-              return Promise.resolve(document.documentElement);
-            case typeof captureElement == 'string':
-              return within<typeof queries>(context.canvasElement, queries).findByQuery(captureElement as string);
-            case typeof captureElement == 'function':
-              // TODO Define type for it
-              return Promise.resolve(
-                (captureElement as unknown as (ctx: typeof context) => Promise<HTMLElement> | HTMLElement)(context),
-              );
-          }
-        },
-        enumerable: true,
-        configurable: true,
-      });
+      // // TODO Define proper types, like captureElement is a promise
+      // const { captureElement } = (context.parameters.creevey =
+      //   (context.parameters.creevey as CreeveyStoryParams) ?? {});
+      // Object.defineProperty(context.parameters.creevey, 'captureElement', {
+      //   get() {
+      //     switch (true) {
+      //       case captureElement === undefined:
+      //         return Promise.resolve(context.canvasElement);
+      //       case captureElement === null:
+      //         return Promise.resolve(document.documentElement);
+      //       case typeof captureElement == 'string':
+      //         return within<typeof queries>(context.canvasElement, queries).findByQuery(captureElement as string);
+      //       case typeof captureElement == 'function':
+      //         // TODO Define type for it
+      //         return Promise.resolve(
+      //           (captureElement as unknown as (ctx: typeof context) => Promise<HTMLElement> | HTMLElement)(context),
+      //         );
+      //     }
+      //   },
+      //   enumerable: true,
+      //   configurable: true,
+      // });
 
       return getStory(context);
     },
