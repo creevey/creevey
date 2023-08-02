@@ -13,7 +13,7 @@
     "addon",
     "test"
   ],
-  "version": "0.9.0-non-webpack.2",
+  "version": "0.9.0-non-webpack.2.fix-capture-element",
   "bin": {
     "creevey": "./lib/cjs/cli.js"
   },
