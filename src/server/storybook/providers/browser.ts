@@ -1,15 +1,11 @@
 import cluster from 'cluster';
-import type { Config, CreeveyStory, StoriesRaw, StoryInput } from '../../../types';
+import type { CreeveyStory, StoriesProvider, StoriesRaw } from '../../../types';
 import { loadStoriesFromBrowser } from '../../selenium';
 import { emitStoriesMessage, sendStoriesMessage, subscribeOn, subscribeOnWorker } from '../../messages';
 import { isDefined } from '../../../types';
 import { logger } from '../../logger';
 
-export async function loadStories(
-  _config: Config,
-  { port }: { port: number },
-  storiesListener: (stories: Map<string, StoryInput[]>) => void,
-): Promise<StoriesRaw> {
+export const loadStories: StoriesProvider = async (_config, _options, storiesListener) => {
   if (cluster.isPrimary) {
     return new Promise<StoriesRaw>((resolve) => {
       const worker = Object.values(cluster.workers ?? {})
@@ -43,7 +39,7 @@ export async function loadStories(
         emitStoriesMessage({ type: 'set', payload: { stories, oldTests: storiesWithOldTests } });
       if (message.type == 'update') storiesListener(new Map(message.payload));
     });
-    const stories = await loadStoriesFromBrowser(port);
+    const stories = await loadStoriesFromBrowser();
 
     const storiesWithOldTests: string[] = [];
 
@@ -56,4 +52,4 @@ export async function loadStories(
 
     return stories;
   }
-}
+};

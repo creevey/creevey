@@ -8,6 +8,20 @@
 
 - hybrid stories provider ([89d9c73](https://github.com/wKich/creevey/commit/89d9c7357369dffb320ea06fe158b4113f57034c))
 
+## [0.8.1](https://github.com/wKich/creevey/compare/v0.8.1-beta.1...v0.8.1) (2023-05-29)
+
+## [0.8.1-beta.1](https://github.com/wKich/creevey/compare/v0.8.1-beta.0...v0.8.1-beta.1) (2023-05-05)
+
+### Bug Fixes
+
+- **providers:** set creevey port for all providers ([79e8aae](https://github.com/wKich/creevey/commit/79e8aae629d79260f93a93057486bab659801a46))
+
+## [0.8.1-beta.0](https://github.com/wKich/creevey/compare/v0.8.0...v0.8.1-beta.0) (2023-04-11)
+
+### Bug Fixes
+
+- **addon:** make bundlers to load esm version of addon ([f2937ca](https://github.com/wKich/creevey/commit/f2937caccca158e68c8be45d0882ec9b62eb05b2))
+
 # [0.8.0](https://github.com/wKich/creevey/compare/v0.8.0-beta.1...v0.8.0) (2023-03-07)
 
 ### Bug Fixes

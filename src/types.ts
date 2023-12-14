@@ -218,11 +218,7 @@ export interface Config {
    * }
    * ```
    */
-  storiesProvider: (
-    config: Config,
-    options: { watch: boolean; debug: boolean; port: number },
-    storiesListener: (stories: Map<string, StoryInput[]>) => void,
-  ) => Promise<StoriesRaw>;
+  storiesProvider: StoriesProvider;
   /**
    * Define custom babel options for load stories transformation
    */
@@ -260,6 +256,12 @@ export interface Config {
   testsDir?: string;
   tsConfig?: string;
 }
+
+export type StoriesProvider = (
+  config: Config,
+  options: { watch: boolean; debug: boolean },
+  storiesListener: (stories: Map<string, StoryInput[]>) => void,
+) => Promise<StoriesRaw>;
 
 export type CreeveyConfig = Partial<Config>;
 

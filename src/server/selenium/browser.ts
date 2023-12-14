@@ -18,6 +18,7 @@ import {
   StorybookGlobals,
   StoryInput,
   StoriesRaw,
+  Options,
 } from '../../types';
 import { colors, logger } from '../logger';
 import { emitStoriesMessage, subscribeOn } from '../messages';
@@ -515,30 +516,24 @@ async function resolveCreeveyHost(browser: WebDriver, port: number): Promise<str
   return creeveyServerHost;
 }
 
-export async function loadStoriesFromBrowser(port: number): Promise<StoriesRaw> {
+export async function loadStoriesFromBrowser(): Promise<StoriesRaw> {
   if (!browser) throw new Error("Can't get stories from browser if webdriver isn't connected");
 
-  const host = await resolveCreeveyHost(browser, port);
-
-  const stories = await browser.executeAsyncScript<StoriesRaw | void>(
-    function (creeveyHost: string, creeveyPort: number, callback: (stories: StoriesRaw | void) => void) {
-      window.__CREEVEY_SERVER_HOST__ = creeveyHost;
-      window.__CREEVEY_SERVER_PORT__ = creeveyPort;
-      void window.__CREEVEY_GET_STORIES__().then(callback);
-    },
-    host,
-    port,
-  );
+  const stories = await browser.executeAsyncScript<StoriesRaw | void>(function (
+    callback: (stories: StoriesRaw | void) => void,
+  ) {
+    void window.__CREEVEY_GET_STORIES__().then(callback);
+  });
 
   if (!stories) throw new Error("Can't get stories, it seems creevey or storybook API isn't available");
 
   return stories;
 }
 
-export async function getBrowser(config: Config, name: string): Promise<WebDriver | null> {
+export async function getBrowser(config: Config, options: Options & { browser: string }): Promise<WebDriver | null> {
   if (browser) return browser;
 
-  browserName = name;
+  browserName = options.browser;
   const browserConfig = config.browsers[browserName] as BrowserConfig;
   const {
     gridUrl = config.gridUrl,
@@ -566,7 +561,7 @@ export async function getBrowser(config: Config, name: string): Promise<WebDrive
     const url = new URL(gridUrl);
     url.username = url.username ? '********' : '';
     url.password = url.password ? '********' : '';
-    browserLogger.debug(`(${name}) Connecting to Selenium ${chalk.magenta(url.toString())}`);
+    browserLogger.debug(`(${browserName}) Connecting to Selenium ${chalk.magenta(url.toString())}`);
 
     browser = await new Builder().usingServer(gridUrl).withCapabilities(capabilities).build();
 
@@ -581,7 +576,7 @@ export async function getBrowser(config: Config, name: string): Promise<WebDrive
     }
 
     browserLogger.debug(
-      `(${name}) Connected successful with ${[chalk.green(browserHost), chalk.magenta(sessionId)]
+      `(${browserName}) Connected successful with ${[chalk.green(browserHost), chalk.magenta(sessionId)]
         .filter(Boolean)
         .join(':')}`,
     );
@@ -591,7 +586,7 @@ export async function getBrowser(config: Config, name: string): Promise<WebDrive
     prefix.apply(browserLogger, {
       format(level) {
         const levelColor = colors[level.toUpperCase() as keyof typeof colors];
-        return `[${name}:${chalk.gray(sessionId)}] ${levelColor(level)} =>`;
+        return `[${browserName}:${chalk.gray(sessionId)}] ${levelColor(level)} =>`;
       },
     });
 
@@ -620,9 +615,18 @@ export async function getBrowser(config: Config, name: string): Promise<WebDrive
     await updateStorybookGlobals(browser, _storybookGlobals);
   }
 
-  await browser.executeScript(function (workerId: number) {
-    window.__CREEVEY_WORKER_ID__ = workerId;
-  }, process.pid);
+  const creeveyHost = await resolveCreeveyHost(browser, options.port);
+
+  await browser.executeScript(
+    function (workerId: number, creeveyHost: string, creeveyPort: number) {
+      window.__CREEVEY_WORKER_ID__ = workerId;
+      window.__CREEVEY_SERVER_HOST__ = creeveyHost;
+      window.__CREEVEY_SERVER_PORT__ = creeveyPort;
+    },
+    process.pid,
+    creeveyHost,
+    options.port,
+  );
 
   return browser;
 }

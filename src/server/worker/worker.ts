@@ -140,7 +140,7 @@ export default async function worker(config: Config, options: Options & { browse
 
   chai.use(chaiImage(getExpected, config.diffOptions));
 
-  if ((await getBrowser(config, options.browser)) == null) return;
+  if ((await getBrowser(config, options)) == null) return;
 
   await addTestsFromStories(mocha.suite, config, {
     browser: options.browser,
@@ -150,11 +150,11 @@ export default async function worker(config: Config, options: Options & { browse
   });
 
   try {
-    await (await getBrowser(config, options.browser))?.getCurrentUrl();
+    await (await getBrowser(config, options))?.getCurrentUrl();
   } catch (_) {
     await closeBrowser();
   }
-  const browser = await getBrowser(config, options.browser);
+  const browser = await getBrowser(config, options);
   const sessionId = (await browser?.getSession())?.getId();
 
   if (browser == null) return;

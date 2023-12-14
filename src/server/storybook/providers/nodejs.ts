@@ -2,7 +2,7 @@
 import path from 'path';
 import cluster from 'cluster';
 import chokidar, { FSWatcher } from 'chokidar';
-import type { StoryInput, WebpackMessage, SetStoriesData, Config, StoriesRaw } from '../../../types';
+import type { StoryInput, WebpackMessage, SetStoriesData, Config, StoriesRaw, StoriesProvider } from '../../../types';
 import { noop } from '../../../types';
 import { getCreeveyCache } from '../../utils';
 import { subscribeOn } from '../../messages';
@@ -161,11 +161,7 @@ async function loadStoriesDirectly(
 }
 
 // TODO Do we need to support multiple storybooks here?
-export async function loadStories(
-  config: Config,
-  { watch, debug }: { watch: boolean; debug: boolean },
-  storiesListener: (stories: Map<string, StoryInput[]>) => void,
-): Promise<StoriesRaw> {
+export const loadStories: StoriesProvider = async (config, { watch, debug }, storiesListener) => {
   const storybookApi = await initStorybookEnvironment();
   const Events = await importStorybookCoreEvents();
 
@@ -191,7 +187,7 @@ export async function loadStories(
   else void loadStoriesDirectly(config, { watcher, debug });
 
   return loadPromise;
-}
+};
 
 export async function extractStoriesData(
   config: Config,
