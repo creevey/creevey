@@ -13,7 +13,7 @@
     "addon",
     "test"
   ],
-  "version": "0.8.1-sb7.1",
+  "version": "0.8.1-sb7.4",
   "bin": {
     "creevey": "./lib/cjs/cli.js"
   },
@@ -95,7 +95,7 @@
     "@octokit/core": "^4.0.4",
     "@storybook/components": "^7.6.4",
     "@storybook/csf": "0.1.2",
-    "@storybook/testing-library": "^0.2.2",
+    "@storybook/testing-library": "^0.0.13",
     "@storybook/theming": "^7.6.4",
     "@types/chai": "^4.3.1",
     "@types/selenium-webdriver": "^4.1.5",
