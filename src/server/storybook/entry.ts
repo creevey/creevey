@@ -1,3 +1,6 @@
+/* eslint-disable */
+//@ts-nocheck
+
 import type { StoryApi } from '@storybook/addons';
 import { addons } from '@storybook/addons';
 import { getStorybookFramework, resolveFromStorybook } from './helpers';

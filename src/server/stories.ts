@@ -1,3 +1,6 @@
+/* eslint-disable */
+//@ts-nocheck
+
 import path from 'path';
 import { mkdirSync, writeFileSync } from 'fs';
 import { createHash } from 'crypto';

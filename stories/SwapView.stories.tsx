@@ -25,7 +25,7 @@ export default {
   parameters: {
     creevey: {
       waitForReady: true,
-      captureElement: '#root > *',
+      captureElement: '#storybook-root > *',
     },
   },
 } as ComponentMeta<typeof SwapView>;

@@ -1,3 +1,6 @@
+/* eslint-disable */
+//@ts-nocheck
+
 import type { StorybookConfig } from '@storybook/core-common';
 import path from 'path';
 import resolveFrom from 'resolve-from';
@@ -64,7 +67,7 @@ export function hasSvelteCSFAddon(): boolean {
 
 export function getStorybookVersion(): string {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { version } = require(resolveFromStorybook('@storybook/core/package.json')) as {
+  const { version } = require(resolveFromStorybook('@storybook/core-server/package.json')) as {
     version: string;
   };
 

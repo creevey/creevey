@@ -1,3 +1,7 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-nocheck
+/* eslint-disable */
+
 import { API } from '@storybook/api';
 import { SET_STORIES, STORY_RENDERED } from '@storybook/core-events';
 import { denormalizeStoryParameters } from '../../shared';

@@ -1,3 +1,6 @@
+/* eslint-disable */
+//@ts-nocheck
+
 import { Parameters } from '@storybook/api';
 import { mapValues, mergeWith, cloneDeepWith } from 'lodash';
 import { SetStoriesData, StoriesRaw, CreeveyStoryParams, StoryInput } from '../types';

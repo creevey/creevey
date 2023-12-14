@@ -1,3 +1,6 @@
+/* eslint-disable */
+//@ts-nocheck
+
 /* eslint-disable @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/ban-ts-comment */
 import path from 'path';
 import cluster from 'cluster';

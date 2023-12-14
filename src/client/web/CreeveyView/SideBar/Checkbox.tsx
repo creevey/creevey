@@ -8,7 +8,6 @@ const Label = withTheme(
   styled.label<{ theme: Theme; disabled?: boolean }>(({ theme, disabled }) => ({
     display: 'inline-flex',
     alignItems: 'baseline',
-    lineHeight: theme.typography.size.l1,
     position: 'relative',
     whiteSpace: 'nowrap',
     cursor: 'pointer',
@@ -34,7 +33,7 @@ const Label = withTheme(
 
 const Box = withTheme(
   styled.span(({ theme }) => ({
-    display: 'inline-block',
+    display: 'flex',
     width: '16px',
     height: '16px',
     border: theme.appBorderColor,
@@ -96,7 +95,7 @@ export class Checkbox extends React.Component<BooleanProps, CheckboxState> {
           {indeterminate ? (
             <CircleIcon icon="circle" width="8" height="8" />
           ) : checked ? (
-            <CheckIcon icon="check" stroke="currentColor" strokeWidth="30" width="12" height="12" />
+            <CheckIcon icon="check" width="12" height="12" />
           ) : (
             ' '
           )}

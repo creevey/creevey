@@ -32,6 +32,7 @@ const config: WebpackConfiguration & WebpackDevServerConfiguration = {
     ? { plugins: [new DefinePlugin({ __CREEVEY_SERVER_PORT__: JSON.stringify('3000') })] }
     : {}),
   performance: false,
+  mode: 'development',
 };
 
 export default config;

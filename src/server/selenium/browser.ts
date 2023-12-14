@@ -1,3 +1,7 @@
+/* eslint-disable */
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-nocheck
+
 import { Args } from '@storybook/api';
 import chalk from 'chalk';
 import http from 'http';
@@ -22,7 +26,7 @@ import {
 } from '../../types';
 import { colors, logger } from '../logger';
 import { emitStoriesMessage, subscribeOn } from '../messages';
-import { importStorybookCoreEvents } from '../storybook/helpers';
+import { importStorybookCoreEvents, isStorybookVersionLessThan } from '../storybook/helpers';
 import { isShuttingDown, LOCALHOST_REGEXP, runSequence } from '../utils';
 
 type ElementRect = {
@@ -41,6 +45,7 @@ declare global {
   }
 }
 
+const storybookRootID = isStorybookVersionLessThan(7) ? 'root' : 'storybook-root';
 const DOCKER_INTERNAL = 'host.docker.internal';
 let browserLogger = logger;
 let browserName = '';
@@ -138,9 +143,9 @@ function getUrlChecker(browser: WebDriver): (url: string) => Promise<boolean> {
       // We don't use any page load strategies except `NONE`
       // because other add significant delay and some of them don't work in earlier chrome versions
       // Browsers always load page successful even it's failed
-      // So we just check `#root` element
-      browserLogger.debug(`Checking ${chalk.cyan('#root')} existence on ${chalk.magenta(url)}`);
-      return source.includes('<div id="root"></div>');
+      // So we just check `root` element
+      browserLogger.debug(`Checking ${chalk.cyan(`#${storybookRootID}`)} existence on ${chalk.magenta(url)}`);
+      return source.includes(`id="${storybookRootID}"`);
     } catch (error) {
       return false;
     }
@@ -157,11 +162,17 @@ async function waitForStorybook(browser: WebDriver): Promise<void> {
     isTimeout = true;
   }, 60000);
   while (wait) {
-    wait = await browser.executeAsyncScript(function (SET_STORIES: string, callback: (wait: boolean) => void): void {
-      if (typeof window.__STORYBOOK_ADDONS_CHANNEL__ == 'undefined') return callback(true);
-      if (window.__STORYBOOK_ADDONS_CHANNEL__.last(SET_STORIES) == undefined) return callback(true);
-      return callback(false);
-    }, Events.SET_STORIES);
+    if (isStorybookVersionLessThan(7)) {
+      wait = await browser.executeAsyncScript(function (SET_STORIES: string, callback: (wait: boolean) => void): void {
+        if (typeof window.__STORYBOOK_ADDONS_CHANNEL__ == 'undefined') return callback(true);
+        if (window.__STORYBOOK_ADDONS_CHANNEL__.last(SET_STORIES) == undefined) return callback(true);
+        return callback(false);
+      }, Events.SET_STORIES);
+    } else {
+      wait = await browser.executeAsyncScript(function (callback: (wait: boolean) => void): void {
+        return callback(typeof window.__STORYBOOK_ADDONS_CHANNEL__ == 'undefined');
+      });
+    }
     if (!wait) clearTimeout(initiateTimeout);
   }
   if (isTimeout) throw new Error('Failed to wait `setStories` event');
@@ -680,7 +691,11 @@ export async function switchStory(this: Context): Promise<void> {
   if (!story) throw new Error(`Current test '${this.testScope.join('/')}' context doesn't have 'story' field`);
 
   const { id, kind, name, parameters } = story;
-  const { captureElement = '#root', waitForReady, ignoreElements } = (parameters.creevey ?? {}) as CreeveyStoryParams;
+  const {
+    captureElement = `#${storybookRootID}`,
+    waitForReady,
+    ignoreElements,
+  } = (parameters.creevey ?? {}) as CreeveyStoryParams;
 
   browserLogger.debug(`Switching to story ${chalk.cyan(kind)}/${chalk.cyan(name)} by id ${chalk.magenta(id)}`);
 

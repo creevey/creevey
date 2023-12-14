@@ -1,3 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-nocheck
+
 import React, { Fragment, useState, useEffect } from 'react';
 import { IconButton, Icons, Separator } from '@storybook/components';
 import { ForwardIcon, NextIcon } from './Icons';

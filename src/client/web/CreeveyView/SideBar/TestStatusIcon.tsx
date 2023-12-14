@@ -33,25 +33,11 @@ export const TestStatusIcon = withTheme(
     let icon = null;
     switch (status) {
       case 'failed': {
-        icon = (
-          <Icon
-            color={inverted ? theme.color.lightest : theme.color.negative}
-            icon="cross"
-            stroke="currentColor"
-            strokeWidth="30"
-          />
-        );
+        icon = <Icon color={inverted ? theme.color.lightest : theme.color.negative} icon="cross" />;
         break;
       }
       case 'success': {
-        icon = (
-          <Icon
-            color={inverted ? theme.color.lightest : theme.color.green}
-            icon="check"
-            stroke="currentColor"
-            strokeWidth="30"
-          />
-        );
+        icon = <Icon color={inverted ? theme.color.lightest : theme.color.green} icon="check" />;
         break;
       }
       case 'running': {
@@ -59,26 +45,11 @@ export const TestStatusIcon = withTheme(
         break;
       }
       case 'pending': {
-        icon = (
-          <Icon
-            color={inverted ? theme.color.lightest : theme.color.mediumdark}
-            icon="time"
-            stroke="currentColor"
-            strokeWidth="30"
-          />
-        );
+        icon = <Icon color={inverted ? theme.color.lightest : theme.color.mediumdark} icon="time" />;
         break;
       }
       default: {
-        if (skip)
-          icon = (
-            <Icon
-              color={inverted ? theme.color.lightest : undefined}
-              icon="timer"
-              stroke="currentColor"
-              strokeWidth="30"
-            />
-          );
+        if (skip) icon = <Icon color={inverted ? theme.color.lightest : undefined} icon="timer" />;
         break;
       }
     }

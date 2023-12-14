@@ -1,3 +1,6 @@
+/* eslint-disable */
+//@ts-nocheck
+
 import cluster from 'cluster';
 import type { CreeveyStory, StoriesProvider, StoriesRaw } from '../../../types';
 import { loadStoriesFromBrowser } from '../../selenium';

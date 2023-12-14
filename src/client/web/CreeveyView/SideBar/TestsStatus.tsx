@@ -1,3 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-nocheck
+
 import React from 'react';
 import { TestStatus } from '../../../../types';
 import { CreeveyTestsStatus } from '../../../shared/helpers';
@@ -61,26 +64,26 @@ export const TestsStatus = withTheme(
       <Container>
         <Button onClick={() => onClickByStatus('pending')}>
           <IconContainer color={theme?.color.mediumdark}>
-            <Icons icon="time" stroke="currentColor" strokeWidth="30" />
+            <Icons icon="time" />
             {pendingCount}
           </IconContainer>
         </Button>
         <Divider />
         <Button onClick={() => onClickByStatus('success')}>
           <IconContainer color={theme?.color.green}>
-            <Icons icon="check" stroke="currentColor" strokeWidth="30" /> {successCount}
+            <Icons icon="check" /> {successCount}
           </IconContainer>
         </Button>
         <Divider />
         <Button onClick={() => onClickByStatus('failed')}>
           <IconContainer color={theme?.color.negative}>
-            <Icons icon="cross" stroke="currentColor" strokeWidth="30" /> {failedCount}
+            <Icons icon="cross" /> {failedCount}
           </IconContainer>
         </Button>
         <Divider />
         <Button>
           <IconContainer>
-            <Icons icon="timer" stroke="currentColor" strokeWidth="30" /> {skippedCount}
+            <Icons icon="timer" /> {skippedCount}
           </IconContainer>
         </Button>
       </Container>

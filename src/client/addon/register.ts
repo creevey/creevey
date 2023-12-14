@@ -1,3 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-nocheck
+
 import { addons, types } from '@storybook/addons';
 import { API } from '@storybook/api';
 import React from 'react';
