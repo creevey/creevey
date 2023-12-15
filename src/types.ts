@@ -257,9 +257,10 @@ export interface Config {
   tsConfig?: string;
 }
 
-export type StoriesProvider = (
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type StoriesProvider<T = any> = (
   config: Config,
-  options: { watch: boolean; debug: boolean },
+  options: T,
   storiesListener: (stories: Map<string, StoryInput[]>) => void,
 ) => Promise<StoriesRaw>;
 

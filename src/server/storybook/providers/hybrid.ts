@@ -1,17 +1,17 @@
 import chokidar from 'chokidar';
 
 import { loadStories as browserProvider } from './browser';
-import type { Config, StoriesRaw, StoryInput, CreeveyStoryParams, CreeveyStory } from '../../../types';
+import type { Config, StoryInput, CreeveyStoryParams, CreeveyStory, StoriesProvider } from '../../../types';
 import { logger } from '../../logger';
 import parse, { CreeveyParamsByStoryId } from '../../testsFiles/parser';
 import { readDirRecursive } from '../../../server/utils';
 import { combineParameters } from '../../../shared';
 
-export async function loadStories(
+export const loadStories: StoriesProvider = async (
   _config: Config,
-  { port }: { port: number },
+  _options,
   storiesListener: (stories: Map<string, StoryInput[]>) => void,
-): Promise<StoriesRaw> {
+) => {
   let creeveyParamsByStoryId: CreeveyParamsByStoryId = {};
 
   const mergeParamsFromTestsToStory = (story: CreeveyStory, creeveyParams: CreeveyStoryParams): void => {
@@ -20,7 +20,7 @@ export async function loadStories(
     }
   };
 
-  const stories = await browserProvider(_config, { port }, (updatedStoriesByFiles) => {
+  const stories = await browserProvider(_config, {}, (updatedStoriesByFiles) => {
     Array.from(updatedStoriesByFiles.entries()).forEach(([, storiesArray]) => {
       storiesArray.forEach((story) => {
         const creeveyParams = creeveyParamsByStoryId[story.id];
@@ -40,7 +40,7 @@ export async function loadStories(
   });
 
   return stories;
-}
+};
 
 async function parseParams(
   config: Config,

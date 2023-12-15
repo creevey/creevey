@@ -161,7 +161,11 @@ async function loadStoriesDirectly(
 }
 
 // TODO Do we need to support multiple storybooks here?
-export const loadStories: StoriesProvider = async (config, { watch, debug }, storiesListener) => {
+export const loadStories: StoriesProvider<{ watch: boolean; debug: boolean }> = async (
+  config,
+  { watch, debug },
+  storiesListener,
+) => {
   const storybookApi = await initStorybookEnvironment();
   const Events = await importStorybookCoreEvents();
 
