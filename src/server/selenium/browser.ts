@@ -494,11 +494,15 @@ async function resolveCreeveyHost(browser: WebDriver, port: number): Promise<str
     function (hosts: string[], port: number, callback: (host?: string | null) => void) {
       void Promise.all(
         hosts.map(function (host) {
-          // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-          return fetch('http://' + host + ':' + port + '/ping')
-            .then(function (response) {
+          return Promise.race([
+            // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+            fetch('http://' + host + ':' + port + '/ping').then(function (response) {
               return response.text();
-            })
+            }),
+            new Promise((_resolve, reject) => {
+              setTimeout(reject, 5000);
+            }),
+          ])
             .then(function (pong) {
               return pong == 'pong' ? host : null;
             })

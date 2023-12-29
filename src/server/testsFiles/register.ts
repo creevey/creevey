@@ -42,5 +42,5 @@ export default async function register(config: Config): Promise<void> {
     }),
   );
 
-  (await import('ts-node')).register({ project: tsConfigPath, transpileOnly: true });
+  // (await import('ts-node')).register({ project: tsConfigPath, transpileOnly: true });
 }
