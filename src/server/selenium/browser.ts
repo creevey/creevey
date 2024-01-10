@@ -165,9 +165,11 @@ async function waitForStorybook(browser: WebDriver): Promise<void> {
         return callback(false);
       }, Events.SET_STORIES);
     } else {
-      wait = await browser.executeAsyncScript(function (callback: (wait: boolean) => void): void {
-        return callback(typeof window.__STORYBOOK_ADDONS_CHANNEL__ == 'undefined');
-      });
+      wait = await browser.executeAsyncScript(function (SET_GLOBALS: string, callback: (wait: boolean) => void): void {
+        if (typeof window.__STORYBOOK_ADDONS_CHANNEL__ == 'undefined') return callback(true);
+        if (window.__STORYBOOK_ADDONS_CHANNEL__.last(SET_GLOBALS) == undefined) return callback(true);
+        return callback(false);
+      }, Events.SET_GLOBALS);
     }
     if (!wait) clearTimeout(initiateTimeout);
   }

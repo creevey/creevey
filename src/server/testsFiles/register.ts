@@ -38,7 +38,10 @@ export default async function register(config: Config): Promise<void> {
         plugins: ['jsx', 'typescript'],
       },
       presets: ['@babel/preset-typescript', ['@babel/preset-env', { targets: { node: '10' }, modules: 'commonjs' }]],
-      plugins: [['@babel/plugin-transform-runtime'], ['babel-plugin-tsconfig-paths', { tsconfig: tsConfigPath }]],
+      plugins: [
+        ['@babel/plugin-transform-runtime'],
+        ...(tsConfigPath ? [['babel-plugin-tsconfig-paths', { tsconfig: tsConfigPath }]] : []),
+      ],
     }),
   );
 
