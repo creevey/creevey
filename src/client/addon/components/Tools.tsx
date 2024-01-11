@@ -68,7 +68,7 @@ export const Tools = ({ manager }: ToolsProps): JSX.Element | null => {
   return (
     <Fragment>
       <IconButton
-        href={`http://localhost:${__CREEVEY_CLIENT_PORT__ || __CREEVEY_SERVER_PORT__}/?${stringify({
+        href={`http://localhost:${__CREEVEY_CLIENT_PORT__ || __CREEVEY_SERVER_PORT__ || 3000}/?${stringify({
           testPath: getTestPath(test),
         })}`}
         target="_blank"

@@ -29,6 +29,7 @@
     },
     "./preset": "./preset/index.js",
     "./preset/ie11": "./preset/ie11.js",
+    "./preset/sb7": "./preset/sb7.js",
     "./lib/esm/client/addon/decorator.js": "./lib/esm/client/addon/decorator.js"
   },
   "main": "lib/cjs/index.js",
