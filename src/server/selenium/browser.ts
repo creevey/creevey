@@ -157,7 +157,7 @@ async function waitForStorybook(browser: WebDriver): Promise<void> {
     wait = false;
     isTimeout = true;
   }, 60000);
-  while (wait) {
+  while (wait !== false) {
     if (isStorybookVersionLessThan(7)) {
       wait = await browser.executeAsyncScript(function (SET_STORIES: string, callback: (wait: boolean) => void): void {
         if (typeof window.__STORYBOOK_ADDONS_CHANNEL__ == 'undefined') return callback(true);
@@ -165,10 +165,10 @@ async function waitForStorybook(browser: WebDriver): Promise<void> {
         return callback(false);
       }, Events.SET_STORIES);
     } else {
-      wait = await browser.executeAsyncScript(function (SET_GLOBALS: string, callback: (wait: boolean) => void): void {
-        if (typeof window.__STORYBOOK_ADDONS_CHANNEL__ == 'undefined') return callback(true);
-        if (window.__STORYBOOK_ADDONS_CHANNEL__.last(SET_GLOBALS) == undefined) return callback(true);
-        return callback(false);
+      wait = await browser.executeScript(function (SET_GLOBALS: string): boolean {
+        if (typeof window.__STORYBOOK_ADDONS_CHANNEL__ == 'undefined') return true;
+        if (window.__STORYBOOK_ADDONS_CHANNEL__.last(SET_GLOBALS) == undefined) return true;
+        return false;
       }, Events.SET_GLOBALS);
     }
     if (!wait) clearTimeout(initiateTimeout);
