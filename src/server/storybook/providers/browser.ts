@@ -4,7 +4,7 @@ import { loadStoriesFromBrowser } from '../../selenium';
 import { emitStoriesMessage, sendStoriesMessage, subscribeOn, subscribeOnWorker } from '../../messages';
 import { isDefined } from '../../../types';
 import { logger } from '../../logger';
-import { deserializeRawStories } from '../../../../src/shared';
+import { deserializeRawStories } from '../../../shared';
 
 export const loadStories: StoriesProvider = async (_config, _options, storiesListener) => {
   if (cluster.isPrimary) {
