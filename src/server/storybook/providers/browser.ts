@@ -4,6 +4,7 @@ import { loadStoriesFromBrowser } from '../../selenium';
 import { emitStoriesMessage, sendStoriesMessage, subscribeOn, subscribeOnWorker } from '../../messages';
 import { isDefined } from '../../../types';
 import { logger } from '../../logger';
+import { deserializeRawStories } from '../../../../src/shared';
 
 export const loadStories: StoriesProvider = async (_config, _options, storiesListener) => {
   if (cluster.isPrimary) {
@@ -39,7 +40,7 @@ export const loadStories: StoriesProvider = async (_config, _options, storiesLis
         emitStoriesMessage({ type: 'set', payload: { stories, oldTests: storiesWithOldTests } });
       if (message.type == 'update') storiesListener(new Map(message.payload));
     });
-    const stories = await loadStoriesFromBrowser();
+    const stories = deserializeRawStories(await loadStoriesFromBrowser());
 
     const storiesWithOldTests: string[] = [];
 
