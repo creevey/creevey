@@ -165,11 +165,15 @@ async function waitForStorybook(browser: WebDriver): Promise<void> {
         return callback(false);
       }, Events.SET_STORIES);
     } else {
-      wait = await browser.executeScript(function (SET_GLOBALS: string): boolean {
-        if (typeof window.__STORYBOOK_ADDONS_CHANNEL__ == 'undefined') return true;
-        if (window.__STORYBOOK_ADDONS_CHANNEL__.last(SET_GLOBALS) == undefined) return true;
-        return false;
-      }, Events.SET_GLOBALS);
+      try {
+        wait = await browser.executeScript(function (SET_GLOBALS: string): boolean {
+          if (typeof window.__STORYBOOK_ADDONS_CHANNEL__ == 'undefined') return true;
+          if (window.__STORYBOOK_ADDONS_CHANNEL__.last(SET_GLOBALS) == undefined) return true;
+          return false;
+        }, Events.SET_GLOBALS);
+      } catch (e: unknown) {
+        browserLogger.debug('An error has been catched during the script: ', e);
+      }
     }
     if (!wait) clearTimeout(initiateTimeout);
   }
