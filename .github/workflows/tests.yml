@@ -6,10 +6,10 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v4
+      - uses: volta-cli/action@v4
         with:
-          node-version: 16.x
+          registry-url: https://registry.npmjs.org
       - name: install
         run: yarn
       - name: lint
@@ -18,7 +18,7 @@ jobs:
         run: yarn build
       - name: pack
         run: yarn pack
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           name: creevey
           path: creevey-*.tgz
@@ -29,12 +29,12 @@ jobs:
       BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
       BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           lfs: true
-      - uses: actions/setup-node@v1
+      - uses: volta-cli/action@v4
         with:
-          node-version: 16.x
+          registry-url: https://registry.npmjs.org
       - name: checkout lfs
         run: git lfs checkout
       - name: install
@@ -45,7 +45,7 @@ jobs:
         run: yarn start:storybook &
       - name: creevey
         run: yarn creevey:github
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           name: report
           path: report/
