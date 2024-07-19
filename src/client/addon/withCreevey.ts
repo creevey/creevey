@@ -1,24 +1,13 @@
 import * as Events from '@storybook/core-events';
-import * as polyfill from 'event-source-polyfill';
 import type { PreviewWeb } from '@storybook/preview-web';
 import type { AnyFramework, StoryContextForEnhancers } from '@storybook/csf';
 import type { StoryStore } from '@storybook/client-api';
 // import { buildQueries, within } from '@storybook/testing-library';
-import { MakeDecoratorResult, makeDecorator, Channel } from '@storybook/addons';
+import { MakeDecoratorResult, makeDecorator } from '@storybook/addons';
+import { Channel } from '@storybook/channels';
 import { CaptureOptions, CreeveyStoryParams, isObject, noop, StoriesRaw, StorybookGlobals } from '../../types';
 import { serializeRawStories } from '../../shared';
 import { getConnectionUrl } from '../shared/helpers';
-// import { isInternetExplorer } from './utils';
-
-if (typeof process != 'object' || typeof process.version != 'string') {
-  // NOTE If you don't use babel-polyfill or any other polyfills that add EventSource for IE11
-  // You don't get hot reload in IE11. So put polyfill for that to better UX
-  // Don't load in nodejs environment
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const { NativeEventSource, EventSourcePolyfill } = polyfill;
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  window.EventSource = NativeEventSource || EventSourcePolyfill;
-}
 
 declare global {
   interface Window {
@@ -330,10 +319,7 @@ export function withCreevey(): MakeDecoratorResult {
             case captureElement === null:
               return Promise.resolve(document.documentElement);
             case typeof captureElement == 'string':
-              return Promise.resolve(context.canvasElement.querySelector(captureElement as string));
-            // return isInternetExplorer // some code from testing-library makes IE hang
-            //   ? Promise.resolve(context.canvasElement.querySelector(captureElement as string))
-            //   : within<typeof queries>(context.canvasElement, queries).findByQuery(captureElement as string);
+              return Promise.resolve((context.canvasElement as Element).querySelector(captureElement as string));
             case typeof captureElement == 'function':
               // TODO Define type for it
               return Promise.resolve(

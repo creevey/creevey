@@ -26,6 +26,7 @@ describe('serializes raw stories with creevey params', () => {
           options: {},
           creevey: creeveyParams,
         },
+        tags: [],
         initialArgs: {},
         argTypes: {},
       },

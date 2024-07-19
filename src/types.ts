@@ -1,4 +1,4 @@
-import type { DecoratorFunction } from '@storybook/addons';
+import type { DecoratorFunction } from '@storybook/csf';
 import type { IKey } from 'selenium-webdriver/lib/input';
 import type { Worker as ClusterWorker } from 'cluster';
 import type { until, WebDriver, WebElementPromise } from 'selenium-webdriver';
@@ -30,10 +30,10 @@ export type StoriesRaw = Record<string, StoryContextForEnhancers>;
 
 export type StoryInput = StoriesRaw extends { [id: string]: infer S } ? S : never;
 
-export interface StoryMeta<StoryFnReturnType = unknown> {
+export interface StoryMeta {
   title: string;
   component?: unknown;
-  decorators?: DecoratorFunction<StoryFnReturnType>[];
+  decorators?: DecoratorFunction[];
   parameters?: {
     creevey?: CreeveyStoryParams;
     [name: string]: unknown;
@@ -58,7 +58,7 @@ export interface CSFStory<StoryFnReturnType = unknown> {
    */
   story?: {
     name?: string;
-    decorators?: DecoratorFunction<StoryFnReturnType>[];
+    decorators?: DecoratorFunction[];
     parameters?: {
       creevey?: CreeveyStoryParams;
       [name: string]: unknown;
@@ -66,7 +66,7 @@ export interface CSFStory<StoryFnReturnType = unknown> {
   };
 
   storyName?: string;
-  decorators?: DecoratorFunction<StoryFnReturnType>[];
+  decorators?: DecoratorFunction[];
   parameters?: {
     creevey?: CreeveyStoryParams;
     [name: string]: unknown;

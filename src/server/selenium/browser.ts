@@ -1,4 +1,4 @@
-import { Args } from '@storybook/api';
+import { Args } from '@storybook/csf';
 import { SET_GLOBALS, UPDATE_STORY_ARGS, STORY_RENDERED } from '@storybook/core-events';
 import chalk from 'chalk';
 import http from 'http';

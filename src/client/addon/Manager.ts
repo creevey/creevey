@@ -79,8 +79,8 @@ export class CreeveyManager {
       this.status.tests = prevTests;
       this.stories = prevStories;
       this.setPanelsTitle();
-      // @ts-expect-error Incompatible type, skip for now
-      void this.storybookApi.setStories(this.stories);
+      // TODO Check setStories method in 6.x and migrate properly
+      this.storybookApi.emit(SET_STORIES, this.stories);
     }
     this.updateStatusListeners.forEach((x) => x(update));
   };
@@ -90,7 +90,7 @@ export class CreeveyManager {
   };
 
   onStoryRendered = (storyId: string): void => {
-    if (this.storyId === '') void this.addStatusesToSideBar();
+    if (this.storyId === '') this.addStatusesToSideBar();
     if (this.storyId !== storyId) {
       this.storyId = storyId;
       this.selectedTestId = this.getTestsByStoryIdAndBrowser(this.activeBrowser)[0]?.id ?? '';
@@ -180,7 +180,7 @@ export class CreeveyManager {
     this.storybookApi.setSelectedPanel(`${ADDON_ID}/panel/${firstPanelBrowser}`);
   };
 
-  async addStatusesToSideBar(): Promise<void> {
+  addStatusesToSideBar(): void {
     if (!Object.keys(this.stories).length) return;
 
     const stories = this.stories;
@@ -193,8 +193,8 @@ export class CreeveyManager {
       this.stories[storyId].name = this.addStatusToStoryName(stories[storyId].name, status, skip);
     });
 
-    // @ts-expect-error Incompatible type, skip for now
-    await this.storybookApi.setStories(this.stories);
+    // TODO Check setStories method in 6.x and migrate properly
+    this.storybookApi.emit(SET_STORIES, this.stories);
   }
 
   addStatusToStoryName(name: string, status: TestStatus | undefined, skip: string | boolean): string {
