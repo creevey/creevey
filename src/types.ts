@@ -154,11 +154,6 @@ export interface Config {
    */
   reportDir: string;
   /**
-   * Absolute path to storybook config directory
-   * @default path.join(process.cwd(), './.storybook')
-   */
-  storybookDir: string;
-  /**
    * How much test would be retried
    * @default 0
    */
@@ -182,18 +177,6 @@ export interface Config {
    * Works only with `useDocker == false`
    */
   selenoidPath?: string;
-  /**
-   * Creevey extract tests by using babel transformations
-   * and load stories to nodejs directly.
-   * In some edge cases it may fail to load tests.
-   * In that case you can enable this option.
-   * Creevey uses Storybook webpack config to build nodejs bundle with tests.
-   * But it slightly slower and doesn't work if you use custom bundler for Storybook
-   *
-   * Affects only for Storybook 6.2+
-   * @default false
-   */
-  useWebpackToExtractTests: boolean;
   /**
    * Creevey has two built-in stories providers.
    *
@@ -271,9 +254,7 @@ export interface Options {
   port: number;
   ui: boolean;
   update: boolean | string;
-  webpack: boolean;
   debug: boolean;
-  extract: boolean | string;
   tests: boolean;
   browser?: string;
   reporter?: string;

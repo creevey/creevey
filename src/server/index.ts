@@ -16,15 +16,13 @@ async function startWebdriverServer(config: Config, options: Options): Promise<v
 
 export default async function (options: Options): Promise<void> {
   const config = await readConfig(options);
-  const { browser = defaultBrowser, extract, tests, update, webpack, ui, port } = options;
+  const { browser = defaultBrowser, tests, update, ui, port } = options;
 
   if (!config) return;
 
   // NOTE: We don't need docker nor selenoid for webpack or update options
   if (
     !(config.gridUrl || (Object.values(config.browsers) as BrowserConfig[]).every(({ gridUrl }) => gridUrl)) &&
-    !extract &&
-    !webpack &&
     !tests &&
     !update
   ) {
@@ -32,16 +30,8 @@ export default async function (options: Options): Promise<void> {
   }
 
   switch (true) {
-    case Boolean(extract) || tests: {
-      return (await import('./extract')).default(config, options);
-    }
     case Boolean(update): {
       return (await import('./update')).default(config, typeof update == 'string' ? update : undefined);
-    }
-    case webpack: {
-      logger.info('Starting Webpack Compiler');
-
-      return (await import('./loaders/webpack/compile')).default(config, options);
     }
     case cluster.isPrimary: {
       logger.info('Starting Master Process');

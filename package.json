@@ -14,9 +14,7 @@
     "test"
   ],
   "version": "0.9.0-beta.13",
-  "bin": {
-    "creevey": "./lib/cjs/cli.js"
-  },
+  "bin": "./lib/cjs/cli.js",
   "exports": {
     ".": {
       "types": "./lib/types/index.d.ts",
@@ -243,7 +241,7 @@
     "displayName": "Creevey"
   },
   "volta": {
-    "node": "16.15.0",
-    "yarn": "1.22.19"
+    "node": "20.12.2",
+    "yarn": "4.1.1"
   }
 }
