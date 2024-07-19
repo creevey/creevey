@@ -2,16 +2,15 @@
 export default {
   stories: ['../stories/**/*.stories.@(md|ts)x'],
   addons: [
+    '@storybook/addon-links',
     '@storybook/addon-essentials',
+    '@storybook/addon-onboarding',
+    '@storybook/addon-interactions',
     {
       name: './../src/client/addon/preset',
       options: { clientPort: 8000, creeveyPreExtract: './scripts/babel-register' },
     },
   ],
-  // TODO: Do we need it?
-  features: {
-    previewCsfV3: true,
-  },
   framework: {
     name: '@storybook/react-webpack5',
     options: {
@@ -19,5 +18,8 @@ export default {
         useSWC: true,
       },
     },
+  },
+  docs: {
+    autodocs: 'tag',
   },
 };

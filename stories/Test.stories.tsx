@@ -10,7 +10,7 @@ export default {
   component: TestComponent,
   parameters: {
     creevey: {
-      captureElement: '#root',
+      captureElement: '#storybook-root',
     },
   },
 } as ComponentMeta<typeof TestComponent>;
