@@ -40,7 +40,7 @@ jobs:
       - name: install
         run: yarn
       - name: unit tests
-        run: yarn test:unit
+        run: yarn test
       - name: storybook
         run: yarn start:storybook &
       - name: creevey
