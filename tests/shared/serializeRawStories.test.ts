@@ -16,13 +16,18 @@ describe('serializes raw stories with creevey params', () => {
     return {
       'test-story': {
         id: 'test-story',
+        componentId: 'button',
+        title: 'Button Test Story',
         name: 'story',
+        story: 'story',
         kind: 'test',
         parameters: {
           fileName: '',
           options: {},
           creevey: creeveyParams,
         },
+        initialArgs: {},
+        argTypes: {},
       },
     };
   };

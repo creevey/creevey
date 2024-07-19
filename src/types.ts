@@ -343,7 +343,7 @@ export interface TestData extends TestMeta {
 }
 
 export interface ServerTest extends TestData {
-  story: StoryInput & { parameters: StoryInput['parameters'] & { fileName: string } };
+  story: StoryInput;
   fn: (this: Context) => Promise<void>;
 }
 
