@@ -79,6 +79,7 @@ export class CreeveyManager {
       this.status.tests = prevTests;
       this.stories = prevStories;
       this.setPanelsTitle();
+      // @ts-expect-error Incompatible type, skip for now
       void this.storybookApi.setStories(this.stories);
     }
     this.updateStatusListeners.forEach((x) => x(update));
@@ -192,6 +193,7 @@ export class CreeveyManager {
       this.stories[storyId].name = this.addStatusToStoryName(stories[storyId].name, status, skip);
     });
 
+    // @ts-expect-error Incompatible type, skip for now
     await this.storybookApi.setStories(this.stories);
   }
 

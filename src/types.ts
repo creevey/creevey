@@ -1,10 +1,10 @@
-import type { API as StorybookAPI } from '@storybook/api';
 import type { DecoratorFunction } from '@storybook/addons';
 import type { IKey } from 'selenium-webdriver/lib/input';
 import type { Worker as ClusterWorker } from 'cluster';
 import type { until, WebDriver, WebElementPromise } from 'selenium-webdriver';
 import type Pixelmatch from 'pixelmatch';
 import type { Context } from 'mocha';
+import { StoryContextForEnhancers } from '@storybook/csf';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type DiffOptions = typeof Pixelmatch extends (
@@ -26,7 +26,7 @@ export type SetStoriesData = {
   stories: StoriesRaw;
 };
 
-export type StoriesRaw = StorybookAPI extends { setStories: (stories: infer SS) => void } ? SS : never;
+export type StoriesRaw = Record<string, StoryContextForEnhancers>;
 
 export type StoryInput = StoriesRaw extends { [id: string]: infer S } ? S : never;
 
@@ -343,7 +343,7 @@ export interface TestData extends TestMeta {
 }
 
 export interface ServerTest extends TestData {
-  story: StoryInput;
+  story: StoryInput & { parameters: StoryInput['parameters'] & { fileName: string } };
   fn: (this: Context) => Promise<void>;
 }
 

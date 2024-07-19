@@ -1,21 +1,12 @@
 import * as Events from '@storybook/core-events';
 import * as polyfill from 'event-source-polyfill';
 import type { PreviewWeb } from '@storybook/preview-web';
-import type { AnyFramework } from '@storybook/csf';
+import type { AnyFramework, StoryContextForEnhancers } from '@storybook/csf';
 import type { StoryStore } from '@storybook/client-api';
 // import { buildQueries, within } from '@storybook/testing-library';
-import { addons, MakeDecoratorResult, makeDecorator, Channel } from '@storybook/addons';
-import {
-  CaptureOptions,
-  CreeveyStoryParams,
-  isObject,
-  noop,
-  SetStoriesData,
-  StoriesRaw,
-  StorybookGlobals,
-  StoryInput,
-} from '../../types';
-import { denormalizeStoryParameters, serializeRawStories } from '../../shared';
+import { MakeDecoratorResult, makeDecorator, Channel } from '@storybook/addons';
+import { CaptureOptions, CreeveyStoryParams, isObject, noop, StoriesRaw, StorybookGlobals } from '../../types';
+import { serializeRawStories } from '../../shared';
 import { getConnectionUrl } from '../shared/helpers';
 // import { isInternetExplorer } from './utils';
 
@@ -166,6 +157,8 @@ let creeveyReady: () => void;
 let setStoriesCounter = 0;
 
 export function withCreevey(): MakeDecoratorResult {
+  const addonsChannel = (): Channel => window.__STORYBOOK_ADDONS_CHANNEL__;
+
   let currentStory = '';
   let isAnimationDisabled = false;
 
@@ -181,39 +174,20 @@ export function withCreevey(): MakeDecoratorResult {
   }
 
   async function getStories(): Promise<StoriesRaw | void> {
-    const storiesPromise = new Promise<StoriesRaw>((resolve) =>
-      addons
-        .getChannel()
-        .once(Events.SET_STORIES, (data: SetStoriesData) =>
-          resolve(serializeRawStories(denormalizeStoryParameters(data))),
-        ),
-    );
-
-    const store = window.__STORYBOOK_STORY_STORE__ ?? {};
-    if (store.cacheAllCSFFiles) {
-      await store.cacheAllCSFFiles();
-      addons.getChannel().emit(Events.SET_STORIES, store.getSetStoriesPayload());
-    } else return;
-
-    addons.getChannel().on(Events.SET_STORIES, (data: SetStoriesData) => {
-      // TODO Figure out how to get only updated stories
-      // TODO Subscribe on hmr? like use dummy-hmr
-      setStoriesCounter += 1;
-      const stories = serializeRawStories(denormalizeStoryParameters(data));
-      const storiesByFiles = new Map<string, StoryInput[]>();
-      Object.values(stories).forEach((story) => {
-        const storiesFromFile = storiesByFiles.get(story.parameters.fileName);
-        if (storiesFromFile) storiesFromFile.push(story);
-        else storiesByFiles.set(story.parameters.fileName, [story]);
-      });
-      void fetch(`http://${getConnectionUrl()}/stories`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ setStoriesCounter, stories: [...storiesByFiles.entries()] }),
-      });
+    const stories = serializeRawStories(await window.__STORYBOOK_PREVIEW__.extract());
+    const storiesByFiles = new Map<string, StoryContextForEnhancers[]>();
+    Object.values(stories).forEach((story) => {
+      const fileName = story.parameters.fileName as string;
+      const storiesFromFile = storiesByFiles.get(fileName);
+      if (storiesFromFile) storiesFromFile.push(story);
+      else storiesByFiles.set(fileName, [story]);
     });
-
-    return storiesPromise;
+    void fetch(`http://${getConnectionUrl()}/stories`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ setStoriesCounter, stories: [...storiesByFiles.entries()] }),
+    });
+    return stories;
   }
 
   async function selectStory(
@@ -226,7 +200,7 @@ export function withCreevey(): MakeDecoratorResult {
     if (!isAnimationDisabled) disableAnimation();
 
     isTestBrowser = true;
-    const channel = addons.getChannel();
+    const channel = addonsChannel();
     const waitForReady = shouldWaitForReady
       ? new Promise<void>((resolve) => (window.__CREEVEY_SET_READY_FOR_CAPTURE__ = resolve))
       : Promise.resolve();
@@ -268,7 +242,7 @@ export function withCreevey(): MakeDecoratorResult {
   }
 
   function updateGlobals(globals: StorybookGlobals): void {
-    addons.getChannel().emit(Events.UPDATE_GLOBALS, { globals });
+    addonsChannel().emit(Events.UPDATE_GLOBALS, { globals });
   }
 
   function insertIgnoreStyles(ignoreSelectors: string[]): HTMLStyleElement {
@@ -301,7 +275,7 @@ export function withCreevey(): MakeDecoratorResult {
     let isCaptureCalled = false;
     let isPlayCompleted = false;
 
-    const channel = addons.getChannel();
+    const channel = addonsChannel();
     void waitForStoryRendered(channel).then(() => {
       if (isCaptureCalled) return;
       isPlayCompleted = true;
