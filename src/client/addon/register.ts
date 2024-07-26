@@ -1,4 +1,4 @@
-import { addons, types } from '@storybook/addons';
+import { addons, types } from '@storybook/manager-api';
 import { API } from '@storybook/api';
 import React from 'react';
 import { Addon } from './components/Addon';

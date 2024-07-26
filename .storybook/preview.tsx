@@ -2,10 +2,10 @@ import React from 'react';
 import { ThemeProvider, themes, ensure } from '@storybook/theming';
 import { CreeveyContext } from '../src/client/web/CreeveyContext';
 import { noop } from '../src/types';
-import { DecoratorFunction } from '@storybook/addons';
+import { DecoratorFunction } from '@storybook/csf';
 
-export const decorators: DecoratorFunction<JSX.Element>[] = [
-  (Story, context): JSX.Element => (
+export const decorators: DecoratorFunction[] = [
+  (storyFn, context): JSX.Element => (
     <ThemeProvider theme={ensure(themes.light)}>
       <CreeveyContext.Provider
         value={{
@@ -18,7 +18,7 @@ export const decorators: DecoratorFunction<JSX.Element>[] = [
           ...context.parameters?.context,
         }}
       >
-        <Story />
+        {storyFn(context)}
       </CreeveyContext.Provider>
     </ThemeProvider>
   ),

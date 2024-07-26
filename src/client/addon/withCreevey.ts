@@ -2,8 +2,7 @@ import * as Events from '@storybook/core-events';
 import type { PreviewWeb } from '@storybook/preview-web';
 import type { AnyFramework, StoryContextForEnhancers } from '@storybook/csf';
 import type { StoryStore } from '@storybook/client-api';
-// import { buildQueries, within } from '@storybook/testing-library';
-import { MakeDecoratorResult, makeDecorator } from '@storybook/addons';
+import { makeDecorator } from '@storybook/preview-api';
 import { Channel } from '@storybook/channels';
 import { CaptureOptions, CreeveyStoryParams, isObject, noop, StoriesRaw, StorybookGlobals } from '../../types';
 import { serializeRawStories } from '../../shared';
@@ -145,7 +144,7 @@ let waitForCreevey: Promise<void>;
 let creeveyReady: () => void;
 let setStoriesCounter = 0;
 
-export function withCreevey(): MakeDecoratorResult {
+export function withCreevey(): ReturnType<typeof makeDecorator> {
   const addonsChannel = (): Channel => window.__STORYBOOK_ADDONS_CHANNEL__;
 
   let currentStory = '';
@@ -284,24 +283,6 @@ export function withCreevey(): MakeDecoratorResult {
   window.__CREEVEY_REMOVE_IGNORE_STYLES__ = removeIgnoreStyles;
   window.__CREEVEY_HAS_PLAY_COMPLETED_YET__ = hasPlayCompletedYet;
   window.__CREEVEY_SET_READY_FOR_CAPTURE__ = noop;
-
-  // const queryAllByQuery = (container: HTMLElement, query: string): HTMLElement[] =>
-  //   [...container.querySelectorAll(query)].filter((e) => e instanceof HTMLElement) as HTMLElement[];
-  // const getMultipleError = (_: Element | null, query: string): string => `Found multiple elements by query: ${query}`;
-  // const getMissingError = (_: Element | null, query: string): string => `Unable to find an element by query: ${query}`;
-
-  // const [queryByQuery, getAllByQuery, getByQuery, findAllByQuery, findByQuery] = buildQueries(
-  //   queryAllByQuery,
-  //   getMultipleError,
-  //   getMissingError,
-  // );
-  // const queries = {
-  //   queryByQuery,
-  //   getAllByQuery,
-  //   getByQuery,
-  //   findAllByQuery,
-  //   findByQuery,
-  // };
 
   return makeDecorator({
     name: 'withCreevey',
