@@ -1,4 +1,4 @@
-import { Parameters } from '@storybook/api';
+import { Parameters } from '@storybook/csf';
 import { mapValues, mergeWith, cloneDeepWith } from 'lodash';
 import { SetStoriesData, StoriesRaw, CreeveyStoryParams, StoryInput } from '../types';
 import { deserializeRegExp, isSerializedRegExp, isRegExp, serializeRegExp } from './serializeRegExp';
@@ -21,11 +21,7 @@ export const denormalizeStoryParameters = ({
 }: SetStoriesData): StoriesRaw => {
   return mapValues(stories, (storyData) => ({
     ...storyData,
-    parameters: combineParameters(
-      globalParameters,
-      kindParameters[storyData.kind] ?? {},
-      storyData.parameters as Parameters,
-    ),
+    parameters: combineParameters(globalParameters, kindParameters[storyData.kind] ?? {}, storyData.parameters),
   })) as StoriesRaw;
 };
 

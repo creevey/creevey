@@ -1,4 +1,5 @@
-import { Args } from '@storybook/api';
+import { Args } from '@storybook/csf';
+import { SET_GLOBALS, UPDATE_STORY_ARGS, STORY_RENDERED } from '@storybook/core-events';
 import chalk from 'chalk';
 import http from 'http';
 import https from 'https';
@@ -22,7 +23,6 @@ import {
 } from '../../types';
 import { colors, logger } from '../logger';
 import { emitStoriesMessage, subscribeOn } from '../messages';
-import { importStorybookCoreEvents, isStorybookVersionLessThan } from '../storybook/helpers';
 import { isShuttingDown, LOCALHOST_REGEXP, runSequence } from '../utils';
 
 type ElementRect = {
@@ -41,7 +41,7 @@ declare global {
   }
 }
 
-const storybookRootID = isStorybookVersionLessThan(7) ? 'root' : 'storybook-root';
+const storybookRootID = 'storybook-root';
 const DOCKER_INTERNAL = 'host.docker.internal';
 let browserLogger = logger;
 let browserName = '';
@@ -152,28 +152,19 @@ async function waitForStorybook(browser: WebDriver): Promise<void> {
   browserLogger.debug('Waiting for `setStories` event to make sure that storybook is initiated');
   let wait = true;
   let isTimeout = false;
-  const Events = await importStorybookCoreEvents();
   const initiateTimeout = setTimeout(() => {
     wait = false;
     isTimeout = true;
   }, 60000);
   while (wait !== false) {
-    if (isStorybookVersionLessThan(7)) {
-      wait = await browser.executeAsyncScript(function (SET_STORIES: string, callback: (wait: boolean) => void): void {
-        if (typeof window.__STORYBOOK_ADDONS_CHANNEL__ == 'undefined') return callback(true);
-        if (window.__STORYBOOK_ADDONS_CHANNEL__.last(SET_STORIES) == undefined) return callback(true);
-        return callback(false);
-      }, Events.SET_STORIES);
-    } else {
-      try {
-        wait = await browser.executeScript(function (SET_GLOBALS: string): boolean {
-          if (typeof window.__STORYBOOK_ADDONS_CHANNEL__ == 'undefined') return true;
-          if (window.__STORYBOOK_ADDONS_CHANNEL__.last(SET_GLOBALS) == undefined) return true;
-          return false;
-        }, Events.SET_GLOBALS);
-      } catch (e: unknown) {
-        browserLogger.debug('An error has been catched during the script: ', e);
-      }
+    try {
+      wait = await browser.executeScript(function (SET_GLOBALS: string): boolean {
+        if (typeof window.__STORYBOOK_ADDONS_CHANNEL__ == 'undefined') return true;
+        if (window.__STORYBOOK_ADDONS_CHANNEL__.last(SET_GLOBALS) == undefined) return true;
+        return false;
+      }, SET_GLOBALS);
+    } catch (e: unknown) {
+      browserLogger.debug('An error has been caught during the script: ', e);
     }
     if (!wait) clearTimeout(initiateTimeout);
   }
@@ -649,7 +640,6 @@ export async function getBrowser(config: Config, options: Options & { browser: s
 }
 
 async function updateStoryArgs(browser: WebDriver, story: StoryInput, updatedArgs: Args): Promise<void> {
-  const Events = await importStorybookCoreEvents();
   await browser.executeAsyncScript<undefined>(
     function (
       storyId: string,
@@ -666,8 +656,8 @@ async function updateStoryArgs(browser: WebDriver, story: StoryInput, updatedArg
     },
     story.id,
     updatedArgs,
-    Events.UPDATE_STORY_ARGS,
-    Events.STORY_RENDERED,
+    UPDATE_STORY_ARGS,
+    STORY_RENDERED,
   );
 }
 

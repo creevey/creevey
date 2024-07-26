@@ -1,10 +1,10 @@
-import type { API as StorybookAPI } from '@storybook/api';
-import type { DecoratorFunction } from '@storybook/addons';
+import type { DecoratorFunction } from '@storybook/csf';
 import type { IKey } from 'selenium-webdriver/lib/input';
 import type { Worker as ClusterWorker } from 'cluster';
 import type { until, WebDriver, WebElementPromise } from 'selenium-webdriver';
 import type Pixelmatch from 'pixelmatch';
 import type { Context } from 'mocha';
+import { StoryContextForEnhancers } from '@storybook/csf';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type DiffOptions = typeof Pixelmatch extends (
@@ -26,14 +26,14 @@ export type SetStoriesData = {
   stories: StoriesRaw;
 };
 
-export type StoriesRaw = StorybookAPI extends { setStories: (stories: infer SS) => void } ? SS : never;
+export type StoriesRaw = Record<string, StoryContextForEnhancers>;
 
 export type StoryInput = StoriesRaw extends { [id: string]: infer S } ? S : never;
 
-export interface StoryMeta<StoryFnReturnType = unknown> {
+export interface StoryMeta {
   title: string;
   component?: unknown;
-  decorators?: DecoratorFunction<StoryFnReturnType>[];
+  decorators?: DecoratorFunction[];
   parameters?: {
     creevey?: CreeveyStoryParams;
     [name: string]: unknown;
@@ -58,7 +58,7 @@ export interface CSFStory<StoryFnReturnType = unknown> {
    */
   story?: {
     name?: string;
-    decorators?: DecoratorFunction<StoryFnReturnType>[];
+    decorators?: DecoratorFunction[];
     parameters?: {
       creevey?: CreeveyStoryParams;
       [name: string]: unknown;
@@ -66,7 +66,7 @@ export interface CSFStory<StoryFnReturnType = unknown> {
   };
 
   storyName?: string;
-  decorators?: DecoratorFunction<StoryFnReturnType>[];
+  decorators?: DecoratorFunction[];
   parameters?: {
     creevey?: CreeveyStoryParams;
     [name: string]: unknown;
@@ -154,11 +154,6 @@ export interface Config {
    */
   reportDir: string;
   /**
-   * Absolute path to storybook config directory
-   * @default path.join(process.cwd(), './.storybook')
-   */
-  storybookDir: string;
-  /**
    * How much test would be retried
    * @default 0
    */
@@ -182,18 +177,6 @@ export interface Config {
    * Works only with `useDocker == false`
    */
   selenoidPath?: string;
-  /**
-   * Creevey extract tests by using babel transformations
-   * and load stories to nodejs directly.
-   * In some edge cases it may fail to load tests.
-   * In that case you can enable this option.
-   * Creevey uses Storybook webpack config to build nodejs bundle with tests.
-   * But it slightly slower and doesn't work if you use custom bundler for Storybook
-   *
-   * Affects only for Storybook 6.2+
-   * @default false
-   */
-  useWebpackToExtractTests: boolean;
   /**
    * Creevey has two built-in stories providers.
    *
@@ -271,9 +254,7 @@ export interface Options {
   port: number;
   ui: boolean;
   update: boolean | string;
-  webpack: boolean;
   debug: boolean;
-  extract: boolean | string;
   tests: boolean;
   browser?: string;
   reporter?: string;

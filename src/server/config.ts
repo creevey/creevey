@@ -1,7 +1,5 @@
 import fs from 'fs';
 import path from 'path';
-import { isCSFv3Enabled, storybookDirRef } from './storybook/helpers';
-import { loadStories as nodejsStoriesProvider } from './storybook/providers/nodejs';
 import { loadStories as browserStoriesProvider } from './storybook/providers/browser';
 import { Config, Browser, BrowserConfig, Options, isDefined } from '../types';
 
@@ -9,7 +7,6 @@ export const defaultBrowser = 'chrome';
 
 export const defaultConfig: Omit<Config, 'gridUrl' | 'storiesProvider' | 'testsDir' | 'tsConfig'> = {
   useDocker: true,
-  useWebpackToExtractTests: false,
   dockerImage: 'aerokube/selenoid:latest-release',
   dockerImagePlatform: '',
   pullImages: true,
@@ -17,7 +14,6 @@ export const defaultConfig: Omit<Config, 'gridUrl' | 'storiesProvider' | 'testsD
   storybookUrl: 'http://localhost:6006',
   screenDir: path.resolve('images'),
   reportDir: path.resolve('report'),
-  storybookDir: path.resolve('.storybook'),
   maxRetries: 0,
   diffOptions: { threshold: 0, includeAA: true },
   browsers: { [defaultBrowser]: true },
@@ -54,10 +50,7 @@ export async function readConfig(options: Options): Promise<Config> {
 
   if (isDefined(configPath)) Object.assign(userConfig, ((await import(configPath)) as { default: Config }).default);
 
-  storybookDirRef.current = userConfig.storybookDir;
-
-  if (!userConfig.storiesProvider)
-    userConfig.storiesProvider = (await isCSFv3Enabled()) ? browserStoriesProvider : nodejsStoriesProvider;
+  if (!userConfig.storiesProvider) userConfig.storiesProvider = browserStoriesProvider;
 
   if (options.failFast != undefined) userConfig.failFast = Boolean(options.failFast);
   if (options.reportDir) userConfig.reportDir = path.resolve(options.reportDir);

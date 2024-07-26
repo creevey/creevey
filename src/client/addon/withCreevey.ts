@@ -1,33 +1,12 @@
 import * as Events from '@storybook/core-events';
-import * as polyfill from 'event-source-polyfill';
 import type { PreviewWeb } from '@storybook/preview-web';
-import type { AnyFramework } from '@storybook/csf';
+import type { AnyFramework, StoryContextForEnhancers } from '@storybook/csf';
 import type { StoryStore } from '@storybook/client-api';
-// import { buildQueries, within } from '@storybook/testing-library';
-import { addons, MakeDecoratorResult, makeDecorator, Channel } from '@storybook/addons';
-import {
-  CaptureOptions,
-  CreeveyStoryParams,
-  isObject,
-  noop,
-  SetStoriesData,
-  StoriesRaw,
-  StorybookGlobals,
-  StoryInput,
-} from '../../types';
-import { denormalizeStoryParameters, serializeRawStories } from '../../shared';
+import { makeDecorator } from '@storybook/preview-api';
+import { Channel } from '@storybook/channels';
+import { CaptureOptions, CreeveyStoryParams, isObject, noop, StoriesRaw, StorybookGlobals } from '../../types';
+import { serializeRawStories } from '../../shared';
 import { getConnectionUrl } from '../shared/helpers';
-// import { isInternetExplorer } from './utils';
-
-if (typeof process != 'object' || typeof process.version != 'string') {
-  // NOTE If you don't use babel-polyfill or any other polyfills that add EventSource for IE11
-  // You don't get hot reload in IE11. So put polyfill for that to better UX
-  // Don't load in nodejs environment
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const { NativeEventSource, EventSourcePolyfill } = polyfill;
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  window.EventSource = NativeEventSource || EventSourcePolyfill;
-}
 
 declare global {
   interface Window {
@@ -165,7 +144,9 @@ let waitForCreevey: Promise<void>;
 let creeveyReady: () => void;
 let setStoriesCounter = 0;
 
-export function withCreevey(): MakeDecoratorResult {
+export function withCreevey(): ReturnType<typeof makeDecorator> {
+  const addonsChannel = (): Channel => window.__STORYBOOK_ADDONS_CHANNEL__;
+
   let currentStory = '';
   let isAnimationDisabled = false;
 
@@ -181,39 +162,20 @@ export function withCreevey(): MakeDecoratorResult {
   }
 
   async function getStories(): Promise<StoriesRaw | void> {
-    const storiesPromise = new Promise<StoriesRaw>((resolve) =>
-      addons
-        .getChannel()
-        .once(Events.SET_STORIES, (data: SetStoriesData) =>
-          resolve(serializeRawStories(denormalizeStoryParameters(data))),
-        ),
-    );
-
-    const store = window.__STORYBOOK_STORY_STORE__ ?? {};
-    if (store.cacheAllCSFFiles) {
-      await store.cacheAllCSFFiles();
-      addons.getChannel().emit(Events.SET_STORIES, store.getSetStoriesPayload());
-    } else return;
-
-    addons.getChannel().on(Events.SET_STORIES, (data: SetStoriesData) => {
-      // TODO Figure out how to get only updated stories
-      // TODO Subscribe on hmr? like use dummy-hmr
-      setStoriesCounter += 1;
-      const stories = serializeRawStories(denormalizeStoryParameters(data));
-      const storiesByFiles = new Map<string, StoryInput[]>();
-      Object.values(stories).forEach((story) => {
-        const storiesFromFile = storiesByFiles.get(story.parameters.fileName);
-        if (storiesFromFile) storiesFromFile.push(story);
-        else storiesByFiles.set(story.parameters.fileName, [story]);
-      });
-      void fetch(`http://${getConnectionUrl()}/stories`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ setStoriesCounter, stories: [...storiesByFiles.entries()] }),
-      });
+    const stories = serializeRawStories(await window.__STORYBOOK_PREVIEW__.extract());
+    const storiesByFiles = new Map<string, StoryContextForEnhancers[]>();
+    Object.values(stories).forEach((story) => {
+      const fileName = story.parameters.fileName as string;
+      const storiesFromFile = storiesByFiles.get(fileName);
+      if (storiesFromFile) storiesFromFile.push(story);
+      else storiesByFiles.set(fileName, [story]);
     });
-
-    return storiesPromise;
+    void fetch(`http://${getConnectionUrl()}/stories`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ setStoriesCounter, stories: [...storiesByFiles.entries()] }),
+    });
+    return stories;
   }
 
   async function selectStory(
@@ -226,7 +188,7 @@ export function withCreevey(): MakeDecoratorResult {
     if (!isAnimationDisabled) disableAnimation();
 
     isTestBrowser = true;
-    const channel = addons.getChannel();
+    const channel = addonsChannel();
     const waitForReady = shouldWaitForReady
       ? new Promise<void>((resolve) => (window.__CREEVEY_SET_READY_FOR_CAPTURE__ = resolve))
       : Promise.resolve();
@@ -268,7 +230,7 @@ export function withCreevey(): MakeDecoratorResult {
   }
 
   function updateGlobals(globals: StorybookGlobals): void {
-    addons.getChannel().emit(Events.UPDATE_GLOBALS, { globals });
+    addonsChannel().emit(Events.UPDATE_GLOBALS, { globals });
   }
 
   function insertIgnoreStyles(ignoreSelectors: string[]): HTMLStyleElement {
@@ -301,7 +263,7 @@ export function withCreevey(): MakeDecoratorResult {
     let isCaptureCalled = false;
     let isPlayCompleted = false;
 
-    const channel = addons.getChannel();
+    const channel = addonsChannel();
     void waitForStoryRendered(channel).then(() => {
       if (isCaptureCalled) return;
       isPlayCompleted = true;
@@ -322,24 +284,6 @@ export function withCreevey(): MakeDecoratorResult {
   window.__CREEVEY_HAS_PLAY_COMPLETED_YET__ = hasPlayCompletedYet;
   window.__CREEVEY_SET_READY_FOR_CAPTURE__ = noop;
 
-  // const queryAllByQuery = (container: HTMLElement, query: string): HTMLElement[] =>
-  //   [...container.querySelectorAll(query)].filter((e) => e instanceof HTMLElement) as HTMLElement[];
-  // const getMultipleError = (_: Element | null, query: string): string => `Found multiple elements by query: ${query}`;
-  // const getMissingError = (_: Element | null, query: string): string => `Unable to find an element by query: ${query}`;
-
-  // const [queryByQuery, getAllByQuery, getByQuery, findAllByQuery, findByQuery] = buildQueries(
-  //   queryAllByQuery,
-  //   getMultipleError,
-  //   getMissingError,
-  // );
-  // const queries = {
-  //   queryByQuery,
-  //   getAllByQuery,
-  //   getByQuery,
-  //   findAllByQuery,
-  //   findByQuery,
-  // };
-
   return makeDecorator({
     name: 'withCreevey',
     parameterName: 'creevey',
@@ -356,10 +300,7 @@ export function withCreevey(): MakeDecoratorResult {
             case captureElement === null:
               return Promise.resolve(document.documentElement);
             case typeof captureElement == 'string':
-              return Promise.resolve(context.canvasElement.querySelector(captureElement as string));
-            // return isInternetExplorer // some code from testing-library makes IE hang
-            //   ? Promise.resolve(context.canvasElement.querySelector(captureElement as string))
-            //   : within<typeof queries>(context.canvasElement, queries).findByQuery(captureElement as string);
+              return Promise.resolve((context.canvasElement as Element).querySelector(captureElement as string));
             case typeof captureElement == 'function':
               // TODO Define type for it
               return Promise.resolve(

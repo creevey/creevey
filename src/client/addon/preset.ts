@@ -1,7 +1,3 @@
-export function config(entry: string[] = []): string[] {
-  return [...entry, require.resolve('./decorator')];
-}
+export const previewAnnotations = [require.resolve('./preview')];
 
-export function managerEntries(entry: string[] = []): string[] {
-  return [...entry, require.resolve('./register')];
-}
+export const managerEntries = [require.resolve('./register')];

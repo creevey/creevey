@@ -5,6 +5,7 @@ import { Configuration as WebpackDevServerConfiguration } from 'webpack-dev-serv
 const config: WebpackConfiguration & WebpackDevServerConfiguration = {
   entry: [require.resolve('core-js'), require.resolve('regenerator-runtime/runtime'), './src/client/web/index.tsx'],
   output: { path: path.join(__dirname, './lib/cjs/client/web') },
+  mode: process.env.WEBPACK_DEV_SERVER ? 'development' : 'production',
   module: {
     rules: [
       {

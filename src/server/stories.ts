@@ -122,7 +122,7 @@ export async function loadTestsFromStories(
         },
       }) =>
         // TODO Don't use filename as a key, due possible collisions if two require.context with same structure of modules are defined
-        testIdsByFiles.set(fileName, [...(testIdsByFiles.get(fileName) ?? []), id]),
+        testIdsByFiles.set(fileName as string, [...(testIdsByFiles.get(fileName as string) ?? []), id]),
     );
 
   return tests;

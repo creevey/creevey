@@ -1,5 +1,5 @@
 import path from 'path';
-import { writeFileSync, copyFile, readdir, mkdir, existsSync } from 'fs';
+import { copyFile, readdir, mkdir, existsSync, writeFile } from 'fs';
 import { promisify } from 'util';
 import master from './master';
 import creeveyApi, { CreeveyApi } from './api';
@@ -9,6 +9,7 @@ import { subscribeOn } from '../messages';
 import Runner from './runner';
 import { logger } from '../logger';
 
+const writeFileAsync = promisify(writeFile);
 const copyFileAsync = promisify(copyFile);
 const readdirAsync = promisify(readdir);
 const mkdirAsync = promisify(mkdir);
@@ -70,10 +71,11 @@ export default async function (config: Config, options: Options, resolveApi: (ap
   runner = await master(config, { watch: options.ui, debug: options.debug, port: options.port });
 
   if (options.saveReport) {
-    await copyStatics(config.reportDir);
-    runner.on('stop', () =>
-      writeFileSync(path.join(config.reportDir, 'data.js'), reportDataModule(runner?.status.tests)),
-    );
+    runner.on('stop', () => {
+      void copyStatics(config.reportDir).then(() =>
+        writeFileAsync(path.join(config.reportDir, 'data.js'), reportDataModule(runner?.status.tests)),
+      );
+    });
   }
 
   if (options.ui) {

@@ -26,9 +26,9 @@ if (cluster.isPrimary) process.on('SIGINT', shutdown);
 
 const argv = minimist<Options>(process.argv.slice(2), {
   string: ['browser', 'config', 'reporter', 'reportDir', 'screenDir'],
-  boolean: ['debug', 'ui', 'saveReport', 'webpack', 'tests'],
+  boolean: ['debug', 'ui', 'saveReport', 'tests'],
   default: { port: 3000, saveReport: true },
-  alias: { port: 'p', config: 'c', debug: 'd', update: 'u', extract: 'e' },
+  alias: { port: 'p', config: 'c', debug: 'd', update: 'u' },
 });
 
 // @ts-expect-error: define log level for storybook
