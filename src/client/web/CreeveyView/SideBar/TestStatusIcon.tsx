@@ -20,38 +20,24 @@ const Container = styled.span({
 const Icon = styled(Icons)({
   position: 'relative',
   top: '1.5px',
+  verticalAlign: 'baseline',
 });
 
 const Spinner = styled(Loader)({
   top: '14px',
-  left: '40px',
+  left: '42px',
 });
 
-// TODO Use storybook theme colors
 export const TestStatusIcon = withTheme(
   ({ inverted, status, skip, theme }: TestStatusIconProps): JSX.Element | null => {
     let icon = null;
     switch (status) {
       case 'failed': {
-        icon = (
-          <Icon
-            color={inverted ? theme.color.lightest : theme.color.negative}
-            icon="cross"
-            stroke="currentColor"
-            strokeWidth="30"
-          />
-        );
+        icon = <Icon color={inverted ? theme.color.lightest : theme.color.negative} icon="cross" />;
         break;
       }
       case 'success': {
-        icon = (
-          <Icon
-            color={inverted ? theme.color.lightest : theme.color.green}
-            icon="check"
-            stroke="currentColor"
-            strokeWidth="30"
-          />
-        );
+        icon = <Icon color={inverted ? theme.color.lightest : theme.color.green} icon="check" />;
         break;
       }
       case 'running': {
@@ -59,26 +45,11 @@ export const TestStatusIcon = withTheme(
         break;
       }
       case 'pending': {
-        icon = (
-          <Icon
-            color={inverted ? theme.color.lightest : theme.color.mediumdark}
-            icon="time"
-            stroke="currentColor"
-            strokeWidth="30"
-          />
-        );
+        icon = <Icon color={inverted ? theme.color.lightest : theme.color.mediumdark} icon="time" />;
         break;
       }
       default: {
-        if (skip)
-          icon = (
-            <Icon
-              color={inverted ? theme.color.lightest : undefined}
-              icon="timer"
-              stroke="currentColor"
-              strokeWidth="30"
-            />
-          );
+        if (skip) icon = <Icon color={inverted ? theme.color.lightest : undefined} icon="timer" />;
         break;
       }
     }

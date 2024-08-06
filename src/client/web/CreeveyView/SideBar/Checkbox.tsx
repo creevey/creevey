@@ -8,7 +8,6 @@ const Label = withTheme(
   styled.label<{ theme: Theme; disabled?: boolean }>(({ theme, disabled }) => ({
     display: 'inline-flex',
     alignItems: 'baseline',
-    lineHeight: theme.typography.size.l1,
     position: 'relative',
     whiteSpace: 'nowrap',
     cursor: 'pointer',
@@ -54,13 +53,15 @@ const Box = withTheme(
 
 const CircleIcon = styled(Icons)({
   margin: '4px',
+  verticalAlign: 'baseline',
 });
 
 const CheckIcon = styled(Icons)({
   margin: '2px',
+  verticalAlign: 'baseline',
 });
 
-interface BooleanProps {
+interface CheckboxProps {
   checked?: boolean;
   onValueChange: (value: boolean) => void;
   disabled?: boolean;
@@ -76,7 +77,7 @@ export const CheckboxContainer = styled.div({
   zIndex: 2,
 });
 
-export class Checkbox extends React.Component<BooleanProps, CheckboxState> {
+export class Checkbox extends React.Component<CheckboxProps, CheckboxState> {
   state: CheckboxState = { indeterminate: false };
 
   handleIndeterminateChange = (value: boolean): void => {
@@ -96,7 +97,7 @@ export class Checkbox extends React.Component<BooleanProps, CheckboxState> {
           {indeterminate ? (
             <CircleIcon icon="circle" width="8" height="8" />
           ) : checked ? (
-            <CheckIcon icon="check" stroke="currentColor" strokeWidth="30" width="12" height="12" />
+            <CheckIcon icon="check" width="12" height="12" />
           ) : (
             ' '
           )}

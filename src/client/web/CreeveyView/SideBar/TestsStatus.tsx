@@ -59,32 +59,28 @@ export const TestsStatus = withTheme(
   }: TestsStatusProps): JSX.Element => {
     return (
       <Container>
-        {/* @ts-expect-error Fixed in https://github.com/storybookjs/storybook/pull/26623 */}
         <Button onClick={() => onClickByStatus('pending')}>
           <IconContainer color={theme?.color.mediumdark}>
-            <Icons icon="time" stroke="currentColor" strokeWidth="30" />
+            <Icons icon="time" />
             {pendingCount}
           </IconContainer>
         </Button>
         <Divider />
-        {/* @ts-expect-error Fixed in https://github.com/storybookjs/storybook/pull/26623 */}
         <Button onClick={() => onClickByStatus('success')}>
           <IconContainer color={theme?.color.green}>
-            <Icons icon="check" stroke="currentColor" strokeWidth="30" /> {successCount}
+            <Icons icon="check" /> {successCount}
           </IconContainer>
         </Button>
         <Divider />
-        {/* @ts-expect-error Fixed in https://github.com/storybookjs/storybook/pull/26623 */}
         <Button onClick={() => onClickByStatus('failed')}>
           <IconContainer color={theme?.color.negative}>
-            <Icons icon="cross" stroke="currentColor" strokeWidth="30" /> {failedCount}
+            <Icons icon="cross" /> {failedCount}
           </IconContainer>
         </Button>
         <Divider />
-        {/* @ts-expect-error Fixed in https://github.com/storybookjs/storybook/pull/26623 */}
         <Button>
-          <IconContainer>
-            <Icons icon="timer" stroke="currentColor" strokeWidth="30" /> {skippedCount}
+          <IconContainer color={theme?.color.defaultText}>
+            <Icons icon="timer" /> {skippedCount}
           </IconContainer>
         </Button>
       </Container>
