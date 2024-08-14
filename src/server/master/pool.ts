@@ -98,7 +98,7 @@ export default class Pool extends EventEmitter {
   }
 
   private async forkWorker(retry = 0): Promise<Worker | { error: string }> {
-    cluster.setupMaster({
+    cluster.setupPrimary({
       args: ['--browser', this.browser, ...process.argv.slice(2)],
     });
     const worker = cluster.fork();

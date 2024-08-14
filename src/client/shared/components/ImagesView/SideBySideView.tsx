@@ -85,6 +85,7 @@ export const SideBySideView = withTheme(({ actual, diff, expect, theme }: ViewPr
   useResizeObserver(containerRef, calcScale);
   useLayoutEffect(calcScale, [calcScale]);
   useLayoutEffect(() => {
+    // TODO Check image height and viewport
     const diffImage = diffImageRef.current;
     if (!diffImage || !loaded) return;
     const ratio = diffImage.naturalWidth / diffImage.naturalHeight;

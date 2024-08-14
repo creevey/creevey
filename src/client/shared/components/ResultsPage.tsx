@@ -35,7 +35,7 @@ const ImagesViewContainer = styled.div(({ theme }) => ({
 
 const HeaderContainer = styled.div({ position: 'sticky', top: 0, zIndex: 1 });
 
-const BodyContainer = styled.div({ flexGrow: 1 });
+const BodyContainer = styled.div({ flexGrow: 1, minHeight: 0 });
 
 const FooterContainer = styled.div({
   position: 'sticky',

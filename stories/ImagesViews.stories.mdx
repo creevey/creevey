@@ -29,7 +29,9 @@ This is a simple doc page with different diff image views
 Simple side-by-side view. Expected image on the right, actual on the left and diff image on the middle
 
 <Canvas>
-  <Story name="SideBySide">{() => ImagesView('side-by-side')}</Story>
+  <Story name="SideBySide" parameters={{ creevey: { waitForReady: true } }}>
+    {() => ImagesView('side-by-side')}
+  </Story>
 </Canvas>
 
 ## Swap

@@ -96,6 +96,7 @@ export default function server(reportDir: string, port: number, ui: boolean): (a
   subscribeOn('shutdown', () => {
     server.close();
     wss.close();
+    wss.clients.forEach((ws) => ws.close());
   });
 
   void creeveyApi.then((api) => {

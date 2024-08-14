@@ -21,7 +21,10 @@ const ImagesView = ({ mode }: { mode: ImagesViewMode }): JSX.Element => (
 
 export default { title: 'ImagesViews', component: ImagesView } as ComponentMeta<typeof ImagesView>;
 
-export const SideBySide: ComponentStoryObj<typeof ImagesView> = { args: { mode: 'side-by-side' } };
+export const SideBySide: ComponentStoryObj<typeof ImagesView> = {
+  args: { mode: 'side-by-side' },
+  parameters: { creevey: { waitForReady: true } },
+};
 
 export const Swap: ComponentStoryObj<typeof ImagesView> = {
   args: { mode: 'swap' },

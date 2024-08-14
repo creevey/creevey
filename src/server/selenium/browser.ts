@@ -82,6 +82,7 @@ function getSessionData(grid: string, sessionId = ''): Promise<Record<string, un
 }
 
 function getAddresses(): string[] {
+  // TODO Check if docker is used
   return [DOCKER_INTERNAL].concat(
     ...Object.values(networkInterfaces())
       .filter(isDefined)
@@ -555,7 +556,7 @@ export async function getBrowser(config: Config, options: Options & { browser: s
   const realAddress = address;
 
   // TODO Define some capabilities explicitly and define typings
-  const capabilities = new Capabilities({ ...userCapabilities, pageLoadStrategy: PageLoadStrategy.NONE });
+  const capabilities = new Capabilities({ ...userCapabilities, pageLoadStrategy: PageLoadStrategy.EAGER });
 
   subscribeOn('shutdown', () => {
     browser?.quit().finally(() =>
