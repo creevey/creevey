@@ -1,11 +1,11 @@
 import chokidar from 'chokidar';
 
-import { loadStories as browserProvider } from './browser';
-import type { Config, StoryInput, CreeveyStoryParams, CreeveyStory, StoriesProvider } from '../../../types';
-import { logger } from '../../logger';
-import parse, { CreeveyParamsByStoryId } from '../../testsFiles/parser';
-import { readDirRecursive } from '../../../server/utils';
-import { combineParameters } from '../../../shared';
+import { loadStories as browserProvider } from './browser.js';
+import type { Config, StoryInput, CreeveyStoryParams, CreeveyStory, StoriesProvider } from '../../../types.js';
+import { logger } from '../../logger.js';
+import parse, { CreeveyParamsByStoryId } from '../../testsFiles/parser.js';
+import { readDirRecursive } from '../../../server/utils.js';
+import { combineParameters } from '../../../shared/index.js';
 
 export const loadStories: StoriesProvider = async (
   _config: Config,
@@ -52,7 +52,7 @@ async function parseParams(
 
   const testFiles = readDirRecursive(config.testsDir).filter((file) => config.testsRegex?.test(file));
 
-  await (await import('../../testsFiles/register')).default(config);
+  await (await import('../../testsFiles/register.js')).default(config);
 
   if (listener) {
     chokidar.watch(testFiles).on('change', (filePath) => {

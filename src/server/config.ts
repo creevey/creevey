@@ -1,7 +1,8 @@
 import fs from 'fs';
 import path from 'path';
-import { loadStories as browserStoriesProvider } from './storybook/providers/browser';
-import { Config, Browser, BrowserConfig, Options, isDefined } from '../types';
+import { loadStories as browserStoriesProvider } from './storybook/providers/browser.js';
+import { Config, Browser, BrowserConfig, Options, isDefined } from '../types.js';
+import { buildConfigBundle, configExt, isFilePathESM, loadConfigFromBundledFile } from './utils.js';
 
 export const defaultBrowser = 'chrome';
 
@@ -30,16 +31,20 @@ function normalizeBrowserConfig(name: string, config: Browser): BrowserConfig {
 }
 
 function resolveConfigPath(configPath?: string): string | undefined {
-  const rootDir = process.cwd();
   const configDir = path.resolve('.creevey');
 
   if (isDefined(configPath)) {
     configPath = path.resolve(configPath);
   } else if (fs.existsSync(configDir)) {
-    configPath = path.join(configDir, 'config');
-    // TODO We already find file with extension, why not use it?
-  } else if (fs.readdirSync(rootDir).find((filename) => filename.startsWith('creevey.config'))) {
-    configPath = path.join(rootDir, 'creevey.config');
+    for (const ext of configExt) {
+      configPath = path.resolve(configDir, `config${ext}`);
+      if (fs.existsSync(configPath)) break;
+    }
+  } else {
+    for (const ext of configExt) {
+      configPath = path.resolve(`creevey.config${ext}`);
+      if (fs.existsSync(configPath)) break;
+    }
   }
 
   return configPath;
@@ -49,7 +54,15 @@ export async function readConfig(options: Options): Promise<Config> {
   const configPath = resolveConfigPath(options.config);
   const userConfig: typeof defaultConfig & Partial<Pick<Config, 'gridUrl' | 'storiesProvider'>> = { ...defaultConfig };
 
-  if (isDefined(configPath)) Object.assign(userConfig, ((await import(configPath)) as { default: Config }).default);
+  if (isDefined(configPath)) {
+    const isESM = isFilePathESM(configPath);
+
+    const configCode = await buildConfigBundle(configPath, isESM)
+
+    const configData = await loadConfigFromBundledFile(configPath, configCode, isESM);
+
+    Object.assign(userConfig, configData);
+  }
 
   if (!userConfig.storiesProvider) userConfig.storiesProvider = browserStoriesProvider;
 

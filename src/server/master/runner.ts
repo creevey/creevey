@@ -1,6 +1,5 @@
 import path from 'path';
-import { copyFile, mkdir } from 'fs';
-import { promisify } from 'util';
+import { copyFile, mkdir } from 'fs/promises';
 import { EventEmitter } from 'events';
 import {
   Config,
@@ -12,11 +11,8 @@ import {
   TestStatus,
   ServerTest,
   TestMeta,
-} from '../../types';
-import Pool from './pool';
-
-const copyFileAsync = promisify(copyFile);
-const mkdirAsync = promisify(mkdir);
+} from '../../types.js';
+import Pool from './pool.js';
 
 export default class Runner extends EventEmitter {
   private failFast: boolean;
@@ -179,8 +175,8 @@ export default class Runner extends EventEmitter {
     const testPath = path.join(...restPath, image == browser ? '' : browser);
     const srcImagePath = path.join(this.reportDir, testPath, images.actual);
     const dstImagePath = path.join(this.screenDir, testPath, `${image}.png`);
-    await mkdirAsync(path.join(this.screenDir, testPath), { recursive: true });
-    await copyFileAsync(srcImagePath, dstImagePath);
+    await mkdir(path.join(this.screenDir, testPath), { recursive: true });
+    await copyFile(srcImagePath, dstImagePath);
     test.approved[image] = retry;
     this.sendUpdate({
       tests: { [id]: { id, browser, testName, storyPath, approved: { [image]: retry }, storyId: test.storyId } },

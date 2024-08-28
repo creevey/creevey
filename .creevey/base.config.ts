@@ -1,14 +1,14 @@
 import path from 'path';
 import { config as dotenv } from 'dotenv';
-import { isInsideDocker } from '../src/server/utils';
-import { CreeveyConfig } from '../src/types';
+import { isInsideDocker } from '../src/server/utils.js';
+import { CreeveyConfig } from '../src/types.js';
 
 dotenv();
 
 const config: CreeveyConfig = {
   useDocker: isInsideDocker ? false : true,
   maxRetries: process.env.CI ? 5 : 0,
-  screenDir: path.join(__dirname, '../stories/images'),
+  screenDir: path.join(import.meta.dirname, '../stories/images'),
 };
 
 export default config;

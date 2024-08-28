@@ -1,5 +1,4 @@
 {
-  "main": "../lib/cjs/client/addon/index.js",
-  "module": "../lib/esm/client/addon/index.js",
-  "types": "../lib/types/client/addon/index.d.ts"
+  "main": "../lib/client/addon/index.js",
+  "types": "../lib/client/addon/index.d.ts"
 }

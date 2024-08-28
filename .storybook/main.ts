@@ -8,16 +8,11 @@ export default {
     '@storybook/addon-interactions',
     {
       name: './../src/client/addon/preset',
-      options: { clientPort: 8000, creeveyPreExtract: './scripts/babel-register' },
+      options: { clientPort: 8000 },
     },
   ],
   framework: {
-    name: '@storybook/react-webpack5',
-    options: {
-      builder: {
-        useSWC: true,
-      },
-    },
+    name: '@storybook/react-vite',
   },
   docs: {
     autodocs: 'tag',

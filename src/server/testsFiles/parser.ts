@@ -1,5 +1,5 @@
 import { toId, storyNameFromExport } from '@storybook/csf';
-import { CreeveyStoryParams, CreeveyTestFunction } from '../../types';
+import { CreeveyStoryParams, CreeveyTestFunction } from '../../types.js';
 
 export type CreeveyParamsByStoryId = { [storyId: string]: CreeveyStoryParams };
 

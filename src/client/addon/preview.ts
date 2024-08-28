@@ -1,4 +1,4 @@
-import { withCreevey } from './withCreevey';
+import { withCreevey } from './withCreevey.js';
 
 const preview = {
   decorators: [withCreevey()],

@@ -1,7 +1,7 @@
 import path from 'path';
 import { mkdirSync, writeFileSync } from 'fs';
 import { createHash } from 'crypto';
-import { mapValues, pick } from 'lodash';
+import _ from 'lodash';
 import type { Context } from 'mocha';
 import type {
   TestData,
@@ -12,9 +12,9 @@ import type {
   StoryInput,
   CreeveyTestFunction,
   SetStoriesData,
-} from '../types';
-import { isDefined, isFunction, isObject } from '../types';
-import { shouldSkip, removeProps } from './utils';
+} from '../types.js';
+import { isDefined, isFunction, isObject } from '../types.js';
+import { shouldSkip, removeProps } from './utils.js';
 
 function storyTestFabric(delay?: number, testFn?: CreeveyTestFunction) {
   return async function storyTest(this: Context) {
@@ -133,13 +133,13 @@ export function saveStoriesJson(storiesData: SetStoriesData, extract: string | b
 
   // NOTE Copy-pasted from Storybook's `getStoriesJsonData` method
   const allowed = ['fileName', 'docsOnly', 'framework', '__id', '__isArgsStory'];
-  storiesData.globalParameters = pick(storiesData.globalParameters, allowed);
+  storiesData.globalParameters = _.pick(storiesData.globalParameters, allowed);
   // @ts-expect-error ignore error
-  storiesData.kindParameters = mapValues(storiesData.kindParameters, (v) => pick(v, allowed));
+  storiesData.kindParameters = _.mapValues(storiesData.kindParameters, (v) => _.pick(v, allowed));
   // @ts-expect-error ignore error
-  storiesData.stories = mapValues(storiesData.stories, (v) => ({
-    ...pick(v, ['id', 'name', 'kind', 'story']),
-    parameters: pick(v.parameters, allowed),
+  storiesData.stories = _.mapValues(storiesData.stories, (v) => ({
+    ..._.pick(v, ['id', 'name', 'kind', 'story']),
+    parameters: _.pick(v.parameters, allowed),
   }));
 
   // TODO Fix args stories

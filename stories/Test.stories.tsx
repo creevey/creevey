@@ -1,11 +1,11 @@
-import { ComponentMeta, ComponentStoryObj } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
 
-import { CreeveyStoryParams } from '../src/types';
+import { CreeveyStoryParams } from '../src/types.js';
 
 const TestComponent: React.FC = () => <span data-test-id="x">TEST</span>;
 
-export default {
+const Kind: Meta<typeof TestComponent> = {
   title: 'TestKind',
   component: TestComponent,
   parameters: {
@@ -13,9 +13,11 @@ export default {
       captureElement: '#storybook-root',
     },
   },
-} as ComponentMeta<typeof TestComponent>;
+};
 
-export const Story: ComponentStoryObj<typeof TestComponent> = {
+export default Kind;
+
+export const Story: StoryObj<typeof TestComponent> = {
   parameters: {
     creevey: {
       captureElement: 'body',

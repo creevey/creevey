@@ -4,9 +4,9 @@ import type { AnyFramework, StoryContextForEnhancers } from '@storybook/csf';
 import type { StoryStore } from '@storybook/client-api';
 import { makeDecorator } from '@storybook/preview-api';
 import { Channel } from '@storybook/channels';
-import { CaptureOptions, CreeveyStoryParams, isObject, noop, StoriesRaw, StorybookGlobals } from '../../types';
-import { serializeRawStories } from '../../shared';
-import { getConnectionUrl } from '../shared/helpers';
+import { CaptureOptions, CreeveyStoryParams, isObject, noop, StoriesRaw, StorybookGlobals } from '../../types.js';
+import { serializeRawStories } from '../../shared/index.js';
+import { getConnectionUrl } from '../shared/helpers.js';
 
 declare global {
   interface Window {

@@ -1,17 +1,13 @@
 import path from 'path';
-import { promisify } from 'util';
-import { mkdir, writeFile, copyFile, lstatSync, existsSync } from 'fs';
-import { Config, BrowserConfig } from '../../types';
-import { downloadBinary, getCreeveyCache } from '../utils';
-import { pullImages, runImage } from '../docker';
+import { lstatSync, existsSync } from 'fs';
+import { mkdir, writeFile, copyFile } from 'fs/promises';
+import { Config, BrowserConfig } from '../../types.js';
+import { downloadBinary, getCreeveyCache } from '../utils.js';
+import { pullImages, runImage } from '../docker.js';
 import { Octokit } from '@octokit/core';
-import { subscribeOn } from '../messages';
+import { subscribeOn } from '../messages.js';
 import cluster from 'cluster';
-import { chmod, exec } from 'shelljs';
-
-const mkdirAsync = promisify(mkdir);
-const writeFileAsync = promisify(writeFile);
-const copyFileAsync = promisify(copyFile);
+import sh from 'shelljs';
 
 async function createSelenoidConfig(browsers: BrowserConfig[], { useDocker }: { useDocker: boolean }): Promise<string> {
   const selenoidConfig: {
@@ -41,8 +37,8 @@ async function createSelenoidConfig(browsers: BrowserConfig[], { useDocker }: { 
     },
   );
 
-  await mkdirAsync(selenoidConfigDir, { recursive: true });
-  await writeFileAsync(path.join(selenoidConfigDir, 'browsers.json'), JSON.stringify(selenoidConfig));
+  await mkdir(selenoidConfigDir, { recursive: true });
+  await writeFile(path.join(selenoidConfigDir, 'browsers.json'), JSON.stringify(selenoidConfig));
 
   return selenoidConfigDir;
 }
@@ -82,19 +78,19 @@ export async function startSelenoidStandalone(config: Config, debug: boolean): P
   const selenoidConfigDir = await createSelenoidConfig(browsers, { useDocker: false });
   const binaryPath = path.join(selenoidConfigDir, process.platform == 'win32' ? 'selenoid.exe' : 'selenoid');
   if (config.selenoidPath) {
-    await copyFileAsync(path.resolve(config.selenoidPath), binaryPath);
+    await copyFile(path.resolve(config.selenoidPath), binaryPath);
   } else {
     await downloadSelenoidBinary(binaryPath);
   }
 
   // TODO Download browser webdrivers
   try {
-    if (process.platform != 'win32') chmod('+x', binaryPath);
+    if (process.platform != 'win32') sh.chmod('+x', binaryPath);
   } catch (_) {
     /* noop */
   }
 
-  const selenoidProcess = exec(`${binaryPath} -conf ./browsers.json -disable-docker`, {
+  const selenoidProcess = sh.exec(`${binaryPath} -conf ./browsers.json -disable-docker`, {
     async: true,
     cwd: selenoidConfigDir,
   });

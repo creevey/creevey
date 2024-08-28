@@ -1,7 +1,7 @@
 import React from 'react';
-import { Paging } from './Paging';
-import { styled, withTheme } from '@storybook/theming';
 import { Button } from '@storybook/components';
+import { styled, withTheme } from '@storybook/theming';
+import { Paging } from './Paging.js';
 
 export interface PageFooterProps {
   canApprove: boolean;

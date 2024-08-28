@@ -1,7 +1,7 @@
 import { addHook } from 'pirates';
 import { getTsconfig } from 'get-tsconfig';
 
-import { Config } from '../../types';
+import { Config } from '../../types.js';
 
 export default async function register(config: Config): Promise<void> {
   addHook(() => '', {

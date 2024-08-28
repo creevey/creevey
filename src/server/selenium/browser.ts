@@ -3,7 +3,7 @@ import { SET_GLOBALS, UPDATE_STORY_ARGS, STORY_RENDERED } from '@storybook/core-
 import chalk from 'chalk';
 import http from 'http';
 import https from 'https';
-import { getLogger, levels } from 'loglevel';
+import Logger from 'loglevel';
 import prefix from 'loglevel-plugin-prefix';
 import { Context, Suite, Test } from 'mocha';
 import { networkInterfaces } from 'os';
@@ -14,7 +14,7 @@ import { Builder, By, Capabilities, Origin, WebDriver, WebElement, logging } fro
 // import { Options as ChromeOptions } from 'selenium-webdriver/chrome';
 // import { Options as SafariOptions } from 'selenium-webdriver/safari';
 // import { Options as FirefoxOptions } from 'selenium-webdriver/firefox';
-import { PageLoadStrategy } from 'selenium-webdriver/lib/capabilities';
+import { PageLoadStrategy } from 'selenium-webdriver/lib/capabilities.js';
 import {
   BrowserConfig,
   Config,
@@ -25,10 +25,10 @@ import {
   StoryInput,
   StoriesRaw,
   Options,
-} from '../../types';
-import { colors, logger } from '../logger';
-import { emitStoriesMessage, subscribeOn } from '../messages';
-import { isShuttingDown, LOCALHOST_REGEXP, runSequence } from '../utils';
+} from '../../types.js';
+import { colors, logger } from '../logger.js';
+import { emitStoriesMessage, subscribeOn } from '../messages.js';
+import { isShuttingDown, LOCALHOST_REGEXP, runSequence } from '../utils.js';
 
 type ElementRect = {
   top: number;
@@ -362,7 +362,7 @@ export async function takeScreenshot(
 
   try {
     if (!captureElement) {
-      if (browserLogger.getLevel() <= levels.DEBUG) {
+      if (browserLogger.getLevel() <= Logger.levels.DEBUG) {
         const { innerWidth, innerHeight } = await browser.executeScript<{ innerWidth: number; innerHeight: number }>(
           function () {
             return {
@@ -645,7 +645,7 @@ export async function getBrowser(config: Config, options: Options & { browser: s
         .join(':')}`,
     );
 
-    browserLogger = getLogger(sessionId);
+    browserLogger = Logger.getLogger(sessionId);
 
     prefix.apply(browserLogger, {
       format(level) {

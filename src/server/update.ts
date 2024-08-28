@@ -1,12 +1,14 @@
 import path from 'path';
-import fs, { Dirent, mkdirSync } from 'fs';
+import { createRequire } from 'module';
+import { Dirent, mkdirSync, copyFileSync, readdirSync } from 'fs';
 import micromatch from 'micromatch';
-import { Config, isDefined, ServerTest } from '../types';
+import { Config, isDefined, ServerTest } from '../types.js';
 
+const _require = createRequire(import.meta.url);
 function tryToLoadTestsData(filename: string): Partial<{ [id: string]: ServerTest }> | undefined {
   try {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    return require(filename) as Partial<{ [id: string]: ServerTest }>;
+    return _require(filename) as Partial<{ [id: string]: ServerTest }>;
   } catch (_) {
     /* noop */
   }
@@ -36,7 +38,7 @@ function approve(
     )
     .forEach((retry, imageName) => {
       mkdirSync(dstPath, { recursive: true });
-      fs.copyFileSync(path.join(srcPath, `${imageName}-actual-${retry}.png`), path.join(dstPath, `${imageName}.png`));
+      copyFileSync(path.join(srcPath, `${imageName}-actual-${retry}.png`), path.join(dstPath, `${imageName}.png`));
     });
 }
 
@@ -46,7 +48,7 @@ function traverse(
   testPaths: string[][] | null,
   isMatch: (value: string) => boolean,
 ): void {
-  const dirents = fs.readdirSync(srcPath, { withFileTypes: true });
+  const dirents = readdirSync(srcPath, { withFileTypes: true });
   approve(dirents, srcPath, dstPath, testPaths, isMatch);
   dirents
     .filter((dirent) => dirent.isDirectory())
@@ -66,7 +68,7 @@ export default function update(config: Config, grepPattern?: string): void {
   const isMatch = grepPattern ? micromatch.matcher(grepPattern, { contains: true }) : () => true;
 
   const testsMeta = tryToLoadTestsData(`${reportDir}/tests.json`);
-  const testsReport = tryToLoadTestsData(`${reportDir}/data`);
+  const testsReport = tryToLoadTestsData(`${reportDir}/data.js`);
   let testPaths: string[][] | null = null;
 
   if (testsMeta && testsReport) {

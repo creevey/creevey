@@ -1,27 +1,21 @@
-import { promisify } from 'util';
-import fs, { Stats } from 'fs';
 import path from 'path';
 import chai from 'chai';
 import chalk from 'chalk';
+import { Stats } from 'fs';
+import { stat, readdir, readFile, writeFile, mkdir } from 'fs/promises';
 import Mocha, { Context, MochaOptions } from 'mocha';
 import { Key, until } from 'selenium-webdriver';
-import { Config, Images, Options, TestMessage, isImageError } from '../../types';
-import { subscribeOn, emitTestMessage, emitWorkerMessage } from '../messages';
-import chaiImage from './chai-image';
-import { closeBrowser, getBrowser, switchStory } from '../selenium';
-import { CreeveyReporter, TeamcityReporter } from './reporter';
-import { addTestsFromStories } from './helpers';
-import { logger } from '../logger';
-
-const statAsync = promisify(fs.stat);
-const readdirAsync = promisify(fs.readdir);
-const readFileAsync = promisify(fs.readFile);
-const writeFileAsync = promisify(fs.writeFile);
-const mkdirAsync = promisify(fs.mkdir);
+import { Config, Images, Options, TestMessage, isImageError } from '../../types.js';
+import { subscribeOn, emitTestMessage, emitWorkerMessage } from '../messages.js';
+import chaiImage from './chai-image.js';
+import { closeBrowser, getBrowser, switchStory } from '../selenium/index.js';
+import { CreeveyReporter, TeamcityReporter } from './reporter.js';
+import { addTestsFromStories } from './helpers.js';
+import { logger } from '../logger.js';
 
 async function getStat(filePath: string): Promise<Stats | null> {
   try {
-    return await statAsync(filePath);
+    return await stat(filePath);
   } catch (error) {
     if (typeof error == 'object' && error && (error as { code?: unknown }).code === 'ENOENT') {
       return null;
@@ -35,7 +29,7 @@ async function getLastImageNumber(imageDir: string, imageName: string): Promise<
 
   try {
     return (
-      (await readdirAsync(imageDir))
+      (await readdir(imageDir))
         .map((filename) => filename.replace(actualImagesRegexp, '$1'))
         .map(Number)
         .filter((x) => !isNaN(x))
@@ -71,9 +65,9 @@ export default async function worker(config: Config, options: Options & { browse
   }
 
   async function saveImages(imageDir: string, images: { name: string; data: Buffer }[]): Promise<void> {
-    await mkdirAsync(imageDir, { recursive: true });
+    await mkdir(imageDir, { recursive: true });
     for (const { name, data } of images) {
-      await writeFileAsync(path.join(imageDir, name), data);
+      await writeFile(path.join(imageDir, name), data);
     }
   }
 
@@ -113,7 +107,7 @@ export default async function worker(config: Config, options: Options & { browse
     const expectImageStat = await getStat(path.join(expectImageDir, `${imageName}.png`));
     if (!expectImageStat) return { expected: null, onCompare };
 
-    const expected = await readFileAsync(path.join(expectImageDir, `${imageName}.png`));
+    const expected = await readFile(path.join(expectImageDir, `${imageName}.png`));
 
     return { expected, onCompare };
   }

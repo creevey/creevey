@@ -1,8 +1,8 @@
-import { Placeholder } from '@storybook/components';
 import React, { useEffect, useState } from 'react';
-import { TestData } from '../../../types';
-import { Panel } from './Panel';
-import { CreeveyManager } from '../Manager';
+import { Placeholder } from '@storybook/components';
+import { TestData } from '../../../types.js';
+import { Panel } from './Panel.js';
+import { CreeveyManager } from '../Manager.js';
 
 interface AddonProps {
   active?: boolean;

@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { serializeRegExp, deserializeRegExp, SerializedRegExp } from '../../src/shared/serializeRegExp';
+import { serializeRegExp, deserializeRegExp, SerializedRegExp } from '../../src/shared/serializeRegExp.js';
 
 describe('serialize regexp', () => {
   it('serializes correctly', () => {

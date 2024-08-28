@@ -7,11 +7,12 @@ import serve from 'koa-static';
 import mount from 'koa-mount';
 import body from 'koa-bodyparser';
 import WebSocket from 'ws';
-import { CreeveyApi } from './api';
-import { emitStoriesMessage, sendStoriesMessage, subscribeOn, subscribeOnWorker } from '../messages';
-import { CaptureOptions, isDefined, noop, StoryInput } from '../../types';
-import { logger } from '../logger';
-import { deserializeStory } from '../../shared';
+import { fileURLToPath } from 'url';
+import { CreeveyApi } from './api.js';
+import { emitStoriesMessage, sendStoriesMessage, subscribeOn, subscribeOnWorker } from '../messages.js';
+import { CaptureOptions, isDefined, noop, StoryInput } from '../../types.js';
+import { logger } from '../logger.js';
+import { deserializeStory } from '../../shared/index.js';
 
 export default function server(reportDir: string, port: number, ui: boolean): (api: CreeveyApi) => void {
   let resolveApi: (api: CreeveyApi) => void = noop;
@@ -86,7 +87,7 @@ export default function server(reportDir: string, port: number, ui: boolean): (a
     await next();
   });
 
-  app.use(serve(path.join(__dirname, '../../client/web')));
+  app.use(serve(path.join(path.dirname(fileURLToPath(import.meta.url)), '../../client/web')));
   app.use(mount('/report', serve(reportDir)));
 
   wss.on('error', (error) => logger.error(error));

@@ -1,8 +1,8 @@
 import chalk from 'chalk';
-import { Runner, reporters, MochaOptions } from 'mocha';
+import Logger from 'loglevel';
 import prefix from 'loglevel-plugin-prefix';
-import { Images, isDefined, isImageError } from '../../types';
-import { getLogger } from '../logger';
+import { Runner, reporters, MochaOptions } from 'mocha';
+import { Images, isDefined, isImageError } from '../../types.js';
 
 interface ReporterOptions {
   reportDir: string;
@@ -26,7 +26,7 @@ export class CreeveyReporter extends reporters.Base {
     super(runner);
 
     const { sessionId, topLevelSuite } = options.reporterOptions as ReporterOptions;
-    const testLogger = getLogger(topLevelSuite);
+    const testLogger = Logger.getLogger(topLevelSuite);
 
     prefix.apply(testLogger, {
       format(level) {

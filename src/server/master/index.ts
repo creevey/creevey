@@ -1,28 +1,24 @@
 import path from 'path';
-import { copyFile, readdir, mkdir, existsSync, writeFile } from 'fs';
-import { promisify } from 'util';
-import master from './master';
-import creeveyApi, { CreeveyApi } from './api';
-import { Config, Options, isDefined } from '../../types';
-import { shutdown, shutdownWorkers, testsToImages, readDirRecursive } from '../utils';
-import { subscribeOn } from '../messages';
-import Runner from './runner';
-import { logger } from '../logger';
-import { sendScreenshotsCount } from '../telemetry';
-
-const writeFileAsync = promisify(writeFile);
-const copyFileAsync = promisify(copyFile);
-const readdirAsync = promisify(readdir);
-const mkdirAsync = promisify(mkdir);
+import { existsSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { copyFile, readdir, mkdir, writeFile } from 'fs/promises';
+import master from './master.js';
+import creeveyApi, { CreeveyApi } from './api.js';
+import { Config, Options, isDefined } from '../../types.js';
+import { shutdown, shutdownWorkers, testsToImages, readDirRecursive } from '../utils.js';
+import { subscribeOn } from '../messages.js';
+import Runner from './runner.js';
+import { logger } from '../logger.js';
+import { sendScreenshotsCount } from '../telemetry.js';
 
 async function copyStatics(reportDir: string): Promise<void> {
-  const clientDir = path.join(__dirname, '../../client/web');
-  const files = (await readdirAsync(clientDir, { withFileTypes: true }))
+  const clientDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '../../client/web');
+  const files = (await readdir(clientDir, { withFileTypes: true }))
     .filter((dirent) => dirent.isFile() && !dirent.name.endsWith('.d.ts') && !dirent.name.endsWith('.tsx'))
     .map((dirent) => dirent.name);
-  await mkdirAsync(reportDir, { recursive: true });
+  await mkdir(reportDir, { recursive: true });
   for (const file of files) {
-    await copyFileAsync(path.join(clientDir, file), path.join(reportDir, file));
+    await copyFile(path.join(clientDir, file), path.join(reportDir, file));
   }
 }
 
@@ -74,7 +70,7 @@ export default async function (config: Config, options: Options, resolveApi: (ap
   if (options.saveReport) {
     runner.on('stop', () => {
       void copyStatics(config.reportDir).then(() =>
-        writeFileAsync(path.join(config.reportDir, 'data.js'), reportDataModule(runner?.status.tests)),
+        writeFile(path.join(config.reportDir, 'data.js'), reportDataModule(runner?.status.tests)),
       );
     });
   }

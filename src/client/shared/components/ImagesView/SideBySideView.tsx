@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { ViewPropsWithTheme, getBorderColor, themeBorderColors } from './ImagesView';
-import { styled, withTheme } from '@storybook/theming';
-import { useApplyScale, useLoadImages, useResizeObserver, getBorderSize } from '../../helpers';
 import { Loader } from '@storybook/components';
-import { readyForCapture } from '../../../addon/readyForCapture';
+import { styled, withTheme } from '@storybook/theming';
+import { ViewPropsWithTheme, getBorderColor, themeBorderColors } from './ImagesView.js';
+import { useApplyScale, useLoadImages, useResizeObserver, getBorderSize } from '../../helpers.js';
+import { readyForCapture } from '../../../addon/readyForCapture.js';
 
 type LayoutDirection = 'horizontal' | 'vertical';
 

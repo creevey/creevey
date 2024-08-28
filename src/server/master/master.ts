@@ -1,7 +1,7 @@
 import path from 'path';
-import { Config, TestData, isDefined, ServerTest } from '../../types';
-import { loadTestsFromStories, saveTestsJson } from '../stories';
-import Runner from './runner';
+import { Config, TestData, isDefined, ServerTest } from '../../types.js';
+import { loadTestsFromStories, saveTestsJson } from '../stories.js';
+import Runner from './runner.js';
 
 function mergeTests(
   testsWithReports: Partial<{ [id: string]: TestData }>,

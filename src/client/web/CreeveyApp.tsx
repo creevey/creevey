@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useImmer } from 'use-immer';
-import { CreeveyUpdate, CreeveySuite, isDefined, CreeveyTest } from '../../types';
-import { CreeveyClientApi } from '../shared/creeveyClientApi';
+import { ensure, styled, ThemeProvider, themes, withTheme } from '@storybook/theming';
+import { CreeveyUpdate, CreeveySuite, isDefined, CreeveyTest } from '../../types.js';
+import { CreeveyClientApi } from '../shared/creeveyClientApi.js';
 import {
   getCheckedTests,
   updateTestStatus,
@@ -14,13 +15,12 @@ import {
   setSearchParams,
   getTestPathFromSearch,
   CreeveyViewFilter,
-} from '../shared/helpers';
-import { CreeveyContext } from './CreeveyContext';
-import { KeyboardEvents } from './KeyboardEventsContext';
-import { SideBar } from './CreeveyView/SideBar';
-import { ResultsPage } from '../shared/components/ResultsPage';
-import { ensure, styled, ThemeProvider, themes, withTheme } from '@storybook/theming';
-import { Toggle } from './CreeveyView/SideBar/Toggle';
+} from '../shared/helpers.js';
+import { CreeveyContext } from './CreeveyContext.js';
+import { KeyboardEvents } from './KeyboardEventsContext.js';
+import { SideBar } from './CreeveyView/SideBar/index.js';
+import { ResultsPage } from '../shared/components/ResultsPage.js';
+import { Toggle } from './CreeveyView/SideBar/Toggle.js';
 
 export interface CreeveyAppProps {
   api?: CreeveyClientApi;

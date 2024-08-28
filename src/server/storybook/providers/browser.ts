@@ -1,10 +1,10 @@
 import cluster from 'cluster';
-import type { CreeveyStory, StoriesProvider, StoriesRaw } from '../../../types';
-import { loadStoriesFromBrowser } from '../../selenium';
-import { emitStoriesMessage, sendStoriesMessage, subscribeOn, subscribeOnWorker } from '../../messages';
-import { isDefined } from '../../../types';
-import { logger } from '../../logger';
-import { deserializeRawStories } from '../../../shared';
+import type { CreeveyStory, StoriesProvider, StoriesRaw } from '../../../types.js';
+import { loadStoriesFromBrowser } from '../../selenium/index.js';
+import { emitStoriesMessage, sendStoriesMessage, subscribeOn, subscribeOnWorker } from '../../messages.js';
+import { isDefined } from '../../../types.js';
+import { logger } from '../../logger.js';
+import { deserializeRawStories } from '../../../shared/index.js';
 
 export const loadStories: StoriesProvider = async (_config, _options, storiesListener) => {
   if (cluster.isPrimary) {

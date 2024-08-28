@@ -1,11 +1,11 @@
 import cluster from 'cluster';
 import minimist from 'minimist';
-import creevey from './server';
-import { noop, Options } from './types';
-import { emitWorkerMessage } from './server/messages';
-import { isShuttingDown, shutdown, shutdownWorkers } from './server/utils';
-import { setDefaultLevel, levels } from 'loglevel';
-import { logger } from './server/logger';
+import creevey from './server/index.js';
+import { noop, Options } from './types.js';
+import { emitWorkerMessage } from './server/messages.js';
+import { isShuttingDown, shutdown, shutdownWorkers } from './server/utils.js';
+import Logger from 'loglevel';
+import { logger } from './server/logger.js';
 
 function shutdownOnException(reason: unknown): void {
   if (isShuttingDown.current) return;
@@ -34,14 +34,14 @@ const argv = minimist<Options>(process.argv.slice(2), {
 // @ts-expect-error: define log level for storybook
 global.LOGLEVEL = argv.trace ? 'trace' : argv.debug ? 'debug' : 'warn';
 if (argv.trace) {
-  logger.setDefaultLevel(levels.TRACE);
-  setDefaultLevel(levels.TRACE);
+  logger.setDefaultLevel(Logger.levels.TRACE);
+  Logger.setDefaultLevel(Logger.levels.TRACE);
 } else if (argv.debug) {
-  logger.setDefaultLevel(levels.DEBUG);
-  setDefaultLevel(levels.DEBUG);
+  logger.setDefaultLevel(Logger.levels.DEBUG);
+  Logger.setDefaultLevel(Logger.levels.DEBUG);
 } else {
-  logger.setDefaultLevel(levels.INFO);
-  setDefaultLevel(levels.INFO);
+  logger.setDefaultLevel(Logger.levels.INFO);
+  Logger.setDefaultLevel(Logger.levels.INFO);
 }
 
 void creevey(argv);

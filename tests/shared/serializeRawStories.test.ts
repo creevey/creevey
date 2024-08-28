@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import { CreeveyStoryParams, StoriesRaw } from '../../src/types';
-import { serializeRawStories, deserializeRawStories } from '../../src/shared';
+import { CreeveyStoryParams, StoriesRaw } from '../../src/types.js';
+import { serializeRawStories, deserializeRawStories } from '../../src/shared/index.js';
 
 describe('serializes raw stories with creevey params', () => {
   const getStories = (): StoriesRaw => {

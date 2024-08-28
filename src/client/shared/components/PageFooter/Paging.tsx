@@ -1,8 +1,7 @@
 import React from 'react';
-
 import { Button, Icons } from '@storybook/components';
-import { noop } from '../../../../types';
 import { styled } from '@storybook/theming';
+import { noop } from '../../../../types.js';
 
 export interface PagingProps {
   activePage: number;

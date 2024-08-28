@@ -1,4 +1,4 @@
-import { BrowserConfig } from '../../src/types';
+import { BrowserConfig } from '../../src/types.js';
 
 const config: BrowserConfig = {
   limit: 5,

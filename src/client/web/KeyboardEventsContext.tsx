@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useContext } from 'react';
-import { CreeveySuite, isTest, noop } from '../../types';
-import { CreeveyViewFilter, filterTests, flattenSuite, getSuiteByPath, getTestPath } from '../shared/helpers';
-import { CreeveyContext } from './CreeveyContext';
+import { CreeveySuite, isTest, noop } from '../../types.js';
+import { CreeveyViewFilter, filterTests, flattenSuite, getSuiteByPath, getTestPath } from '../shared/helpers.js';
+import { CreeveyContext } from './CreeveyContext.js';
 
 export type SuitePath = string[];
 export type FocusableItem = null | SuitePath;

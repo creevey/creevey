@@ -12,7 +12,7 @@ import {
   WebpackHandler,
   DockerHandler,
   ShutdownHandler,
-} from '../types';
+} from '../types.js';
 
 function emitMessage<T>(message: T): boolean {
   if (cluster.isWorker && !process.connected) return false;

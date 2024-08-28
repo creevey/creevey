@@ -1,5 +1,5 @@
 import type { DecoratorFunction } from '@storybook/csf';
-import type { IKey } from 'selenium-webdriver/lib/input';
+import type { IKey } from 'selenium-webdriver/lib/input.js';
 import type { Worker as ClusterWorker } from 'cluster';
 import type { until, WebDriver, WebElementPromise } from 'selenium-webdriver';
 import type Pixelmatch from 'pixelmatch';
@@ -381,7 +381,7 @@ export interface SkipOption {
 
 export type SkipOptions = boolean | string | Record<string, SkipOption | SkipOption[]>;
 
-export type CreeveyTestFunction = (this: {
+export interface CreeveyTestController {
   browser: WebDriver;
   until: typeof until;
   keys: IKey;
@@ -389,7 +389,9 @@ export type CreeveyTestFunction = (this: {
   takeScreenshot: () => Promise<string>;
   updateStoryArgs: <Args extends Record<string, unknown>>(updatedArgs: Args) => Promise<void>;
   readonly captureElement?: WebElementPromise;
-}) => Promise<void>;
+}
+
+export type CreeveyTestFunction = (this: CreeveyTestController) => Promise<void>;
 
 export interface CaptureOptions {
   imageName?: string;
@@ -440,6 +442,19 @@ export interface CreeveySuite {
 
 export type ImagesViewMode = 'side-by-side' | 'swap' | 'slide' | 'blend';
 
+export interface PackageJson {
+  [field: string]: any;
+  name: string;
+  type: string;
+  version: string;
+  main: string;
+  module: string;
+  browser: string | Record<string, string | false>;
+  exports: string | Record<string, any> | string[];
+  imports: Record<string, any>;
+  dependencies: Record<string, string>;
+}
+
 export function noop(): void {
   /* noop */
 }
@@ -449,7 +464,14 @@ export function isDefined<T>(value: T | null | undefined): value is T {
 }
 
 export function isTest<T1, T2 extends TestData>(x?: T1 | T2): x is T2 {
-  return isDefined(x) && 'id' in x && 'storyId' in x && typeof x.id == 'string' && typeof x.storyId == 'string';
+  return (
+    isDefined(x) &&
+    isObject(x) &&
+    'id' in x &&
+    'storyId' in x &&
+    typeof x.id == 'string' &&
+    typeof x.storyId == 'string'
+  );
 }
 
 export function isObject(x: unknown): x is Record<string, unknown> {

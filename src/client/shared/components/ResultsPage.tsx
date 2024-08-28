@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { ImagesView } from './ImagesView/ImagesView';
-import { PageHeader } from './PageHeader/PageHeader';
-import { PageFooter } from './PageFooter/PageFooter';
-import { getImageUrl } from '../helpers';
-import { styled, withTheme, Theme } from '@storybook/theming';
 import { Placeholder, ScrollArea } from '@storybook/components';
-import { getViewMode, VIEW_MODE_KEY } from '../viewMode';
-import { ImagesViewMode, TestResult } from '../../../types';
+import { styled, withTheme, Theme } from '@storybook/theming';
+import { ImagesView } from './ImagesView/ImagesView.js';
+import { PageHeader } from './PageHeader/PageHeader.js';
+import { PageFooter } from './PageFooter/PageFooter.js';
+import { getImageUrl } from '../helpers.js';
+import { getViewMode, VIEW_MODE_KEY } from '../viewMode.js';
+import { ImagesViewMode, TestResult } from '../../../types.js';
 
 interface TestResultsProps {
   id: string;

@@ -1,9 +1,9 @@
 import { addons, types } from '@storybook/manager-api';
 import { API } from '@storybook/api';
 import React from 'react';
-import { Addon } from './components/Addon';
-import { Tools } from './components/Tools';
-import { CreeveyManager } from './Manager';
+import { Addon } from './components/Addon.js';
+import { Tools } from './components/Tools.js';
+import { CreeveyManager } from './Manager.js';
 
 export const ADDON_ID = 'creevey';
 

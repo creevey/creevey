@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   moduleNameMapper: {
     '#(.*)': '<rootDir>/node_modules/$1',
   },

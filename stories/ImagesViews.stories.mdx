@@ -3,7 +3,6 @@ import { fireEvent, within } from '@storybook/testing-library';
 
 import { capture } from '../src/client/addon';
 import { ImagesView as ImagesViewBase } from '../src/client/shared/components/ImagesView';
-import { ImagesViewMode, CSFStory } from '../src/types';
 
 import octocatExpect from './fixtures/octocat-expect.png';
 import octocatDiff from './fixtures/octocat-diff.png';
@@ -12,7 +11,7 @@ import octocatActual from './fixtures/octocat-actual.png';
 export const ImagesView = (mode) => (
   <ImagesViewBase
     image={{ expect: octocatExpect, diff: octocatDiff, actual: octocatActual }}
-    url=""
+    url={new URL(import.meta.url).origin}
     canApprove
     mode={mode}
   />

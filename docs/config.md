@@ -12,7 +12,7 @@
 
 ### Creevey config
 
-In default configuration Creevey take screenshots of `#root` element only for chrome browser in one concurrent instance, to run tests in different browsers or speedup tests and run in parallel, you need to define config file `.creevey/config.js`
+In default configuration Creevey take screenshots of `#storybook-root` element only for chrome browser in one concurrent instance, to run tests in different browsers or speedup tests and run in parallel, you need to define config file `.creevey/config.js`
 
 ```ts
 module.exports = {
@@ -46,9 +46,6 @@ module.exports = {
 
   // Default Storybook url
   storybookUrl: 'http://localhost:6006',
-
-  // Storybook config directory
-  storybookDir: path.join(__dirname, '.storybook'),
 
   // Where original images are stored
   screenDir: path.join(__dirname, '../images'),
