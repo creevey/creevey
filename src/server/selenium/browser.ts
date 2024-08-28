@@ -30,12 +30,12 @@ import { colors, logger } from '../logger.js';
 import { emitStoriesMessage, subscribeOn } from '../messages.js';
 import { isShuttingDown, LOCALHOST_REGEXP, runSequence } from '../utils.js';
 
-type ElementRect = {
+interface ElementRect {
   top: number;
   left: number;
   width: number;
   height: number;
-};
+}
 
 declare global {
   interface Window {
@@ -63,15 +63,14 @@ function getSessionData(grid: string, sessionId = ''): Promise<Record<string, un
   return new Promise((resolve, reject) =>
     (gridUrl.protocol == 'https:' ? https : http).get(gridUrl.toString(), (res) => {
       if (res.statusCode !== 200) {
-        return reject(
-          new Error(`Couldn't get session data for ${sessionId}. Status code: ${res.statusCode ?? 'Unknown'}`),
-        );
+        reject(new Error(`Couldn't get session data for ${sessionId}. Status code: ${res.statusCode ?? 'Unknown'}`));
+        return;
       }
 
       let data = '';
 
       res.setEncoding('utf8');
-      res.on('data', (chunk) => (data += chunk));
+      res.on('data', (chunk: string) => (data += chunk));
       res.on('end', () => {
         try {
           resolve(JSON.parse(data) as Record<string, unknown>);
@@ -79,7 +78,7 @@ function getSessionData(grid: string, sessionId = ''): Promise<Record<string, un
           reject(
             new Error(
               `Couldn't get session data for ${sessionId}. ${
-                error instanceof Error ? error.stack ?? error.message : (error as string)
+                error instanceof Error ? (error.stack ?? error.message) : (error as string)
               }`,
             ),
           );
@@ -151,7 +150,7 @@ function getUrlChecker(browser: WebDriver): (url: string) => Promise<boolean> {
       // So we just check `root` element
       browserLogger.debug(`Checking ${chalk.cyan(`#${storybookRootID}`)} existence on ${chalk.magenta(url)}`);
       return source.includes(`id="${storybookRootID}"`);
-    } catch (error) {
+    } catch (_) {
       return false;
     }
   };
@@ -165,7 +164,8 @@ async function waitForStorybook(browser: WebDriver): Promise<void> {
     wait = false;
     isTimeout = true;
   }, 60000);
-  while (wait !== false) {
+  // TODO Improve timeout if `await executeScript` is hanging
+  while (wait) {
     try {
       wait = await browser.executeScript(function (SET_GLOBALS: string): boolean {
         if (typeof window.__STORYBOOK_ADDONS_CHANNEL__ == 'undefined') return true;
@@ -395,8 +395,11 @@ export async function takeScreenshot(
               width: elementRect.width,
               height: elementRect.height,
             },
+            // NOTE page_Offset is used only for IE9-11
             windowRect: {
+              // eslint-disable-next-line @typescript-eslint/no-deprecated
               top: Math.round(window.scrollY || window.pageYOffset),
+              // eslint-disable-next-line @typescript-eslint/no-deprecated
               left: Math.round(window.scrollX || window.pageXOffset),
               width: window.innerWidth,
               height: window.innerHeight,
@@ -452,9 +455,10 @@ async function selectStory(
       callback: (response: [error?: string | null, isCaptureCalled?: boolean]) => void,
     ) {
       if (typeof window.__CREEVEY_SELECT_STORY__ == 'undefined') {
-        return callback([
+        callback([
           "Creevey can't switch story. This may happened if forget to add `creevey` addon to your storybook config, or storybook not loaded in browser due syntax error.",
         ]);
+        return;
       }
       void window.__CREEVEY_SELECT_STORY__(id, kind, name, shouldWaitForReady, callback);
     },
@@ -488,7 +492,7 @@ async function openStorybookPage(
   resolver?: () => Promise<string>,
 ): Promise<void> {
   if (!LOCALHOST_REGEXP.test(storybookUrl)) {
-    return browser?.get(appendIframePath(storybookUrl));
+    return browser.get(appendIframePath(storybookUrl));
   }
 
   try {
@@ -585,10 +589,7 @@ export async function getBrowser(config: Config, options: Options & { browser: s
   const capabilities = new Capabilities({ ...userCapabilities, pageLoadStrategy: PageLoadStrategy.EAGER });
 
   subscribeOn('shutdown', () => {
-    browser?.quit().finally(() =>
-      // eslint-disable-next-line no-process-exit
-      process.exit(),
-    );
+    browser?.quit().finally(() => process.exit());
     browser = null;
   });
 
@@ -629,7 +630,7 @@ export async function getBrowser(config: Config, options: Options & { browser: s
     // const id = await browser.getWindowHandle();
     // context = await BrowsingContext(browser, { browsingContextId: id });
 
-    const sessionId = (await browser.getSession())?.getId();
+    const sessionId = (await browser.getSession()).getId();
     let browserHost = '';
 
     try {
@@ -780,7 +781,9 @@ export async function switchStory(this: Context): Promise<void> {
         .executeAsyncScript<boolean>(function (callback: (isCompleted: boolean) => void) {
           window.__CREEVEY_HAS_PLAY_COMPLETED_YET__(callback);
         })
-        .then((isCompleted) => storyPlayResolver(isCompleted));
+        .then((isCompleted) => {
+          storyPlayResolver(isCompleted);
+        });
 
       emitStoriesMessage({ type: 'capture' });
     });

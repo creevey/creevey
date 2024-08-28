@@ -39,7 +39,7 @@ export const Panel = ({ tests, selectedTestId, onChangeTest, onImageApprove }: P
         <Wrapper isRunning={isRunning}>
           <ResultsPage
             height={'100%'}
-            key={`${result.id}_${result.results?.length ?? 0}`} // TODO
+            key={`${result.id}_${result.results.length}`} // TODO
             id={result.id}
             path={getTestPath(result)} // TODO Memo?
             results={result.results}

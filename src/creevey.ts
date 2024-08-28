@@ -10,7 +10,7 @@ import { logger } from './server/logger.js';
 function shutdownOnException(reason: unknown): void {
   if (isShuttingDown.current) return;
 
-  const error = reason instanceof Error ? reason.stack ?? reason.message : (reason as string);
+  const error = reason instanceof Error ? (reason.stack ?? reason.message) : (reason as string);
 
   logger.error(error);
 

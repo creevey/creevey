@@ -85,14 +85,24 @@ export class Checkbox extends React.Component<CheckboxProps, CheckboxState> {
       indeterminate: value,
     });
   };
-  public setIndeterminate = (): void => this.handleIndeterminateChange(true);
-  public resetIndeterminate = (): void => this.handleIndeterminateChange(false);
+  public setIndeterminate = (): void => {
+    this.handleIndeterminateChange(true);
+  };
+  public resetIndeterminate = (): void => {
+    this.handleIndeterminateChange(false);
+  };
   render(): JSX.Element {
     const { checked, disabled, onValueChange } = this.props;
     const { indeterminate } = this.state;
     return (
       <Label disabled={disabled}>
-        <input type="checkbox" onChange={(e) => onValueChange(e.target.checked)} checked={checked || false} />
+        <input
+          type="checkbox"
+          onChange={(e) => {
+            onValueChange(e.target.checked);
+          }}
+          checked={checked || false}
+        />
         <Box>
           {indeterminate ? (
             <CircleIcon icon="circle" width="8" height="8" />

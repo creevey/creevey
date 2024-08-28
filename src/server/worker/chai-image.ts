@@ -81,11 +81,17 @@ export default function (
         return imageName ? `Expected image '${imageName}' does not exists` : 'Expected image does not exists';
       }
 
-      if (actual.equals(expected)) return await onCompare(actual);
+      if (actual.equals(expected)) {
+        await onCompare(actual);
+        return;
+      }
 
       const { isEqual, diff } = compareImages(expected, actual, diffOptions);
 
-      if (isEqual) return await onCompare(actual);
+      if (isEqual) {
+        await onCompare(actual);
+        return;
+      }
 
       await onCompare(actual, expected, diff);
 
@@ -108,7 +114,7 @@ export default function (
     );
 
     utils.addMethod(Assertion.prototype, 'matchImages', async function matchImages(this: Record<string, unknown>) {
-      const errors: { [imageName: string]: string } = {};
+      const errors: Record<string, string> = {};
       await Promise.all(
         Object.entries<string | Buffer>(utils.flag(this, 'object') as Record<string, string | Buffer>).map(
           async ([imageName, imageOrBase64]) => {
@@ -134,7 +140,7 @@ export default function (
   };
 }
 
-function createImageError(imageErrors: string | Partial<{ [name: string]: string }>): ImagesError {
+function createImageError(imageErrors: string | Partial<Record<string, string>>): ImagesError {
   const error = new Error('Expected image to match') as ImagesError;
   error.images = imageErrors;
   return error;

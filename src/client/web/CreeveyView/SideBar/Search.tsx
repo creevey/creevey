@@ -1,7 +1,7 @@
 import { Icons } from '@storybook/components';
 import { styled, Theme, withTheme } from '@storybook/theming';
 import React, { ChangeEvent, useContext, useRef, useState } from 'react';
-import { KeyboardEventsContext } from '../../KeyboardEventsContext';
+import { KeyboardEventsContext } from '../../KeyboardEventsContext.js';
 
 interface SearchProps {
   onChange: (arg: string) => void;
@@ -108,8 +108,12 @@ export const Search = ({ onChange, value }: SearchProps): JSX.Element => {
     <FilterForm
       autoComplete="off"
       focussed={focussed}
-      onReset={() => onChange('')}
-      onSubmit={(e) => e.preventDefault()}
+      onReset={() => {
+        onChange('');
+      }}
+      onSubmit={(e) => {
+        e.preventDefault();
+      }}
     >
       <FilterField
         type="text"
@@ -118,7 +122,9 @@ export const Search = ({ onChange, value }: SearchProps): JSX.Element => {
           onSetFocussed(true);
           setSidebarFocusedItem(null);
         }}
-        onBlur={() => onSetFocussed(false)}
+        onBlur={() => {
+          onSetFocussed(false);
+        }}
         onChange={(e: ChangeEvent<HTMLInputElement>) => {
           onChange(e.target.value);
         }}

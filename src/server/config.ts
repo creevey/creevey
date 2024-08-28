@@ -57,7 +57,7 @@ export async function readConfig(options: Options): Promise<Config> {
   if (isDefined(configPath)) {
     const isESM = isFilePathESM(configPath);
 
-    const configCode = await buildConfigBundle(configPath, isESM)
+    const configCode = await buildConfigBundle(configPath, isESM);
 
     const configData = await loadConfigFromBundledFile(configPath, configCode, isESM);
 

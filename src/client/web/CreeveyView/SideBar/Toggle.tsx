@@ -73,7 +73,13 @@ interface ToggleProps {
 
 export const Toggle = ({ value, onChange }: ToggleProps): JSX.Element => (
   <Container>
-    <input type="checkbox" onChange={() => onChange(!value)} checked={value || false} />
+    <input
+      type="checkbox"
+      onChange={() => {
+        onChange(!value);
+      }}
+      checked={value || false}
+    />
     <span>{value ? '☪' : '☀'}</span>
   </Container>
 );

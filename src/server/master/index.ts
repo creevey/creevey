@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 import { copyFile, readdir, mkdir, writeFile } from 'fs/promises';
 import master from './master.js';
 import creeveyApi, { CreeveyApi } from './api.js';
-import { Config, Options, isDefined } from '../../types.js';
+import { Config, Options, TestData, isDefined } from '../../types.js';
 import { shutdown, shutdownWorkers, testsToImages, readDirRecursive } from '../utils.js';
 import { subscribeOn } from '../messages.js';
 import Runner from './runner.js';
@@ -22,7 +22,7 @@ async function copyStatics(reportDir: string): Promise<void> {
   }
 }
 
-function reportDataModule<T>(data: T): string {
+function reportDataModule(data: Partial<Record<string, TestData>>): string {
   return `
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
@@ -59,7 +59,7 @@ export default async function (config: Config, options: Options, resolveApi: (ap
         new Promise((resolve) => setTimeout(resolve, 10000)),
         new Promise((resolve) => runner?.once('stop', resolve)),
       ]).then(() => shutdownWorkers());
-      runner?.stop();
+      runner.stop();
     } else {
       void shutdownWorkers();
     }
@@ -70,7 +70,7 @@ export default async function (config: Config, options: Options, resolveApi: (ap
   if (options.saveReport) {
     runner.on('stop', () => {
       void copyStatics(config.reportDir).then(() =>
-        writeFile(path.join(config.reportDir, 'data.js'), reportDataModule(runner?.status.tests)),
+        writeFile(path.join(config.reportDir, 'data.js'), reportDataModule(runner.status.tests)),
       );
     });
   }
@@ -81,12 +81,12 @@ export default async function (config: Config, options: Options, resolveApi: (ap
   } else {
     if (Object.values(runner.status.tests).filter((test) => test && !test.skip).length == 0) {
       logger.warn("Don't have any tests to run");
-      // eslint-disable-next-line no-process-exit
+
       void shutdownWorkers().then(() => process.exit());
       return;
     }
     runner.once('stop', () => {
-      const tests = Object.values(runner?.status.tests ?? {});
+      const tests = Object.values(runner.status.tests);
       const isSuccess = tests
         .filter(isDefined)
         .filter(({ skip }) => !skip)
@@ -94,13 +94,12 @@ export default async function (config: Config, options: Options, resolveApi: (ap
       // TODO output summary
       process.exitCode = isSuccess ? 0 : -1;
       if (!config.failFast) outputUnnecessaryImages(config.screenDir, testsToImages(tests));
-      sendScreenshotsCount(config, options, runner?.status)
-        .catch((reason) => {
-          const error = reason instanceof Error ? reason.stack ?? reason.message : (reason as string);
+      void sendScreenshotsCount(config, options, runner.status)
+        .catch((reason: unknown) => {
+          const error = reason instanceof Error ? (reason.stack ?? reason.message) : (reason as string);
           logger.warn(`Can't send telemetry: ${error}`);
         })
         .finally(() => {
-          // eslint-disable-next-line no-process-exit
           void shutdownWorkers().then(() => process.exit());
         });
     });

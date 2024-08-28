@@ -65,7 +65,10 @@ export const SideBySideView = withTheme(({ actual, diff, expect, theme }: ViewPr
     const diffImage = diffImageRef.current;
     const actualImage = actualImageRef.current;
 
-    if (!containerElement || !expectImage || !actualImage || !diffImage || !loaded) return setScale(1);
+    if (!containerElement || !expectImage || !actualImage || !diffImage || !loaded) {
+      setScale(1);
+      return;
+    }
 
     const borderSize = getBorderSize(diffImage);
 

@@ -19,7 +19,9 @@ function broadcast(wss: WebSocket.Server, message: Response): void {
 export default function creeveyApi(runner: Runner): CreeveyApi {
   return {
     subscribe(wss: WebSocket.Server) {
-      runner.on('update', (payload: CreeveyUpdate) => broadcast(wss, { type: 'update', payload }));
+      runner.on('update', (payload: CreeveyUpdate) => {
+        broadcast(wss, { type: 'update', payload });
+      });
     },
 
     handleMessage(ws: WebSocket, message: WebSocket.Data) {

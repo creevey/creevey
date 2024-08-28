@@ -19,8 +19,8 @@ export default class Runner extends EventEmitter {
   private screenDir: string;
   private reportDir: string;
   private browsers: string[];
-  private pools: { [browser: string]: Pool } = {};
-  tests: Partial<{ [id: string]: ServerTest }> = {};
+  private pools: Record<string, Pool> = {};
+  tests: Partial<Record<string, ServerTest>> = {};
   public get isRunning(): boolean {
     return Object.values(this.pools).some((pool) => pool.isRunning);
   }
@@ -71,7 +71,7 @@ export default class Runner extends EventEmitter {
     await Promise.all(Object.values(this.pools).map((pool) => pool.init()));
   }
 
-  public updateTests(testsDiff: Partial<{ [id: string]: ServerTest }>): void {
+  public updateTests(testsDiff: Partial<Record<string, ServerTest>>): void {
     const tests: CreeveyStatus['tests'] = {};
     const removedTests: TestMeta[] = [];
     Object.entries(testsDiff).forEach(([id, newTest]) => {
@@ -99,9 +99,7 @@ export default class Runner extends EventEmitter {
   }
 
   public start(ids: string[]): void {
-    interface TestsByBrowser {
-      [browser: string]: { id: string; path: string[] }[];
-    }
+    type TestsByBrowser = Record<string, { id: string; path: string[] }[]>;
     if (this.isRunning) return;
 
     const testsToStart = ids
@@ -122,13 +120,13 @@ export default class Runner extends EventEmitter {
       ),
     });
 
-    const testsByBrowser: Partial<TestsByBrowser> = testsToStart.reduce((tests: TestsByBrowser, test) => {
+    const testsByBrowser: Partial<TestsByBrowser> = testsToStart.reduce((tests: Partial<TestsByBrowser>, test) => {
       const { id, browser, testName, storyPath } = test;
       const restPath = [...storyPath, testName].filter(isDefined);
       test.status = 'pending';
       return {
         ...tests,
-        [browser]: [...(tests[browser] || []), { id, path: restPath }],
+        [browser]: [...(tests[browser] ?? []), { id, path: restPath }],
       };
     }, {});
 
@@ -144,7 +142,9 @@ export default class Runner extends EventEmitter {
 
   public stop(): void {
     if (!this.isRunning) return;
-    this.browsers.forEach((browser) => this.pools[browser].stop());
+    this.browsers.forEach((browser) => {
+      this.pools[browser].stop();
+    });
   }
 
   public get status(): CreeveyStatus {
@@ -162,9 +162,9 @@ export default class Runner extends EventEmitter {
 
   public async approve({ id, retry, image }: ApprovePayload): Promise<void> {
     const test = this.tests[id];
-    if (!test || !test.results) return;
+    if (!test?.results) return;
     const result = test.results[retry];
-    if (!result || !result.images) return;
+    if (!result.images) return;
     const images = result.images[image];
     if (!images) return;
     if (!test.approved) {

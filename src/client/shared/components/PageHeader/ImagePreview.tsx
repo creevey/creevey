@@ -66,7 +66,9 @@ const Image = withTheme(
 
 export const ImagePreview = withTheme(
   ({ isActive, onClick, imageName, url, theme, error }: ImageSwapProps): JSX.Element => {
-    const handleClick = (): void => onClick(imageName);
+    const handleClick = (): void => {
+      onClick(imageName);
+    };
 
     return (
       <Button

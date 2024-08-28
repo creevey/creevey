@@ -18,7 +18,7 @@ export async function registerCreeveyPanels(storybookApi: API): Promise<void> {
     title: `Creevey/Run`,
     match: ({ viewMode }) => !!(viewMode && /^story$/.exec(viewMode)),
     type: types.TOOL,
-    // eslint-disable-next-line react/display-name
+
     render: () => React.createElement(Tools, { manager }),
   });
   await manager.initAll();
@@ -33,7 +33,7 @@ export async function registerCreeveyPanels(storybookApi: API): Promise<void> {
       paramKey: browser,
 
       // NOTE key = PANEL_ID needs to correct render button in addons panel
-      // eslint-disable-next-line react/display-name
+
       render: ({ active }) =>
         React.createElement(Addon, {
           active,

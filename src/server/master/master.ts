@@ -4,9 +4,9 @@ import { loadTestsFromStories, saveTestsJson } from '../stories.js';
 import Runner from './runner.js';
 
 function mergeTests(
-  testsWithReports: Partial<{ [id: string]: TestData }>,
-  testsFromStories: Partial<{ [id: string]: ServerTest }>,
-): Partial<{ [id: string]: ServerTest }> {
+  testsWithReports: Partial<Record<string, TestData>>,
+  testsFromStories: Partial<Record<string, ServerTest>>,
+): Partial<Record<string, ServerTest>> {
   Object.values(testsFromStories)
     .filter(isDefined)
     .forEach((test) => {
@@ -28,7 +28,7 @@ export default async function master(
   const reportDataPath = path.join(config.reportDir, 'data.js');
   let testsFromReport = {};
   try {
-    testsFromReport = (await import(reportDataPath)) as Partial<{ [id: string]: TestData }>;
+    testsFromReport = (await import(reportDataPath)) as Partial<Record<string, TestData>>;
   } catch (error) {
     // Ignore error
   }

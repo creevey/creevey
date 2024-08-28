@@ -13,7 +13,7 @@ declare global {
     __CREEVEY_SERVER_HOST__: string;
     __CREEVEY_SERVER_PORT__: number;
     __CREEVEY_WORKER_ID__: number;
-    __CREEVEY_GET_STORIES__: () => Promise<StoriesRaw | void>;
+    __CREEVEY_GET_STORIES__: () => Promise<StoriesRaw | undefined>;
     __CREEVEY_SELECT_STORY__: (
       storyId: string,
       kind: string,
@@ -54,8 +54,12 @@ const disableAnimationsStyles = `
 `;
 
 async function resetCurrentStory(channel: Channel): Promise<void> {
-  setTimeout(() => channel.emit(Events.SET_CURRENT_STORY, { storyId: true, name: '', kind: '' }), 0);
-  return new Promise<void>((resolve) => channel.once(Events.STORY_MISSING, resolve));
+  setTimeout(() => {
+    channel.emit(Events.SET_CURRENT_STORY, { storyId: true, name: '', kind: '' });
+  }, 0);
+  return new Promise<void>((resolve) => {
+    channel.once(Events.STORY_MISSING, resolve);
+  });
 }
 
 function catchRenderError(channel: Channel): Promise<void> & { cancel: () => void } {
@@ -98,8 +102,7 @@ function waitForStoryRendered(channel: Channel): Promise<void> & { cancel: () =>
 }
 
 function waitForFontsLoaded(): Promise<void> | void {
-  if (!document.fonts) return;
-
+  // TODO Use document.fonts.ready instead
   const areFontsLoading = Array.from(document.fonts).some((font) => font.status == 'loading');
 
   if (areFontsLoading) {
@@ -161,7 +164,7 @@ export function withCreevey(): ReturnType<typeof makeDecorator> {
     document.head.appendChild(style);
   }
 
-  async function getStories(): Promise<StoriesRaw | void> {
+  async function getStories(): Promise<StoriesRaw | undefined> {
     const stories = serializeRawStories(await window.__STORYBOOK_PREVIEW__.extract());
     const storiesByFiles = new Map<string, StoryContextForEnhancers[]>();
     Object.values(stories).forEach((story) => {
@@ -201,7 +204,9 @@ export function withCreevey(): ReturnType<typeof makeDecorator> {
     const errorPromise = catchRenderError(channel);
     const capturePromise = waitForCaptureCall().then(() => (isCaptureCalled = true));
 
-    setTimeout(() => channel.emit(Events.SET_CURRENT_STORY, { storyId, name, kind }), 0);
+    setTimeout(() => {
+      channel.emit(Events.SET_CURRENT_STORY, { storyId, name, kind });
+    }, 0);
 
     try {
       await Promise.race([
@@ -218,10 +223,10 @@ export function withCreevey(): ReturnType<typeof makeDecorator> {
       // NOTE Event `STORY_ERRORED` return error-like object without `name` field
       const errorMessage =
         reason instanceof Error
-          ? reason.stack ?? reason.message
+          ? (reason.stack ?? reason.message)
           : isObject(reason)
-          ? `${reason.message as string}\n    ${reason.stack as string}`
-          : (reason as string);
+            ? `${reason.message as string}\n    ${reason.stack as string}`
+            : (reason as string);
       callback([errorMessage]);
     } finally {
       renderPromise.cancel();
@@ -290,8 +295,8 @@ export function withCreevey(): ReturnType<typeof makeDecorator> {
 
     wrapper: (getStory, context) => {
       // TODO Define proper types, like captureElement is a promise
-      const { captureElement } = (context.parameters.creevey =
-        (context.parameters.creevey as CreeveyStoryParams) ?? {});
+      const { captureElement } = (context.parameters.creevey = (context.parameters.creevey ??
+        {}) as CreeveyStoryParams);
       Object.defineProperty(context.parameters.creevey, 'captureElement', {
         get() {
           switch (true) {
@@ -300,7 +305,7 @@ export function withCreevey(): ReturnType<typeof makeDecorator> {
             case captureElement === null:
               return Promise.resolve(document.documentElement);
             case typeof captureElement == 'string':
-              return Promise.resolve((context.canvasElement as Element).querySelector(captureElement as string));
+              return Promise.resolve((context.canvasElement as Element).querySelector(captureElement));
             case typeof captureElement == 'function':
               // TODO Define type for it
               return Promise.resolve(

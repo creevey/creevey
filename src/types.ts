@@ -19,16 +19,16 @@ export type DiffOptions = typeof Pixelmatch extends (
   : never;
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
-export type SetStoriesData = {
+export interface SetStoriesData {
   v?: number;
   globalParameters: { creevey?: CreeveyStoryParams };
-  kindParameters: Partial<{ [kind: string]: { fileName: string; creevey?: CreeveyStoryParams } }>;
+  kindParameters: Partial<Record<string, { fileName: string; creevey?: CreeveyStoryParams }>>;
   stories: StoriesRaw;
-};
+}
 
 export type StoriesRaw = Record<string, StoryContextForEnhancers>;
 
-export type StoryInput = StoriesRaw extends { [id: string]: infer S } ? S : never;
+export type StoryInput = StoriesRaw extends Record<string, infer S> ? S : never;
 
 export interface StoryMeta {
   title: string;
@@ -113,9 +113,7 @@ export type BrowserConfig = Capabilities & {
   viewport?: { width: number; height: number };
 };
 
-export interface StorybookGlobals {
-  [key: string]: unknown;
-}
+export type StorybookGlobals = Record<string, unknown>;
 
 export type Browser = boolean | string | BrowserConfig;
 
@@ -172,7 +170,7 @@ export interface Config {
    * Browser capabilities
    * @default { chrome: true }
    */
-  browsers: { [key: string]: Browser };
+  browsers: Record<string, Browser>;
   /**
    * Hooks that allow run custom script before and after creevey start
    */
@@ -331,12 +329,12 @@ export interface TestResult {
   status: 'failed' | 'success';
   // TODO Remove checks `name == browser` in TestResultsView
   // images?: Partial<{ [name: string]: Images }> | Images;
-  images?: Partial<{ [name: string]: Images }>;
+  images?: Partial<Record<string, Images>>;
   error?: string;
 }
 
 export interface ImagesError extends Error {
-  images: string | Partial<{ [name: string]: string }>;
+  images: string | Partial<Record<string, string>>;
 }
 
 export interface TestMeta {
@@ -352,7 +350,7 @@ export interface TestData extends TestMeta {
   retries?: number;
   status?: TestStatus;
   results?: TestResult[];
-  approved?: Partial<{ [image: string]: number }>;
+  approved?: Partial<Record<string, number>>;
 }
 
 export interface ServerTest extends TestData {
@@ -362,13 +360,14 @@ export interface ServerTest extends TestData {
 
 export interface CreeveyStatus {
   isRunning: boolean;
-  tests: Partial<{ [id: string]: TestData }>;
+  tests: Partial<Record<string, TestData>>;
   browsers: string[];
 }
 
 export interface CreeveyUpdate {
   isRunning?: boolean;
-  tests?: Partial<{ [id: string]: TestData }>;
+  // TODO Use Map instead
+  tests?: Partial<Record<string, TestData>>;
   removedTests?: TestMeta[];
 }
 
@@ -403,10 +402,7 @@ export interface CreeveyStoryParams extends CaptureOptions {
   waitForReady?: boolean;
   delay?: number | { for: string[]; ms: number };
   skip?: SkipOptions;
-  tests?: {
-    // TODO Define browserName, story
-    [name: string]: CreeveyTestFunction;
-  };
+  tests?: Record<string, CreeveyTestFunction>;
 }
 
 export interface ApprovePayload {
@@ -437,7 +433,8 @@ export interface CreeveySuite {
   opened: boolean;
   checked: boolean;
   indeterminate: boolean;
-  children: Partial<{ [title: string]: CreeveySuite | CreeveyTest }>;
+  // TODO Use Map instead
+  children: Partial<Record<string, CreeveySuite | CreeveyTest>>;
 }
 
 export type ImagesViewMode = 'side-by-side' | 'swap' | 'slide' | 'blend';

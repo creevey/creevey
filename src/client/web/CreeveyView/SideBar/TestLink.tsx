@@ -20,7 +20,7 @@ export function TestLink({ title, opened, test }: TestLinkProps): JSX.Element {
   const { sidebarFocusedItem, setSidebarFocusedItem } = useContext(KeyboardEventsContext);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
 
-  const emptyResults = (test?.results?.length ?? 0) == 0;
+  const emptyResults = (test.results?.length ?? 0) == 0;
   const testPath = useMemo(() => getTestPath(test), [test]);
 
   const isTestFocused = useMemo(
@@ -31,7 +31,12 @@ export function TestLink({ title, opened, test }: TestLinkProps): JSX.Element {
     [testPath, sidebarFocusedItem],
   );
 
-  const handleCheck = useCallback((value: boolean): void => onSuiteToggle(testPath, value), [testPath, onSuiteToggle]);
+  const handleCheck = useCallback(
+    (value: boolean): void => {
+      onSuiteToggle(testPath, value);
+    },
+    [testPath, onSuiteToggle],
+  );
 
   useEffect(() => {
     if (isTestFocused) buttonRef.current?.focus();

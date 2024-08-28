@@ -71,18 +71,42 @@ const handlers = createHandlers();
 
 const handler = (message: ProcessMessage): void => {
   switch (message.scope) {
-    case 'worker':
-      return handlers.worker.forEach((h) => h(message));
-    case 'stories':
-      return handlers.stories.forEach((h) => h(message));
-    case 'test':
-      return handlers.test.forEach((h) => h(message));
-    case 'webpack':
-      return handlers.webpack.forEach((h) => h(message));
-    case 'docker':
-      return handlers.docker.forEach((h) => h(message));
-    case 'shutdown':
-      return handlers.shutdown.forEach((h) => h(message));
+    case 'worker': {
+      handlers.worker.forEach((h) => {
+        h(message);
+      });
+      return;
+    }
+    case 'stories': {
+      handlers.stories.forEach((h) => {
+        h(message);
+      });
+      return;
+    }
+    case 'test': {
+      handlers.test.forEach((h) => {
+        h(message);
+      });
+      return;
+    }
+    case 'webpack': {
+      handlers.webpack.forEach((h) => {
+        h(message);
+      });
+      return;
+    }
+    case 'docker': {
+      handlers.docker.forEach((h) => {
+        h(message);
+      });
+      return;
+    }
+    case 'shutdown': {
+      handlers.shutdown.forEach((h) => {
+        h(message);
+      });
+      return;
+    }
   }
 };
 process.on('message', handler);
@@ -174,18 +198,42 @@ export function subscribeOnWorker(
     worker.once('exit', () => workers.delete(worker));
     worker.on('message', (message: ProcessMessage): void => {
       switch (message.scope) {
-        case 'worker':
-          return workerHandlers.worker.forEach((h) => h(message));
-        case 'stories':
-          return workerHandlers.stories.forEach((h) => h(message));
-        case 'test':
-          return workerHandlers.test.forEach((h) => h(message));
-        case 'webpack':
-          return workerHandlers.webpack.forEach((h) => h(message));
-        case 'docker':
-          return workerHandlers.docker.forEach((h) => h(message));
-        case 'shutdown':
-          return workerHandlers.shutdown.forEach((h) => h(message));
+        case 'worker': {
+          workerHandlers.worker.forEach((h) => {
+            h(message);
+          });
+          return;
+        }
+        case 'stories': {
+          workerHandlers.stories.forEach((h) => {
+            h(message);
+          });
+          return;
+        }
+        case 'test': {
+          workerHandlers.test.forEach((h) => {
+            h(message);
+          });
+          return;
+        }
+        case 'webpack': {
+          workerHandlers.webpack.forEach((h) => {
+            h(message);
+          });
+          return;
+        }
+        case 'docker': {
+          workerHandlers.docker.forEach((h) => {
+            h(message);
+          });
+          return;
+        }
+        case 'shutdown': {
+          workerHandlers.shutdown.forEach((h) => {
+            h(message);
+          });
+          return;
+        }
       }
     });
   }

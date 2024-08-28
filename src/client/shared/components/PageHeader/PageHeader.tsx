@@ -8,9 +8,7 @@ import { viewModes } from '../../viewMode.js';
 
 interface PageHeaderProps {
   title: string[];
-  images?: Partial<{
-    [name: string]: Images;
-  }>;
+  images?: Partial<Record<string, Images>>;
   errorMessage?: string | null;
   showViewModes: boolean;
   showTitle?: boolean;
@@ -80,7 +78,9 @@ export function PageHeader({
   const [imageName, setImageName] = useState((imageEntires[0] ?? [])[0] ?? '');
 
   const handleImageChange = (name: string): void => (setImageName(name), onImageChange(name));
-  const handleViewModeChange = (mode: string): void => onViewModeChange(mode as ImagesViewMode);
+  const handleViewModeChange = (mode: string): void => {
+    onViewModeChange(mode as ImagesViewMode);
+  };
   const error = errorMessage || imagesWithError.includes(imageName) ? images[imageName]?.error || errorMessage : null;
 
   return showTitle || error || imageEntires.length > 1 || showViewModes ? (

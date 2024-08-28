@@ -82,7 +82,12 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
     [api],
   );
   const handleStop = useCallback((): void => api?.stop(), [api]);
-  const handleThemeChange = useCallback((isDark: boolean): void => setTheme(isDark ? 'dark' : 'light'), [setTheme]);
+  const handleThemeChange = useCallback(
+    (isDark: boolean): void => {
+      setTheme(isDark ? 'dark' : 'light');
+    },
+    [setTheme],
+  );
   const handleOpenTest = useCallback((test: CreeveyTest): void => {
     const testPath = getTestPath(test);
     setSearchParams(testPath);
@@ -119,7 +124,9 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
         if (isDefined(tests))
           updateTests((draft) => {
             Object.values(tests).forEach((test) => test && updateTestStatus(draft, getTestPath(test), test));
-            removedTests.forEach((test) => removeTests(draft, getTestPath(test)));
+            removedTests.forEach((test) => {
+              removeTests(draft, getTestPath(test));
+            });
           });
       }),
     [api, updateTests],

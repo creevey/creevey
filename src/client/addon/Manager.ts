@@ -2,15 +2,7 @@ import { API } from '@storybook/api';
 import { Addon_TypesEnum } from '@storybook/types';
 import { SET_STORIES, STORY_RENDERED } from '@storybook/core-events';
 import { denormalizeStoryParameters } from '../../shared/index.js';
-import {
-  CreeveyStatus,
-  CreeveyUpdate,
-  isDefined,
-  TestData,
-  TestStatus,
-  StoriesRaw,
-  SetStoriesData,
-} from '../../types.js';
+import { CreeveyStatus, CreeveyUpdate, isDefined, TestData, TestStatus, StoriesRaw } from '../../types.js';
 import { initCreeveyClientApi, CreeveyClientApi } from '../shared/creeveyClientApi.js';
 import { calcStatus } from '../shared/helpers.js';
 import { ADDON_ID } from './register.js';
@@ -24,8 +16,8 @@ export class CreeveyManager {
   creeveyApi: CreeveyClientApi | null = null;
   stories: StoriesRaw = {};
 
-  updateStatusListeners: Array<(update: CreeveyUpdate) => void> = [];
-  changeTestListeners: Array<(testId: string) => void> = [];
+  updateStatusListeners: ((update: CreeveyUpdate) => void)[] = [];
+  changeTestListeners: ((testId: string) => void)[] = [];
   constructor(public storybookApi: API) {
     this.storybookApi = storybookApi;
   }
@@ -54,7 +46,7 @@ export class CreeveyManager {
     }
     if (isDefined(tests)) {
       const prevTests = this.status.tests;
-      const prevStories = this.stories || {};
+      const prevStories = this.stories;
       Object.values(tests)
         .filter(isDefined)
         .forEach((update) => {
@@ -73,25 +65,36 @@ export class CreeveyManager {
                 .map((x) => (x.id === id ? status : x.status))
                 .reduce((oldStatus, newStatus) => calcStatus(oldStatus, newStatus), undefined);
 
-              story.name = this.addStatusToStoryName(story.name, calcStatus(oldStatus, status), skip || false);
+              story.name = this.addStatusToStoryName(story.name, calcStatus(oldStatus, status), skip ?? false);
             }
           }
-          if (isDefined(results)) test.results ? test.results.push(...results) : (test.results = results);
+          if (isDefined(results)) {
+            if (test.results) test.results.push(...results);
+            else test.results = results;
+          }
           if (isDefined(approved)) {
             Object.entries(approved).forEach(
-              ([image, retry]) =>
-                retry !== undefined && test && ((test.approved = test?.approved || {})[image] = retry),
+              ([image, retry]) => retry !== undefined && ((test.approved = test.approved ?? {})[image] = retry),
             );
           }
         });
-      removedTests.forEach(({ id }) => delete prevTests[id]);
-      this.status.tests = prevTests;
+      const nextTests: Partial<Record<string, TestData>> = {};
+      const testsToRemove = new Set(removedTests.map(({ id }) => id));
+
+      for (const id in prevTests) {
+        if (testsToRemove.has(id)) continue;
+        nextTests[id] = prevTests[id];
+      }
+
+      this.status.tests = nextTests;
       this.stories = prevStories;
       this.setPanelsTitle();
       // TODO Check setStories method in 6.x and migrate properly
       this.storybookApi.emit(SET_STORIES, this.stories);
     }
-    this.updateStatusListeners.forEach((x) => x(update));
+    this.updateStatusListeners.forEach((x) => {
+      x(update);
+    });
   };
 
   getCurrentTest = (): TestData | undefined => {
@@ -104,7 +107,9 @@ export class CreeveyManager {
       this.storyId = storyId;
       this.selectedTestId = this.getTestsByStoryIdAndBrowser(this.activeBrowser)[0]?.id ?? '';
       this.setPanelsTitle();
-      this.changeTestListeners.forEach((x) => x(this.selectedTestId));
+      this.changeTestListeners.forEach((x) => {
+        x(this.selectedTestId);
+      });
     }
   };
 
@@ -133,23 +138,26 @@ export class CreeveyManager {
     this.creeveyApi?.start(ids);
   };
   onSetStories = (data: Parameters<typeof denormalizeStoryParameters>['0']): void => {
-    const stories = data.v ? denormalizeStoryParameters(data as unknown as SetStoriesData) : data.stories;
+    const stories = data.v ? denormalizeStoryParameters(data) : data.stories;
     this.stories = stories;
   };
 
   setActiveBrowser = (browser: string): void => {
     this.activeBrowser = browser;
     this.selectedTestId = this.getTestsByStoryIdAndBrowser(this.activeBrowser)[0]?.id ?? '';
-    this.changeTestListeners.forEach((x) => x(this.selectedTestId));
+    this.changeTestListeners.forEach((x) => {
+      x(this.selectedTestId);
+    });
   };
 
   setSelectedTestId = (testId: string): void => {
     this.selectedTestId = testId;
-    this.changeTestListeners.forEach((x) => x(this.selectedTestId));
+    this.changeTestListeners.forEach((x) => {
+      x(this.selectedTestId);
+    });
   };
 
   getStoryTests = (storyId: string): TestData[] => {
-    if (!this.status || !this.status.tests) return [];
     return Object.values(this.status.tests)
       .filter((result) => result?.storyId === storyId)
       .filter(isDefined);
@@ -168,16 +176,15 @@ export class CreeveyManager {
   getTabTitle = (browser: string): string => {
     const tests = this.getTestsByStoryIdAndBrowser(browser);
     const browserStatus = tests
-      .map((x) => x && x.status)
+      .map((x) => x.status)
       .reduce((oldStatus, newStatus) => calcStatus(oldStatus, newStatus), undefined);
-    const browserSkip = tests.length > 0 ? tests.every((x) => x && x.skip) : false;
+    const browserSkip = tests.length > 0 ? tests.every((x) => x.skip) : false;
     const emojiStatus = getEmojiByTestStatus(browserStatus, browserSkip);
     return `${emojiStatus ? `${emojiStatus} ` : ''}Creevey/${browser}`;
   };
 
   setPanelsTitle = (): void => {
-    const panels = this.storybookApi?.getElements(Addon_TypesEnum.PANEL);
-    if (!panels) return;
+    const panels = this.storybookApi.getElements(Addon_TypesEnum.PANEL);
     let firstPanelBrowser = this.activeBrowser;
     for (const p in panels) {
       const panel = panels[p];

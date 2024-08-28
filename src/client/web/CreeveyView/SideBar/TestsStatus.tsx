@@ -60,7 +60,11 @@ export const TestsStatus = withTheme(
     return (
       <Container>
         {/* @ts-expect-error Fixed in https://github.com/storybookjs/storybook/pull/26623 */}
-        <Button onClick={() => onClickByStatus('pending')}>
+        <Button
+          onClick={() => {
+            onClickByStatus('pending');
+          }}
+        >
           <IconContainer color={theme?.color.mediumdark}>
             <Icons icon="time" />
             {pendingCount}
@@ -68,14 +72,22 @@ export const TestsStatus = withTheme(
         </Button>
         <Divider />
         {/* @ts-expect-error Fixed in https://github.com/storybookjs/storybook/pull/26623 */}
-        <Button onClick={() => onClickByStatus('success')}>
+        <Button
+          onClick={() => {
+            onClickByStatus('success');
+          }}
+        >
           <IconContainer color={theme?.color.green}>
             <Icons icon="check" /> {successCount}
           </IconContainer>
         </Button>
         <Divider />
         {/* @ts-expect-error Fixed in https://github.com/storybookjs/storybook/pull/26623 */}
-        <Button onClick={() => onClickByStatus('failed')}>
+        <Button
+          onClick={() => {
+            onClickByStatus('failed');
+          }}
+        >
           <IconContainer color={theme?.color.negative}>
             <Icons icon="cross" /> {failedCount}
           </IconContainer>

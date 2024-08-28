@@ -45,13 +45,14 @@ export async function addTestsFromStories(
   const tests = await loadTestsFromStories(
     [browser],
     (listener) => config.storiesProvider(config, options, listener),
-    (testsDiff) =>
+    (testsDiff) => {
       Object.entries(testsDiff).forEach(([id, newTest]) => {
         const oldTest = mochaTestsById.get(id);
         mochaTestsById.delete(id);
         if (oldTest) removeTestOrSuite(oldTest);
         if (newTest) mochaTestsById.set(id, addTest(rootSuite, newTest));
-      }),
+      });
+    },
   );
 
   Object.values(tests)

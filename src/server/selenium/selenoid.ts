@@ -10,12 +10,13 @@ import cluster from 'cluster';
 import sh from 'shelljs';
 
 async function createSelenoidConfig(browsers: BrowserConfig[], { useDocker }: { useDocker: boolean }): Promise<string> {
-  const selenoidConfig: {
-    [browser: string]: {
+  const selenoidConfig: Record<
+    string,
+    {
       default: string;
-      versions: { [version: string]: { image: string | string[]; port: string; path: string } };
-    };
-  } = {};
+      versions: Record<string, { image: string | string[]; port: string; path: string }>;
+    }
+  > = {};
   const selenoidConfigDir = path.join(getCreeveyCache(), 'selenoid');
 
   browsers.forEach(

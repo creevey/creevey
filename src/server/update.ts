@@ -5,10 +5,9 @@ import micromatch from 'micromatch';
 import { Config, isDefined, ServerTest } from '../types.js';
 
 const _require = createRequire(import.meta.url);
-function tryToLoadTestsData(filename: string): Partial<{ [id: string]: ServerTest }> | undefined {
+function tryToLoadTestsData(filename: string): Partial<Record<string, ServerTest>> | undefined {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    return _require(filename) as Partial<{ [id: string]: ServerTest }>;
+    return _require(filename) as Partial<Record<string, ServerTest>>;
   } catch (_) {
     /* noop */
   }
@@ -60,7 +59,9 @@ function traverse(
         ] as [string, string[][] | null],
     )
     .filter(([, paths]) => !paths || paths.length > 0)
-    .forEach(([dirname, paths]) => traverse(path.join(srcPath, dirname), path.join(dstPath, dirname), paths, isMatch));
+    .forEach(([dirname, paths]) => {
+      traverse(path.join(srcPath, dirname), path.join(dstPath, dirname), paths, isMatch);
+    });
 }
 
 export default function update(config: Config, grepPattern?: string): void {

@@ -6,7 +6,11 @@ import { isShuttingDown } from '../utils.js';
 
 const FORK_RETRIES = 5;
 
-type WorkerTest = { id: string; path: string[]; retries: number };
+interface WorkerTest {
+  id: string;
+  path: string[];
+  retries: number;
+}
 
 export default class Pool extends EventEmitter {
   private maxRetries: number;
@@ -18,7 +22,10 @@ export default class Pool extends EventEmitter {
   public get isRunning(): boolean {
     return this.workers.length !== this.freeWorkers.length;
   }
-  constructor(config: Config, private browser: string) {
+  constructor(
+    config: Config,
+    private browser: string,
+  ) {
     super();
 
     this.failFast = config.failFast;
@@ -34,7 +41,9 @@ export default class Pool extends EventEmitter {
     );
     if (this.workers.length != poolSize)
       throw new Error(`Can't instantiate workers for ${this.browser} due many errors`);
-    this.workers.forEach((worker) => this.exitHandler(worker));
+    this.workers.forEach((worker) => {
+      this.exitHandler(worker);
+    });
   }
 
   start(tests: { id: string; path: string[] }[]): boolean {
@@ -137,8 +146,12 @@ export default class Pool extends EventEmitter {
   }
 
   private gracefullyKill(worker: Worker): void {
-    const timeout = setTimeout(() => worker.kill(), 10000);
-    worker.on('exit', () => clearTimeout(timeout));
+    const timeout = setTimeout(() => {
+      worker.kill();
+    }, 10000);
+    worker.on('exit', () => {
+      clearTimeout(timeout);
+    });
     sendShutdownMessage(worker);
   }
 
@@ -158,7 +171,9 @@ export default class Pool extends EventEmitter {
 
     worker.isRunning = false;
 
-    setImmediate(() => this.process());
+    setImmediate(() => {
+      this.process();
+    });
   }
 
   private subscribe(worker: Worker, test: WorkerTest): void {
@@ -166,7 +181,9 @@ export default class Pool extends EventEmitter {
       subscribeOnWorker(worker, 'worker', (message) => {
         if (message.type != 'error') return;
 
-        subscriptions.forEach((unsubscribe) => unsubscribe());
+        subscriptions.forEach((unsubscribe) => {
+          unsubscribe();
+        });
 
         this.gracefullyKill(worker);
 
@@ -175,7 +192,9 @@ export default class Pool extends EventEmitter {
       subscribeOnWorker(worker, 'test', (message) => {
         if (message.type != 'end') return;
 
-        subscriptions.forEach((unsubscribe) => unsubscribe());
+        subscriptions.forEach((unsubscribe) => {
+          unsubscribe();
+        });
 
         this.handleTestResult(worker, test, message.payload);
       }),

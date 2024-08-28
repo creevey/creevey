@@ -43,7 +43,7 @@ async function getLastImageNumber(imageDir: string, imageName: string): Promise<
 // FIXME browser options hotfix
 export default async function worker(config: Config, options: Options & { browser: string }): Promise<void> {
   let retries = 0;
-  let images: Partial<{ [name: string]: Images }> = {};
+  let images: Partial<Record<string, Images>> = {};
   let error: string | undefined = undefined;
   const screenshots: { imageName?: string; screenshot: string }[] = [];
   const testScope: string[] = [];
@@ -82,7 +82,7 @@ export default async function worker(config: Config, options: Options & { browse
     // rootSuite -> kindSuite -> storyTest -> [browsers.png]
     // rootSuite -> kindSuite -> storySuite -> test -> [browsers.png]
     const testPath = [...testScope];
-    const imageName = assertImageName ?? (testPath.pop() as string);
+    const imageName = assertImageName ?? testPath.pop()!;
 
     const imagesMeta: { name: string; data: Buffer }[] = [];
     const reportImageDir = path.join(config.reportDir, ...testPath);
@@ -162,7 +162,9 @@ export default async function worker(config: Config, options: Options & { browse
       10 * 1000,
     );
 
-    subscribeOn('shutdown', () => clearInterval(interval));
+    subscribeOn('shutdown', () => {
+      clearInterval(interval);
+    });
   }
 
   mocha.suite.beforeAll(function (this: Context) {

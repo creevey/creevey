@@ -84,7 +84,9 @@ export function SideBar({ rootSuite, openedTest, onOpenTest, filter, setFilter }
   const suiteList = flattenSuite(suite);
   const countCheckedTests = getCheckedTests(rootSuite).length;
 
-  const handleStart = (): void => onStart(suite);
+  const handleStart = (): void => {
+    onStart(suite);
+  };
 
   return (
     <SideBarContext.Provider value={{ onOpenTest }}>

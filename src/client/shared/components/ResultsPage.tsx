@@ -12,7 +12,7 @@ interface TestResultsProps {
   id: string;
   path: string[];
   results?: TestResult[];
-  approved?: Partial<{ [image: string]: number }>;
+  approved?: Partial<Record<string, number>>;
   showTitle?: boolean;
   onImageApprove: (id: string, retry: number, image: string) => void;
   theme: Theme;
@@ -66,7 +66,9 @@ export function ResultsPageInternal({
   const [imageName, setImageName] = useState(Object.keys(result.images ?? {})[0] ?? '');
   const [viewMode, setViewMode] = useState<ImagesViewMode>(getViewMode());
 
-  useEffect(() => setRetry(results.length), [results.length]);
+  useEffect(() => {
+    setRetry(results.length);
+  }, [results.length]);
 
   const url = getImageUrl(path, imageName);
   const image = result.images?.[imageName];
@@ -81,7 +83,9 @@ export function ResultsPageInternal({
       )
     : [];
 
-  const handleApprove = (): void => onImageApprove(id, retry - 1, imageName);
+  const handleApprove = (): void => {
+    onImageApprove(id, retry - 1, imageName);
+  };
   const handleChangeViewMode = (mode: ImagesViewMode): void => {
     localStorage.setItem(VIEW_MODE_KEY, mode);
     setViewMode(mode);

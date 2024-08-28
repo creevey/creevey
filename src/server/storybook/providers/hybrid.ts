@@ -60,7 +60,9 @@ async function parseParams(
 
       // doesn't work, always returns {} due modules caching
       // see https://github.com/nodejs/modules/issues/307
-      void parse(testFiles).then((data) => listener(data));
+      void parse(testFiles).then((data) => {
+        listener(data);
+      });
     });
   }
 

@@ -9,12 +9,10 @@ interface ReporterOptions {
   sessionId: string;
   topLevelSuite: string;
   willRetry: boolean;
-  images: Partial<{
-    [name: string]: Partial<Images>;
-  }>;
+  images: Partial<Record<string, Partial<Images>>>;
 }
 
-const testLevels: { [level: string]: string } = {
+const testLevels: Record<string, string> = {
   INFO: chalk.green('PASS'),
   WARN: chalk.yellow('START'),
   ERROR: chalk.red('FAIL'),
@@ -34,19 +32,23 @@ export class CreeveyReporter extends reporters.Base {
       },
     });
 
-    runner.on('test', (test) => testLogger.warn(chalk.cyan(test.titlePath().join('/'))));
-    runner.on('pass', (test) => testLogger.info(chalk.cyan(test.titlePath().join('/'))));
-    runner.on('fail', (test, error) =>
+    runner.on('test', (test) => {
+      testLogger.warn(chalk.cyan(test.titlePath().join('/')));
+    });
+    runner.on('pass', (test) => {
+      testLogger.info(chalk.cyan(test.titlePath().join('/')));
+    });
+    runner.on('fail', (test, error) => {
       testLogger.error(
         chalk.cyan(test.titlePath().join('/')),
         '\n  ',
         getErrors(
           error,
           (error, imageName) => `${chalk.bold(imageName ?? topLevelSuite)}:${error}`,
-          (error) => `${error.stack ?? error.message}`,
+          (error) => error.stack ?? error.message,
         ).join('\n  '),
-      ),
-    );
+      );
+    });
   }
 }
 
@@ -57,15 +59,15 @@ export class TeamcityReporter extends reporters.Base {
     const topLevelSuite = this.escape((options.reporterOptions as ReporterOptions).topLevelSuite);
     const reporterOptions = options.reporterOptions as ReporterOptions;
 
-    runner.on('suite', (suite) =>
+    runner.on('suite', (suite) => {
       suite.root
         ? console.log(`##teamcity[testSuiteStarted name='${topLevelSuite}' flowId='${process.pid}']`)
-        : console.log(`##teamcity[testSuiteStarted name='${this.escape(suite.title)}' flowId='${process.pid}']`),
-    );
+        : console.log(`##teamcity[testSuiteStarted name='${this.escape(suite.title)}' flowId='${process.pid}']`);
+    });
 
-    runner.on('test', (test) =>
-      console.log(`##teamcity[testStarted name='${this.escape(test.title)}' flowId='${process.pid}']`),
-    );
+    runner.on('test', (test) => {
+      console.log(`##teamcity[testStarted name='${this.escape(test.title)}' flowId='${process.pid}']`);
+    });
 
     runner.on('fail', (test, error: Error) => {
       Object.entries(reporterOptions.images).forEach(([name, image]) => {
@@ -103,17 +105,17 @@ export class TeamcityReporter extends reporters.Base {
           );
     });
 
-    runner.on('pending', (test) =>
+    runner.on('pending', (test) => {
       console.log(
         `##teamcity[testIgnored name='${this.escape(test.title)}' message='${this.escape(
           typeof test.skipReason == 'boolean' ? test.title : test.skipReason,
         )}' flowId='${process.pid}']`,
-      ),
-    );
+      );
+    });
 
-    runner.on('test end', (test) =>
-      console.log(`##teamcity[testFinished name='${this.escape(test.title)}' flowId='${process.pid}']`),
-    );
+    runner.on('test end', (test) => {
+      console.log(`##teamcity[testFinished name='${this.escape(test.title)}' flowId='${process.pid}']`);
+    });
 
     runner.on(
       'suite end',
@@ -122,9 +124,9 @@ export class TeamcityReporter extends reporters.Base {
         console.log(`##teamcity[testSuiteFinished name='${this.escape(suite.title)}' flowId='${process.pid}']`),
     );
 
-    runner.on('end', () =>
-      console.log(`##teamcity[testSuiteFinished name='${topLevelSuite}' flowId='${process.pid}']`),
-    );
+    runner.on('end', () => {
+      console.log(`##teamcity[testSuiteFinished name='${topLevelSuite}' flowId='${process.pid}']`);
+    });
   }
 
   private escape = (str: string): string => {

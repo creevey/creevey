@@ -32,7 +32,13 @@ export function Paging(props: PagingProps): JSX.Element {
           <StyledButton
             outline
             disabled={disabled}
-            onClick={disabled ? noop : () => goToPage(props.activePage + 1)}
+            onClick={
+              disabled
+                ? noop
+                : () => {
+                    goToPage(props.activePage + 1);
+                  }
+            }
             key="forward"
           >
             <span>
@@ -43,7 +49,14 @@ export function Paging(props: PagingProps): JSX.Element {
       }
       default: {
         return (
-          <StyledButton outline secondary={props.activePage === item} key={item} onClick={() => goToPage(item)}>
+          <StyledButton
+            outline
+            secondary={props.activePage === item}
+            key={item}
+            onClick={() => {
+              goToPage(item);
+            }}
+          >
             {item}
           </StyledButton>
         );

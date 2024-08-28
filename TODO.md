@@ -570,3 +570,10 @@
 - [ ] Use own runner instead of mocha
 - [ ] Allow use creevey without storybook
 - [ ] Support third-party test runners
+
+## The new beginning
+
+- [ ] Use odiff
+- [ ] Kontur creevey config
+- [ ] Add similar to playwright tracing
+- [ ] Show instructions for git-lfs

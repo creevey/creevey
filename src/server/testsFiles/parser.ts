@@ -1,7 +1,7 @@
 import { toId, storyNameFromExport } from '@storybook/csf';
 import { CreeveyStoryParams, CreeveyTestFunction } from '../../types.js';
 
-export type CreeveyParamsByStoryId = { [storyId: string]: CreeveyStoryParams };
+export type CreeveyParamsByStoryId = Record<string, CreeveyStoryParams>;
 
 export default async function parse(files: string[]): Promise<CreeveyParamsByStoryId> {
   result = {};
@@ -39,7 +39,7 @@ export const story = (
   storyParams = null;
   storyFn({ setStoryParameters });
   const storyId = getStoryId(kindTitle, storyTitle);
-  result[storyId] = Object.assign({}, storyParams, { tests: result[storyId]?.tests });
+  result[storyId] = Object.assign({}, storyParams, { tests: result[storyId].tests });
   storyTitle = '';
   storyParams = null;
 };

@@ -42,10 +42,9 @@ export const SwapView = withTheme(({ theme, expect, actual, diff }: ViewPropsWit
   useApplyScale(expectImageRef, scale, image);
   useApplyScale(actualImageRef, scale, image);
 
-  const handleChangeView = useCallback(
-    (): void => setImage((prevImage) => (prevImage == 'actual' ? 'expect' : 'actual')),
-    [],
-  );
+  const handleChangeView = useCallback((): void => {
+    setImage((prevImage) => (prevImage == 'actual' ? 'expect' : 'actual'));
+  }, []);
 
   useEffect(() => {
     if (loaded) readyForCapture();

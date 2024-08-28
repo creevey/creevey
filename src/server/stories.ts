@@ -22,16 +22,16 @@ function storyTestFabric(delay?: number, testFn?: CreeveyTestFunction) {
     await (testFn
       ? testFn.call(this)
       : this.screenshots.length > 0
-      ? this.expect(
-          this.screenshots.reduce(
-            (screenshots, { imageName, screenshot }, index) => ({
-              ...screenshots,
-              [imageName ?? `screenshot_${index}`]: screenshot,
-            }),
-            {},
-          ),
-        ).to.matchImages()
-      : this.expect(await this.takeScreenshot()).to.matchImage());
+        ? this.expect(
+            this.screenshots.reduce(
+              (screenshots, { imageName, screenshot }, index) => ({
+                ...screenshots,
+                [imageName ?? `screenshot_${index}`]: screenshot,
+              }),
+              {},
+            ),
+          ).to.matchImages()
+        : this.expect(await this.takeScreenshot()).to.matchImage());
   };
 }
 
@@ -48,11 +48,8 @@ function createCreeveyTest(
   return { id, skip, browser, testName, storyPath: [...kind.split('/').map((x) => x.trim()), story], storyId };
 }
 
-function convertStories(
-  browserName: string,
-  stories: StoriesRaw | StoryInput[],
-): Partial<{ [testId: string]: ServerTest }> {
-  const tests: { [testId: string]: ServerTest } = {};
+function convertStories(browserName: string, stories: StoriesRaw | StoryInput[]): Partial<Record<string, ServerTest>> {
+  const tests: Record<string, ServerTest> = {};
 
   (Array.isArray(stories) ? stories : Object.values(stories)).forEach((storyMeta) => {
     // TODO Skip docsOnly stories for now
@@ -85,12 +82,12 @@ function convertStories(
 export async function loadTestsFromStories(
   browsers: string[],
   provider: (storiesListener: (stories: Map<string, StoryInput[]>) => void) => Promise<StoriesRaw>,
-  update?: (testsDiff: Partial<{ [id: string]: ServerTest }>) => void,
-): Promise<Partial<{ [id: string]: ServerTest }>> {
+  update?: (testsDiff: Partial<Record<string, ServerTest>>) => void,
+): Promise<Partial<Record<string, ServerTest>>> {
   const testIdsByFiles = new Map<string, string[]>();
   const stories = await provider((storiesByFiles) => {
-    const testsDiff: Partial<{ [id: string]: ServerTest }> = {};
-    const tests: Partial<{ [id: string]: ServerTest }> = {};
+    const testsDiff: Partial<Record<string, ServerTest>> = {};
+    const tests: Partial<Record<string, ServerTest>> = {};
     browsers.forEach((browser) => {
       Array.from(storiesByFiles.entries()).forEach(([filename, stories]) => {
         Object.assign(tests, convertStories(browser, stories));
@@ -107,8 +104,7 @@ export async function loadTestsFromStories(
   });
 
   const tests = browsers.reduce(
-    (tests: Partial<{ [testId: string]: ServerTest }>, browser) =>
-      Object.assign(tests, convertStories(browser, stories)),
+    (tests: Partial<Record<string, ServerTest>>, browser) => Object.assign(tests, convertStories(browser, stories)),
     {},
   );
 
@@ -144,7 +140,7 @@ export function saveStoriesJson(storiesData: SetStoriesData, extract: string | b
 
   // TODO Fix args stories
   removeProps(storiesData ?? {}, ['stories', () => true, 'parameters', '__isArgsStory']);
-  Object.values(storiesData?.stories ?? {}).forEach(
+  Object.values(storiesData.stories ?? {}).forEach(
     (story) =>
       isObject(story) && 'parameters' in story && isObject(story.parameters) && delete story.parameters.__isArgsStory,
   );

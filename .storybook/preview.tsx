@@ -1,7 +1,7 @@
 import React from 'react';
 import { ThemeProvider, themes, ensure } from '@storybook/theming';
-import { CreeveyContext } from '../src/client/web/CreeveyContext';
-import { noop } from '../src/types';
+import { CreeveyContext } from '../src/client/web/CreeveyContext.js';
+import { noop } from '../src/types.js';
 import { DecoratorFunction } from '@storybook/csf';
 
 export const decorators: DecoratorFunction[] = [
@@ -15,7 +15,6 @@ export const decorators: DecoratorFunction[] = [
           onStop: noop,
           onSuiteOpen: noop,
           onSuiteToggle: noop,
-          ...context.parameters?.context,
         }}
       >
         {storyFn(context)}

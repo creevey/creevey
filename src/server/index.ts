@@ -31,7 +31,8 @@ export default async function (options: Options): Promise<void> {
 
   switch (true) {
     case Boolean(update): {
-      return (await import('./update.js')).default(config, typeof update == 'string' ? update : undefined);
+      (await import('./update.js')).default(config, typeof update == 'string' ? update : undefined);
+      return;
     }
     case cluster.isPrimary: {
       logger.info('Starting Master Process');

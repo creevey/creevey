@@ -17,7 +17,9 @@ function loadCreeveyData(): Promise<CreeveyStatus['tests']> {
   return new Promise<CreeveyStatus['tests']>((resolve) => {
     const script = document.createElement('script');
     script.src = 'data.js';
-    script.onload = () => resolve(__CREEVEY_DATA__);
+    script.onload = () => {
+      resolve(__CREEVEY_DATA__);
+    };
     document.body.appendChild(script);
   });
 }

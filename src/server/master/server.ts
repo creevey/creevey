@@ -58,7 +58,9 @@ export default function server(reportDir: string, port: number, ui: boolean): (a
       Object.values(cluster.workers ?? {})
         .filter(isDefined)
         .filter((worker) => worker.isConnected())
-        .forEach((worker) => sendStoriesMessage(worker, { type: 'update', payload: deserializedStories }));
+        .forEach((worker) => {
+          sendStoriesMessage(worker, { type: 'update', payload: deserializedStories });
+        });
       return;
     }
     await next();
@@ -90,14 +92,18 @@ export default function server(reportDir: string, port: number, ui: boolean): (a
   app.use(serve(path.join(path.dirname(fileURLToPath(import.meta.url)), '../../client/web')));
   app.use(mount('/report', serve(reportDir)));
 
-  wss.on('error', (error) => logger.error(error));
+  wss.on('error', (error) => {
+    logger.error(error);
+  });
 
   server.listen(port);
 
   subscribeOn('shutdown', () => {
     server.close();
     wss.close();
-    wss.clients.forEach((ws) => ws.close());
+    wss.clients.forEach((ws) => {
+      ws.close();
+    });
   });
 
   void creeveyApi.then((api) => {

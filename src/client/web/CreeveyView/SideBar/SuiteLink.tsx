@@ -81,7 +81,9 @@ export function SuiteLink({ title, suite, 'data-testid': dataTid }: SuiteLinkPro
 
   const isRootSuite = suite.path.length == 0;
 
-  const handleCheck = (value: boolean): void => onSuiteToggle(suite.path, value);
+  const handleCheck = (value: boolean): void => {
+    onSuiteToggle(suite.path, value);
+  };
   const handleOpen = (): void => {
     if (!isRootSuite) {
       onSuiteOpen(suite.path, !suite.opened);
