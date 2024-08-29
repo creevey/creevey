@@ -1,6 +1,7 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState, ChangeEvent, useContext, useRef, useEffect } from 'react';
 import { styled, withTheme, Theme } from '@storybook/theming';
 import { Icons } from '@storybook/components';
+import { KeyboardEventsContext } from '../../KeyboardEventsContext';
 
 interface SearchProps {
   onChange: (arg: string) => void;
@@ -99,7 +100,14 @@ const FilterForm = withTheme(
 );
 
 export const Search = ({ onChange, value }: SearchProps): JSX.Element => {
+  const { sidebarFocusedItem } = useContext(KeyboardEventsContext);
   const [focussed, onSetFocussed] = useState(false);
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (sidebarFocusedItem === 'search') searchRef.current?.focus();
+  }, [sidebarFocusedItem]);
+
   return (
     <FilterForm
       autoComplete="off"
@@ -109,6 +117,7 @@ export const Search = ({ onChange, value }: SearchProps): JSX.Element => {
     >
       <FilterField
         type="text"
+        ref={searchRef}
         onFocus={() => onSetFocussed(true)}
         onBlur={() => onSetFocussed(false)}
         onChange={(e: ChangeEvent<HTMLInputElement>) => {

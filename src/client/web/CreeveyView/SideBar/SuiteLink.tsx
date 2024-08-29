@@ -64,7 +64,10 @@ export function SuiteLink({ title, suite, 'data-testid': dataTid }: SuiteLinkPro
   const buttonRef = useRef<HTMLButtonElement | null>(null);
 
   const isSuiteFocused = useMemo(
-    () => sidebarFocusedItem.length === suite.path.length && sidebarFocusedItem.every((x) => suite.path.includes(x)),
+    () =>
+      Array.isArray(sidebarFocusedItem) &&
+      sidebarFocusedItem.length === suite.path.length &&
+      sidebarFocusedItem.every((x) => suite.path.includes(x)),
     [suite, sidebarFocusedItem],
   );
   useEffect(

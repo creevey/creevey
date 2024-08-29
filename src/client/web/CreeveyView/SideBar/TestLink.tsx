@@ -24,7 +24,10 @@ export function TestLink({ title, opened, test }: TestLinkProps): JSX.Element {
   const testPath = useMemo(() => getTestPath(test), [test]);
 
   const isTestFocused = useMemo(
-    () => testPath.length === sidebarFocusedItem.length && testPath.every((x) => sidebarFocusedItem.includes(x)),
+    () =>
+      Array.isArray(sidebarFocusedItem) &&
+      testPath.length === sidebarFocusedItem.length &&
+      testPath.every((x) => sidebarFocusedItem.includes(x)),
     [testPath, sidebarFocusedItem],
   );
 
