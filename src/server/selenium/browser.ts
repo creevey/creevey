@@ -446,17 +446,12 @@ export async function takeScreenshot(
   return screenshot;
 }
 
-async function selectStory(
-  browser: WebDriver,
-  { id, title, name }: { id: string; title: string; name: string },
-  waitForReady = false,
-): Promise<boolean> {
-  browserLogger.debug(`Triggering 'SetCurrentStory' event with storyId ${chalk.magenta(id)}`);
+async function selectStory(browser: WebDriver, storyId: string, waitForReady = false): Promise<boolean> {
+  browserLogger.debug(`Triggering 'SetCurrentStory' event with storyId ${chalk.magenta(storyId)}`);
+
   const result = await browser.executeAsyncScript<[error?: string | null, isCaptureCalled?: boolean] | null>(
     function (
       id: string,
-      title: string,
-      name: string,
       shouldWaitForReady: boolean,
       callback: (response: [error?: string | null, isCaptureCalled?: boolean]) => void,
     ) {
@@ -466,11 +461,9 @@ async function selectStory(
         ]);
         return;
       }
-      void window.__CREEVEY_SELECT_STORY__(id, title, name, shouldWaitForReady, callback);
+      void window.__CREEVEY_SELECT_STORY__(id, shouldWaitForReady, callback);
     },
-    id,
-    title,
-    name,
+    storyId,
     waitForReady,
   );
 
@@ -797,7 +790,7 @@ export async function switchStory(this: Context): Promise<void> {
   });
 
   await resetMousePosition(this.browser);
-  const isCaptureCalled = await selectStory(this.browser, { id, title, name }, waitForReady);
+  const isCaptureCalled = await selectStory(this.browser, id, waitForReady);
 
   if (isCaptureCalled) {
     while (!(await waitForComplete)) {

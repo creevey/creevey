@@ -16,8 +16,6 @@ declare global {
     __CREEVEY_GET_STORIES__: () => Promise<StoriesRaw | undefined>;
     __CREEVEY_SELECT_STORY__: (
       storyId: string,
-      kind: string,
-      name: string,
       shouldWaitForReady: boolean,
       callback: (response: [error?: string | null, isCaptureCalled?: boolean]) => void,
     ) => Promise<void>;
@@ -52,16 +50,6 @@ const disableAnimationsStyles = `
   transition: 0s !important;
 }
 `;
-
-async function resetCurrentStory(channel: Channel): Promise<void> {
-  setTimeout(() => {
-    // TODO kind is deprecated
-    channel.emit(Events.SET_CURRENT_STORY, { storyId: true, name: '', kind: '' });
-  }, 0);
-  return new Promise<void>((resolve) => {
-    channel.once(Events.STORY_MISSING, resolve);
-  });
-}
 
 function catchRenderError(channel: Channel): Promise<void> & { cancel: () => void } {
   let rejectCallback: (reason?: unknown) => void;
@@ -151,7 +139,6 @@ let setStoriesCounter = 0;
 export function withCreevey(): ReturnType<typeof makeDecorator> {
   const addonsChannel = (): Channel => window.__STORYBOOK_ADDONS_CHANNEL__;
 
-  let currentStory = '';
   let isAnimationDisabled = false;
 
   initCreeveyState();
@@ -182,13 +169,15 @@ export function withCreevey(): ReturnType<typeof makeDecorator> {
     return stories;
   }
 
+  // TODO Use Events.STORY_RENDER_PHASE_CHANGED: `loading/rendering/completed` with storyId
+  // TODO Check other statuses and statuses with play function
   async function selectStory(
     storyId: string,
-    title: string,
-    name: string,
     shouldWaitForReady: boolean,
     callback: (response: [error?: string | null, isCaptureCalled?: boolean]) => void,
   ): Promise<void> {
+    const currentStory = window.__STORYBOOK_PREVIEW__.currentSelection?.storyId ?? '';
+
     if (!isAnimationDisabled) disableAnimation();
 
     isTestBrowser = true;
@@ -197,17 +186,14 @@ export function withCreevey(): ReturnType<typeof makeDecorator> {
       ? new Promise<void>((resolve) => (window.__CREEVEY_SET_READY_FOR_CAPTURE__ = resolve))
       : Promise.resolve();
 
-    if (storyId == currentStory) await resetCurrentStory(channel);
-    else currentStory = storyId;
-
     let isCaptureCalled = false;
     const renderPromise = waitForStoryRendered(channel);
     const errorPromise = catchRenderError(channel);
     const capturePromise = waitForCaptureCall().then(() => (isCaptureCalled = true));
 
     setTimeout(() => {
-      // TODO kind is deprecated
-      channel.emit(Events.SET_CURRENT_STORY, { storyId, name, kind: title });
+      if (storyId == currentStory) channel.emit(Events.FORCE_REMOUNT, { storyId });
+      else channel.emit(Events.SET_CURRENT_STORY, { storyId });
     }, 0);
 
     try {
