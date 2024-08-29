@@ -1,8 +1,8 @@
-import { expect } from 'chai';
+import { expect, describe, test } from 'vitest';
 import { serializeRegExp, deserializeRegExp, SerializedRegExp } from '../../src/shared/serializeRegExp.js';
 
 describe('serialize regexp', () => {
-  it('serializes correctly', () => {
+  test('serializes correctly', () => {
     const regexp = /[a-z]/gi;
     const serialized: SerializedRegExp = {
       __regexp: true,
@@ -12,7 +12,7 @@ describe('serialize regexp', () => {
     expect(serializeRegExp(regexp)).to.deep.equal(serialized);
   });
 
-  it('deserializes correctly', () => {
+  test('deserializes correctly', () => {
     const regexp = /[a-z]/gi;
     const serialized: SerializedRegExp = {
       __regexp: true,

@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { expect, describe, test } from 'vitest';
 import { checkSuite } from '../../src/client/shared/helpers.js';
 import { CreeveySuite, TestData } from '../../src/types.js';
 
@@ -13,7 +13,7 @@ function mockTest(): TestData {
 }
 
 describe('toogleChecked', () => {
-  it('should uncheck test', () => {
+  test('should uncheck test', () => {
     const tests: CreeveySuite = {
       path: [],
       skip: false,
@@ -35,7 +35,7 @@ describe('toogleChecked', () => {
     expect(tests).to.deep.equal(expectedTests);
   });
 
-  it('should uncheck suite', () => {
+  test('should uncheck suite', () => {
     const tests: CreeveySuite = {
       path: [],
       skip: false,
@@ -75,7 +75,7 @@ describe('toogleChecked', () => {
     expect(tests).to.deep.equal(expectedTests);
   });
 
-  it('should set indeterminate on uncheck test', () => {
+  test('should set indeterminate on uncheck test', () => {
     const tests: CreeveySuite = {
       path: [],
       skip: false,
@@ -115,7 +115,7 @@ describe('toogleChecked', () => {
     expect(tests).to.deep.equal(expectedTests);
   });
 
-  it('should reset indeterminate on check test', () => {
+  test('should reset indeterminate on check test', () => {
     const tests: CreeveySuite = {
       path: [],
       skip: false,
@@ -155,7 +155,7 @@ describe('toogleChecked', () => {
     expect(tests).to.deep.equal(expectedTests);
   });
 
-  it('should set indeterminate on uncheck suite', () => {
+  test('should set indeterminate on uncheck suite', () => {
     const tests: CreeveySuite = {
       path: [],
       skip: false,
@@ -211,7 +211,7 @@ describe('toogleChecked', () => {
     expect(tests).to.deep.equal(expectedTests);
   });
 
-  it('should reset indeterminate on uncheck suite', () => {
+  test('should reset indeterminate on uncheck suite', () => {
     const tests: CreeveySuite = {
       path: [],
       skip: false,
@@ -267,7 +267,7 @@ describe('toogleChecked', () => {
     expect(tests).to.deep.equal(expectedTests);
   });
 
-  it('should check root suite', () => {
+  test('should check root suite', () => {
     const tests: CreeveySuite = {
       path: [],
       skip: false,

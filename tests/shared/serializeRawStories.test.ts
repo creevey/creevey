@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { expect, describe, test } from 'vitest';
 import { CreeveyStoryParams, StoriesRaw } from '../../src/types.js';
 import { serializeRawStories, deserializeRawStories } from '../../src/shared/index.js';
 
@@ -33,7 +33,7 @@ describe('serializes raw stories with creevey params', () => {
     };
   };
 
-  it('serializes and deserializes without losses', () => {
+  test('serializes and deserializes without losses', () => {
     const stories = getStories();
     const serialized = serializeRawStories(stories);
     const deserialized = deserializeRawStories(serialized);
@@ -41,7 +41,7 @@ describe('serializes raw stories with creevey params', () => {
     expect(deserialized).to.deep.equal(stories);
   });
 
-  it('serializes, stringifies, parses and deserializes without losses', () => {
+  test('serializes, stringifies, parses and deserializes without losses', () => {
     const stories = getStories();
     const serialized = serializeRawStories(stories);
     const stringified = JSON.stringify(serialized);
