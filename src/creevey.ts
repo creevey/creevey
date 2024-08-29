@@ -16,7 +16,7 @@ function shutdownOnException(reason: unknown): void {
 
   process.exitCode = -1;
   if (cluster.isWorker) emitWorkerMessage({ type: 'error', payload: { error } });
-  if (cluster.isPrimary && !isShuttingDown.current) void shutdownWorkers();
+  if (cluster.isPrimary) void shutdownWorkers();
 }
 
 process.on('uncaughtException', shutdownOnException);

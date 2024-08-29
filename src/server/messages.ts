@@ -14,7 +14,7 @@ import {
   ShutdownHandler,
 } from '../types.js';
 
-function emitMessage<T>(message: T): boolean {
+function emitMessage(message: unknown): boolean {
   if (cluster.isWorker && !process.connected) return false;
   return (
     process.send?.(message) ??

@@ -6,12 +6,16 @@ export type CreeveyParamsByStoryId = Record<string, CreeveyStoryParams>;
 export default async function parse(files: string[]): Promise<CreeveyParamsByStoryId> {
   result = {};
 
-  await Promise.all(files.map(async (file) => import(file)));
+  await Promise.all(
+    files.map(async (file) => {
+      await import(file);
+    }),
+  );
 
-  return result;
+  return result as CreeveyParamsByStoryId;
 }
 
-let result: CreeveyParamsByStoryId = {};
+let result: Partial<CreeveyParamsByStoryId> = {};
 
 let kindTitle = '';
 let storyTitle = '';
@@ -39,7 +43,7 @@ export const story = (
   storyParams = null;
   storyFn({ setStoryParameters });
   const storyId = getStoryId(kindTitle, storyTitle);
-  result[storyId] = Object.assign({}, storyParams, { tests: result[storyId].tests });
+  result[storyId] = Object.assign({}, storyParams, { tests: result[storyId]?.tests });
   storyTitle = '';
   storyParams = null;
 };

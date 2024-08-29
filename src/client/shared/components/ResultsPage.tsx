@@ -77,9 +77,7 @@ export function ResultsPageInternal({
   const imagesWithError = result.images
     ? Object.keys(result.images).filter(
         (imageName) =>
-          result.status != 'success' &&
-          approved[imageName] != retry - 1 &&
-          (result.images || {})[imageName]?.error != null,
+          result.status != 'success' && approved[imageName] != retry - 1 && result.images?.[imageName]?.error != null,
       )
     : [];
 

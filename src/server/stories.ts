@@ -11,14 +11,13 @@ import type {
   ServerTest,
   StoryInput,
   CreeveyTestFunction,
-  SetStoriesData,
 } from '../types.js';
-import { isDefined, isFunction, isObject } from '../types.js';
-import { shouldSkip, removeProps } from './utils.js';
+import { isDefined, isFunction } from '../types.js';
+import { shouldSkip } from './utils.js';
 
 function storyTestFabric(delay?: number, testFn?: CreeveyTestFunction) {
   return async function storyTest(this: Context) {
-    delay ? await new Promise((resolve) => setTimeout(resolve, delay)) : void 0;
+    if (delay) await new Promise((resolve) => setTimeout(resolve, delay));
     await (testFn
       ? testFn.call(this)
       : this.screenshots.length > 0
@@ -41,11 +40,11 @@ function createCreeveyTest(
   skipOptions?: SkipOptions,
   testName?: string,
 ): TestData {
-  const { kind, name: story, id: storyId } = storyMeta;
-  const path = [kind, story, testName, browser].filter(isDefined);
-  const skip = skipOptions ? shouldSkip(browser, { kind, story }, skipOptions, testName) : false;
+  const { title, name, id: storyId } = storyMeta;
+  const path = [title, name, testName, browser].filter(isDefined);
+  const skip = skipOptions ? shouldSkip(browser, { title, name }, skipOptions, testName) : false;
   const id = createHash('sha1').update(path.join('/')).digest('hex');
-  return { id, skip, browser, testName, storyPath: [...kind.split('/').map((x) => x.trim()), story], storyId };
+  return { id, skip, browser, testName, storyPath: [...title.split('/').map((x) => x.trim()), name], storyId };
 }
 
 function convertStories(browserName: string, stories: StoriesRaw | StoryInput[]): Partial<Record<string, ServerTest>> {
@@ -122,30 +121,6 @@ export async function loadTestsFromStories(
     );
 
   return tests;
-}
-
-export function saveStoriesJson(storiesData: SetStoriesData, extract: string | boolean): void {
-  const outputDir = typeof extract == 'boolean' ? 'storybook-static' : extract;
-
-  // NOTE Copy-pasted from Storybook's `getStoriesJsonData` method
-  const allowed = ['fileName', 'docsOnly', 'framework', '__id', '__isArgsStory'];
-  storiesData.globalParameters = _.pick(storiesData.globalParameters, allowed);
-  // @ts-expect-error ignore error
-  storiesData.kindParameters = _.mapValues(storiesData.kindParameters, (v) => _.pick(v, allowed));
-  // @ts-expect-error ignore error
-  storiesData.stories = _.mapValues(storiesData.stories, (v) => ({
-    ..._.pick(v, ['id', 'name', 'kind', 'story']),
-    parameters: _.pick(v.parameters, allowed),
-  }));
-
-  // TODO Fix args stories
-  removeProps(storiesData ?? {}, ['stories', () => true, 'parameters', '__isArgsStory']);
-  Object.values(storiesData.stories ?? {}).forEach(
-    (story) =>
-      isObject(story) && 'parameters' in story && isObject(story.parameters) && delete story.parameters.__isArgsStory,
-  );
-  mkdirSync(outputDir, { recursive: true });
-  writeFileSync(path.join(outputDir, 'stories.json'), JSON.stringify(storiesData, null, 2));
 }
 
 export function saveTestsJson(tests: Record<string, unknown>, dstPath: string = process.cwd()): void {

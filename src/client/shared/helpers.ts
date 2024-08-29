@@ -198,7 +198,11 @@ export function removeTests(suite: CreeveySuite, path: string[]): void {
 
   const suiteOrTest = suite.children[title];
   if (suiteOrTest && !isTest(suiteOrTest)) removeTests(suiteOrTest, path);
-  if (isTest(suiteOrTest) || Object.keys(suiteOrTest?.children ?? {}).length == 0) delete suite.children[title];
+  if (isTest(suiteOrTest) || Object.keys(suiteOrTest?.children ?? {}).length == 0) {
+    // TODO Use Map instead
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+    delete suite.children[title];
+  }
   if (Object.keys(suite.children).length == 0) return;
   updateChecked(suite);
   suite.skip = Object.values(suite.children)
@@ -283,7 +287,7 @@ export function getConnectionUrl(): string {
 }
 
 export function getImageUrl(path: string[], imageName: string): string {
-  // path => [kind, story, test, browser]
+  // path => [title, story, test, browser]
   const browser = path.slice(-1)[0];
   const imagesUrl = window.location.host
     ? `${window.location.protocol}//${getConnectionUrl()}${

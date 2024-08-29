@@ -101,7 +101,7 @@ export class Checkbox extends React.Component<CheckboxProps, CheckboxState> {
           onChange={(e) => {
             onValueChange(e.target.checked);
           }}
-          checked={checked || false}
+          checked={checked ?? false}
         />
         <Box>
           {indeterminate ? (

@@ -34,7 +34,7 @@ export default class Pool extends EventEmitter {
   }
 
   async init(): Promise<void> {
-    const poolSize = this.config.limit || 1;
+    const poolSize = Math.max(1, this.config.limit ?? 1);
     // TODO Init queue for workers to smooth browser starting load
     this.workers = (await Promise.all(Array.from({ length: poolSize }).map(() => this.forkWorker()))).filter(
       (workerOrError): workerOrError is Worker => workerOrError instanceof ClusterWorker,
@@ -67,7 +67,7 @@ export default class Pool extends EventEmitter {
 
   process(): void {
     const worker = this.getFreeWorker();
-    const [test] = this.queue;
+    const test = this.queue.at(0);
 
     if (this.queue.length == 0 && this.workers.length === this.freeWorkers.length) {
       this.forcedStop = false;

@@ -56,7 +56,8 @@ export const Tools = ({ manager }: ToolsProps): JSX.Element | null => {
       // @ts-expect-error Fixed in https://github.com/storybookjs/storybook/pull/26623
       <Button
         onClick={() => {
-          isRunning ? manager.onStop() : handleClick();
+          if (isRunning) manager.onStop();
+          else handleClick();
         }}
         title={disabled ? '' : title}
         disabled={disabled}
@@ -70,7 +71,7 @@ export const Tools = ({ manager }: ToolsProps): JSX.Element | null => {
     <Fragment>
       {/* @ts-expect-error Fixed in https://github.com/storybookjs/storybook/pull/26623 */}
       <IconButton
-        href={`http://localhost:${__CREEVEY_CLIENT_PORT__ || __CREEVEY_SERVER_PORT__ || 3000}/?${stringify({
+        href={`http://localhost:${__CREEVEY_CLIENT_PORT__ ?? __CREEVEY_SERVER_PORT__ ?? 3000}/?${stringify({
           testPath: getTestPath(test),
         })}`}
         target="_blank"

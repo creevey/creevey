@@ -19,6 +19,14 @@
     },
     "skipLibCheck": true
   },
-  "include": ["src/**/*", ".creevey/**/*", ".storybook/*", "stories/**/*", "types/*", "tests/**/*", "webpack.config.ts"],
+  "include": [
+    "src/**/*",
+    ".creevey/**/*",
+    ".storybook/*",
+    "stories/**/*",
+    "types/*",
+    "tests/**/*",
+    "webpack.config.ts"
+  ],
   "exclude": ["report", "lib", "scripts"]
 }

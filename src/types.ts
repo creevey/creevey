@@ -295,7 +295,7 @@ export type WebpackMessage =
 
 export type DockerMessage = { type: 'start'; payload?: never } | { type: 'success'; payload: { gridUrl: string } };
 
-export type ShutdownMessage = unknown;
+export type ShutdownMessage = object;
 
 export type ProcessMessage =
   | (WorkerMessage & { scope: 'worker' })
@@ -386,7 +386,7 @@ export interface CreeveyTestController {
   keys: IKey;
   expect: Chai.ExpectStatic;
   takeScreenshot: () => Promise<string>;
-  updateStoryArgs: <Args extends Record<string, unknown>>(updatedArgs: Args) => Promise<void>;
+  updateStoryArgs: (updatedArgs: Record<string, unknown>) => Promise<void>;
   readonly captureElement?: WebElementPromise;
 }
 
@@ -440,15 +440,15 @@ export interface CreeveySuite {
 export type ImagesViewMode = 'side-by-side' | 'swap' | 'slide' | 'blend';
 
 export interface PackageJson {
-  [field: string]: any;
+  [field: string]: unknown;
   name: string;
   type: string;
   version: string;
   main: string;
   module: string;
   browser: string | Record<string, string | false>;
-  exports: string | Record<string, any> | string[];
-  imports: Record<string, any>;
+  exports: string | Record<string, unknown> | string[];
+  imports: Record<string, unknown>;
   dependencies: Record<string, string>;
 }
 
@@ -460,7 +460,7 @@ export function isDefined<T>(value: T | null | undefined): value is T {
   return value !== null && value !== undefined;
 }
 
-export function isTest<T1, T2 extends TestData>(x?: T1 | T2): x is T2 {
+export function isTest(x?: CreeveySuite | CreeveyTest): x is CreeveyTest {
   return (
     isDefined(x) &&
     isObject(x) &&

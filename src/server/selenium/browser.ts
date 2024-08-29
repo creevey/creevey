@@ -69,7 +69,7 @@ function getSessionData(grid: string, sessionId = ''): Promise<Record<string, un
 
       let data = '';
 
-      res.setEncoding('utf8');
+      res.setEncoding('utf-8');
       res.on('data', (chunk: string) => (data += chunk));
       res.on('end', () => {
         try {
@@ -123,7 +123,7 @@ async function openUrlAndWaitForPageSource(
   do {
     try {
       source = await browser.getPageSource();
-    } catch (_) {
+    } catch {
       // NOTE: Firefox can raise exception "curContainer.frame.document.documentElement is null"
     }
   } while (predicate(source));
@@ -150,7 +150,7 @@ function getUrlChecker(browser: WebDriver): (url: string) => Promise<boolean> {
       // So we just check `root` element
       browserLogger.debug(`Checking ${chalk.cyan(`#${storybookRootID}`)} existence on ${chalk.magenta(url)}`);
       return source.includes(`id="${storybookRootID}"`);
-    } catch (_) {
+    } catch {
       return false;
     }
   };
@@ -158,25 +158,31 @@ function getUrlChecker(browser: WebDriver): (url: string) => Promise<boolean> {
 
 async function waitForStorybook(browser: WebDriver): Promise<void> {
   browserLogger.debug('Waiting for `setStories` event to make sure that storybook is initiated');
-  let wait = true;
-  let isTimeout = false;
-  const initiateTimeout = setTimeout(() => {
-    wait = false;
-    isTimeout = true;
-  }, 60000);
-  // TODO Improve timeout if `await executeScript` is hanging
-  while (wait) {
-    try {
-      wait = await browser.executeScript(function (SET_GLOBALS: string): boolean {
-        if (typeof window.__STORYBOOK_ADDONS_CHANNEL__ == 'undefined') return true;
-        if (window.__STORYBOOK_ADDONS_CHANNEL__.last(SET_GLOBALS) == undefined) return true;
-        return false;
-      }, SET_GLOBALS);
-    } catch (e: unknown) {
-      browserLogger.debug('An error has been caught during the script: ', e);
-    }
-    if (!wait) clearTimeout(initiateTimeout);
-  }
+
+  const isTimeout = await Promise.race([
+    new Promise<boolean>((resolve) => {
+      setTimeout(() => {
+        resolve(true);
+      }, 60000);
+    }),
+    (async () => {
+      let wait = true;
+      do {
+        try {
+          wait = await browser.executeScript<boolean>(function (SET_GLOBALS: string): boolean {
+            if (typeof window.__STORYBOOK_ADDONS_CHANNEL__ == 'undefined') return true;
+            if (window.__STORYBOOK_ADDONS_CHANNEL__.last(SET_GLOBALS) == undefined) return true;
+            return false;
+          }, SET_GLOBALS);
+        } catch (e: unknown) {
+          browserLogger.debug('An error has been caught during the script:', e);
+        }
+      } while (wait);
+      return false;
+    })(),
+  ]);
+
+  // TODO Change the message to describe a reason why it might happen
   if (isTimeout) throw new Error('Failed to wait `setStories` event');
 }
 
@@ -442,14 +448,14 @@ export async function takeScreenshot(
 
 async function selectStory(
   browser: WebDriver,
-  { id, kind, name }: { id: string; kind: string; name: string },
+  { id, title, name }: { id: string; title: string; name: string },
   waitForReady = false,
 ): Promise<boolean> {
   browserLogger.debug(`Triggering 'SetCurrentStory' event with storyId ${chalk.magenta(id)}`);
   const result = await browser.executeAsyncScript<[error?: string | null, isCaptureCalled?: boolean] | null>(
     function (
       id: string,
-      kind: string,
+      title: string,
       name: string,
       shouldWaitForReady: boolean,
       callback: (response: [error?: string | null, isCaptureCalled?: boolean]) => void,
@@ -460,10 +466,10 @@ async function selectStory(
         ]);
         return;
       }
-      void window.__CREEVEY_SELECT_STORY__(id, kind, name, shouldWaitForReady, callback);
+      void window.__CREEVEY_SELECT_STORY__(id, title, name, shouldWaitForReady, callback);
     },
     id,
-    kind,
+    title,
     name,
     waitForReady,
   );
@@ -503,10 +509,11 @@ async function openStorybookPage(
 
       browserLogger.debug(`Resolver storybook url ${resolvedUrl}`);
 
-      return browser.get(appendIframePath(resolvedUrl));
+      await browser.get(appendIframePath(resolvedUrl));
+    } else {
+      // NOTE: getUrlChecker already calls `browser.get` so we don't need another one
+      await resolveStorybookUrl(appendIframePath(storybookUrl), getUrlChecker(browser));
     }
-    // NOTE: getUrlChecker already calls `browser.get` so we don't need another one
-    return void (await resolveStorybookUrl(appendIframePath(storybookUrl), getUrlChecker(browser)));
   } catch (error) {
     browserLogger.error('Failed to resolve storybook URL', error instanceof Error ? error.message : '');
     throw error;
@@ -558,8 +565,8 @@ async function resolveCreeveyHost(browser: WebDriver, port: number): Promise<str
 export async function loadStoriesFromBrowser(): Promise<StoriesRaw> {
   if (!browser) throw new Error("Can't get stories from browser if webdriver isn't connected");
 
-  const stories = await browser.executeAsyncScript<StoriesRaw | void>(function (
-    callback: (stories: StoriesRaw | void) => void,
+  const stories = await browser.executeAsyncScript<StoriesRaw | undefined>(function (
+    callback: (stories: StoriesRaw | undefined) => void,
   ) {
     void window.__CREEVEY_GET_STORIES__().then(callback);
   });
@@ -589,7 +596,7 @@ export async function getBrowser(config: Config, options: Options & { browser: s
   const capabilities = new Capabilities({ ...userCapabilities, pageLoadStrategy: PageLoadStrategy.EAGER });
 
   subscribeOn('shutdown', () => {
-    browser?.quit().finally(() => process.exit());
+    void browser?.quit().finally(() => process.exit());
     browser = null;
   });
 
@@ -636,7 +643,7 @@ export async function getBrowser(config: Config, options: Options & { browser: s
     try {
       const { Name } = await getSessionData(gridUrl, sessionId);
       if (typeof Name == 'string') browserHost = Name;
-    } catch (_) {
+    } catch {
       /* noop */
     }
 
@@ -743,14 +750,14 @@ export async function switchStory(this: Context): Promise<void> {
 
   if (!story) throw new Error(`Current test '${this.testScope.join('/')}' context doesn't have 'story' field`);
 
-  const { id, kind, name, parameters } = story;
+  const { id, title, name, parameters } = story;
   const {
     captureElement = `#${storybookRootID}`,
     waitForReady,
     ignoreElements,
   } = (parameters.creevey ?? {}) as CreeveyStoryParams;
 
-  browserLogger.debug(`Switching to story ${chalk.cyan(kind)}/${chalk.cyan(name)} by id ${chalk.magenta(id)}`);
+  browserLogger.debug(`Switching to story ${chalk.cyan(title)}/${chalk.cyan(name)} by id ${chalk.magenta(id)}`);
 
   if (captureElement)
     Object.defineProperty(this, 'captureElement', {
@@ -790,7 +797,7 @@ export async function switchStory(this: Context): Promise<void> {
   });
 
   await resetMousePosition(this.browser);
-  const isCaptureCalled = await selectStory(this.browser, { id, kind, name }, waitForReady);
+  const isCaptureCalled = await selectStory(this.browser, { id, title, name }, waitForReady);
 
   if (isCaptureCalled) {
     while (!(await waitForComplete)) {

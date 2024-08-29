@@ -23,7 +23,7 @@ const Button = styled.button<{ borderColor?: string }>(({ borderColor }) => ({
   zIndex: 1,
   margin: '0 10px',
   border: '2px solid transparent',
-  borderColor: borderColor || 'transparent',
+  borderColor: borderColor ?? 'transparent',
 
   '&:first-of-type': {
     marginLeft: 0,

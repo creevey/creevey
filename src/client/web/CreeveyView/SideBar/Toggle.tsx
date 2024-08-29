@@ -78,7 +78,7 @@ export const Toggle = ({ value, onChange }: ToggleProps): JSX.Element => (
       onChange={() => {
         onChange(!value);
       }}
-      checked={value || false}
+      checked={value ?? false}
     />
     <span>{value ? '☪' : '☀'}</span>
   </Container>

@@ -24,7 +24,7 @@ export default async function register(config: Config): Promise<void> {
     ignoreNodeModules: false,
   });
 
-  const { path: tsConfigPath } = getTsconfig(config.tsConfig) || {};
+  const { path: tsConfigPath } = getTsconfig(config.tsConfig) ?? {};
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
   (await import('@babel/register')).default(

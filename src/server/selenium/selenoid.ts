@@ -1,23 +1,30 @@
 import path from 'path';
+import assert from 'assert';
+import cluster from 'cluster';
 import { lstatSync, existsSync } from 'fs';
 import { mkdir, writeFile, copyFile } from 'fs/promises';
+import sh from 'shelljs';
+import { Octokit } from '@octokit/core';
 import { Config, BrowserConfig } from '../../types.js';
 import { downloadBinary, getCreeveyCache } from '../utils.js';
 import { pullImages, runImage } from '../docker.js';
-import { Octokit } from '@octokit/core';
 import { subscribeOn } from '../messages.js';
-import cluster from 'cluster';
-import sh from 'shelljs';
 
 async function createSelenoidConfig(browsers: BrowserConfig[], { useDocker }: { useDocker: boolean }): Promise<string> {
-  const selenoidConfig: Record<
-    string,
-    {
-      default: string;
-      versions: Record<string, { image: string | string[]; port: string; path: string }>;
-    }
+  const selenoidConfig: Partial<
+    Record<
+      string,
+      {
+        default: string;
+        versions: Record<string, { image: string | string[]; port: string; path: string }>;
+      }
+    >
   > = {};
-  const selenoidConfigDir = path.join(getCreeveyCache(), 'selenoid');
+  const cacheDir = getCreeveyCache();
+
+  assert(cacheDir, "Couldn't get cache directory");
+
+  const selenoidConfigDir = path.join(cacheDir, 'selenoid');
 
   browsers.forEach(
     ({
@@ -87,7 +94,7 @@ export async function startSelenoidStandalone(config: Config, debug: boolean): P
   // TODO Download browser webdrivers
   try {
     if (process.platform != 'win32') sh.chmod('+x', binaryPath);
-  } catch (_) {
+  } catch {
     /* noop */
   }
 

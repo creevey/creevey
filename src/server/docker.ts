@@ -68,7 +68,7 @@ export async function runImage(
       const container = docker.getContainer(info.Id);
       try {
         await container.stop();
-      } catch (_) {
+      } catch {
         /* noop */
       }
       await container.remove();
@@ -86,7 +86,7 @@ export async function runImage(
         try {
           await container.stop();
           await container.remove();
-        } catch (_) {
+        } catch {
           /* noop */
         }
       });

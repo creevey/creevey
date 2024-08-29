@@ -111,7 +111,9 @@ export default function server(reportDir: string, port: number, ui: boolean): (a
 
     wss.on('connection', (ws) => {
       ws.on('message', (message: WebSocket.RawData, isBinary: boolean) => {
-        api.handleMessage(ws, isBinary ? message : message.toString());
+        // NOTE Text messages are passed as Buffer https://github.com/websockets/ws/releases/tag/8.0.0
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string
+        api.handleMessage(ws, isBinary ? message : message.toString('utf-8'));
       });
     });
   });

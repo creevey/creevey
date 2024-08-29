@@ -6,7 +6,7 @@ describe('shouldSkip', () => {
     it('match story by browser', () => {
       const result = shouldSkip(
         'chrome',
-        { kind: 'Button', story: 'with Error' },
+        { title: 'Button', name: 'with Error' },
         {
           'Skip stories for chrome': {
             in: 'chrome',
@@ -19,7 +19,7 @@ describe('shouldSkip', () => {
     it('skip story by browser', () => {
       const result = shouldSkip(
         'firefox',
-        { kind: 'Input', story: 'with Error' },
+        { title: 'Input', name: 'with Error' },
         {
           'Skip stories for chrome': {
             in: 'chrome',
@@ -34,7 +34,7 @@ describe('shouldSkip', () => {
     it('match story by kind', () => {
       const result = shouldSkip(
         'chrome',
-        { kind: 'Button', story: 'with Error' },
+        { title: 'Button', name: 'with Error' },
         {
           'Skip all buttons': {
             kinds: 'Button',
@@ -47,7 +47,7 @@ describe('shouldSkip', () => {
     it('skip story by kind', () => {
       const result = shouldSkip(
         'chrome',
-        { kind: 'Input', story: 'with Error' },
+        { title: 'Input', name: 'with Error' },
         {
           'Skip all buttons': {
             kinds: 'Button',
@@ -62,7 +62,7 @@ describe('shouldSkip', () => {
     it('match story by story', () => {
       const result = shouldSkip(
         'chrome',
-        { kind: 'Button', story: 'with Error' },
+        { title: 'Button', name: 'with Error' },
         {
           'Skip `with Error` stories': {
             stories: 'with Error',
@@ -75,7 +75,7 @@ describe('shouldSkip', () => {
     it('skip story by story', () => {
       const result = shouldSkip(
         'chrome',
-        { kind: 'Input', story: 'without Error' },
+        { title: 'Input', name: 'without Error' },
         {
           'Skip `with Error` stories': {
             stories: 'with Error',
@@ -90,7 +90,7 @@ describe('shouldSkip', () => {
     it('match story by test', () => {
       const result = shouldSkip(
         'chrome',
-        { kind: 'Button', story: 'with Error' },
+        { title: 'Button', name: 'with Error' },
         {
           'Skip click tests': {
             tests: 'click',
@@ -104,7 +104,7 @@ describe('shouldSkip', () => {
     it('skip story by test', () => {
       const result = shouldSkip(
         'chrome',
-        { kind: 'Input', story: 'with Error' },
+        { title: 'Input', name: 'with Error' },
         {
           'Skip click tests': {
             tests: 'click',
@@ -120,7 +120,7 @@ describe('shouldSkip', () => {
     it('match story by regex', () => {
       const result = shouldSkip(
         'chrome',
-        { kind: 'Button', story: 'with Error' },
+        { title: 'Button', name: 'with Error' },
         {
           'Skip stories started with `with`': {
             stories: /^with/g,
@@ -136,7 +136,7 @@ describe('shouldSkip', () => {
     it('match story by array', () => {
       const result = shouldSkip(
         'chrome',
-        { kind: 'Button', story: 'with Error' },
+        { title: 'Button', name: 'with Error' },
         {
           'Skip some stories': {
             stories: ['Primary', 'with Error'],
@@ -152,7 +152,7 @@ describe('shouldSkip', () => {
     it('plain object', () => {
       const result = shouldSkip(
         'chrome',
-        { kind: 'Button', story: 'with Error' },
+        { title: 'Button', name: 'with Error' },
         { 'Skip click tests': { tests: 'click' } },
         'click',
       );
@@ -162,7 +162,7 @@ describe('shouldSkip', () => {
     it('object with arrays', () => {
       const result = shouldSkip(
         'chrome',
-        { kind: 'Button', story: 'with Error' },
+        { title: 'Button', name: 'with Error' },
         {
           'Skip click tests': [{ tests: 'click' }, { tests: 'fillIn' }],
         },
@@ -174,7 +174,7 @@ describe('shouldSkip', () => {
     it('object with objects', () => {
       const result = shouldSkip(
         'chrome',
-        { kind: 'Button', story: 'with Error' },
+        { title: 'Button', name: 'with Error' },
         {
           'Skip click tests': { tests: 'click' },
           'Skip fillIn tests': { tests: 'fillIn' },

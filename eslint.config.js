@@ -37,6 +37,7 @@ const config = tseslint.config(
       },
     },
     rules: {
+      'react/prop-types': 'off',
       '@typescript-eslint/restrict-template-expressions': [
         'error',
         {
@@ -52,7 +53,6 @@ const config = tseslint.config(
           caughtErrorsIgnorePattern: '^_',
           destructuredArrayIgnorePattern: '^_',
           varsIgnorePattern: '^_',
-          ignoreRestSiblings: true,
         },
       ],
     },

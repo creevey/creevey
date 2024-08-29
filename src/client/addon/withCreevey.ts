@@ -55,6 +55,7 @@ const disableAnimationsStyles = `
 
 async function resetCurrentStory(channel: Channel): Promise<void> {
   setTimeout(() => {
+    // TODO kind is deprecated
     channel.emit(Events.SET_CURRENT_STORY, { storyId: true, name: '', kind: '' });
   }, 0);
   return new Promise<void>((resolve) => {
@@ -183,7 +184,7 @@ export function withCreevey(): ReturnType<typeof makeDecorator> {
 
   async function selectStory(
     storyId: string,
-    kind: string,
+    title: string,
     name: string,
     shouldWaitForReady: boolean,
     callback: (response: [error?: string | null, isCaptureCalled?: boolean]) => void,
@@ -205,7 +206,8 @@ export function withCreevey(): ReturnType<typeof makeDecorator> {
     const capturePromise = waitForCaptureCall().then(() => (isCaptureCalled = true));
 
     setTimeout(() => {
-      channel.emit(Events.SET_CURRENT_STORY, { storyId, name, kind });
+      // TODO kind is deprecated
+      channel.emit(Events.SET_CURRENT_STORY, { storyId, name, kind: title });
     }, 0);
 
     try {

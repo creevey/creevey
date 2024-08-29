@@ -75,13 +75,16 @@ export function PageHeader({
   onViewModeChange,
 }: PageHeaderProps): JSX.Element | null {
   const imageEntires = Object.entries(images) as [string, Images][];
-  const [imageName, setImageName] = useState((imageEntires[0] ?? [])[0] ?? '');
+  const [imageName, setImageName] = useState(imageEntires.at(0)?.[0] ?? '');
 
-  const handleImageChange = (name: string): void => (setImageName(name), onImageChange(name));
+  const handleImageChange = (name: string): void => {
+    setImageName(name);
+    onImageChange(name);
+  };
   const handleViewModeChange = (mode: string): void => {
     onViewModeChange(mode as ImagesViewMode);
   };
-  const error = errorMessage || imagesWithError.includes(imageName) ? images[imageName]?.error || errorMessage : null;
+  const error = errorMessage || imagesWithError.includes(imageName) ? (images[imageName]?.error ?? errorMessage) : null;
 
   return showTitle || error || imageEntires.length > 1 || showViewModes ? (
     <Container>

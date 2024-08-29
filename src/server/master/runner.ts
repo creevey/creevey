@@ -86,12 +86,13 @@ export default class Runner extends EventEmitter {
           };
         } else this.tests[id] = newTest;
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { story, fn, ...restTest } = newTest;
+        const { story: _, fn: __, ...restTest } = newTest;
         tests[id] = { ...restTest, status: 'unknown' };
       } else if (oldTest) {
         const { id, browser, testName, storyPath, storyId } = oldTest;
         removedTests.push({ id, browser, testName, storyPath, storyId });
+        // TODO Use Map instead
+        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete this.tests[id];
       }
     });
@@ -151,8 +152,8 @@ export default class Runner extends EventEmitter {
     const tests: CreeveyStatus['tests'] = {};
     Object.values(this.tests)
       .filter(isDefined)
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .forEach(({ story, fn, ...test }) => (tests[test.id] = test));
+
+      .forEach(({ story: _, fn: __, ...test }) => (tests[test.id] = test));
     return {
       isRunning: this.isRunning,
       tests,

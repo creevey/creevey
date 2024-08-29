@@ -19,7 +19,8 @@ const config: CreeveyConfig = {
     before: () =>
       new Promise<void>((resolve, reject) => {
         bs.start({ key: process.env.BROWSERSTACK_ACCESS_KEY }, (error) => {
-          error ? reject(error) : resolve();
+          if (error) reject(error);
+          else resolve();
         });
       }),
     after: () => {

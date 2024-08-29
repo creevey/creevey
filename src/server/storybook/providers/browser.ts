@@ -47,7 +47,7 @@ export const loadStories: StoriesProvider = async (_config, _options, storiesLis
     Object.values(stories).forEach((story) => {
       if ((story as CreeveyStory).parameters?.creevey?.tests) {
         delete (story as CreeveyStory).parameters?.creevey?.tests;
-        storiesWithOldTests.push(`${story.kind}/${story.name}`);
+        storiesWithOldTests.push(`${story.title}/${story.name}`);
       }
     });
 

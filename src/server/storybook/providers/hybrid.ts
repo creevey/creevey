@@ -12,11 +12,11 @@ export const loadStories: StoriesProvider = async (
   _options,
   storiesListener: (stories: Map<string, StoryInput[]>) => void,
 ) => {
-  let creeveyParamsByStoryId: CreeveyParamsByStoryId = {};
+  let creeveyParamsByStoryId: Partial<CreeveyParamsByStoryId> = {};
 
   const mergeParamsFromTestsToStory = (story: CreeveyStory, creeveyParams: CreeveyStoryParams): void => {
     if (story.parameters) {
-      story.parameters.creevey = combineParameters(story.parameters.creevey || {}, creeveyParams);
+      story.parameters.creevey = combineParameters(story.parameters.creevey ?? {}, creeveyParams);
     }
   };
 
@@ -24,9 +24,7 @@ export const loadStories: StoriesProvider = async (
     Array.from(updatedStoriesByFiles.entries()).forEach(([, storiesArray]) => {
       storiesArray.forEach((story) => {
         const creeveyParams = creeveyParamsByStoryId[story.id];
-        if (creeveyParams) {
-          mergeParamsFromTestsToStory(story, creeveyParams);
-        }
+        if (creeveyParams) mergeParamsFromTestsToStory(story, creeveyParams);
       });
     });
     storiesListener(updatedStoriesByFiles);
@@ -36,7 +34,8 @@ export const loadStories: StoriesProvider = async (
   creeveyParamsByStoryId = await parseParams(_config /*, (data) => console.log(data) */);
 
   Object.entries(stories).forEach(([storyId, story]) => {
-    mergeParamsFromTestsToStory(story, creeveyParamsByStoryId[storyId]);
+    const creeveyParams = creeveyParamsByStoryId[storyId];
+    if (creeveyParams) mergeParamsFromTestsToStory(story, creeveyParams);
   });
 
   return stories;

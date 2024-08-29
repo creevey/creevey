@@ -17,7 +17,7 @@ const Container = styled.div({
 });
 
 const IconContainer = styled.div<{ color?: string }>(({ color }) => ({
-  color: color || 'inherit',
+  color: color ?? 'inherit',
   display: 'inline-flex',
   flexDirection: 'row',
   alignItems: 'center',

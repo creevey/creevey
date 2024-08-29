@@ -71,7 +71,7 @@ export default function (
   diffOptions: DiffOptions,
 ) {
   return function chaiImage({ Assertion }: Chai.ChaiStatic, utils: Chai.ChaiUtils): void {
-    async function assertImage(actual: Buffer, imageName?: string): Promise<string | void> {
+    async function assertImage(actual: Buffer, imageName?: string): Promise<string | undefined> {
       let onCompare: (actual: Buffer, expect?: Buffer, diff?: Buffer) => Promise<void> = () => Promise.resolve();
       let expected = await getExpected(imageName);
       if (!(expected instanceof Buffer) && expected != null) ({ expected, onCompare } = expected);
@@ -118,7 +118,7 @@ export default function (
       await Promise.all(
         Object.entries<string | Buffer>(utils.flag(this, 'object') as Record<string, string | Buffer>).map(
           async ([imageName, imageOrBase64]) => {
-            let errorMessage: string | void;
+            let errorMessage: string | undefined;
             try {
               errorMessage = await assertImage(
                 typeof imageOrBase64 == 'string' ? Buffer.from(imageOrBase64, 'base64') : imageOrBase64,

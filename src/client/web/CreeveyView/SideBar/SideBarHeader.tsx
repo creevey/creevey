@@ -59,10 +59,10 @@ const Button = withTheme(
 
 const MarginContainer = styled.div<{ left?: string; right?: string; top?: string; bottom?: string }>(
   ({ left, right, top, bottom }) => ({
-    marginLeft: left || 0,
-    marginRight: right || 0,
-    marginTop: top || 0,
-    marginBottom: bottom || 0,
+    marginLeft: left ?? 0,
+    marginRight: right ?? 0,
+    marginTop: top ?? 0,
+    marginBottom: bottom ?? 0,
   }),
 );
 
@@ -75,7 +75,7 @@ const parseStringForFilter = (value: string): CreeveyViewFilter => {
     .map((word) => word.toLowerCase());
 
   tokens.forEach((word) => {
-    const [, matchedStatus] = /^status:(failed|success|pending)$/i.exec(word) || [];
+    const [, matchedStatus] = /^status:(failed|success|pending)$/i.exec(word) ?? [];
     if (matchedStatus) return (status = matchedStatus as TestStatus);
     subStrings.push(word);
   });

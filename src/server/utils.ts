@@ -8,7 +8,7 @@ import { createRequire, isBuiltin } from 'module';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { build } from 'esbuild';
 import findCacheDir from 'find-cache-dir';
-import { SkipOptions, SkipOption, isDefined, TestData, noop, isFunction, PackageJson, Config } from '../types.js';
+import { SkipOptions, SkipOption, isDefined, TestData, noop, PackageJson, Config } from '../types.js';
 import { emitShutdownMessage, sendShutdownMessage } from './messages.js';
 
 // NOTE: There is an issue in windows which described in vite, that's why we don't use already promisified method
@@ -34,8 +34,8 @@ function matchBy(pattern: string | string[] | RegExp | undefined, value: string)
 export function shouldSkip(
   browser: string,
   meta: {
-    kind: string;
-    story: string;
+    title: string;
+    name: string;
   },
   skipOptions: SkipOptions,
   test?: string,
@@ -53,8 +53,8 @@ export function shouldSkip(
 export function shouldSkipByOption(
   browser: string,
   meta: {
-    kind: string;
-    story: string;
+    title: string;
+    name: string;
   },
   skipOption: SkipOption | SkipOption[],
   reason: string,
@@ -69,10 +69,10 @@ export function shouldSkipByOption(
   }
 
   const { in: browsers, kinds, stories, tests } = skipOption;
-  const { kind, story } = meta;
+  const { title, name } = meta;
   const skipByBrowser = matchBy(browsers, browser);
-  const skipByKind = matchBy(kinds, kind);
-  const skipByStory = matchBy(stories, story);
+  const skipByKind = matchBy(kinds, title);
+  const skipByStory = matchBy(stories, name);
   const skipByTest = !isDefined(test) || matchBy(tests, test);
 
   return skipByBrowser && skipByKind && skipByStory && skipByTest && reason;
@@ -105,8 +105,8 @@ export function shutdown(): void {
   process.exit();
 }
 
-export function getCreeveyCache(): string {
-  return findCacheDir({ name: 'creevey', cwd: dirname(fileURLToPath(import.meta.url)) })!;
+export function getCreeveyCache(): string | undefined {
+  return findCacheDir({ name: 'creevey', cwd: dirname(fileURLToPath(import.meta.url)) });
 }
 
 export async function runSequence(seq: (() => unknown)[], predicate: () => boolean): Promise<void> {
@@ -134,7 +134,7 @@ export function testsToImages(tests: (TestData | undefined)[]): Set<string> {
 
 // https://tuhrig.de/how-to-know-you-are-inside-a-docker-container/
 export const isInsideDocker =
-  fs.existsSync('/proc/1/cgroup') && fs.readFileSync('/proc/1/cgroup', 'utf8').includes('docker');
+  fs.existsSync('/proc/1/cgroup') && fs.readFileSync('/proc/1/cgroup', 'utf-8').includes('docker');
 
 export const downloadBinary = (downloadUrl: string, destination: string): Promise<void> =>
   new Promise((resolve, reject) =>
@@ -168,23 +168,6 @@ export const downloadBinary = (downloadUrl: string, destination: string): Promis
     }),
   );
 
-export function removeProps(obj: Record<string, unknown>, propPath: (string | ((key: string) => boolean))[]): void {
-  const [prop, ...restPath] = propPath;
-  if (restPath.length > 0) {
-    if (typeof prop == 'string') obj[prop] && removeProps(obj[prop] as Record<string, unknown>, restPath);
-    if (isFunction(prop))
-      Object.keys(obj)
-        .filter(prop)
-        .forEach((key) => obj[key] && removeProps(obj[key] as Record<string, unknown>, restPath));
-  } else {
-    if (typeof prop == 'string') delete obj[prop];
-    if (isFunction(prop))
-      Object.keys(obj)
-        .filter(prop)
-        .forEach((key) => delete obj[key]);
-  }
-}
-
 export function readDirRecursive(dirPath: string): string[] {
   return ([] as string[]).concat(
     ...fs
@@ -210,10 +193,10 @@ export function findNearestPackageData(basedir: string): PackageJson | null {
     const pkgPath = join(basedir, 'package.json');
     if (tryStatSync(pkgPath)?.isFile()) {
       try {
-        const pkgData = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
-
-        return pkgData;
-      } catch {}
+        return JSON.parse(fs.readFileSync(pkgPath, 'utf-8')) as PackageJson;
+      } catch {
+        /* noop */
+      }
     }
 
     const nextBasedir = dirname(basedir);
@@ -299,7 +282,7 @@ export async function buildConfigBundle(configPath: string, isESM: boolean) {
 }
 
 interface NodeModuleWithCompile extends NodeModule {
-  _compile(code: string, filename: string): any;
+  _compile(code: string, filename: string): unknown;
 }
 
 const _require = createRequire(import.meta.url);
@@ -314,16 +297,17 @@ export async function loadConfigFromBundledFile(
   if (isESM) {
     const fileBase = `${fileName}.timestamp-${Date.now()}-${Math.random().toString(16).slice(2)}`;
     const fileNameTmp = `${fileBase}.mjs`;
-    const fileUrl = `${pathToFileURL(fileBase)}.mjs`;
+    const fileUrl = `${pathToFileURL(fileBase).toString()}.mjs`;
     await fsp.writeFile(fileNameTmp, bundledCode);
     try {
-      return (await import(fileUrl)).default;
+      return ((await import(fileUrl)) as { default: Config }).default;
     } finally {
-      fs.unlink(fileNameTmp, () => {}); // Ignore errors
+      fs.unlink(fileNameTmp, () => void 0); // Ignore errors
     }
   }
   // for cjs, we can register a custom loader via `_require.extensions`
   else {
+    /* eslint-disable */
     const extension = extname(fileName);
     // We don't use fsp.realpath() here because it has the same behaviour as
     // fs.realpath.native. On some Windows systems, it returns uppercase volume
@@ -344,5 +328,6 @@ export async function loadConfigFromBundledFile(
     const raw = _require(fileName);
     _require.extensions[loaderExt] = defaultLoader;
     return raw.__esModule ? raw.default : raw;
+    /* eslint-enable */
   }
 }

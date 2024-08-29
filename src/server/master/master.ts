@@ -29,8 +29,8 @@ export default async function master(
   let testsFromReport = {};
   try {
     testsFromReport = (await import(reportDataPath)) as Partial<Record<string, TestData>>;
-  } catch (error) {
-    // Ignore error
+  } catch {
+    /* noop */
   }
 
   await runner.init();

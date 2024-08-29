@@ -21,7 +21,7 @@ export const denormalizeStoryParameters = ({
 }: SetStoriesData): StoriesRaw => {
   return _.mapValues(stories, (storyData) => ({
     ...storyData,
-    parameters: combineParameters(globalParameters, kindParameters[storyData.kind] ?? {}, storyData.parameters),
+    parameters: combineParameters(globalParameters, kindParameters[storyData.title] ?? {}, storyData.parameters),
   })) as StoriesRaw;
 };
 

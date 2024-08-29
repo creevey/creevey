@@ -32,7 +32,7 @@ const CreeveyAppAsync = React.lazy(async () => {
     try {
       creeveyApi = await initCreeveyClientApi();
       creeveyStatus = await creeveyApi.status;
-    } catch (error) {
+    } catch {
       // NOTE: Failed to get status from API
       // NOTE: It might happen on circle ci from artifact
       isReport = true;

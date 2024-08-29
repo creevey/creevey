@@ -8,7 +8,7 @@ const _require = createRequire(import.meta.url);
 function tryToLoadTestsData(filename: string): Partial<Record<string, ServerTest>> | undefined {
   try {
     return _require(filename) as Partial<Record<string, ServerTest>>;
-  } catch (_) {
+  } catch {
     /* noop */
   }
 }

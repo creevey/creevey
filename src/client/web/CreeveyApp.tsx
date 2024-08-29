@@ -123,7 +123,9 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
         if (isDefined(isRunning)) setIsRunning(isRunning);
         if (isDefined(tests))
           updateTests((draft) => {
-            Object.values(tests).forEach((test) => test && updateTestStatus(draft, getTestPath(test), test));
+            Object.values(tests).forEach((test) => {
+              if (test) updateTestStatus(draft, getTestPath(test), test);
+            });
             removedTests.forEach((test) => {
               removeTests(draft, getTestPath(test));
             });

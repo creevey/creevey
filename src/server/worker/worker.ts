@@ -2,6 +2,7 @@ import path from 'path';
 import chai from 'chai';
 import chalk from 'chalk';
 import { Stats } from 'fs';
+import assert from 'assert';
 import { stat, readdir, readFile, writeFile, mkdir } from 'fs/promises';
 import Mocha, { Context, MochaOptions } from 'mocha';
 import { Key, until } from 'selenium-webdriver';
@@ -56,9 +57,8 @@ export default async function worker(config: Config, options: Options & { browse
         images,
         error,
       };
-      isTimeout
-        ? emitWorkerMessage({ type: 'error', payload: { error: error ?? 'Unknown error' } })
-        : emitTestMessage({ type: 'end', payload });
+      if (isTimeout) emitWorkerMessage({ type: 'error', payload: { error: error ?? 'Unknown error' } });
+      else emitTestMessage({ type: 'end', payload });
     } else {
       emitTestMessage({ type: 'end', payload: { status: 'success', images } });
     }
@@ -78,11 +78,13 @@ export default async function worker(config: Config, options: Options & { browse
     | Buffer
     | null
   > {
-    // context => [kind, story, test, browser]
+    // context => [title, name, test, browser]
     // rootSuite -> kindSuite -> storyTest -> [browsers.png]
     // rootSuite -> kindSuite -> storySuite -> test -> [browsers.png]
     const testPath = [...testScope];
-    const imageName = assertImageName ?? testPath.pop()!;
+    const imageName = assertImageName ?? testPath.pop();
+
+    assert(typeof imageName === 'string', `Can't get image name from empty test scope`);
 
     const imagesMeta: { name: string; data: Buffer }[] = [];
     const reportImageDir = path.join(config.reportDir, ...testPath);
@@ -114,7 +116,7 @@ export default async function worker(config: Config, options: Options & { browse
 
   const mochaOptions: MochaOptions = {
     timeout: 30000,
-    reporter: process.env.TEAMCITY_VERSION ? TeamcityReporter : options.reporter || CreeveyReporter,
+    reporter: process.env.TEAMCITY_VERSION ? TeamcityReporter : (options.reporter ?? CreeveyReporter),
     reporterOptions: {
       reportDir: config.reportDir,
       topLevelSuite: options.browser,
@@ -145,7 +147,7 @@ export default async function worker(config: Config, options: Options & { browse
 
   try {
     await (await getBrowser(config, options))?.getCurrentUrl();
-  } catch (_) {
+  } catch {
     await closeBrowser();
   }
   const browser = await getBrowser(config, options);
@@ -226,5 +228,5 @@ export default async function worker(config: Config, options: Options & { browse
 }
 
 function hasTimeout(str: string | null | undefined): boolean {
-  return str != null && str.toLowerCase().includes('timeout');
+  return str?.toLowerCase().includes('timeout') ?? false;
 }

@@ -60,9 +60,8 @@ export class TeamcityReporter extends reporters.Base {
     const reporterOptions = options.reporterOptions as ReporterOptions;
 
     runner.on('suite', (suite) => {
-      suite.root
-        ? console.log(`##teamcity[testSuiteStarted name='${topLevelSuite}' flowId='${process.pid}']`)
-        : console.log(`##teamcity[testSuiteStarted name='${this.escape(suite.title)}' flowId='${process.pid}']`);
+      if (suite.root) console.log(`##teamcity[testSuiteStarted name='${topLevelSuite}' flowId='${process.pid}']`);
+      else console.log(`##teamcity[testSuiteStarted name='${this.escape(suite.title)}' flowId='${process.pid}']`);
     });
 
     runner.on('test', (test) => {
@@ -77,8 +76,8 @@ export class TeamcityReporter extends reporters.Base {
           .concat(name == topLevelSuite ? [] : [topLevelSuite])
           .map(this.escape)
           .join('/');
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { error, ...rest } = image;
+
+        const { error: _, ...rest } = image;
         Object.values(rest as Partial<Images>)
           .filter(isDefined)
           .forEach((fileName) => {
@@ -96,13 +95,14 @@ export class TeamcityReporter extends reporters.Base {
       // Output failed test as passed due TC don't support retry mechanic
       // https://teamcity-support.jetbrains.com/hc/en-us/community/posts/207216829-Count-test-as-successful-if-at-least-one-try-is-successful?page=1#community_comment_207394125
 
-      reporterOptions.willRetry
-        ? console.log(`##teamcity[testFinished name='${this.escape(test.title)}' flowId='${process.pid}']`)
-        : console.log(
-            `##teamcity[testFailed name='${this.escape(test.title)}' message='${this.escape(
-              error.message,
-            )}' details='${this.escape(error.stack ?? '')}' flowId='${process.pid}']`,
-          );
+      if (reporterOptions.willRetry)
+        console.log(`##teamcity[testFinished name='${this.escape(test.title)}' flowId='${process.pid}']`);
+      else
+        console.log(
+          `##teamcity[testFailed name='${this.escape(test.title)}' message='${this.escape(
+            error.message,
+          )}' details='${this.escape(error.stack ?? '')}' flowId='${process.pid}']`,
+        );
     });
 
     runner.on('pending', (test) => {
@@ -117,12 +117,10 @@ export class TeamcityReporter extends reporters.Base {
       console.log(`##teamcity[testFinished name='${this.escape(test.title)}' flowId='${process.pid}']`);
     });
 
-    runner.on(
-      'suite end',
-      (suite) =>
-        suite.root ||
-        console.log(`##teamcity[testSuiteFinished name='${this.escape(suite.title)}' flowId='${process.pid}']`),
-    );
+    runner.on('suite end', (suite) => {
+      if (!suite.root)
+        console.log(`##teamcity[testSuiteFinished name='${this.escape(suite.title)}' flowId='${process.pid}']`);
+    });
 
     runner.on('end', () => {
       console.log(`##teamcity[testSuiteFinished name='${topLevelSuite}' flowId='${process.pid}']`);
