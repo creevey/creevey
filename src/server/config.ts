@@ -55,6 +55,7 @@ export async function readConfig(options: Options): Promise<Config> {
   if (options.failFast != undefined) userConfig.failFast = Boolean(options.failFast);
   if (options.reportDir) userConfig.reportDir = path.resolve(options.reportDir);
   if (options.screenDir) userConfig.screenDir = path.resolve(options.screenDir);
+  if (options.storybookUrl) userConfig.storybookUrl = options.storybookUrl;
 
   // NOTE: Hack to pass typescript checking
   const config = userConfig as Config;

@@ -260,6 +260,7 @@ export interface Options {
   reporter?: string;
   screenDir?: string;
   reportDir?: string;
+  storybookUrl?: string;
   saveReport: boolean;
   failFast?: boolean;
 }
