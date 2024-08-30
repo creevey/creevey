@@ -41,6 +41,7 @@ export const loadStories: StoriesProvider = async (
   return stories;
 };
 
+// TODO Check if it works with watch
 async function parseParams(
   config: Config,
   listener?: (data: CreeveyParamsByStoryId) => void,
@@ -50,8 +51,6 @@ async function parseParams(
   }
 
   const testFiles = readDirRecursive(config.testsDir).filter((file) => config.testsRegex?.test(file));
-
-  await (await import('../../testsFiles/register.js')).default(config);
 
   if (listener) {
     chokidar.watch(testFiles).on('change', (filePath) => {

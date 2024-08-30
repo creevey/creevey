@@ -1,3 +1,4 @@
+import { register } from 'tsx/esm/api';
 import { toId, storyNameFromExport } from '@storybook/csf';
 import { CreeveyStoryParams, CreeveyTestFunction } from '../../types.js';
 
@@ -6,11 +7,13 @@ export type CreeveyParamsByStoryId = Record<string, CreeveyStoryParams>;
 export default async function parse(files: string[]): Promise<CreeveyParamsByStoryId> {
   result = {};
 
+  const unregister = register();
   await Promise.all(
     files.map(async (file) => {
       await import(file);
     }),
   );
+  await unregister();
 
   return result as CreeveyParamsByStoryId;
 }
