@@ -1,31 +1,11 @@
 import React, { FunctionComponent } from 'react';
-import { Color, styled, Theme, withTheme } from '@storybook/theming';
+import { styled, withTheme } from '@storybook/theming';
 import { SideBySideView } from './SideBySideView.js';
 import { SwapView } from './SwapView.js';
 import { SlideView } from './SlideView.js';
 import { BlendView } from './BlendView.js';
 import { Images, ImagesViewMode } from '../../../../types.js';
-
-export const themeBorderColors = {
-  actual: 'negative',
-  expect: 'positive',
-  diff: 'secondary',
-};
-
-const isColor = (theme: Theme, color: string): color is keyof Color => color in theme.color;
-export function getBorderColor(theme: Theme, color: string): string {
-  return isColor(theme, color) ? theme.color[color] : color;
-}
-
-interface ViewProps {
-  actual: string;
-  diff: string;
-  expect: string;
-}
-
-export interface ViewPropsWithTheme extends ViewProps {
-  theme: Theme;
-}
+import { getBorderColor, themeBorderColors, ViewProps } from './common.js';
 
 interface ImagesViewProps {
   url: string;

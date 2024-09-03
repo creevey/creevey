@@ -1,32 +1,31 @@
-import { addons, types } from '@storybook/manager-api';
-import { API } from '@storybook/api';
 import React from 'react';
+import { API } from '@storybook/api';
+import { addons, types } from '@storybook/manager-api';
 import { Addon } from './components/Addon.js';
 import { Tools } from './components/Tools.js';
-import { CreeveyManager } from './Manager.js';
+import { CreeveyController, ADDON_ID } from './controller.js';
 
-export const ADDON_ID = 'creevey';
-
+// TODO Take api from `import { useGlobals, useStorybookApi } from '@storybook/manager-api';`
 addons.register(ADDON_ID, (api) => {
   void registerCreeveyPanels(api);
 });
 
-export async function registerCreeveyPanels(storybookApi: API): Promise<void> {
-  const manager = new CreeveyManager(storybookApi);
+async function registerCreeveyPanels(storybookApi: API): Promise<void> {
+  const controller = new CreeveyController(storybookApi);
 
   addons.add(`${ADDON_ID}/panel/run`, {
     title: `Creevey/Run`,
     match: ({ viewMode }) => !!(viewMode && /^story$/.exec(viewMode)),
     type: types.TOOL,
 
-    render: () => React.createElement(Tools, { manager }),
+    render: () => React.createElement(Tools, { controller }),
   });
-  await manager.initAll();
-  const browsers = manager.getBrowsers();
+  await controller.initAll();
+  const browsers = controller.getBrowsers();
 
   browsers.forEach((browser) => {
     const panelId = `${ADDON_ID}/panel/${browser}`;
-    const title = manager.getTabTitle(browser);
+    const title = controller.getTabTitle(browser);
     addons.add(panelId, {
       title,
       type: types.PANEL,
@@ -37,7 +36,7 @@ export async function registerCreeveyPanels(storybookApi: API): Promise<void> {
       render: ({ active }) =>
         React.createElement(Addon, {
           active,
-          manager,
+          controller,
           browser,
         }),
     });

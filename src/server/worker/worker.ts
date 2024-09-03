@@ -42,7 +42,7 @@ async function getLastImageNumber(imageDir: string, imageName: string): Promise<
 }
 
 // FIXME browser options hotfix
-export default async function worker(config: Config, options: Options & { browser: string }): Promise<void> {
+export async function start(config: Config, options: Options & { browser: string }): Promise<void> {
   let retries = 0;
   let images: Partial<Record<string, Images>> = {};
   let error: string | undefined = undefined;

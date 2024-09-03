@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Loader } from '@storybook/components';
 import { styled, withTheme } from '@storybook/theming';
-import { getBorderColor, themeBorderColors, ViewPropsWithTheme } from './ImagesView.js';
+import { getBorderColor, themeBorderColors, ViewPropsWithTheme } from './common.js';
 import { useApplyScale, useCalcScale, useLoadImages } from '../../helpers.js';
 import { readyForCapture } from '../../../addon/readyForCapture.js';
 

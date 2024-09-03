@@ -1,10 +1,10 @@
-import type { DecoratorFunction } from '@storybook/csf';
+import type { StoryContextForEnhancers, DecoratorFunction } from '@storybook/csf';
 import type { IKey } from 'selenium-webdriver/lib/input.js';
 import type { Worker as ClusterWorker } from 'cluster';
 import type { until, WebDriver, WebElementPromise } from 'selenium-webdriver';
 import type Pixelmatch from 'pixelmatch';
 import type { Context } from 'mocha';
-import { StoryContextForEnhancers } from '@storybook/csf';
+import type { expect } from 'chai';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type DiffOptions = typeof Pixelmatch extends (
@@ -384,7 +384,7 @@ export interface CreeveyTestController {
   browser: WebDriver;
   until: typeof until;
   keys: IKey;
-  expect: Chai.ExpectStatic;
+  expect: typeof expect;
   takeScreenshot: () => Promise<string>;
   updateStoryArgs: (updatedArgs: Record<string, unknown>) => Promise<void>;
   readonly captureElement?: WebElementPromise;
@@ -438,19 +438,6 @@ export interface CreeveySuite {
 }
 
 export type ImagesViewMode = 'side-by-side' | 'swap' | 'slide' | 'blend';
-
-export interface PackageJson {
-  [field: string]: unknown;
-  name: string;
-  type: string;
-  version: string;
-  main: string;
-  module: string;
-  browser: string | Record<string, string | false>;
-  exports: string | Record<string, unknown> | string[];
-  imports: Record<string, unknown>;
-  dependencies: Record<string, string>;
-}
 
 export function noop(): void {
   /* noop */

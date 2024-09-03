@@ -2,49 +2,49 @@ import React, { useEffect, useState } from 'react';
 import { Placeholder } from '@storybook/components';
 import { TestData } from '../../../types.js';
 import { Panel } from './Panel.js';
-import { CreeveyManager } from '../Manager.js';
+import { CreeveyController } from '../controller.js';
 
 interface AddonProps {
   active?: boolean;
   browser: string;
-  manager: CreeveyManager;
+  controller: CreeveyController;
 }
-export const Addon = ({ active, browser, manager }: AddonProps): JSX.Element | null => {
+export const Addon = ({ active, browser, controller }: AddonProps): JSX.Element | null => {
   const [tests, setTests] = useState<TestData[]>([]);
 
-  const [selectedTestId, setSelectedTestId] = useState(manager.selectedTestId);
+  const [selectedTestId, setSelectedTestId] = useState(controller.selectedTestId);
 
   useEffect(() => {
     if (active) {
-      manager.setActiveBrowser(browser);
-      const browserTests = manager.getTestsByStoryIdAndBrowser(manager.activeBrowser);
+      controller.setActiveBrowser(browser);
+      const browserTests = controller.getTestsByStoryIdAndBrowser(controller.activeBrowser);
       setTests(browserTests);
     }
-  }, [active, browser, manager]);
+  }, [active, browser, controller]);
 
   useEffect(() => {
-    const unsubscribe = manager.onChangeTest((testId) => {
+    const unsubscribe = controller.onChangeTest((testId) => {
       setSelectedTestId(testId);
-      const status = manager.getTestsByStoryIdAndBrowser(manager.activeBrowser);
+      const status = controller.getTestsByStoryIdAndBrowser(controller.activeBrowser);
       setTests(status);
     });
     return unsubscribe;
-  }, [manager]);
+  }, [controller]);
 
   useEffect(() => {
-    const unsubscribe = manager.onUpdateStatus(() => {
-      setTests(manager.getTestsByStoryIdAndBrowser(manager.activeBrowser));
+    const unsubscribe = controller.onUpdateStatus(() => {
+      setTests(controller.getTestsByStoryIdAndBrowser(controller.activeBrowser));
     });
     return unsubscribe;
-  }, [manager, browser]);
+  }, [controller, browser]);
 
   return active ? (
     tests.length ? (
       <Panel
         tests={tests}
         selectedTestId={selectedTestId}
-        onChangeTest={manager.setSelectedTestId}
-        onImageApprove={manager.onImageApprove}
+        onChangeTest={controller.setSelectedTestId}
+        onImageApprove={controller.onImageApprove}
       />
     ) : (
       <Placeholder>No test results</Placeholder>

@@ -1,17 +1,8 @@
 import path from 'path';
-import { createRequire } from 'module';
 import { Dirent, mkdirSync, copyFileSync, readdirSync } from 'fs';
 import micromatch from 'micromatch';
-import { Config, isDefined, ServerTest } from '../types.js';
-
-const _require = createRequire(import.meta.url);
-function tryToLoadTestsData(filename: string): Partial<Record<string, ServerTest>> | undefined {
-  try {
-    return _require(filename) as Partial<Record<string, ServerTest>>;
-  } catch {
-    /* noop */
-  }
-}
+import { Config, isDefined } from '../types.js';
+import { tryToLoadTestsData } from './utils.js';
 
 const actualRegex = /^(.*)-actual-(\d+)\.png$/i;
 
@@ -64,7 +55,7 @@ function traverse(
     });
 }
 
-export default function update(config: Config, grepPattern?: string): void {
+export function update(config: Config, grepPattern?: string): void {
   const { reportDir, screenDir } = config;
   const isMatch = grepPattern ? micromatch.matcher(grepPattern, { contains: true }) : () => true;
 

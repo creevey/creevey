@@ -4,7 +4,7 @@ import { Configuration as WebpackDevServerConfiguration } from 'webpack-dev-serv
 
 const config: WebpackConfiguration & WebpackDevServerConfiguration = {
   entry: [require.resolve('core-js'), require.resolve('regenerator-runtime/runtime'), './src/client/web/index.tsx'],
-  output: { path: path.join(__dirname, './lib/client/web') },
+  output: { path: path.join(__dirname, './dist/esm/client/web') },
   mode: process.env.WEBPACK_SERVE ? 'development' : 'production',
   module: {
     rules: [
@@ -14,11 +14,11 @@ const config: WebpackConfiguration & WebpackDevServerConfiguration = {
         use: {
           loader: 'babel-loader',
           options: {
-            overrides: [
-              {
-                // TODO Don't need, see https://babeljs.io/docs/en/babel-preset-env#usebuiltins-entry
-                presets: [['@babel/preset-env', { useBuiltIns: 'entry', corejs: 3 }]],
-              },
+            presets: [
+              '@babel/preset-react',
+              '@babel/preset-typescript',
+              // TODO Don't need, see https://babeljs.io/docs/en/babel-preset-env#usebuiltins-entry
+              ['@babel/preset-env', { useBuiltIns: 'entry', corejs: 3 }],
             ],
           },
         },

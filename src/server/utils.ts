@@ -1,18 +1,12 @@
+import fs from 'fs';
 import { get } from 'https';
 import cluster from 'cluster';
-import fsp from 'fs/promises';
-import fs, { Stats } from 'fs';
-import { promisify } from 'util';
-import { dirname, extname, join, isAbsolute } from 'path';
-import { createRequire, isBuiltin } from 'module';
-import { fileURLToPath, pathToFileURL } from 'url';
-import { build } from 'esbuild';
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+import { createRequire } from 'module';
 import findCacheDir from 'find-cache-dir';
-import { SkipOptions, SkipOption, isDefined, TestData, noop, PackageJson, Config } from '../types.js';
+import { SkipOptions, SkipOption, isDefined, TestData, noop, ServerTest } from '../types.js';
 import { emitShutdownMessage, sendShutdownMessage } from './messages.js';
-
-// NOTE: There is an issue in windows which described in vite, that's why we don't use already promisified method
-const promisifiedRealpath = promisify(fs.realpath);
 
 export const isShuttingDown = { current: false };
 
@@ -178,156 +172,11 @@ export function readDirRecursive(dirPath: string): string[] {
   );
 }
 
-// NOTE: Functions copied from vite project to load config file
-export function tryStatSync(file: string): Stats | undefined {
-  try {
-    // The "throwIfNoEntry" is a performance optimization for cases where the file does not exist
-    return fs.statSync(file, { throwIfNoEntry: false });
-  } catch {
-    // Ignore errors
-  }
-}
-
-export function findNearestPackageData(basedir: string): PackageJson | null {
-  while (basedir) {
-    const pkgPath = join(basedir, 'package.json');
-    if (tryStatSync(pkgPath)?.isFile()) {
-      try {
-        return JSON.parse(fs.readFileSync(pkgPath, 'utf-8')) as PackageJson;
-      } catch {
-        /* noop */
-      }
-    }
-
-    const nextBasedir = dirname(basedir);
-    if (nextBasedir === basedir) break;
-    basedir = nextBasedir;
-  }
-
-  return null;
-}
-
-export function isFilePathESM(filePath: string): boolean {
-  if (/\.m[jt]s$/.test(filePath)) {
-    return true;
-  } else if (/\.c[jt]s$/.test(filePath)) {
-    return false;
-  } else {
-    // check package.json for type: "module"
-    try {
-      const pkg = findNearestPackageData(dirname(filePath));
-      return pkg?.type === 'module';
-    } catch {
-      return false;
-    }
-  }
-}
-
-export async function buildConfigBundle(configPath: string, isESM: boolean) {
-  // NOTE: Oversimplified config build call from vite project, which doesn't include whole externalize deps logic
-  const dirnameVarName = '__creevey_injected_original_dirname';
-  const filenameVarName = '__creevey_injected_original_filename';
-  const importMetaUrlVarName = '__creevey_injected_original_import_meta_url';
-  const {
-    outputFiles: [{ text: code }],
-  } = await build({
-    entryPoints: [configPath],
-    write: false,
-    target: [`node${process.versions.node}`],
-    platform: 'node',
-    bundle: true,
-    format: isESM ? 'esm' : 'cjs',
-    mainFields: ['main'],
-    sourcemap: 'inline',
-    metafile: true,
-    define: {
-      __dirname: dirnameVarName,
-      __filename: filenameVarName,
-      'import.meta.url': importMetaUrlVarName,
-      'import.meta.dirname': dirnameVarName,
-      'import.meta.filename': filenameVarName,
-    },
-    plugins: [
-      {
-        name: 'externalize-deps',
-        setup(build) {
-          build.onResolve({ filter: /^[^.].*/ }, ({ path: id, kind }) => {
-            if (kind === 'entry-point' || isAbsolute(id) || isBuiltin(id)) return;
-
-            if (!id.startsWith('.')) return { external: true };
-          });
-        },
-      },
-      {
-        name: 'inject-file-scope-variables',
-        setup(build) {
-          build.onLoad({ filter: /\.[cm]?[jt]s$/ }, async (args) => {
-            const contents = await fsp.readFile(args.path, 'utf-8');
-            const injectValues =
-              `const ${dirnameVarName} = ${JSON.stringify(dirname(args.path))};` +
-              `const ${filenameVarName} = ${JSON.stringify(args.path)};` +
-              `const ${importMetaUrlVarName} = ${JSON.stringify(pathToFileURL(args.path).href)};`;
-
-            return {
-              loader: args.path.endsWith('ts') ? 'ts' : 'js',
-              contents: injectValues + contents,
-            };
-          });
-        },
-      },
-    ],
-  });
-
-  return code;
-}
-
-interface NodeModuleWithCompile extends NodeModule {
-  _compile(code: string, filename: string): unknown;
-}
-
 const _require = createRequire(import.meta.url);
-export async function loadConfigFromBundledFile(
-  fileName: string,
-  bundledCode: string,
-  isESM: boolean,
-): Promise<Config> {
-  // for esm, before we can register loaders without requiring users to run node
-  // with --experimental-loader themselves, we have to do a hack here:
-  // write it to disk, load it with native Node ESM, then delete the file.
-  if (isESM) {
-    const fileBase = `${fileName}.timestamp-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-    const fileNameTmp = `${fileBase}.mjs`;
-    const fileUrl = `${pathToFileURL(fileBase).toString()}.mjs`;
-    await fsp.writeFile(fileNameTmp, bundledCode);
-    try {
-      return ((await import(fileUrl)) as { default: Config }).default;
-    } finally {
-      fs.unlink(fileNameTmp, () => void 0); // Ignore errors
-    }
-  }
-  // for cjs, we can register a custom loader via `_require.extensions`
-  else {
-    /* eslint-disable */
-    const extension = extname(fileName);
-    // We don't use fsp.realpath() here because it has the same behaviour as
-    // fs.realpath.native. On some Windows systems, it returns uppercase volume
-    // letters (e.g. "C:\") while the Node.js loader uses lowercase volume letters.
-    // See https://github.com/vitejs/vite/issues/12923
-    const realFileName = await promisifiedRealpath(fileName);
-    const loaderExt = extension in _require.extensions ? extension : '.js';
-    const defaultLoader = _require.extensions[loaderExt]!;
-    _require.extensions[loaderExt] = (module: NodeModule, filename: string) => {
-      if (filename === realFileName) {
-        (module as NodeModuleWithCompile)._compile(bundledCode, filename);
-      } else {
-        defaultLoader(module, filename);
-      }
-    };
-    // clear cache in case of server restart
-    delete _require.cache[_require.resolve(fileName)];
-    const raw = _require(fileName);
-    _require.extensions[loaderExt] = defaultLoader;
-    return raw.__esModule ? raw.default : raw;
-    /* eslint-enable */
+export function tryToLoadTestsData(filename: string): Partial<Record<string, ServerTest>> | undefined {
+  try {
+    return _require(filename) as Partial<Record<string, ServerTest>>;
+  } catch {
+    /* noop */
   }
 }

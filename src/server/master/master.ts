@@ -2,6 +2,7 @@ import path from 'path';
 import { Config, TestData, isDefined, ServerTest } from '../../types.js';
 import { loadTestsFromStories, saveTestsJson } from '../stories.js';
 import Runner from './runner.js';
+import { tryToLoadTestsData } from '../utils.js';
 
 function mergeTests(
   testsWithReports: Partial<Record<string, TestData>>,
@@ -26,12 +27,7 @@ export default async function master(
 ): Promise<Runner> {
   const runner = new Runner(config);
   const reportDataPath = path.join(config.reportDir, 'data.js');
-  let testsFromReport = {};
-  try {
-    testsFromReport = (await import(reportDataPath)) as Partial<Record<string, TestData>>;
-  } catch {
-    /* noop */
-  }
+  const testsFromReport = tryToLoadTestsData(reportDataPath) ?? {};
 
   await runner.init();
 

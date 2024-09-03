@@ -14,7 +14,7 @@ import { CaptureOptions, isDefined, noop, StoryInput } from '../../types.js';
 import { logger } from '../logger.js';
 import { deserializeStory } from '../../shared/index.js';
 
-export default function server(reportDir: string, port: number, ui: boolean): (api: CreeveyApi) => void {
+export function start(reportDir: string, port: number, ui: boolean): (api: CreeveyApi) => void {
   let resolveApi: (api: CreeveyApi) => void = noop;
   let setStoriesCounter = 0;
   const creeveyApi = new Promise<CreeveyApi>((resolve) => (resolveApi = resolve));

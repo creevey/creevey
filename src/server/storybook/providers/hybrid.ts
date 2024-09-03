@@ -4,7 +4,7 @@ import { loadStories as browserProvider } from './browser.js';
 import type { Config, StoryInput, CreeveyStoryParams, CreeveyStory, StoriesProvider } from '../../../types.js';
 import { logger } from '../../logger.js';
 import parse, { CreeveyParamsByStoryId } from '../../testsFiles/parser.js';
-import { readDirRecursive } from '../../../server/utils.js';
+import { readDirRecursive } from '../../utils.js';
 import { combineParameters } from '../../../shared/index.js';
 
 export const loadStories: StoriesProvider = async (

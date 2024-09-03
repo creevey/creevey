@@ -5,10 +5,13 @@ import { denormalizeStoryParameters } from '../../shared/index.js';
 import { CreeveyStatus, CreeveyUpdate, isDefined, TestData, TestStatus, StoriesRaw } from '../../types.js';
 import { initCreeveyClientApi, CreeveyClientApi } from '../shared/creeveyClientApi.js';
 import { calcStatus } from '../shared/helpers.js';
-import { ADDON_ID } from './register.js';
 import { getEmojiByTestStatus } from './utils.js';
 
-export class CreeveyManager {
+export const ADDON_ID = 'creevey';
+
+// TODO Add `useController` hook
+// TODO use `import { useGlobals, useStorybookApi } from '@storybook/manager-api';`
+export class CreeveyController {
   storyId = '';
   activeBrowser = '';
   selectedTestId = '';

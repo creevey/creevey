@@ -64,11 +64,11 @@ typings/
 .next
 
 # Build sources
-lib
+/dist
 build
 
 # Screenshot tests report
-report
+/report
 
 /chromedriver.exe
 /geckodriver.exe

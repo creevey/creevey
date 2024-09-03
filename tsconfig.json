@@ -2,7 +2,7 @@
   "compilerOptions": {
     "rootDir": ".",
     "baseUrl": ".",
-    "declarationDir": "./lib",
+    "outDir": "./dist",
     "sourceMap": true,
     "declaration": true,
     "module": "NodeNext",
@@ -28,5 +28,5 @@
     "tests/**/*",
     "webpack.config.ts"
   ],
-  "exclude": ["report", "lib", "scripts"]
+  "exclude": ["report", "dist", "scripts"]
 }

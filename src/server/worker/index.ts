@@ -1,1 +1,1 @@
-export { default } from './worker.js';
+export { start } from './worker.js';

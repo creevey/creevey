@@ -44,7 +44,7 @@ function outputUnnecessaryImages(imagesDir: string, images: Set<string>): void {
   }
 }
 
-export default async function (config: Config, options: Options, resolveApi: (api: CreeveyApi) => void): Promise<void> {
+export async function start(config: Config, options: Options, resolveApi: (api: CreeveyApi) => void): Promise<void> {
   let runner: Runner | null = null;
   if (config.hooks.before) {
     await config.hooks.before();

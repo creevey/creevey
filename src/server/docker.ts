@@ -101,7 +101,7 @@ export async function runImage(
   });
 }
 
-export default async function (
+export async function initDocker(
   config: Config,
   browser: string | undefined,
   startContainer: () => Promise<string>,

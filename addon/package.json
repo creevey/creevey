@@ -1,4 +1,0 @@
-{
-  "main": "../lib/client/addon/index.js",
-  "types": "../lib/client/addon/index.d.ts"
-}
