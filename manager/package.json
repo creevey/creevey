@@ -1,4 +1,3 @@
 {
-  "main": "../dist/cjs/client/addon/manager.js",
-  "module": "../dist/esm/client/addon/manager.js"
+  "main": "../dist/client/addon/manager.js"
 }

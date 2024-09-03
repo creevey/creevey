@@ -2,36 +2,17 @@
   "name": "creevey",
   "description": "Cross-browser screenshot testing tool for Storybook with fancy UI Runner",
   "version": "0.9.0-beta.20",
-  "type": "module",
-  "bin": "./dist/esm/cli.js",
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/esm/index.js",
-  "types": "./dist/esm/index.d.ts",
+  "type": "commonjs",
+  "bin": "./dist/cli.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": {
-      "types": "./dist/esm/index.d.ts",
-      "import": "./dist/esm/index.js",
-      "default": "./dist/cjs/index.js"
-    },
-    "./manager": {
-      "types": "./dist/esm/client/addon/manager.d.ts",
-      "import": "./dist/esm/client/addon/manager.js",
-      "default": "./dist/cjs/client/addon/manager.js"
-    },
-    "./preview": {
-      "types": "./dist/esm/client/addon/preview.d.ts",
-      "import": "./dist/esm/client/addon/preview.js",
-      "default": "./dist/cjs/client/addon/preview.js"
-    },
-    "./preset": {
-      "types": "./dist/esm/client/addon/preset.d.ts",
-      "import": "./dist/esm/client/addon/preset.js",
-      "default": "./dist/cjs/client/addon/preset.js"
-    },
-    "./dist/esm/client/addon/manager.js": "./dist/esm/client/addon/manager.js",
-    "./dist/cjs/client/addon/manager.js": "./dist/cjs/client/addon/manager.js",
-    "./dist/esm/client/addon/preview.js": "./dist/esm/client/addon/preview.js",
-    "./dist/cjs/client/addon/preview.js": "./dist/cjs/client/addon/preview.js",
+    ".": "./dist/index.js",
+    "./manager": "./dist/client/addon/manager.js",
+    "./preview": "./dist/client/addon/preview.js",
+    "./preset": "./dist/client/addon/preset.js",
+    "./dist/client/addon/manager.js": "./dist/client/addon/manager.js",
+    "./dist/client/addon/preview.js": "./dist/client/addon/preview.js",
     "./package.json": "./package.json"
   },
   "author": "Dmitriy Lazarev <w@kich.dev>",
@@ -58,7 +39,7 @@
     "lint": "redrun -p \"lint:*\"",
     "lint:tsc": "tsc --noEmit",
     "lint:eslint": "eslint",
-    "lint:prettier": "prettier --check *.{md,json,js,ts} ./**/*.{js,ts,tsx}",
+    "lint:prettier": "prettier --check .",
     "test": "vitest",
     "start": "redrun -p \"start:*\"",
     "start:client": "webpack-dev-server",
@@ -72,13 +53,10 @@
     "fix:eslint": "eslint --fix",
     "fix:prettier": "prettier --write .",
     "prebuild": "yarn clean && mkdir dist",
-    "build": "yarn prebuild && yarn build:client && yarn copy:client && yarn build:creevey && yarn postbuild",
-    "build:client": "webpack --mode production && cpx src/client/web/index.html dist/esm/client/web",
-    "build:creevey": "yarn tsc:cjs && yarn tsc:esm",
-    "tsc:cjs": "tsx ./scripts/package-type.ts commonjs && tsc --build tsconfig.cjs.json",
-    "tsc:esm": "tsx ./scripts/package-type.ts module && tsc --build tsconfig.esm.json",
-    "copy:client": "cpx \"dist/esm/client/web/*\" dist/cjs/client/web/",
-    "postbuild": "cpx \"scripts/dist/*\" dist/cjs/ && cpx \"scripts/dist/*\" dist/esm/",
+    "build": "yarn prebuild && yarn build:client && yarn build:creevey && yarn postbuild",
+    "build:client": "webpack --mode production && cpx src/client/web/index.html dist/client/web",
+    "build:creevey": "tsc --build tsconfig.prod.json",
+    "postbuild": "cpx \"scripts/dist/*\" dist/",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
     "build-storybook": "storybook build",
     "chromatic": "npx chromatic --project-token t3010eknrh",
@@ -214,7 +192,7 @@
     }
   },
   "lint-staged": {
-    "**/*.(j|t)s?(x)": [
+    "**/*.(c|m)?(j|t)s?(x)": [
       "eslint --fix",
       "prettier --write"
     ],

@@ -57,7 +57,6 @@ export async function readConfig(options: Options): Promise<Config> {
 
   if (isDefined(configPath)) {
     const unregister = register();
-    // TODO import
     const { default: configData } = (await import(configPath)) as {
       default: Partial<Config>;
     };

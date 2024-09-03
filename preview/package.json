@@ -1,4 +1,3 @@
 {
-  "main": "../dist/cjs/client/addon/preview.js",
-  "module": "../dist/esm/client/addon/preview.js"
+  "main": "../dist/client/addon/preview.js"
 }

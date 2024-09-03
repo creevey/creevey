@@ -26,7 +26,7 @@ const config = tseslint.config(
 
       parserOptions: {
         projectService: {
-          allowDefaultProject: ['*.{c,}js'],
+          allowDefaultProject: ['*.{m,}js'],
           defaultProject: 'tsconfig.json',
         },
       },

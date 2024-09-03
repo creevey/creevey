@@ -1,6 +1,6 @@
 import path from 'path';
 import { existsSync } from 'fs';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 import { copyFile, readdir, mkdir, writeFile } from 'fs/promises';
 import master from './master.js';
 import creeveyApi, { CreeveyApi } from './api.js';
@@ -11,8 +11,10 @@ import Runner from './runner.js';
 import { logger } from '../logger.js';
 import { sendScreenshotsCount } from '../telemetry.js';
 
+const importMetaUrl = pathToFileURL(__filename).href;
+
 async function copyStatics(reportDir: string): Promise<void> {
-  const clientDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '../../client/web');
+  const clientDir = path.join(path.dirname(fileURLToPath(importMetaUrl)), '../../client/web');
   const files = (await readdir(clientDir, { withFileTypes: true }))
     .filter((dirent) => dirent.isFile() && !dirent.name.endsWith('.d.ts') && !dirent.name.endsWith('.tsx'))
     .map((dirent) => dirent.name);

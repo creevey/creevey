@@ -2,11 +2,13 @@ import fs from 'fs';
 import { get } from 'https';
 import cluster from 'cluster';
 import { dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 import { createRequire } from 'module';
 import findCacheDir from 'find-cache-dir';
 import { SkipOptions, SkipOption, isDefined, TestData, noop, ServerTest } from '../types.js';
 import { emitShutdownMessage, sendShutdownMessage } from './messages.js';
+
+const importMetaUrl = pathToFileURL(__filename).href;
 
 export const isShuttingDown = { current: false };
 
@@ -100,7 +102,7 @@ export function shutdown(): void {
 }
 
 export function getCreeveyCache(): string | undefined {
-  return findCacheDir({ name: 'creevey', cwd: dirname(fileURLToPath(import.meta.url)) });
+  return findCacheDir({ name: 'creevey', cwd: dirname(fileURLToPath(importMetaUrl)) });
 }
 
 export async function runSequence(seq: (() => unknown)[], predicate: () => boolean): Promise<void> {
@@ -172,7 +174,7 @@ export function readDirRecursive(dirPath: string): string[] {
   );
 }
 
-const _require = createRequire(import.meta.url);
+const _require = createRequire(importMetaUrl);
 export function tryToLoadTestsData(filename: string): Partial<Record<string, ServerTest>> | undefined {
   try {
     return _require(filename) as Partial<Record<string, ServerTest>>;

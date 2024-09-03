@@ -7,12 +7,14 @@ import serve from 'koa-static';
 import mount from 'koa-mount';
 import body from 'koa-bodyparser';
 import WebSocket from 'ws';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 import { CreeveyApi } from './api.js';
 import { emitStoriesMessage, sendStoriesMessage, subscribeOn, subscribeOnWorker } from '../messages.js';
 import { CaptureOptions, isDefined, noop, StoryInput } from '../../types.js';
 import { logger } from '../logger.js';
 import { deserializeStory } from '../../shared/index.js';
+
+const importMetaUrl = pathToFileURL(__filename).href;
 
 export function start(reportDir: string, port: number, ui: boolean): (api: CreeveyApi) => void {
   let resolveApi: (api: CreeveyApi) => void = noop;
@@ -89,7 +91,7 @@ export function start(reportDir: string, port: number, ui: boolean): (api: Creev
     await next();
   });
 
-  app.use(serve(path.join(path.dirname(fileURLToPath(import.meta.url)), '../../client/web')));
+  app.use(serve(path.join(path.dirname(fileURLToPath(importMetaUrl)), '../../client/web')));
   app.use(mount('/report', serve(reportDir)));
 
   wss.on('error', (error) => {
