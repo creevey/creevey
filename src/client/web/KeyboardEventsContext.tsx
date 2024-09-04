@@ -4,11 +4,11 @@ import { CreeveyViewFilter, filterTests, flattenSuite, getSuiteByPath, getTestPa
 import { CreeveyContext } from './CreeveyContext';
 
 export type SuitePath = string[];
-export type FocusableItem = 'search' | SuitePath;
+export type FocusableItem = null | SuitePath;
 
 export interface KeyboardEventsContextType {
   sidebarFocusedItem: FocusableItem;
-  setSidebarFocusedItem: (path: string[]) => void;
+  setSidebarFocusedItem: (item: FocusableItem) => void;
 }
 
 export const KeyboardEventsContext = React.createContext<KeyboardEventsContextType>({
@@ -44,7 +44,9 @@ export const KeyboardEvents = ({
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
-      if (e.code === 'Enter' && Array.isArray(sidebarFocusedItem)) {
+      if (sidebarFocusedItem === null) return;
+
+      if (e.code === 'Enter') {
         if (sidebarFocusedItem.length === 0) return;
 
         const focusedSuite = getSuiteByPath(rootSuite, sidebarFocusedItem);
@@ -58,7 +60,7 @@ export const KeyboardEvents = ({
         }
         return;
       }
-      if (e.code === 'Space' && Array.isArray(sidebarFocusedItem)) {
+      if (e.code === 'Space') {
         e.preventDefault();
         const focusedSuite = getSuiteByPath(rootSuite, sidebarFocusedItem);
         if (!focusedSuite) return;
@@ -66,7 +68,6 @@ export const KeyboardEvents = ({
         onSuiteToggle(path, !focusedSuite.checked);
       }
       if (e.code === 'ArrowDown') {
-        if (typeof sidebarFocusedItem === 'string') return setSidebarFocusedItem([]);
         const currentIndex = sidebarFocusedItem.length === 0 ? -1 : getFocusedItemIndex(sidebarFocusedItem);
         if (currentIndex === suiteList.length - 1) return;
         const nextSuite = suiteList[currentIndex + 1];
@@ -74,15 +75,13 @@ export const KeyboardEvents = ({
         setSidebarFocusedItem(nextPath);
       }
       if (e.code === 'ArrowUp') {
-        if (typeof sidebarFocusedItem === 'string') return;
-        if (sidebarFocusedItem.length === 0) return setSidebarFocusedItem('search');
         const currentIndex = sidebarFocusedItem.length === 0 ? 0 : getFocusedItemIndex(sidebarFocusedItem);
         const nextSuite = currentIndex > 0 ? suiteList[currentIndex - 1].suite : rootSuite;
         const nextPath = isTest(nextSuite) ? getTestPath(nextSuite) : nextSuite.path;
         setSidebarFocusedItem(nextPath);
       }
 
-      if (e.code === 'ArrowRight' && Array.isArray(sidebarFocusedItem)) {
+      if (e.code === 'ArrowRight') {
         if (sidebarFocusedItem.length === 0) return;
         const focusedSuite = getSuiteByPath(rootSuite, sidebarFocusedItem);
 
@@ -90,7 +89,7 @@ export const KeyboardEvents = ({
         onSuiteOpen(focusedSuite.path, true);
       }
 
-      if (e.code === 'ArrowLeft' && Array.isArray(sidebarFocusedItem)) {
+      if (e.code === 'ArrowLeft') {
         if (sidebarFocusedItem.length === 0) return;
         const focusedSuite = getSuiteByPath(rootSuite, sidebarFocusedItem);
         if (!focusedSuite) return;

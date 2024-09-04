@@ -88,10 +88,11 @@ export function SuiteLink({ title, suite, 'data-testid': dataTid }: SuiteLinkPro
       setSidebarFocusedItem(suite.path);
     }
   };
+  const handleFocus = (): void => setSidebarFocusedItem(suite.path);
 
   return (
     <Container>
-      <Button onClick={handleOpen} data-testid={dataTid} focused={isSuiteFocused} ref={buttonRef}>
+      <Button onClick={handleOpen} onFocus={handleFocus} data-testid={dataTid} focused={isSuiteFocused} ref={buttonRef}>
         <TestStatusIcon status={suite.status} skip={suite.skip} />
         <SuiteContainer padding={Math.max(48, (suite.path.length + 5) * 8)}>
           {isTest(suite) ||
