@@ -16,10 +16,7 @@
     "./package.json": "./package.json"
   },
   "author": "Dmitriy Lazarev <w@kich.dev>",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/wKich/creevey.git"
-  },
+  "repository": "github.com:creevey/creevey",
   "keywords": [
     "testing",
     "storybook",

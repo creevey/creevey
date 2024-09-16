@@ -9752,7 +9752,7 @@ __metadata:
     webpack-dev-server: "npm:^5.0.4"
     ws: "npm:^8.8.0"
   bin:
-    creevey: ./dist/esm/cli.js
+    creevey: ./dist/cli.js
   languageName: unknown
   linkType: soft
 
