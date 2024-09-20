@@ -90,7 +90,9 @@ export function SuiteLink({ title, suite, 'data-testid': dataTid }: SuiteLinkPro
       setSidebarFocusedItem(suite.path);
     }
   };
-  const handleFocus = (): void => setSidebarFocusedItem(suite.path);
+  const handleFocus = (): void => {
+    setSidebarFocusedItem(suite.path);
+  };
 
   return (
     <Container>

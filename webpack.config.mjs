@@ -1,5 +1,6 @@
 import { createRequire } from 'module';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import webpack from 'webpack';
 
 const _require = createRequire(import.meta.url);
@@ -8,7 +9,7 @@ const _require = createRequire(import.meta.url);
  */
 const config = {
   entry: [_require.resolve('core-js'), _require.resolve('regenerator-runtime/runtime'), './src/client/web/index.tsx'],
-  output: { path: path.join(import.meta.dirname, './dist/client/web') },
+  output: { path: path.join(path.dirname(fileURLToPath(import.meta.url)), './dist/client/web') },
   mode: process.env.WEBPACK_SERVE ? 'development' : 'production',
   module: {
     rules: [
