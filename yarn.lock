@@ -2017,6 +2017,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@bazel/runfiles@npm:^5.8.1":
+  version: 5.8.1
+  resolution: "@bazel/runfiles@npm:5.8.1"
+  checksum: 10c0/c148ea89839240d918ea615c485fcd0e5c009215ddfa718cc7dd1c3f0e2e278eb8d291b6cd990cd8fc2ade161f98f2defbac8b9c2968e5c5bc4edb98e6ed6bc6
+  languageName: node
+  linkType: hard
+
 "@bcoe/v8-coverage@npm:^0.2.3":
   version: 0.2.3
   resolution: "@bcoe/v8-coverage@npm:0.2.3"
@@ -6901,12 +6908,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^20.14.15":
-  version: 20.14.15
-  resolution: "@types/node@npm:20.14.15"
+"@types/node@npm:^18.19.50":
+  version: 18.19.50
+  resolution: "@types/node@npm:18.19.50"
   dependencies:
     undici-types: "npm:~5.26.4"
-  checksum: 10c0/093713db52dc544f3931a3dec9d7d8ef661f323e57becd083a7918c778cef1eb6ec32d1017bf5ade06bb06dc5c7551f4f4d749a14e40868cce44d51e54acd8ed
+  checksum: 10c0/36e6bc9eb47213ce94a868dad9504465ad89fba6af9f7954e22bb27fb17a32ac495f263d0cf4fdaee74becd7b2629609a446ec8c2b59b7a07bd587567c8a4782
   languageName: node
   linkType: hard
 
@@ -7035,12 +7042,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/selenium-webdriver@npm:^4.1.5":
-  version: 4.1.5
-  resolution: "@types/selenium-webdriver@npm:4.1.5"
+"@types/selenium-webdriver@npm:^4.1.26":
+  version: 4.1.26
+  resolution: "@types/selenium-webdriver@npm:4.1.26"
   dependencies:
+    "@types/node": "npm:*"
     "@types/ws": "npm:*"
-  checksum: 10c0/278a6c5e6e13136bb30bef5a5a84bc6072f73265a4629e2522bb2d61ebc76912cffc8075194af43b9eb6198c6a8c79715dcd5ceba340df6e0482df8c1a3d5331
+  checksum: 10c0/d7acb40244b13527ca3b691e71d377aae1526f96fee512a5c8edb5f14bae7094700d9f64339e200042a3ea8e9d952180eb8b592138b26ce2080c405c00ad60fa
   languageName: node
   linkType: hard
 
@@ -10070,14 +10078,14 @@ __metadata:
     "@types/micromatch": "npm:^4.0.1"
     "@types/minimist": "npm:^1.2.1"
     "@types/mocha": "npm:^9.1.1"
-    "@types/node": "npm:^20.14.15"
+    "@types/node": "npm:^18.19.50"
     "@types/pixelmatch": "npm:^5.2.2"
     "@types/pngjs": "npm:^6.0.0"
     "@types/qs": "npm:^6.9.6"
     "@types/react": "npm:^17.0.19"
     "@types/react-dom": "npm:^17.0.3"
     "@types/resize-observer-browser": "npm:^0.1.7"
-    "@types/selenium-webdriver": "npm:^4.1.5"
+    "@types/selenium-webdriver": "npm:^4.1.26"
     "@types/shelljs": "npm:^0.8.11"
     "@types/tmp": "npm:^0.2.3"
     "@types/webpack": "npm:^5.28.0"
@@ -10137,7 +10145,7 @@ __metadata:
     redrun: "npm:^11.0.5"
     regenerator-runtime: "npm:^0.13.7"
     rimraf: "npm:^3.0.2"
-    selenium-webdriver: "npm:^4.3.1"
+    selenium-webdriver: "npm:^4.25.0"
     shelljs: "npm:^0.8.5"
     storybook: "npm:^7.6.20"
     tmp: "npm:^0.2.1"
@@ -15259,15 +15267,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jszip@npm:^3.10.0":
-  version: 3.10.0
-  resolution: "jszip@npm:3.10.0"
+"jszip@npm:^3.10.1":
+  version: 3.10.1
+  resolution: "jszip@npm:3.10.1"
   dependencies:
     lie: "npm:~3.3.0"
     pako: "npm:~1.0.2"
     readable-stream: "npm:~2.3.6"
     setimmediate: "npm:^1.0.5"
-  checksum: 10c0/4b38746e353d4d73406fbe29c3bc3659f92b4ee7f93e4c677fc86ea72e3e967354a4cc51dfa47698fc32880e83a9c6e17d892806321d02a469a2dc7408f6ef21
+  checksum: 10c0/58e01ec9c4960383fb8b38dd5f67b83ccc1ec215bf74c8a5b32f42b6e5fb79fada5176842a11409c4051b5b94275044851814a31076bf49e1be218d3ef57c863
   languageName: node
   linkType: hard
 
@@ -20142,14 +20150,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"selenium-webdriver@npm:^4.3.1":
-  version: 4.3.1
-  resolution: "selenium-webdriver@npm:4.3.1"
+"selenium-webdriver@npm:^4.25.0":
+  version: 4.25.0
+  resolution: "selenium-webdriver@npm:4.25.0"
   dependencies:
-    jszip: "npm:^3.10.0"
-    tmp: "npm:^0.2.1"
-    ws: "npm:>=8.7.0"
-  checksum: 10c0/88c3a927ee69ac5ea7a031fdb973c4038405d6ee16fc3e096d11a8c6d7c13dd5820b098f547b2505e08fa8b02ce69d7420a64bfc92cff8c8605e3c0691f129ee
+    "@bazel/runfiles": "npm:^5.8.1"
+    jszip: "npm:^3.10.1"
+    tmp: "npm:^0.2.3"
+    ws: "npm:^8.18.0"
+  checksum: 10c0/4d085a702aff85bf8779e7111b33c8186b36d71f7ffd3e7105ec9468930e74756b5890c6ba8e0958b0ebcbff90aa42042b3adf05f75cdbd0b50501756d899b36
   languageName: node
   linkType: hard
 
@@ -21589,6 +21598,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tmp@npm:^0.2.3":
+  version: 0.2.3
+  resolution: "tmp@npm:0.2.3"
+  checksum: 10c0/3e809d9c2f46817475b452725c2aaa5d11985cf18d32a7a970ff25b568438e2c076c2e8609224feef3b7923fa9749b74428e3e634f6b8e520c534eef2fd24125
+  languageName: node
+  linkType: hard
+
 "tmpl@npm:1.0.5":
   version: 1.0.5
   resolution: "tmpl@npm:1.0.5"
@@ -22936,7 +22952,31 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:>=8.7.0, ws@npm:^8.2.3, ws@npm:^8.4.2, ws@npm:^8.8.0":
+"ws@npm:^6.1.0":
+  version: 6.2.3
+  resolution: "ws@npm:6.2.3"
+  dependencies:
+    async-limiter: "npm:~1.0.0"
+  checksum: 10c0/56a35b9799993cea7ce2260197e7879f21bbbb194a967f31acbbda6f7f46ecda4365951966fb062044c95197e19fb2f053be6f65c172435455186835f494de41
+  languageName: node
+  linkType: hard
+
+"ws@npm:^8.18.0":
+  version: 8.18.0
+  resolution: "ws@npm:8.18.0"
+  peerDependencies:
+    bufferutil: ^4.0.1
+    utf-8-validate: ">=5.0.2"
+  peerDependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: 10c0/25eb33aff17edcb90721ed6b0eb250976328533ad3cd1a28a274bd263682e7296a6591ff1436d6cbc50fa67463158b062f9d1122013b361cec99a05f84680e06
+  languageName: node
+  linkType: hard
+
+"ws@npm:^8.2.3, ws@npm:^8.4.2, ws@npm:^8.8.0":
   version: 8.8.0
   resolution: "ws@npm:8.8.0"
   peerDependencies:
@@ -22948,15 +22988,6 @@ __metadata:
     utf-8-validate:
       optional: true
   checksum: 10c0/c7843c2321cba2c7e234bca2d0fa9babb7ff6c4bcf131423f2af50577b6f80b3ee862296de79efb9116b46834b19ca78e8292c75eeef7000fc02ff8a9a57948f
-  languageName: node
-  linkType: hard
-
-"ws@npm:^6.1.0":
-  version: 6.2.3
-  resolution: "ws@npm:6.2.3"
-  dependencies:
-    async-limiter: "npm:~1.0.0"
-  checksum: 10c0/56a35b9799993cea7ce2260197e7879f21bbbb194a967f31acbbda6f7f46ecda4365951966fb062044c95197e19fb2f053be6f65c172435455186835f494de41
   languageName: node
   linkType: hard
 
