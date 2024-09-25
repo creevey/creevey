@@ -8,6 +8,7 @@ import { shutdown, shutdownWorkers, testsToImages, readDirRecursive } from '../u
 import { subscribeOn } from '../messages';
 import Runner from './runner';
 import { logger } from '../logger';
+import { sendScreenshotsCount } from '../telemetry';
 
 const writeFileAsync = promisify(writeFile);
 const copyFileAsync = promisify(copyFile);
@@ -97,8 +98,15 @@ export default async function (config: Config, options: Options, resolveApi: (ap
       // TODO output summary
       process.exitCode = isSuccess ? 0 : -1;
       if (!config.failFast) outputUnnecessaryImages(config.screenDir, testsToImages(tests));
-      // eslint-disable-next-line no-process-exit
-      void shutdownWorkers().then(() => process.exit());
+      sendScreenshotsCount(config, options, runner?.status)
+        .catch((reason) => {
+          const error = reason instanceof Error ? reason.stack ?? reason.message : (reason as string);
+          logger.warn(`Can't send telemetry: ${error}`);
+        })
+        .finally(() => {
+          // eslint-disable-next-line no-process-exit
+          void shutdownWorkers().then(() => process.exit());
+        });
     });
     // TODO grep
     runner.start(Object.keys(runner.status.tests));

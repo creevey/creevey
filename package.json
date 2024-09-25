@@ -32,7 +32,8 @@
     },
     "./lib/cjs/client/addon/preview.js": {
       "default": "./lib/cjs/client/addon/preview.js"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "main": "lib/cjs/index.js",
   "module": "lib/esm/index.js",

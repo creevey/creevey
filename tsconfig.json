@@ -14,7 +14,7 @@
     "noUnusedParameters": true,
     "typeRoots": ["./types", "./node_modules/@types"],
     "paths": {
-      "creevey": ["src"]
+      "creevey": ["./"]
     },
     "skipLibCheck": true
   },

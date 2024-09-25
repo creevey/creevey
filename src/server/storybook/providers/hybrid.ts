@@ -66,3 +66,5 @@ async function parseParams(
 
   return parse(testFiles);
 }
+
+loadStories.providerName = 'hybrid';

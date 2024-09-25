@@ -26,13 +26,14 @@ async function createSelenoidConfig(browsers: BrowserConfig[], { useDocker }: { 
     ({
       browserName,
       version = 'latest',
-      dockerImage = `selenoid/${browserName}:${version}`,
+      browserVersion = version,
+      dockerImage = `selenoid/${browserName}:${browserVersion}`,
       webdriverCommand = [],
     }) => {
-      if (!selenoidConfig[browserName]) selenoidConfig[browserName] = { default: version, versions: {} };
+      if (!selenoidConfig[browserName]) selenoidConfig[browserName] = { default: browserVersion, versions: {} };
       if (!useDocker && webdriverCommand.length == 0)
         throw new Error('Please specify "webdriverCommand" browser option with path to browser webdriver');
-      selenoidConfig[browserName].versions[version] = {
+      selenoidConfig[browserName].versions[browserVersion] = {
         image: useDocker ? dockerImage : webdriverCommand,
         port: '4444',
         path: !useDocker || ['chrome', 'opera', 'webkit', 'MicrosoftEdge'].includes(browserName) ? '/' : '/wd/hub',

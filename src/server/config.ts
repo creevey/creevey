@@ -6,6 +6,7 @@ import { Config, Browser, BrowserConfig, Options, isDefined } from '../types';
 export const defaultBrowser = 'chrome';
 
 export const defaultConfig: Omit<Config, 'gridUrl' | 'storiesProvider' | 'testsDir' | 'tsConfig'> = {
+  disableTelemetry: false,
   useDocker: true,
   dockerImage: 'aerokube/selenoid:latest-release',
   dockerImagePlatform: '',

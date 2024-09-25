@@ -82,6 +82,11 @@ export interface CreeveyStory {
 
 export interface Capabilities {
   browserName: string;
+  browserVersion?: string;
+  platformName?: string;
+  /**
+   * @deprecated use `browserVersion` instead
+   */
   version?: string;
   [prop: string]: unknown;
 }
@@ -97,7 +102,7 @@ export type BrowserConfig = Capabilities & {
   _storybookGlobals?: StorybookGlobals;
   /**
    * Specify custom docker image. Used only with `useDocker == true`
-   * @default `selenoid/${browserName}:${version ?? 'latest'}`
+   * @default `selenoid/${browserName}:${browserVersion ?? 'latest'}`
    */
   dockerImage?: string;
   /**
@@ -238,18 +243,24 @@ export interface Config {
   testsRegex?: RegExp;
   testsDir?: string;
   tsConfig?: string;
+  /**
+   * Telemetry contains information about Creevey and Storybook versions, used Creevey config, browsers and tests meta.
+   * It's being sent only for projects from git.skbkontur.ru
+   * @default false
+   */
+  disableTelemetry?: boolean;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type StoriesProvider<T = any> = (
-  config: Config,
-  options: T,
-  storiesListener: (stories: Map<string, StoryInput[]>) => void,
-) => Promise<StoriesRaw>;
+export interface StoriesProvider<T = any> {
+  (config: Config, options: T, storiesListener: (stories: Map<string, StoryInput[]>) => void): Promise<StoriesRaw>;
+  providerName?: string;
+}
 
 export type CreeveyConfig = Partial<Config>;
 
 export interface Options {
+  _: string[];
   config?: string;
   port: number;
   ui: boolean;

@@ -54,3 +54,5 @@ export const loadStories: StoriesProvider = async (_config, _options, storiesLis
     return stories;
   }
 };
+
+loadStories.providerName = 'browser';
