@@ -29,6 +29,7 @@ async function createSelenoidConfig(browsers: BrowserConfig[], { useDocker }: { 
   browsers.forEach(
     ({
       browserName,
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
       version = 'latest',
       browserVersion = version,
       dockerImage = `selenoid/${browserName}:${browserVersion}`,
@@ -119,6 +120,7 @@ export async function startSelenoidContainer(config: Config, debug: boolean): Pr
   browsers.forEach(
     ({
       browserName,
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
       version = 'latest',
       browserVersion = version,
       limit: browserLimit = 1,
