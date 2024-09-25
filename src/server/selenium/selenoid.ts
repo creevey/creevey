@@ -116,8 +116,9 @@ export async function startSelenoidContainer(config: Config, debug: boolean): Pr
     ({
       browserName,
       version = 'latest',
+      browserVersion = version,
       limit: browserLimit = 1,
-      dockerImage = `selenoid/${browserName}:${version}`,
+      dockerImage = `selenoid/${browserName}:${browserVersion}`,
     }) => {
       limit += browserLimit;
       images.push(dockerImage);
