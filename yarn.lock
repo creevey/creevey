@@ -6470,12 +6470,12 @@ __metadata:
   linkType: hard
 
 "@types/docker-modem@npm:*":
-  version: 3.0.1
-  resolution: "@types/docker-modem@npm:3.0.1"
+  version: 3.0.6
+  resolution: "@types/docker-modem@npm:3.0.6"
   dependencies:
     "@types/node": "npm:*"
     "@types/ssh2": "npm:*"
-  checksum: 10c0/ad19fede48eeb42bed47e81089deface825fd70e8c8301857cd5f849bfd9639a02a91a3a49a07ffd62b40f22222f03a682c2d5fbda5a4896048911a636da33a8
+  checksum: 10c0/d3ffd273148bc883ff9b1a972b1f84c1add6d9a197d2f4fc9774db4c814f39c2e51cc649385b55d781c790c16fb0bf9c1f4c62499bd0f372a4b920190919445d
   languageName: node
   linkType: hard
 
@@ -6868,6 +6868,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/node@npm:^18.11.18":
+  version: 18.19.51
+  resolution: "@types/node@npm:18.19.51"
+  dependencies:
+    undici-types: "npm:~5.26.4"
+  checksum: 10c0/ed9d1acec81da03ed90e5ab493f47869e8791af0d6a4d882370d75decb4c567e03c6f27799ec85ab8494f61ba1c6b27ced5285747529015d4479cc83583161e0
+  languageName: node
+  linkType: hard
+
 "@types/node@npm:^18.19.50":
   version: 18.19.50
   resolution: "@types/node@npm:18.19.50"
@@ -7054,22 +7063,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/ssh2-streams@npm:*":
-  version: 0.1.9
-  resolution: "@types/ssh2-streams@npm:0.1.9"
-  dependencies:
-    "@types/node": "npm:*"
-  checksum: 10c0/640a9c7620290fb87ecc39a723bee098e1ec6382ce6422f655191f6c397da65c6651830be9dc97af5e6b745818ef3bb0731dff421d9129d909a78fd97b0d6431
-  languageName: node
-  linkType: hard
-
 "@types/ssh2@npm:*":
-  version: 0.5.47
-  resolution: "@types/ssh2@npm:0.5.47"
+  version: 1.15.1
+  resolution: "@types/ssh2@npm:1.15.1"
   dependencies:
-    "@types/node": "npm:*"
-    "@types/ssh2-streams": "npm:*"
-  checksum: 10c0/87a61c759dbbc8161ba3bc9f94a950e96507e45f76049512363176713dc9fba76bc8dd4a2f9bf098b99a28fc2c4ab7f3f2c487103657a82f4b616e0a78245844
+    "@types/node": "npm:^18.11.18"
+  checksum: 10c0/83c83684e0d620ab940e05c5b7e846eacf6c56761e421dbe6a5a51daa09c82fb71ea4843b792b6e6b2edd0bee8eb665034ffd73978d936b9f008c553bcc38ea7
   languageName: node
   linkType: hard
 

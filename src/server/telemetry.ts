@@ -4,6 +4,8 @@ import { exec } from 'shelljs';
 import { stringify } from 'qs';
 import { set } from 'lodash';
 import { v4 } from 'uuid';
+import { pathToFileURL } from 'url';
+import { createRequire } from 'module';
 import { Config, CreeveyStatus, isDefined, Options } from '../types';
 
 const konturGitHost = 'git.skbkontur.ru';
@@ -37,7 +39,7 @@ function sanitizeGridUrl(gridUrl: string): string {
 function tryGetRepoUrl(): [string | undefined, Error | null] {
   try {
     const gitRemoteOutput = exec('git remote -v', { silent: true });
-    const [, repoUrl] = gitRemoteOutput.stdout.match(/origin\s+(.*)\s+\(fetch\)/) ?? [];
+    const [, repoUrl] = /origin\s+(.*)\s+\(fetch\)/.exec(gitRemoteOutput.stdout) ?? [];
     return [repoUrl, null];
   } catch (error) {
     return [undefined, error as Error];
@@ -58,8 +60,9 @@ function tryGetStorybookVersion(): [string | undefined, Error | null] {
 
 function tryGetCreeveyVersion(): [string | undefined, Error | null] {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires, node/no-missing-require
-    const creeveyPackage = require('creevey/package.json') as { version: string };
+    const importMetaUrl = pathToFileURL(__filename).href;
+    const _require = createRequire(importMetaUrl);
+    const creeveyPackage = _require('creevey/package.json') as { version: string };
     return [creeveyPackage.version, null];
   } catch (error) {
     return [undefined, error as Error];
