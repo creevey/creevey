@@ -46,12 +46,21 @@ function tryGetRepoUrl(): [string | undefined, Error | null] {
   }
 }
 
+function tryGetRootPath(): [string | undefined, Error | null] {
+  try {
+    const gitRevParseOutput = exec('git rev-parse --show-toplevel', { silent: true });
+    return [gitRevParseOutput.stdout.trim(), null];
+  } catch (error) {
+    return [undefined, error as Error];
+  }
+}
+
 function tryGetStorybookVersion(): [string | undefined, Error | null] {
   try {
     const storybookPackageOutput = exec(`node -e "console.log(JSON.stringify(require('storybook/package.json')))"`, {
       silent: true,
     });
-    const storybookPackage = JSON.parse(storybookPackageOutput) as { version: string };
+    const storybookPackage = JSON.parse(storybookPackageOutput.stdout) as { version: string };
     return [storybookPackage.version, null];
   } catch (error) {
     return [undefined, error as Error];
@@ -110,6 +119,7 @@ export async function sendScreenshotsCount(
 
   const [creeveyVersion, creeveyVersionError] = tryGetCreeveyVersion();
   const [storybookVersion, storybookVersionError] = tryGetStorybookVersion();
+  const [gitRootPath] = tryGetRootPath();
 
   const gridUrl = config.gridUrl ? sanitizeGridUrl(config.gridUrl) : undefined;
 
@@ -120,7 +130,7 @@ export async function sendScreenshotsCount(
     storybookVersion: storybookVersion ?? 'unknown',
     options: options._,
     gridUrl,
-    screenDir: config.screenDir ? path.relative(process.cwd(), config.screenDir) : undefined,
+    screenDir: config.screenDir ? path.relative(gitRootPath ?? process.cwd(), config.screenDir) : undefined,
     useDocker: config.useDocker,
     dockerImage: config.dockerImage,
     maxRetries: config.maxRetries,
