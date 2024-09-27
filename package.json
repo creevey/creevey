@@ -189,7 +189,7 @@
     }
   },
   "lint-staged": {
-    "**/*.(c|m)?(j|t)s?(x)": [
+    "**/*.?(c|m)(j|t)s?(x)": [
       "eslint --fix",
       "prettier --write"
     ],

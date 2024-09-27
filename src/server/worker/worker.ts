@@ -182,10 +182,12 @@ export async function start(config: Config, options: Options & { browser: string
   mocha.suite.beforeEach(switchStory);
   if (options.trace) {
     mocha.suite.afterEach(async function (this: Context) {
-      const types = await browser?.manage().logs().getAvailableLogTypes();
-      for (const type of types ?? []) {
-        const logs = await browser?.manage().logs().get(type);
-        logs.forEach((log) => logger.trace(sessionId, this.currentTest?.titlePath().join('/'), log.toJSON()));
+      const types = await browser.manage().logs().getAvailableLogTypes();
+      for (const type of types) {
+        const logs = await browser.manage().logs().get(type);
+        logs.forEach((log) => {
+          logger.trace(sessionId, this.currentTest?.titlePath().join('/'), log.toJSON());
+        });
       }
     });
   }
