@@ -7154,6 +7154,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/uuid@npm:^10":
+  version: 10.0.0
+  resolution: "@types/uuid@npm:10.0.0"
+  checksum: 10c0/9a1404bf287164481cb9b97f6bb638f78f955be57c40c6513b7655160beb29df6f84c915aaf4089a1559c216557dc4d2f79b48d978742d3ae10b937420ddac60
+  languageName: node
+  linkType: hard
+
 "@types/uuid@npm:^9.0.1":
   version: 9.0.8
   resolution: "@types/uuid@npm:9.0.8"
@@ -10088,6 +10095,7 @@ __metadata:
     "@types/selenium-webdriver": "npm:^4.1.26"
     "@types/shelljs": "npm:^0.8.11"
     "@types/tmp": "npm:^0.2.3"
+    "@types/uuid": "npm:^10"
     "@types/webpack": "npm:^5.28.0"
     "@types/ws": "npm:^8.5.3"
     "@typescript-eslint/eslint-plugin": "npm:^5.30.5"
@@ -10152,6 +10160,7 @@ __metadata:
     tsconfig-paths: "npm:^4.0.0"
     typescript: "npm:~4.7.4"
     use-immer: "npm:^0.7.0"
+    uuid: "npm:^10.0.0"
     webpack: "npm:^5.73.0"
     webpack-cli: "npm:^4.10.0"
     webpack-dev-server: "npm:^4.9.3"
@@ -22361,6 +22370,15 @@ __metadata:
   version: 1.0.1
   resolution: "utils-merge@npm:1.0.1"
   checksum: 10c0/02ba649de1b7ca8854bfe20a82f1dfbdda3fb57a22ab4a8972a63a34553cf7aa51bc9081cf7e001b035b88186d23689d69e71b510e610a09a4c66f68aa95b672
+  languageName: node
+  linkType: hard
+
+"uuid@npm:^10.0.0":
+  version: 10.0.0
+  resolution: "uuid@npm:10.0.0"
+  bin:
+    uuid: dist/bin/uuid
+  checksum: 10c0/eab18c27fe4ab9fb9709a5d5f40119b45f2ec8314f8d4cf12ce27e4c6f4ffa4a6321dc7db6c515068fa373c075b49691ba969f0010bf37f44c37ca40cd6bf7fe
   languageName: node
   linkType: hard
 

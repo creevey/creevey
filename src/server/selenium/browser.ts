@@ -3,12 +3,17 @@ import { SET_GLOBALS, UPDATE_STORY_ARGS, STORY_RENDERED } from '@storybook/core-
 import chalk from 'chalk';
 import http from 'http';
 import https from 'https';
-import { getLogger } from 'loglevel';
+import { getLogger, levels } from 'loglevel';
 import prefix from 'loglevel-plugin-prefix';
 import { Context, Suite, Test } from 'mocha';
 import { networkInterfaces } from 'os';
 import { PNG } from 'pngjs';
-import { Builder, By, Capabilities, Origin, WebDriver, WebElement } from 'selenium-webdriver';
+import { Builder, By, Capabilities, Origin, WebDriver, WebElement, logging } from 'selenium-webdriver';
+// import { Options as IeOptions } from 'selenium-webdriver/ie';
+// import { Options as EdgeOptions } from 'selenium-webdriver/edge';
+// import { Options as ChromeOptions } from 'selenium-webdriver/chrome';
+// import { Options as SafariOptions } from 'selenium-webdriver/safari';
+// import { Options as FirefoxOptions } from 'selenium-webdriver/firefox';
 import { PageLoadStrategy } from 'selenium-webdriver/lib/capabilities';
 import {
   BrowserConfig,
@@ -41,11 +46,14 @@ declare global {
   }
 }
 
+// type UnPromise<P> = P extends Promise<infer T> ? T : never;
+
 const storybookRootID = 'storybook-root';
 const DOCKER_INTERNAL = 'host.docker.internal';
 let browserLogger = logger;
 let browserName = '';
 let browser: WebDriver | null = null;
+// let context: UnPromise<ReturnType<typeof BrowsingContext>> | null = null;
 let creeveyServerHost: string | null = null;
 
 function getSessionData(grid: string, sessionId = ''): Promise<Record<string, unknown>> {
@@ -354,6 +362,17 @@ export async function takeScreenshot(
 
   try {
     if (!captureElement) {
+      if (browserLogger.getLevel() <= levels.DEBUG) {
+        const { innerWidth, innerHeight } = await browser.executeScript<{ innerWidth: number; innerHeight: number }>(
+          function () {
+            return {
+              innerWidth: window.innerWidth,
+              innerHeight: window.innerHeight,
+            };
+          },
+        );
+        browserLogger.debug(`Viewport size is: ${innerWidth}x${innerHeight}`);
+      }
       browserLogger.debug('Capturing viewport screenshot');
       screenshot = await browser.takeScreenshot();
       browserLogger.debug('Viewport screenshot is captured');
@@ -397,6 +416,13 @@ export async function takeScreenshot(
       if (isFitIntoViewport) browserLogger.debug(`Capturing ${chalk.cyan(captureElement)}`);
       else browserLogger.debug(`Capturing composite screenshot image of ${chalk.cyan(captureElement)}`);
 
+      // const element = await browser.findElement(By.css(captureElement));
+      // screenshot = isFitIntoViewport
+      //   ? context
+      //     ? await context.captureElementScreenshot(await element.getId())
+      //     : await browser.findElement(By.css(captureElement)).takeScreenshot()
+      //   : // TODO pointer-events: none, need to research
+      //     await takeCompositeScreenshot(browser, windowRect, elementRect);
       screenshot = isFitIntoViewport
         ? await browser.findElement(By.css(captureElement)).takeScreenshot()
         : // TODO pointer-events: none, need to research
@@ -572,7 +598,36 @@ export async function getBrowser(config: Config, options: Options & { browser: s
     url.password = url.password ? '********' : '';
     browserLogger.debug(`(${browserName}) Connecting to Selenium ${chalk.magenta(url.toString())}`);
 
-    browser = await new Builder().usingServer(gridUrl).withCapabilities(capabilities).build();
+    const prefs = new logging.Preferences();
+
+    if (options.trace) {
+      for (const type of Object.values(logging.Type)) {
+        prefs.setLevel(type as string, logging.Level.ALL);
+      }
+    }
+
+    // const ie = new IeOptions();
+    // const edge = new EdgeOptions();
+    // const chrome = new ChromeOptions();
+    // const safari = new SafariOptions();
+    // const firefox = new FirefoxOptions();
+    // edge.enableBidi();
+    // chrome.enableBidi();
+    // firefox.enableBidi();
+
+    browser = await new Builder()
+      // .setIeOptions(ie)
+      // .setEdgeOptions(edge)
+      // .setChromeOptions(chrome)
+      // .setSafariOptions(safari)
+      // .setFirefoxOptions(firefox)
+      .usingServer(gridUrl)
+      .withCapabilities(capabilities)
+      .setLoggingPrefs(prefs) // NOTE: Should go last
+      .build();
+
+    // const id = await browser.getWindowHandle();
+    // context = await BrowsingContext(browser, { browsingContextId: id });
 
     const sessionId = (await browser.getSession())?.getId();
     let browserHost = '';
@@ -601,7 +656,7 @@ export async function getBrowser(config: Config, options: Options & { browser: s
 
     await runSequence(
       [
-        () => browser?.manage().setTimeouts({ pageLoad: 5000, script: 60000 }),
+        () => browser?.manage().setTimeouts({ pageLoad: 10000, script: 60000 }),
         () => viewport && browser && resizeViewport(browser, viewport),
         () => browser && openStorybookPage(browser, realAddress, config.resolveStorybookUrl),
         () => browser && waitForStorybook(browser),

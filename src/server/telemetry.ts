@@ -2,23 +2,24 @@ import path from 'path';
 import https from 'https';
 import { exec } from 'shelljs';
 import { stringify } from 'qs';
-import { Config, CreeveyStatus, Options, TestData } from '../types';
+import { set } from 'lodash';
+import { v4 } from 'uuid';
+import { Config, CreeveyStatus, isDefined, Options } from '../types';
 
 const konturGitHost = 'git.skbkontur.ru';
 
 const trackId = 232; // front_infra
 const origin = 'http://localhost/';
-const category = 'screenshots';
-const action = 'count';
-const label = 'full_run';
+const category = 'tests_run';
+const action = 'done';
 
-function buildPathname(info: Record<string, unknown>): string {
+function buildPathname(label: string, info: string | Record<string, unknown>): string {
   return `/track-event?${stringify({
     id: trackId,
     c: category,
     a: action,
     l: label,
-    cv: JSON.stringify(info),
+    cv: typeof info == 'string' ? info : JSON.stringify(info),
     ts: new Date().toISOString(),
     url: origin,
   })}`;
@@ -65,6 +66,32 @@ function tryGetCreeveyVersion(): [string | undefined, Error | null] {
   }
 }
 
+function sendRequest(options: https.RequestOptions): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    const req = https.request(options, (res) => {
+      if (res.statusCode) {
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          resolve();
+        } else if (res.statusCode >= 300 && res.statusCode < 400) {
+          reject(new Error(`Redirection error: ${res.statusCode}`));
+        } else if (res.statusCode >= 400 && res.statusCode < 500) {
+          reject(new Error(`Client error: ${res.statusCode}`));
+        } else if (res.statusCode >= 500 && res.statusCode < 600) {
+          reject(new Error(`Server error: ${res.statusCode}`));
+        } else {
+          reject(new Error(`Unexpected status code: ${res.statusCode}`));
+        }
+      } else {
+        reject(new Error('No status code received'));
+      }
+    });
+
+    req.on('error', reject);
+
+    req.end();
+  });
+}
+
 export async function sendScreenshotsCount(
   config: Partial<Config>,
   options: Options,
@@ -76,12 +103,15 @@ export async function sendScreenshotsCount(
 
   if (!isKonturRepo || config.disableTelemetry) return;
 
+  const uuid = v4();
+
   const [creeveyVersion, creeveyVersionError] = tryGetCreeveyVersion();
   const [storybookVersion, storybookVersionError] = tryGetStorybookVersion();
 
   const gridUrl = config.gridUrl ? sanitizeGridUrl(config.gridUrl) : undefined;
 
-  const info = {
+  const configMeta = {
+    runId: uuid,
     repoUrl: repoUrl ?? 'unknown',
     creeveyVersion: creeveyVersion ?? 'unknown',
     storybookVersion: storybookVersion ?? 'unknown',
@@ -93,6 +123,16 @@ export async function sendScreenshotsCount(
     maxRetries: config.maxRetries,
     diffOptions: config.diffOptions,
     storiesProvider: config.storiesProvider?.providerName ?? 'unknown',
+    errors: [creeveyVersionError, storybookVersionError].some(Boolean)
+      ? [
+          creeveyVersionError ? `Error while getting creevey version: ${creeveyVersionError.message}` : undefined,
+          storybookVersionError ? `Error while getting storybook version: ${storybookVersionError.message}` : undefined,
+        ].filter(Boolean)
+      : undefined,
+  };
+
+  const browsersMeta = {
+    runId: uuid,
     browsers: Object.fromEntries(
       Object.entries(config.browsers ?? {}).map(([name, browser]) => [
         name,
@@ -111,51 +151,49 @@ export async function sendScreenshotsCount(
           : browser,
       ]),
     ),
-    tests: Object.values(status?.tests ?? {})
-      .filter((x): x is TestData => Boolean(x))
-      .map((test) => ({
-        id: test.id,
-        browser: test.browser,
-        testName: test.testName,
-        storyPath: test.storyPath,
-        status: test.status,
-      })),
-    errors: [creeveyVersionError, storybookVersionError].some(Boolean)
-      ? [
-          creeveyVersionError ? `Error while getting creevey version: ${creeveyVersionError.message}` : undefined,
-          storybookVersionError ? `Error while getting storybook version: ${storybookVersionError.message}` : undefined,
-        ].filter(Boolean)
-      : undefined,
   };
 
-  return new Promise((resolve, reject) => {
-    const req = https.request(
-      {
+  const tests: Record<string, unknown> = {};
+
+  Object.values(status?.tests ?? {})
+    .filter(isDefined)
+    .forEach((test) => {
+      set(tests, [...test.storyPath, test.testName, test.browser].filter(isDefined), test.id);
+    });
+
+  const testsMeta = { runId: uuid, tests };
+
+  const fullPathname = buildPathname('tests', testsMeta);
+  // NOTE: Keep request path shorter than 32k symbols
+  const chunksCount = Math.ceil(fullPathname.length / 32_000);
+  let chunks: string[] = [];
+  if (chunksCount > 1) {
+    const testsString = JSON.stringify(tests);
+    const chunkSize = Math.ceil(testsString.length / chunksCount);
+    chunks = Array.from({ length: chunksCount })
+      .map((_, chunkIndex) => testsString.slice(chunkIndex * chunkSize, (chunkIndex + 1) * chunkSize))
+      .map((testsPart, seq) => buildPathname('tests', { runId: uuid, tests: testsPart, seq }));
+  } else {
+    chunks = [fullPathname];
+  }
+
+  await Promise.all([
+    sendRequest({
+      host: 'metrika.kontur.ru',
+      path: buildPathname('config', configMeta),
+      protocol: 'https:',
+    }),
+    sendRequest({
+      host: 'metrika.kontur.ru',
+      path: buildPathname('browsers', browsersMeta),
+      protocol: 'https:',
+    }),
+    ...chunks.map((chunk) =>
+      sendRequest({
         host: 'metrika.kontur.ru',
-        path: buildPathname(info),
+        path: chunk,
         protocol: 'https:',
-      },
-      (res) => {
-        if (res.statusCode) {
-          if (res.statusCode >= 200 && res.statusCode < 300) {
-            resolve();
-          } else if (res.statusCode >= 300 && res.statusCode < 400) {
-            reject(new Error(`Redirection error: ${res.statusCode}`));
-          } else if (res.statusCode >= 400 && res.statusCode < 500) {
-            reject(new Error(`Client error: ${res.statusCode}`));
-          } else if (res.statusCode >= 500 && res.statusCode < 600) {
-            reject(new Error(`Server error: ${res.statusCode}`));
-          } else {
-            reject(new Error(`Unexpected status code: ${res.statusCode}`));
-          }
-        } else {
-          reject(new Error('No status code received'));
-        }
-      },
-    );
-
-    req.on('error', reject);
-
-    req.end();
-  });
+      }),
+    ),
+  ]);
 }

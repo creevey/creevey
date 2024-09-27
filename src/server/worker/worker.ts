@@ -159,16 +159,17 @@ export default async function worker(config: Config, options: Options & { browse
 
   if (browser == null) return;
 
-  const interval = setInterval(
-    () =>
-      void browser.getCurrentUrl().then((url) => {
-        if (options.debug)
+  if (options.debug) {
+    const interval = setInterval(
+      () =>
+        void browser.getCurrentUrl().then((url) => {
           logger.debug(`${options.browser}:${chalk.gray(sessionId)}`, 'current url', chalk.magenta(url));
-      }),
-    10 * 1000,
-  );
+        }),
+      10 * 1000,
+    );
 
-  subscribeOn('shutdown', () => clearInterval(interval));
+    subscribeOn('shutdown', () => clearInterval(interval));
+  }
 
   mocha.suite.beforeAll(function (this: Context) {
     this.config = config;
@@ -181,6 +182,15 @@ export default async function worker(config: Config, options: Options & { browse
     this.screenshots = screenshots;
   });
   mocha.suite.beforeEach(switchStory);
+  if (options.trace) {
+    mocha.suite.afterEach(async function (this: Context) {
+      const types = await browser?.manage().logs().getAvailableLogTypes();
+      for (const type of types ?? []) {
+        const logs = await browser?.manage().logs().get(type);
+        logs.forEach((log) => logger.trace(sessionId, this.currentTest?.titlePath().join('/'), log.toJSON()));
+      }
+    });
+  }
 
   subscribeOn('test', (message: TestMessage) => {
     if (message.type != 'start') return;

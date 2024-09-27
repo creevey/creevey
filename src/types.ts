@@ -266,6 +266,7 @@ export interface Options {
   ui: boolean;
   update: boolean | string;
   debug: boolean;
+  trace: boolean;
   tests: boolean;
   browser?: string;
   reporter?: string;

@@ -21,6 +21,7 @@ const testLevels: { [level: string]: string } = {
 };
 
 export class CreeveyReporter extends reporters.Base {
+  // TODO Output in better way, like vitest, maybe
   constructor(runner: Runner, options: MochaOptions) {
     super(runner);
 

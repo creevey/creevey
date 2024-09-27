@@ -125,6 +125,7 @@
     "selenium-webdriver": "^4.25.0",
     "shelljs": "^0.8.5",
     "tsconfig-paths": "^4.0.0",
+    "uuid": "^10.0.0",
     "ws": "^8.8.0"
   },
   "devDependencies": {
@@ -169,6 +170,7 @@
     "@types/resize-observer-browser": "^0.1.7",
     "@types/shelljs": "^0.8.11",
     "@types/tmp": "^0.2.3",
+    "@types/uuid": "^10",
     "@types/webpack": "^5.28.0",
     "@types/ws": "^8.5.3",
     "@typescript-eslint/eslint-plugin": "^5.30.5",
