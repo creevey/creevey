@@ -13,13 +13,13 @@ const origin = 'http://localhost/';
 const category = 'tests_run';
 const action = 'done';
 
-function buildPathname(label: string, info: string | Record<string, unknown>): string {
+function buildPathname(label: string, info: Record<string, unknown>): string {
   return `/track-event?${stringify({
     id: trackId,
     c: category,
     a: action,
     l: label,
-    cv: typeof info == 'string' ? info : JSON.stringify(info),
+    cv: JSON.stringify(info),
     ts: new Date().toISOString(),
     url: origin,
   })}`;
@@ -172,7 +172,7 @@ export async function sendScreenshotsCount(
     const chunkSize = Math.ceil(testsString.length / chunksCount);
     chunks = Array.from({ length: chunksCount })
       .map((_, chunkIndex) => testsString.slice(chunkIndex * chunkSize, (chunkIndex + 1) * chunkSize))
-      .map((testsPart, seq) => buildPathname('tests', { runId: uuid, tests: testsPart, seq }));
+      .map((testsPart, seq) => buildPathname('tests', { runId: uuid, seq, tests: testsPart }));
   } else {
     chunks = [fullPathname];
   }
