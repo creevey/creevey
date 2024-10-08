@@ -186,7 +186,7 @@ export async function start(config: Config, options: Options & { browser: string
       for (const type of types) {
         const logs = await browser.manage().logs().get(type);
         logs.forEach((log) => {
-          logger.trace(sessionId, this.currentTest?.titlePath().join('/'), log.toJSON());
+          logger.debug(sessionId, this.currentTest?.titlePath().join('/'), log.toJSON());
         });
       }
     });

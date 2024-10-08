@@ -366,19 +366,20 @@ export async function takeScreenshot(
 
   const ignoreStyles = await insertIgnoreStyles(browser, ignoreElements);
 
+  if (browserLogger.getLevel() <= Logger.levels.DEBUG) {
+    const { innerWidth, innerHeight } = await browser.executeScript<{ innerWidth: number; innerHeight: number }>(
+      function () {
+        return {
+          innerWidth: window.innerWidth,
+          innerHeight: window.innerHeight,
+        };
+      },
+    );
+    browserLogger.debug(`Viewport size is: ${innerWidth}x${innerHeight}`);
+  }
+
   try {
     if (!captureElement) {
-      if (browserLogger.getLevel() <= Logger.levels.DEBUG) {
-        const { innerWidth, innerHeight } = await browser.executeScript<{ innerWidth: number; innerHeight: number }>(
-          function () {
-            return {
-              innerWidth: window.innerWidth,
-              innerHeight: window.innerHeight,
-            };
-          },
-        );
-        browserLogger.debug(`Viewport size is: ${innerWidth}x${innerHeight}`);
-      }
       browserLogger.debug('Capturing viewport screenshot');
       screenshot = await browser.takeScreenshot();
       browserLogger.debug('Viewport screenshot is captured');
@@ -422,8 +423,14 @@ export async function takeScreenshot(
         elementRect.width + elementRect.left <= windowRect.width &&
         elementRect.height + elementRect.top <= windowRect.height;
 
-      if (isFitIntoViewport) browserLogger.debug(`Capturing ${chalk.cyan(captureElement)}`);
-      else browserLogger.debug(`Capturing composite screenshot image of ${chalk.cyan(captureElement)}`);
+      if (isFitIntoViewport) {
+        browserLogger.debug(
+          `Capturing ${chalk.cyan(captureElement)} with size: ${elementRect.width}x${elementRect.height}`,
+        );
+      } else
+        browserLogger.debug(
+          `Capturing composite screenshot image of ${chalk.cyan(captureElement)} with size: ${elementRect.width}x${elementRect.height}`,
+        );
 
       // const element = await browser.findElement(By.css(captureElement));
       // screenshot = isFitIntoViewport
