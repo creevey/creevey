@@ -665,9 +665,12 @@ export async function getBrowser(config: Config, options: Options & { browser: s
     await runSequence(
       [
         () => browser?.manage().setTimeouts({ pageLoad: 10000, script: 60000 }),
-        () => viewport && browser && resizeViewport(browser, viewport),
         () => browser && openStorybookPage(browser, realAddress, config.resolveStorybookUrl),
         () => browser && waitForStorybook(browser),
+        // NOTE: Selenium draws automation toolbar with some delay after webdriver initialization
+        // NOTE: So if we resize window right after getting webdriver instance we might get situation
+        // NOTE: When the toolbar appears after resize and final viewport size become smaller than we set
+        () => viewport && browser && resizeViewport(browser, viewport),
       ],
       () => !isShuttingDown.current,
     );
