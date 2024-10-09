@@ -16,8 +16,8 @@ TODO.md
 PROTO.md
 tsconfig.json
 tsconfig.prod.json
-webpack.config.ts
-eslint.config.js
+webpack.config.mjs
+eslint.config.mjs
 tests
 report
 scripts

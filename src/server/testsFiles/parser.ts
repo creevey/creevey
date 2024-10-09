@@ -1,19 +1,21 @@
-import { register } from 'tsx/esm/api';
+import { pathToFileURL } from 'url';
 import { toId, storyNameFromExport } from '@storybook/csf';
 import { CreeveyStoryParams, CreeveyTestFunction } from '../../types.js';
+import { loadThroughTSX } from '../utils.js';
 
 export type CreeveyParamsByStoryId = Record<string, CreeveyStoryParams>;
 
 export default async function parse(files: string[]): Promise<CreeveyParamsByStoryId> {
   result = {};
 
-  const unregister = register();
-  await Promise.all(
-    files.map(async (file) => {
-      await import(file);
-    }),
+  await loadThroughTSX(async (load) =>
+    Promise.all(
+      files.map(async (file) => {
+        const fileUrl = pathToFileURL(file).toString();
+        await load(fileUrl);
+      }),
+    ),
   );
-  await unregister();
 
   return result as CreeveyParamsByStoryId;
 }

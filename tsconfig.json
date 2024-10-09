@@ -26,7 +26,7 @@
     "stories/**/*",
     "types/*",
     "tests/**/*",
-    "webpack.config.mts"
+    "webpack.config.mjs"
   ],
   "exclude": ["report", "dist", "scripts"]
 }

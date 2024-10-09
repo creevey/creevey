@@ -5,6 +5,8 @@ import { dirname } from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { createRequire } from 'module';
 import findCacheDir from 'find-cache-dir';
+import { register as esmRegister } from 'tsx/esm/api';
+import { register as cjsRegister } from 'tsx/cjs/api';
 import { SkipOptions, SkipOption, isDefined, TestData, noop, ServerTest } from '../types.js';
 import { emitShutdownMessage, sendShutdownMessage } from './messages.js';
 
@@ -181,4 +183,24 @@ export function tryToLoadTestsData(filename: string): Partial<Record<string, Ser
   } catch {
     /* noop */
   }
+}
+
+const [nodeVersion] = process.versions.node.split('.').map(Number);
+export async function loadThroughTSX<T>(
+  callback: (load: (modulePath: string) => Promise<T>) => Promise<T>,
+): Promise<T> {
+  const unregister = nodeVersion > 18 ? esmRegister() : cjsRegister();
+
+  const result = await callback((modulePath) =>
+    nodeVersion > 18
+      ? import(modulePath)
+      : // eslint-disable-next-line @typescript-eslint/no-require-imports
+        Promise.resolve(require(modulePath) as T),
+  );
+
+  // NOTE: `unregister` type is `(() => Promise<void>) | (() => void)`
+  // eslint-disable-next-line @typescript-eslint/await-thenable, @typescript-eslint/no-confusing-void-expression
+  await unregister();
+
+  return result;
 }

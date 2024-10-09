@@ -1,9 +1,9 @@
 import fs from 'fs';
 import path from 'path';
+import { pathToFileURL } from 'url';
 import { loadStories as browserStoriesProvider } from './storybook/providers/browser.js';
 import { Config, Browser, BrowserConfig, Options, isDefined } from '../types.js';
-import { configExt } from './utils.js';
-import { register } from 'tsx/esm/api';
+import { configExt, loadThroughTSX } from './utils.js';
 
 export const defaultBrowser = 'chrome';
 
@@ -56,11 +56,11 @@ export async function readConfig(options: Options): Promise<Config> {
   const userConfig: typeof defaultConfig & Partial<Pick<Config, 'gridUrl' | 'storiesProvider'>> = { ...defaultConfig };
 
   if (isDefined(configPath)) {
-    const unregister = register();
-    const { default: configData } = (await import(configPath)) as {
-      default: Partial<Config>;
-    };
-    await unregister();
+    const configModule = await loadThroughTSX<{ default: Partial<Config> } | Partial<Config>>((load) => {
+      const configFileUrl = pathToFileURL(configPath).toString();
+      return load(configFileUrl);
+    });
+    const configData = 'default' in configModule ? configModule.default : configModule;
 
     Object.assign(userConfig, configData);
   }
