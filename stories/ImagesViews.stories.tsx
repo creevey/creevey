@@ -10,17 +10,8 @@ import octocatExpect from './fixtures/octocat-expect.png';
 import octocatDiff from './fixtures/octocat-diff.png';
 import octocatActual from './fixtures/octocat-actual.png';
 
-const importMetaUrl =
-  (document.currentScript as HTMLScriptElement | undefined)?.src ??
-  new URL('stories/ImagesViews.stories.tsx', document.baseURI).href;
-
 const ImagesView = ({ mode }: { mode: ImagesViewMode }): JSX.Element => (
-  <ImagesViewBase
-    image={{ expect: octocatExpect, diff: octocatDiff, actual: octocatActual }}
-    url={new URL(importMetaUrl).origin}
-    canApprove
-    mode={mode}
-  />
+  <ImagesViewBase image={{ expect: octocatExpect, diff: octocatDiff, actual: octocatActual }} canApprove mode={mode} />
 );
 
 const Kind: Meta<typeof ImagesView> = { title: 'ImagesViews', component: ImagesView };

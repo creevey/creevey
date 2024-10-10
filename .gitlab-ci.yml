@@ -1,8 +1,6 @@
 image: node:latest
 before_script:
   - curl https://get.volta.sh | bash
-  - echo 'export VOLTA_HOME=$HOME/.volta' >> $BASH_ENV
-  - echo 'export PATH=$VOLTA_HOME:$PATH' >> $BASH_ENV
 
 cache:
   paths:

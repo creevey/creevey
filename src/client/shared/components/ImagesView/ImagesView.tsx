@@ -8,7 +8,7 @@ import { Images, ImagesViewMode } from '../../../../types.js';
 import { getBorderColor, themeBorderColors, ViewProps } from './common.js';
 
 interface ImagesViewProps {
-  url: string;
+  url?: string;
   image: Images;
   canApprove: boolean;
   mode: ImagesViewMode;
@@ -43,6 +43,10 @@ const ActualImage = withTheme(
   }),
 );
 
+function normalizeUrl(image: string, url?: string): string {
+  return url ? `${url}/${image}` : image;
+}
+
 export function ImagesView({ url, image, canApprove, mode }: ImagesViewProps): JSX.Element {
   const ViewComponent = views[mode];
 
@@ -51,10 +55,14 @@ export function ImagesView({ url, image, canApprove, mode }: ImagesViewProps): J
   return (
     <Container>
       {canApprove && diff && expect ? (
-        <ViewComponent actual={`${url}/${actual}`} diff={`${url}/${diff}`} expect={`${url}/${expect}`} />
+        <ViewComponent
+          actual={normalizeUrl(actual, url)}
+          diff={normalizeUrl(diff, url)}
+          expect={normalizeUrl(expect, url)}
+        />
       ) : (
-        <ImageLink href={`${url}/${actual}`} target="_blank" rel="noopener noreferrer">
-          <ActualImage alt="actual" src={`${url}/${actual}`} />
+        <ImageLink href={normalizeUrl(actual, url)} target="_blank" rel="noopener noreferrer">
+          <ActualImage alt="actual" src={normalizeUrl(actual, url)} />
         </ImageLink>
       )}
     </Container>
