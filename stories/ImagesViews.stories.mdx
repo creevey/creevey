@@ -9,11 +9,7 @@ import octocatDiff from './fixtures/octocat-diff.png';
 import octocatActual from './fixtures/octocat-actual.png';
 
 export const ImagesView = (mode) => (
-  <ImagesViewBase
-    image={{ expect: octocatExpect, diff: octocatDiff, actual: octocatActual }}
-    canApprove
-    mode={mode}
-  />
+  <ImagesViewBase image={{ expect: octocatExpect, diff: octocatDiff, actual: octocatActual }} canApprove mode={mode} />
 );
 
 <Meta title="Docs/ImagesViews" component={ImagesViewBase} />
