@@ -155,19 +155,17 @@ export async function start(config: Config, options: Options & { browser: string
 
   if (browser == null) return;
 
-  if (options.debug) {
-    const interval = setInterval(
-      () =>
-        void browser.getCurrentUrl().then((url) => {
-          logger.debug(`${options.browser}:${chalk.gray(sessionId)}`, 'current url', chalk.magenta(url));
-        }),
-      10 * 1000,
-    );
+  const interval = setInterval(
+    () =>
+      void browser.getCurrentUrl().then((url) => {
+        logger.debug(`${options.browser}:${chalk.gray(sessionId)}`, 'current url', chalk.magenta(url));
+      }),
+    10 * 1000,
+  );
 
-    subscribeOn('shutdown', () => {
-      clearInterval(interval);
-    });
-  }
+  subscribeOn('shutdown', () => {
+    clearInterval(interval);
+  });
 
   mocha.suite.beforeAll(function (this: Context) {
     this.config = config;
