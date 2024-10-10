@@ -3,7 +3,7 @@ import chai from 'chai';
 import chalk from 'chalk';
 import { Stats } from 'fs';
 import assert from 'assert';
-import { stat, readdir, readFile, writeFile, mkdir, appendFile } from 'fs/promises';
+import { stat, readdir, readFile, writeFile, mkdir } from 'fs/promises';
 import Mocha, { Context, MochaOptions } from 'mocha';
 import { Key, until } from 'selenium-webdriver';
 import { Config, Images, Options, TestMessage, isImageError } from '../../types.js';
@@ -182,16 +182,20 @@ export async function start(config: Config, options: Options & { browser: string
   mocha.suite.beforeEach(switchStory);
   if (options.trace) {
     mocha.suite.afterEach(async function (this: Context) {
+      const output: string[] = [];
       const types = await browser.manage().logs().getAvailableLogTypes();
       for (const type of types) {
         const logs = await browser.manage().logs().get(type);
-        const output = logs
-          .map((log) =>
-            [sessionId, this.currentTest?.titlePath().join('/'), JSON.stringify(log.toJSON(), null, 2)].join(' '),
-          )
-          .join('\n');
-        await appendFile(path.join(config.reportDir, 'trace.log'), output);
+        output.push(logs.map((log) => JSON.stringify(log.toJSON(), null, 2)).join('\n'));
       }
+      logger.debug(
+        '----------',
+        sessionId,
+        this.currentTest?.titlePath().join('/'),
+        '----------\n',
+        output.join('\n'),
+        '\n----------------------------------------------------------------------------------------------------',
+      );
     });
   }
 
