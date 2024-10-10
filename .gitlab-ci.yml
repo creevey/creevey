@@ -1,6 +1,4 @@
 image: node:latest
-before_script:
-  - curl https://get.volta.sh | bash
 
 cache:
   paths:
@@ -13,13 +11,13 @@ build:
     paths:
       - dist/
       - creevey-*.tgz
+  before_script:
+    - curl https://get.volta.sh | bash
   script:
     - yarn lint
+    - yarn test:unit
     - yarn build
     - yarn pack
-unit:
-  script:
-    - yarn test:unit
 
 ui:
   stage: test
