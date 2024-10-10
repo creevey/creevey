@@ -1,8 +1,8 @@
-import { ComponentMeta, ComponentStoryObj } from '@storybook/react';
-import { PageHeader } from '../src/client/shared/components/PageHeader/PageHeader';
-import { noop } from '../src/types';
+import { Meta, StoryObj } from '@storybook/react';
+import { PageHeader } from '../src/client/shared/components/PageHeader/PageHeader.js';
+import { noop } from '../src/types.js';
 
-export default {
+const Kind: Meta<typeof PageHeader> = {
   title: 'PageHeader',
   component: PageHeader,
   args: {
@@ -10,9 +10,11 @@ export default {
     onImageChange: noop,
     onViewModeChange: noop,
   },
-} as ComponentMeta<typeof PageHeader>;
+};
 
-export const Simple: ComponentStoryObj<typeof PageHeader> = {
+export default Kind;
+
+export const Simple: StoryObj<typeof PageHeader> = {
   args: {
     title: ['chrome', 'title', '1'],
     showViewModes: true,
@@ -20,7 +22,7 @@ export const Simple: ComponentStoryObj<typeof PageHeader> = {
   },
 };
 
-export const WithError: ComponentStoryObj<typeof PageHeader> = {
+export const WithError: StoryObj<typeof PageHeader> = {
   args: {
     title: ['chrome', 'title', '2'],
     errorMessage: 'errorMessage',
@@ -28,7 +30,7 @@ export const WithError: ComponentStoryObj<typeof PageHeader> = {
     viewMode: 'swap',
   },
 };
-export const WithImagePreview: ComponentStoryObj<typeof PageHeader> = {
+export const WithImagePreview: StoryObj<typeof PageHeader> = {
   args: {
     title: ['chrome', 'title', '3'],
     showViewModes: false,
@@ -38,7 +40,7 @@ export const WithImagePreview: ComponentStoryObj<typeof PageHeader> = {
   },
 };
 
-export const Full: ComponentStoryObj<typeof PageHeader> = {
+export const Full: StoryObj<typeof PageHeader> = {
   args: {
     title: ['chrome', 'title', '4'],
     showViewModes: true,

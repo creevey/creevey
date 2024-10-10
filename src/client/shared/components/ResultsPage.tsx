@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { ImagesView } from './ImagesView/ImagesView';
-import { PageHeader } from './PageHeader/PageHeader';
-import { PageFooter } from './PageFooter/PageFooter';
-import { getImageUrl } from '../helpers';
-import { styled, withTheme, Theme } from '@storybook/theming';
 import { Placeholder, ScrollArea } from '@storybook/components';
-import { getViewMode, VIEW_MODE_KEY } from '../viewMode';
-import { ImagesViewMode, TestResult } from '../../../types';
+import { styled, withTheme, Theme } from '@storybook/theming';
+import { ImagesView } from './ImagesView/ImagesView.js';
+import { PageHeader } from './PageHeader/PageHeader.js';
+import { PageFooter } from './PageFooter/PageFooter.js';
+import { getImageUrl } from '../helpers.js';
+import { getViewMode, VIEW_MODE_KEY } from '../viewMode.js';
+import { ImagesViewMode, TestResult } from '../../../types.js';
 
 interface TestResultsProps {
   id: string;
   path: string[];
   results?: TestResult[];
-  approved?: Partial<{ [image: string]: number }>;
+  approved?: Partial<Record<string, number>>;
   showTitle?: boolean;
   onImageApprove: (id: string, retry: number, image: string) => void;
   theme: Theme;
@@ -35,7 +35,7 @@ const ImagesViewContainer = styled.div(({ theme }) => ({
 
 const HeaderContainer = styled.div({ position: 'sticky', top: 0, zIndex: 1 });
 
-const BodyContainer = styled.div({ flexGrow: 1 });
+const BodyContainer = styled.div({ flexGrow: 1, minHeight: 0 });
 
 const FooterContainer = styled.div({
   position: 'sticky',
@@ -66,7 +66,9 @@ export function ResultsPageInternal({
   const [imageName, setImageName] = useState(Object.keys(result.images ?? {})[0] ?? '');
   const [viewMode, setViewMode] = useState<ImagesViewMode>(getViewMode());
 
-  useEffect(() => setRetry(results.length), [results.length]);
+  useEffect(() => {
+    setRetry(results.length);
+  }, [results.length]);
 
   const url = getImageUrl(path, imageName);
   const image = result.images?.[imageName];
@@ -75,13 +77,13 @@ export function ResultsPageInternal({
   const imagesWithError = result.images
     ? Object.keys(result.images).filter(
         (imageName) =>
-          result.status != 'success' &&
-          approved[imageName] != retry - 1 &&
-          (result.images || {})[imageName]?.error != null,
+          result.status != 'success' && approved[imageName] != retry - 1 && result.images?.[imageName]?.error != null,
       )
     : [];
 
-  const handleApprove = (): void => onImageApprove(id, retry - 1, imageName);
+  const handleApprove = (): void => {
+    onImageApprove(id, retry - 1, imageName);
+  };
   const handleChangeViewMode = (mode: ImagesViewMode): void => {
     localStorage.setItem(VIEW_MODE_KEY, mode);
     setViewMode(mode);

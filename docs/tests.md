@@ -13,7 +13,7 @@ export default { title: 'MyComponent' };
 export const Basic: Story & CreeveyStory = () => <MyComponent />;
 Basic.parameters = {
   creevey: {
-    captureElement: '#root',
+    captureElement: '#storybook-root',
     tests: {
       async click() {
         await this.browser.actions().click(this.captureElement).perform();
@@ -25,7 +25,7 @@ Basic.parameters = {
 };
 ```
 
-NOTE: Here you define story parameters with simple test `click`. Where you setup capturing element `#root` then click on that element and taking screenshot to assert it. `this.browser` allow you to access to native selenium webdriver instance you could check [API here](https://www.selenium.dev/selenium/docs/api/javascript/module/selenium-webdriver/index_exports_WebDriver.html).
+NOTE: Here you define story parameters with simple test `click`. Where you setup capturing element `#storybook-root` then click on that element and taking screenshot to assert it. `this.browser` allow you to access to native selenium webdriver instance you could check [API here](https://www.selenium.dev/selenium/docs/api/javascript/module/selenium-webdriver/index_exports_WebDriver.html).
 
 You also could write more powerful tests with asserting multiple screenshots
 
@@ -40,7 +40,7 @@ export const Basic: CSFStory<JSX.Element> = () => <MyForm />;
 Basic.story = {
   parameters: {
     creevey: {
-      captureElement: '#root',
+      captureElement: '#storybook-root',
       delay: 1000,
       tests: {
         async submit() {

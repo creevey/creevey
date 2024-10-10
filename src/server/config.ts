@@ -1,15 +1,15 @@
 import fs from 'fs';
 import path from 'path';
-import { isCSFv3Enabled, storybookDirRef } from './storybook/helpers';
-import { loadStories as nodejsStoriesProvider } from './storybook/providers/nodejs';
-import { loadStories as browserStoriesProvider } from './storybook/providers/browser';
-import { Config, Browser, BrowserConfig, Options, isDefined } from '../types';
+import { pathToFileURL } from 'url';
+import { loadStories as browserStoriesProvider } from './storybook/providers/browser.js';
+import { Config, Browser, BrowserConfig, Options, isDefined } from '../types.js';
+import { configExt, loadThroughTSX } from './utils.js';
 
 export const defaultBrowser = 'chrome';
 
-export const defaultConfig: Omit<Config, 'gridUrl' | 'storiesProvider'> = {
+export const defaultConfig: Omit<Config, 'gridUrl' | 'storiesProvider' | 'testsDir' | 'tsConfig'> = {
+  disableTelemetry: false,
   useDocker: true,
-  useWebpackToExtractTests: false,
   dockerImage: 'aerokube/selenoid:latest-release',
   dockerImagePlatform: '',
   pullImages: true,
@@ -17,12 +17,12 @@ export const defaultConfig: Omit<Config, 'gridUrl' | 'storiesProvider'> = {
   storybookUrl: 'http://localhost:6006',
   screenDir: path.resolve('images'),
   reportDir: path.resolve('report'),
-  storybookDir: path.resolve('.storybook'),
   maxRetries: 0,
   diffOptions: { threshold: 0, includeAA: true },
   browsers: { [defaultBrowser]: true },
   hooks: {},
   babelOptions: (_) => _,
+  testsRegex: /\.creevey\.(t|j)s$/,
 };
 
 function normalizeBrowserConfig(name: string, config: Browser): BrowserConfig {
@@ -32,16 +32,20 @@ function normalizeBrowserConfig(name: string, config: Browser): BrowserConfig {
 }
 
 function resolveConfigPath(configPath?: string): string | undefined {
-  const rootDir = process.cwd();
   const configDir = path.resolve('.creevey');
 
   if (isDefined(configPath)) {
     configPath = path.resolve(configPath);
   } else if (fs.existsSync(configDir)) {
-    configPath = path.join(configDir, 'config');
-    // TODO We already find file with extension, why not use it?
-  } else if (fs.readdirSync(rootDir).find((filename) => filename.startsWith('creevey.config'))) {
-    configPath = path.join(rootDir, 'creevey.config');
+    for (const ext of configExt) {
+      configPath = path.resolve(configDir, `config${ext}`);
+      if (fs.existsSync(configPath)) break;
+    }
+  } else {
+    for (const ext of configExt) {
+      configPath = path.resolve(`creevey.config${ext}`);
+      if (fs.existsSync(configPath)) break;
+    }
   }
 
   return configPath;
@@ -51,16 +55,22 @@ export async function readConfig(options: Options): Promise<Config> {
   const configPath = resolveConfigPath(options.config);
   const userConfig: typeof defaultConfig & Partial<Pick<Config, 'gridUrl' | 'storiesProvider'>> = { ...defaultConfig };
 
-  if (isDefined(configPath)) Object.assign(userConfig, ((await import(configPath)) as { default: Config }).default);
+  if (isDefined(configPath)) {
+    const configModule = await loadThroughTSX<{ default: Partial<Config> } | Partial<Config>>((load) => {
+      const configFileUrl = pathToFileURL(configPath).toString();
+      return load(configFileUrl);
+    });
+    const configData = 'default' in configModule ? configModule.default : configModule;
 
-  storybookDirRef.current = userConfig.storybookDir;
+    Object.assign(userConfig, configData);
+  }
 
-  if (!userConfig.storiesProvider)
-    userConfig.storiesProvider = (await isCSFv3Enabled()) ? browserStoriesProvider : nodejsStoriesProvider;
+  if (!userConfig.storiesProvider) userConfig.storiesProvider = browserStoriesProvider;
 
   if (options.failFast != undefined) userConfig.failFast = Boolean(options.failFast);
   if (options.reportDir) userConfig.reportDir = path.resolve(options.reportDir);
   if (options.screenDir) userConfig.screenDir = path.resolve(options.screenDir);
+  if (options.storybookUrl) userConfig.storybookUrl = options.storybookUrl;
 
   // NOTE: Hack to pass typescript checking
   const config = userConfig as Config;

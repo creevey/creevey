@@ -1,34 +1,14 @@
 import React, { FunctionComponent } from 'react';
-import { SideBySideView } from './SideBySideView';
-import { SwapView } from './SwapView';
-import { SlideView } from './SlideView';
-import { BlendView } from './BlendView';
-import { Images, ImagesViewMode } from '../../../../types';
-import { Color, styled, Theme, withTheme } from '@storybook/theming';
-
-export const themeBorderColors = {
-  actual: 'negative',
-  expect: 'positive',
-  diff: 'secondary',
-};
-
-const isColor = (theme: Theme, color: string): color is keyof Color => color in theme.color;
-export function getBorderColor(theme: Theme, color: string): string {
-  return isColor(theme, color) ? theme.color[color] : color;
-}
-
-interface ViewProps {
-  actual: string;
-  diff: string;
-  expect: string;
-}
-
-export interface ViewPropsWithTheme extends ViewProps {
-  theme: Theme;
-}
+import { styled, withTheme } from '@storybook/theming';
+import { SideBySideView } from './SideBySideView.js';
+import { SwapView } from './SwapView.js';
+import { SlideView } from './SlideView.js';
+import { BlendView } from './BlendView.js';
+import { Images, ImagesViewMode } from '../../../../types.js';
+import { getBorderColor, themeBorderColors, ViewProps } from './common.js';
 
 interface ImagesViewProps {
-  url: string;
+  url?: string;
   image: Images;
   canApprove: boolean;
   mode: ImagesViewMode;
@@ -63,6 +43,10 @@ const ActualImage = withTheme(
   }),
 );
 
+function normalizeUrl(image: string, url?: string): string {
+  return url ? `${url}/${image}` : image;
+}
+
 export function ImagesView({ url, image, canApprove, mode }: ImagesViewProps): JSX.Element {
   const ViewComponent = views[mode];
 
@@ -71,10 +55,14 @@ export function ImagesView({ url, image, canApprove, mode }: ImagesViewProps): J
   return (
     <Container>
       {canApprove && diff && expect ? (
-        <ViewComponent actual={`${url}/${actual}`} diff={`${url}/${diff}`} expect={`${url}/${expect}`} />
+        <ViewComponent
+          actual={normalizeUrl(actual, url)}
+          diff={normalizeUrl(diff, url)}
+          expect={normalizeUrl(expect, url)}
+        />
       ) : (
-        <ImageLink href={`${url}/${actual}`} target="_blank" rel="noopener noreferrer">
-          <ActualImage alt="actual" src={`${url}/${actual}`} />
+        <ImageLink href={normalizeUrl(actual, url)} target="_blank" rel="noopener noreferrer">
+          <ActualImage alt="actual" src={normalizeUrl(actual, url)} />
         </ImageLink>
       )}
     </Container>

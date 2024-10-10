@@ -1,27 +1,22 @@
-import { promisify } from 'util';
-import fs, { Stats } from 'fs';
 import path from 'path';
 import chai from 'chai';
 import chalk from 'chalk';
+import { Stats } from 'fs';
+import assert from 'assert';
+import { stat, readdir, readFile, writeFile, mkdir } from 'fs/promises';
 import Mocha, { Context, MochaOptions } from 'mocha';
 import { Key, until } from 'selenium-webdriver';
-import { Config, Images, Options, TestMessage, isImageError } from '../../types';
-import { subscribeOn, emitTestMessage, emitWorkerMessage } from '../messages';
-import chaiImage from './chai-image';
-import { closeBrowser, getBrowser, switchStory } from '../selenium';
-import { CreeveyReporter, TeamcityReporter } from './reporter';
-import { addTestsFromStories } from './helpers';
-import { logger } from '../logger';
-
-const statAsync = promisify(fs.stat);
-const readdirAsync = promisify(fs.readdir);
-const readFileAsync = promisify(fs.readFile);
-const writeFileAsync = promisify(fs.writeFile);
-const mkdirAsync = promisify(fs.mkdir);
+import { Config, Images, Options, TestMessage, isImageError } from '../../types.js';
+import { subscribeOn, emitTestMessage, emitWorkerMessage } from '../messages.js';
+import chaiImage from './chai-image.js';
+import { closeBrowser, getBrowser, switchStory } from '../selenium/index.js';
+import { CreeveyReporter, TeamcityReporter } from './reporter.js';
+import { addTestsFromStories } from './helpers.js';
+import { logger } from '../logger.js';
 
 async function getStat(filePath: string): Promise<Stats | null> {
   try {
-    return await statAsync(filePath);
+    return await stat(filePath);
   } catch (error) {
     if (typeof error == 'object' && error && (error as { code?: unknown }).code === 'ENOENT') {
       return null;
@@ -35,7 +30,7 @@ async function getLastImageNumber(imageDir: string, imageName: string): Promise<
 
   try {
     return (
-      (await readdirAsync(imageDir))
+      (await readdir(imageDir))
         .map((filename) => filename.replace(actualImagesRegexp, '$1'))
         .map(Number)
         .filter((x) => !isNaN(x))
@@ -47,9 +42,9 @@ async function getLastImageNumber(imageDir: string, imageName: string): Promise<
 }
 
 // FIXME browser options hotfix
-export default async function worker(config: Config, options: Options & { browser: string }): Promise<void> {
+export async function start(config: Config, options: Options & { browser: string }): Promise<void> {
   let retries = 0;
-  let images: Partial<{ [name: string]: Images }> = {};
+  let images: Partial<Record<string, Images>> = {};
   let error: string | undefined = undefined;
   const screenshots: { imageName?: string; screenshot: string }[] = [];
   const testScope: string[] = [];
@@ -62,18 +57,17 @@ export default async function worker(config: Config, options: Options & { browse
         images,
         error,
       };
-      isTimeout
-        ? emitWorkerMessage({ type: 'error', payload: { error: error ?? 'Unknown error' } })
-        : emitTestMessage({ type: 'end', payload });
+      if (isTimeout) emitWorkerMessage({ type: 'error', payload: { error: error ?? 'Unknown error' } });
+      else emitTestMessage({ type: 'end', payload });
     } else {
       emitTestMessage({ type: 'end', payload: { status: 'success', images } });
     }
   }
 
   async function saveImages(imageDir: string, images: { name: string; data: Buffer }[]): Promise<void> {
-    await mkdirAsync(imageDir, { recursive: true });
+    await mkdir(imageDir, { recursive: true });
     for (const { name, data } of images) {
-      await writeFileAsync(path.join(imageDir, name), data);
+      await writeFile(path.join(imageDir, name), data);
     }
   }
 
@@ -84,11 +78,13 @@ export default async function worker(config: Config, options: Options & { browse
     | Buffer
     | null
   > {
-    // context => [kind, story, test, browser]
+    // context => [title, name, test, browser]
     // rootSuite -> kindSuite -> storyTest -> [browsers.png]
     // rootSuite -> kindSuite -> storySuite -> test -> [browsers.png]
     const testPath = [...testScope];
-    const imageName = assertImageName ?? (testPath.pop() as string);
+    const imageName = assertImageName ?? testPath.pop();
+
+    assert(typeof imageName === 'string', `Can't get image name from empty test scope`);
 
     const imagesMeta: { name: string; data: Buffer }[] = [];
     const reportImageDir = path.join(config.reportDir, ...testPath);
@@ -113,14 +109,14 @@ export default async function worker(config: Config, options: Options & { browse
     const expectImageStat = await getStat(path.join(expectImageDir, `${imageName}.png`));
     if (!expectImageStat) return { expected: null, onCompare };
 
-    const expected = await readFileAsync(path.join(expectImageDir, `${imageName}.png`));
+    const expected = await readFile(path.join(expectImageDir, `${imageName}.png`));
 
     return { expected, onCompare };
   }
 
   const mochaOptions: MochaOptions = {
     timeout: 30000,
-    reporter: process.env.TEAMCITY_VERSION ? TeamcityReporter : options.reporter || CreeveyReporter,
+    reporter: process.env.TEAMCITY_VERSION ? TeamcityReporter : (options.reporter ?? CreeveyReporter),
     reporterOptions: {
       reportDir: config.reportDir,
       topLevelSuite: options.browser,
@@ -151,7 +147,7 @@ export default async function worker(config: Config, options: Options & { browse
 
   try {
     await (await getBrowser(config, options))?.getCurrentUrl();
-  } catch (_) {
+  } catch {
     await closeBrowser();
   }
   const browser = await getBrowser(config, options);
@@ -162,13 +158,14 @@ export default async function worker(config: Config, options: Options & { browse
   const interval = setInterval(
     () =>
       void browser.getCurrentUrl().then((url) => {
-        if (options.debug)
-          logger.debug(`${options.browser}:${chalk.gray(sessionId)}`, 'current url', chalk.magenta(url));
+        logger.debug(`${options.browser}:${chalk.gray(sessionId)}`, 'current url', chalk.magenta(url));
       }),
     10 * 1000,
   );
 
-  subscribeOn('shutdown', () => clearInterval(interval));
+  subscribeOn('shutdown', () => {
+    clearInterval(interval);
+  });
 
   mocha.suite.beforeAll(function (this: Context) {
     this.config = config;
@@ -181,6 +178,24 @@ export default async function worker(config: Config, options: Options & { browse
     this.screenshots = screenshots;
   });
   mocha.suite.beforeEach(switchStory);
+  if (options.trace) {
+    mocha.suite.afterEach(async function (this: Context) {
+      const output: string[] = [];
+      const types = await browser.manage().logs().getAvailableLogTypes();
+      for (const type of types) {
+        const logs = await browser.manage().logs().get(type);
+        output.push(logs.map((log) => JSON.stringify(log.toJSON(), null, 2)).join('\n'));
+      }
+      logger.debug(
+        '----------',
+        sessionId,
+        this.currentTest?.titlePath().join('/'),
+        '----------\n',
+        output.join('\n'),
+        '\n----------------------------------------------------------------------------------------------------',
+      );
+    });
+  }
 
   subscribeOn('test', (message: TestMessage) => {
     if (message.type != 'start') return;
@@ -220,5 +235,5 @@ export default async function worker(config: Config, options: Options & { browse
 }
 
 function hasTimeout(str: string | null | undefined): boolean {
-  return str != null && str.toLowerCase().includes('timeout');
+  return str?.toLowerCase().includes('timeout') ?? false;
 }

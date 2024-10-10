@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { styled } from '@storybook/theming';
-import { ComponentMeta, ComponentStoryObj } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react';
 
 const CHUNK_SIZE = 250;
 const DIAG_LENGTH = (2 * CHUNK_SIZE ** 2) ** (1 / 2);
@@ -55,17 +55,19 @@ const ChunkTiles: FunctionComponent<{ size: number; offset: number }> = (props) 
   </ChunkTilesContainer>
 );
 
-export default {
+const Kind: Meta<typeof ChunkTiles> = {
   title: 'TestViews',
   component: ChunkTiles,
   parameters: { creevey: { captureElement: '[data-testid="CaptureElement"]' } },
-} as ComponentMeta<typeof ChunkTiles>;
+};
 
-export const ViewportFit: ComponentStoryObj<typeof ChunkTiles> = { args: { size: 2, offset: 0 } };
-export const Overflow: ComponentStoryObj<typeof ChunkTiles> = { args: { size: 6, offset: 0 } };
-export const ViewportFitOffset: ComponentStoryObj<typeof ChunkTiles> = { args: { size: 2, offset: 4 } };
-export const OverflowOffset: ComponentStoryObj<typeof ChunkTiles> = { args: { size: 6, offset: 4 } };
-export const IgnoreElements: ComponentStoryObj<typeof ChunkTiles> = {
+export default Kind;
+
+export const ViewportFit: StoryObj<typeof ChunkTiles> = { args: { size: 2, offset: 0 } };
+export const Overflow: StoryObj<typeof ChunkTiles> = { args: { size: 6, offset: 0 } };
+export const ViewportFitOffset: StoryObj<typeof ChunkTiles> = { args: { size: 2, offset: 4 } };
+export const OverflowOffset: StoryObj<typeof ChunkTiles> = { args: { size: 6, offset: 4 } };
+export const IgnoreElements: StoryObj<typeof ChunkTiles> = {
   args: { size: 3, offset: 0 },
   parameters: {
     creevey: {

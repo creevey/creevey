@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { ViewPropsWithTheme, getBorderColor, themeBorderColors } from './ImagesView';
-import { styled, withTheme } from '@storybook/theming';
-import { useApplyScale, useLoadImages, useResizeObserver, getBorderSize } from '../../helpers';
 import { Loader } from '@storybook/components';
-import { readyForCapture } from '../../../addon/readyForCapture';
+import { styled, withTheme } from '@storybook/theming';
+import { ViewPropsWithTheme, getBorderColor, themeBorderColors } from './common.js';
+import { useApplyScale, useLoadImages, useResizeObserver, getBorderSize } from '../../helpers.js';
+import { readyForCapture } from '../../../addon/readyForCapture.js';
 
 type LayoutDirection = 'horizontal' | 'vertical';
 
@@ -65,7 +65,10 @@ export const SideBySideView = withTheme(({ actual, diff, expect, theme }: ViewPr
     const diffImage = diffImageRef.current;
     const actualImage = actualImageRef.current;
 
-    if (!containerElement || !expectImage || !actualImage || !diffImage || !loaded) return setScale(1);
+    if (!containerElement || !expectImage || !actualImage || !diffImage || !loaded) {
+      setScale(1);
+      return;
+    }
 
     const borderSize = getBorderSize(diffImage);
 
@@ -85,6 +88,7 @@ export const SideBySideView = withTheme(({ actual, diff, expect, theme }: ViewPr
   useResizeObserver(containerRef, calcScale);
   useLayoutEffect(calcScale, [calcScale]);
   useLayoutEffect(() => {
+    // TODO Check image height and viewport
     const diffImage = diffImageRef.current;
     if (!diffImage || !loaded) return;
     const ratio = diffImage.naturalWidth / diffImage.naturalHeight;

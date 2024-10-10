@@ -1,11 +1,11 @@
 import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom';
-import { CreeveyApp } from './CreeveyApp';
+import { CreeveyApp } from './CreeveyApp.js';
 
-import { initCreeveyClientApi, CreeveyClientApi } from '../shared/creeveyClientApi';
-import { CreeveyStatus, noop } from '../../types';
-import { treeifyTests } from '../shared/helpers';
-import { CreeveyLoader } from './CreeveyLoader';
+import { initCreeveyClientApi, CreeveyClientApi } from '../shared/creeveyClientApi.js';
+import { CreeveyStatus, noop } from '../../types.js';
+import { treeifyTests } from '../shared/helpers.js';
+import { CreeveyLoader } from './CreeveyLoader.js';
 
 declare global {
   const __CREEVEY_DATA__: CreeveyStatus['tests'];
@@ -17,7 +17,9 @@ function loadCreeveyData(): Promise<CreeveyStatus['tests']> {
   return new Promise<CreeveyStatus['tests']>((resolve) => {
     const script = document.createElement('script');
     script.src = 'data.js';
-    script.onload = () => resolve(__CREEVEY_DATA__);
+    script.onload = () => {
+      resolve(__CREEVEY_DATA__);
+    };
     document.body.appendChild(script);
   });
 }
@@ -30,7 +32,7 @@ const CreeveyAppAsync = React.lazy(async () => {
     try {
       creeveyApi = await initCreeveyClientApi();
       creeveyStatus = await creeveyApi.status;
-    } catch (error) {
+    } catch {
       // NOTE: Failed to get status from API
       // NOTE: It might happen on circle ci from artifact
       isReport = true;

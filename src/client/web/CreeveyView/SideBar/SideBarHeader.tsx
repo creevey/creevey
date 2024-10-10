@@ -1,11 +1,11 @@
 import React, { useContext, useState } from 'react';
 import { Button as NativeButton, Icons } from '@storybook/components';
 import { styled, withTheme } from '@storybook/theming';
-import { CreeveyContext } from '../../CreeveyContext';
-import { TestsStatus, TestsStatusProps } from './TestsStatus';
-import { TestStatus } from '../../../../types';
-import { CreeveyViewFilter } from '../../../shared/helpers';
-import { Search } from './Search';
+import { CreeveyContext } from '../../CreeveyContext.js';
+import { TestsStatus, TestsStatusProps } from './TestsStatus.js';
+import { TestStatus } from '../../../../types.js';
+import { CreeveyViewFilter } from '../../../shared/helpers.js';
+import { Search } from './Search.js';
 
 interface SideBarHeaderProps {
   testsStatus: Omit<TestsStatusProps, 'onClickByStatus'>;
@@ -59,10 +59,10 @@ const Button = withTheme(
 
 const MarginContainer = styled.div<{ left?: string; right?: string; top?: string; bottom?: string }>(
   ({ left, right, top, bottom }) => ({
-    marginLeft: left || 0,
-    marginRight: right || 0,
-    marginTop: top || 0,
-    marginBottom: bottom || 0,
+    marginLeft: left ?? 0,
+    marginRight: right ?? 0,
+    marginTop: top ?? 0,
+    marginBottom: bottom ?? 0,
   }),
 );
 
@@ -75,7 +75,7 @@ const parseStringForFilter = (value: string): CreeveyViewFilter => {
     .map((word) => word.toLowerCase());
 
   tokens.forEach((word) => {
-    const [, matchedStatus] = /^status:(failed|success|pending)$/i.exec(word) || [];
+    const [, matchedStatus] = /^status:(failed|success|pending)$/i.exec(word) ?? [];
     if (matchedStatus) return (status = matchedStatus as TestStatus);
     subStrings.push(word);
   });

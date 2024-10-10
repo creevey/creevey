@@ -1,12 +1,16 @@
 import cluster, { Worker as ClusterWorker } from 'cluster';
 import { EventEmitter } from 'events';
-import { Worker, Config, TestResult, BrowserConfig, WorkerMessage, TestStatus, isWorkerMessage } from '../../types';
-import { sendTestMessage, sendShutdownMessage, subscribeOnWorker } from '../messages';
-import { isShuttingDown } from '../utils';
+import { Worker, Config, TestResult, BrowserConfig, WorkerMessage, TestStatus, isWorkerMessage } from '../../types.js';
+import { sendTestMessage, sendShutdownMessage, subscribeOnWorker } from '../messages.js';
+import { isShuttingDown } from '../utils.js';
 
 const FORK_RETRIES = 5;
 
-type WorkerTest = { id: string; path: string[]; retries: number };
+interface WorkerTest {
+  id: string;
+  path: string[];
+  retries: number;
+}
 
 export default class Pool extends EventEmitter {
   private maxRetries: number;
@@ -18,7 +22,10 @@ export default class Pool extends EventEmitter {
   public get isRunning(): boolean {
     return this.workers.length !== this.freeWorkers.length;
   }
-  constructor(config: Config, private browser: string) {
+  constructor(
+    config: Config,
+    private browser: string,
+  ) {
     super();
 
     this.failFast = config.failFast;
@@ -27,13 +34,16 @@ export default class Pool extends EventEmitter {
   }
 
   async init(): Promise<void> {
-    const poolSize = this.config.limit || 1;
+    const poolSize = Math.max(1, this.config.limit ?? 1);
+    // TODO Init queue for workers to smooth browser starting load
     this.workers = (await Promise.all(Array.from({ length: poolSize }).map(() => this.forkWorker()))).filter(
       (workerOrError): workerOrError is Worker => workerOrError instanceof ClusterWorker,
     );
     if (this.workers.length != poolSize)
       throw new Error(`Can't instantiate workers for ${this.browser} due many errors`);
-    this.workers.forEach((worker) => this.exitHandler(worker));
+    this.workers.forEach((worker) => {
+      this.exitHandler(worker);
+    });
   }
 
   start(tests: { id: string; path: string[] }[]): boolean {
@@ -57,7 +67,7 @@ export default class Pool extends EventEmitter {
 
   process(): void {
     const worker = this.getFreeWorker();
-    const [test] = this.queue;
+    const test = this.queue.at(0);
 
     if (this.queue.length == 0 && this.workers.length === this.freeWorkers.length) {
       this.forcedStop = false;
@@ -98,7 +108,7 @@ export default class Pool extends EventEmitter {
   }
 
   private async forkWorker(retry = 0): Promise<Worker | { error: string }> {
-    cluster.setupMaster({
+    cluster.setupPrimary({
       args: ['--browser', this.browser, ...process.argv.slice(2)],
     });
     const worker = cluster.fork();
@@ -136,8 +146,12 @@ export default class Pool extends EventEmitter {
   }
 
   private gracefullyKill(worker: Worker): void {
-    const timeout = setTimeout(() => worker.kill(), 10000);
-    worker.on('exit', () => clearTimeout(timeout));
+    const timeout = setTimeout(() => {
+      worker.kill();
+    }, 10000);
+    worker.on('exit', () => {
+      clearTimeout(timeout);
+    });
     sendShutdownMessage(worker);
   }
 
@@ -157,7 +171,9 @@ export default class Pool extends EventEmitter {
 
     worker.isRunning = false;
 
-    setImmediate(() => this.process());
+    setImmediate(() => {
+      this.process();
+    });
   }
 
   private subscribe(worker: Worker, test: WorkerTest): void {
@@ -165,7 +181,9 @@ export default class Pool extends EventEmitter {
       subscribeOnWorker(worker, 'worker', (message) => {
         if (message.type != 'error') return;
 
-        subscriptions.forEach((unsubscribe) => unsubscribe());
+        subscriptions.forEach((unsubscribe) => {
+          unsubscribe();
+        });
 
         this.gracefullyKill(worker);
 
@@ -174,7 +192,9 @@ export default class Pool extends EventEmitter {
       subscribeOnWorker(worker, 'test', (message) => {
         if (message.type != 'end') return;
 
-        subscriptions.forEach((unsubscribe) => unsubscribe());
+        subscriptions.forEach((unsubscribe) => {
+          unsubscribe();
+        });
 
         this.handleTestResult(worker, test, message.payload);
       }),

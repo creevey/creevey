@@ -1,14 +1,14 @@
 import React, { Fragment, useState, useEffect } from 'react';
-import { IconButton, Icons, Separator } from '@storybook/components';
-import { ForwardIcon, NextIcon } from './Icons';
 import { stringify } from 'qs';
+import { IconButton, Icons, Separator } from '@storybook/components';
 import { styled } from '@storybook/theming';
-import { isDefined, TestData } from '../../../types';
-import { getTestPath, useForceUpdate } from '../../shared/helpers';
-import { CreeveyManager } from '../Manager';
+import { ForwardIcon, NextIcon } from './Icons.js';
+import { isDefined, TestData } from '../../../types.js';
+import { getTestPath, useForceUpdate } from '../../shared/helpers.js';
+import { CreeveyController } from '../controller.js';
 
 interface ToolsProps {
-  manager: CreeveyManager;
+  controller: CreeveyController;
 }
 
 const Button = styled(IconButton)({
@@ -24,25 +24,25 @@ const Button = styled(IconButton)({
 
 type ButtonType = 'RunAll' | 'RunStoryTests' | 'RunTest';
 
-export const Tools = ({ manager }: ToolsProps): JSX.Element | null => {
+export const Tools = ({ controller }: ToolsProps): JSX.Element | null => {
   const [buttonClicked, setButtonClicked] = useState<ButtonType | null>();
-  const [isRunning, setRunning] = useState(manager.status.isRunning);
+  const [isRunning, setRunning] = useState(controller.status.isRunning);
   const forceUpdate = useForceUpdate();
-  const test: TestData | undefined = manager.getCurrentTest();
+  const test: TestData | undefined = controller.getCurrentTest();
 
   useEffect(() => {
-    const unsubscribe = manager.onChangeTest(() => {
+    const unsubscribe = controller.onChangeTest(() => {
       forceUpdate();
     });
     return unsubscribe;
-  }, [manager, forceUpdate]);
+  }, [controller, forceUpdate]);
 
   useEffect(() => {
-    const unsubscribe = manager.onUpdateStatus(({ isRunning }) => {
+    const unsubscribe = controller.onUpdateStatus(({ isRunning }) => {
       if (isDefined(isRunning)) setRunning(isRunning);
     });
     return unsubscribe;
-  }, [manager]);
+  }, [controller]);
 
   if (!test) return null;
 
@@ -53,9 +53,11 @@ export const Tools = ({ manager }: ToolsProps): JSX.Element | null => {
     };
     const disabled = isRunning && buttonClicked != null && buttonClicked !== type;
     return (
+      // @ts-expect-error Fixed in https://github.com/storybookjs/storybook/pull/26623
       <Button
         onClick={() => {
-          isRunning ? manager.onStop() : handleClick();
+          if (isRunning) controller.onStop();
+          else handleClick();
         }}
         title={disabled ? '' : title}
         disabled={disabled}
@@ -67,8 +69,9 @@ export const Tools = ({ manager }: ToolsProps): JSX.Element | null => {
 
   return (
     <Fragment>
+      {/* @ts-expect-error Fixed in https://github.com/storybookjs/storybook/pull/26623 */}
       <IconButton
-        href={`http://localhost:${__CREEVEY_CLIENT_PORT__ || __CREEVEY_SERVER_PORT__}/?${stringify({
+        href={`http://localhost:${__CREEVEY_CLIENT_PORT__ ?? __CREEVEY_SERVER_PORT__ ?? 3000}/?${stringify({
           testPath: getTestPath(test),
         })}`}
         target="_blank"
@@ -77,14 +80,14 @@ export const Tools = ({ manager }: ToolsProps): JSX.Element | null => {
         <Icons icon="sharealt" />
       </IconButton>
       <Separator />
-      {renderButton('RunAll', 'Run all', manager.onStartAllTests, <ForwardIcon />)}
+      {renderButton('RunAll', 'Run all', controller.onStartAllTests, <ForwardIcon />)}
       {renderButton(
         'RunStoryTests',
         'Run all story tests',
-        manager.onStartAllStoryTests,
+        controller.onStartAllStoryTests,
         <NextIcon width={15} height={11} />,
       )}
-      {renderButton('RunTest', 'Run', manager.onStart, <Icons icon="play" />)}
+      {renderButton('RunTest', 'Run', controller.onStart, <Icons icon="play" />)}
     </Fragment>
   );
 };

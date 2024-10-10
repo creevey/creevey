@@ -7,13 +7,16 @@ import serve from 'koa-static';
 import mount from 'koa-mount';
 import body from 'koa-bodyparser';
 import WebSocket from 'ws';
-import { CreeveyApi } from './api';
-import { emitStoriesMessage, sendStoriesMessage, subscribeOn, subscribeOnWorker } from '../messages';
-import { CaptureOptions, isDefined, noop, StoryInput } from '../../types';
-import { logger } from '../logger';
-import { deserializeStory } from '../../shared';
+import { fileURLToPath, pathToFileURL } from 'url';
+import { CreeveyApi } from './api.js';
+import { emitStoriesMessage, sendStoriesMessage, subscribeOn, subscribeOnWorker } from '../messages.js';
+import { CaptureOptions, isDefined, noop, StoryInput } from '../../types.js';
+import { logger } from '../logger.js';
+import { deserializeStory } from '../../shared/index.js';
 
-export default function server(reportDir: string, port: number, ui: boolean): (api: CreeveyApi) => void {
+const importMetaUrl = pathToFileURL(__filename).href;
+
+export function start(reportDir: string, port: number, ui: boolean): (api: CreeveyApi) => void {
   let resolveApi: (api: CreeveyApi) => void = noop;
   let setStoriesCounter = 0;
   const creeveyApi = new Promise<CreeveyApi>((resolve) => (resolveApi = resolve));
@@ -57,7 +60,9 @@ export default function server(reportDir: string, port: number, ui: boolean): (a
       Object.values(cluster.workers ?? {})
         .filter(isDefined)
         .filter((worker) => worker.isConnected())
-        .forEach((worker) => sendStoriesMessage(worker, { type: 'update', payload: deserializedStories }));
+        .forEach((worker) => {
+          sendStoriesMessage(worker, { type: 'update', payload: deserializedStories });
+        });
       return;
     }
     await next();
@@ -86,16 +91,21 @@ export default function server(reportDir: string, port: number, ui: boolean): (a
     await next();
   });
 
-  app.use(serve(path.join(__dirname, '../../client/web')));
+  app.use(serve(path.join(path.dirname(fileURLToPath(importMetaUrl)), '../../client/web')));
   app.use(mount('/report', serve(reportDir)));
 
-  wss.on('error', (error) => logger.error(error));
+  wss.on('error', (error) => {
+    logger.error(error);
+  });
 
   server.listen(port);
 
   subscribeOn('shutdown', () => {
     server.close();
     wss.close();
+    wss.clients.forEach((ws) => {
+      ws.close();
+    });
   });
 
   void creeveyApi.then((api) => {
@@ -103,7 +113,9 @@ export default function server(reportDir: string, port: number, ui: boolean): (a
 
     wss.on('connection', (ws) => {
       ws.on('message', (message: WebSocket.RawData, isBinary: boolean) => {
-        api.handleMessage(ws, isBinary ? message : message.toString());
+        // NOTE Text messages are passed as Buffer https://github.com/websockets/ws/releases/tag/8.0.0
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string
+        api.handleMessage(ws, isBinary ? message : message.toString('utf-8'));
       });
     });
   });

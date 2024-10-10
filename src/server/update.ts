@@ -1,16 +1,8 @@
 import path from 'path';
-import fs, { Dirent, mkdirSync } from 'fs';
+import { Dirent, mkdirSync, copyFileSync, readdirSync } from 'fs';
 import micromatch from 'micromatch';
-import { Config, isDefined, ServerTest } from '../types';
-
-function tryToLoadTestsData(filename: string): Partial<{ [id: string]: ServerTest }> | undefined {
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    return require(filename) as Partial<{ [id: string]: ServerTest }>;
-  } catch (_) {
-    /* noop */
-  }
-}
+import { Config, isDefined } from '../types.js';
+import { tryToLoadTestsData } from './utils.js';
 
 const actualRegex = /^(.*)-actual-(\d+)\.png$/i;
 
@@ -36,7 +28,7 @@ function approve(
     )
     .forEach((retry, imageName) => {
       mkdirSync(dstPath, { recursive: true });
-      fs.copyFileSync(path.join(srcPath, `${imageName}-actual-${retry}.png`), path.join(dstPath, `${imageName}.png`));
+      copyFileSync(path.join(srcPath, `${imageName}-actual-${retry}.png`), path.join(dstPath, `${imageName}.png`));
     });
 }
 
@@ -46,7 +38,7 @@ function traverse(
   testPaths: string[][] | null,
   isMatch: (value: string) => boolean,
 ): void {
-  const dirents = fs.readdirSync(srcPath, { withFileTypes: true });
+  const dirents = readdirSync(srcPath, { withFileTypes: true });
   approve(dirents, srcPath, dstPath, testPaths, isMatch);
   dirents
     .filter((dirent) => dirent.isDirectory())
@@ -58,15 +50,17 @@ function traverse(
         ] as [string, string[][] | null],
     )
     .filter(([, paths]) => !paths || paths.length > 0)
-    .forEach(([dirname, paths]) => traverse(path.join(srcPath, dirname), path.join(dstPath, dirname), paths, isMatch));
+    .forEach(([dirname, paths]) => {
+      traverse(path.join(srcPath, dirname), path.join(dstPath, dirname), paths, isMatch);
+    });
 }
 
-export default function update(config: Config, grepPattern?: string): void {
+export function update(config: Config, grepPattern?: string): void {
   const { reportDir, screenDir } = config;
   const isMatch = grepPattern ? micromatch.matcher(grepPattern, { contains: true }) : () => true;
 
   const testsMeta = tryToLoadTestsData(`${reportDir}/tests.json`);
-  const testsReport = tryToLoadTestsData(`${reportDir}/data`);
+  const testsReport = tryToLoadTestsData(`${reportDir}/data.js`);
   let testPaths: string[][] | null = null;
 
   if (testsMeta && testsReport) {

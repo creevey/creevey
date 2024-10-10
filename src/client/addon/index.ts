@@ -1,2 +1,2 @@
-export * from './withCreevey';
-export * from './readyForCapture';
+export * from './withCreevey.js';
+export * from './readyForCapture.js';

@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useImmer } from 'use-immer';
-import { CreeveyUpdate, CreeveySuite, isDefined, CreeveyTest } from '../../types';
-import { CreeveyClientApi } from '../shared/creeveyClientApi';
+import { ensure, styled, ThemeProvider, themes, withTheme } from '@storybook/theming';
+import { CreeveyUpdate, CreeveySuite, isDefined, CreeveyTest } from '../../types.js';
+import { CreeveyClientApi } from '../shared/creeveyClientApi.js';
 import {
   getCheckedTests,
   updateTestStatus,
@@ -14,13 +15,12 @@ import {
   setSearchParams,
   getTestPathFromSearch,
   CreeveyViewFilter,
-} from '../shared/helpers';
-import { CreeveyContext } from './CreeveyContext';
-import { KeyboardEvents } from './KeyboardEventsContext';
-import { SideBar } from './CreeveyView/SideBar';
-import { ResultsPage } from '../shared/components/ResultsPage';
-import { ensure, styled, ThemeProvider, themes, withTheme } from '@storybook/theming';
-import { Toggle } from './CreeveyView/SideBar/Toggle';
+} from '../shared/helpers.js';
+import { CreeveyContext } from './CreeveyContext.js';
+import { KeyboardEvents } from './KeyboardEventsContext.js';
+import { SideBar } from './CreeveyView/SideBar/index.js';
+import { ResultsPage } from '../shared/components/ResultsPage.js';
+import { Toggle } from './CreeveyView/SideBar/Toggle.js';
 
 export interface CreeveyAppProps {
   api?: CreeveyClientApi;
@@ -82,7 +82,12 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
     [api],
   );
   const handleStop = useCallback((): void => api?.stop(), [api]);
-  const handleThemeChange = useCallback((isDark: boolean): void => setTheme(isDark ? 'dark' : 'light'), [setTheme]);
+  const handleThemeChange = useCallback(
+    (isDark: boolean): void => {
+      setTheme(isDark ? 'dark' : 'light');
+    },
+    [setTheme],
+  );
   const handleOpenTest = useCallback((test: CreeveyTest): void => {
     const testPath = getTestPath(test);
     setSearchParams(testPath);
@@ -118,8 +123,12 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
         if (isDefined(isRunning)) setIsRunning(isRunning);
         if (isDefined(tests))
           updateTests((draft) => {
-            Object.values(tests).forEach((test) => test && updateTestStatus(draft, getTestPath(test), test));
-            removedTests.forEach((test) => removeTests(draft, getTestPath(test)));
+            Object.values(tests).forEach((test) => {
+              if (test) updateTestStatus(draft, getTestPath(test), test);
+            });
+            removedTests.forEach((test) => {
+              removeTests(draft, getTestPath(test));
+            });
           });
       }),
     [api, updateTests],

@@ -1,8 +1,8 @@
-import { ComponentMeta, ComponentStoryObj } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react';
 import { within } from '@storybook/testing-library';
-import { SideBar } from '../src/client/web/CreeveyView/SideBar';
-import { treeifyTests, checkSuite, getTestByPath } from '../src/client/shared/helpers';
-import { noop, CreeveySuite, CreeveyStatus, isDefined, isTest } from '../src/types';
+import { SideBar } from '../src/client/web/CreeveyView/SideBar/index.js';
+import { treeifyTests, checkSuite, getTestByPath } from '../src/client/shared/helpers.js';
+import { noop, CreeveySuite, CreeveyStatus, isDefined, isTest } from '../src/types.js';
 
 function openSuites(suite: CreeveySuite): CreeveySuite {
   suite.opened = true;
@@ -55,7 +55,7 @@ const statusTests: () => CreeveyStatus['tests'] = () => ({
   12: { id: '12', browser: 'pending', storyPath: ['root', 'running'], storyId: '', skip: false, status: 'pending' },
 });
 
-export default {
+const Kind: Meta<typeof SideBar> = {
   title: 'SideBar',
   component: SideBar,
   args: {
@@ -63,9 +63,11 @@ export default {
     onOpenTest: noop,
     setFilter: noop,
   },
-} as ComponentMeta<typeof SideBar>;
+};
 
-export const SimpleSideBar: ComponentStoryObj<typeof SideBar> = {
+export default Kind;
+
+export const SimpleSideBar: StoryObj<typeof SideBar> = {
   args: (() => {
     const rootSuite = openSuites(treeifyTests(simpleTests()));
     const testPath = ['root', 'simple', 'hasResult'];
@@ -83,7 +85,7 @@ export const SimpleSideBar: ComponentStoryObj<typeof SideBar> = {
   },
 };
 
-export const StatusSideBar: ComponentStoryObj<typeof SideBar> = {
+export const StatusSideBar: StoryObj<typeof SideBar> = {
   args: {
     rootSuite: openSuites(treeifyTests(statusTests())),
     openedTest: null,

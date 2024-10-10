@@ -1,7 +1,7 @@
 import path from 'path';
 import { mkdirSync, writeFileSync } from 'fs';
 import { createHash } from 'crypto';
-import { mapValues, pick } from 'lodash';
+import _ from 'lodash';
 import type { Context } from 'mocha';
 import type {
   TestData,
@@ -11,27 +11,26 @@ import type {
   ServerTest,
   StoryInput,
   CreeveyTestFunction,
-  SetStoriesData,
-} from '../types';
-import { isDefined, isFunction, isObject } from '../types';
-import { shouldSkip, removeProps } from './utils';
+} from '../types.js';
+import { isDefined, isFunction } from '../types.js';
+import { shouldSkip } from './utils.js';
 
 function storyTestFabric(delay?: number, testFn?: CreeveyTestFunction) {
   return async function storyTest(this: Context) {
-    delay ? await new Promise((resolve) => setTimeout(resolve, delay)) : void 0;
+    if (delay) await new Promise((resolve) => setTimeout(resolve, delay));
     await (testFn
       ? testFn.call(this)
       : this.screenshots.length > 0
-      ? this.expect(
-          this.screenshots.reduce(
-            (screenshots, { imageName, screenshot }, index) => ({
-              ...screenshots,
-              [imageName ?? `screenshot_${index}`]: screenshot,
-            }),
-            {},
-          ),
-        ).to.matchImages()
-      : this.expect(await this.takeScreenshot()).to.matchImage());
+        ? this.expect(
+            this.screenshots.reduce(
+              (screenshots, { imageName, screenshot }, index) => ({
+                ...screenshots,
+                [imageName ?? `screenshot_${index}`]: screenshot,
+              }),
+              {},
+            ),
+          ).to.matchImages()
+        : this.expect(await this.takeScreenshot()).to.matchImage());
   };
 }
 
@@ -41,18 +40,15 @@ function createCreeveyTest(
   skipOptions?: SkipOptions,
   testName?: string,
 ): TestData {
-  const { kind, name: story, id: storyId } = storyMeta;
-  const path = [kind, story, testName, browser].filter(isDefined);
-  const skip = skipOptions ? shouldSkip(browser, { kind, story }, skipOptions, testName) : false;
+  const { title, name, id: storyId } = storyMeta;
+  const path = [title, name, testName, browser].filter(isDefined);
+  const skip = skipOptions ? shouldSkip(browser, { title, name }, skipOptions, testName) : false;
   const id = createHash('sha1').update(path.join('/')).digest('hex');
-  return { id, skip, browser, testName, storyPath: [...kind.split('/').map((x) => x.trim()), story], storyId };
+  return { id, skip, browser, testName, storyPath: [...title.split('/').map((x) => x.trim()), name], storyId };
 }
 
-function convertStories(
-  browserName: string,
-  stories: StoriesRaw | StoryInput[],
-): Partial<{ [testId: string]: ServerTest }> {
-  const tests: { [testId: string]: ServerTest } = {};
+function convertStories(browserName: string, stories: StoriesRaw | StoryInput[]): Partial<Record<string, ServerTest>> {
+  const tests: Record<string, ServerTest> = {};
 
   (Array.isArray(stories) ? stories : Object.values(stories)).forEach((storyMeta) => {
     // TODO Skip docsOnly stories for now
@@ -85,12 +81,12 @@ function convertStories(
 export async function loadTestsFromStories(
   browsers: string[],
   provider: (storiesListener: (stories: Map<string, StoryInput[]>) => void) => Promise<StoriesRaw>,
-  update?: (testsDiff: Partial<{ [id: string]: ServerTest }>) => void,
-): Promise<Partial<{ [id: string]: ServerTest }>> {
+  update?: (testsDiff: Partial<Record<string, ServerTest>>) => void,
+): Promise<Partial<Record<string, ServerTest>>> {
   const testIdsByFiles = new Map<string, string[]>();
   const stories = await provider((storiesByFiles) => {
-    const testsDiff: Partial<{ [id: string]: ServerTest }> = {};
-    const tests: Partial<{ [id: string]: ServerTest }> = {};
+    const testsDiff: Partial<Record<string, ServerTest>> = {};
+    const tests: Partial<Record<string, ServerTest>> = {};
     browsers.forEach((browser) => {
       Array.from(storiesByFiles.entries()).forEach(([filename, stories]) => {
         Object.assign(tests, convertStories(browser, stories));
@@ -107,8 +103,7 @@ export async function loadTestsFromStories(
   });
 
   const tests = browsers.reduce(
-    (tests: Partial<{ [testId: string]: ServerTest }>, browser) =>
-      Object.assign(tests, convertStories(browser, stories)),
+    (tests: Partial<Record<string, ServerTest>>, browser) => Object.assign(tests, convertStories(browser, stories)),
     {},
   );
 
@@ -122,34 +117,10 @@ export async function loadTestsFromStories(
         },
       }) =>
         // TODO Don't use filename as a key, due possible collisions if two require.context with same structure of modules are defined
-        testIdsByFiles.set(fileName, [...(testIdsByFiles.get(fileName) ?? []), id]),
+        testIdsByFiles.set(fileName as string, [...(testIdsByFiles.get(fileName as string) ?? []), id]),
     );
 
   return tests;
-}
-
-export function saveStoriesJson(storiesData: SetStoriesData, extract: string | boolean): void {
-  const outputDir = typeof extract == 'boolean' ? 'storybook-static' : extract;
-
-  // NOTE Copy-pasted from Storybook's `getStoriesJsonData` method
-  const allowed = ['fileName', 'docsOnly', 'framework', '__id', '__isArgsStory'];
-  storiesData.globalParameters = pick(storiesData.globalParameters, allowed);
-  // @ts-expect-error ignore error
-  storiesData.kindParameters = mapValues(storiesData.kindParameters, (v) => pick(v, allowed));
-  // @ts-expect-error ignore error
-  storiesData.stories = mapValues(storiesData.stories, (v) => ({
-    ...pick(v, ['id', 'name', 'kind', 'story']),
-    parameters: pick(v.parameters, allowed),
-  }));
-
-  // TODO Fix args stories
-  removeProps(storiesData ?? {}, ['stories', () => true, 'parameters', '__isArgsStory']);
-  Object.values(storiesData?.stories ?? {}).forEach(
-    (story) =>
-      isObject(story) && 'parameters' in story && isObject(story.parameters) && delete story.parameters.__isArgsStory,
-  );
-  mkdirSync(outputDir, { recursive: true });
-  writeFileSync(path.join(outputDir, 'stories.json'), JSON.stringify(storiesData, null, 2));
 }
 
 export function saveTestsJson(tests: Record<string, unknown>, dstPath: string = process.cwd()): void {

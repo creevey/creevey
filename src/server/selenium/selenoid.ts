@@ -1,38 +1,44 @@
 import path from 'path';
-import { promisify } from 'util';
-import { mkdir, writeFile, copyFile, lstatSync, existsSync } from 'fs';
-import { Config, BrowserConfig } from '../../types';
-import { downloadBinary, getCreeveyCache } from '../utils';
-import { pullImages, runImage } from '../docker';
-import { Octokit } from '@octokit/core';
-import { subscribeOn } from '../messages';
+import assert from 'assert';
 import cluster from 'cluster';
-import { chmod, exec } from 'shelljs';
-
-const mkdirAsync = promisify(mkdir);
-const writeFileAsync = promisify(writeFile);
-const copyFileAsync = promisify(copyFile);
+import { lstatSync, existsSync } from 'fs';
+import { mkdir, writeFile, copyFile } from 'fs/promises';
+import sh from 'shelljs';
+import { Octokit } from '@octokit/core';
+import { Config, BrowserConfig } from '../../types.js';
+import { downloadBinary, getCreeveyCache } from '../utils.js';
+import { pullImages, runImage } from '../docker.js';
+import { subscribeOn } from '../messages.js';
 
 async function createSelenoidConfig(browsers: BrowserConfig[], { useDocker }: { useDocker: boolean }): Promise<string> {
-  const selenoidConfig: {
-    [browser: string]: {
-      default: string;
-      versions: { [version: string]: { image: string | string[]; port: string; path: string } };
-    };
-  } = {};
-  const selenoidConfigDir = path.join(getCreeveyCache(), 'selenoid');
+  const selenoidConfig: Partial<
+    Record<
+      string,
+      {
+        default: string;
+        versions: Record<string, { image: string | string[]; port: string; path: string }>;
+      }
+    >
+  > = {};
+  const cacheDir = getCreeveyCache();
+
+  assert(cacheDir, "Couldn't get cache directory");
+
+  const selenoidConfigDir = path.join(cacheDir, 'selenoid');
 
   browsers.forEach(
     ({
       browserName,
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
       version = 'latest',
-      dockerImage = `selenoid/${browserName}:${version}`,
+      browserVersion = version,
+      dockerImage = `selenoid/${browserName}:${browserVersion}`,
       webdriverCommand = [],
     }) => {
-      if (!selenoidConfig[browserName]) selenoidConfig[browserName] = { default: version, versions: {} };
+      if (!selenoidConfig[browserName]) selenoidConfig[browserName] = { default: browserVersion, versions: {} };
       if (!useDocker && webdriverCommand.length == 0)
         throw new Error('Please specify "webdriverCommand" browser option with path to browser webdriver');
-      selenoidConfig[browserName].versions[version] = {
+      selenoidConfig[browserName].versions[browserVersion] = {
         image: useDocker ? dockerImage : webdriverCommand,
         port: '4444',
         path: !useDocker || ['chrome', 'opera', 'webkit', 'MicrosoftEdge'].includes(browserName) ? '/' : '/wd/hub',
@@ -40,8 +46,8 @@ async function createSelenoidConfig(browsers: BrowserConfig[], { useDocker }: { 
     },
   );
 
-  await mkdirAsync(selenoidConfigDir, { recursive: true });
-  await writeFileAsync(path.join(selenoidConfigDir, 'browsers.json'), JSON.stringify(selenoidConfig));
+  await mkdir(selenoidConfigDir, { recursive: true });
+  await writeFile(path.join(selenoidConfigDir, 'browsers.json'), JSON.stringify(selenoidConfig));
 
   return selenoidConfigDir;
 }
@@ -81,19 +87,19 @@ export async function startSelenoidStandalone(config: Config, debug: boolean): P
   const selenoidConfigDir = await createSelenoidConfig(browsers, { useDocker: false });
   const binaryPath = path.join(selenoidConfigDir, process.platform == 'win32' ? 'selenoid.exe' : 'selenoid');
   if (config.selenoidPath) {
-    await copyFileAsync(path.resolve(config.selenoidPath), binaryPath);
+    await copyFile(path.resolve(config.selenoidPath), binaryPath);
   } else {
     await downloadSelenoidBinary(binaryPath);
   }
 
   // TODO Download browser webdrivers
   try {
-    if (process.platform != 'win32') chmod('+x', binaryPath);
-  } catch (_) {
+    if (process.platform != 'win32') sh.chmod('+x', binaryPath);
+  } catch {
     /* noop */
   }
 
-  const selenoidProcess = exec(`${binaryPath} -conf ./browsers.json -disable-docker`, {
+  const selenoidProcess = sh.exec(`${binaryPath} -conf ./browsers.json -disable-docker`, {
     async: true,
     cwd: selenoidConfigDir,
   });
@@ -114,9 +120,11 @@ export async function startSelenoidContainer(config: Config, debug: boolean): Pr
   browsers.forEach(
     ({
       browserName,
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
       version = 'latest',
+      browserVersion = version,
       limit: browserLimit = 1,
-      dockerImage = `selenoid/${browserName}:${version}`,
+      dockerImage = `selenoid/${browserName}:${browserVersion}`,
     }) => {
       limit += browserLimit;
       images.push(dockerImage);

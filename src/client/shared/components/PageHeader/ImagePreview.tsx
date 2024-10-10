@@ -23,7 +23,7 @@ const Button = styled.button<{ borderColor?: string }>(({ borderColor }) => ({
   zIndex: 1,
   margin: '0 10px',
   border: '2px solid transparent',
-  borderColor: borderColor || 'transparent',
+  borderColor: borderColor ?? 'transparent',
 
   '&:first-of-type': {
     marginLeft: 0,
@@ -66,7 +66,9 @@ const Image = withTheme(
 
 export const ImagePreview = withTheme(
   ({ isActive, onClick, imageName, url, theme, error }: ImageSwapProps): JSX.Element => {
-    const handleClick = (): void => onClick(imageName);
+    const handleClick = (): void => {
+      onClick(imageName);
+    };
 
     return (
       <Button

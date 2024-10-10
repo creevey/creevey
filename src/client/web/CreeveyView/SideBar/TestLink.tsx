@@ -1,12 +1,12 @@
 import React, { useEffect, useCallback, useContext, useMemo, useRef } from 'react';
-import { CreeveyTest } from '../../../../types';
-import { TestStatusIcon } from './TestStatusIcon';
-import { CreeveyContext } from '../../CreeveyContext';
-import { SideBarContext } from './SideBar';
-import { KeyboardEventsContext } from '../../KeyboardEventsContext';
-import { Button, Container, SuiteContainer } from './SuiteLink';
-import { Checkbox, CheckboxContainer } from './Checkbox';
-import { getTestPath } from '../../../shared/helpers';
+import { CreeveyTest } from '../../../../types.js';
+import { TestStatusIcon } from './TestStatusIcon.js';
+import { CreeveyContext } from '../../CreeveyContext.js';
+import { SideBarContext } from './SideBar.js';
+import { KeyboardEventsContext } from '../../KeyboardEventsContext.js';
+import { Button, Container, SuiteContainer } from './SuiteLink.js';
+import { Checkbox, CheckboxContainer } from './Checkbox.js';
+import { getTestPath } from '../../../shared/helpers.js';
 
 export interface TestLinkProps {
   title: string;
@@ -20,15 +20,23 @@ export function TestLink({ title, opened, test }: TestLinkProps): JSX.Element {
   const { sidebarFocusedItem, setSidebarFocusedItem } = useContext(KeyboardEventsContext);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
 
-  const emptyResults = (test?.results?.length ?? 0) == 0;
+  const emptyResults = (test.results?.length ?? 0) == 0;
   const testPath = useMemo(() => getTestPath(test), [test]);
 
   const isTestFocused = useMemo(
-    () => testPath.length === sidebarFocusedItem.length && testPath.every((x) => sidebarFocusedItem.includes(x)),
+    () =>
+      Array.isArray(sidebarFocusedItem) &&
+      testPath.length === sidebarFocusedItem.length &&
+      testPath.every((x) => sidebarFocusedItem.includes(x)),
     [testPath, sidebarFocusedItem],
   );
 
-  const handleCheck = useCallback((value: boolean): void => onSuiteToggle(testPath, value), [testPath, onSuiteToggle]);
+  const handleCheck = useCallback(
+    (value: boolean): void => {
+      onSuiteToggle(testPath, value);
+    },
+    [testPath, onSuiteToggle],
+  );
 
   useEffect(() => {
     if (isTestFocused) buttonRef.current?.focus();

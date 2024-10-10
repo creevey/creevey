@@ -1,7 +1,7 @@
 import { themes, ThemeVars } from '@storybook/theming';
 import { parse, stringify } from 'qs';
 import { RefObject, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { TestData, isTest, isDefined, TestStatus, CreeveySuite, CreeveyTest, CreeveyStatus } from '../../types';
+import { TestData, isTest, isDefined, TestStatus, CreeveySuite, CreeveyTest, CreeveyStatus } from '../../types.js';
 
 export interface CreeveyViewFilter {
   status: TestStatus | null;
@@ -73,7 +73,9 @@ function checkTests(suiteOrTest: CreeveySuite | CreeveyTest, checked: boolean): 
     suiteOrTest.indeterminate = false;
     Object.values(suiteOrTest.children)
       .filter(isDefined)
-      .forEach((child) => checkTests(child, checked));
+      .forEach((child) => {
+        checkTests(child, checked);
+      });
   }
 }
 
@@ -117,7 +119,7 @@ export function treeifyTests(testsById: CreeveyStatus['tests']): CreeveySuite {
     const [browser, ...testPath] = getTestPath(test).reverse();
 
     const lastSuite = testPath.reverse().reduce((suite, token) => {
-      const subSuite = suite.children[token] || makeEmptySuiteNode([...suite.path, token]);
+      const subSuite = suite.children[token] ?? makeEmptySuiteNode([...suite.path, token]);
 
       subSuite.status = calcStatus(subSuite.status, test.status);
 
@@ -167,10 +169,13 @@ export function updateTestStatus(suite: CreeveySuite, path: string[], update: Pa
     const { skip, status, results, approved } = update;
     if (isDefined(skip)) test.skip = skip;
     if (isDefined(status)) test.status = status;
-    if (isDefined(results)) test.results ? test.results.push(...results) : (test.results = results);
+    if (isDefined(results)) {
+      if (test.results) test.results.push(...results);
+      else test.results = results;
+    }
     if (isDefined(approved))
       Object.entries(approved).forEach(
-        ([image, retry]) => retry !== undefined && ((test.approved = test.approved || {})[image] = retry),
+        ([image, retry]) => retry !== undefined && ((test.approved = test.approved ?? {})[image] = retry),
       );
   } else {
     const subSuite = suiteOrTest;
@@ -193,7 +198,11 @@ export function removeTests(suite: CreeveySuite, path: string[]): void {
 
   const suiteOrTest = suite.children[title];
   if (suiteOrTest && !isTest(suiteOrTest)) removeTests(suiteOrTest, path);
-  if (isTest(suiteOrTest) || Object.keys(suiteOrTest?.children ?? {}).length == 0) delete suite.children[title];
+  if (isTest(suiteOrTest) || Object.keys(suiteOrTest?.children ?? {}).length == 0) {
+    // TODO Use Map instead
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+    delete suite.children[title];
+  }
   if (Object.keys(suite.children).length == 0) return;
   updateChecked(suite);
   suite.skip = Object.values(suite.children)
@@ -239,7 +248,7 @@ export function openSuite(suite: CreeveySuite, path: string[], opened: boolean):
   if (subSuite && !isTest(subSuite)) subSuite.opened = opened;
 }
 
-export function flattenSuite(suite: CreeveySuite): Array<{ title: string; suite: CreeveySuite | CreeveyTest }> {
+export function flattenSuite(suite: CreeveySuite): { title: string; suite: CreeveySuite | CreeveyTest }[] {
   if (!suite.opened) return [];
   return Object.entries(suite.children).flatMap(([title, subSuite]) =>
     subSuite ? [{ title, suite: subSuite }, ...(isTest(subSuite) ? [] : flattenSuite(subSuite))] : [],
@@ -252,7 +261,7 @@ export function countTestsStatus(suite: CreeveySuite): CreeveyTestsStatus {
   let skippedCount = 0;
   let pendingCount = 0;
 
-  const cases: Array<CreeveySuite | CreeveyTest> = Object.values(suite.children).filter(isDefined);
+  const cases: (CreeveySuite | CreeveyTest)[] = Object.values(suite.children).filter(isDefined);
   let suiteOrTest;
   while ((suiteOrTest = cases.pop())) {
     if (isTest(suiteOrTest)) {
@@ -278,7 +287,7 @@ export function getConnectionUrl(): string {
 }
 
 export function getImageUrl(path: string[], imageName: string): string {
-  // path => [kind, story, test, browser]
+  // path => [title, story, test, browser]
   const browser = path.slice(-1)[0];
   const imagesUrl = window.location.host
     ? `${window.location.protocol}//${getConnectionUrl()}${
@@ -310,7 +319,9 @@ export function useLoadImages(s1: string, s2: string, s3: string): boolean {
             image.onerror = resolve;
           }),
       ),
-    ).then(() => setLoaded(true));
+    ).then(() => {
+      setLoaded(true);
+    });
   }, [s1, s2, s3]);
 
   return loaded;
@@ -353,7 +364,10 @@ export function useCalcScale(diffImageRef: RefObject<HTMLImageElement>, loaded: 
   const calcScale = useCallback(() => {
     const diffImage = diffImageRef.current;
 
-    if (!diffImage || !loaded) return setScale(1);
+    if (!diffImage || !loaded) {
+      setScale(1);
+      return;
+    }
     const borderSize = getBorderSize(diffImage);
     const ratio = (diffImage.getBoundingClientRect().width - borderSize * 2) / diffImage.naturalWidth;
     setScale(Math.min(1, ratio));
@@ -393,9 +407,8 @@ export function setSearchParams(testPath: string[]): void {
 
 export function getTestPathFromSearch(): string[] {
   const { testPath } = parse(window.location.search.slice(1));
-  //@ts-expect-error: This expression is not callable.
   if (Array.isArray(testPath) && testPath.every((token) => typeof token == 'string')) {
-    return testPath as string[];
+    return testPath;
   }
   return [];
 }
@@ -403,5 +416,7 @@ export function getTestPathFromSearch(): string[] {
 export function useForceUpdate(): () => void {
   const [, update] = useState({});
 
-  return useCallback(() => update({}), []);
+  return useCallback(() => {
+    update({});
+  }, []);
 }

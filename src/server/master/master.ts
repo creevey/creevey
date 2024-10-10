@@ -1,13 +1,13 @@
 import path from 'path';
-import { Config, TestData, isDefined, ServerTest } from '../../types';
-import { loadTestsFromStories, saveTestsJson } from '../stories';
-import Runner from './runner';
-import { startWebpackCompiler } from '../loaders/webpack/start';
+import { Config, TestData, isDefined, ServerTest } from '../../types.js';
+import { loadTestsFromStories, saveTestsJson } from '../stories.js';
+import Runner from './runner.js';
+import { tryToLoadTestsData } from '../utils.js';
 
 function mergeTests(
-  testsWithReports: Partial<{ [id: string]: TestData }>,
-  testsFromStories: Partial<{ [id: string]: ServerTest }>,
-): Partial<{ [id: string]: ServerTest }> {
+  testsWithReports: Partial<Record<string, TestData>>,
+  testsFromStories: Partial<Record<string, ServerTest>>,
+): Partial<Record<string, ServerTest>> {
   Object.values(testsFromStories)
     .filter(isDefined)
     .forEach((test) => {
@@ -25,15 +25,9 @@ export default async function master(
   config: Config,
   options: { watch: boolean; debug: boolean; port: number },
 ): Promise<Runner> {
-  if (config.useWebpackToExtractTests) await startWebpackCompiler();
   const runner = new Runner(config);
   const reportDataPath = path.join(config.reportDir, 'data.js');
-  let testsFromReport = {};
-  try {
-    testsFromReport = (await import(reportDataPath)) as Partial<{ [id: string]: TestData }>;
-  } catch (error) {
-    // Ignore error
-  }
+  const testsFromReport = tryToLoadTestsData(reportDataPath) ?? {};
 
   await runner.init();
 

@@ -1,9 +1,10 @@
 import cluster from 'cluster';
-import type { CreeveyStory, StoriesProvider, StoriesRaw } from '../../../types';
-import { loadStoriesFromBrowser } from '../../selenium';
-import { emitStoriesMessage, sendStoriesMessage, subscribeOn, subscribeOnWorker } from '../../messages';
-import { isDefined } from '../../../types';
-import { logger } from '../../logger';
+import type { CreeveyStory, StoriesProvider, StoriesRaw } from '../../../types.js';
+import { loadStoriesFromBrowser } from '../../selenium/index.js';
+import { emitStoriesMessage, sendStoriesMessage, subscribeOn, subscribeOnWorker } from '../../messages.js';
+import { isDefined } from '../../../types.js';
+import { logger } from '../../logger.js';
+import { deserializeRawStories } from '../../../shared/index.js';
 
 export const loadStories: StoriesProvider = async (_config, _options, storiesListener) => {
   if (cluster.isPrimary) {
@@ -39,17 +40,19 @@ export const loadStories: StoriesProvider = async (_config, _options, storiesLis
         emitStoriesMessage({ type: 'set', payload: { stories, oldTests: storiesWithOldTests } });
       if (message.type == 'update') storiesListener(new Map(message.payload));
     });
-    const stories = await loadStoriesFromBrowser();
+    const stories = deserializeRawStories(await loadStoriesFromBrowser());
 
     const storiesWithOldTests: string[] = [];
 
     Object.values(stories).forEach((story) => {
       if ((story as CreeveyStory).parameters?.creevey?.tests) {
         delete (story as CreeveyStory).parameters?.creevey?.tests;
-        storiesWithOldTests.push(`${story.kind}/${story.name}`);
+        storiesWithOldTests.push(`${story.title}/${story.name}`);
       }
     });
 
     return stories;
   }
 };
+
+loadStories.providerName = 'browser';

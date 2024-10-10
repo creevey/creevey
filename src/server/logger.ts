@@ -1,8 +1,6 @@
 import chalk from 'chalk';
-import { default as Logger } from 'loglevel';
+import Logger from 'loglevel';
 import prefix from 'loglevel-plugin-prefix';
-
-export { getLogger } from 'loglevel';
 
 export const colors = {
   TRACE: chalk.magenta,

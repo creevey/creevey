@@ -1,11 +1,11 @@
 import cluster from 'cluster';
-import { Config, BrowserConfig, isDockerMessage, DockerAuth } from '../types';
-import { subscribeOn, sendDockerMessage, emitDockerMessage } from './messages';
-import { isInsideDocker, LOCALHOST_REGEXP } from './utils';
-import Dockerode, { Container } from 'dockerode';
-import { Writable, Stream } from 'stream';
 import ora from 'ora';
-import { logger } from './logger';
+import { Writable } from 'stream';
+import Dockerode, { Container } from 'dockerode';
+import { Config, BrowserConfig, isDockerMessage, DockerAuth } from '../types.js';
+import { subscribeOn, sendDockerMessage, emitDockerMessage } from './messages.js';
+import { isInsideDocker, LOCALHOST_REGEXP } from './utils.js';
+import { logger } from './logger.js';
 
 const docker = new Dockerode();
 
@@ -28,20 +28,20 @@ export async function pullImages(
     await new Promise<void>((resolve, reject) => {
       const spinner = ora(`${image}: Pull start`).start();
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      docker.pull(image, args, function (pullError: unknown, stream: Stream) {
-        if (pullError) {
+      docker.pull(image, args, (pullError: Error | null, stream?: NodeJS.ReadableStream) => {
+        if (pullError || !stream) {
           spinner.fail();
-          return reject(pullError);
+          reject(pullError ?? new Error('Unknown error'));
+          return;
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
         docker.modem.followProgress(stream, onFinished, onProgress);
 
-        function onFinished(error: unknown): void {
+        function onFinished(error: Error | null): void {
           if (error) {
             spinner.fail();
-            return reject(error);
+            reject(error);
+            return;
           }
           spinner.succeed(`${image}: Pull complete`);
           resolve();
@@ -50,7 +50,7 @@ export async function pullImages(
         function onProgress(event: { id: string; status: string; progress?: string }): void {
           if (!/^[a-z0-9]{12}$/i.test(event.id)) return;
 
-          spinner.text = `${image}: [${event.id}] ${event.status} ${event.progress ? `${event.progress}` : ''}`;
+          spinner.text = `${image}: [${event.id}] ${event.status} ${event.progress ? event.progress : ''}`;
         }
       });
     });
@@ -64,13 +64,11 @@ export async function runImage(
   debug: boolean,
 ): Promise<string> {
   await Promise.all(
-    (
-      await docker.listContainers({ all: true, filters: { ancestor: [image] } })
-    ).map(async (info) => {
+    (await docker.listContainers({ all: true, filters: { ancestor: [image] } })).map(async (info) => {
       const container = docker.getContainer(info.Id);
       try {
         await container.stop();
-      } catch (_) {
+      } catch {
         /* noop */
       }
       await container.remove();
@@ -88,7 +86,7 @@ export async function runImage(
         try {
           await container.stop();
           await container.remove();
-        } catch (error) {
+        } catch {
           /* noop */
         }
       });
@@ -96,12 +94,14 @@ export async function runImage(
     hub.once(
       'start',
       (container: Container) =>
-        void container.inspect().then((info) => resolve(info.NetworkSettings.Networks.bridge.IPAddress)),
+        void container.inspect().then((info) => {
+          resolve(info.NetworkSettings.Networks.bridge.IPAddress);
+        }),
     );
   });
 }
 
-export default async function (
+export async function initDocker(
   config: Config,
   browser: string | undefined,
   startContainer: () => Promise<string>,

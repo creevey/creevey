@@ -1,4 +1,4 @@
-import { TestStatus } from '../../types';
+import { TestStatus } from '../../types.js';
 
 export function getEmojiByTestStatus(status: TestStatus | undefined, skip: string | boolean = false): string {
   switch (status) {

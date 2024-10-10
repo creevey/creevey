@@ -1,19 +1,19 @@
 import React, { createContext, useContext } from 'react';
-import { SideBarHeader } from './SideBarHeader';
-import { CreeveySuite, CreeveyTest, noop, isTest } from '../../../../types';
+import { transparentize } from 'polished';
+import { ScrollArea } from '@storybook/components';
+import { styled, withTheme } from '@storybook/theming';
+import { SideBarHeader } from './SideBarHeader.js';
+import { CreeveySuite, CreeveyTest, noop, isTest } from '../../../../types.js';
 import {
   filterTests,
   CreeveyViewFilter,
   flattenSuite,
   countTestsStatus,
   getCheckedTests,
-} from '../../../shared/helpers';
-import { CreeveyContext } from '../../CreeveyContext';
-import { SuiteLink } from './SuiteLink';
-import { TestLink } from './TestLink';
-import { styled, withTheme } from '@storybook/theming';
-import { transparentize } from 'polished';
-import { ScrollArea } from '@storybook/components';
+} from '../../../shared/helpers.js';
+import { CreeveyContext } from '../../CreeveyContext.js';
+import { SuiteLink } from './SuiteLink.js';
+import { TestLink } from './TestLink.js';
 
 export const SideBarContext = createContext<{ onOpenTest: (test: CreeveyTest) => void }>({
   onOpenTest: noop,
@@ -84,7 +84,9 @@ export function SideBar({ rootSuite, openedTest, onOpenTest, filter, setFilter }
   const suiteList = flattenSuite(suite);
   const countCheckedTests = getCheckedTests(rootSuite).length;
 
-  const handleStart = (): void => onStart(suite);
+  const handleStart = (): void => {
+    onStart(suite);
+  };
 
   return (
     <SideBarContext.Provider value={{ onOpenTest }}>

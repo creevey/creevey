@@ -1,10 +1,10 @@
-import type { API as StorybookAPI } from '@storybook/api';
-import type { DecoratorFunction } from '@storybook/addons';
-import type { IKey } from 'selenium-webdriver/lib/input';
+import type { StoryContextForEnhancers, DecoratorFunction } from '@storybook/csf';
+import type { IKey } from 'selenium-webdriver/lib/input.js';
 import type { Worker as ClusterWorker } from 'cluster';
 import type { until, WebDriver, WebElementPromise } from 'selenium-webdriver';
 import type Pixelmatch from 'pixelmatch';
 import type { Context } from 'mocha';
+import type { expect } from 'chai';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type DiffOptions = typeof Pixelmatch extends (
@@ -19,21 +19,21 @@ export type DiffOptions = typeof Pixelmatch extends (
   : never;
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
-export type SetStoriesData = {
+export interface SetStoriesData {
   v?: number;
   globalParameters: { creevey?: CreeveyStoryParams };
-  kindParameters: Partial<{ [kind: string]: { fileName: string; creevey?: CreeveyStoryParams } }>;
+  kindParameters: Partial<Record<string, { fileName: string; creevey?: CreeveyStoryParams }>>;
   stories: StoriesRaw;
-};
+}
 
-export type StoriesRaw = StorybookAPI extends { setStories: (stories: infer SS) => void } ? SS : never;
+export type StoriesRaw = Record<string, StoryContextForEnhancers>;
 
-export type StoryInput = StoriesRaw extends { [id: string]: infer S } ? S : never;
+export type StoryInput = StoriesRaw extends Record<string, infer S> ? S : never;
 
-export interface StoryMeta<StoryFnReturnType = unknown> {
+export interface StoryMeta {
   title: string;
   component?: unknown;
-  decorators?: DecoratorFunction<StoryFnReturnType>[];
+  decorators?: DecoratorFunction[];
   parameters?: {
     creevey?: CreeveyStoryParams;
     [name: string]: unknown;
@@ -58,7 +58,7 @@ export interface CSFStory<StoryFnReturnType = unknown> {
    */
   story?: {
     name?: string;
-    decorators?: DecoratorFunction<StoryFnReturnType>[];
+    decorators?: DecoratorFunction[];
     parameters?: {
       creevey?: CreeveyStoryParams;
       [name: string]: unknown;
@@ -66,7 +66,7 @@ export interface CSFStory<StoryFnReturnType = unknown> {
   };
 
   storyName?: string;
-  decorators?: DecoratorFunction<StoryFnReturnType>[];
+  decorators?: DecoratorFunction[];
   parameters?: {
     creevey?: CreeveyStoryParams;
     [name: string]: unknown;
@@ -82,6 +82,11 @@ export interface CreeveyStory {
 
 export interface Capabilities {
   browserName: string;
+  browserVersion?: string;
+  platformName?: string;
+  /**
+   * @deprecated use `browserVersion` instead
+   */
   version?: string;
   [prop: string]: unknown;
 }
@@ -97,7 +102,7 @@ export type BrowserConfig = Capabilities & {
   _storybookGlobals?: StorybookGlobals;
   /**
    * Specify custom docker image. Used only with `useDocker == true`
-   * @default `selenoid/${browserName}:${version ?? 'latest'}`
+   * @default `selenoid/${browserName}:${browserVersion ?? 'latest'}`
    */
   dockerImage?: string;
   /**
@@ -108,9 +113,7 @@ export type BrowserConfig = Capabilities & {
   viewport?: { width: number; height: number };
 };
 
-export interface StorybookGlobals {
-  [key: string]: unknown;
-}
+export type StorybookGlobals = Record<string, unknown>;
 
 export type Browser = boolean | string | BrowserConfig;
 
@@ -154,11 +157,6 @@ export interface Config {
    */
   reportDir: string;
   /**
-   * Absolute path to storybook config directory
-   * @default path.join(process.cwd(), './.storybook')
-   */
-  storybookDir: string;
-  /**
    * How much test would be retried
    * @default 0
    */
@@ -172,7 +170,7 @@ export interface Config {
    * Browser capabilities
    * @default { chrome: true }
    */
-  browsers: { [key: string]: Browser };
+  browsers: Record<string, Browser>;
   /**
    * Hooks that allow run custom script before and after creevey start
    */
@@ -182,18 +180,6 @@ export interface Config {
    * Works only with `useDocker == false`
    */
   selenoidPath?: string;
-  /**
-   * Creevey extract tests by using babel transformations
-   * and load stories to nodejs directly.
-   * In some edge cases it may fail to load tests.
-   * In that case you can enable this option.
-   * Creevey uses Storybook webpack config to build nodejs bundle with tests.
-   * But it slightly slower and doesn't work if you use custom bundler for Storybook
-   *
-   * Affects only for Storybook 6.2+
-   * @default false
-   */
-  useWebpackToExtractTests: boolean;
   /**
    * Creevey has two built-in stories providers.
    *
@@ -252,29 +238,39 @@ export interface Config {
    * Specify platform for docker images
    */
   dockerImagePlatform: string;
+  testsRegex?: RegExp;
+  testsDir?: string;
+  tsConfig?: string;
+  /**
+   * Telemetry contains information about Creevey and Storybook versions, used Creevey config, browsers and tests meta.
+   * It's being sent only for projects from git.skbkontur.ru
+   * @default false
+   */
+  disableTelemetry?: boolean;
 }
 
-export type StoriesProvider = (
-  config: Config,
-  options: { watch: boolean; debug: boolean },
-  storiesListener: (stories: Map<string, StoryInput[]>) => void,
-) => Promise<StoriesRaw>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export interface StoriesProvider<T = any> {
+  (config: Config, options: T, storiesListener: (stories: Map<string, StoryInput[]>) => void): Promise<StoriesRaw>;
+  providerName?: string;
+}
 
 export type CreeveyConfig = Partial<Config>;
 
 export interface Options {
+  _: string[];
   config?: string;
   port: number;
   ui: boolean;
   update: boolean | string;
-  webpack: boolean;
   debug: boolean;
-  extract: boolean | string;
+  trace: boolean;
   tests: boolean;
   browser?: string;
   reporter?: string;
   screenDir?: string;
   reportDir?: string;
+  storybookUrl?: string;
   saveReport: boolean;
   failFast?: boolean;
 }
@@ -299,7 +295,7 @@ export type WebpackMessage =
 
 export type DockerMessage = { type: 'start'; payload?: never } | { type: 'success'; payload: { gridUrl: string } };
 
-export type ShutdownMessage = unknown;
+export type ShutdownMessage = object;
 
 export type ProcessMessage =
   | (WorkerMessage & { scope: 'worker' })
@@ -333,12 +329,12 @@ export interface TestResult {
   status: 'failed' | 'success';
   // TODO Remove checks `name == browser` in TestResultsView
   // images?: Partial<{ [name: string]: Images }> | Images;
-  images?: Partial<{ [name: string]: Images }>;
+  images?: Partial<Record<string, Images>>;
   error?: string;
 }
 
 export interface ImagesError extends Error {
-  images: string | Partial<{ [name: string]: string }>;
+  images: string | Partial<Record<string, string>>;
 }
 
 export interface TestMeta {
@@ -354,7 +350,7 @@ export interface TestData extends TestMeta {
   retries?: number;
   status?: TestStatus;
   results?: TestResult[];
-  approved?: Partial<{ [image: string]: number }>;
+  approved?: Partial<Record<string, number>>;
 }
 
 export interface ServerTest extends TestData {
@@ -364,13 +360,14 @@ export interface ServerTest extends TestData {
 
 export interface CreeveyStatus {
   isRunning: boolean;
-  tests: Partial<{ [id: string]: TestData }>;
+  tests: Partial<Record<string, TestData>>;
   browsers: string[];
 }
 
 export interface CreeveyUpdate {
   isRunning?: boolean;
-  tests?: Partial<{ [id: string]: TestData }>;
+  // TODO Use Map instead
+  tests?: Partial<Record<string, TestData>>;
   removedTests?: TestMeta[];
 }
 
@@ -383,15 +380,17 @@ export interface SkipOption {
 
 export type SkipOptions = boolean | string | Record<string, SkipOption | SkipOption[]>;
 
-export type CreeveyTestFunction = (this: {
+export interface CreeveyTestController {
   browser: WebDriver;
   until: typeof until;
   keys: IKey;
-  expect: Chai.ExpectStatic;
+  expect: typeof expect;
   takeScreenshot: () => Promise<string>;
-  updateStoryArgs: <Args extends Record<string, unknown>>(updatedArgs: Args) => Promise<void>;
+  updateStoryArgs: (updatedArgs: Record<string, unknown>) => Promise<void>;
   readonly captureElement?: WebElementPromise;
-}) => Promise<void>;
+}
+
+export type CreeveyTestFunction = (this: CreeveyTestController) => Promise<void>;
 
 export interface CaptureOptions {
   imageName?: string;
@@ -403,10 +402,7 @@ export interface CreeveyStoryParams extends CaptureOptions {
   waitForReady?: boolean;
   delay?: number | { for: string[]; ms: number };
   skip?: SkipOptions;
-  tests?: {
-    // TODO Define browserName, story
-    [name: string]: CreeveyTestFunction;
-  };
+  tests?: Record<string, CreeveyTestFunction>;
 }
 
 export interface ApprovePayload {
@@ -437,7 +433,8 @@ export interface CreeveySuite {
   opened: boolean;
   checked: boolean;
   indeterminate: boolean;
-  children: Partial<{ [title: string]: CreeveySuite | CreeveyTest }>;
+  // TODO Use Map instead
+  children: Partial<Record<string, CreeveySuite | CreeveyTest>>;
 }
 
 export type ImagesViewMode = 'side-by-side' | 'swap' | 'slide' | 'blend';
@@ -450,8 +447,15 @@ export function isDefined<T>(value: T | null | undefined): value is T {
   return value !== null && value !== undefined;
 }
 
-export function isTest<T1, T2 extends TestData>(x?: T1 | T2): x is T2 {
-  return isDefined(x) && 'id' in x && 'storyId' in x && typeof x.id == 'string' && typeof x.storyId == 'string';
+export function isTest(x?: CreeveySuite | CreeveyTest): x is CreeveyTest {
+  return (
+    isDefined(x) &&
+    isObject(x) &&
+    'id' in x &&
+    'storyId' in x &&
+    typeof x.id == 'string' &&
+    typeof x.storyId == 'string'
+  );
 }
 
 export function isObject(x: unknown): x is Record<string, unknown> {

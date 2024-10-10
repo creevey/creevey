@@ -1,6 +1,7 @@
-import React, { useState, ChangeEvent } from 'react';
-import { styled, withTheme, Theme } from '@storybook/theming';
 import { Icons } from '@storybook/components';
+import { styled, Theme, withTheme } from '@storybook/theming';
+import React, { ChangeEvent, useContext, useRef, useState } from 'react';
+import { KeyboardEventsContext } from '../../KeyboardEventsContext.js';
 
 interface SearchProps {
   onChange: (arg: string) => void;
@@ -99,18 +100,31 @@ const FilterForm = withTheme(
 );
 
 export const Search = ({ onChange, value }: SearchProps): JSX.Element => {
+  const { setSidebarFocusedItem } = useContext(KeyboardEventsContext);
   const [focussed, onSetFocussed] = useState(false);
+  const searchRef = useRef<HTMLInputElement>(null);
+
   return (
     <FilterForm
       autoComplete="off"
       focussed={focussed}
-      onReset={() => onChange('')}
-      onSubmit={(e) => e.preventDefault()}
+      onReset={() => {
+        onChange('');
+      }}
+      onSubmit={(e) => {
+        e.preventDefault();
+      }}
     >
       <FilterField
         type="text"
-        onFocus={() => onSetFocussed(true)}
-        onBlur={() => onSetFocussed(false)}
+        ref={searchRef}
+        onFocus={() => {
+          onSetFocussed(true);
+          setSidebarFocusedItem(null);
+        }}
+        onBlur={() => {
+          onSetFocussed(false);
+        }}
         onChange={(e: ChangeEvent<HTMLInputElement>) => {
           onChange(e.target.value);
         }}
@@ -118,7 +132,7 @@ export const Search = ({ onChange, value }: SearchProps): JSX.Element => {
         value={value}
       />
       <Icons icon="search" />
-      <CancelButton type="reset" value="reset" title="Clear search">
+      <CancelButton tabIndex={-1} type="reset" value="reset" title="Clear search">
         <Icons icon="closeAlt" />
       </CancelButton>
     </FilterForm>

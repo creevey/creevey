@@ -1,22 +1,32 @@
 {
   "compilerOptions": {
+    "rootDir": ".",
     "baseUrl": ".",
-    "declarationDir": "./lib/types",
+    "outDir": "./dist",
     "sourceMap": true,
     "declaration": true,
-    "module": "esnext",
-    "moduleResolution": "node",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "strict": true,
     "jsx": "react",
-    "target": "esnext",
+    "target": "ESNext",
     "esModuleInterop": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "typeRoots": ["./types", "./node_modules/@types"],
     "paths": {
-      "creevey": ["src"]
+      "creevey": ["./"]
     },
     "skipLibCheck": true
   },
-  "exclude": ["./report", "./lib", "./scripts/dist", "./examples", "./tests/**/*.fixtures"]
+  "include": [
+    "src/**/*",
+    ".creevey/**/*",
+    ".storybook/*",
+    "stories/**/*",
+    "types/*",
+    "tests/**/*",
+    "webpack.config.mjs"
+  ],
+  "exclude": ["report", "dist", "scripts"]
 }

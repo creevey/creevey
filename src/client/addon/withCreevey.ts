@@ -1,44 +1,21 @@
 import * as Events from '@storybook/core-events';
-import * as polyfill from 'event-source-polyfill';
 import type { PreviewWeb } from '@storybook/preview-web';
-import type { AnyFramework } from '@storybook/csf';
+import type { AnyFramework, StoryContextForEnhancers } from '@storybook/csf';
 import type { StoryStore } from '@storybook/client-api';
-import { buildQueries, within } from '@storybook/testing-library';
-import { addons, MakeDecoratorResult, makeDecorator, Channel } from '@storybook/addons';
-import {
-  CaptureOptions,
-  CreeveyStoryParams,
-  isObject,
-  noop,
-  SetStoriesData,
-  StoriesRaw,
-  StorybookGlobals,
-  StoryInput,
-} from '../../types';
-import { denormalizeStoryParameters, serializeRawStories } from '../../shared';
-import { getConnectionUrl } from '../shared/helpers';
-import { isInternetExplorer } from './utils';
-
-if (typeof process != 'object' || typeof process.version != 'string') {
-  // NOTE If you don't use babel-polyfill or any other polyfills that add EventSource for IE11
-  // You don't get hot reload in IE11. So put polyfill for that to better UX
-  // Don't load in nodejs environment
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const { NativeEventSource, EventSourcePolyfill } = polyfill;
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  window.EventSource = NativeEventSource || EventSourcePolyfill;
-}
+import { makeDecorator } from '@storybook/preview-api';
+import { Channel } from '@storybook/channels';
+import { CaptureOptions, CreeveyStoryParams, isObject, noop, StoriesRaw, StorybookGlobals } from '../../types.js';
+import { serializeRawStories } from '../../shared/index.js';
+import { getConnectionUrl } from '../shared/helpers.js';
 
 declare global {
   interface Window {
     __CREEVEY_SERVER_HOST__: string;
     __CREEVEY_SERVER_PORT__: number;
     __CREEVEY_WORKER_ID__: number;
-    __CREEVEY_GET_STORIES__: () => Promise<StoriesRaw | void>;
+    __CREEVEY_GET_STORIES__: () => Promise<StoriesRaw | undefined>;
     __CREEVEY_SELECT_STORY__: (
       storyId: string,
-      kind: string,
-      name: string,
       shouldWaitForReady: boolean,
       callback: (response: [error?: string | null, isCaptureCalled?: boolean]) => void,
     ) => Promise<void>;
@@ -73,11 +50,6 @@ const disableAnimationsStyles = `
   transition: 0s !important;
 }
 `;
-
-async function resetCurrentStory(channel: Channel): Promise<void> {
-  setTimeout(() => channel.emit(Events.SET_CURRENT_STORY, { storyId: true, name: '', kind: '' }), 0);
-  return new Promise<void>((resolve) => channel.once(Events.STORY_MISSING, resolve));
-}
 
 function catchRenderError(channel: Channel): Promise<void> & { cancel: () => void } {
   let rejectCallback: (reason?: unknown) => void;
@@ -119,8 +91,7 @@ function waitForStoryRendered(channel: Channel): Promise<void> & { cancel: () =>
 }
 
 function waitForFontsLoaded(): Promise<void> | void {
-  if (!document.fonts) return;
-
+  // TODO Use document.fonts.ready instead
   const areFontsLoading = Array.from(document.fonts).some((font) => font.status == 'loading');
 
   if (areFontsLoading) {
@@ -165,8 +136,9 @@ let waitForCreevey: Promise<void>;
 let creeveyReady: () => void;
 let setStoriesCounter = 0;
 
-export function withCreevey(): MakeDecoratorResult {
-  let currentStory = '';
+export function withCreevey(): ReturnType<typeof makeDecorator> {
+  const addonsChannel = (): Channel => window.__STORYBOOK_ADDONS_CHANNEL__;
+
   let isAnimationDisabled = false;
 
   initCreeveyState();
@@ -180,66 +152,49 @@ export function withCreevey(): MakeDecoratorResult {
     document.head.appendChild(style);
   }
 
-  async function getStories(): Promise<StoriesRaw | void> {
-    const storiesPromise = new Promise<StoriesRaw>((resolve) =>
-      addons
-        .getChannel()
-        .once(Events.SET_STORIES, (data: SetStoriesData) =>
-          resolve(serializeRawStories(denormalizeStoryParameters(data))),
-        ),
-    );
-
-    const store = window.__STORYBOOK_STORY_STORE__ ?? {};
-    if (store.cacheAllCSFFiles) {
-      await store.cacheAllCSFFiles();
-      addons.getChannel().emit(Events.SET_STORIES, store.getSetStoriesPayload());
-    } else return;
-
-    addons.getChannel().on(Events.SET_STORIES, (data: SetStoriesData) => {
-      // TODO Figure out how to get only updated stories
-      // TODO Subscribe on hmr? like use dummy-hmr
-      setStoriesCounter += 1;
-      const stories = serializeRawStories(denormalizeStoryParameters(data));
-      const storiesByFiles = new Map<string, StoryInput[]>();
-      Object.values(stories).forEach((story) => {
-        const storiesFromFile = storiesByFiles.get(story.parameters.fileName);
-        if (storiesFromFile) storiesFromFile.push(story);
-        else storiesByFiles.set(story.parameters.fileName, [story]);
-      });
-      void fetch(`http://${getConnectionUrl()}/stories`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ setStoriesCounter, stories: [...storiesByFiles.entries()] }),
-      });
+  async function getStories(): Promise<StoriesRaw | undefined> {
+    const stories = serializeRawStories(await window.__STORYBOOK_PREVIEW__.extract());
+    const storiesByFiles = new Map<string, StoryContextForEnhancers[]>();
+    Object.values(stories).forEach((story) => {
+      const fileName = story.parameters.fileName as string;
+      const storiesFromFile = storiesByFiles.get(fileName);
+      if (storiesFromFile) storiesFromFile.push(story);
+      else storiesByFiles.set(fileName, [story]);
     });
-
-    return storiesPromise;
+    void fetch(`http://${getConnectionUrl()}/stories`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ setStoriesCounter, stories: [...storiesByFiles.entries()] }),
+    });
+    return stories;
   }
 
+  // TODO Use Events.STORY_RENDER_PHASE_CHANGED: `loading/rendering/completed` with storyId
+  // TODO Check other statuses and statuses with play function
   async function selectStory(
     storyId: string,
-    kind: string,
-    name: string,
     shouldWaitForReady: boolean,
     callback: (response: [error?: string | null, isCaptureCalled?: boolean]) => void,
   ): Promise<void> {
+    const currentStory = window.__STORYBOOK_PREVIEW__.currentSelection?.storyId ?? '';
+
     if (!isAnimationDisabled) disableAnimation();
 
     isTestBrowser = true;
-    const channel = addons.getChannel();
+    const channel = addonsChannel();
     const waitForReady = shouldWaitForReady
       ? new Promise<void>((resolve) => (window.__CREEVEY_SET_READY_FOR_CAPTURE__ = resolve))
       : Promise.resolve();
-
-    if (storyId == currentStory) await resetCurrentStory(channel);
-    else currentStory = storyId;
 
     let isCaptureCalled = false;
     const renderPromise = waitForStoryRendered(channel);
     const errorPromise = catchRenderError(channel);
     const capturePromise = waitForCaptureCall().then(() => (isCaptureCalled = true));
 
-    setTimeout(() => channel.emit(Events.SET_CURRENT_STORY, { storyId, name, kind }), 0);
+    setTimeout(() => {
+      if (storyId == currentStory) channel.emit(Events.FORCE_REMOUNT, { storyId });
+      else channel.emit(Events.SET_CURRENT_STORY, { storyId });
+    }, 0);
 
     try {
       await Promise.race([
@@ -256,10 +211,10 @@ export function withCreevey(): MakeDecoratorResult {
       // NOTE Event `STORY_ERRORED` return error-like object without `name` field
       const errorMessage =
         reason instanceof Error
-          ? reason.stack ?? reason.message
+          ? (reason.stack ?? reason.message)
           : isObject(reason)
-          ? `${reason.message as string}\n    ${reason.stack as string}`
-          : (reason as string);
+            ? `${reason.message as string}\n    ${reason.stack as string}`
+            : (reason as string);
       callback([errorMessage]);
     } finally {
       renderPromise.cancel();
@@ -268,7 +223,7 @@ export function withCreevey(): MakeDecoratorResult {
   }
 
   function updateGlobals(globals: StorybookGlobals): void {
-    addons.getChannel().emit(Events.UPDATE_GLOBALS, { globals });
+    addonsChannel().emit(Events.UPDATE_GLOBALS, { globals });
   }
 
   function insertIgnoreStyles(ignoreSelectors: string[]): HTMLStyleElement {
@@ -301,7 +256,7 @@ export function withCreevey(): MakeDecoratorResult {
     let isCaptureCalled = false;
     let isPlayCompleted = false;
 
-    const channel = addons.getChannel();
+    const channel = addonsChannel();
     void waitForStoryRendered(channel).then(() => {
       if (isCaptureCalled) return;
       isPlayCompleted = true;
@@ -322,32 +277,14 @@ export function withCreevey(): MakeDecoratorResult {
   window.__CREEVEY_HAS_PLAY_COMPLETED_YET__ = hasPlayCompletedYet;
   window.__CREEVEY_SET_READY_FOR_CAPTURE__ = noop;
 
-  const queryAllByQuery = (container: HTMLElement, query: string): HTMLElement[] =>
-    [...container.querySelectorAll(query)].filter((e) => e instanceof HTMLElement) as HTMLElement[];
-  const getMultipleError = (_: Element | null, query: string): string => `Found multiple elements by query: ${query}`;
-  const getMissingError = (_: Element | null, query: string): string => `Unable to find an element by query: ${query}`;
-
-  const [queryByQuery, getAllByQuery, getByQuery, findAllByQuery, findByQuery] = buildQueries(
-    queryAllByQuery,
-    getMultipleError,
-    getMissingError,
-  );
-  const queries = {
-    queryByQuery,
-    getAllByQuery,
-    getByQuery,
-    findAllByQuery,
-    findByQuery,
-  };
-
   return makeDecorator({
     name: 'withCreevey',
     parameterName: 'creevey',
 
     wrapper: (getStory, context) => {
       // TODO Define proper types, like captureElement is a promise
-      const { captureElement } = (context.parameters.creevey =
-        (context.parameters.creevey as CreeveyStoryParams) ?? {});
+      const { captureElement } = (context.parameters.creevey = (context.parameters.creevey ??
+        {}) as CreeveyStoryParams);
       Object.defineProperty(context.parameters.creevey, 'captureElement', {
         get() {
           switch (true) {
@@ -356,9 +293,7 @@ export function withCreevey(): MakeDecoratorResult {
             case captureElement === null:
               return Promise.resolve(document.documentElement);
             case typeof captureElement == 'string':
-              return isInternetExplorer // some code from testing-library makes IE hang
-                ? Promise.resolve(context.canvasElement.querySelector(captureElement as string))
-                : within<typeof queries>(context.canvasElement, queries).findByQuery(captureElement as string);
+              return Promise.resolve((context.canvasElement as Element).querySelector(captureElement));
             case typeof captureElement == 'function':
               // TODO Define type for it
               return Promise.resolve(

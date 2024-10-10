@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
-import { ImagesViewMode, Images } from '../../../../types';
-import { getImageUrl } from '../../helpers';
 import { Icons, Tabs } from '@storybook/components';
 import { styled, withTheme, Theme } from '@storybook/theming';
-import { ImagePreview } from './ImagePreview';
-import { viewModes } from '../../viewMode';
+import { ImagesViewMode, Images } from '../../../../types.js';
+import { getImageUrl } from '../../helpers.js';
+import { ImagePreview } from './ImagePreview.js';
+import { viewModes } from '../../viewMode.js';
 
 interface PageHeaderProps {
   title: string[];
-  images?: Partial<{
-    [name: string]: Images;
-  }>;
+  images?: Partial<Record<string, Images>>;
   errorMessage?: string | null;
   showViewModes: boolean;
   showTitle?: boolean;
@@ -77,11 +75,16 @@ export function PageHeader({
   onViewModeChange,
 }: PageHeaderProps): JSX.Element | null {
   const imageEntires = Object.entries(images) as [string, Images][];
-  const [imageName, setImageName] = useState((imageEntires[0] ?? [])[0] ?? '');
+  const [imageName, setImageName] = useState(imageEntires.at(0)?.[0] ?? '');
 
-  const handleImageChange = (name: string): void => (setImageName(name), onImageChange(name));
-  const handleViewModeChange = (mode: string): void => onViewModeChange(mode as ImagesViewMode);
-  const error = errorMessage || imagesWithError.includes(imageName) ? images[imageName]?.error || errorMessage : null;
+  const handleImageChange = (name: string): void => {
+    setImageName(name);
+    onImageChange(name);
+  };
+  const handleViewModeChange = (mode: string): void => {
+    onViewModeChange(mode as ImagesViewMode);
+  };
+  const error = errorMessage || imagesWithError.includes(imageName) ? (images[imageName]?.error ?? errorMessage) : null;
 
   return showTitle || error || imageEntires.length > 1 || showViewModes ? (
     <Container>

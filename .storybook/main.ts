@@ -1,14 +1,20 @@
+// TODO Update config to 7.x
 export default {
   stories: ['../stories/**/*.stories.@(md|ts)x'],
   addons: [
-    '@storybook/addon-postcss',
+    '@storybook/addon-links',
     '@storybook/addon-essentials',
+    '@storybook/addon-onboarding',
+    '@storybook/addon-interactions',
     {
       name: './../src/client/addon/preset',
-      options: { clientPort: 8000, creeveyPreExtract: './scripts/babel-register' },
+      options: { clientPort: 8000 },
     },
   ],
-  features: {
-    previewCsfV3: true,
+  framework: {
+    name: '@storybook/react-vite',
+  },
+  docs: {
+    autodocs: 'tag',
   },
 };

@@ -1,6 +1,6 @@
 import React from 'react';
-import { styled, withTheme, Theme, keyframes, ensure, ThemeProvider, themes } from '@storybook/theming';
-import { useTheme } from '../shared/helpers';
+import { styled, withTheme, Theme, keyframes, ensure, ThemeProvider, themes, Keyframes } from '@storybook/theming';
+import { useTheme } from '../shared/helpers.js';
 
 const Container = withTheme(
   styled.div(({ theme }) => ({
@@ -35,7 +35,7 @@ const Loader = withTheme(
   })),
 );
 
-export const rotate360 = keyframes`
+export const rotate360: Keyframes = keyframes`
   from {
     transform: rotate(0deg);
   }

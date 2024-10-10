@@ -1,34 +1,34 @@
 import React from 'react';
-import { ComponentMeta, ComponentStoryObj } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react';
 import { fireEvent, within } from '@storybook/testing-library';
 
-import { capture } from '../src/client/addon';
-import { ImagesView as ImagesViewBase } from '../src/client/shared/components/ImagesView';
-import { ImagesViewMode } from '../src/types';
+import { capture } from '../src/client/addon/index.js';
+import { ImagesView as ImagesViewBase } from '../src/client/shared/components/ImagesView/index.js';
+import { ImagesViewMode } from '../src/types.js';
 
 import octocatExpect from './fixtures/octocat-expect.png';
 import octocatDiff from './fixtures/octocat-diff.png';
 import octocatActual from './fixtures/octocat-actual.png';
 
 const ImagesView = ({ mode }: { mode: ImagesViewMode }): JSX.Element => (
-  <ImagesViewBase
-    image={{ expect: octocatExpect, diff: octocatDiff, actual: octocatActual }}
-    url=""
-    canApprove
-    mode={mode}
-  />
+  <ImagesViewBase image={{ expect: octocatExpect, diff: octocatDiff, actual: octocatActual }} canApprove mode={mode} />
 );
 
-export default { title: 'ImagesViews', component: ImagesView } as ComponentMeta<typeof ImagesView>;
+const Kind: Meta<typeof ImagesView> = { title: 'ImagesViews', component: ImagesView };
 
-export const SideBySide: ComponentStoryObj<typeof ImagesView> = { args: { mode: 'side-by-side' } };
+export default Kind;
 
-export const Swap: ComponentStoryObj<typeof ImagesView> = {
+export const SideBySide: StoryObj<typeof ImagesView> = {
+  args: { mode: 'side-by-side' },
+  parameters: { creevey: { waitForReady: true } },
+};
+
+export const Swap: StoryObj<typeof ImagesView> = {
   args: { mode: 'swap' },
   parameters: { creevey: { waitForReady: true } },
 };
 
-export const Slide: ComponentStoryObj<typeof ImagesView> = {
+export const Slide: StoryObj<typeof ImagesView> = {
   args: { mode: 'slide' },
   parameters: { creevey: { waitForReady: true } },
   async play({ canvasElement }) {
@@ -41,4 +41,4 @@ export const Slide: ComponentStoryObj<typeof ImagesView> = {
   },
 };
 
-export const Blend: ComponentStoryObj<typeof ImagesView> = { args: { mode: 'blend' } };
+export const Blend: StoryObj<typeof ImagesView> = { args: { mode: 'blend' } };

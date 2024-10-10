@@ -1,11 +1,11 @@
 import React, { useRef, useContext, useEffect, useMemo } from 'react';
-import { Checkbox, CheckboxContainer } from './Checkbox';
 import { Icons } from '@storybook/components';
-import { TestStatusIcon } from './TestStatusIcon';
-import { CreeveySuite, isTest } from '../../../../types';
-import { CreeveyContext } from '../../CreeveyContext';
-import { KeyboardEventsContext } from '../../KeyboardEventsContext';
 import { styled, withTheme, Theme } from '@storybook/theming';
+import { Checkbox, CheckboxContainer } from './Checkbox.js';
+import { TestStatusIcon } from './TestStatusIcon.js';
+import { CreeveySuite, isTest } from '../../../../types.js';
+import { CreeveyContext } from '../../CreeveyContext.js';
+import { KeyboardEventsContext } from '../../KeyboardEventsContext.js';
 
 export interface SuiteLinkProps {
   title: string;
@@ -64,7 +64,10 @@ export function SuiteLink({ title, suite, 'data-testid': dataTid }: SuiteLinkPro
   const buttonRef = useRef<HTMLButtonElement | null>(null);
 
   const isSuiteFocused = useMemo(
-    () => sidebarFocusedItem.length === suite.path.length && sidebarFocusedItem.every((x) => suite.path.includes(x)),
+    () =>
+      Array.isArray(sidebarFocusedItem) &&
+      sidebarFocusedItem.length === suite.path.length &&
+      sidebarFocusedItem.every((x) => suite.path.includes(x)),
     [suite, sidebarFocusedItem],
   );
   useEffect(
@@ -78,17 +81,22 @@ export function SuiteLink({ title, suite, 'data-testid': dataTid }: SuiteLinkPro
 
   const isRootSuite = suite.path.length == 0;
 
-  const handleCheck = (value: boolean): void => onSuiteToggle(suite.path, value);
+  const handleCheck = (value: boolean): void => {
+    onSuiteToggle(suite.path, value);
+  };
   const handleOpen = (): void => {
     if (!isRootSuite) {
       onSuiteOpen(suite.path, !suite.opened);
       setSidebarFocusedItem(suite.path);
     }
   };
+  const handleFocus = (): void => {
+    setSidebarFocusedItem(suite.path);
+  };
 
   return (
     <Container>
-      <Button onClick={handleOpen} data-testid={dataTid} focused={isSuiteFocused} ref={buttonRef}>
+      <Button onClick={handleOpen} onFocus={handleFocus} data-testid={dataTid} focused={isSuiteFocused} ref={buttonRef}>
         <TestStatusIcon status={suite.status} skip={suite.skip} />
         <SuiteContainer padding={Math.max(48, (suite.path.length + 5) * 8)}>
           {isTest(suite) ||

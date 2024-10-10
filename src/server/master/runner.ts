@@ -1,6 +1,5 @@
 import path from 'path';
-import { copyFile, mkdir } from 'fs';
-import { promisify } from 'util';
+import { copyFile, mkdir } from 'fs/promises';
 import { EventEmitter } from 'events';
 import {
   Config,
@@ -12,19 +11,16 @@ import {
   TestStatus,
   ServerTest,
   TestMeta,
-} from '../../types';
-import Pool from './pool';
-
-const copyFileAsync = promisify(copyFile);
-const mkdirAsync = promisify(mkdir);
+} from '../../types.js';
+import Pool from './pool.js';
 
 export default class Runner extends EventEmitter {
   private failFast: boolean;
   private screenDir: string;
   private reportDir: string;
   private browsers: string[];
-  private pools: { [browser: string]: Pool } = {};
-  tests: Partial<{ [id: string]: ServerTest }> = {};
+  private pools: Record<string, Pool> = {};
+  tests: Partial<Record<string, ServerTest>> = {};
   public get isRunning(): boolean {
     return Object.values(this.pools).some((pool) => pool.isRunning);
   }
@@ -75,7 +71,7 @@ export default class Runner extends EventEmitter {
     await Promise.all(Object.values(this.pools).map((pool) => pool.init()));
   }
 
-  public updateTests(testsDiff: Partial<{ [id: string]: ServerTest }>): void {
+  public updateTests(testsDiff: Partial<Record<string, ServerTest>>): void {
     const tests: CreeveyStatus['tests'] = {};
     const removedTests: TestMeta[] = [];
     Object.entries(testsDiff).forEach(([id, newTest]) => {
@@ -90,12 +86,13 @@ export default class Runner extends EventEmitter {
           };
         } else this.tests[id] = newTest;
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { story, fn, ...restTest } = newTest;
+        const { story: _, fn: __, ...restTest } = newTest;
         tests[id] = { ...restTest, status: 'unknown' };
       } else if (oldTest) {
         const { id, browser, testName, storyPath, storyId } = oldTest;
         removedTests.push({ id, browser, testName, storyPath, storyId });
+        // TODO Use Map instead
+        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete this.tests[id];
       }
     });
@@ -103,9 +100,7 @@ export default class Runner extends EventEmitter {
   }
 
   public start(ids: string[]): void {
-    interface TestsByBrowser {
-      [browser: string]: { id: string; path: string[] }[];
-    }
+    type TestsByBrowser = Record<string, { id: string; path: string[] }[]>;
     if (this.isRunning) return;
 
     const testsToStart = ids
@@ -126,13 +121,13 @@ export default class Runner extends EventEmitter {
       ),
     });
 
-    const testsByBrowser: Partial<TestsByBrowser> = testsToStart.reduce((tests: TestsByBrowser, test) => {
+    const testsByBrowser: Partial<TestsByBrowser> = testsToStart.reduce((tests: Partial<TestsByBrowser>, test) => {
       const { id, browser, testName, storyPath } = test;
       const restPath = [...storyPath, testName].filter(isDefined);
       test.status = 'pending';
       return {
         ...tests,
-        [browser]: [...(tests[browser] || []), { id, path: restPath }],
+        [browser]: [...(tests[browser] ?? []), { id, path: restPath }],
       };
     }, {});
 
@@ -148,15 +143,17 @@ export default class Runner extends EventEmitter {
 
   public stop(): void {
     if (!this.isRunning) return;
-    this.browsers.forEach((browser) => this.pools[browser].stop());
+    this.browsers.forEach((browser) => {
+      this.pools[browser].stop();
+    });
   }
 
   public get status(): CreeveyStatus {
     const tests: CreeveyStatus['tests'] = {};
     Object.values(this.tests)
       .filter(isDefined)
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .forEach(({ story, fn, ...test }) => (tests[test.id] = test));
+
+      .forEach(({ story: _, fn: __, ...test }) => (tests[test.id] = test));
     return {
       isRunning: this.isRunning,
       tests,
@@ -166,9 +163,9 @@ export default class Runner extends EventEmitter {
 
   public async approve({ id, retry, image }: ApprovePayload): Promise<void> {
     const test = this.tests[id];
-    if (!test || !test.results) return;
+    if (!test?.results) return;
     const result = test.results[retry];
-    if (!result || !result.images) return;
+    if (!result.images) return;
     const images = result.images[image];
     if (!images) return;
     if (!test.approved) {
@@ -179,8 +176,8 @@ export default class Runner extends EventEmitter {
     const testPath = path.join(...restPath, image == browser ? '' : browser);
     const srcImagePath = path.join(this.reportDir, testPath, images.actual);
     const dstImagePath = path.join(this.screenDir, testPath, `${image}.png`);
-    await mkdirAsync(path.join(this.screenDir, testPath), { recursive: true });
-    await copyFileAsync(srcImagePath, dstImagePath);
+    await mkdir(path.join(this.screenDir, testPath), { recursive: true });
+    await copyFile(srcImagePath, dstImagePath);
     test.approved[image] = retry;
     this.sendUpdate({
       tests: { [id]: { id, browser, testName, storyPath, approved: { [image]: retry }, storyId: test.storyId } },

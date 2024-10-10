@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ViewPropsWithTheme, getBorderColor, themeBorderColors } from './ImagesView';
-import { styled, withTheme } from '@storybook/theming';
-import { useApplyScale, useCalcScale, useLoadImages } from '../../helpers';
 import { Loader } from '@storybook/components';
-import { readyForCapture } from '../../../addon/readyForCapture';
+import { styled, withTheme } from '@storybook/theming';
+import { ViewPropsWithTheme, getBorderColor, themeBorderColors } from './common.js';
+import { useApplyScale, useCalcScale, useLoadImages } from '../../helpers.js';
+import { readyForCapture } from '../../../addon/readyForCapture.js';
 
 type ImageState = keyof typeof themeBorderColors;
 
@@ -42,10 +42,9 @@ export const SwapView = withTheme(({ theme, expect, actual, diff }: ViewPropsWit
   useApplyScale(expectImageRef, scale, image);
   useApplyScale(actualImageRef, scale, image);
 
-  const handleChangeView = useCallback(
-    (): void => setImage((prevImage) => (prevImage == 'actual' ? 'expect' : 'actual')),
-    [],
-  );
+  const handleChangeView = useCallback((): void => {
+    setImage((prevImage) => (prevImage == 'actual' ? 'expect' : 'actual'));
+  }, []);
 
   useEffect(() => {
     if (loaded) readyForCapture();

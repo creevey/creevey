@@ -1,6 +1,6 @@
-import { expect } from 'chai';
-import { CreeveyStoryParams, StoriesRaw } from '../../src/types';
-import { serializeRawStories, deserializeRawStories } from '../../src/shared';
+import { expect, describe, test } from 'vitest';
+import { CreeveyStoryParams, StoriesRaw } from '../../src/types.js';
+import { serializeRawStories, deserializeRawStories } from '../../src/shared/index.js';
 
 describe('serializes raw stories with creevey params', () => {
   const getStories = (): StoriesRaw => {
@@ -16,18 +16,24 @@ describe('serializes raw stories with creevey params', () => {
     return {
       'test-story': {
         id: 'test-story',
+        componentId: 'button',
+        title: 'Button Test Story',
         name: 'story',
+        story: 'story',
         kind: 'test',
         parameters: {
           fileName: '',
           options: {},
           creevey: creeveyParams,
         },
+        tags: [],
+        initialArgs: {},
+        argTypes: {},
       },
     };
   };
 
-  it('serializes and deserializes without losses', () => {
+  test('serializes and deserializes without losses', () => {
     const stories = getStories();
     const serialized = serializeRawStories(stories);
     const deserialized = deserializeRawStories(serialized);
@@ -35,7 +41,7 @@ describe('serializes raw stories with creevey params', () => {
     expect(deserialized).to.deep.equal(stories);
   });
 
-  it('serializes, stringifies, parses and deserializes without losses', () => {
+  test('serializes, stringifies, parses and deserializes without losses', () => {
     const stories = getStories();
     const serialized = serializeRawStories(stories);
     const stringified = JSON.stringify(serialized);

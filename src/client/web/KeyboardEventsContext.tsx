@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useCallback, useContext } from 'react';
-import { CreeveySuite, isTest, noop } from '../../types';
-import { CreeveyViewFilter, filterTests, flattenSuite, getSuiteByPath, getTestPath } from '../shared/helpers';
-import { CreeveyContext } from './CreeveyContext';
+import { CreeveySuite, isTest, noop } from '../../types.js';
+import { CreeveyViewFilter, filterTests, flattenSuite, getSuiteByPath, getTestPath } from '../shared/helpers.js';
+import { CreeveyContext } from './CreeveyContext.js';
+
+export type SuitePath = string[];
+export type FocusableItem = null | SuitePath;
 
 export interface KeyboardEventsContextType {
-  sidebarFocusedItem: string[];
-  setSidebarFocusedItem: (path: string[]) => void;
+  sidebarFocusedItem: FocusableItem;
+  setSidebarFocusedItem: (item: FocusableItem) => void;
 }
 
 export const KeyboardEventsContext = React.createContext<KeyboardEventsContextType>({
@@ -22,27 +25,27 @@ export const KeyboardEvents = ({
   filter: CreeveyViewFilter;
   children: React.ReactChild;
 }): JSX.Element => {
-  const [sidebarFocusedItem, setSidebarFocusedItem] = useState<string[]>([]);
+  const [sidebarFocusedItem, setSidebarFocusedItem] = useState<FocusableItem>([]);
 
   const { onSuiteOpen, onSuiteToggle } = useContext(CreeveyContext);
 
   const suiteList = flattenSuite(filterTests(rootSuite, filter));
 
-  const focusOnNode = useCallback((path: string[]): void => setSidebarFocusedItem(path), []);
+  const getFocusedItemIndex = useCallback(
+    (item: string[]): number => {
+      return suiteList.findIndex((x) => {
+        const path = isTest(x.suite) ? getTestPath(x.suite) : x.suite.path;
 
-  const getFocusedItemIndex = useCallback((): number => {
-    return suiteList.findIndex((x) => {
-      const path = isTest(x.suite) ? getTestPath(x.suite) : x.suite.path;
-
-      return (
-        sidebarFocusedItem.length === path.length &&
-        sidebarFocusedItem.every((focusedPath) => path.includes(focusedPath))
-      );
-    });
-  }, [suiteList, sidebarFocusedItem]);
+        return item.length === path.length && item.every((focusedPath) => path.includes(focusedPath));
+      });
+    },
+    [suiteList],
+  );
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
+      if (sidebarFocusedItem === null) return;
+
       if (e.code === 'Enter') {
         if (sidebarFocusedItem.length === 0) return;
 
@@ -65,17 +68,17 @@ export const KeyboardEvents = ({
         onSuiteToggle(path, !focusedSuite.checked);
       }
       if (e.code === 'ArrowDown') {
-        const currentIndex = sidebarFocusedItem.length === 0 ? -1 : getFocusedItemIndex();
+        const currentIndex = sidebarFocusedItem.length === 0 ? -1 : getFocusedItemIndex(sidebarFocusedItem);
         if (currentIndex === suiteList.length - 1) return;
         const nextSuite = suiteList[currentIndex + 1];
         const nextPath = isTest(nextSuite.suite) ? getTestPath(nextSuite.suite) : nextSuite.suite.path;
-        focusOnNode(nextPath);
+        setSidebarFocusedItem(nextPath);
       }
       if (e.code === 'ArrowUp') {
-        const currentIndex = sidebarFocusedItem.length === 0 ? 0 : getFocusedItemIndex();
+        const currentIndex = sidebarFocusedItem.length === 0 ? 0 : getFocusedItemIndex(sidebarFocusedItem);
         const nextSuite = currentIndex > 0 ? suiteList[currentIndex - 1].suite : rootSuite;
         const nextPath = isTest(nextSuite) ? getTestPath(nextSuite) : nextSuite.path;
-        focusOnNode(nextPath);
+        setSidebarFocusedItem(nextPath);
       }
 
       if (e.code === 'ArrowRight') {
@@ -96,10 +99,10 @@ export const KeyboardEvents = ({
         }
 
         const path = isTest(focusedSuite) ? getTestPath(focusedSuite) : focusedSuite.path;
-        focusOnNode(path.slice(0, -1));
+        setSidebarFocusedItem(path.slice(0, -1));
       }
     },
-    [focusOnNode, onSuiteOpen, onSuiteToggle, rootSuite, suiteList, getFocusedItemIndex, sidebarFocusedItem],
+    [onSuiteOpen, onSuiteToggle, rootSuite, suiteList, getFocusedItemIndex, sidebarFocusedItem],
   );
 
   useEffect(() => {

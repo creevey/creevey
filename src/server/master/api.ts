@@ -1,7 +1,7 @@
 import WebSocket from 'ws';
-import Runner from './runner';
-import { Request, Response, CreeveyUpdate } from '../../types';
-import { logger } from '../logger';
+import Runner from './runner.js';
+import { Request, Response, CreeveyUpdate } from '../../types.js';
+import { logger } from '../logger.js';
 
 export interface CreeveyApi {
   subscribe: (wss: WebSocket.Server) => void;
@@ -19,7 +19,9 @@ function broadcast(wss: WebSocket.Server, message: Response): void {
 export default function creeveyApi(runner: Runner): CreeveyApi {
   return {
     subscribe(wss: WebSocket.Server) {
-      runner.on('update', (payload: CreeveyUpdate) => broadcast(wss, { type: 'update', payload }));
+      runner.on('update', (payload: CreeveyUpdate) => {
+        broadcast(wss, { type: 'update', payload });
+      });
     },
 
     handleMessage(ws: WebSocket, message: WebSocket.Data) {

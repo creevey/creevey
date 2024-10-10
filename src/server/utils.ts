@@ -1,15 +1,22 @@
-import { createWriteStream, existsSync, readFileSync, unlink } from 'fs';
-import cluster from 'cluster';
-import { SkipOptions, SkipOption, isDefined, TestData, noop, isFunction } from '../types';
-import { emitShutdownMessage, sendShutdownMessage } from './messages';
-import findCacheDir from 'find-cache-dir';
+import fs from 'fs';
 import { get } from 'https';
+import cluster from 'cluster';
+import { dirname } from 'path';
+import { fileURLToPath, pathToFileURL } from 'url';
+import { createRequire } from 'module';
+import findCacheDir from 'find-cache-dir';
+import { register as esmRegister } from 'tsx/esm/api';
+import { register as cjsRegister } from 'tsx/cjs/api';
+import { SkipOptions, SkipOption, isDefined, TestData, noop, ServerTest } from '../types.js';
+import { emitShutdownMessage, sendShutdownMessage } from './messages.js';
+
+const importMetaUrl = pathToFileURL(__filename).href;
 
 export const isShuttingDown = { current: false };
 
 export const LOCALHOST_REGEXP = /(localhost|127\.0\.0\.1)/i;
 
-export const extensions = ['.js', '.jsx', '.ts', '.tsx'];
+export const configExt = ['.js', '.mjs', '.ts', '.cjs', '.mts', '.cts'];
 
 export const skipOptionKeys = ['in', 'kinds', 'stories', 'tests', 'reason'];
 
@@ -25,8 +32,8 @@ function matchBy(pattern: string | string[] | RegExp | undefined, value: string)
 export function shouldSkip(
   browser: string,
   meta: {
-    kind: string;
-    story: string;
+    title: string;
+    name: string;
   },
   skipOptions: SkipOptions,
   test?: string,
@@ -44,8 +51,8 @@ export function shouldSkip(
 export function shouldSkipByOption(
   browser: string,
   meta: {
-    kind: string;
-    story: string;
+    title: string;
+    name: string;
   },
   skipOption: SkipOption | SkipOption[],
   reason: string,
@@ -60,10 +67,10 @@ export function shouldSkipByOption(
   }
 
   const { in: browsers, kinds, stories, tests } = skipOption;
-  const { kind, story } = meta;
+  const { title, name } = meta;
   const skipByBrowser = matchBy(browsers, browser);
-  const skipByKind = matchBy(kinds, kind);
-  const skipByStory = matchBy(stories, story);
+  const skipByKind = matchBy(kinds, title);
+  const skipByStory = matchBy(stories, name);
   const skipByTest = !isDefined(test) || matchBy(tests, test);
 
   return skipByBrowser && skipByKind && skipByStory && skipByTest && reason;
@@ -78,7 +85,9 @@ export async function shutdownWorkers(): Promise<void> {
       .map(
         (worker) =>
           new Promise<void>((resolve) => {
-            const timeout = setTimeout(() => worker.kill(), 10000);
+            const timeout = setTimeout(() => {
+              worker.kill();
+            }, 10000);
             worker.on('exit', () => {
               clearTimeout(timeout);
               resolve();
@@ -91,15 +100,14 @@ export async function shutdownWorkers(): Promise<void> {
 }
 
 export function shutdown(): void {
-  // eslint-disable-next-line no-process-exit
   process.exit();
 }
 
-export function getCreeveyCache(): string {
-  return findCacheDir({ name: 'creevey', cwd: __dirname }) as string;
+export function getCreeveyCache(): string | undefined {
+  return findCacheDir({ name: 'creevey', cwd: dirname(fileURLToPath(importMetaUrl)) });
 }
 
-export async function runSequence(seq: Array<() => unknown>, predicate: () => boolean): Promise<void> {
+export async function runSequence(seq: (() => unknown)[], predicate: () => boolean): Promise<void> {
   for (const fn of seq) {
     if (predicate()) await fn();
   }
@@ -123,22 +131,28 @@ export function testsToImages(tests: (TestData | undefined)[]): Set<string> {
 }
 
 // https://tuhrig.de/how-to-know-you-are-inside-a-docker-container/
-export const isInsideDocker = existsSync('/proc/1/cgroup') && /docker/.test(readFileSync('/proc/1/cgroup', 'utf8'));
+export const isInsideDocker =
+  fs.existsSync('/proc/1/cgroup') && fs.readFileSync('/proc/1/cgroup', 'utf-8').includes('docker');
 
 export const downloadBinary = (downloadUrl: string, destination: string): Promise<void> =>
   new Promise((resolve, reject) =>
     get(downloadUrl, (response) => {
       if (response.statusCode == 302) {
         const { location } = response.headers;
-        if (!location)
-          return reject(new Error(`Couldn't download selenoid. Status code: ${response.statusCode ?? 'UNKNOWN'}`));
+        if (!location) {
+          reject(new Error(`Couldn't download selenoid. Status code: ${response.statusCode ?? 'UNKNOWN'}`));
+          return;
+        }
 
-        return resolve(downloadBinary(location, destination));
+        resolve(downloadBinary(location, destination));
+        return;
       }
-      if (response.statusCode != 200)
-        return reject(new Error(`Couldn't download selenoid. Status code: ${response.statusCode ?? 'UNKNOWN'}`));
+      if (response.statusCode != 200) {
+        reject(new Error(`Couldn't download selenoid. Status code: ${response.statusCode ?? 'UNKNOWN'}`));
+        return;
+      }
 
-      const fileStream = createWriteStream(destination);
+      const fileStream = fs.createWriteStream(destination);
       response.pipe(fileStream);
 
       fileStream.on('finish', () => {
@@ -146,25 +160,47 @@ export const downloadBinary = (downloadUrl: string, destination: string): Promis
         resolve();
       });
       fileStream.on('error', (error) => {
-        unlink(destination, noop);
+        fs.unlink(destination, noop);
         reject(error);
       });
     }),
   );
 
-export function removeProps(obj: Record<string, unknown>, propPath: (string | ((key: string) => boolean))[]): void {
-  const [prop, ...restPath] = propPath;
-  if (restPath.length > 0) {
-    if (typeof prop == 'string') obj[prop] && removeProps(obj[prop] as Record<string, unknown>, restPath);
-    if (isFunction(prop))
-      Object.keys(obj)
-        .filter(prop)
-        .forEach((key) => obj[key] && removeProps(obj[key] as Record<string, unknown>, restPath));
-  } else {
-    if (typeof prop == 'string') delete obj[prop];
-    if (isFunction(prop))
-      Object.keys(obj)
-        .filter(prop)
-        .forEach((key) => delete obj[key]);
+export function readDirRecursive(dirPath: string): string[] {
+  return ([] as string[]).concat(
+    ...fs
+      .readdirSync(dirPath, { withFileTypes: true })
+      .map((dirent) =>
+        dirent.isDirectory() ? readDirRecursive(`${dirPath}/${dirent.name}`) : [`${dirPath}/${dirent.name}`],
+      ),
+  );
+}
+
+const _require = createRequire(importMetaUrl);
+export function tryToLoadTestsData(filename: string): Partial<Record<string, ServerTest>> | undefined {
+  try {
+    return _require(filename) as Partial<Record<string, ServerTest>>;
+  } catch {
+    /* noop */
   }
+}
+
+const [nodeVersion] = process.versions.node.split('.').map(Number);
+export async function loadThroughTSX<T>(
+  callback: (load: (modulePath: string) => Promise<T>) => Promise<T>,
+): Promise<T> {
+  const unregister = nodeVersion > 18 ? esmRegister() : cjsRegister();
+
+  const result = await callback((modulePath) =>
+    nodeVersion > 18
+      ? import(modulePath)
+      : // eslint-disable-next-line @typescript-eslint/no-require-imports
+        Promise.resolve(require(modulePath) as T),
+  );
+
+  // NOTE: `unregister` type is `(() => Promise<void>) | (() => void)`
+  // eslint-disable-next-line @typescript-eslint/await-thenable, @typescript-eslint/no-confusing-void-expression
+  await unregister();
+
+  return result;
 }

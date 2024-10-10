@@ -1,10 +1,10 @@
 import React from 'react';
-import { TestData } from '../../../types';
 import { Loader } from '@storybook/components';
-import { ResultsPage } from '../../shared/components/ResultsPage';
 import { styled } from '@storybook/theming';
-import { getTestPath } from '../../shared/helpers';
-import TestSelect from './TestSelect';
+import { TestData } from '../../../types.js';
+import { ResultsPage } from '../../shared/components/ResultsPage.js';
+import { getTestPath } from '../../shared/helpers.js';
+import TestSelect from './TestSelect.js';
 interface PanelProps {
   tests: TestData[];
   selectedTestId: string;
@@ -39,7 +39,7 @@ export const Panel = ({ tests, selectedTestId, onChangeTest, onImageApprove }: P
         <Wrapper isRunning={isRunning}>
           <ResultsPage
             height={'100%'}
-            key={`${result.id}_${result.results?.length ?? 0}`} // TODO
+            key={`${result.id}_${result.results.length}`} // TODO
             id={result.id}
             path={getTestPath(result)} // TODO Memo?
             results={result.results}

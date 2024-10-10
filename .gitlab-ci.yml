@@ -1,8 +1,4 @@
 image: node:latest
-before_script:
-  - curl -o- -L https://yarnpkg.com/install.sh | bash
-  - export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
-  - yarn install --cache-folder .yarn
 
 cache:
   paths:
@@ -13,15 +9,16 @@ build:
   stage: build
   artifacts:
     paths:
-      - lib/
+      - dist/
       - creevey-*.tgz
+  before_script:
+    - curl https://get.volta.sh | bash
   script:
+    - volta setup
     - yarn lint
+    - yarn test:unit
     - yarn build
     - yarn pack
-unit:
-  script:
-    - yarn test:unit
 
 ui:
   stage: test
@@ -36,6 +33,6 @@ ui:
       - report/
   script:
     - mkdir report
-    - cp lib/cjs/client/web/*.js report/
+    - cp dist/client/web/*.js report/
     - yarn start:storybook &
     - yarn creevey:gitlab

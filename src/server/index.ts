@@ -1,30 +1,26 @@
 import cluster from 'cluster';
-import { readConfig, defaultBrowser } from './config';
-import { Options, Config, BrowserConfig } from '../types';
-import { logger } from './logger';
+import { readConfig, defaultBrowser } from './config.js';
+import { Options, Config, BrowserConfig } from '../types.js';
+import { logger } from './logger.js';
 
 // NOTE: Impure function, mutate config by adding gridUrl prop
 async function startWebdriverServer(config: Config, options: Options): Promise<void> {
   if (config.useDocker) {
-    return (await import('./docker')).default(config, options.browser, async () =>
-      (await import('./selenium/selenoid')).startSelenoidContainer(config, options.debug),
+    return (await import('./docker.js')).initDocker(config, options.browser, async () =>
+      (await import('./selenium/selenoid.js')).startSelenoidContainer(config, options.debug),
     );
   } else {
-    return (await import('./selenium/selenoid')).startSelenoidStandalone(config, options.debug);
+    return (await import('./selenium/selenoid.js')).startSelenoidStandalone(config, options.debug);
   }
 }
 
 export default async function (options: Options): Promise<void> {
   const config = await readConfig(options);
-  const { browser = defaultBrowser, extract, tests, update, webpack, ui, port } = options;
-
-  if (!config) return;
+  const { browser = defaultBrowser, tests, update, ui, port } = options;
 
   // NOTE: We don't need docker nor selenoid for webpack or update options
   if (
     !(config.gridUrl || (Object.values(config.browsers) as BrowserConfig[]).every(({ gridUrl }) => gridUrl)) &&
-    !extract &&
-    !webpack &&
     !tests &&
     !update
   ) {
@@ -32,28 +28,24 @@ export default async function (options: Options): Promise<void> {
   }
 
   switch (true) {
-    case Boolean(extract) || tests: {
-      return (await import('./extract')).default(config, options);
-    }
     case Boolean(update): {
-      return (await import('./update')).default(config, typeof update == 'string' ? update : undefined);
-    }
-    case webpack: {
-      logger.info('Starting Webpack Compiler');
-
-      return (await import('./loaders/webpack/compile')).default(config, options);
+      (await import('./update.js')).update(config, typeof update == 'string' ? update : undefined);
+      return;
     }
     case cluster.isPrimary: {
       logger.info('Starting Master Process');
 
-      const resolveApi = (await import('./master/server')).default(config.reportDir, port, ui);
+      const resolveApi = (await import('./master/server.js')).start(config.reportDir, port, ui);
 
-      return (await import('./master')).default(config, options, resolveApi);
+      return (await import('./master/index.js')).start(config, options, resolveApi);
     }
     default: {
       logger.info(`Starting Worker for ${browser}`);
 
-      return (await import('./worker')).default(config, { ...options, browser });
+      return (await import('./worker/index.js')).start(config, {
+        ...options,
+        browser,
+      });
     }
   }
 }

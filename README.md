@@ -76,7 +76,7 @@ And that's it.
 
 **NOTE:** In first run you may noticed, that all your tests are failing, it because you don't have source screenshot images yet. If you think, that all images are acceptable, you may approve them all in one command `yarn creevey --update`.
 
-**NOTE:** Creevey captures screenshot of the `#root` element and sometimes you need to capture a whole browser viewport. To achieve this you could define `captureElement` Creevey parameter for story or kind. Or you may pass any different css selector.
+**NOTE:** Creevey captures screenshot of the `#storybook-root` element and sometimes you need to capture a whole browser viewport. To achieve this you could define `captureElement` Creevey parameter for story or kind. Or you may pass any different css selector.
 
 ```tsx
 // stories/MyModal.stories.tsx
@@ -142,7 +142,7 @@ This cause to flaky screenshots. Possible solutions:
 
 Because tests defined in story parameters and `selenium-webdriver` depends on nodejs builtin packages. Storybook may fail to build browser bundle. To avoid import use these workarounds:
 
-- `.findElement(By.css('#root'))` -> `.findElement({ css: '#root' })`
+- `.findElement(By.css('#storybook-root'))` -> `.findElement({ css: '#storybook-root' })`
 - `.sendKeys(Keys.ENTER)` -> `.sendKeys(this.keys.ENTER)`
 
 ## Used by
