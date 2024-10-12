@@ -165,6 +165,8 @@
     "jiti": "^1.21.6",
     "lint-staged": "^13.0.3",
     "pinst": "^3.0.0",
+    "playwright": "^1.48.0",
+    "playwright-core": "^1.48.0",
     "prettier": "^3.3.3",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",

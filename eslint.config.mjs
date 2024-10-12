@@ -7,7 +7,7 @@ import prettierRecommended from 'eslint-plugin-prettier/recommended';
 
 // TODO Add import plugin after it migrated to eslint 9.x
 const config = tseslint.config(
-  { ignores: ['dist/*', 'report/*', 'scripts/*'] },
+  { ignores: ['dist/*', 'report/*', 'scripts/*', 'index.mts'] },
   js.configs.recommended,
   prettierRecommended,
   /* eslint-disable-next-line */
