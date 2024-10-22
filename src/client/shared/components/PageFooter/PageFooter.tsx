@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '@storybook/components';
+import { Button, Spaced } from '@storybook/components';
 import { styled, withTheme } from '@storybook/theming';
 import { Paging } from './Paging.js';
 
@@ -34,11 +34,13 @@ export function PageFooter({
   return (
     <Container>
       <Paging activePage={retry} onPageChange={onRetryChange} pagesCount={retriesCount} />
-      {canApprove ? (
-        <StyledButton secondary outline onClick={onApprove}>
-          {'Approve'}
-        </StyledButton>
-      ) : null}
+      <Spaced col={2} row={1}>
+        {canApprove ? (
+          <StyledButton secondary onClick={onApprove}>
+            Approve
+          </StyledButton>
+        ) : null}
+      </Spaced>
     </Container>
   );
 }

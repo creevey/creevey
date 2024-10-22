@@ -8,7 +8,7 @@ import { getImageUrl } from '../helpers.js';
 import { getViewMode, VIEW_MODE_KEY } from '../viewMode.js';
 import { ImagesViewMode, TestResult } from '../../../types.js';
 
-interface TestResultsProps {
+interface ResultsPageProps {
   id: string;
   path: string[];
   results?: TestResult[];
@@ -60,7 +60,7 @@ export function ResultsPageInternal({
   onImageApprove,
   showTitle = false,
   height,
-}: TestResultsProps): JSX.Element {
+}: ResultsPageProps): JSX.Element {
   const [retry, setRetry] = useState(results.length);
   const result = results[retry - 1] ?? {};
   const [imageName, setImageName] = useState(Object.keys(result.images ?? {})[0] ?? '');
@@ -84,6 +84,7 @@ export function ResultsPageInternal({
   const handleApprove = (): void => {
     onImageApprove(id, retry - 1, imageName);
   };
+
   const handleChangeViewMode = (mode: ImagesViewMode): void => {
     localStorage.setItem(VIEW_MODE_KEY, mode);
     setViewMode(mode);

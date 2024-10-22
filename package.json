@@ -158,6 +158,7 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-react": "^7.35.0",
+    "eslint-plugin-react-hooks": "^5.0.0",
     "git-cz": "^4.9.0",
     "globals": "^15.9.0",
     "husky": "^8.0.1",

@@ -49,6 +49,10 @@ export default function creeveyApi(runner: Runner): CreeveyApi {
           void runner.approve(command.payload);
           return;
         }
+        case 'approveAll': {
+          void runner.approveAll();
+          return;
+        }
       }
     },
   };

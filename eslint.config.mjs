@@ -3,6 +3,7 @@ import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 // @ts-expect-error There is no types in this package
 import react from 'eslint-plugin-react';
+import reactHooks from 'eslint-plugin-react-hooks';
 import prettierRecommended from 'eslint-plugin-prettier/recommended';
 
 // TODO Add import plugin after it migrated to eslint 9.x
@@ -36,7 +37,11 @@ const config = tseslint.config(
         version: 'detect',
       },
     },
+    plugins: {
+      'react-hooks': reactHooks,
+    },
     rules: {
+      ...reactHooks.configs.recommended.rules,
       'react/prop-types': 'off',
       '@typescript-eslint/restrict-template-expressions': [
         'error',

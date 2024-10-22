@@ -1,7 +1,5 @@
 import React from 'react';
-import { Button, Icons } from '@storybook/components';
-import { styled } from '@storybook/theming';
-import { noop } from '../../../../types.js';
+import { TabButton } from '@storybook/components';
 
 export interface PagingProps {
   activePage: number;
@@ -9,56 +7,43 @@ export interface PagingProps {
   pagesCount: number;
 }
 
-export type ItemType = number | '.' | 'forward';
-
-const StyledButton = styled(Button)({
-  transform: 'none',
-  marginLeft: '8px',
-});
+export type ItemType = number | '.';
 
 export function Paging(props: PagingProps): JSX.Element {
   const renderItem = (item: ItemType, index: number): JSX.Element => {
     switch (item) {
       case '.': {
         return (
-          <StyledButton disabled key={`dots${index < 5 ? 'Left' : 'Right'}`}>
-            {'...'}
-          </StyledButton>
-        );
-      }
-      case 'forward': {
-        const disabled = props.activePage === props.pagesCount;
-        return (
-          <StyledButton
-            outline
-            disabled={disabled}
-            onClick={
-              disabled
-                ? noop
-                : () => {
-                    goToPage(props.activePage + 1);
-                  }
-            }
-            key="forward"
+          <TabButton
+            disabled
+            key={`dots${index < 5 ? 'Left' : 'Right'}`}
+            autoFocus={false}
+            content={''}
+            nonce={''}
+            rel={''}
+            rev={''}
           >
-            <span>
-              Next <Icons icon="arrowright" />
-            </span>
-          </StyledButton>
+            {'...'}
+          </TabButton>
         );
       }
+
       default: {
         return (
-          <StyledButton
-            outline
-            secondary={props.activePage === item}
+          <TabButton
+            rel={item}
+            rev={item}
+            autoFocus={false}
+            nonce={item}
+            content={item}
             key={item}
             onClick={() => {
               goToPage(item);
             }}
+            active={props.activePage === item}
           >
             {item}
-          </StyledButton>
+          </TabButton>
         );
       }
     }
@@ -101,5 +86,5 @@ function getItems(active: number, total: number): ItemType[] {
     result.push(total);
   }
 
-  return result.concat('forward');
+  return result;
 }

@@ -49,7 +49,14 @@ export function TestLink({ title, opened, test }: TestLinkProps): JSX.Element {
 
   return (
     <Container disabled={emptyResults}>
-      <Button onClick={handleOpen} active={opened} focused={isTestFocused} disabled={emptyResults} ref={buttonRef}>
+      <Button
+        onClick={handleOpen}
+        active={opened}
+        focused={isTestFocused}
+        disabled={emptyResults}
+        ref={buttonRef}
+        approved={test.approved}
+      >
         <TestStatusIcon inverted={opened} status={test.status} skip={test.skip} />
         <SuiteContainer padding={(testPath.length + 8) * 8}>{title}</SuiteContainer>
       </Button>

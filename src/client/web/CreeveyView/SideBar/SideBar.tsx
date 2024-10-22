@@ -14,6 +14,7 @@ import {
 import { CreeveyContext } from '../../CreeveyContext.js';
 import { SuiteLink } from './SuiteLink.js';
 import { TestLink } from './TestLink.js';
+import { SideBarFooter } from './SideBarFooter.js';
 
 export const SideBarContext = createContext<{ onOpenTest: (test: CreeveyTest) => void }>({
   onOpenTest: noop,
@@ -25,6 +26,7 @@ export interface SideBarProps {
   onOpenTest: (test: CreeveyTest) => void;
   filter: CreeveyViewFilter;
   setFilter: (filter: CreeveyViewFilter) => void;
+  onApproveAll: () => void;
 }
 
 const Container = withTheme(
@@ -75,7 +77,14 @@ const Divider = withTheme(
   })),
 );
 
-export function SideBar({ rootSuite, openedTest, onOpenTest, filter, setFilter }: SideBarProps): JSX.Element {
+export function SideBar({
+  rootSuite,
+  openedTest,
+  onOpenTest,
+  filter,
+  setFilter,
+  onApproveAll,
+}: SideBarProps): JSX.Element {
   const { onStart, onStop } = useContext(CreeveyContext);
 
   // TODO Maybe need to do flatten first?
@@ -119,6 +128,7 @@ export function SideBar({ rootSuite, openedTest, onOpenTest, filter, setFilter }
             </TestsContainer>
           </ScrollArea>
         </ScrollContainer>
+        <SideBarFooter onApproveAll={onApproveAll} />
       </Container>
     </SideBarContext.Provider>
   );

@@ -38,6 +38,7 @@ export const Panel = ({ tests, selectedTestId, onChangeTest, onImageApprove }: P
       {result?.results?.length ? (
         <Wrapper isRunning={isRunning}>
           <ResultsPage
+            onGoToNextFailedTest={console.log}
             height={'100%'}
             key={`${result.id}_${result.results.length}`} // TODO
             id={result.id}

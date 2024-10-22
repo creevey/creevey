@@ -40,6 +40,10 @@ export const TestStatusIcon = withTheme(
         icon = <Icon color={inverted ? theme.color.lightest : theme.color.green} icon="check" />;
         break;
       }
+      case 'approved': {
+        icon = <Icon color={inverted ? theme.color.lightest : theme.color.mediumdark} icon="thumbsup" />;
+        break;
+      }
       case 'running': {
         icon = <Spinner size={10} />;
         break;

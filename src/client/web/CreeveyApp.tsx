@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useImmer } from 'use-immer';
 import { ensure, styled, ThemeProvider, themes, withTheme } from '@storybook/theming';
 import { CreeveyUpdate, CreeveySuite, isDefined, CreeveyTest } from '../../types.js';
@@ -15,6 +15,7 @@ import {
   setSearchParams,
   getTestPathFromSearch,
   CreeveyViewFilter,
+  getFailedTests,
 } from '../shared/helpers.js';
 import { CreeveyContext } from './CreeveyContext.js';
 import { KeyboardEvents } from './KeyboardEventsContext.js';
@@ -55,6 +56,7 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
   const [theme, setTheme] = useTheme();
 
   const openedTest = getTestByPath(tests, openedTestPath);
+  const failedTests = useMemo(() => getFailedTests(tests), [tests]);
   if (openedTestPath.length > 0 && !isDefined(openedTest)) openTest([]);
 
   const handleSuiteOpen = useCallback(
@@ -73,10 +75,45 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
     },
     [updateTests],
   );
+
+  const handleOpenTest = useCallback(
+    (test: CreeveyTest): void => {
+      const testPath = getTestPath(test);
+      setSearchParams(testPath);
+      updateTests((draft) => {
+        openSuite(draft, testPath, true);
+        openTest(testPath);
+      });
+    },
+    [updateTests],
+  );
+
+  const handleGoToNextFailedTest = useCallback(() => {
+    if (failedTests.length <= 1) return;
+    const currentTest = failedTests.findIndex((t) => t.id === openedTest?.id);
+    const nextFailedTest = failedTests[currentTest + 1] || failedTests[0];
+    handleOpenTest(nextFailedTest);
+  }, [failedTests, handleOpenTest, openedTest?.id]);
+
   const handleImageApprove = useCallback(
-    (id: string, retry: number, image: string): void => api?.approve(id, retry, image),
+    (id: string, retry: number, image: string): void => {
+      api?.approve(id, retry, image);
+    },
     [api],
   );
+
+  const handleImageApproveAndGoNext = useCallback(
+    (id: string, retry: number, image: string): void => {
+      handleImageApprove(id, retry, image);
+      handleGoToNextFailedTest();
+    },
+    [handleImageApprove, handleGoToNextFailedTest],
+  );
+
+  const handleApproveAll = useCallback(() => {
+    api?.approveAll();
+  }, [api]);
+
   const handleStart = useCallback(
     (tests: CreeveySuite): void => api?.start(getCheckedTests(tests).map((test) => test.id)),
     [api],
@@ -88,11 +125,6 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
     },
     [setTheme],
   );
-  const handleOpenTest = useCallback((test: CreeveyTest): void => {
-    const testPath = getTestPath(test);
-    setSearchParams(testPath);
-    openTest(testPath);
-  }, []);
 
   useEffect(() => {
     window.addEventListener('popstate', (event) => {
@@ -154,6 +186,7 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
               onOpenTest={handleOpenTest}
               filter={filter}
               setFilter={setFilter}
+              onApproveAll={handleApproveAll}
             />
             {openedTest && (
               <ResultsPage
@@ -163,7 +196,7 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
                 results={openedTest.results}
                 approved={openedTest.approved}
                 showTitle
-                onImageApprove={handleImageApprove}
+                onImageApprove={handleImageApproveAndGoNext}
               />
             )}
             <ToggleContainer>
