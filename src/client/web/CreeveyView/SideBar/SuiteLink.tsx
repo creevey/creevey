@@ -6,6 +6,7 @@ import { TestStatusIcon } from './TestStatusIcon.js';
 import { CreeveySuite, isTest } from '../../../../types.js';
 import { CreeveyContext } from '../../CreeveyContext.js';
 import { KeyboardEventsContext } from '../../KeyboardEventsContext.js';
+import { isSuiteApproved } from '../../../shared/helpers.js';
 
 export interface SuiteLinkProps {
   title: string;
@@ -23,7 +24,7 @@ export const Container = withTheme(
 
 export const Button = withTheme(
   styled.button<{ theme: Theme; active?: boolean; focused?: boolean; approved?: boolean }>(
-    ({ theme, active, focused, approved }) => ({
+    ({ theme, active, focused }) => ({
       width: '100%',
       boxSizing: 'border-box',
       appearance: 'none',
@@ -33,13 +34,7 @@ export const Button = withTheme(
       border: 'none',
       zIndex: 1,
       textAlign: 'left',
-      background: active
-        ? theme.color.secondary
-        : focused
-          ? theme.background.hoverable
-          : approved
-            ? theme.background.positive
-            : 'none',
+      background: active ? theme.color.secondary : focused ? theme.background.hoverable : 'none',
       color: active ? theme.color.inverseText : 'inherit',
       outline: focused ? `1px solid ${theme.color.ancillary}` : 'none',
 
@@ -106,7 +101,7 @@ export function SuiteLink({ title, suite, 'data-testid': dataTid }: SuiteLinkPro
   return (
     <Container>
       <Button onClick={handleOpen} onFocus={handleFocus} data-testid={dataTid} focused={isSuiteFocused} ref={buttonRef}>
-        <TestStatusIcon status={suite.status} skip={suite.skip} />
+        <TestStatusIcon status={suite.status} skip={suite.skip} approved={isSuiteApproved(suite)} />
         <SuiteContainer padding={Math.max(48, (suite.path.length + 5) * 8)}>
           {isTest(suite) ||
             (Boolean(suite.path.length) &&

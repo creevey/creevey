@@ -165,6 +165,16 @@ export function getFailedTests(suite: CreeveySuite): CreeveyTest[] {
     });
 }
 
+export function isSuiteApproved(suite: CreeveySuite): boolean {
+  return Object.values(suite.children)
+    .filter(isDefined)
+    .every((suiteOrTest) => {
+      if (isTest(suiteOrTest)) return suiteOrTest.approved?.[suiteOrTest.browser] != null;
+
+      return isSuiteApproved(suiteOrTest);
+    });
+}
+
 export function updateTestStatus(suite: CreeveySuite, path: string[], update: Partial<TestData>): void {
   const title = path.shift();
 

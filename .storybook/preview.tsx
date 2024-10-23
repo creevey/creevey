@@ -11,6 +11,8 @@ export const decorators: DecoratorFunction[] = [
         value={{
           isReport: false,
           isRunning: false,
+          onImageApprove: noop,
+          onApproveAll: noop,
           onStart: noop,
           onStop: noop,
           onSuiteOpen: noop,

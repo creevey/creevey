@@ -4,6 +4,7 @@ import { Button, Icons } from '@storybook/components';
 
 interface SideBarFooterProps {
   onApproveAll: () => void;
+  onImageApprove?: () => void;
 }
 
 const Sticky = withTheme(
@@ -22,16 +23,16 @@ const Container = styled.div({
   justifyContent: 'space-between',
 });
 
-export function SideBarFooter({ onApproveAll }: SideBarFooterProps): JSX.Element {
+export function SideBarFooter({ onApproveAll, onImageApprove }: SideBarFooterProps): JSX.Element {
   return (
     <Sticky>
       <Container>
+        <Button secondary onClick={onImageApprove} disabled={!onImageApprove} style={{ paddingRight: 8 }}>
+          Approve
+          <Icons icon="arrowright" style={{ paddingLeft: 4 }} />
+        </Button>
         <Button secondary outline onClick={onApproveAll}>
           Approve all
-        </Button>
-
-        <Button secondary outline>
-          <Icons icon="arrowright" />
         </Button>
       </Container>
     </Sticky>
