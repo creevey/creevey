@@ -5,12 +5,15 @@ import { lstatSync, existsSync } from 'fs';
 import { mkdir, writeFile, copyFile } from 'fs/promises';
 import sh from 'shelljs';
 import { Octokit } from '@octokit/core';
-import { Config, BrowserConfig } from '../../types.js';
+import { Config, BrowserConfigObject } from '../../types.js';
 import { downloadBinary, getCreeveyCache } from '../utils.js';
 import { pullImages, runImage } from '../docker.js';
 import { subscribeOn } from '../messages.js';
 
-async function createSelenoidConfig(browsers: BrowserConfig[], { useDocker }: { useDocker: boolean }): Promise<string> {
+async function createSelenoidConfig(
+  browsers: BrowserConfigObject[],
+  { useDocker }: { useDocker: boolean },
+): Promise<string> {
   const selenoidConfig: Partial<
     Record<
       string,
@@ -83,7 +86,7 @@ export async function startSelenoidStandalone(config: Config, debug: boolean): P
 
   if (cluster.isWorker) return;
 
-  const browsers = (Object.values(config.browsers) as BrowserConfig[]).filter((browser) => !browser.gridUrl);
+  const browsers = (Object.values(config.browsers) as BrowserConfigObject[]).filter((browser) => !browser.gridUrl);
   const selenoidConfigDir = await createSelenoidConfig(browsers, { useDocker: false });
   const binaryPath = path.join(selenoidConfigDir, process.platform == 'win32' ? 'selenoid.exe' : 'selenoid');
   if (config.selenoidPath) {
@@ -113,7 +116,7 @@ export async function startSelenoidStandalone(config: Config, debug: boolean): P
 }
 
 export async function startSelenoidContainer(config: Config, debug: boolean): Promise<string> {
-  const browsers = (Object.values(config.browsers) as BrowserConfig[]).filter((browser) => !browser.gridUrl);
+  const browsers = (Object.values(config.browsers) as BrowserConfigObject[]).filter((browser) => !browser.gridUrl);
   const images: string[] = [];
   let limit = 0;
 

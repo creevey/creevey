@@ -6,7 +6,6 @@ import https from 'https';
 import Logger from 'loglevel';
 import prefix from 'loglevel-plugin-prefix';
 import { Context, Suite, Test } from 'mocha';
-import { networkInterfaces } from 'os';
 import { PNG } from 'pngjs';
 import { Builder, By, Capabilities, Origin, WebDriver, WebElement, logging } from 'selenium-webdriver';
 // import { Options as IeOptions } from 'selenium-webdriver/ie';
@@ -16,19 +15,27 @@ import { Builder, By, Capabilities, Origin, WebDriver, WebElement, logging } fro
 // import { Options as FirefoxOptions } from 'selenium-webdriver/firefox';
 import { PageLoadStrategy } from 'selenium-webdriver/lib/capabilities.js';
 import {
-  BrowserConfig,
+  BrowserConfigObject,
   Config,
   CreeveyStoryParams,
-  isDefined,
   noop,
   StorybookGlobals,
   StoryInput,
   StoriesRaw,
   Options,
+  CreeveyBrowser,
 } from '../../types.js';
 import { colors, logger } from '../logger.js';
 import { emitStoriesMessage, subscribeOn } from '../messages.js';
-import { isShuttingDown, LOCALHOST_REGEXP, runSequence } from '../utils.js';
+import {
+  appendIframePath,
+  getAddresses,
+  isShuttingDown,
+  LOCALHOST_REGEXP,
+  resolveStorybookUrl,
+  runSequence,
+  storybookRootID,
+} from '../utils.js';
 
 interface ElementRect {
   top: number;
@@ -48,10 +55,8 @@ declare global {
 
 // type UnPromise<P> = P extends Promise<infer T> ? T : never;
 
-const storybookRootID = 'storybook-root';
-const DOCKER_INTERNAL = 'host.docker.internal';
+// TODO Don't use local variables
 let browserLogger = logger;
-let browserName = '';
 let browser: WebDriver | null = null;
 // let context: UnPromise<ReturnType<typeof BrowsingContext>> | null = null;
 let creeveyServerHost: string | null = null;
@@ -86,31 +91,6 @@ function getSessionData(grid: string, sessionId = ''): Promise<Record<string, un
       });
     }),
   );
-}
-
-function getAddresses(): string[] {
-  // TODO Check if docker is used
-  return [DOCKER_INTERNAL].concat(
-    ...Object.values(networkInterfaces())
-      .filter(isDefined)
-      .map((network) => network.filter((info) => info.family == 'IPv4').map((info) => info.address)),
-  );
-}
-
-async function resolveStorybookUrl(storybookUrl: string, checkUrl: (url: string) => Promise<boolean>): Promise<string> {
-  browserLogger.debug('Resolving storybook url');
-  const addresses = getAddresses();
-  for (const ip of addresses) {
-    const resolvedUrl = storybookUrl.replace(LOCALHOST_REGEXP, ip);
-    browserLogger.debug(`Checking storybook availability on ${chalk.magenta(resolvedUrl)}`);
-    if (await checkUrl(resolvedUrl)) {
-      browserLogger.debug(`Resolved storybook url ${chalk.magenta(resolvedUrl)}`);
-      return resolvedUrl;
-    }
-  }
-  const error = new Error('Please specify `storybookUrl` with IP address that accessible from remote browser');
-  error.name = 'ResolveUrlError';
-  throw error;
 }
 
 async function openUrlAndWaitForPageSource(
@@ -169,6 +149,7 @@ async function waitForStorybook(browser: WebDriver): Promise<void> {
       let wait = true;
       do {
         try {
+          // TODO Research a different way to ensure storybook is initiated
           wait = await browser.executeScript<boolean>(function (SET_GLOBALS: string): boolean {
             if (typeof window.__STORYBOOK_ADDONS_CHANNEL__ == 'undefined') return true;
             if (window.__STORYBOOK_ADDONS_CHANNEL__.last(SET_GLOBALS) == undefined) return true;
@@ -357,7 +338,7 @@ async function takeCompositeScreenshot(
   return PNG.sync.write(compositeImage).toString('base64');
 }
 
-export async function takeScreenshot(
+async function takeScreenshot(
   browser: WebDriver,
   captureElement?: string | null,
   ignoreElements?: string | string[] | null,
@@ -468,7 +449,7 @@ async function selectStory(browser: WebDriver, storyId: string, waitForReady = f
         ]);
         return;
       }
-      void window.__CREEVEY_SELECT_STORY__(id, shouldWaitForReady, callback);
+      void window.__CREEVEY_SELECT_STORY__(id, shouldWaitForReady).then(callback);
     },
     storyId,
     waitForReady,
@@ -481,15 +462,11 @@ async function selectStory(browser: WebDriver, storyId: string, waitForReady = f
   return isCaptureCalled;
 }
 
-export async function updateStorybookGlobals(browser: WebDriver, globals: StorybookGlobals): Promise<void> {
+async function updateStorybookGlobals(browser: WebDriver, globals: StorybookGlobals): Promise<void> {
   browserLogger.debug('Applying storybook globals');
   await browser.executeScript(function (globals: StorybookGlobals) {
     window.__CREEVEY_UPDATE_GLOBALS__(globals);
   }, globals);
-}
-
-function appendIframePath(url: string): string {
-  return `${url.replace(/\/$/, '')}/iframe.html`;
 }
 
 async function openStorybookPage(
@@ -512,7 +489,7 @@ async function openStorybookPage(
       await browser.get(appendIframePath(resolvedUrl));
     } else {
       // NOTE: getUrlChecker already calls `browser.get` so we don't need another one
-      await resolveStorybookUrl(appendIframePath(storybookUrl), getUrlChecker(browser));
+      await resolveStorybookUrl(appendIframePath(storybookUrl), getUrlChecker(browser), browserLogger);
     }
   } catch (error) {
     browserLogger.error('Failed to resolve storybook URL', error instanceof Error ? error.message : '');
@@ -562,7 +539,7 @@ async function resolveCreeveyHost(browser: WebDriver, port: number): Promise<str
   return creeveyServerHost;
 }
 
-export async function loadStoriesFromBrowser(): Promise<StoriesRaw> {
+async function loadStoriesFromBrowser(): Promise<StoriesRaw> {
   if (!browser) throw new Error("Can't get stories from browser if webdriver isn't connected");
 
   const stories = await browser.executeAsyncScript<StoriesRaw | undefined>(function (
@@ -576,11 +553,11 @@ export async function loadStoriesFromBrowser(): Promise<StoriesRaw> {
   return stories;
 }
 
-export async function getBrowser(config: Config, options: Options & { browser: string }): Promise<WebDriver | null> {
+async function getBrowser(config: Config, options: Options & { browser: string }): Promise<WebDriver | null> {
   if (browser) return browser;
 
-  browserName = options.browser;
-  const browserConfig = config.browsers[browserName] as BrowserConfig;
+  const browserName = options.browser;
+  const browserConfig = config.browsers[browserName] as BrowserConfigObject;
   const {
     gridUrl = config.gridUrl,
     storybookUrl: address = config.storybookUrl,
@@ -596,8 +573,7 @@ export async function getBrowser(config: Config, options: Options & { browser: s
   const capabilities = new Capabilities({ ...userCapabilities, pageLoadStrategy: PageLoadStrategy.EAGER });
 
   subscribeOn('shutdown', () => {
-    void browser?.quit().finally(() => process.exit());
-    browser = null;
+    void closeBrowser().finally(() => process.exit());
   });
 
   try {
@@ -728,7 +704,7 @@ async function updateStoryArgs(browser: WebDriver, story: StoryInput, updatedArg
   );
 }
 
-export async function closeBrowser(): Promise<void> {
+async function closeBrowser(): Promise<void> {
   if (!browser) return;
   try {
     await browser.quit();
@@ -737,21 +713,22 @@ export async function closeBrowser(): Promise<void> {
   }
 }
 
-export async function switchStory(this: Context): Promise<void> {
-  let testOrSuite: Test | Suite | undefined = this.currentTest;
+// TODO Maybe share some code with playwright function
+async function switchStory(context: Context): Promise<void> {
+  let testOrSuite: Test | Suite | undefined = context.currentTest;
 
   if (!testOrSuite) throw new Error("Can't switch story, because test context doesn't have 'currentTest' field");
 
-  this.testScope.length = 0;
-  this.screenshots.length = 0;
-  this.testScope.push(this.browserName);
+  context.testScope.length = 0;
+  context.screenshots.length = 0;
+  context.testScope.push(context.browserName);
   while (testOrSuite?.title) {
-    this.testScope.push(testOrSuite.title);
+    context.testScope.push(testOrSuite.title);
     testOrSuite = testOrSuite.parent;
   }
-  const story = this.currentTest?.ctx?.story as StoryInput | undefined;
+  const story = context.currentTest?.ctx?.story as StoryInput | undefined;
 
-  if (!story) throw new Error(`Current test '${this.testScope.join('/')}' context doesn't have 'story' field`);
+  if (!story) throw new Error(`Current test '${context.testScope.join('/')}' context doesn't have 'story' field`);
 
   const { id, title, name, parameters } = story;
   const {
@@ -763,17 +740,17 @@ export async function switchStory(this: Context): Promise<void> {
   browserLogger.debug(`Switching to story ${chalk.cyan(title)}/${chalk.cyan(name)} by id ${chalk.magenta(id)}`);
 
   if (captureElement)
-    Object.defineProperty(this, 'captureElement', {
+    Object.defineProperty(context, 'captureElement', {
       enumerable: true,
       configurable: true,
-      get: () => this.browser.findElement(By.css(captureElement)),
+      get: () => context.browser.findElement(By.css(captureElement)),
     });
-  else Reflect.deleteProperty(this, 'captureElement');
+  else Reflect.deleteProperty(context, 'captureElement');
 
-  this.takeScreenshot = () => takeScreenshot(this.browser, captureElement, ignoreElements);
-  this.updateStoryArgs = (updatedArgs: Args) => updateStoryArgs(this.browser, story, updatedArgs);
+  context.takeScreenshot = () => takeScreenshot(context.browser, captureElement, ignoreElements);
+  context.updateStoryArgs = (updatedArgs: Args) => updateStoryArgs(context.browser, story, updatedArgs);
 
-  this.testScope.reverse();
+  context.testScope.reverse();
 
   let storyPlayResolver: (isCompleted: boolean) => void;
   let waitForComplete = new Promise<boolean>((resolve) => (storyPlayResolver = resolve));
@@ -781,15 +758,15 @@ export async function switchStory(this: Context): Promise<void> {
     if (message.type != 'capture') return;
     const { payload = {}, payload: { imageName } = {} } = message;
     void takeScreenshot(
-      this.browser,
+      context.browser,
       payload.captureElement ?? captureElement,
       payload.ignoreElements ?? ignoreElements,
     ).then((screenshot) => {
-      this.screenshots.push({ imageName, screenshot });
+      context.screenshots.push({ imageName, screenshot });
 
-      void this.browser
+      void context.browser
         .executeAsyncScript<boolean>(function (callback: (isCompleted: boolean) => void) {
-          window.__CREEVEY_HAS_PLAY_COMPLETED_YET__(callback);
+          void window.__CREEVEY_HAS_PLAY_COMPLETED_YET__().then(callback);
         })
         .then((isCompleted) => {
           storyPlayResolver(isCompleted);
@@ -799,8 +776,8 @@ export async function switchStory(this: Context): Promise<void> {
     });
   });
 
-  await resetMousePosition(this.browser);
-  const isCaptureCalled = await selectStory(this.browser, id, waitForReady);
+  await resetMousePosition(context.browser);
+  const isCaptureCalled = await selectStory(context.browser, id, waitForReady);
 
   if (isCaptureCalled) {
     while (!(await waitForComplete)) {
@@ -835,3 +812,10 @@ async function removeIgnoreStyles(browser: WebDriver, ignoreStyles: WebElement |
     }, ignoreStyles);
   }
 }
+
+export const seleniumBrowser: CreeveyBrowser<WebDriver> = {
+  getBrowser,
+  loadStoriesFromBrowser,
+  switchStory,
+  closeBrowser,
+};

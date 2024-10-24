@@ -1,12 +1,11 @@
 import cluster from 'cluster';
 import type { CreeveyStory, StoriesProvider, StoriesRaw } from '../../../types.js';
-import { loadStoriesFromBrowser } from '../../selenium/index.js';
 import { emitStoriesMessage, sendStoriesMessage, subscribeOn, subscribeOnWorker } from '../../messages.js';
 import { isDefined } from '../../../types.js';
 import { logger } from '../../logger.js';
 import { deserializeRawStories } from '../../../shared/index.js';
 
-export const loadStories: StoriesProvider = async (_config, _options, storiesListener) => {
+export const loadStories: StoriesProvider = async (config, storiesListener) => {
   if (cluster.isPrimary) {
     return new Promise<StoriesRaw>((resolve) => {
       const worker = Object.values(cluster.workers ?? {})
@@ -40,7 +39,8 @@ export const loadStories: StoriesProvider = async (_config, _options, storiesLis
         emitStoriesMessage({ type: 'set', payload: { stories, oldTests: storiesWithOldTests } });
       if (message.type == 'update') storiesListener(new Map(message.payload));
     });
-    const stories = deserializeRawStories(await loadStoriesFromBrowser());
+    const browser = config.webdriver;
+    const stories = deserializeRawStories(await browser.loadStoriesFromBrowser());
 
     const storiesWithOldTests: string[] = [];
 

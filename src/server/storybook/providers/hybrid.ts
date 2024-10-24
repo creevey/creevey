@@ -8,8 +8,7 @@ import { readDirRecursive } from '../../utils.js';
 import { combineParameters } from '../../../shared/index.js';
 
 export const loadStories: StoriesProvider = async (
-  _config: Config,
-  _options,
+  config: Config,
   storiesListener: (stories: Map<string, StoryInput[]>) => void,
 ) => {
   let creeveyParamsByStoryId: Partial<CreeveyParamsByStoryId> = {};
@@ -20,7 +19,7 @@ export const loadStories: StoriesProvider = async (
     }
   };
 
-  const stories = await browserProvider(_config, {}, (updatedStoriesByFiles) => {
+  const stories = await browserProvider(config, (updatedStoriesByFiles) => {
     Array.from(updatedStoriesByFiles.entries()).forEach(([, storiesArray]) => {
       storiesArray.forEach((story) => {
         const creeveyParams = creeveyParamsByStoryId[story.id];
@@ -31,7 +30,7 @@ export const loadStories: StoriesProvider = async (
   });
 
   // TODO fix test files hot reloading
-  creeveyParamsByStoryId = await parseParams(_config /*, (data) => console.log(data) */);
+  creeveyParamsByStoryId = await parseParams(config /*, (data) => console.log(data) */);
 
   Object.entries(stories).forEach(([storyId, story]) => {
     const creeveyParams = creeveyParamsByStoryId[storyId];
