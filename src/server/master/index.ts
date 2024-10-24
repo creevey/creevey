@@ -67,7 +67,7 @@ export async function start(config: Config, options: Options, resolveApi: (api: 
     }
   });
 
-  runner = await master(config, { watch: options.ui, debug: options.debug, port: options.port });
+  runner = await master(config);
 
   runner.on('stop', () => {
     void copyStatics(config.reportDir).then(() =>

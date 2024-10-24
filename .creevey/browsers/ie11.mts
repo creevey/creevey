@@ -1,6 +1,6 @@
-import { BrowserConfig } from '../../src/types.js';
+import { BrowserConfigObject } from '../../src/types.js';
 
-const config: BrowserConfig = {
+const config: BrowserConfigObject = {
   limit: 5,
   gridUrl: 'https://hub-cloud.browserstack.com/wd/hub',
   browserName: 'IE',
