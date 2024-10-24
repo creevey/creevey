@@ -81,6 +81,16 @@ export interface CreeveyStory {
   };
 }
 
+export interface CreeveyBrowser<T extends WebDriver> {
+  loadStoriesFromBrowser(): Promise<StoriesRaw>;
+
+  getBrowser(config: Config, options: Options & { browser: string }): Promise<T | null>;
+
+  closeBrowser(): Promise<void>;
+
+  switchStory(story: StoryInput, context: CreeveyTestContext): Promise<CreeveyTestContext>;
+}
+
 export interface Capabilities {
   browserName: string;
   browserVersion?: string;
@@ -92,7 +102,7 @@ export interface Capabilities {
   [prop: string]: unknown;
 }
 
-export type BrowserConfig = Capabilities & {
+export type BrowserConfigObject = Capabilities & {
   limit?: number;
   gridUrl?: string;
   storybookUrl?: string;
@@ -116,7 +126,7 @@ export type BrowserConfig = Capabilities & {
 
 export type StorybookGlobals = Record<string, unknown>;
 
-export type Browser = boolean | string | BrowserConfig;
+export type BrowserConfig = boolean | string | BrowserConfigObject;
 
 export interface HookConfig {
   before?: () => unknown;
@@ -193,7 +203,7 @@ export interface Config {
    * Browser capabilities
    * @default { chrome: true }
    */
-  browsers: Record<string, Browser>;
+  browsers: Record<string, BrowserConfig>;
   /**
    * Hooks that allow run custom script before and after creevey start
    */

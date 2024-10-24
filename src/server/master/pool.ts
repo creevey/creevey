@@ -1,6 +1,6 @@
 import { Worker as ClusterWorker } from 'cluster';
 import { EventEmitter } from 'events';
-import { Worker, Config, TestResult, BrowserConfig, TestStatus } from '../../types.js';
+import { Worker, Config, TestResult, BrowserConfigObject, TestStatus } from '../../types.js';
 import { sendTestMessage, subscribeOnWorker } from '../messages.js';
 import { gracefullyKill, isShuttingDown } from '../utils.js';
 import { WorkerQueue } from './queue.js';
@@ -13,7 +13,7 @@ interface WorkerTest {
 
 export default class Pool extends EventEmitter {
   private maxRetries: number;
-  private config: BrowserConfig;
+  private config: BrowserConfigObject;
   private workers: Worker[] = [];
   private queue: WorkerTest[] = [];
   private forcedStop = false;
@@ -30,7 +30,7 @@ export default class Pool extends EventEmitter {
 
     this.failFast = config.failFast;
     this.maxRetries = config.maxRetries;
-    this.config = config.browsers[browser] as BrowserConfig;
+    this.config = config.browsers[browser] as BrowserConfigObject;
   }
 
   async init(): Promise<void> {

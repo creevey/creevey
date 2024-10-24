@@ -15,12 +15,11 @@ declare global {
     __CREEVEY_SELECT_STORY__: (
       storyId: string,
       shouldWaitForReady: boolean,
-      callback: (response: [error?: string | null, isCaptureCalled?: boolean]) => void,
-    ) => Promise<void>;
+    ) => Promise<[error?: string | null, isCaptureCalled?: boolean]>;
     __CREEVEY_UPDATE_GLOBALS__: (globals: StorybookGlobals) => void;
     __CREEVEY_INSERT_IGNORE_STYLES__: (ignoreElements: string[]) => HTMLStyleElement;
     __CREEVEY_REMOVE_IGNORE_STYLES__: (ignoreStyles: HTMLStyleElement) => void;
-    __CREEVEY_HAS_PLAY_COMPLETED_YET__: (callback: (isPlayCompleted: boolean) => void) => void;
+    __CREEVEY_HAS_PLAY_COMPLETED_YET__: () => Promise<boolean>;
     __CREEVEY_SET_READY_FOR_CAPTURE__?: () => void;
     __STORYBOOK_ADDONS_CHANNEL__: Channel;
     __STORYBOOK_STORY_STORE__: StoryStore<Renderer>;
@@ -172,8 +171,7 @@ export function withCreevey(): ReturnType<typeof makeDecorator> {
   async function selectStory(
     storyId: string,
     shouldWaitForReady: boolean,
-    callback: (response: [error?: string | null, isCaptureCalled?: boolean]) => void,
-  ): Promise<void> {
+  ): Promise<[error?: string | null, isCaptureCalled?: boolean]> {
     const currentStory = window.__STORYBOOK_PREVIEW__.currentSelection?.storyId ?? '';
 
     if (!isAnimationDisabled) disableAnimation();
@@ -203,7 +201,7 @@ export function withCreevey(): ReturnType<typeof makeDecorator> {
         })(),
         errorPromise,
       ]);
-      callback([null, isCaptureCalled]);
+      return [null, isCaptureCalled];
     } catch (reason) {
       // NOTE Event `STORY_THREW_EXCEPTION` triggered only in react and vue frameworks and return Error instance
       // NOTE Event `STORY_ERRORED` return error-like object without `name` field
@@ -213,7 +211,7 @@ export function withCreevey(): ReturnType<typeof makeDecorator> {
           : isObject(reason)
             ? `${reason.message as string}\n    ${reason.stack as string}`
             : (reason as string);
-      callback([errorMessage]);
+      return [errorMessage];
     } finally {
       renderPromise.cancel();
       errorPromise.cancel();
@@ -249,21 +247,23 @@ export function withCreevey(): ReturnType<typeof makeDecorator> {
     ignoreStyles.parentNode?.removeChild(ignoreStyles);
   }
 
-  function hasPlayCompletedYet(callback: (isPlayCompleted: boolean) => void): void {
-    creeveyReady();
-    let isCaptureCalled = false;
-    let isPlayCompleted = false;
+  function hasPlayCompletedYet(): Promise<boolean> {
+    return new Promise<boolean>((resolve) => {
+      creeveyReady();
+      let isCaptureCalled = false;
+      let isPlayCompleted = false;
 
-    const channel = addonsChannel();
-    void waitForStoryRendered(channel).then(() => {
-      if (isCaptureCalled) return;
-      isPlayCompleted = true;
-      callback(true);
-    });
-    void waitForCaptureCall().then(() => {
-      if (isPlayCompleted) return;
-      isCaptureCalled = true;
-      callback(false);
+      const channel = addonsChannel();
+      void waitForStoryRendered(channel).then(() => {
+        if (isCaptureCalled) return;
+        isPlayCompleted = true;
+        resolve(true);
+      });
+      void waitForCaptureCall().then(() => {
+        if (isPlayCompleted) return;
+        isCaptureCalled = true;
+        resolve(false);
+      });
     });
   }
 

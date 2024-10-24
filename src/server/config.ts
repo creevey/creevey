@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { pathToFileURL } from 'url';
 import { loadStories as browserStoriesProvider } from './storybook/providers/browser.js';
-import { Config, Browser, BrowserConfig, Options, isDefined } from '../types.js';
+import { Config, BrowserConfig, BrowserConfigObject, Options, isDefined } from '../types.js';
 import { configExt, loadThroughTSX } from './utils.js';
 import { CreeveyReporter, TeamcityReporter } from './reporter.js';
 
@@ -30,7 +30,7 @@ export const defaultConfig: Omit<Config, 'gridUrl' | 'storiesProvider' | 'testsD
   testsRegex: /\.creevey\.(t|j)s$/,
 };
 
-function normalizeBrowserConfig(name: string, config: Browser): BrowserConfig {
+function normalizeBrowserConfig(name: string, config: BrowserConfig): BrowserConfigObject {
   if (typeof config == 'boolean') return { browserName: name };
   if (typeof config == 'string') return { browserName: config };
   return config;
