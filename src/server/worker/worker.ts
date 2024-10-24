@@ -3,13 +3,13 @@ import chai from 'chai';
 import chalk from 'chalk';
 import { Stats } from 'fs';
 import assert from 'assert';
+import { v4 } from 'uuid';
 import { stat, readdir, readFile, writeFile, mkdir } from 'fs/promises';
 import Mocha, { Context, MochaOptions } from 'mocha';
-import { Key, until } from 'selenium-webdriver';
+import { Key, until, WebDriver } from 'selenium-webdriver';
 import { Config, Images, Options, TestMessage, isImageError } from '../../types.js';
 import { subscribeOn, emitTestMessage, emitWorkerMessage } from '../messages.js';
 import chaiImage from './chai-image.js';
-import { closeBrowser, getBrowser, switchStory } from '../selenium/index.js';
 import { CreeveyReporter, TeamcityReporter } from './reporter.js';
 import { addTestsFromStories } from './helpers.js';
 import { logger } from '../logger.js';
@@ -131,12 +131,13 @@ export async function start(config: Config, options: Options & { browser: string
       },
     },
   };
+  const webdriver = config.webdriver;
   const mocha = new Mocha(mochaOptions);
   mocha.cleanReferencesAfterRun(false);
 
   chai.use(chaiImage(getExpected, config.diffOptions));
 
-  if ((await getBrowser(config, options)) == null) return;
+  if ((await webdriver.getBrowser(config, options)) == null) return;
 
   await addTestsFromStories(mocha.suite, config, {
     browser: options.browser,
@@ -146,29 +147,38 @@ export async function start(config: Config, options: Options & { browser: string
   });
 
   try {
-    await (await getBrowser(config, options))?.getCurrentUrl();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const browser = await webdriver.getBrowser(config, options);
+    if (browser instanceof WebDriver) {
+      await browser.getCurrentUrl();
+    }
   } catch {
-    await closeBrowser();
+    await webdriver.closeBrowser();
   }
-  const browser = await getBrowser(config, options);
-  const sessionId = (await browser?.getSession())?.getId();
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const browser = await webdriver.getBrowser(config, options);
+  // TODO Use uuid in browser, expose get id method
+  const sessionId = browser instanceof WebDriver ? (await browser.getSession()).getId() : v4();
 
   if (browser == null) return;
 
-  const interval = setInterval(
-    () =>
+  const interval = setInterval(() => {
+    if (browser instanceof WebDriver) {
       void browser.getCurrentUrl().then((url) => {
         logger.debug(`${options.browser}:${chalk.gray(sessionId)}`, 'current url', chalk.magenta(url));
-      }),
-    10 * 1000,
-  );
+      });
+    }
+  }, 10 * 1000);
 
   subscribeOn('shutdown', () => {
     clearInterval(interval);
   });
 
   mocha.suite.beforeAll(function (this: Context) {
+    // TODO Fix types from dist
+    // @ts-expect-error Fix types from dist
     this.config = config;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     this.browser = browser;
     this.until = until;
     this.keys = Key;
@@ -177,24 +187,28 @@ export async function start(config: Config, options: Options & { browser: string
     this.testScope = testScope;
     this.screenshots = screenshots;
   });
-  mocha.suite.beforeEach(switchStory);
+  mocha.suite.beforeEach(function () {
+    return webdriver.switchStory(this);
+  });
   if (options.trace) {
-    mocha.suite.afterEach(async function (this: Context) {
-      const output: string[] = [];
-      const types = await browser.manage().logs().getAvailableLogTypes();
-      for (const type of types) {
-        const logs = await browser.manage().logs().get(type);
-        output.push(logs.map((log) => JSON.stringify(log.toJSON(), null, 2)).join('\n'));
-      }
-      logger.debug(
-        '----------',
-        sessionId,
-        this.currentTest?.titlePath().join('/'),
-        '----------\n',
-        output.join('\n'),
-        '\n----------------------------------------------------------------------------------------------------',
-      );
-    });
+    if (browser instanceof WebDriver) {
+      mocha.suite.afterEach(async function (this: Context) {
+        const output: string[] = [];
+        const types = await browser.manage().logs().getAvailableLogTypes();
+        for (const type of types) {
+          const logs = await browser.manage().logs().get(type);
+          output.push(logs.map((log) => JSON.stringify(log.toJSON(), null, 2)).join('\n'));
+        }
+        logger.debug(
+          '----------',
+          sessionId,
+          this.currentTest?.titlePath().join('/'),
+          '----------\n',
+          output.join('\n'),
+          '\n----------------------------------------------------------------------------------------------------',
+        );
+      });
+    }
   }
 
   subscribeOn('test', (message: TestMessage) => {

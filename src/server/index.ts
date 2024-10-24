@@ -1,14 +1,33 @@
 import cluster from 'cluster';
 import { readConfig, defaultBrowser } from './config.js';
-import { Options, Config, BrowserConfig } from '../types.js';
+import { Options, Config, BrowserConfigObject } from '../types.js';
 import { logger } from './logger.js';
+import { seleniumBrowser } from './selenium/browser.js';
 
 // NOTE: Impure function, mutate config by adding gridUrl prop
 async function startWebdriverServer(config: Config, options: Options): Promise<void> {
+  // TODO select webdriver 'playwright' or selenium
   if (config.useDocker) {
-    return (await import('./docker.js')).initDocker(config, options.browser, async () =>
-      (await import('./selenium/selenoid.js')).startSelenoidContainer(config, options.debug),
-    );
+    const docker = await import('./docker.js');
+    if (config.webdriver === seleniumBrowser) {
+      return docker.initDocker(config, options.browser, async () =>
+        (await import('./selenium/selenoid.js')).startSelenoidContainer(config, options.debug),
+      );
+    } else {
+      if (cluster.isWorker) {
+        await docker.buildImage();
+        await docker.runImage(
+          'creevey-chromium',
+          [],
+          {
+            HostConfig: {
+              PortBindings: { '4444/tcp': [{ HostPort: '4444' }] },
+            },
+          },
+          true,
+        );
+      }
+    }
   } else {
     return (await import('./selenium/selenoid.js')).startSelenoidStandalone(config, options.debug);
   }
@@ -20,7 +39,7 @@ export default async function (options: Options): Promise<void> {
 
   // NOTE: We don't need docker nor selenoid for webpack or update options
   if (
-    !(config.gridUrl || (Object.values(config.browsers) as BrowserConfig[]).every(({ gridUrl }) => gridUrl)) &&
+    !(config.gridUrl || (Object.values(config.browsers) as BrowserConfigObject[]).every(({ gridUrl }) => gridUrl)) &&
     !tests &&
     !update
   ) {

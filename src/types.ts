@@ -5,6 +5,7 @@ import type { until, WebDriver, WebElementPromise } from 'selenium-webdriver';
 import type Pixelmatch from 'pixelmatch';
 import type { Context } from 'mocha';
 import type { expect } from 'chai';
+import type { Page } from 'playwright-core';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type DiffOptions = typeof Pixelmatch extends (
@@ -80,6 +81,16 @@ export interface CreeveyStory {
   };
 }
 
+export interface CreeveyBrowser<T extends WebDriver | Page> {
+  loadStoriesFromBrowser(): Promise<StoriesRaw>;
+
+  getBrowser(config: Config, options: Options & { browser: string }): Promise<T | null>;
+
+  closeBrowser(): Promise<void>;
+
+  switchStory(context: Context): Promise<void>;
+}
+
 export interface Capabilities {
   browserName: string;
   browserVersion?: string;
@@ -91,7 +102,7 @@ export interface Capabilities {
   [prop: string]: unknown;
 }
 
-export type BrowserConfig = Capabilities & {
+export type BrowserConfigObject = Capabilities & {
   limit?: number;
   gridUrl?: string;
   storybookUrl?: string;
@@ -115,7 +126,7 @@ export type BrowserConfig = Capabilities & {
 
 export type StorybookGlobals = Record<string, unknown>;
 
-export type Browser = boolean | string | BrowserConfig;
+export type BrowserConfig = boolean | string | BrowserConfigObject;
 
 export interface HookConfig {
   before?: () => unknown;
@@ -170,7 +181,7 @@ export interface Config {
    * Browser capabilities
    * @default { chrome: true }
    */
-  browsers: Record<string, Browser>;
+  browsers: Record<string, BrowserConfig>;
   /**
    * Hooks that allow run custom script before and after creevey start
    */
@@ -205,6 +216,11 @@ export interface Config {
    * ```
    */
   storiesProvider: StoriesProvider;
+  /**
+   *
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  webdriver: CreeveyBrowser<any>;
   /**
    * Define custom babel options for load stories transformation
    */
@@ -249,9 +265,8 @@ export interface Config {
   disableTelemetry?: boolean;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export interface StoriesProvider<T = any> {
-  (config: Config, options: T, storiesListener: (stories: Map<string, StoryInput[]>) => void): Promise<StoriesRaw>;
+export interface StoriesProvider {
+  (config: Config, storiesListener: (stories: Map<string, StoryInput[]>) => void): Promise<StoriesRaw>;
   providerName?: string;
 }
 

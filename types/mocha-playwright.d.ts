@@ -1,9 +1,8 @@
 /// <reference types="mocha" />
-// TODO Rename file, ensure other reference to be correct
 declare namespace Mocha {
   interface Context {
     config: import('creevey').Config;
-    browser: import('selenium-webdriver').WebDriver;
+    browser: import('playwright-core').Page;
     until: import('selenium-webdriver/lib/until');
     keys: import('selenium-webdriver/lib/input').IKey;
     expect: Chai.ExpectStatic;

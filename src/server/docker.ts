@@ -1,8 +1,9 @@
 import cluster from 'cluster';
 import ora from 'ora';
+import tar from 'tar-stream';
 import { Writable } from 'stream';
 import Dockerode, { Container } from 'dockerode';
-import { Config, BrowserConfig, isDockerMessage, DockerAuth } from '../types.js';
+import { Config, BrowserConfigObject, isDockerMessage, DockerAuth } from '../types.js';
 import { subscribeOn, sendDockerMessage, emitDockerMessage } from './messages.js';
 import { isInsideDocker, LOCALHOST_REGEXP } from './utils.js';
 import { logger } from './logger.js';
@@ -55,6 +56,59 @@ export async function pullImages(
       });
     });
   }
+}
+
+// TODO Rename entry, directory, image name, add version and playwright-core version, get random free port, select browser
+const chromium = `
+FROM mcr.microsoft.com/playwright:v1.48.0
+
+RUN mkdir /creevey && \\
+    cd /creevey && \\
+    echo "{ \\"type\\": \\"module\\" }" > package.json && \\
+    echo "import { chromium } from 'playwright-core';" >> index.js && \\
+    echo "const ws = await chromium.launchServer({ port: 4444, wsPath: 'creevey' })" >> index.js && \\
+    echo "console.log(ws.wsEndpoint())" >> index.js && \\
+    npm i playwright-core
+    # node ./index.js
+
+EXPOSE 4444
+
+ENTRYPOINT [ "node", "/creevey/index.js" ]
+`;
+
+export async function buildImage() {
+  const pack = tar.pack();
+  pack.entry({ name: 'Dockerfile' }, chromium);
+  pack.finalize();
+  const image = 'creevey-chromium';
+  const spinner = ora(`${image}: Build start`).start();
+  await new Promise<void>((resolve, reject) => {
+    docker.buildImage(pack, { t: image }, (error: Error | null, stream) => {
+      if (error || !stream) {
+        spinner.fail();
+        reject(error ?? new Error('Unknown error'));
+        return;
+      }
+
+      docker.modem.followProgress(stream, onFinished, onProgress);
+
+      function onFinished(error: Error | null): void {
+        if (error) {
+          spinner.fail();
+          reject(error);
+          return;
+        }
+        spinner.succeed(`${image}: Build complete`);
+        resolve();
+      }
+
+      function onProgress(event: { id: string; status: string; progress?: string }): void {
+        if (!/^[a-z0-9]{12}$/i.test(event.id)) return;
+
+        spinner.text = `${image}: [${event.id}] ${event.status} ${event.progress ? event.progress : ''}`;
+      }
+    });
+  });
 }
 
 export async function runImage(
@@ -122,7 +176,7 @@ export async function initDocker(
       });
     });
   } else {
-    if (browser && (config.browsers[browser] as BrowserConfig).gridUrl) return Promise.resolve();
+    if (browser && (config.browsers[browser] as BrowserConfigObject).gridUrl) return Promise.resolve();
     return new Promise((resolve) => {
       subscribeOn('docker', (message) => {
         if (message.type == 'success') {
