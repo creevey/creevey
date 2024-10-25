@@ -50,7 +50,12 @@ export function TestLink({ title, opened, test }: TestLinkProps): JSX.Element {
   return (
     <Container disabled={emptyResults}>
       <Button onClick={handleOpen} active={opened} focused={isTestFocused} disabled={emptyResults} ref={buttonRef}>
-        <TestStatusIcon inverted={opened} status={test.status} skip={test.skip} />
+        <TestStatusIcon
+          inverted={opened}
+          status={test.status}
+          skip={test.skip}
+          approved={test.approved?.[title] != null}
+        />
         <SuiteContainer padding={(testPath.length + 8) * 8}>{title}</SuiteContainer>
       </Button>
       {/* NOTE Little hack to allow click on checkbox and don't trigger Button click */}

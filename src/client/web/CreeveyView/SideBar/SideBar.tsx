@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext } from 'react';
 import { transparentize } from 'polished';
 import { ScrollArea } from '@storybook/components';
 import { styled, withTheme } from '@storybook/theming';
@@ -11,9 +11,10 @@ import {
   countTestsStatus,
   getCheckedTests,
 } from '../../../shared/helpers.js';
-import { CreeveyContext } from '../../CreeveyContext.js';
+import { useCreeveyContext } from '../../CreeveyContext.js';
 import { SuiteLink } from './SuiteLink.js';
 import { TestLink } from './TestLink.js';
+import { SideBarFooter } from './SideBarFooter.js';
 
 export const SideBarContext = createContext<{ onOpenTest: (test: CreeveyTest) => void }>({
   onOpenTest: noop,
@@ -37,7 +38,7 @@ const Container = withTheme(
 );
 
 const ScrollContainer = styled.div({
-  height: 'calc(100vh - 165px)',
+  height: 'calc(100vh - 245px)',
   width: 300,
   flex: 'none',
   overflowY: 'auto',
@@ -76,7 +77,7 @@ const Divider = withTheme(
 );
 
 export function SideBar({ rootSuite, openedTest, onOpenTest, filter, setFilter }: SideBarProps): JSX.Element {
-  const { onStart, onStop } = useContext(CreeveyContext);
+  const { onStart, onStop, onApproveAll, onImageApprove } = useCreeveyContext();
 
   // TODO Maybe need to do flatten first?
   const suite = filterTests(rootSuite, filter);
@@ -119,6 +120,7 @@ export function SideBar({ rootSuite, openedTest, onOpenTest, filter, setFilter }
             </TestsContainer>
           </ScrollArea>
         </ScrollContainer>
+        <SideBarFooter onApproveAll={onApproveAll} onImageApprove={onImageApprove} />
       </Container>
     </SideBarContext.Provider>
   );

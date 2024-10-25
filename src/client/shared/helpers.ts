@@ -16,8 +16,9 @@ export interface CreeveyTestsStatus {
 }
 
 const statusUpdatesMap = new Map<TestStatus | undefined, RegExp>([
-  [undefined, /(unknown|success|failed|pending|running)/],
-  ['unknown', /(success|failed|pending|running)/],
+  [undefined, /(unknown|approved|success|failed|pending|running)/],
+  ['unknown', /(approved|success|failed|pending|running)/],
+  ['approved', /(success|failed|pending|running)/],
   ['success', /(failed|pending|running)/],
   ['failed', /(pending|running)/],
   ['pending', /running/],
@@ -153,6 +154,27 @@ export function getCheckedTests(suite: CreeveySuite): CreeveyTest[] {
     });
 }
 
+// TODO Mark test after approve
+export function getFailedTests(suite: CreeveySuite): CreeveyTest[] {
+  return Object.values(suite.children)
+    .filter(isDefined)
+    .flatMap((suiteOrTest) => {
+      if (isTest(suiteOrTest)) return suiteOrTest.status === 'failed' ? suiteOrTest : [];
+
+      return getFailedTests(suiteOrTest);
+    });
+}
+
+export function isSuiteApproved(suite: CreeveySuite): boolean {
+  return Object.values(suite.children)
+    .filter(isDefined)
+    .every((suiteOrTest) => {
+      if (isTest(suiteOrTest)) return suiteOrTest.approved?.[suiteOrTest.browser] != null;
+
+      return isSuiteApproved(suiteOrTest);
+    });
+}
+
 export function updateTestStatus(suite: CreeveySuite, path: string[], update: Partial<TestData>): void {
   const title = path.shift();
 
@@ -215,6 +237,8 @@ export function removeTests(suite: CreeveySuite, path: string[]): void {
     .reduce(calcStatus);
 }
 
+// TODO Include images to test suite
+// TODO If only one image in test, don't include it
 export function filterTests(suite: CreeveySuite, filter: CreeveyViewFilter): CreeveySuite {
   const { status, subStrings } = filter;
   if (!status && !subStrings.length) return suite;

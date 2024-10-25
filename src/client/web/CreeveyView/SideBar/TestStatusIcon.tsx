@@ -7,6 +7,7 @@ export interface TestStatusIconProps {
   inverted?: boolean;
   status?: TestStatus;
   skip?: string | boolean;
+  approved?: boolean;
   theme: Theme;
 }
 
@@ -29,15 +30,20 @@ const Spinner = styled(Loader)({
 });
 
 export const TestStatusIcon = withTheme(
-  ({ inverted, status, skip, theme }: TestStatusIconProps): JSX.Element | null => {
+  ({ inverted, status, skip, theme, approved }: TestStatusIconProps): JSX.Element | null => {
     let icon = null;
     switch (status) {
       case 'failed': {
+        if (approved) icon = <Icon color={inverted ? theme.color.lightest : theme.color.mediumdark} icon="thumbsup" />;
         icon = <Icon color={inverted ? theme.color.lightest : theme.color.negative} icon="cross" />;
         break;
       }
       case 'success': {
         icon = <Icon color={inverted ? theme.color.lightest : theme.color.green} icon="check" />;
+        break;
+      }
+      case 'approved': {
+        icon = <Icon color={inverted ? theme.color.lightest : theme.color.mediumdark} icon="thumbsup" />;
         break;
       }
       case 'running': {
