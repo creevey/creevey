@@ -53,6 +53,8 @@ const statusTests: () => CreeveyStatus['tests'] = () => ({
     status: 'running',
   },
   12: { id: '12', browser: 'pending', storyPath: ['root', 'running'], storyId: '', skip: false, status: 'pending' },
+  13: { id: '13', browser: 'approved', storyPath: ['root', 'failed'], storyId: '', skip: false, status: 'approved' },
+  14: { id: '14', browser: 'skipped', storyPath: ['root', 'pending'], storyId: '', skip: true, status: undefined },
 });
 
 const Kind: Meta<typeof SideBar> = {
@@ -88,6 +90,5 @@ export const SimpleSideBar: StoryObj<typeof SideBar> = {
 export const StatusSideBar: StoryObj<typeof SideBar> = {
   args: {
     rootSuite: openSuites(treeifyTests(statusTests())),
-    openedTest: null,
   },
 };

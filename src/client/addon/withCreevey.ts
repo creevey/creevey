@@ -316,7 +316,7 @@ export async function capture(options?: CaptureOptions): Promise<void> {
   captureResolver();
   waitForCreevey = new Promise((resolve) => (creeveyReady = resolve));
 
-  await fetch(`http://${getConnectionUrl()}/capture`, {
+  void fetch(`http://${getConnectionUrl()}/capture`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ workerId: window.__CREEVEY_WORKER_ID__, options }),

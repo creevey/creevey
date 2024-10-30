@@ -6,7 +6,6 @@ import { TestStatusIcon } from './TestStatusIcon.js';
 import { CreeveySuite, isTest } from '../../../../types.js';
 import { CreeveyContext } from '../../CreeveyContext.js';
 import { KeyboardEventsContext } from '../../KeyboardEventsContext.js';
-import { isSuiteApproved } from '../../../shared/helpers.js';
 
 export interface SuiteLinkProps {
   title: string;
@@ -15,28 +14,17 @@ export interface SuiteLinkProps {
 }
 
 export const Container = withTheme(
-  styled.div<{ theme: Theme; disabled?: boolean }>(({ theme, disabled }) => ({
-    position: 'relative',
-    width: '100%',
-    ...(disabled ? { color: theme.color.mediumdark, pointerEvents: 'none' } : {}),
-  })),
-);
-
-export const Button = withTheme(
-  styled.button<{ theme: Theme; active?: boolean; focused?: boolean; approved?: boolean }>(
-    ({ theme, active, focused }) => ({
+  styled.div<{ theme: Theme; disabled?: boolean; active?: boolean; focused?: boolean }>(
+    ({ theme, disabled, active, focused }) => ({
+      position: 'relative',
       width: '100%',
-      boxSizing: 'border-box',
-      appearance: 'none',
-      padding: '6px 36px',
+      height: '28px',
       lineHeight: '20px',
-      cursor: 'pointer',
-      border: 'none',
-      zIndex: 1,
-      textAlign: 'left',
+      display: 'flex',
       background: active ? theme.color.secondary : focused ? theme.background.hoverable : 'none',
       color: active ? theme.color.inverseText : 'inherit',
       outline: focused ? `1px solid ${theme.color.ancillary}` : 'none',
+      ...(disabled ? { color: theme.color.mediumdark, pointerEvents: 'none' } : {}),
 
       // NOTE There is no way to trigger hover from js, so we add `.hover` class for testing purpose
       '&:hover, &.hover': active
@@ -48,17 +36,44 @@ export const Button = withTheme(
   ),
 );
 
+export const Button = withTheme(
+  styled.button<{ theme: Theme; active?: boolean }>(({ theme, active }) => ({
+    flexGrow: 1,
+    boxSizing: 'border-box',
+    appearance: 'none',
+    padding: '4px 16px 4px 8px',
+    lineHeight: '18px',
+    cursor: 'pointer',
+    border: 'none',
+    zIndex: 1,
+    textAlign: 'left',
+    background: 'none',
+    outline: 'none',
+    color: active ? theme.color.inverseText : 'inherit',
+  })),
+);
+
 const ArrowIcon = styled(Icons)({
-  paddingRight: '8px',
+  paddingRight: '4px',
   display: 'inline-block',
-  width: '16px',
-  height: '11px',
+  width: '12px',
+  height: '18px',
+  verticalAlign: 'unset',
 });
 
 export const SuiteContainer = styled.span<{ padding: number }>(({ padding }) => ({
   paddingLeft: padding,
   whiteSpace: 'normal',
+  display: 'grid',
+  gridTemplateColumns: 'repeat(2, min-content) auto',
 }));
+
+export const SuiteTitle = styled.span({
+  paddingLeft: '4px',
+  whiteSpace: 'nowrap',
+  overflowX: 'hidden',
+  textOverflow: 'ellipsis',
+});
 
 export function SuiteLink({ title, suite, 'data-testid': dataTid }: SuiteLinkProps): JSX.Element {
   const { onSuiteOpen, onSuiteToggle } = useContext(CreeveyContext);
@@ -99,16 +114,7 @@ export function SuiteLink({ title, suite, 'data-testid': dataTid }: SuiteLinkPro
   };
 
   return (
-    <Container>
-      <Button onClick={handleOpen} onFocus={handleFocus} data-testid={dataTid} focused={isSuiteFocused} ref={buttonRef}>
-        <TestStatusIcon status={suite.status} skip={suite.skip} approved={isSuiteApproved(suite)} />
-        <SuiteContainer padding={Math.max(48, (suite.path.length + 5) * 8)}>
-          {isTest(suite) ||
-            (Boolean(suite.path.length) &&
-              (suite.opened ? <ArrowIcon icon="arrowdown" /> : <ArrowIcon icon="arrowright" />))}
-          {title}
-        </SuiteContainer>
-      </Button>
+    <Container focused={isSuiteFocused}>
       <CheckboxContainer>
         <Checkbox
           ref={checkboxRef}
@@ -117,6 +123,15 @@ export function SuiteLink({ title, suite, 'data-testid': dataTid }: SuiteLinkPro
           onValueChange={handleCheck}
         />
       </CheckboxContainer>
+      <Button onClick={handleOpen} onFocus={handleFocus} data-testid={dataTid} ref={buttonRef}>
+        <SuiteContainer padding={(suite.path.length - 1) * 8}>
+          {isTest(suite) ||
+            (Boolean(suite.path.length) &&
+              (suite.opened ? <ArrowIcon icon="arrowdown" /> : <ArrowIcon icon="arrowright" />))}
+          <TestStatusIcon status={suite.status} skip={suite.skip} />
+          <SuiteTitle>{title}</SuiteTitle>
+        </SuiteContainer>
+      </Button>
     </Container>
   );
 }

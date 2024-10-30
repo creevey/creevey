@@ -33,6 +33,9 @@ export async function initCreeveyClientApi(): Promise<CreeveyClientApi> {
       approve(id: string, retry: number, image: string) {
         send({ type: 'approve', payload: { id, retry, image } });
       },
+      approveAll() {
+        send({ type: 'approveAll' });
+      },
       onUpdate(fn: (update: CreeveyUpdate) => void) {
         updateListeners.add(fn);
         return () => updateListeners.delete(fn);

@@ -11,7 +11,7 @@ import { ImagesViewMode, TestResult } from '../../../types.js';
 interface ResultsPageProps {
   path: string[];
   results?: TestResult[];
-  approved?: Partial<Record<string, number>>;
+  approved?: Partial<Record<string, number>> | null;
   showTitle?: boolean;
   theme: Theme;
   height?: string;
@@ -56,9 +56,8 @@ const Container = styled.div<{ height?: string }>(({ height = '100vh' }) => ({
 export function ResultsPageInternal({
   path,
   results = [],
-  approved = {},
+  approved,
   theme,
-  showTitle = false,
   height,
   retry,
   imageName,
@@ -69,12 +68,12 @@ export function ResultsPageInternal({
   const [viewMode, setViewMode] = useState<ImagesViewMode>(getViewMode());
   const url = getImageUrl(path, imageName);
   const image = result.images?.[imageName];
-  const canApprove = Boolean(image && approved[imageName] != retry - 1 && result.status != 'success');
+  const canApprove = Boolean(image && approved?.[imageName] != retry - 1 && result.status != 'success');
   const hasDiffAndExpect = canApprove && Boolean(image?.diff && image.expect);
   const imagesWithError = result.images
     ? Object.keys(result.images).filter(
         (imageName) =>
-          result.status != 'success' && approved[imageName] != retry - 1 && result.images?.[imageName]?.error != null,
+          result.status != 'success' && approved?.[imageName] != retry - 1 && result.images?.[imageName]?.error != null,
       )
     : [];
 
@@ -88,13 +87,13 @@ export function ResultsPageInternal({
       <HeaderContainer>
         <PageHeader
           title={path}
+          imageName={imageName}
           images={result.images}
           errorMessage={result.error}
           showViewModes={hasDiffAndExpect}
           viewMode={viewMode}
           onViewModeChange={handleChangeViewMode}
           onImageChange={onImageChange}
-          showTitle={showTitle}
           imagesWithError={imagesWithError}
         />
       </HeaderContainer>

@@ -6,8 +6,6 @@ const Kind: Meta<typeof PageFooter> = {
   title: 'PageFooter',
   component: PageFooter,
   args: {
-    canApprove: true,
-    onApprove: noop,
     onRetryChange: noop,
     retriesCount: 10,
     retry: 1,

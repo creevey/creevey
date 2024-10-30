@@ -1,15 +1,11 @@
 import React from 'react';
 import { styled, withTheme } from '@storybook/theming';
 import { Button, Icons } from '@storybook/components';
-
-interface SideBarFooterProps {
-  onApproveAll: () => void;
-  onImageApprove?: () => void;
-}
+import { useCreeveyContext } from '../../CreeveyContext.js';
 
 const Sticky = withTheme(
   styled.div(({ theme }) => ({
-    padding: '24px 32px 8px',
+    padding: '24px 16px 8px 16px',
     background: theme.background.content,
     height: '50px',
     zIndex: 5,
@@ -23,7 +19,9 @@ const Container = styled.div({
   justifyContent: 'space-between',
 });
 
-export function SideBarFooter({ onApproveAll, onImageApprove }: SideBarFooterProps): JSX.Element {
+export function SideBarFooter(): JSX.Element {
+  const { onApproveAll, onImageApprove } = useCreeveyContext();
+
   return (
     <Sticky>
       <Container>

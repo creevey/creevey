@@ -581,6 +581,4 @@
 - [ ] Remove chai and provide `expect` specially for images (maybe another API)
 - [ ] Try pkgroll or use storybook addon-kit template
 
-- Replace esbuild for config to tsx
-- Check nodejs 18.x support
-- Build esm/cjs
+- Add shortcuts for approve/view switch/image switch

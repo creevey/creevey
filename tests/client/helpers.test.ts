@@ -1,5 +1,5 @@
 import { expect, describe, test } from 'vitest';
-import { checkSuite, isSuiteApproved } from '../../src/client/shared/helpers.js';
+import { checkSuite } from '../../src/client/shared/helpers.js';
 import { CreeveySuite, TestData } from '../../src/types.js';
 
 function mockTest(): TestData {
@@ -11,75 +11,6 @@ function mockTest(): TestData {
     skip: false,
   };
 }
-
-describe('isSuiteApproved', () => {
-  test('simple', () => {
-    const tests: CreeveySuite = {
-      path: [],
-      skip: false,
-      opened: false,
-      checked: true,
-      indeterminate: false,
-      children: {
-        foo: {
-          path: [],
-          skip: false,
-          opened: false,
-          checked: true,
-          indeterminate: false,
-          children: { bar: { ...mockTest(), browser: 'chrome', checked: false, approved: { chrome: 1 } } },
-        },
-      },
-    };
-    expect(isSuiteApproved(tests)).toBeTruthy();
-  });
-  test('two tests, one approved', () => {
-    const tests: CreeveySuite = {
-      path: [],
-      skip: false,
-      opened: false,
-      checked: true,
-      indeterminate: false,
-      children: {
-        foo: {
-          path: [],
-          skip: false,
-          opened: false,
-          checked: true,
-          indeterminate: false,
-          children: {
-            chrome: { ...mockTest(), browser: 'chrome', checked: false, approved: { chrome: 1 } },
-            ie: { ...mockTest(), browser: 'ie', checked: false },
-          },
-        },
-      },
-    };
-    expect(isSuiteApproved(tests)).toBeFalsy();
-  });
-  test('two tests, all approved', () => {
-    const tests: CreeveySuite = {
-      path: [],
-      skip: false,
-      opened: false,
-      checked: true,
-      indeterminate: false,
-      children: {
-        foo: {
-          path: [],
-          skip: false,
-          opened: false,
-          checked: true,
-          indeterminate: false,
-          children: {
-            bar: { ...mockTest(), browser: 'chrome', checked: false, approved: { chrome: 1 } },
-            baz: { ...mockTest(), browser: 'chrome', checked: false, approved: { chrome: 1 } },
-          },
-        },
-      },
-    };
-    expect(isSuiteApproved(tests)).toBeTruthy();
-  });
-});
 
 describe('toogleChecked', () => {
   test('should uncheck test', () => {

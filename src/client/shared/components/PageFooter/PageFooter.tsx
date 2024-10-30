@@ -11,7 +11,7 @@ export interface PageFooterProps {
 const Container = withTheme(
   styled.div(({ theme }) => ({
     display: 'flex',
-    padding: '20px',
+    padding: '24px 32px 20px',
     justifyContent: 'space-between',
     background: theme.background.content,
   })),

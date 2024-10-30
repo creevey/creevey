@@ -55,6 +55,7 @@ let browserName = '';
 let browser: WebDriver | null = null;
 // let context: UnPromise<ReturnType<typeof BrowsingContext>> | null = null;
 let creeveyServerHost: string | null = null;
+let creeveyServerPort: number | null = null;
 
 function getSessionData(grid: string, sessionId = ''): Promise<Record<string, unknown>> {
   const gridUrl = new URL(grid);
@@ -520,11 +521,10 @@ async function openStorybookPage(
   }
 }
 
-async function resolveCreeveyHost(browser: WebDriver, port: number): Promise<string> {
-  if (creeveyServerHost != null) return creeveyServerHost;
-
+async function resolveCreeveyHost(browser: WebDriver, port: number): Promise<void> {
   const addresses = getAddresses();
 
+  creeveyServerPort = port;
   creeveyServerHost = await browser.executeAsyncScript(
     function (hosts: string[], port: number, callback: (host?: string | null) => void) {
       void Promise.all(
@@ -558,8 +558,6 @@ async function resolveCreeveyHost(browser: WebDriver, port: number): Promise<str
   );
 
   if (creeveyServerHost == null) throw new Error("Can't reach creevey server from a browser");
-
-  return creeveyServerHost;
 }
 
 export async function loadStoriesFromBrowser(): Promise<StoriesRaw> {
@@ -690,8 +688,14 @@ export async function getBrowser(config: Config, options: Options & { browser: s
     await updateStorybookGlobals(browser, _storybookGlobals);
   }
 
-  const creeveyHost = await resolveCreeveyHost(browser, options.port);
+  await resolveCreeveyHost(browser, options.port);
 
+  await updateBrowserGlobalVariables(browser);
+
+  return browser;
+}
+
+async function updateBrowserGlobalVariables(browser: WebDriver) {
   await browser.executeScript(
     function (workerId: number, creeveyHost: string, creeveyPort: number) {
       window.__CREEVEY_WORKER_ID__ = workerId;
@@ -699,11 +703,9 @@ export async function getBrowser(config: Config, options: Options & { browser: s
       window.__CREEVEY_SERVER_PORT__ = creeveyPort;
     },
     process.pid,
-    creeveyHost,
-    options.port,
+    creeveyServerHost,
+    creeveyServerPort,
   );
-
-  return browser;
 }
 
 async function updateStoryArgs(browser: WebDriver, story: StoryInput, updatedArgs: Args): Promise<void> {
@@ -799,6 +801,7 @@ export async function switchStory(this: Context): Promise<void> {
     });
   });
 
+  await updateBrowserGlobalVariables(this.browser);
   await resetMousePosition(this.browser);
   const isCaptureCalled = await selectStory(this.browser, id, waitForReady);
 

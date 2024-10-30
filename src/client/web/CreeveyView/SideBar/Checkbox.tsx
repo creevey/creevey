@@ -70,11 +70,11 @@ interface CheckboxState {
   indeterminate: boolean;
 }
 
-export const CheckboxContainer = styled.div({
-  position: 'absolute',
-  left: '64px',
-  top: '6px',
-  zIndex: 2,
+export const CheckboxContainer = styled.span({
+  paddingLeft: '8px',
+  verticalAlign: 'middle',
+  alignSelf: 'center',
+  lineHeight: '18px',
 });
 
 export class Checkbox extends React.Component<CheckboxProps, CheckboxState> {

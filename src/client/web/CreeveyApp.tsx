@@ -113,7 +113,7 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
     const id = openedTest?.id;
 
     if (!id) return;
-    api?.approve(id, retry, imageName);
+    api?.approve(id, retry - 1, imageName);
   }, [api, imageName, openedTest?.id, retry]);
 
   const handleImageApproveAndGoNext = useCallback((): void => {
@@ -202,7 +202,7 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
           <FlexContainer>
             <SideBar
               rootSuite={tests}
-              openedTest={openedTest}
+              testId={openedTest?.id}
               onOpenTest={handleOpenTest}
               filter={filter}
               setFilter={setFilter}
@@ -213,7 +213,6 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
                 path={openedTestPath}
                 results={openedTest.results}
                 approved={openedTest.approved}
-                showTitle
                 retry={retry}
                 imageName={imageName}
                 onImageChange={setImageName}

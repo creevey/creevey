@@ -350,7 +350,7 @@ export interface TestData extends TestMeta {
   retries?: number;
   status?: TestStatus;
   results?: TestResult[];
-  approved?: Partial<Record<string, number>>;
+  approved?: Partial<Record<string, number>> | null;
 }
 
 export interface ServerTest extends TestData {

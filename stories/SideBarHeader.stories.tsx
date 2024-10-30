@@ -22,20 +22,20 @@ export default Kind;
 
 export const HeaderStopped: StoryObj<typeof SideBarHeader> = {
   args: {
-    testsStatus: { pendingCount: 0, successCount: 1, failedCount: 2, skippedCount: 3 },
+    testsStatus: { pendingCount: 0, successCount: 1, failedCount: 2, approvedCount: 3 },
   },
 };
 
 export const HeaderRunning: StoryObj<typeof SideBarHeader> = {
   args: {
-    testsStatus: { pendingCount: 1, successCount: 2, failedCount: 3, skippedCount: 4 },
+    testsStatus: { pendingCount: 1, successCount: 2, failedCount: 3, approvedCount: 4 },
   },
   parameters: { context: { isRunning: true } },
 };
 
 export const HeaderDisabled: StoryObj<typeof SideBarHeader> = {
   args: {
-    testsStatus: { pendingCount: 0, successCount: 1, failedCount: 2, skippedCount: 3 },
+    testsStatus: { pendingCount: 0, successCount: 1, failedCount: 2, approvedCount: 3 },
     canStart: false,
   },
 };

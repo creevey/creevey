@@ -45,6 +45,7 @@ export default class Runner extends EventEmitter {
     // TODO Handle 'retrying' status
     test.status = status == 'retrying' ? 'failed' : status;
     if (!result) {
+      // NOTE: Running status
       this.sendUpdate({ tests: { [id]: { id, browser, testName, storyPath, status: test.status, storyId } } });
       return;
     }
@@ -53,8 +54,23 @@ export default class Runner extends EventEmitter {
     }
     test.results.push(result);
 
+    if (status == 'failed') {
+      test.approved = null;
+    }
+
     this.sendUpdate({
-      tests: { [id]: { id, browser, testName, storyPath, status: test.status, results: [result], storyId } },
+      tests: {
+        [id]: {
+          id,
+          browser,
+          testName,
+          storyPath,
+          status: test.status,
+          approved: test.approved,
+          results: [result],
+          storyId,
+        },
+      },
     });
 
     if (this.failFast && status == 'failed') this.stop();
@@ -214,8 +230,13 @@ export default class Runner extends EventEmitter {
     await this.copyImage(test, image, images.actual);
 
     test.approved[image] = retry;
+
+    if (Object.keys(result.images).every((name) => typeof test.approved?.[name] == 'number')) {
+      test.status = 'approved';
+    }
+
     this.sendUpdate({
-      tests: { [id]: { id, browser, testName, storyPath, approved: { [image]: retry }, storyId } },
+      tests: { [id]: { id, browser, testName, storyPath, status: test.status, approved: { [image]: retry }, storyId } },
     });
   }
   private sendUpdate(data: CreeveyUpdate): void {
