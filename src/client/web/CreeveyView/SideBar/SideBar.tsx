@@ -1,7 +1,7 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext } from 'react';
 import { transparentize } from 'polished';
 import { ScrollArea } from '@storybook/components';
-import { styled, withTheme } from '@storybook/theming';
+import { styled, Theme, withTheme } from '@storybook/theming';
 import { SideBarHeader } from './SideBarHeader.js';
 import { CreeveySuite, CreeveyTest, noop, isTest } from '../../../../types.js';
 import {
@@ -11,17 +11,18 @@ import {
   countTestsStatus,
   getCheckedTests,
 } from '../../../shared/helpers.js';
-import { CreeveyContext } from '../../CreeveyContext.js';
+import { useCreeveyContext } from '../../CreeveyContext.js';
 import { SuiteLink } from './SuiteLink.js';
 import { TestLink } from './TestLink.js';
+import { SideBarFooter } from './SideBarFooter.js';
 
 export const SideBarContext = createContext<{ onOpenTest: (test: CreeveyTest) => void }>({
   onOpenTest: noop,
 });
 
 export interface SideBarProps {
+  testId?: string;
   rootSuite: CreeveySuite;
-  openedTest: CreeveyTest | null;
   onOpenTest: (test: CreeveyTest) => void;
   filter: CreeveyViewFilter;
   setFilter: (filter: CreeveyViewFilter) => void;
@@ -37,7 +38,7 @@ const Container = withTheme(
 );
 
 const ScrollContainer = styled.div({
-  height: 'calc(100vh - 165px)',
+  height: 'calc(100vh - 245px)',
   width: 300,
   flex: 'none',
   overflowY: 'auto',
@@ -46,10 +47,16 @@ const ScrollContainer = styled.div({
   left: '0',
 });
 
+const StyledScrollArea = styled(ScrollArea)({
+  '& > div > div': {
+    height: 'calc(100% - 8px)',
+  },
+});
+
 const Shadow = withTheme(
-  styled.div(({ theme }) => ({
+  styled.div<{ theme: Theme; position: 'top' | 'bottom' }>(({ theme, position }) => ({
+    [position]: '0px',
     position: 'sticky',
-    top: '0px',
     boxShadow: `0 0 5px 2.5px ${transparentize(0.8, theme.color.defaultText)}`,
     zIndex: 3,
   })),
@@ -62,21 +69,22 @@ const SelectAllContainer = styled.div({
 
 const TestsContainer = styled.div({
   position: 'relative',
-  paddingBottom: '40px',
+  paddingBottom: '8px',
+  height: '100%',
 });
 
 const Divider = withTheme(
-  styled.div(({ theme }) => ({
-    position: 'absolute',
+  styled.div<{ theme: Theme; position: 'top' | 'bottom' }>(({ theme, position }) => ({
+    ...(position === 'top' ? { position: 'absolute' } : { position: 'relative', bottom: '8px', marginBottom: '-8px' }),
     height: '8px',
     width: '100%',
-    zIndex: 3,
+    zIndex: 4,
     background: theme.background.content,
   })),
 );
 
-export function SideBar({ rootSuite, openedTest, onOpenTest, filter, setFilter }: SideBarProps): JSX.Element {
-  const { onStart, onStop } = useContext(CreeveyContext);
+export function SideBar({ rootSuite, testId, onOpenTest, filter, setFilter }: SideBarProps): JSX.Element {
+  const { onStart, onStop } = useCreeveyContext();
 
   // TODO Maybe need to do flatten first?
   const suite = filterTests(rootSuite, filter);
@@ -100,10 +108,10 @@ export function SideBar({ rootSuite, openedTest, onOpenTest, filter, setFilter }
           canStart={countCheckedTests !== 0}
         />
         <ScrollContainer>
-          <ScrollArea vertical>
-            <Shadow />
+          <StyledScrollArea vertical>
+            <Shadow position="top" />
             <TestsContainer>
-              <Divider />
+              <Divider position="top" />
               {/* TODO Output message when nothing found */}
               <SelectAllContainer>
                 <SuiteLink title="Select all" suite={rootSuite} data-testid="selectAll" />
@@ -111,14 +119,17 @@ export function SideBar({ rootSuite, openedTest, onOpenTest, filter, setFilter }
               {suiteList.map(({ title, suite }) =>
                 // TODO Update components without re-mount
                 isTest(suite) ? (
-                  <TestLink key={suite.id} title={title} opened={suite.id == openedTest?.id} test={suite} />
+                  <TestLink key={suite.id} title={title} opened={suite.id == testId} test={suite} />
                 ) : (
                   <SuiteLink key={suite.path.join('/')} title={title} suite={suite} data-testid={title} />
                 ),
               )}
             </TestsContainer>
-          </ScrollArea>
+            <Divider position="bottom" />
+          </StyledScrollArea>
+          <Shadow position="bottom" />
         </ScrollContainer>
+        <SideBarFooter />
       </Container>
     </SideBarContext.Provider>
   );

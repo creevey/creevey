@@ -6,7 +6,7 @@ const Kind: Meta<typeof PageHeader> = {
   title: 'PageHeader',
   component: PageHeader,
   args: {
-    showTitle: true,
+    imageName: '',
     onImageChange: noop,
     onViewModeChange: noop,
   },
@@ -33,6 +33,7 @@ export const WithError: StoryObj<typeof PageHeader> = {
 export const WithImagePreview: StoryObj<typeof PageHeader> = {
   args: {
     title: ['chrome', 'title', '3'],
+    imageName: 'idle',
     showViewModes: false,
     viewMode: 'swap',
     images: { click: { actual: '1' }, idle: { actual: '2', error: 'error' } },
@@ -43,6 +44,7 @@ export const WithImagePreview: StoryObj<typeof PageHeader> = {
 export const Full: StoryObj<typeof PageHeader> = {
   args: {
     title: ['chrome', 'title', '4'],
+    imageName: 'click',
     showViewModes: true,
     viewMode: 'swap',
     images: { click: { actual: '1', error: 'error' }, idle: { actual: '2', error: 'error' } },

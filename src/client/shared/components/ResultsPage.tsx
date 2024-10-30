@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Placeholder, ScrollArea } from '@storybook/components';
 import { styled, withTheme, Theme } from '@storybook/theming';
 import { ImagesView } from './ImagesView/ImagesView.js';
@@ -8,15 +8,17 @@ import { getImageUrl } from '../helpers.js';
 import { getViewMode, VIEW_MODE_KEY } from '../viewMode.js';
 import { ImagesViewMode, TestResult } from '../../../types.js';
 
-interface TestResultsProps {
-  id: string;
+interface ResultsPageProps {
   path: string[];
   results?: TestResult[];
-  approved?: Partial<Record<string, number>>;
+  approved?: Partial<Record<string, number>> | null;
   showTitle?: boolean;
-  onImageApprove: (id: string, retry: number, image: string) => void;
   theme: Theme;
   height?: string;
+  retry: number;
+  imageName: string;
+  onImageChange: (image: string) => void;
+  onRetryChange: (retry: number) => void;
 }
 
 const Wrapper = styled.div({
@@ -52,38 +54,29 @@ const Container = styled.div<{ height?: string }>(({ height = '100vh' }) => ({
 }));
 
 export function ResultsPageInternal({
-  id,
   path,
   results = [],
-  approved = {},
+  approved,
   theme,
-  onImageApprove,
-  showTitle = false,
   height,
-}: TestResultsProps): JSX.Element {
-  const [retry, setRetry] = useState(results.length);
+  retry,
+  imageName,
+  onImageChange,
+  onRetryChange,
+}: ResultsPageProps): JSX.Element {
   const result = results[retry - 1] ?? {};
-  const [imageName, setImageName] = useState(Object.keys(result.images ?? {})[0] ?? '');
   const [viewMode, setViewMode] = useState<ImagesViewMode>(getViewMode());
-
-  useEffect(() => {
-    setRetry(results.length);
-  }, [results.length]);
-
   const url = getImageUrl(path, imageName);
   const image = result.images?.[imageName];
-  const canApprove = Boolean(image && approved[imageName] != retry - 1 && result.status != 'success');
+  const canApprove = Boolean(image && approved?.[imageName] != retry - 1 && result.status != 'success');
   const hasDiffAndExpect = canApprove && Boolean(image?.diff && image.expect);
   const imagesWithError = result.images
     ? Object.keys(result.images).filter(
         (imageName) =>
-          result.status != 'success' && approved[imageName] != retry - 1 && result.images?.[imageName]?.error != null,
+          result.status != 'success' && approved?.[imageName] != retry - 1 && result.images?.[imageName]?.error != null,
       )
     : [];
 
-  const handleApprove = (): void => {
-    onImageApprove(id, retry - 1, imageName);
-  };
   const handleChangeViewMode = (mode: ImagesViewMode): void => {
     localStorage.setItem(VIEW_MODE_KEY, mode);
     setViewMode(mode);
@@ -94,13 +87,13 @@ export function ResultsPageInternal({
       <HeaderContainer>
         <PageHeader
           title={path}
+          imageName={imageName}
           images={result.images}
           errorMessage={result.error}
           showViewModes={hasDiffAndExpect}
           viewMode={viewMode}
           onViewModeChange={handleChangeViewMode}
-          onImageChange={setImageName}
-          showTitle={showTitle}
+          onImageChange={onImageChange}
           imagesWithError={imagesWithError}
         />
       </HeaderContainer>
@@ -119,13 +112,7 @@ export function ResultsPageInternal({
       </BodyContainer>
       {results.length ? (
         <FooterContainer>
-          <PageFooter
-            canApprove={canApprove}
-            retry={retry}
-            retriesCount={results.length}
-            onRetryChange={setRetry}
-            onApprove={handleApprove}
-          />
+          <PageFooter retry={retry} retriesCount={results.length} onRetryChange={onRetryChange} />
         </FooterContainer>
       ) : null}
     </Container>

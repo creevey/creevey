@@ -12,13 +12,14 @@ export interface CreeveyTestsStatus {
   successCount: number;
   failedCount: number;
   pendingCount: number;
-  skippedCount: number;
+  approvedCount: number;
 }
 
 const statusUpdatesMap = new Map<TestStatus | undefined, RegExp>([
-  [undefined, /(unknown|success|failed|pending|running)/],
-  ['unknown', /(success|failed|pending|running)/],
-  ['success', /(failed|pending|running)/],
+  [undefined, /(unknown|success|approved|failed|pending|running)/],
+  ['unknown', /(success|approved|failed|pending|running)/],
+  ['success', /(approved|failed|pending|running)/],
+  ['approved', /(failed|pending|running)/],
   ['failed', /(pending|running)/],
   ['pending', /running/],
 ]);
@@ -153,6 +154,16 @@ export function getCheckedTests(suite: CreeveySuite): CreeveyTest[] {
     });
 }
 
+export function getFailedTests(suite: CreeveySuite): CreeveyTest[] {
+  return Object.values(suite.children)
+    .filter(isDefined)
+    .flatMap((suiteOrTest) => {
+      if (isTest(suiteOrTest)) return suiteOrTest.status === 'failed' ? suiteOrTest : [];
+
+      return getFailedTests(suiteOrTest);
+    });
+}
+
 export function updateTestStatus(suite: CreeveySuite, path: string[], update: Partial<TestData>): void {
   const title = path.shift();
 
@@ -173,7 +184,8 @@ export function updateTestStatus(suite: CreeveySuite, path: string[], update: Pa
       if (test.results) test.results.push(...results);
       else test.results = results;
     }
-    if (isDefined(approved))
+    if (approved === null) test.approved = null;
+    else if (approved !== undefined)
       Object.entries(approved).forEach(
         ([image, retry]) => retry !== undefined && ((test.approved = test.approved ?? {})[image] = retry),
       );
@@ -215,6 +227,8 @@ export function removeTests(suite: CreeveySuite, path: string[]): void {
     .reduce(calcStatus);
 }
 
+// TODO Include images to test suite
+// TODO If only one image in test, don't include it
 export function filterTests(suite: CreeveySuite, filter: CreeveyViewFilter): CreeveySuite {
   const { status, subStrings } = filter;
   if (!status && !subStrings.length) return suite;
@@ -258,14 +272,14 @@ export function flattenSuite(suite: CreeveySuite): { title: string; suite: Creev
 export function countTestsStatus(suite: CreeveySuite): CreeveyTestsStatus {
   let successCount = 0;
   let failedCount = 0;
-  let skippedCount = 0;
+  let approvedCount = 0;
   let pendingCount = 0;
 
   const cases: (CreeveySuite | CreeveyTest)[] = Object.values(suite.children).filter(isDefined);
   let suiteOrTest;
   while ((suiteOrTest = cases.pop())) {
     if (isTest(suiteOrTest)) {
-      if (suiteOrTest.skip) skippedCount++;
+      if (suiteOrTest.status === 'approved') approvedCount++;
       if (suiteOrTest.status === 'success') successCount++;
       if (suiteOrTest.status === 'failed') failedCount++;
       if (suiteOrTest.status === 'pending') pendingCount++;
@@ -274,7 +288,7 @@ export function countTestsStatus(suite: CreeveySuite): CreeveyTestsStatus {
     }
   }
 
-  return { successCount, failedCount, skippedCount, pendingCount };
+  return { approvedCount, successCount, failedCount, pendingCount };
 }
 
 export function getConnectionUrl(): string {

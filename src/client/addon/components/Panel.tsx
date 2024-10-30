@@ -5,6 +5,7 @@ import { TestData } from '../../../types.js';
 import { ResultsPage } from '../../shared/components/ResultsPage.js';
 import { getTestPath } from '../../shared/helpers.js';
 import TestSelect from './TestSelect.js';
+import { noop } from 'lodash';
 interface PanelProps {
   tests: TestData[];
   selectedTestId: string;
@@ -22,7 +23,7 @@ const TestSelectContainer = styled.div(({ theme }) => ({
   border: `1px solid ${theme.appBorderColor}`,
 }));
 
-export const Panel = ({ tests, selectedTestId, onChangeTest, onImageApprove }: PanelProps): JSX.Element => {
+export const Panel = ({ tests, selectedTestId, onChangeTest }: PanelProps): JSX.Element => {
   const result = tests.find((x) => x.id === selectedTestId);
 
   const isRunning = result?.status === 'running';
@@ -40,11 +41,14 @@ export const Panel = ({ tests, selectedTestId, onChangeTest, onImageApprove }: P
           <ResultsPage
             height={'100%'}
             key={`${result.id}_${result.results.length}`} // TODO
-            id={result.id}
             path={getTestPath(result)} // TODO Memo?
             results={result.results}
             approved={result.approved}
-            onImageApprove={onImageApprove}
+            // addon doesn't work, add only stubs
+            retry={0}
+            onRetryChange={noop}
+            imageName=""
+            onImageChange={noop}
           />
         </Wrapper>
       ) : null}

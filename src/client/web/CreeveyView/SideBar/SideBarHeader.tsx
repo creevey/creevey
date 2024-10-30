@@ -18,7 +18,7 @@ interface SideBarHeaderProps {
 
 const Sticky = withTheme(
   styled.div(({ theme }) => ({
-    padding: '24px 32px 8px',
+    padding: '24px 36px 8px',
     background: theme.background.content,
     height: '130px',
     zIndex: 5,

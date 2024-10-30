@@ -53,7 +53,7 @@ export const TestsStatus = withTheme(
     successCount,
     failedCount,
     pendingCount,
-    skippedCount,
+    approvedCount,
     onClickByStatus,
     theme,
   }: TestsStatusProps): JSX.Element => {
@@ -94,9 +94,13 @@ export const TestsStatus = withTheme(
         </Button>
         <Divider />
         {/* @ts-expect-error Fixed in https://github.com/storybookjs/storybook/pull/26623 */}
-        <Button>
+        <Button
+          onClick={() => {
+            onClickByStatus('approved');
+          }}
+        >
           <IconContainer color={theme?.color.defaultText}>
-            <Icons icon="timer" /> {skippedCount}
+            <Icons icon="thumbsup" /> {approvedCount}
           </IconContainer>
         </Button>
       </Container>

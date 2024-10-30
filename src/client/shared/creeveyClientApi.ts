@@ -5,6 +5,7 @@ export interface CreeveyClientApi {
   start: (ids: string[]) => void;
   stop: () => void;
   approve: (id: string, retry: number, image: string) => void;
+  approveAll: () => void;
   onUpdate: (fn: (update: CreeveyUpdate) => void) => () => void;
   readonly status: Promise<CreeveyStatus>;
 }
@@ -31,6 +32,9 @@ export async function initCreeveyClientApi(): Promise<CreeveyClientApi> {
       },
       approve(id: string, retry: number, image: string) {
         send({ type: 'approve', payload: { id, retry, image } });
+      },
+      approveAll() {
+        send({ type: 'approveAll' });
       },
       onUpdate(fn: (update: CreeveyUpdate) => void) {
         updateListeners.add(fn);

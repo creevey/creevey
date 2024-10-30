@@ -208,6 +208,7 @@ export async function start(config: Config, options: Options & { browser: string
     retries = test.retries;
 
     mocha.grep(new RegExp(`^${testPath}$`));
+    mocha.unloadFiles();
     const runner = mocha.run(runHandler);
 
     // TODO How handle browser corruption?

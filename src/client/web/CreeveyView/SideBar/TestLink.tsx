@@ -4,7 +4,7 @@ import { TestStatusIcon } from './TestStatusIcon.js';
 import { CreeveyContext } from '../../CreeveyContext.js';
 import { SideBarContext } from './SideBar.js';
 import { KeyboardEventsContext } from '../../KeyboardEventsContext.js';
-import { Button, Container, SuiteContainer } from './SuiteLink.js';
+import { Button, Container, SuiteContainer, SuiteTitle } from './SuiteLink.js';
 import { Checkbox, CheckboxContainer } from './Checkbox.js';
 import { getTestPath } from '../../../shared/helpers.js';
 
@@ -48,11 +48,7 @@ export function TestLink({ title, opened, test }: TestLinkProps): JSX.Element {
   }, [test, onOpenTest, setSidebarFocusedItem]);
 
   return (
-    <Container disabled={emptyResults}>
-      <Button onClick={handleOpen} active={opened} focused={isTestFocused} disabled={emptyResults} ref={buttonRef}>
-        <TestStatusIcon inverted={opened} status={test.status} skip={test.skip} />
-        <SuiteContainer padding={(testPath.length + 8) * 8}>{title}</SuiteContainer>
-      </Button>
+    <Container disabled={emptyResults} active={opened} focused={isTestFocused}>
       {/* NOTE Little hack to allow click on checkbox and don't trigger Button click */}
       {/* We can use other approach, but checkbox has vertical-align: top */}
       <CheckboxContainer>
@@ -62,6 +58,12 @@ export function TestLink({ title, opened, test }: TestLinkProps): JSX.Element {
           onValueChange={handleCheck}
         />
       </CheckboxContainer>
+      <Button onClick={handleOpen} disabled={emptyResults} ref={buttonRef}>
+        <SuiteContainer padding={(testPath.length + 1) * 8}>
+          <TestStatusIcon inverted={opened} status={test.status} skip={test.skip} />
+          <SuiteTitle>{title}</SuiteTitle>
+        </SuiteContainer>
+      </Button>
     </Container>
   );
 }

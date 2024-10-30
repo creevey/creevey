@@ -45,6 +45,7 @@ export default class Runner extends EventEmitter {
     // TODO Handle 'retrying' status
     test.status = status == 'retrying' ? 'failed' : status;
     if (!result) {
+      // NOTE: Running status
       this.sendUpdate({ tests: { [id]: { id, browser, testName, storyPath, status: test.status, storyId } } });
       return;
     }
@@ -53,8 +54,23 @@ export default class Runner extends EventEmitter {
     }
     test.results.push(result);
 
+    if (status == 'failed') {
+      test.approved = null;
+    }
+
     this.sendUpdate({
-      tests: { [id]: { id, browser, testName, storyPath, status: test.status, results: [result], storyId } },
+      tests: {
+        [id]: {
+          id,
+          browser,
+          testName,
+          storyPath,
+          status: test.status,
+          approved: test.approved,
+          results: [result],
+          storyId,
+        },
+      },
     });
 
     if (this.failFast && status == 'failed') this.stop();
@@ -161,6 +177,44 @@ export default class Runner extends EventEmitter {
     };
   }
 
+  private async copyImage(test: ServerTest, image: string, actual: string): Promise<void> {
+    const { browser, testName, storyPath } = test;
+    const restPath = [...storyPath, testName].filter(isDefined);
+    const testPath = path.join(...restPath, image == browser ? '' : browser);
+    const srcImagePath = path.join(this.reportDir, testPath, actual);
+    const dstImagePath = path.join(this.screenDir, testPath, `${image}.png`);
+    await mkdir(path.join(this.screenDir, testPath), { recursive: true });
+    await copyFile(srcImagePath, dstImagePath);
+  }
+
+  public async approveAll(): Promise<void> {
+    const updatedTests: NonNullable<CreeveyUpdate['tests']> = {};
+    for (const test of Object.values(this.tests)) {
+      if (!test?.results) continue;
+      const retry = test.results.length - 1;
+      const { images, status } = test.results.at(retry) ?? {};
+      if (!images || status != 'failed') continue;
+      for (const [name, image] of Object.entries(images)) {
+        if (!image) continue;
+        await this.copyImage(test, name, image.actual);
+
+        if (!test.approved) {
+          test.approved = {};
+        }
+        test.approved[name] = retry;
+
+        updatedTests[test.id] = {
+          id: test.id,
+          browser: test.browser,
+          storyPath: test.storyPath,
+          storyId: test.storyId,
+          approved: { [name]: retry },
+        };
+      }
+    }
+    this.sendUpdate({ tests: updatedTests });
+  }
+
   public async approve({ id, retry, image }: ApprovePayload): Promise<void> {
     const test = this.tests[id];
     if (!test?.results) return;
@@ -171,16 +225,18 @@ export default class Runner extends EventEmitter {
     if (!test.approved) {
       test.approved = {};
     }
-    const { browser, testName, storyPath } = test;
-    const restPath = [...storyPath, testName].filter(isDefined);
-    const testPath = path.join(...restPath, image == browser ? '' : browser);
-    const srcImagePath = path.join(this.reportDir, testPath, images.actual);
-    const dstImagePath = path.join(this.screenDir, testPath, `${image}.png`);
-    await mkdir(path.join(this.screenDir, testPath), { recursive: true });
-    await copyFile(srcImagePath, dstImagePath);
+    const { browser, testName, storyPath, storyId } = test;
+
+    await this.copyImage(test, image, images.actual);
+
     test.approved[image] = retry;
+
+    if (Object.keys(result.images).every((name) => typeof test.approved?.[name] == 'number')) {
+      test.status = 'approved';
+    }
+
     this.sendUpdate({
-      tests: { [id]: { id, browser, testName, storyPath, approved: { [image]: retry }, storyId: test.storyId } },
+      tests: { [id]: { id, browser, testName, storyPath, status: test.status, approved: { [image]: retry }, storyId } },
     });
   }
   private sendUpdate(data: CreeveyUpdate): void {

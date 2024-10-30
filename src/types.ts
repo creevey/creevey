@@ -323,7 +323,7 @@ export interface Images {
   error?: string;
 }
 
-export type TestStatus = 'unknown' | 'pending' | 'running' | 'failed' | 'success' | 'retrying';
+export type TestStatus = 'unknown' | 'pending' | 'running' | 'failed' | 'approved' | 'success' | 'retrying';
 
 export interface TestResult {
   status: 'failed' | 'success';
@@ -350,7 +350,7 @@ export interface TestData extends TestMeta {
   retries?: number;
   status?: TestStatus;
   results?: TestResult[];
-  approved?: Partial<Record<string, number>>;
+  approved?: Partial<Record<string, number>> | null;
 }
 
 export interface ServerTest extends TestData {
@@ -415,7 +415,8 @@ export type Request =
   | { type: 'status' }
   | { type: 'start'; payload: string[] }
   | { type: 'stop' }
-  | { type: 'approve'; payload: ApprovePayload };
+  | { type: 'approve'; payload: ApprovePayload }
+  | { type: 'approveAll' };
 
 export type Response =
   | { type: 'status'; payload: CreeveyStatus }

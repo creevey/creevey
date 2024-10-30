@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { Icons, Tabs } from '@storybook/components';
 import { styled, withTheme, Theme } from '@storybook/theming';
 import { ImagesViewMode, Images } from '../../../../types.js';
@@ -8,10 +8,10 @@ import { viewModes } from '../../viewMode.js';
 
 interface PageHeaderProps {
   title: string[];
+  imageName: string;
   images?: Partial<Record<string, Images>>;
   errorMessage?: string | null;
   showViewModes: boolean;
-  showTitle?: boolean;
   viewMode: ImagesViewMode;
   imagesWithError?: string[];
   onImageChange: (name: string) => void;
@@ -63,34 +63,40 @@ const ImagesEntriesContainer = styled.div({
   margin: '16px 0 8px',
 });
 
+// TODO Move images to sidebar
 export function PageHeader({
   title,
+  imageName,
   images = {},
   errorMessage,
   showViewModes,
-  showTitle,
   viewMode,
   imagesWithError = [],
   onImageChange,
   onViewModeChange,
 }: PageHeaderProps): JSX.Element | null {
   const imageEntires = Object.entries(images) as [string, Images][];
-  const [imageName, setImageName] = useState(imageEntires.at(0)?.[0] ?? '');
 
-  const handleImageChange = (name: string): void => {
-    setImageName(name);
-    onImageChange(name);
-  };
   const handleViewModeChange = (mode: string): void => {
     onViewModeChange(mode as ImagesViewMode);
   };
+
+  useEffect(() => {
+    if (imageName === '') {
+      if (imagesWithError.length > 0) {
+        onImageChange(imagesWithError[0]);
+        return;
+      }
+      const firstImage = Object.keys(images).at(0);
+      if (firstImage) onImageChange(firstImage);
+    }
+  }, [imageName, images, imagesWithError, onImageChange]);
+
   const error = errorMessage || imagesWithError.includes(imageName) ? (images[imageName]?.error ?? errorMessage) : null;
 
-  return showTitle || error || imageEntires.length > 1 || showViewModes ? (
+  return (
     <Container>
-      {showTitle && (
-        <H1>{title.flatMap((token) => [token, <HeaderDivider key={token}>/</HeaderDivider>]).slice(0, -1)}</H1>
-      )}
+      <H1>{title.flatMap((token) => [token, <HeaderDivider key={token}>/</HeaderDivider>]).slice(0, -1)}</H1>
       {error && (
         <ErrorContainer>
           <Icons icon="closeAlt" />
@@ -105,7 +111,7 @@ export function PageHeader({
               imageName={name}
               url={`${getImageUrl(title, name)}/${image.actual}`}
               isActive={name === imageName}
-              onClick={handleImageChange}
+              onClick={onImageChange}
               error={imagesWithError.includes(name)}
             />
           ))}
@@ -119,5 +125,5 @@ export function PageHeader({
         </Tabs>
       )}
     </Container>
-  ) : null;
+  );
 }
