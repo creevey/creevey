@@ -314,6 +314,7 @@ export type ShutdownHandler = (message: ShutdownMessage) => void;
 
 export interface Worker extends ClusterWorker {
   isRunning?: boolean;
+  isShuttingDown?: boolean;
 }
 
 export interface Images {

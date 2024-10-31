@@ -96,11 +96,13 @@ export default class Pool extends EventEmitter {
   }
 
   private getFreeWorker(): Worker | undefined {
-    return this.freeWorkers[Math.floor(Math.random() * this.freeWorkers.length)];
+    const freeWorkers = this.freeWorkers;
+
+    return freeWorkers[Math.floor(Math.random() * freeWorkers.length)];
   }
 
   private get aliveWorkers(): Worker[] {
-    return this.workers.filter((worker) => !worker.exitedAfterDisconnect);
+    return this.workers.filter((worker) => !worker.exitedAfterDisconnect && !worker.isShuttingDown);
   }
 
   private get freeWorkers(): Worker[] {
@@ -146,6 +148,7 @@ export default class Pool extends EventEmitter {
   }
 
   private gracefullyKill(worker: Worker): void {
+    worker.isShuttingDown = true;
     const timeout = setTimeout(() => {
       worker.kill();
     }, 10000);

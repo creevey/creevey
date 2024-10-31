@@ -202,12 +202,14 @@ export default class Runner extends EventEmitter {
           test.approved = {};
         }
         test.approved[name] = retry;
+        test.status = 'approved';
 
         updatedTests[test.id] = {
           id: test.id,
           browser: test.browser,
           storyPath: test.storyPath,
           storyId: test.storyId,
+          status: test.status,
           approved: { [name]: retry },
         };
       }

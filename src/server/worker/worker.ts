@@ -9,7 +9,7 @@ import { Key, until } from 'selenium-webdriver';
 import { Config, Images, Options, TestMessage, isImageError } from '../../types.js';
 import { subscribeOn, emitTestMessage, emitWorkerMessage } from '../messages.js';
 import chaiImage from './chai-image.js';
-import { closeBrowser, getBrowser, switchStory } from '../selenium/index.js';
+import { getBrowser, switchStory } from '../selenium/index.js';
 import { CreeveyReporter, TeamcityReporter } from './reporter.js';
 import { addTestsFromStories } from './helpers.js';
 import { logger } from '../logger.js';
@@ -136,7 +136,19 @@ export async function start(config: Config, options: Options & { browser: string
 
   chai.use(chaiImage(getExpected, config.diffOptions));
 
-  if ((await getBrowser(config, options)) == null) return;
+  const browser = await (async () => {
+    try {
+      return await getBrowser(config, options);
+    } catch (error) {
+      emitWorkerMessage({
+        type: 'error',
+        payload: { error: error instanceof Error ? error.message : ((error ?? 'Unknown error') as string) },
+      });
+      return null;
+    }
+  })();
+
+  if (browser == null) return;
 
   await addTestsFromStories(mocha.suite, config, {
     browser: options.browser,
@@ -145,18 +157,11 @@ export async function start(config: Config, options: Options & { browser: string
     port: options.port,
   });
 
-  try {
-    await (await getBrowser(config, options))?.getCurrentUrl();
-  } catch {
-    await closeBrowser();
-  }
-  const browser = await getBrowser(config, options);
-  const sessionId = (await browser?.getSession())?.getId();
-
-  if (browser == null) return;
+  const sessionId = (await browser.getSession()).getId();
 
   const interval = setInterval(
     () =>
+      // NOTE Simple way to keep session alive
       void browser.getCurrentUrl().then((url) => {
         logger.debug(`${options.browser}:${chalk.gray(sessionId)}`, 'current url', chalk.magenta(url));
       }),
