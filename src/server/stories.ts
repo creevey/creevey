@@ -2,7 +2,6 @@ import path from 'path';
 import { mkdirSync, writeFileSync } from 'fs';
 import { createHash } from 'crypto';
 import _ from 'lodash';
-import type { Context } from 'mocha';
 import type {
   TestData,
   CreeveyStoryParams,
@@ -11,26 +10,27 @@ import type {
   ServerTest,
   StoryInput,
   CreeveyTestFunction,
+  CreeveyTestContext,
 } from '../types.js';
 import { isDefined, isFunction } from '../types.js';
 import { shouldSkip } from './utils.js';
 
 function storyTestFabric(delay?: number, testFn?: CreeveyTestFunction) {
-  return async function storyTest(this: Context) {
+  return async function storyTest(context: CreeveyTestContext) {
     if (delay) await new Promise((resolve) => setTimeout(resolve, delay));
     await (testFn
-      ? testFn.call(this)
-      : this.screenshots.length > 0
-        ? this.expect(
-            this.screenshots.reduce(
+      ? testFn(context)
+      : context.screenshots.length > 0
+        ? context.matchImages(
+            context.screenshots.reduce(
               (screenshots, { imageName, screenshot }, index) => ({
                 ...screenshots,
                 [imageName ?? `screenshot_${index}`]: screenshot,
               }),
               {},
             ),
-          ).to.matchImages()
-        : this.expect(await this.takeScreenshot()).to.matchImage());
+          )
+        : context.matchImage(await context.takeScreenshot()));
   };
 }
 
@@ -41,10 +41,17 @@ function createCreeveyTest(
   testName?: string,
 ): TestData {
   const { title, name, id: storyId } = storyMeta;
-  const path = [title, name, testName, browser].filter(isDefined);
+  const testPath = [title, name, testName, browser].filter(isDefined);
   const skip = skipOptions ? shouldSkip(browser, { title, name }, skipOptions, testName) : false;
-  const id = createHash('sha1').update(path.join('/')).digest('hex');
-  return { id, skip, browser, testName, storyPath: [...title.split('/').map((x) => x.trim()), name], storyId };
+  const id = createHash('sha1').update(testPath.join('/')).digest('hex');
+  return {
+    id,
+    skip,
+    browser,
+    testName,
+    storyPath: [...title.split('/').map((x) => x.trim()), name],
+    storyId,
+  };
 }
 
 function convertStories(browserName: string, stories: StoriesRaw | StoryInput[]): Partial<Record<string, ServerTest>> {

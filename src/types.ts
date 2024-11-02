@@ -1,10 +1,10 @@
 import type { StoryContextForEnhancers, DecoratorFunction } from '@storybook/csf';
 import type { IKey } from 'selenium-webdriver/lib/input.js';
 import type { Worker as ClusterWorker } from 'cluster';
-import type { until, WebDriver, WebElementPromise } from 'selenium-webdriver';
+import type { until, WebDriver, WebElement } from 'selenium-webdriver';
 import type Pixelmatch from 'pixelmatch';
-import type { Context } from 'mocha';
 import type { expect } from 'chai';
+import type EventEmitter from 'events';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type DiffOptions = typeof Pixelmatch extends (
@@ -131,6 +131,9 @@ export interface DockerAuth {
   serveraddress?: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type BaseReporter = new (runner: EventEmitter, options: { reporterOptions: any }) => void;
+
 export interface Config {
   /**
    * Url to Selenium grid hub or standalone selenium.
@@ -157,10 +160,25 @@ export interface Config {
    */
   reportDir: string;
   /**
+   * Specify a custom reporter for test results. Creevey accepts only mocha-like reporters
+   * @optional
+   */
+  reporter: BaseReporter;
+  /**
+   * Options which are used by reporter
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  reporterOptions?: Record<string, any>;
+  /**
    * How much test would be retried
    * @default 0
    */
   maxRetries: number;
+  /**
+   * How much time should be spent on each test
+   * @default 30000
+   */
+  testTimeout: number;
   /**
    * Define pixelmatch diff options
    * @default { threshold: 0, includeAA: true }
@@ -204,7 +222,7 @@ export interface Config {
    * }
    * ```
    */
-  storiesProvider: StoriesProvider;
+  storiesProvider: StoriesProvider; // TODO Update description
   /**
    * Define custom babel options for load stories transformation
    */
@@ -267,6 +285,9 @@ export interface Options {
   trace: boolean;
   tests: boolean;
   browser?: string;
+  /**
+   * @deprecated use {@link Config.reporter} instead
+   */
   reporter?: string;
   screenDir?: string;
   reportDir?: string;
@@ -275,7 +296,11 @@ export interface Options {
   failFast?: boolean;
 }
 
-export type WorkerMessage = { type: 'ready'; payload?: never } | { type: 'error'; payload: { error: string } };
+export type WorkerError = 'browser' | 'test' | 'unknown';
+
+export type WorkerMessage =
+  | { type: 'ready'; payload?: never }
+  | { type: 'error'; payload: { subtype: WorkerError; error: string } };
 
 export type StoriesMessage =
   | { type: 'get'; payload?: never }
@@ -334,8 +359,8 @@ export interface TestResult {
   error?: string;
 }
 
-export interface ImagesError extends Error {
-  images: string | Partial<Record<string, string>>;
+export class ImagesError extends Error {
+  images?: string | Partial<Record<string, string>>;
 }
 
 export interface TestMeta {
@@ -354,9 +379,75 @@ export interface TestData extends TestMeta {
   approved?: Partial<Record<string, number>> | null;
 }
 
+export interface BaseCreeveyTestContext {
+  browserName: string;
+  browser: WebDriver;
+  /**
+   * @deprecated In near future Creevey will additionally support Playwright as a webdriver, so any Selenium specific things might not be available. Please import `until` explicitly
+   */
+  until: typeof until;
+  /**
+   * @deprecated In near future Creevey will additionally support Playwright as a webdriver, so any Selenium specific things might not be available. Please import `keys` explicitly
+   */
+  keys: IKey;
+  /**
+   * @deprecated Usually for screenshot testing you don't need other type of assertions except matching images, but if you really need it, please use external `expect` libs
+   */
+  expect: typeof expect;
+  /**
+   * @internal
+   */
+  screenshots: { imageName?: string; screenshot: string }[];
+  matchImage: (image: string | Buffer, imageName?: string) => Promise<void>;
+  matchImages: (images: Record<string, string | Buffer>) => Promise<void>;
+}
+
+export interface CreeveyTestContext extends BaseCreeveyTestContext {
+  takeScreenshot: () => Promise<string>;
+  updateStoryArgs: (updatedArgs: Record<string, unknown>) => Promise<void>;
+  /**
+   * @deprecated In near future Creevey will additionally support Playwright as a webdriver, so any Selenium specific things might not be available. The type of `captureElement` will be changed to `string`
+   */
+  readonly captureElement: Promise<WebElement> | undefined;
+}
+
+export enum TEST_EVENTS {
+  RUN_BEGIN = 'start',
+  RUN_END = 'end',
+  TEST_BEGIN = 'test',
+  TEST_END = 'test end',
+  TEST_FAIL = 'fail',
+  TEST_PASS = 'pass',
+}
+
 export interface ServerTest extends TestData {
   story: StoryInput;
-  fn: (this: Context) => Promise<void>;
+  fn: CreeveyTestFunction;
+}
+
+export interface FakeSuite {
+  title: string;
+  fullTitle: () => string;
+  titlePath: () => string[];
+  tests: FakeTest[];
+}
+
+// NOTE: Mocha-like test interface, used specifically for reporting
+export interface FakeTest {
+  parent: FakeSuite;
+  title: string;
+  fullTitle: () => string;
+  titlePath: () => string[];
+  currentRetry: () => number;
+  retires: () => number;
+  slow: () => number;
+  duration?: number;
+  state?: 'failed' | 'passed';
+  // NOTE > duration, > duration / 2, > 0
+  speed?: 'slow' | 'medium' | 'fast';
+  err?: unknown;
+  // NOTE: image files
+  attachments?: string[];
 }
 
 export interface CreeveyStatus {
@@ -381,17 +472,7 @@ export interface SkipOption {
 
 export type SkipOptions = boolean | string | Record<string, SkipOption | SkipOption[]>;
 
-export interface CreeveyTestController {
-  browser: WebDriver;
-  until: typeof until;
-  keys: IKey;
-  expect: typeof expect;
-  takeScreenshot: () => Promise<string>;
-  updateStoryArgs: (updatedArgs: Record<string, unknown>) => Promise<void>;
-  readonly captureElement?: WebElementPromise;
-}
-
-export type CreeveyTestFunction = (this: CreeveyTestController) => Promise<void>;
+export type CreeveyTestFunction = (context: CreeveyTestContext) => Promise<void>;
 
 export interface CaptureOptions {
   imageName?: string;
@@ -474,7 +555,7 @@ export function isFunction(x: unknown): x is (...args: any[]) => any {
 }
 
 export function isImageError(error: unknown): error is ImagesError {
-  return error instanceof Error && 'images' in error;
+  return error instanceof ImagesError && 'images' in error;
 }
 
 export function isProcessMessage(message: unknown): message is ProcessMessage {
