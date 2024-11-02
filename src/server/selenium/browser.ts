@@ -5,7 +5,6 @@ import http from 'http';
 import https from 'https';
 import Logger from 'loglevel';
 import prefix from 'loglevel-plugin-prefix';
-import { Context, Suite, Test } from 'mocha';
 import { networkInterfaces } from 'os';
 import { PNG } from 'pngjs';
 import { Builder, By, Capabilities, Origin, WebDriver, WebElement, logging } from 'selenium-webdriver';
@@ -25,6 +24,8 @@ import {
   StoryInput,
   StoriesRaw,
   Options,
+  CreeveyTestContext,
+  BaseCreeveyTestContext,
 } from '../../types.js';
 import { colors, logger } from '../logger.js';
 import { emitStoriesMessage, subscribeOn } from '../messages.js';
@@ -231,6 +232,9 @@ async function waitForStorybook(browser: WebDriver): Promise<void> {
       do {
         try {
           wait = await browser.executeScript<boolean>(function (SET_GLOBALS: string): boolean {
+            // TODO Maybe use
+            // import { global } from '@storybook/global';
+            // global.IS_STORYBOOK
             if (typeof window.__STORYBOOK_ADDONS_CHANNEL__ == 'undefined') return true;
             if (window.__STORYBOOK_ADDONS_CHANNEL__.last(SET_GLOBALS) == undefined) return true;
             return false;
@@ -718,9 +722,8 @@ export async function getBrowser(config: Config, options: Options & { browser: s
       return null;
     }
     const currentUrl = await browser.getCurrentUrl();
-    const error = new Error(
-      `Can't load storybook root page${currentUrl ? ` by URL ${currentUrl}` : ''}: ${originalError instanceof Error ? originalError.message : ((originalError ?? 'Unknown error') as string)}`,
-    );
+    const message = originalError instanceof Error ? originalError.message : ((originalError ?? 'Unknown error') as string);
+    const error = new Error(`Can't load storybook root page${currentUrl ? ` by URL ${currentUrl}` : ''}: ${message}`);
     if (originalError instanceof Error) error.stack = originalError.stack;
     throw error;
   }
@@ -772,22 +775,7 @@ export async function closeBrowser(): Promise<void> {
   }
 }
 
-export async function switchStory(this: Context): Promise<void> {
-  let testOrSuite: Test | Suite | undefined = this.currentTest;
-
-  if (!testOrSuite) throw new Error("Can't switch story, because test context doesn't have 'currentTest' field");
-
-  this.testScope.length = 0;
-  this.screenshots.length = 0;
-  this.testScope.push(this.browserName);
-  while (testOrSuite?.title) {
-    this.testScope.push(testOrSuite.title);
-    testOrSuite = testOrSuite.parent;
-  }
-  const story = this.currentTest?.ctx?.story as StoryInput | undefined;
-
-  if (!story) throw new Error(`Current test '${this.testScope.join('/')}' context doesn't have 'story' field`);
-
+export async function switchStory(story: StoryInput, context: BaseCreeveyTestContext): Promise<CreeveyTestContext> {
   const { id, title, name, parameters } = story;
   const {
     captureElement = `#${storybookRootID}`,
@@ -797,32 +785,19 @@ export async function switchStory(this: Context): Promise<void> {
 
   logger().debug(`Switching to story ${chalk.cyan(title)}/${chalk.cyan(name)} by id ${chalk.magenta(id)}`);
 
-  if (captureElement)
-    Object.defineProperty(this, 'captureElement', {
-      enumerable: true,
-      configurable: true,
-      get: () => this.browser.findElement(By.css(captureElement)),
-    });
-  else Reflect.deleteProperty(this, 'captureElement');
-
-  this.takeScreenshot = () => takeScreenshot(this.browser, captureElement, ignoreElements);
-  this.updateStoryArgs = (updatedArgs: Args) => updateStoryArgs(this.browser, story, updatedArgs);
-
-  this.testScope.reverse();
-
   let storyPlayResolver: (isCompleted: boolean) => void;
   let waitForComplete = new Promise<boolean>((resolve) => (storyPlayResolver = resolve));
   const unsubscribe = subscribeOn('stories', (message) => {
     if (message.type != 'capture') return;
     const { payload = {}, payload: { imageName } = {} } = message;
     void takeScreenshot(
-      this.browser,
+      context.browser,
       payload.captureElement ?? captureElement,
       payload.ignoreElements ?? ignoreElements,
     ).then((screenshot) => {
-      this.screenshots.push({ imageName, screenshot });
+      context.screenshots.push({ imageName, screenshot });
 
-      void this.browser
+      void context.browser
         .executeAsyncScript<boolean>(function (callback: (isCompleted: boolean) => void) {
           window.__CREEVEY_HAS_PLAY_COMPLETED_YET__(callback);
         })
@@ -834,11 +809,13 @@ export async function switchStory(this: Context): Promise<void> {
     });
   });
 
-  await updateBrowserGlobalVariables(this.browser);
-  await resetMousePosition(this.browser);
-  const isCaptureCalled = await selectStory(this.browser, id, waitForReady);
+  // NOTE: Global variables might be reset after hot reload. I think it's workaround, maybe we need better solution
+  await updateBrowserGlobalVariables(context.browser);
+  await resetMousePosition(context.browser);
+  const isCaptureCalled = await selectStory(context.browser, id, waitForReady);
 
   if (isCaptureCalled) {
+    logger().debug(`Capturing screenshots from ${chalk.magenta(id)} story's \`play()\` function`);
     while (!(await waitForComplete)) {
       waitForComplete = new Promise<boolean>((resolve) => (storyPlayResolver = resolve));
     }
@@ -846,7 +823,19 @@ export async function switchStory(this: Context): Promise<void> {
 
   unsubscribe();
 
-  logger().debug(`Story ${chalk.magenta(id)} ready for capturing`);
+  if (isCaptureCalled) logger().debug(`Story ${chalk.magenta(id)} completed capturing`);
+  else logger().debug(`Story ${chalk.magenta(id)} ready for capturing`);
+
+  return Object.assign(
+    {
+      takeScreenshot: () => takeScreenshot(context.browser, captureElement, ignoreElements),
+      updateStoryArgs: (updatedArgs: Args) => updateStoryArgs(context.browser, story, updatedArgs),
+      get captureElement() {
+        return captureElement ? context.browser.findElement(By.css(captureElement)) : undefined;
+      },
+    },
+    context,
+  );
 }
 
 async function insertIgnoreStyles(

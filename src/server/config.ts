@@ -4,6 +4,7 @@ import { pathToFileURL } from 'url';
 import { loadStories as browserStoriesProvider } from './storybook/providers/browser.js';
 import { Config, Browser, BrowserConfig, Options, isDefined } from '../types.js';
 import { configExt, loadThroughTSX } from './utils.js';
+import { CreeveyReporter, TeamcityReporter } from './reporter.js';
 
 export const defaultBrowser = 'chrome';
 
@@ -18,7 +19,9 @@ export const defaultConfig: Omit<Config, 'gridUrl' | 'storiesProvider' | 'testsD
   storybookUrl: 'http://localhost:6006',
   screenDir: path.resolve('images'),
   reportDir: path.resolve('report'),
+  reporter: process.env.TEAMCITY_VERSION ? TeamcityReporter : CreeveyReporter,
   maxRetries: 0,
+  testTimeout: 30000,
   diffOptions: { threshold: 0, includeAA: true },
   browsers: { [defaultBrowser]: true },
   hooks: {},
