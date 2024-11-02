@@ -15,7 +15,7 @@ function shutdownOnException(reason: unknown): void {
   logger().error(error);
 
   process.exitCode = -1;
-  if (cluster.isWorker) emitWorkerMessage({ type: 'error', payload: { error } });
+  if (cluster.isWorker) emitWorkerMessage({ type: 'error', payload: { subtype: 'unknown', error } });
   if (cluster.isPrimary) void shutdownWorkers();
 }
 
@@ -33,6 +33,22 @@ const argv = minimist<Options>(process.argv.slice(2), {
 
 if ('port' in argv && !isNaN(argv.port)) argv.port = Number(argv.port);
 if ('browser' in argv && argv.browser) setRootName(argv.browser);
+
+// eslint-disable-next-line @typescript-eslint/no-deprecated
+if (cluster.isPrimary && argv.reporter) {
+  logger.warn(`--reporter option has been removed please describe reporter in config file:
+    import { reporters } from 'mocha';
+
+    const config = {
+      reporter: reporters.${
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
+        argv.reporter
+      },
+    };
+
+    export default config;
+  `);
+}
 
 // @ts-expect-error: define log level for storybook
 global.LOGLEVEL = argv.trace ? 'trace' : argv.debug ? 'debug' : 'warn';

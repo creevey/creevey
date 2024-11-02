@@ -1,13 +1,13 @@
 import chalk from 'chalk';
 import Logger from 'loglevel';
 import prefix from 'loglevel-plugin-prefix';
-import { Runner, reporters, MochaOptions } from 'mocha';
-import { Images, isDefined, isImageError } from '../../types.js';
+import { FakeTest, Images, isDefined, isImageError, TEST_EVENTS } from '../types.js';
+import EventEmitter from 'events';
 
 interface ReporterOptions {
   reportDir: string;
   sessionId: string;
-  topLevelSuite: string;
+  browserName: string;
   willRetry: boolean;
   images: Partial<Record<string, Partial<Images>>>;
 }
@@ -18,62 +18,73 @@ const testLevels: Record<string, string> = {
   ERROR: chalk.red('FAIL'),
 };
 
-export class CreeveyReporter extends reporters.Base {
+export class CreeveyReporter {
   // TODO Output in better way, like vitest, maybe
-  constructor(runner: Runner, options: MochaOptions) {
-    super(runner);
-
-    const { sessionId, topLevelSuite } = options.reporterOptions as ReporterOptions;
-    const testLogger = Logger.getLogger(sessionId);
+  constructor(runner: EventEmitter, options: { reporterOptions: { creevey: ReporterOptions } }) {
+    const { sessionId, browserName } = options.reporterOptions.creevey;
+    const testLogger = Logger.getLogger(browserName);
 
     prefix.apply(testLogger, {
       format(level) {
-        return `[${topLevelSuite}:${chalk.gray(process.pid)}] ${testLevels[level]} => ${chalk.gray(sessionId)}`;
+        return `[${browserName}:${chalk.gray(process.pid)}] ${testLevels[level]} => ${chalk.gray(sessionId)}`;
       },
     });
 
-    runner.on('test', (test) => {
+    runner.on(TEST_EVENTS.TEST_BEGIN, (test: FakeTest) => {
       testLogger.warn(chalk.cyan(test.titlePath().join('/')));
     });
-    runner.on('pass', (test) => {
+    runner.on(TEST_EVENTS.TEST_PASS, (test: FakeTest) => {
       testLogger.info(chalk.cyan(test.titlePath().join('/')));
     });
-    runner.on('fail', (test, error) => {
+    runner.on(TEST_EVENTS.TEST_FAIL, (test: FakeTest, error) => {
       testLogger.error(
         chalk.cyan(test.titlePath().join('/')),
         '\n  ',
-        getErrors(
+        this.getErrors(
           error,
-          (error, imageName) => `${chalk.bold(imageName ?? topLevelSuite)}:${error}`,
+          (error, imageName) => `${chalk.bold(imageName ?? browserName)}:${error}`,
           (error) => error.stack ?? error.message,
         ).join('\n  '),
       );
     });
   }
+  private getErrors(
+    error: unknown,
+    imageErrorToString: (error: string, imageName?: string) => string,
+    errorToString: (error: Error) => string,
+  ): string[] {
+    const errors = [];
+    if (!(error instanceof Error)) {
+      errors.push(error as string);
+    } else if (!isImageError(error)) {
+      errors.push(errorToString(error));
+    } else if (typeof error.images == 'string') {
+      errors.push(imageErrorToString(error.images));
+    } else {
+      const imageErrors = error.images ?? {};
+      Object.keys(imageErrors).forEach((imageName) => {
+        errors.push(imageErrorToString(imageErrors[imageName] ?? '', imageName));
+      });
+    }
+    return errors;
+  }
 }
 
-export class TeamcityReporter extends reporters.Base {
-  constructor(runner: Runner, options: MochaOptions) {
-    super(runner);
+export class TeamcityReporter {
+  constructor(runner: EventEmitter, options: { reporterOptions: { creevey: ReporterOptions } }) {
+    const browserName = this.escape(options.reporterOptions.creevey.browserName);
+    const reporterOptions = options.reporterOptions.creevey;
 
-    const topLevelSuite = this.escape((options.reporterOptions as ReporterOptions).topLevelSuite);
-    const reporterOptions = options.reporterOptions as ReporterOptions;
-
-    runner.on('suite', (suite) => {
-      if (suite.root) console.log(`##teamcity[testSuiteStarted name='${topLevelSuite}' flowId='${process.pid}']`);
-      else console.log(`##teamcity[testSuiteStarted name='${this.escape(suite.title)}' flowId='${process.pid}']`);
-    });
-
-    runner.on('test', (test) => {
+    runner.on(TEST_EVENTS.TEST_BEGIN, (test: FakeTest) => {
       console.log(`##teamcity[testStarted name='${this.escape(test.title)}' flowId='${process.pid}']`);
     });
 
-    runner.on('fail', (test, error: Error) => {
+    runner.on(TEST_EVENTS.TEST_FAIL, (test: FakeTest, error: Error) => {
       Object.entries(reporterOptions.images).forEach(([name, image]) => {
         if (!image) return;
         const filePath = test
           .titlePath()
-          .concat(name == topLevelSuite ? [] : [topLevelSuite])
+          .concat(name == browserName ? [] : [browserName])
           .map(this.escape)
           .join('/');
 
@@ -104,27 +115,6 @@ export class TeamcityReporter extends reporters.Base {
           )}' details='${this.escape(error.stack ?? '')}' flowId='${process.pid}']`,
         );
     });
-
-    runner.on('pending', (test) => {
-      console.log(
-        `##teamcity[testIgnored name='${this.escape(test.title)}' message='${this.escape(
-          typeof test.skipReason == 'boolean' ? test.title : test.skipReason,
-        )}' flowId='${process.pid}']`,
-      );
-    });
-
-    runner.on('test end', (test) => {
-      console.log(`##teamcity[testFinished name='${this.escape(test.title)}' flowId='${process.pid}']`);
-    });
-
-    runner.on('suite end', (suite) => {
-      if (!suite.root)
-        console.log(`##teamcity[testSuiteFinished name='${this.escape(suite.title)}' flowId='${process.pid}']`);
-    });
-
-    runner.on('end', () => {
-      console.log(`##teamcity[testSuiteFinished name='${topLevelSuite}' flowId='${process.pid}']`);
-    });
   }
 
   private escape = (str: string): string => {
@@ -145,26 +135,4 @@ export class TeamcityReporter extends reporters.Base {
         .replace(/'/g, "|'")
     );
   };
-}
-
-function getErrors(
-  error: unknown,
-  imageErrorToString: (error: string, imageName?: string) => string,
-  errorToString: (error: Error) => string,
-): string[] {
-  const errors = [];
-  if (!(error instanceof Error)) {
-    errors.push(error as string);
-  } else if (!isImageError(error)) {
-    errors.push(errorToString(error));
-  } else if (typeof error.images == 'string') {
-    errors.push(imageErrorToString(error.images));
-  } else {
-    const imageErrors = error.images;
-    Object.keys(imageErrors).forEach((imageName) => {
-      errors.push(imageErrorToString(imageErrors[imageName] ?? '', imageName));
-    });
-  }
-
-  return errors;
 }

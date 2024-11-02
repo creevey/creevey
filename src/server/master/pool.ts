@@ -156,9 +156,11 @@ export default class Pool extends EventEmitter {
           unsubscribe();
         });
 
-        gracefullyKill(worker);
+        if (message.payload.subtype == 'unknown') {
+          gracefullyKill(worker);
+        }
 
-        this.handleTestResult(worker, test, { status: 'failed', ...message.payload });
+        this.handleTestResult(worker, test, { status: 'failed', error: message.payload.error });
       }),
       subscribeOnWorker(worker, 'test', (message) => {
         if (message.type != 'end') return;

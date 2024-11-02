@@ -3,16 +3,30 @@ import chai from 'chai';
 import chalk from 'chalk';
 import { Stats } from 'fs';
 import assert from 'assert';
+import Logger from 'loglevel';
+import EventEmitter from 'events';
 import { stat, readdir, readFile, writeFile, mkdir } from 'fs/promises';
-import Mocha, { Context, MochaOptions } from 'mocha';
-import { Key, until } from 'selenium-webdriver';
-import { Config, Images, Options, TestMessage, isImageError } from '../../types.js';
+import { Key, until, WebDriver } from 'selenium-webdriver';
+import {
+  BaseCreeveyTestContext,
+  Config,
+  FakeSuite,
+  FakeTest,
+  Images,
+  Options,
+  ServerTest,
+  TEST_EVENTS,
+  TestMessage,
+  isDefined,
+  isImageError,
+} from '../../types.js';
 import { subscribeOn, emitTestMessage, emitWorkerMessage } from '../messages.js';
 import chaiImage from './chai-image.js';
 import { getBrowser, switchStory } from '../selenium/index.js';
-import { CreeveyReporter, TeamcityReporter } from './reporter.js';
-import { addTestsFromStories } from './helpers.js';
+import { getMatchers } from './match-image.js';
+import { loadTestsFromStories } from '../stories.js';
 import { logger } from '../logger.js';
+import { getTestPath } from '../utils.js';
 
 async function getStat(filePath: string): Promise<Stats | null> {
   try {
@@ -41,47 +55,159 @@ async function getLastImageNumber(imageDir: string, imageName: string): Promise<
   }
 }
 
+async function getTestsFromStories(
+  config: Config,
+  { browser, ...options }: { browser: string; watch: boolean; debug: boolean; port: number },
+): Promise<Map<string, ServerTest>> {
+  const testsById = new Map<string, ServerTest>();
+  const tests = await loadTestsFromStories(
+    [browser],
+    (listener) => config.storiesProvider(config, options, listener),
+    (testsDiff) => {
+      Object.entries(testsDiff).forEach(([id, newTest]) => {
+        if (newTest) testsById.set(id, newTest);
+        else testsById.delete(id);
+      });
+    },
+  );
+
+  Object.values(tests)
+    .filter(isDefined)
+    .forEach((test) => testsById.set(test.id, test));
+
+  return testsById;
+}
+
+async function outputTraceLogs(browser: WebDriver, test: ServerTest, logger: Logger.Logger): Promise<void> {
+  const output: string[] = [];
+  const types = await browser.manage().logs().getAvailableLogTypes();
+  for (const type of types) {
+    const logs = await browser.manage().logs().get(type);
+    output.push(logs.map((log) => JSON.stringify(log.toJSON(), null, 2)).join('\n'));
+  }
+  logger.debug(
+    '----------',
+    getTestPath(test).join('/'),
+    '----------\n',
+    output.join('\n'),
+    '\n----------------------------------------------------------------------------------------------------',
+  );
+}
+
+function runHandler(browserName: string, images: Partial<Record<string, Images>>, error?: unknown): void {
+  // TODO How handle browser corruption?
+  if (isImageError(error)) {
+    if (typeof error.images == 'string') {
+      const image = images[browserName];
+      if (image) image.error = error.images;
+    } else {
+      const imageErrors = error.images ?? {};
+      Object.keys(imageErrors).forEach((imageName) => {
+        const image = images[imageName];
+        if (image) image.error = imageErrors[imageName];
+      });
+    }
+  }
+
+  if (error || Object.values(images).some((image) => image?.error != null)) {
+    const errorMessage = serializeError(error);
+
+    const isUnexpectedError =
+      hasTimeout(errorMessage) ||
+      hasDisconnected(errorMessage) ||
+      Object.values(images).some((image) => hasTimeout(image?.error));
+    if (isUnexpectedError) emitWorkerMessage({ type: 'error', payload: { subtype: 'unknown', error: errorMessage } });
+    else
+      emitTestMessage({
+        type: 'end',
+        payload: {
+          status: 'failed',
+          images,
+          error: errorMessage,
+        },
+      });
+  } else {
+    emitTestMessage({ type: 'end', payload: { status: 'success', images } });
+  }
+}
+
+async function setupBrowser(getter: () => Promise<WebDriver | null>): Promise<[string, WebDriver] | undefined> {
+  let browser: WebDriver | null = null;
+
+  try {
+    browser = await getter();
+  } catch (error) {
+    logger().error('Failed to start browser:', error);
+    emitWorkerMessage({
+      type: 'error',
+      payload: { subtype: 'browser', error: serializeError(error) },
+    });
+  }
+
+  if (browser == null) return;
+
+  const sessionId = (await browser.getSession()).getId();
+
+  return [sessionId, browser];
+}
+
+function keepAlive(browser: WebDriver): void {
+  const interval = setInterval(
+    () =>
+      // NOTE Simple way to keep session alive
+      void browser.getCurrentUrl().then((url) => {
+        logger().debug('current url', chalk.magenta(url));
+      }),
+    10 * 1000,
+  );
+
+  subscribeOn('shutdown', () => {
+    clearInterval(interval);
+  });
+}
+
+async function saveImages(imageDir: string, images: { name: string; data: Buffer }[]): Promise<string[]> {
+  const files: string[] = [];
+  await mkdir(imageDir, { recursive: true });
+  for (const { name, data } of images) {
+    const filePath = path.join(imageDir, name);
+    await writeFile(filePath, data);
+    files.push(filePath);
+  }
+  return files;
+}
+
+function serializeError(error: unknown): string {
+  if (!error) return 'Unknown error';
+  if (error instanceof Error) return error.stack ?? error.message;
+  return error instanceof Object ? JSON.stringify(error) : String(error);
+}
+
+function hasDisconnected(str: string | null | undefined): boolean {
+  return str?.toLowerCase().includes('disconnected') ?? false;
+}
+
+function hasTimeout(str: string | null | undefined): boolean {
+  return str?.toLowerCase().includes('timeout') ?? false;
+}
+
 // FIXME browser options hotfix
 export async function start(config: Config, options: Options & { browser: string }): Promise<void> {
   let retries = 0;
+  let attachments: string[] = [];
+  let testFullPath: string[] = [];
   let images: Partial<Record<string, Images>> = {};
-  let error: string | undefined = undefined;
-  const screenshots: { imageName?: string; screenshot: string }[] = [];
-  const testScope: string[] = [];
+  const [sessionId, browser] = (await setupBrowser(() => getBrowser(config, options))) ?? [];
 
-  function runHandler(failures: number): void {
-    if (failures > 0 && (error || Object.values(images).some((image) => image?.error != null))) {
-      const isTimeout = hasTimeout(error) || Object.values(images).some((image) => hasTimeout(image?.error));
-      const payload: { status: 'failed'; images: typeof images; error?: string } = {
-        status: 'failed',
-        images,
-        error,
-      };
-      if (isTimeout) emitWorkerMessage({ type: 'error', payload: { error: error ?? 'Unknown error' } });
-      else emitTestMessage({ type: 'end', payload });
-    } else {
-      emitTestMessage({ type: 'end', payload: { status: 'success', images } });
-    }
-  }
+  if (!browser || !sessionId) return;
 
-  async function saveImages(imageDir: string, images: { name: string; data: Buffer }[]): Promise<void> {
-    await mkdir(imageDir, { recursive: true });
-    for (const { name, data } of images) {
-      await writeFile(path.join(imageDir, name), data);
-    }
-  }
+  keepAlive(browser);
 
-  async function getExpected(
-    assertImageName?: string,
-  ): Promise<
-    | { expected: Buffer | null; onCompare: (actual: Buffer, expect?: Buffer, diff?: Buffer) => Promise<void> }
-    | Buffer
-    | null
-  > {
-    // context => [title, name, test, browser]
-    // rootSuite -> kindSuite -> storyTest -> [browsers.png]
-    // rootSuite -> kindSuite -> storySuite -> test -> [browsers.png]
-    const testPath = [...testScope];
+  async function getExpected(assertImageName?: string): Promise<{
+    expected: Buffer | null;
+    onCompare: (actual: Buffer, expect?: Buffer, diff?: Buffer) => Promise<void>;
+  }> {
+    const testPath = [...testFullPath];
     const imageName = assertImageName ?? testPath.pop();
 
     assert(typeof imageName === 'string', `Can't get image name from empty test scope`);
@@ -101,7 +227,7 @@ export async function start(config: Config, options: Options & { browser: string
         imagesMeta.push({ name: image.diff, data: diff });
       }
       if (options.saveReport) {
-        await saveImages(reportImageDir, imagesMeta);
+        attachments = await saveImages(reportImageDir, imagesMeta);
       }
     };
 
@@ -114,133 +240,144 @@ export async function start(config: Config, options: Options & { browser: string
     return { expected, onCompare };
   }
 
-  const mochaOptions: MochaOptions = {
-    timeout: 30000,
-    reporter: process.env.TEAMCITY_VERSION ? TeamcityReporter : (options.reporter ?? CreeveyReporter),
-    reporterOptions: {
+  const reporterOptions = {
+    ...config.reporterOptions,
+    creevey: {
+      sessionId,
       reportDir: config.reportDir,
-      topLevelSuite: options.browser,
+      browserName: options.browser,
       get willRetry() {
         return retries < config.maxRetries;
       },
       get images() {
         return images;
       },
-      get sessionId() {
-        return sessionId;
-      },
     },
   };
-  const mocha = new Mocha(mochaOptions);
-  mocha.cleanReferencesAfterRun(false);
 
-  chai.use(chaiImage(getExpected, config.diffOptions));
+  class FakeRunner extends EventEmitter {}
+  const runner = new FakeRunner();
+  const Reporter = config.reporter;
+  new Reporter(runner, { reporterOptions });
 
-  const browser = await (async () => {
-    try {
-      return await getBrowser(config, options);
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : ((error ?? 'Unknown error') as string);
-      logger().error('Failed to initiate webdriver:', errorMessage);
-      emitWorkerMessage({
-        type: 'error',
-        payload: { error: errorMessage },
-      });
-      return null;
-    }
-  })();
+  const { matchImage, matchImages } = getMatchers(getExpected, config.diffOptions);
+  chai.use(chaiImage(matchImage, matchImages));
 
-  if (browser == null) return;
-
-  await addTestsFromStories(mocha.suite, config, {
+  const tests = await getTestsFromStories(config, {
     browser: options.browser,
     watch: options.ui,
     debug: options.debug,
     port: options.port,
   });
 
-  const sessionId = (await browser.getSession()).getId();
-
-  const interval = setInterval(
-    () =>
-      // NOTE Simple way to keep session alive
-      void browser.getCurrentUrl().then((url) => {
-        logger().debug('current url', chalk.magenta(url));
-      }),
-    10 * 1000,
-  );
-
-  subscribeOn('shutdown', () => {
-    clearInterval(interval);
-  });
-
-  mocha.suite.beforeAll(function (this: Context) {
-    this.config = config;
-    this.browser = browser;
-    this.until = until;
-    this.keys = Key;
-    this.expect = chai.expect;
-    this.browserName = options.browser;
-    this.testScope = testScope;
-    this.screenshots = screenshots;
-  });
-  mocha.suite.beforeEach(switchStory);
-  if (options.trace) {
-    mocha.suite.afterEach(async function (this: Context) {
-      const output: string[] = [];
-      const types = await browser.manage().logs().getAvailableLogTypes();
-      for (const type of types) {
-        const logs = await browser.manage().logs().get(type);
-        output.push(logs.map((log) => JSON.stringify(log.toJSON(), null, 2)).join('\n'));
-      }
-      logger().debug(
-        '----------',
-        this.currentTest?.titlePath().join('/'),
-        '----------\n',
-        output.join('\n'),
-        '\n----------------------------------------------------------------------------------------------------',
-      );
-    });
-  }
-
   subscribeOn('test', (message: TestMessage) => {
     if (message.type != 'start') return;
 
-    const test = message.payload;
-    const testPath = test.path.join(' ').replace(/[|\\{}()[\]^$+*?.-]/g, '\\$&');
+    const test = tests.get(message.payload.id);
+
+    if (!test) {
+      const error = `Test with id ${message.payload.id} not found`;
+      logger().error(error);
+      emitWorkerMessage({
+        type: 'error',
+        payload: { subtype: 'test', error },
+      });
+      return;
+    }
+
+    const baseContext: BaseCreeveyTestContext = {
+      browserName: options.browser,
+      browser: browser,
+      screenshots: [],
+
+      matchImage: matchImage,
+      matchImages: matchImages,
+
+      // NOTE: Deprecated
+      expect: chai.expect,
+      until: until,
+      keys: Key,
+    };
 
     images = {};
-    error = undefined;
-    retries = test.retries;
+    attachments = [];
+    retries = message.payload.retries;
+    testFullPath = getTestPath(test);
+    let error = undefined;
 
-    mocha.grep(new RegExp(`^${testPath}$`));
-    mocha.unloadFiles();
-    const runner = mocha.run(runHandler);
+    const fakeSuite: FakeSuite = {
+      title: test.storyPath.slice(0, -1).join('/'),
+      fullTitle: () => fakeSuite.title,
+      titlePath: () => [fakeSuite.title],
+      tests: [],
+    };
 
-    // TODO How handle browser corruption?
-    runner.on('fail', (_test, reason: unknown) => {
-      if (!(reason instanceof Error)) {
-        error = reason as string;
-      } else if (!isImageError(reason)) {
-        error = reason.stack ?? reason.message;
-      } else if (typeof reason.images == 'string') {
-        const image = images[testScope.slice(-1)[0]];
-        if (image) image.error = reason.images;
-      } else {
-        const imageErrors = reason.images;
-        Object.keys(imageErrors).forEach((imageName) => {
-          const image = images[imageName];
-          if (image) image.error = imageErrors[imageName];
-        });
+    const fakeTest: FakeTest = {
+      parent: fakeSuite,
+      title: [test.story.name, test.testName, test.browser].filter(isDefined).join('/'),
+      fullTitle: () => getTestPath(test).join('/'),
+      titlePath: () => getTestPath(test),
+      currentRetry: () => retries,
+      retires: () => config.maxRetries,
+      slow: () => 1000,
+    };
+
+    fakeSuite.tests.push(fakeTest);
+
+    void (async () => {
+      runner.emit(TEST_EVENTS.RUN_BEGIN);
+      runner.emit(TEST_EVENTS.TEST_BEGIN, fakeTest);
+
+      const start = Date.now();
+      try {
+        await Promise.race([
+          new Promise((reject) =>
+            setTimeout(() => {
+              reject(`Timeout of ${config.testTimeout}ms exceeded`);
+            }, config.testTimeout),
+          ),
+          (async () => {
+            const context = await switchStory(test.story, baseContext);
+            await test.fn(context);
+          })(),
+        ]);
+      } catch (testError) {
+        error = testError;
+        fakeTest.err = error;
       }
+      const duration = Date.now() - start;
+      fakeTest.attachments = attachments;
+      fakeTest.state = error ? 'failed' : 'passed';
+      fakeTest.duration = duration;
+      fakeTest.speed = duration > fakeTest.slow() ? 'slow' : duration / 2 > fakeTest.slow() ? 'medium' : 'fast';
+
+      if (error) {
+        runner.emit(TEST_EVENTS.TEST_FAIL, fakeTest, error);
+      } else {
+        runner.emit(TEST_EVENTS.TEST_PASS, fakeTest);
+      }
+      runner.emit(TEST_EVENTS.TEST_END, fakeTest);
+      runner.emit(TEST_EVENTS.RUN_END);
+
+      if (options.trace) {
+        try {
+          await outputTraceLogs(browser, test, logger());
+        } catch (_) {
+          /* noop */
+        }
+      }
+
+      runHandler(baseContext.browserName, images, error);
+    })().catch((error: unknown) => {
+      logger().error('Unexpected error:', error);
+      emitWorkerMessage({
+        type: 'error',
+        payload: { subtype: 'test', error: serializeError(error) },
+      });
     });
   });
 
-  logger().info('Worker is ready');
+  logger().info('Browser is ready');
 
   emitWorkerMessage({ type: 'ready' });
-}
-
-function hasTimeout(str: string | null | undefined): boolean {
-  return str?.toLowerCase().includes('timeout') ?? false;
 }
