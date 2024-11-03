@@ -18,7 +18,7 @@ export default async function (options: Options): Promise<void> {
   const config = await readConfig(options);
   const { browser = defaultBrowser, tests, update, ui, port } = options;
 
-  // NOTE: We don't need docker nor selenoid for webpack or update options
+  // NOTE: We don't need docker nor selenoid for update option
   if (
     !(config.gridUrl || (Object.values(config.browsers) as BrowserConfig[]).every(({ gridUrl }) => gridUrl)) &&
     !tests &&
