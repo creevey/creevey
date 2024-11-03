@@ -59,6 +59,7 @@ export const TestsStatus = withTheme(
   }: TestsStatusProps): JSX.Element => {
     return (
       <Container>
+        {/* @ts-expect-error Fixed in https://github.com/storybookjs/storybook/pull/26623 */}
         <Button
           onClick={() => {
             onClickByStatus('pending');
@@ -70,6 +71,7 @@ export const TestsStatus = withTheme(
           </IconContainer>
         </Button>
         <Divider />
+        {/* @ts-expect-error Fixed in https://github.com/storybookjs/storybook/pull/26623 */}
         <Button
           onClick={() => {
             onClickByStatus('success');
@@ -80,6 +82,7 @@ export const TestsStatus = withTheme(
           </IconContainer>
         </Button>
         <Divider />
+        {/* @ts-expect-error Fixed in https://github.com/storybookjs/storybook/pull/26623 */}
         <Button
           onClick={() => {
             onClickByStatus('failed');
@@ -90,6 +93,7 @@ export const TestsStatus = withTheme(
           </IconContainer>
         </Button>
         <Divider />
+        {/* @ts-expect-error Fixed in https://github.com/storybookjs/storybook/pull/26623 */}
         <Button
           onClick={() => {
             onClickByStatus('approved');
