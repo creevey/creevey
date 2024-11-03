@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { JSX } from 'react';
 import { styled, withTheme } from '@storybook/theming';
 import { Button, Icons } from '@storybook/components';
 import { useCreeveyContext } from '../../CreeveyContext.js';

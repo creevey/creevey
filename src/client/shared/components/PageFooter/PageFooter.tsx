@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { JSX } from 'react';
 import { styled, withTheme } from '@storybook/theming';
 import { Paging } from './Paging.js';
 
@@ -20,7 +20,7 @@ const Container = withTheme(
 export function PageFooter({ retriesCount, retry, onRetryChange }: PageFooterProps): JSX.Element {
   return (
     <Container>
-      <Paging activePage={retry} onPageChange={onRetryChange} pagesCount={retriesCount} />
+      <Paging activePage={`${retry}`} onPageChange={onRetryChange} pagesCount={retriesCount} />
     </Container>
   );
 }

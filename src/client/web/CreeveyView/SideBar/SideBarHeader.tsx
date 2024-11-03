@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { JSX, useContext, useState } from 'react';
 import { Button as NativeButton, Icons } from '@storybook/components';
 import { styled, withTheme } from '@storybook/theming';
 import { CreeveyContext } from '../../CreeveyContext.js';

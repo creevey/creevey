@@ -1,6 +1,6 @@
+import React, { JSX, ChangeEvent, useContext, useRef, useState } from 'react';
 import { Icons } from '@storybook/components';
 import { styled, Theme, withTheme } from '@storybook/theming';
-import React, { ChangeEvent, useContext, useRef, useState } from 'react';
 import { KeyboardEventsContext } from '../../KeyboardEventsContext.js';
 
 interface SearchProps {

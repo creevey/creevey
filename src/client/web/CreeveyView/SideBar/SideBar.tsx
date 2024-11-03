@@ -1,4 +1,4 @@
-import React, { createContext } from 'react';
+import React, { JSX, createContext } from 'react';
 import { transparentize } from 'polished';
 import { ScrollArea } from '@storybook/components';
 import { styled, Theme, withTheme } from '@storybook/theming';

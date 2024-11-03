@@ -1,5 +1,5 @@
+import React, { JSX } from 'react';
 import { StoryObj, Meta } from '@storybook/react';
-import React from 'react';
 import { ImagesView as ImagesViewBase } from '../src/client/shared/components/ImagesView/index.js';
 
 const BlendView = (image: { expect: string; diff: string; actual: string }): JSX.Element => (
