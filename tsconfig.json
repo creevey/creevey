@@ -19,6 +19,15 @@
     },
     "skipLibCheck": true
   },
-  "include": ["src/**/*", ".creevey/**/*", ".storybook/*", "stories/**/*", "types/*", "tests/**/*", "vite.config.mts"],
+  "include": [
+    "src/**/*",
+    ".creevey/**/*",
+    ".storybook/*",
+    "stories/**/*",
+    "types/*",
+    "tests/**/*",
+    "vite.config.mts",
+    "vitest.config.mts"
+  ],
   "exclude": ["report", "dist", "scripts"]
 }
