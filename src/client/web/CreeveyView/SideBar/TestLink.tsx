@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useContext, useMemo, useRef } from 'react';
+import React, { JSX, useEffect, useCallback, useContext, useMemo, useRef } from 'react';
 import { CreeveyTest } from '../../../../types.js';
 import { TestStatusIcon } from './TestStatusIcon.js';
 import { CreeveyContext } from '../../CreeveyContext.js';
@@ -7,12 +7,17 @@ import { KeyboardEventsContext } from '../../KeyboardEventsContext.js';
 import { Button, Container, SuiteContainer, SuiteTitle } from './SuiteLink.js';
 import { Checkbox, CheckboxContainer } from './Checkbox.js';
 import { getTestPath } from '../../../shared/helpers.js';
+import { styled } from '@storybook/theming';
 
 export interface TestLinkProps {
   title: string;
   opened: boolean;
   test: CreeveyTest;
 }
+
+const TestContainer = styled(SuiteContainer)({
+  gridTemplateColumns: 'min-content auto',
+});
 
 export function TestLink({ title, opened, test }: TestLinkProps): JSX.Element {
   const { onSuiteToggle } = useContext(CreeveyContext);
@@ -59,10 +64,10 @@ export function TestLink({ title, opened, test }: TestLinkProps): JSX.Element {
         />
       </CheckboxContainer>
       <Button onClick={handleOpen} disabled={emptyResults} ref={buttonRef}>
-        <SuiteContainer padding={(testPath.length + 1) * 8}>
+        <TestContainer padding={(testPath.length + 1) * 8}>
           <TestStatusIcon inverted={opened} status={test.status} skip={test.skip} />
           <SuiteTitle>{title}</SuiteTitle>
-        </SuiteContainer>
+        </TestContainer>
       </Button>
     </Container>
   );

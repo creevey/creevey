@@ -1,4 +1,4 @@
-import React, { createContext } from 'react';
+import React, { JSX, createContext } from 'react';
 import { transparentize } from 'polished';
 import { ScrollArea } from '@storybook/components';
 import { styled, Theme, withTheme } from '@storybook/theming';
@@ -47,12 +47,6 @@ const ScrollContainer = styled.div({
   left: '0',
 });
 
-const StyledScrollArea = styled(ScrollArea)({
-  '& > div > div': {
-    height: 'calc(100% - 8px)',
-  },
-});
-
 const Shadow = withTheme(
   styled.div<{ theme: Theme; position: 'top' | 'bottom' }>(({ theme, position }) => ({
     [position]: '0px',
@@ -69,7 +63,6 @@ const SelectAllContainer = styled.div({
 
 const TestsContainer = styled.div({
   position: 'relative',
-  paddingBottom: '8px',
   height: '100%',
 });
 
@@ -108,7 +101,7 @@ export function SideBar({ rootSuite, testId, onOpenTest, filter, setFilter }: Si
           canStart={countCheckedTests !== 0}
         />
         <ScrollContainer>
-          <StyledScrollArea vertical>
+          <ScrollArea vertical>
             <Shadow position="top" />
             <TestsContainer>
               <Divider position="top" />
@@ -126,7 +119,7 @@ export function SideBar({ rootSuite, testId, onOpenTest, filter, setFilter }: Si
               )}
             </TestsContainer>
             <Divider position="bottom" />
-          </StyledScrollArea>
+          </ScrollArea>
           <Shadow position="bottom" />
         </ScrollContainer>
         <SideBarFooter />

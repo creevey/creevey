@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from '@storybook/react';
-import { PageFooter } from '../src/client/shared/components/PageFooter/PageFooter';
+import { PageFooter } from '../src/client/shared/components/PageFooter/PageFooter.js';
 import { noop } from '../src/types.js';
 
 const Kind: Meta<typeof PageFooter> = {

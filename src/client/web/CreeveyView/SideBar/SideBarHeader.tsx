@@ -1,5 +1,6 @@
-import React, { useContext, useState } from 'react';
-import { Button as NativeButton, Icons } from '@storybook/components';
+import React, { JSX, useContext, useState } from 'react';
+import { Button as NativeButton } from '@storybook/components';
+import { StopIcon, PlayIcon } from '@storybook/icons';
 import { styled, withTheme } from '@storybook/theming';
 import { CreeveyContext } from '../../CreeveyContext.js';
 import { TestsStatus, TestsStatusProps } from './TestsStatus.js';
@@ -119,12 +120,12 @@ export function SideBarHeader({
         {isReport ? null : (
           <MarginContainer top="10px">
             {isRunning ? (
-              <Button outline secondary onClick={onStop}>
-                <Icons icon="stop" />
+              <Button variant="outline" onClick={onStop}>
+                <StopIcon />
               </Button>
             ) : (
-              <Button outline secondary onClick={onStart} disabled={!canStart}>
-                <Icons icon="play" />
+              <Button variant="outline" onClick={onStart} disabled={!canStart}>
+                <PlayIcon />
               </Button>
             )}
           </MarginContainer>

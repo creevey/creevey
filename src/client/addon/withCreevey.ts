@@ -1,8 +1,6 @@
 import * as Events from '@storybook/core-events';
-import type { PreviewWeb } from '@storybook/preview-web';
-import type { AnyFramework, StoryContextForEnhancers } from '@storybook/csf';
-import type { StoryStore } from '@storybook/client-api';
-import { makeDecorator } from '@storybook/preview-api';
+import type { Renderer, StoryContextForEnhancers } from '@storybook/csf';
+import { makeDecorator, PreviewWeb, StoryStore } from '@storybook/preview-api';
 import { Channel } from '@storybook/channels';
 import { CaptureOptions, CreeveyStoryParams, isObject, noop, StoriesRaw, StorybookGlobals } from '../../types.js';
 import { serializeRawStories } from '../../shared/index.js';
@@ -25,8 +23,8 @@ declare global {
     __CREEVEY_HAS_PLAY_COMPLETED_YET__: (callback: (isPlayCompleted: boolean) => void) => void;
     __CREEVEY_SET_READY_FOR_CAPTURE__?: () => void;
     __STORYBOOK_ADDONS_CHANNEL__: Channel;
-    __STORYBOOK_STORY_STORE__: StoryStore<AnyFramework>;
-    __STORYBOOK_PREVIEW__: PreviewWeb<AnyFramework>;
+    __STORYBOOK_STORY_STORE__: StoryStore<Renderer>;
+    __STORYBOOK_PREVIEW__: PreviewWeb<Renderer>;
   }
 }
 

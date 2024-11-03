@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useContext } from 'react';
+import React, { JSX, useState, useEffect, useCallback, useContext, PropsWithChildren } from 'react';
 import { CreeveySuite, isTest, noop } from '../../types.js';
 import { CreeveyViewFilter, filterTests, flattenSuite, getSuiteByPath, getTestPath } from '../shared/helpers.js';
 import { CreeveyContext } from './CreeveyContext.js';
@@ -20,11 +20,10 @@ export const KeyboardEvents = ({
   children,
   rootSuite,
   filter,
-}: {
+}: PropsWithChildren<{
   rootSuite: CreeveySuite;
   filter: CreeveyViewFilter;
-  children: React.ReactChild;
-}): JSX.Element => {
+}>): JSX.Element => {
   const [sidebarFocusedItem, setSidebarFocusedItem] = useState<FocusableItem>([]);
 
   const { onSuiteOpen, onSuiteToggle } = useContext(CreeveyContext);

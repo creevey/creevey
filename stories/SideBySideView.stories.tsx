@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { JSX } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { ImagesView as ImagesViewBase } from '../src/client/shared/components/ImagesView/index.js';
 

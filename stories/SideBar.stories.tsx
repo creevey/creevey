@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from '@storybook/react';
-import { within } from '@storybook/testing-library';
+import { within } from '@storybook/test';
 import { SideBar } from '../src/client/web/CreeveyView/SideBar/index.js';
 import { treeifyTests, checkSuite, getTestByPath } from '../src/client/shared/helpers.js';
 import { noop, CreeveySuite, CreeveyStatus, isDefined, isTest } from '../src/types.js';
