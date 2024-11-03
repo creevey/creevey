@@ -26,8 +26,8 @@
     "stories/**/*",
     "types/*",
     "tests/**/*",
-    "vite.config.mts",
-    "vitest.config.mts"
+    "vite.config.ts",
+    "vitest.config.ts"
   ],
   "exclude": ["report", "dist", "scripts"]
 }

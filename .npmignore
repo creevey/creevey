@@ -16,9 +16,9 @@ TODO.md
 PROTO.md
 tsconfig.json
 tsconfig.prod.json
-vite.config.mts
-vitest.config.mts
-eslint.config.mjs
+vite.config.ts
+vitest.config.ts
+eslint.config.js
 tests
 report
 scripts
