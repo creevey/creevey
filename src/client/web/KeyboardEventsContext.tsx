@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useContext } from 'react';
+import React, { JSX, useState, useEffect, useCallback, useContext } from 'react';
 import { CreeveySuite, isTest, noop } from '../../types.js';
 import { CreeveyViewFilter, filterTests, flattenSuite, getSuiteByPath, getTestPath } from '../shared/helpers.js';
 import { CreeveyContext } from './CreeveyContext.js';

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { JSX } from 'react';
 import { ThemeProvider, themes, ensure } from '@storybook/theming';
 import { CreeveyContext } from '../src/client/web/CreeveyContext.js';
 import { noop } from '../src/types.js';

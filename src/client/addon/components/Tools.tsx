@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { JSX, Fragment, useState, useEffect } from 'react';
 import { stringify } from 'qs';
 import { IconButton, Icons, Separator } from '@storybook/components';
 import { styled } from '@storybook/theming';
@@ -53,7 +53,6 @@ export const Tools = ({ controller }: ToolsProps): JSX.Element | null => {
     };
     const disabled = isRunning && buttonClicked != null && buttonClicked !== type;
     return (
-      // @ts-expect-error Fixed in https://github.com/storybookjs/storybook/pull/26623
       <Button
         onClick={() => {
           if (isRunning) controller.onStop();
@@ -69,7 +68,6 @@ export const Tools = ({ controller }: ToolsProps): JSX.Element | null => {
 
   return (
     <Fragment>
-      {/* @ts-expect-error Fixed in https://github.com/storybookjs/storybook/pull/26623 */}
       <IconButton
         href={`http://localhost:${__CREEVEY_CLIENT_PORT__ ?? __CREEVEY_SERVER_PORT__ ?? 3000}/?${stringify({
           testPath: getTestPath(test),

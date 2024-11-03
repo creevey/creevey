@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { JSX, useEffect } from 'react';
 import { Icons, Tabs } from '@storybook/components';
 import { styled, withTheme, Theme } from '@storybook/theming';
 import { ImagesViewMode, Images } from '../../../../types.js';

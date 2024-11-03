@@ -21,6 +21,7 @@ export function start(reportDir: string, port: number, ui: boolean): (api: Creev
   let setStoriesCounter = 0;
   const creeveyApi = new Promise<CreeveyApi>((resolve) => (resolveApi = resolve));
   const app = new Koa();
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
   const server = http.createServer(app.callback());
   const wss = new WebSocket.Server({ server });
 

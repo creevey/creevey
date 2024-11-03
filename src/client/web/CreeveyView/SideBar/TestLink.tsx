@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useContext, useMemo, useRef } from 'react';
+import React, { JSX, useEffect, useCallback, useContext, useMemo, useRef } from 'react';
 import { CreeveyTest } from '../../../../types.js';
 import { TestStatusIcon } from './TestStatusIcon.js';
 import { CreeveyContext } from '../../CreeveyContext.js';
