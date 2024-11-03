@@ -1,5 +1,4 @@
 import { PNG } from 'pngjs';
-import pixelmatch from 'pixelmatch';
 import { DiffOptions, ImagesError } from '../../types.js';
 
 function normalizeImageSize(image: PNG, width: number, height: number): Buffer {
@@ -32,7 +31,12 @@ function hasDiffPixels(diff: Buffer): boolean {
   return false;
 }
 
-function compareImages(expect: Buffer, actual: Buffer, diffOptions: DiffOptions): { isEqual: boolean; diff: Buffer } {
+function compareImages(
+  expect: Buffer,
+  actual: Buffer,
+  pixelmatch: typeof import('pixelmatch'),
+  diffOptions: DiffOptions,
+): { isEqual: boolean; diff: Buffer } {
   const expectImage = PNG.sync.read(expect);
   const actualImage = PNG.sync.read(actual);
 
@@ -59,13 +63,15 @@ function compareImages(expect: Buffer, actual: Buffer, diffOptions: DiffOptions)
   };
 }
 
-export function getMatchers(
+export async function getMatchers(
   getExpected: (imageName?: string) => Promise<{
     expected: Buffer | null;
     onCompare: (actual: Buffer, expect?: Buffer, diff?: Buffer) => Promise<void>;
   }>,
   diffOptions: DiffOptions,
 ) {
+  // TODO Replace with `import from`
+  const { default: pixelmatch } = await import('pixelmatch');
   async function assertImage(actual: Buffer, imageName?: string): Promise<string | undefined> {
     const { expected, onCompare } = await getExpected(imageName);
 
@@ -79,7 +85,7 @@ export function getMatchers(
       return;
     }
 
-    const { isEqual, diff } = compareImages(expected, actual, diffOptions);
+    const { isEqual, diff } = compareImages(expected, actual, pixelmatch, diffOptions);
 
     if (isEqual) {
       await onCompare(actual);

@@ -4,7 +4,6 @@ import cluster from 'cluster';
 import { lstatSync, existsSync } from 'fs';
 import { mkdir, writeFile, copyFile } from 'fs/promises';
 import sh from 'shelljs';
-import { Octokit } from '@octokit/core';
 import { Config, BrowserConfig } from '../../types.js';
 import { downloadBinary, getCreeveyCache } from '../utils.js';
 import { pullImages, runImage } from '../docker.js';
@@ -20,7 +19,7 @@ async function createSelenoidConfig(browsers: BrowserConfig[], { useDocker }: { 
       }
     >
   > = {};
-  const cacheDir = getCreeveyCache();
+  const cacheDir = await getCreeveyCache();
 
   assert(cacheDir, "Couldn't get cache directory");
 
@@ -58,6 +57,8 @@ async function downloadSelenoidBinary(destination: string): Promise<void> {
     linux: 'selenoid_linux_amd64',
     win32: 'selenoid_windows_amd64.exe',
   };
+  // TODO Replace with `import from`
+  const { Octokit } = await import('@octokit/core');
   const octokit = new Octokit();
   const response = await octokit.request('GET /repos/{owner}/{repo}/releases/latest', {
     owner: 'aerokube',

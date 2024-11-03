@@ -6,7 +6,7 @@ import { set } from 'lodash';
 import { v4 } from 'uuid';
 import { pathToFileURL } from 'url';
 import { createRequire } from 'module';
-import { Config, CreeveyStatus, isDefined, Options } from '../types';
+import { Config, CreeveyStatus, isDefined, Options } from '../types.js';
 
 const konturGitHost = 'git.skbkontur.ru';
 

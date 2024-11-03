@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from '@storybook/react';
-import { ResultsPage } from '../src/client/shared/components/ResultsPage';
+import { ResultsPage } from '../src/client/shared/components/ResultsPage.js';
 
 const Kind: Meta<typeof ResultsPage> = {
   title: 'ResultsPage',
