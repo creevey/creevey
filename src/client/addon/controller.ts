@@ -1,4 +1,3 @@
-import { API } from '@storybook/api';
 import { Addon_TypesEnum } from '@storybook/types';
 import { SET_STORIES, STORY_RENDERED } from '@storybook/core-events';
 import { denormalizeStoryParameters } from '../../shared/index.js';
@@ -6,6 +5,7 @@ import { CreeveyStatus, CreeveyUpdate, isDefined, TestData, TestStatus, StoriesR
 import { initCreeveyClientApi, CreeveyClientApi } from '../shared/creeveyClientApi.js';
 import { calcStatus } from '../shared/helpers.js';
 import { getEmojiByTestStatus } from './utils.js';
+import { API } from '@storybook/manager-api';
 
 export const ADDON_ID = 'creevey';
 

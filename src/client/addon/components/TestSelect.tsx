@@ -1,5 +1,6 @@
 import React, { JSX } from 'react';
-import { Button, Icons, TooltipLinkList, WithTooltip } from '@storybook/components';
+import { Button, TooltipLinkList, WithTooltip } from '@storybook/components';
+import { MenuIcon } from '@storybook/icons';
 import { styled } from '@storybook/theming';
 import { TestData } from '../../../types.js';
 import { getEmojiByTestStatus } from '../utils.js';
@@ -23,7 +24,6 @@ export default function TestSelect(props: TestSelectProps): JSX.Element {
     <WithTooltip
       trigger="click"
       placement="bottom"
-      closeOnClick
       tooltip={({ onHide }) => (
         <TooltipLinkList
           links={props.tests.map((x) => ({
@@ -39,8 +39,8 @@ export default function TestSelect(props: TestSelectProps): JSX.Element {
         />
       )}
     >
-      <Button outline small>
-        <Icons icon="menu" />
+      <Button size="small" variant="outline">
+        <MenuIcon />
         {testName}
       </Button>
     </WithTooltip>

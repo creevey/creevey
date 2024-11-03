@@ -1,6 +1,6 @@
 import React, { JSX } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { fireEvent, within } from '@storybook/testing-library';
+import { fireEvent, within } from '@storybook/test';
 import { ImagesView as ImagesViewBase } from '../src/client/shared/components/ImagesView/index.js';
 import { capture } from '../src/client/addon/index.js';
 
@@ -14,7 +14,7 @@ async function play({
   await capture({ imageName: 'idle' });
 
   const slider = await within(canvasElement).findByTestId('slider');
-  fireEvent.change(slider, { target: { value: 50 } });
+  await fireEvent.change(slider, { target: { value: 50 } });
 
   await capture({ imageName: 'click' });
 }

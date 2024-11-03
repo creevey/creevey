@@ -1,5 +1,6 @@
 import React, { JSX, useEffect } from 'react';
-import { Icons, Tabs } from '@storybook/components';
+import { Tabs } from '@storybook/components';
+import { CloseAltIcon } from '@storybook/icons';
 import { styled, withTheme, Theme } from '@storybook/theming';
 import { ImagesViewMode, Images } from '../../../../types.js';
 import { getImageUrl } from '../../helpers.js';
@@ -99,7 +100,7 @@ export function PageHeader({
       <H1>{title.flatMap((token) => [token, <HeaderDivider key={token}>/</HeaderDivider>]).slice(0, -1)}</H1>
       {error && (
         <ErrorContainer>
-          <Icons icon="closeAlt" />
+          <CloseAltIcon />
           <pre>{error}</pre>
         </ErrorContainer>
       )}

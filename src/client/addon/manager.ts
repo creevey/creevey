@@ -1,7 +1,6 @@
 import React from 'react';
-import { API } from '@storybook/api';
 import { Addon_TypesEnum } from '@storybook/types';
-import { addons } from '@storybook/manager-api';
+import { addons, API } from '@storybook/manager-api';
 import { Addon } from './components/Addon.js';
 import { Tools } from './components/Tools.js';
 import { CreeveyController, ADDON_ID } from './controller.js';

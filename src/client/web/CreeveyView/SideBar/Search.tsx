@@ -1,5 +1,5 @@
 import React, { JSX, ChangeEvent, useContext, useRef, useState } from 'react';
-import { Icons } from '@storybook/components';
+import { SearchIcon, CloseAltIcon } from '@storybook/icons';
 import { styled, Theme, withTheme } from '@storybook/theming';
 import { KeyboardEventsContext } from '../../KeyboardEventsContext.js';
 
@@ -131,9 +131,9 @@ export const Search = ({ onChange, value }: SearchProps): JSX.Element => {
         placeholder="search by status or substring"
         value={value}
       />
-      <Icons icon="search" />
+      <SearchIcon />
       <CancelButton tabIndex={-1} type="reset" value="reset" title="Clear search">
-        <Icons icon="closeAlt" />
+        <CloseAltIcon />
       </CancelButton>
     </FilterForm>
   );

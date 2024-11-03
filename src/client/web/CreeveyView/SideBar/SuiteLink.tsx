@@ -1,5 +1,5 @@
 import React, { JSX, useRef, useContext, useEffect, useMemo } from 'react';
-import { Icons } from '@storybook/components';
+import { ChevronDownIcon, ChevronRightIcon } from '@storybook/icons';
 import { styled, withTheme, Theme } from '@storybook/theming';
 import { Checkbox, CheckboxContainer } from './Checkbox.js';
 import { TestStatusIcon } from './TestStatusIcon.js';
@@ -53,13 +53,16 @@ export const Button = withTheme(
   })),
 );
 
-const ArrowIcon = styled(Icons)({
+const iconStyles = {
   paddingRight: '4px',
   display: 'inline-block',
   width: '12px',
   height: '18px',
   verticalAlign: 'unset',
-});
+};
+
+const ChevronDownIconStyled = styled(ChevronDownIcon)(iconStyles);
+const ChevronRightIconStyled = styled(ChevronRightIcon)(iconStyles);
 
 export const SuiteContainer = styled.span<{ padding: number }>(({ padding }) => ({
   paddingLeft: padding,
@@ -126,8 +129,7 @@ export function SuiteLink({ title, suite, 'data-testid': dataTid }: SuiteLinkPro
       <Button onClick={handleOpen} onFocus={handleFocus} data-testid={dataTid} ref={buttonRef}>
         <SuiteContainer padding={(suite.path.length - 1) * 8}>
           {isTest(suite) ||
-            (Boolean(suite.path.length) &&
-              (suite.opened ? <ArrowIcon icon="arrowdown" /> : <ArrowIcon icon="arrowright" />))}
+            (Boolean(suite.path.length) && (suite.opened ? <ChevronDownIconStyled /> : <ChevronRightIconStyled />))}
           <TestStatusIcon status={suite.status} skip={suite.skip} />
           <SuiteTitle>{title}</SuiteTitle>
         </SuiteContainer>

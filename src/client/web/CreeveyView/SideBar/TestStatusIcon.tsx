@@ -1,6 +1,7 @@
 import React, { JSX } from 'react';
 import { styled, withTheme, Theme } from '@storybook/theming';
-import { Icons, Loader } from '@storybook/components';
+import { Loader } from '@storybook/components';
+import { CrossIcon, CheckIcon, CircleHollowIcon, ThumbsUpIcon, AlertIcon, TimeIcon } from '@storybook/icons';
 import { TestStatus } from '../../../../types.js';
 
 export interface TestStatusIconProps {
@@ -17,11 +18,18 @@ const Container = styled.span({
   display: 'inline-block',
 });
 
-const Icon = styled(Icons)({
+const iconStyles = {
   position: 'relative',
   top: '1px',
   verticalAlign: 'baseline',
-});
+} as const;
+
+const CrossIconStyled = styled(CrossIcon)(iconStyles);
+const CheckIconStyled = styled(CheckIcon)(iconStyles);
+const ThumbsUpIconStyled = styled(ThumbsUpIcon)(iconStyles);
+const AlertIconStyled = styled(AlertIcon)(iconStyles);
+const TimeIconStyled = styled(TimeIcon)(iconStyles);
+const CircleHollowIconStyled = styled(CircleHollowIcon)(iconStyles);
 
 const Spinner = styled(Loader)({
   top: '12px',
@@ -34,15 +42,15 @@ export const TestStatusIcon = withTheme(
     let icon = null;
     switch (status) {
       case 'failed': {
-        icon = <Icon color={inverted ? theme.color.lightest : theme.color.negative} icon="cross" />;
+        icon = <CrossIconStyled color={inverted ? theme.color.lightest : theme.color.negative} />;
         break;
       }
       case 'success': {
-        icon = <Icon color={inverted ? theme.color.lightest : theme.color.green} icon="check" />;
+        icon = <CheckIconStyled color={inverted ? theme.color.lightest : theme.color.green} />;
         break;
       }
       case 'approved': {
-        icon = <Icon color={inverted ? theme.color.lightest : theme.color.mediumdark} icon="thumbsup" />;
+        icon = <ThumbsUpIconStyled color={inverted ? theme.color.lightest : theme.color.mediumdark} />;
         break;
       }
       case 'running': {
@@ -50,12 +58,12 @@ export const TestStatusIcon = withTheme(
         break;
       }
       case 'pending': {
-        icon = <Icon color={inverted ? theme.color.lightest : theme.color.mediumdark} icon="time" />;
+        icon = <TimeIconStyled color={inverted ? theme.color.lightest : theme.color.mediumdark} />;
         break;
       }
       default: {
-        if (skip) icon = <Icon color={inverted ? theme.color.lightest : undefined} icon="alert" />;
-        else icon = <Icon color={inverted ? theme.color.lightest : undefined} icon="circlehollow" />;
+        if (skip) icon = <AlertIconStyled color={inverted ? theme.color.lightest : undefined} />;
+        else icon = <CircleHollowIconStyled color={inverted ? theme.color.lightest : undefined} />;
         break;
       }
     }

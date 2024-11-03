@@ -1,6 +1,6 @@
 import React, { JSX } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { fireEvent, within } from '@storybook/testing-library';
+import { fireEvent, within } from '@storybook/test';
 
 import { capture } from '../src/client/addon/index.js';
 import { ImagesView as ImagesViewBase } from '../src/client/shared/components/ImagesView/index.js';
@@ -20,7 +20,8 @@ export default Kind;
 
 export const SideBySide: StoryObj<typeof ImagesView> = {
   args: { mode: 'side-by-side' },
-  parameters: { creevey: { waitForReady: true } },
+  // TODO Some async updates in component might not be waited
+  parameters: { creevey: { waitForReady: true, delay: 100 } },
 };
 
 export const Swap: StoryObj<typeof ImagesView> = {
@@ -35,7 +36,7 @@ export const Slide: StoryObj<typeof ImagesView> = {
     await capture({ imageName: 'idle' });
 
     const slider = await within(canvasElement).findByTestId('slider');
-    fireEvent.change(slider, { target: { value: 50 } });
+    await fireEvent.change(slider, { target: { value: 50 } });
 
     await capture({ imageName: 'click' });
   },
