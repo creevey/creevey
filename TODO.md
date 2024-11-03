@@ -577,8 +577,9 @@
 - [ ] Kontur creevey config
 - [ ] Add similar to playwright tracing
 - [ ] Show instructions for git-lfs
-- [ ] Replace mocha to manual runner (or another variant)
+- [x] Replace mocha to manual runner (or another variant)
 - [ ] Remove chai and provide `expect` specially for images (maybe another API)
 - [ ] Try pkgroll or use storybook addon-kit template
+- [ ] Move some deps used in components to devDeps
 
 - Add shortcuts for approve/view switch/image switch
