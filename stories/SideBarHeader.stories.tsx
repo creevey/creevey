@@ -23,6 +23,7 @@ export default Kind;
 export const HeaderStopped: StoryObj<typeof SideBarHeader> = {
   args: {
     testsStatus: { pendingCount: 0, successCount: 1, failedCount: 2, approvedCount: 3 },
+    canStart: true,
   },
 };
 
