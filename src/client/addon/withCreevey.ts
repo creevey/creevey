@@ -1,8 +1,6 @@
 import * as Events from '@storybook/core-events';
-import type { PreviewWeb } from '@storybook/preview-web';
 import type { Renderer, StoryContextForEnhancers } from '@storybook/csf';
-import type { StoryStore } from '@storybook/client-api';
-import { makeDecorator } from '@storybook/preview-api';
+import { makeDecorator, PreviewWeb, StoryStore } from '@storybook/preview-api';
 import { Channel } from '@storybook/channels';
 import { CaptureOptions, CreeveyStoryParams, isObject, noop, StoriesRaw, StorybookGlobals } from '../../types.js';
 import { serializeRawStories } from '../../shared/index.js';
