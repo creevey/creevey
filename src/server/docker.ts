@@ -1,5 +1,4 @@
 import cluster from 'cluster';
-import ora from 'ora';
 import { Writable } from 'stream';
 import Dockerode, { Container } from 'dockerode';
 import { Config, BrowserConfig, isDockerMessage, DockerAuth } from '../types.js';
@@ -24,13 +23,15 @@ export async function pullImages(
   if (platform) args.platform = platform;
 
   logger.info('Pull docker images');
+  // TODO Replace with `import from`
+  const { default: yoctoSpinner } = await import('yocto-spinner');
   for (const image of images) {
     await new Promise<void>((resolve, reject) => {
-      const spinner = ora(`${image}: Pull start`).start();
+      const spinner = yoctoSpinner({ text: `${image}: Pull start` }).start();
 
       docker.pull(image, args, (pullError: Error | null, stream?: NodeJS.ReadableStream) => {
         if (pullError || !stream) {
-          spinner.fail();
+          spinner.error();
           reject(pullError ?? new Error('Unknown error'));
           return;
         }
@@ -39,11 +40,11 @@ export async function pullImages(
 
         function onFinished(error: Error | null): void {
           if (error) {
-            spinner.fail();
+            spinner.error();
             reject(error);
             return;
           }
-          spinner.succeed(`${image}: Pull complete`);
+          spinner.success(`${image}: Pull complete`);
           resolve();
         }
 

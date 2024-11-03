@@ -4,7 +4,6 @@ import cluster from 'cluster';
 import { dirname } from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { createRequire } from 'module';
-import findCacheDir from 'find-cache-dir';
 import { register as esmRegister } from 'tsx/esm/api';
 import { register as cjsRegister } from 'tsx/cjs/api';
 import { SkipOptions, SkipOption, isDefined, TestData, noop, ServerTest } from '../types.js';
@@ -103,7 +102,8 @@ export function shutdown(): void {
   process.exit();
 }
 
-export function getCreeveyCache(): string | undefined {
+export async function getCreeveyCache(): Promise<string | undefined> {
+  const { default: findCacheDir } = await import('find-cache-dir');
   return findCacheDir({ name: 'creevey', cwd: dirname(fileURLToPath(importMetaUrl)) });
 }
 
@@ -193,6 +193,7 @@ const [nodeVersion] = process.versions.node.split('.').map(Number);
 export async function loadThroughTSX<T>(
   callback: (load: (modulePath: string) => Promise<T>) => Promise<T>,
 ): Promise<T> {
+  // TODO Check if it work in node18 and type: 'module'
   const unregister = nodeVersion > 18 ? esmRegister() : cjsRegister();
 
   const result = await callback((modulePath) =>
