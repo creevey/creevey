@@ -12,6 +12,7 @@ export function Paging(props: PagingProps): JSX.Element {
     switch (item) {
       case '.': {
         return (
+          // @ts-expect-error Fixed in https://github.com/storybookjs/storybook/pull/26623
           <TabButton
             disabled
             key={`dots${index < 5 ? 'Left' : 'Right'}`}
@@ -28,6 +29,7 @@ export function Paging(props: PagingProps): JSX.Element {
 
       default: {
         return (
+          // @ts-expect-error Fixed in https://github.com/storybookjs/storybook/pull/26623
           <TabButton
             rel={item}
             rev={item}

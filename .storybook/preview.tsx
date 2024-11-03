@@ -19,7 +19,7 @@ export const decorators: DecoratorFunction[] = [
           onSuiteToggle: noop,
         }}
       >
-        {storyFn(context)}
+        {storyFn(context) as React.ReactElement}
       </CreeveyContext.Provider>
     </ThemeProvider>
   ),
