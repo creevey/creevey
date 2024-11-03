@@ -1,7 +1,6 @@
 import globals from 'globals';
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
-// @ts-expect-error There is no types in this package
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import prettierRecommended from 'eslint-plugin-prettier/recommended';
@@ -11,7 +10,6 @@ const config = tseslint.config(
   { ignores: ['dist/*', 'report/*', 'scripts/*'] },
   js.configs.recommended,
   prettierRecommended,
-  /* eslint-disable-next-line */
   react.configs.flat.recommended,
   ...tseslint.configs.strictTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
