@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React, { JSX, FunctionComponent } from 'react';
 import { styled, withTheme } from '@storybook/theming';
 import { SideBySideView } from './SideBySideView.js';
 import { SwapView } from './SwapView.js';

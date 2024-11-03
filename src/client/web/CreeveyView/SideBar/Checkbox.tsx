@@ -1,5 +1,4 @@
-import React from 'react';
-
+import React, { JSX } from 'react';
 import { styled, Theme, withTheme } from '@storybook/theming';
 import { Icons } from '@storybook/components';
 import { transparentize } from 'polished';

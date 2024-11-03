@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { JSX } from 'react';
 import { Button, Icons, TooltipLinkList, WithTooltip } from '@storybook/components';
 import { styled } from '@storybook/theming';
 import { TestData } from '../../../types.js';

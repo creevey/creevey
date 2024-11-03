@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { JSX, useState } from 'react';
 import { Placeholder, ScrollArea } from '@storybook/components';
 import { styled, withTheme, Theme } from '@storybook/theming';
 import { ImagesView } from './ImagesView/ImagesView.js';

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { JSX } from 'react';
 import { styled, withTheme, Theme } from '@storybook/theming';
 
 const IMG_SIZE = 64;

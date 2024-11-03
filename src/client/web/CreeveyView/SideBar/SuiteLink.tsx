@@ -1,4 +1,4 @@
-import React, { useRef, useContext, useEffect, useMemo } from 'react';
+import React, { JSX, useRef, useContext, useEffect, useMemo } from 'react';
 import { Icons } from '@storybook/components';
 import { styled, withTheme, Theme } from '@storybook/theming';
 import { Checkbox, CheckboxContainer } from './Checkbox.js';
