@@ -19,14 +19,6 @@
     },
     "skipLibCheck": true
   },
-  "include": [
-    "src/**/*",
-    ".creevey/**/*",
-    ".storybook/*",
-    "stories/**/*",
-    "types/*",
-    "tests/**/*",
-    "webpack.config.mjs"
-  ],
+  "include": ["src/**/*", ".creevey/**/*", ".storybook/*", "stories/**/*", "types/*", "tests/**/*", "vite.config.mts"],
   "exclude": ["report", "dist", "scripts"]
 }
