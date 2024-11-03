@@ -14,7 +14,7 @@ interface ImagesViewProps {
   mode: ImagesViewMode;
 }
 
-const views: { [mode in ImagesViewMode]: FunctionComponent<ViewProps> } = {
+const views: Record<ImagesViewMode, FunctionComponent<ViewProps>> = {
   'side-by-side': SideBySideView,
   swap: SwapView,
   slide: SlideView,

@@ -180,7 +180,7 @@ async function saveImages(imageDir: string, images: { name: string; data: Buffer
 function serializeError(error: unknown): string {
   if (!error) return 'Unknown error';
   if (error instanceof Error) return error.stack ?? error.message;
-  return error instanceof Object ? JSON.stringify(error) : String(error);
+  return typeof error === 'object' ? JSON.stringify(error) : (error as string);
 }
 
 function hasDisconnected(str: string | null | undefined): boolean {

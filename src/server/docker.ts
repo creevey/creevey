@@ -10,7 +10,7 @@ import { logger } from './logger.js';
 const docker = new Dockerode();
 
 class DevNull extends Writable {
-  _write(_chunk: unknown, _encoding: BufferEncoding, callback: (error?: Error | null | undefined) => void): void {
+  _write(_chunk: unknown, _encoding: BufferEncoding, callback: (error?: Error | null) => void): void {
     setImmediate(callback);
   }
 }
