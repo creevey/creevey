@@ -113,6 +113,10 @@ export async function runSequence(seq: (() => unknown)[], predicate: () => boole
   }
 }
 
+export function getTestPath(test: ServerTest): string[] {
+  return [...test.storyPath, test.testName, test.browser].filter(isDefined);
+}
+
 export function testsToImages(tests: (TestData | undefined)[]): Set<string> {
   return new Set(
     ([] as string[]).concat(

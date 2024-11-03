@@ -1,4 +1,4 @@
-import { CreeveyTestController } from 'src/types.js';
+import { CreeveyTestContext } from 'src/types.js';
 import { kind, story, test } from '../../src/server/testsFiles/parser.js';
 
 kind('TestKind', () => {
@@ -10,12 +10,12 @@ kind('TestKind', () => {
       ignoreElements: [],
     });
 
-    test('idletest', async function (this: CreeveyTestController) {
-      await this.expect(await this.takeScreenshot()).to.matchImage('idleimage');
+    test('idletest', async (context: CreeveyTestContext) => {
+      await context.matchImage(await context.takeScreenshot(), 'idleimage');
     });
 
-    test('idletest2', async function (this: CreeveyTestController) {
-      await this.expect(await this.takeScreenshot()).to.matchImage('idleimage2');
+    test('idletest2', async (context: CreeveyTestContext) => {
+      await context.matchImage(await context.takeScreenshot(), 'idleimage2');
     });
   });
 });
