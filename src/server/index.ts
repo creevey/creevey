@@ -16,12 +16,11 @@ async function startWebdriverServer(config: Config, options: Options): Promise<v
 
 export default async function (options: Options): Promise<void> {
   const config = await readConfig(options);
-  const { browser = defaultBrowser, tests, update, ui, port } = options;
+  const { browser = defaultBrowser, update, ui, port } = options;
 
   // NOTE: We don't need docker nor selenoid for update option
   if (
     !(config.gridUrl || (Object.values(config.browsers) as BrowserConfig[]).every(({ gridUrl }) => gridUrl)) &&
-    !tests &&
     !update
   ) {
     await startWebdriverServer(config, options);

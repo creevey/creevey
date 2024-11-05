@@ -72,13 +72,11 @@ export async function start(config: Config, options: Options, resolveApi: (api: 
 
   runner = await master(config, { watch: options.ui, debug: options.debug, port: options.port });
 
-  if (options.saveReport) {
-    runner.on('stop', () => {
-      void copyStatics(config.reportDir).then(() =>
-        writeFile(path.join(config.reportDir, 'data.js'), reportDataModule(runner.status.tests)),
-      );
-    });
-  }
+  runner.on('stop', () => {
+    void copyStatics(config.reportDir).then(() =>
+      writeFile(path.join(config.reportDir, 'data.js'), reportDataModule(runner.status.tests)),
+    );
+  });
 
   if (options.ui) {
     resolveApi(creeveyApi(runner));
