@@ -1,11 +1,7 @@
-import path from 'path';
 import chai from 'chai';
 import chalk from 'chalk';
-import { Stats } from 'fs';
-import assert from 'assert';
 import Logger from 'loglevel';
 import EventEmitter from 'events';
-import { stat, readdir, readFile, writeFile, mkdir } from 'fs/promises';
 import { Key, until, WebDriver } from 'selenium-webdriver';
 import {
   BaseCreeveyTestContext,
@@ -23,37 +19,10 @@ import {
 import { subscribeOn, emitTestMessage, emitWorkerMessage } from '../messages.js';
 import chaiImage from './chai-image.js';
 import { getBrowser, switchStory } from '../selenium/index.js';
-import { getMatchers } from './match-image.js';
+import { getMatchers, getOdiffMatchers, ImageContext } from './match-image.js';
 import { loadTestsFromStories } from '../stories.js';
 import { logger } from '../logger.js';
 import { getTestPath } from '../utils.js';
-
-async function getStat(filePath: string): Promise<Stats | null> {
-  try {
-    return await stat(filePath);
-  } catch (error) {
-    if (typeof error == 'object' && error && (error as { code?: unknown }).code === 'ENOENT') {
-      return null;
-    }
-    throw error;
-  }
-}
-
-async function getLastImageNumber(imageDir: string, imageName: string): Promise<number> {
-  const actualImagesRegexp = new RegExp(`${imageName}-actual-(\\d+)\\.png`);
-
-  try {
-    return (
-      (await readdir(imageDir))
-        .map((filename) => filename.replace(actualImagesRegexp, '$1'))
-        .map(Number)
-        .filter((x) => !isNaN(x))
-        .sort((a, b) => b - a)[0] ?? 0
-    );
-  } catch (_error) {
-    return 0;
-  }
-}
 
 async function getTestsFromStories(
   config: Config,
@@ -166,17 +135,6 @@ function keepAlive(browser: WebDriver, logger: Logger.Logger): void {
   });
 }
 
-async function saveImages(imageDir: string, images: { name: string; data: Buffer }[]): Promise<string[]> {
-  const files: string[] = [];
-  await mkdir(imageDir, { recursive: true });
-  for (const { name, data } of images) {
-    const filePath = path.join(imageDir, name);
-    await writeFile(filePath, data);
-    files.push(filePath);
-  }
-  return files;
-}
-
 function serializeError(error: unknown): string {
   if (!error) return 'Unknown error';
   if (error instanceof Error) return error.stack ?? error.message;
@@ -194,9 +152,11 @@ function hasTimeout(str: string | null | undefined): boolean {
 // FIXME browser options hotfix
 export async function start(config: Config, options: Options & { browser: string }): Promise<void> {
   let retries = 0;
-  let attachments: string[] = [];
-  let testFullPath: string[] = [];
-  let images: Partial<Record<string, Images>> = {};
+  const imagesContext: ImageContext = {
+    attachments: [],
+    testFullPath: [],
+    images: {},
+  };
   const [sessionId, browser] = (await setupBrowser(() => getBrowser(config, options))) ?? [];
 
   if (!browser || !sessionId) return;
@@ -204,43 +164,6 @@ export async function start(config: Config, options: Options & { browser: string
   const workerLogger = Logger.getLogger(`${options.browser}:${chalk.gray(sessionId)}`);
 
   keepAlive(browser, workerLogger);
-
-  async function getExpected(assertImageName?: string): Promise<{
-    expected: Buffer | null;
-    onCompare: (actual: Buffer, expect?: Buffer, diff?: Buffer) => Promise<void>;
-  }> {
-    const testPath = [...testFullPath];
-    const imageName = assertImageName ?? testPath.pop();
-
-    assert(typeof imageName === 'string', `Can't get image name from empty test scope`);
-
-    const imagesMeta: { name: string; data: Buffer }[] = [];
-    const reportImageDir = path.join(config.reportDir, ...testPath);
-    const imageNumber = (await getLastImageNumber(reportImageDir, imageName)) + 1;
-    const actualImageName = `${imageName}-actual-${imageNumber}.png`;
-    const image = (images[imageName] = images[imageName] ?? { actual: actualImageName });
-    const onCompare = async (actual: Buffer, expect?: Buffer, diff?: Buffer): Promise<void> => {
-      imagesMeta.push({ name: image.actual, data: actual });
-
-      if (diff && expect) {
-        image.expect = `${imageName}-expect-${imageNumber}.png`;
-        image.diff = `${imageName}-diff-${imageNumber}.png`;
-        imagesMeta.push({ name: image.expect, data: expect });
-        imagesMeta.push({ name: image.diff, data: diff });
-      }
-      if (options.saveReport) {
-        attachments = await saveImages(reportImageDir, imagesMeta);
-      }
-    };
-
-    const expectImageDir = path.join(config.screenDir, ...testPath);
-    const expectImageStat = await getStat(path.join(expectImageDir, `${imageName}.png`));
-    if (!expectImageStat) return { expected: null, onCompare };
-
-    const expected = await readFile(path.join(expectImageDir, `${imageName}.png`));
-
-    return { expected, onCompare };
-  }
 
   const reporterOptions = {
     ...config.reporterOptions,
@@ -252,7 +175,7 @@ export async function start(config: Config, options: Options & { browser: string
         return retries < config.maxRetries;
       },
       get images() {
-        return images;
+        return imagesContext.images;
       },
     },
   };
@@ -262,7 +185,9 @@ export async function start(config: Config, options: Options & { browser: string
   const Reporter = config.reporter;
   new Reporter(runner, { reporterOptions });
 
-  const { matchImage, matchImages } = await getMatchers(getExpected, config.diffOptions);
+  const { matchImage, matchImages } = options.odiff
+    ? getOdiffMatchers(imagesContext, config)
+    : await getMatchers(imagesContext, config);
   chai.use(chaiImage(matchImage, matchImages, workerLogger));
 
   const tests = await getTestsFromStories(config, {
@@ -301,10 +226,11 @@ export async function start(config: Config, options: Options & { browser: string
       keys: Key,
     };
 
-    images = {};
-    attachments = [];
+    imagesContext.attachments = [];
+    imagesContext.testFullPath = getTestPath(test);
+    imagesContext.images = {};
+
     retries = message.payload.retries;
-    testFullPath = getTestPath(test);
     let error = undefined;
 
     const fakeSuite: FakeSuite = {
@@ -348,7 +274,7 @@ export async function start(config: Config, options: Options & { browser: string
         fakeTest.err = error;
       }
       const duration = Date.now() - start;
-      fakeTest.attachments = attachments;
+      fakeTest.attachments = imagesContext.attachments;
       fakeTest.state = error ? 'failed' : 'passed';
       fakeTest.duration = duration;
       fakeTest.speed = duration > fakeTest.slow() ? 'slow' : duration / 2 > fakeTest.slow() ? 'medium' : 'fast';
@@ -369,7 +295,7 @@ export async function start(config: Config, options: Options & { browser: string
         }
       }
 
-      runHandler(baseContext.browserName, images, error);
+      runHandler(baseContext.browserName, imagesContext.images, error);
     })().catch((error: unknown) => {
       workerLogger.error('Unexpected error:', error);
       emitWorkerMessage({

@@ -22,6 +22,7 @@ export const defaultConfig: Omit<Config, 'gridUrl' | 'storiesProvider' | 'testsD
   maxRetries: 0,
   testTimeout: 30000,
   diffOptions: { threshold: 0, includeAA: true },
+  odiffOptions: { threshold: 0, antialiasing: true },
   browsers: { [defaultBrowser]: true },
   hooks: {},
   babelOptions: (_) => _,
