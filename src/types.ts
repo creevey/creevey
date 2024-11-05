@@ -3,6 +3,7 @@ import type { IKey } from 'selenium-webdriver/lib/input.js';
 import type { Worker as ClusterWorker } from 'cluster';
 import type { until, WebDriver, WebElement } from 'selenium-webdriver';
 import type Pixelmatch from 'pixelmatch';
+import type { ODiffOptions } from 'odiff-bin';
 import type { expect } from 'chai';
 import type EventEmitter from 'events';
 
@@ -190,6 +191,10 @@ export interface Config {
    */
   diffOptions: DiffOptions;
   /**
+   *
+   */
+  odiffOptions: ODiffOptions;
+  /**
    * Browser capabilities
    * @default { chrome: true }
    */
@@ -293,7 +298,6 @@ export interface Options {
   update: boolean | string;
   debug: boolean;
   trace: boolean;
-  tests: boolean;
   browser?: string;
   /**
    * @deprecated use {@link Config.reporter} instead
@@ -303,8 +307,8 @@ export interface Options {
   reportDir?: string;
   storybookUrl?: string;
   storybookAutorunCmd?: string;
-  saveReport: boolean;
   failFast?: boolean;
+  odiff?: boolean;
 }
 
 export type WorkerError = 'browser' | 'test' | 'unknown';

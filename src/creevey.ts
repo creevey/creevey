@@ -26,8 +26,8 @@ if (cluster.isPrimary) process.on('SIGINT', shutdown);
 
 const argv = minimist<Options>(process.argv.slice(2), {
   string: ['browser', 'config', 'reporter', 'reportDir', 'screenDir', 'storybookUrl'],
-  boolean: ['debug', 'trace', 'ui', 'saveReport', 'tests'],
-  default: { port: 3000, saveReport: true },
+  boolean: ['debug', 'trace', 'ui', 'odiff'],
+  default: { port: 3000 },
   alias: { port: 'p', config: 'c', debug: 'd', update: 'u' },
 });
 
