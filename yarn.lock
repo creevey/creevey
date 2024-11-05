@@ -1943,15 +1943,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/cpx@npm:^1.5.5":
-  version: 1.5.5
-  resolution: "@types/cpx@npm:1.5.5"
-  dependencies:
-    "@types/node": "npm:*"
-  checksum: 10c0/2f3bdcf54dee30fee06bba45c086f1049dc8656ec786fce51193f8b6064055defd156afe99a821acf3a6fd73846fab6d6c17a6edfcb2e002c6e6c71b4678c5e8
-  languageName: node
-  linkType: hard
-
 "@types/docker-modem@npm:*":
   version: 3.0.6
   resolution: "@types/docker-modem@npm:3.0.6"
@@ -3615,7 +3606,6 @@ __metadata:
     "@storybook/theming": "npm:^8.4.1"
     "@storybook/types": "npm:^8.4.1"
     "@types/chai": "npm:^4.3.20"
-    "@types/cpx": "npm:^1.5.5"
     "@types/dockerode": "npm:^3.3.31"
     "@types/eslint": "npm:^9.6.1"
     "@types/eslint__js": "npm:^8.42.3"
@@ -3668,6 +3658,7 @@ __metadata:
     loglevel-plugin-prefix: "npm:^0.8.4"
     micromatch: "npm:^4.0.8"
     minimist: "npm:^1.2.8"
+    odiff-bin: "npm:^3.1.2"
     pinst: "npm:^3.0.0"
     pixelmatch: "npm:^6.0.0"
     pngjs: "npm:^7.0.0"
@@ -6671,6 +6662,15 @@ __metadata:
     define-properties: "npm:^1.2.1"
     es-object-atoms: "npm:^1.0.0"
   checksum: 10c0/15809dc40fd6c5529501324fec5ff08570b7d70fb5ebbe8e2b3901afec35cf2b3dc484d1210c6c642cd3e7e0a5e18dd1d6850115337fef46bdae14ab0cb18ac3
+  languageName: node
+  linkType: hard
+
+"odiff-bin@npm:^3.1.2":
+  version: 3.1.2
+  resolution: "odiff-bin@npm:3.1.2"
+  bin:
+    odiff: bin/odiff.exe
+  checksum: 10c0/c5513f66c46d3373619bd812bf2a3426a8d65c33d01a302eb56823a3a3a1a01b86a7f50ab119700be13f2c912fca346d3764fcabe2a27316b95548c4784872f1
   languageName: node
   linkType: hard
 
