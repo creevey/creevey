@@ -516,7 +516,7 @@ export interface CreeveySuite {
   children: Partial<Record<string, CreeveySuite | CreeveyTest>>;
 }
 
-export type ImagesViewMode = 'side-by-side' | 'swap' | 'slide' | 'blend';
+export type ImagesViewMode = 'side-by-side' | 'swap' | 'slide' | 'blend' | 'diff';
 
 export function noop(): void {
   /* noop */
