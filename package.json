@@ -56,7 +56,7 @@
     "postbuild": "cp \"scripts/dist/index.d.ts\" dist/",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
     "build-storybook": "storybook build",
-    "chromatic": "chromatic --project-token t3010eknrh",
+    "chromatic": "chromatic --project-token=chpt_80df83ca94e6fb4",
     "prepare": "husky"
   },
   "engines": {
