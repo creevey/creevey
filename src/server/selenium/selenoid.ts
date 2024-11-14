@@ -1,6 +1,5 @@
 import path from 'path';
 import assert from 'assert';
-import cluster from 'cluster';
 import { lstatSync, existsSync } from 'fs';
 import { mkdir, writeFile, copyFile } from 'fs/promises';
 import sh from 'shelljs';
@@ -31,9 +30,7 @@ async function createSelenoidConfig(
   browsers.forEach(
     ({
       browserName,
-      // eslint-disable-next-line @typescript-eslint/no-deprecated
-      version = 'latest',
-      browserVersion = version,
+      browserVersion = 'latest',
       dockerImage = `selenoid/${browserName}:${browserVersion}`,
       webdriverCommand = [],
     }) => {
@@ -83,10 +80,6 @@ async function downloadSelenoidBinary(destination: string): Promise<void> {
 }
 
 export async function startSelenoidStandalone(config: Config, debug: boolean): Promise<void> {
-  config.gridUrl = 'http://localhost:4444/wd/hub';
-
-  if (cluster.isWorker) return;
-
   const browsers = (Object.values(config.browsers) as BrowserConfigObject[]).filter((browser) => !browser.gridUrl);
   const selenoidConfigDir = await createSelenoidConfig(browsers, { useDocker: false });
   const binaryPath = path.join(selenoidConfigDir, process.platform == 'win32' ? 'selenoid.exe' : 'selenoid');
@@ -124,9 +117,7 @@ export async function startSelenoidContainer(config: Config, debug: boolean): Pr
   browsers.forEach(
     ({
       browserName,
-      // eslint-disable-next-line @typescript-eslint/no-deprecated
-      version = 'latest',
-      browserVersion = version,
+      browserVersion = 'latest',
       limit: browserLimit = 1,
       dockerImage = `selenoid/${browserName}:${browserVersion}`,
     }) => {

@@ -21,8 +21,8 @@ function mergeTests(
   return testsFromStories;
 }
 
-export default async function master(config: Config): Promise<Runner> {
-  const runner = new Runner(config);
+export default async function master(config: Config, gridUrl?: string): Promise<Runner> {
+  const runner = new Runner(config, gridUrl);
   const reportDataPath = path.join(config.reportDir, 'data.js');
   const testsFromReport = tryToLoadTestsData(reportDataPath) ?? {};
 
