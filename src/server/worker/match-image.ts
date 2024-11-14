@@ -113,7 +113,7 @@ async function getExpected(
 
 async function getOdiffExpected(
   ctx: ImageContext,
-  imageOrBase64: string | Buffer,
+  actual: Buffer,
   { imageName, actualImageName, expectImageName, diffImageName, expectImageDir, reportImageDir }: ImagePaths,
 ): Promise<{ actual: string; expect: string; diff: string }> {
   const expected = await readExpected(expectImageDir, imageName);
@@ -122,7 +122,6 @@ async function getOdiffExpected(
   image.expect = expectImageName;
   image.diff = diffImageName;
 
-  const actual = typeof imageOrBase64 == 'string' ? Buffer.from(imageOrBase64, 'base64') : imageOrBase64;
   const imagesMeta = [
     { name: image.actual, data: actual },
     { name: expectImageName, data: expected },
@@ -229,23 +228,17 @@ export async function getMatchers(ctx: ImageContext, config: Config) {
   }
 
   return {
-    matchImage: async (image: string | Buffer, imageName?: string) => {
-      const errorMessage = await assertImage(
-        typeof image == 'string' ? Buffer.from(image, 'base64') : image,
-        imageName,
-      );
+    matchImage: async (image: Buffer, imageName?: string) => {
+      const errorMessage = await assertImage(image, imageName);
       if (errorMessage) {
         throw createImageError(imageName ? { [imageName]: errorMessage } : errorMessage);
       }
     },
-    matchImages: async (images: Record<string, string | Buffer>) => {
+    matchImages: async (images: Record<string, Buffer>) => {
       const errors: Record<string, string> = {};
       await Promise.all(
-        Object.entries(images).map(async ([imageName, imageOrBase64]) => {
-          const errorMessage = await assertImage(
-            typeof imageOrBase64 == 'string' ? Buffer.from(imageOrBase64, 'base64') : imageOrBase64,
-            imageName,
-          );
+        Object.entries(images).map(async ([imageName, image]) => {
+          const errorMessage = await assertImage(image, imageName);
           if (errorMessage) {
             errors[imageName] = errorMessage;
           }
@@ -270,7 +263,7 @@ export function getOdiffMatchers(ctx: ImageContext, config: Config) {
     noFailOnFsErrors: true,
   };
 
-  async function assertImage(image: string | Buffer, imageName?: string): Promise<string | undefined> {
+  async function assertImage(image: Buffer, imageName?: string): Promise<string | undefined> {
     const { actual, expect, diff } = await getOdiffExpected(
       ctx,
       image,
@@ -286,13 +279,13 @@ export function getOdiffMatchers(ctx: ImageContext, config: Config) {
   }
 
   return {
-    matchImage: async (image: string | Buffer, imageName?: string) => {
+    matchImage: async (image: Buffer, imageName?: string) => {
       const errorMessage = await assertImage(image, imageName);
       if (errorMessage) {
         throw createImageError(imageName ? { [imageName]: errorMessage } : errorMessage);
       }
     },
-    matchImages: async (images: Record<string, string | Buffer>) => {
+    matchImages: async (images: Record<string, Buffer>) => {
       const errors: Record<string, string> = {};
       await Promise.all(
         Object.entries(images).map(async ([imageName, image]) => {

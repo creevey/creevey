@@ -1,9 +1,9 @@
 import cluster from 'cluster';
 import minimist from 'minimist';
 import creevey from './server/index.js';
-import { noop, Options } from './types.js';
+import { Options } from './types.js';
 import { emitWorkerMessage } from './server/messages.js';
-import { isShuttingDown, shutdown, shutdownWorkers } from './server/utils.js';
+import { isShuttingDown, shutdownWorkers } from './server/utils.js';
 import Logger from 'loglevel';
 import { logger } from './server/logger.js';
 
@@ -21,11 +21,12 @@ function shutdownOnException(reason: unknown): void {
 
 process.on('uncaughtException', shutdownOnException);
 process.on('unhandledRejection', shutdownOnException);
-if (cluster.isWorker) process.on('SIGINT', noop);
-if (cluster.isPrimary) process.on('SIGINT', shutdown);
+process.on('SIGINT', () => {
+  isShuttingDown.current = true;
+});
 
 const argv = minimist<Options>(process.argv.slice(2), {
-  string: ['browser', 'config', 'reporter', 'reportDir', 'screenDir', 'storybookUrl'],
+  string: ['browser', 'config', 'reporter', 'reportDir', 'screenDir', 'gridUrl', 'storybookUrl'],
   boolean: ['debug', 'trace', 'ui', 'odiff'],
   default: { port: 3000 },
   alias: { port: 'p', config: 'c', debug: 'd', update: 'u' },

@@ -5,7 +5,7 @@ import { copyFile, readdir, mkdir, writeFile } from 'fs/promises';
 import master from './master.js';
 import creeveyApi, { CreeveyApi } from './api.js';
 import { Config, Options, TestData, isDefined } from '../../types.js';
-import { shutdown, shutdownWorkers, testsToImages, readDirRecursive } from '../utils.js';
+import { shutdownWorkers, testsToImages, readDirRecursive } from '../utils.js';
 import { subscribeOn } from '../messages.js';
 import Runner from './runner.js';
 import { logger } from '../logger.js';
@@ -46,13 +46,17 @@ function outputUnnecessaryImages(imagesDir: string, images: Set<string>): void {
   }
 }
 
-export async function start(config: Config, options: Options, resolveApi: (api: CreeveyApi) => void): Promise<void> {
+export async function start(
+  gridUrl: string | undefined,
+  config: Config,
+  options: Options,
+  resolveApi: (api: CreeveyApi) => void,
+): Promise<void> {
   let runner: Runner | null = null;
   if (config.hooks.before) {
     await config.hooks.before();
   }
   subscribeOn('shutdown', () => config.hooks.after?.());
-  process.removeListener('SIGINT', shutdown);
   process.on('SIGINT', () => {
     runner?.removeAllListeners('stop');
     if (runner?.isRunning) {
@@ -67,7 +71,7 @@ export async function start(config: Config, options: Options, resolveApi: (api: 
     }
   });
 
-  runner = await master(config, { watch: options.ui, debug: options.debug, port: options.port });
+  runner = await master(config, gridUrl);
 
   runner.on('stop', () => {
     void copyStatics(config.reportDir).then(() =>

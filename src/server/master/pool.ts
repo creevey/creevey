@@ -1,6 +1,14 @@
 import cluster, { Worker as ClusterWorker } from 'cluster';
 import { EventEmitter } from 'events';
-import { Worker, Config, TestResult, BrowserConfig, WorkerMessage, TestStatus, isWorkerMessage } from '../../types.js';
+import {
+  Worker,
+  Config,
+  TestResult,
+  BrowserConfigObject,
+  WorkerMessage,
+  TestStatus,
+  isWorkerMessage,
+} from '../../types.js';
 import { sendTestMessage, sendShutdownMessage, subscribeOnWorker } from '../messages.js';
 import { isShuttingDown } from '../utils.js';
 
@@ -14,23 +22,26 @@ interface WorkerTest {
 
 export default class Pool extends EventEmitter {
   private maxRetries: number;
-  private config: BrowserConfig;
+  private config: BrowserConfigObject;
   private workers: Worker[] = [];
   private queue: WorkerTest[] = [];
   private forcedStop = false;
   private failFast: boolean;
+  private gridUrl?: string;
   public get isRunning(): boolean {
     return this.workers.length !== this.freeWorkers.length;
   }
   constructor(
     config: Config,
     private browser: string,
+    gridUrl?: string,
   ) {
     super();
 
     this.failFast = config.failFast;
     this.maxRetries = config.maxRetries;
-    this.config = config.browsers[browser] as BrowserConfig;
+    this.config = config.browsers[browser] as BrowserConfigObject;
+    this.gridUrl = this.config.gridUrl ?? gridUrl;
   }
 
   async init(): Promise<void> {
@@ -111,12 +122,12 @@ export default class Pool extends EventEmitter {
 
   private async forkWorker(retry = 0): Promise<Worker | { error: string }> {
     cluster.setupPrimary({
-      args: ['--browser', this.browser, ...process.argv.slice(2)],
+      args: ['--browser', this.browser, ...(this.gridUrl ? ['--gridUrl', this.gridUrl] : []), ...process.argv.slice(2)],
     });
     const worker = cluster.fork();
     const message = await new Promise((resolve: (value: WorkerMessage) => void) => {
       const readyHandler = (message: unknown): void => {
-        if (!isWorkerMessage(message)) return;
+        if (!isWorkerMessage(message) || message.type == 'port') return;
         worker.off('message', readyHandler);
         resolve(message);
       };

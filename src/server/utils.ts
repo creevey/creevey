@@ -13,8 +13,6 @@ const importMetaUrl = pathToFileURL(__filename).href;
 
 export const isShuttingDown = { current: false };
 
-export const LOCALHOST_REGEXP = /(localhost|127\.0\.0\.1)/i;
-
 export const configExt = ['.js', '.mjs', '.ts', '.cjs', '.mts', '.cts'];
 
 export const skipOptionKeys = ['in', 'kinds', 'stories', 'tests', 'reason'];
@@ -98,19 +96,16 @@ export async function shutdownWorkers(): Promise<void> {
   emitShutdownMessage();
 }
 
-export function shutdown(): void {
-  process.exit();
-}
-
 export async function getCreeveyCache(): Promise<string | undefined> {
   const { default: findCacheDir } = await import('find-cache-dir');
   return findCacheDir({ name: 'creevey', cwd: dirname(fileURLToPath(importMetaUrl)) });
 }
 
-export async function runSequence(seq: (() => unknown)[], predicate: () => boolean): Promise<void> {
+export async function runSequence(seq: (() => unknown)[], predicate: () => boolean): Promise<boolean> {
   for (const fn of seq) {
     if (predicate()) await fn();
   }
+  return predicate();
 }
 
 export function getTestPath(test: ServerTest): string[] {

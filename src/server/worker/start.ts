@@ -6,6 +6,7 @@ import { Key, until, WebDriver } from 'selenium-webdriver';
 import {
   BaseCreeveyTestContext,
   Config,
+  CreeveyWebdriver,
   FakeSuite,
   FakeTest,
   Images,
@@ -18,7 +19,7 @@ import {
 } from '../../types.js';
 import { subscribeOn, emitTestMessage, emitWorkerMessage } from '../messages.js';
 import chaiImage from './chai-image.js';
-import { getBrowser, switchStory } from '../selenium/index.js';
+import { SeleniumWebdriver } from '../selenium/webdriver.js';
 import { getMatchers, getOdiffMatchers, ImageContext } from './match-image.js';
 import { loadTestsFromStories } from '../stories.js';
 import { logger } from '../logger.js';
@@ -26,12 +27,13 @@ import { getTestPath } from '../utils.js';
 
 async function getTestsFromStories(
   config: Config,
-  { browser, ...options }: { browser: string; watch: boolean; debug: boolean; port: number },
+  browserName: string,
+  webdriver: CreeveyWebdriver,
 ): Promise<Map<string, ServerTest>> {
   const testsById = new Map<string, ServerTest>();
   const tests = await loadTestsFromStories(
-    [browser],
-    (listener) => config.storiesProvider(config, options, listener),
+    [browserName],
+    (listener) => config.storiesProvider(config, listener, webdriver),
     (testsDiff) => {
       Object.entries(testsDiff).forEach(([id, newTest]) => {
         if (newTest) testsById.set(id, newTest);
@@ -100,39 +102,19 @@ function runHandler(browserName: string, images: Partial<Record<string, Images>>
   }
 }
 
-async function setupBrowser(getter: () => Promise<WebDriver | null>): Promise<[string, WebDriver] | undefined> {
-  let browser: WebDriver | null = null;
-
-  try {
-    browser = await getter();
-  } catch (error) {
-    logger.error('Failed to start browser:', error);
+async function setupWebdriver(webdriver: CreeveyWebdriver): Promise<[string, CreeveyWebdriver] | undefined> {
+  if ((await webdriver.openBrowser(true)) == null) {
+    logger.error('Failed to start browser');
     emitWorkerMessage({
       type: 'error',
-      payload: { subtype: 'browser', error: serializeError(error) },
+      payload: { subtype: 'browser', error: 'Failed to start browser' },
     });
+    return;
   }
 
-  if (browser == null) return;
+  const sessionId = await webdriver.getSessionId();
 
-  const sessionId = (await browser.getSession()).getId();
-
-  return [sessionId, browser];
-}
-
-function keepAlive(browser: WebDriver, logger: Logger.Logger): void {
-  const interval = setInterval(
-    () =>
-      // NOTE Simple way to keep session alive
-      void browser.getCurrentUrl().then((url) => {
-        logger.debug('current url', chalk.magenta(url));
-      }),
-    10 * 1000,
-  );
-
-  subscribeOn('shutdown', () => {
-    clearInterval(interval);
-  });
+  return [sessionId, webdriver];
 }
 
 function serializeError(error: unknown): string {
@@ -149,28 +131,26 @@ function hasTimeout(str: string | null | undefined): boolean {
   return str?.toLowerCase().includes('timeout') ?? false;
 }
 
-// FIXME browser options hotfix
-export async function start(config: Config, options: Options & { browser: string }): Promise<void> {
+export async function start(browser: string, gridUrl: string, config: Config, options: Options): Promise<void> {
   let retries = 0;
   const imagesContext: ImageContext = {
     attachments: [],
     testFullPath: [],
     images: {},
   };
-  const [sessionId, browser] = (await setupBrowser(() => getBrowser(config, options))) ?? [];
+  const Webdriver = config.webdriver;
+  const [sessionId, webdriver] = (await setupWebdriver(new Webdriver(browser, gridUrl, config, options))) ?? [];
 
-  if (!browser || !sessionId) return;
+  if (!webdriver || !sessionId) return;
 
-  const workerLogger = Logger.getLogger(`${options.browser}:${chalk.gray(sessionId)}`);
-
-  keepAlive(browser, workerLogger);
+  const workerLogger = Logger.getLogger(`${browser}:${chalk.gray(sessionId)}`);
 
   const reporterOptions = {
     ...config.reporterOptions,
     creevey: {
       sessionId,
       reportDir: config.reportDir,
-      browserName: options.browser,
+      browserName: browser,
       get willRetry() {
         return retries < config.maxRetries;
       },
@@ -190,12 +170,20 @@ export async function start(config: Config, options: Options & { browser: string
     : await getMatchers(imagesContext, config);
   chai.use(chaiImage(matchImage, matchImages, workerLogger));
 
-  const tests = await getTestsFromStories(config, {
-    browser: options.browser,
-    watch: options.ui,
-    debug: options.debug,
-    port: options.port,
-  });
+  const tests = await (async () => {
+    try {
+      return await getTestsFromStories(config, browser, webdriver);
+    } catch (error) {
+      workerLogger.error('Failed to get tests from stories:', error);
+      emitWorkerMessage({
+        type: 'error',
+        payload: { subtype: 'browser', error: serializeError(error) },
+      });
+      return null;
+    }
+  })();
+
+  if (!tests) return;
 
   subscribeOn('test', (message: TestMessage) => {
     if (message.type != 'start') return;
@@ -213,8 +201,9 @@ export async function start(config: Config, options: Options & { browser: string
     }
 
     const baseContext: BaseCreeveyTestContext = {
-      browserName: options.browser,
-      browser: browser,
+      browserName: browser,
+      // TODO Pass browser instance to test
+      // browser: browser,
       screenshots: [],
 
       matchImage: matchImage,
@@ -222,6 +211,7 @@ export async function start(config: Config, options: Options & { browser: string
 
       // NOTE: Deprecated
       expect: chai.expect,
+      //TODO Move things below to the separate module
       until: until,
       keys: Key,
     };
@@ -265,7 +255,7 @@ export async function start(config: Config, options: Options & { browser: string
             }, config.testTimeout),
           ),
           (async () => {
-            const context = await switchStory(test.story, baseContext);
+            const context = await webdriver.switchStory(test.story, baseContext, workerLogger);
             await test.fn(context);
           })(),
         ]);
@@ -289,7 +279,9 @@ export async function start(config: Config, options: Options & { browser: string
 
       if (options.trace) {
         try {
-          await outputTraceLogs(browser, test, workerLogger);
+          if (webdriver instanceof SeleniumWebdriver && webdriver.browser) {
+            await outputTraceLogs(webdriver.browser, test, workerLogger);
+          }
         } catch (_) {
           /* noop */
         }

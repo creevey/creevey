@@ -1,7 +1,7 @@
 import Logger from 'loglevel';
 export default function (
-  matchImage: (image: string | Buffer, imageName?: string) => Promise<void>,
-  matchImages: (images: Record<string, string | Buffer>) => Promise<void>,
+  matchImage: (image: Buffer, imageName?: string) => Promise<void>,
+  matchImages: (images: Record<string, Buffer>) => Promise<void>,
   logger: Logger.Logger,
 ) {
   let isWarningShown = false;
@@ -16,7 +16,7 @@ export default function (
           );
           isWarningShown = true;
         }
-        const image = utils.flag(this, 'object') as string | Buffer;
+        const image = utils.flag(this, 'object') as Buffer;
         await matchImage(image, imageName);
       },
     );
@@ -28,7 +28,7 @@ export default function (
         );
         isWarningShown = true;
       }
-      const images = utils.flag(this, 'object') as Record<string, string | Buffer>;
+      const images = utils.flag(this, 'object') as Record<string, Buffer>;
       await matchImages(images);
     });
   };

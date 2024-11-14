@@ -24,7 +24,7 @@ export default class Runner extends EventEmitter {
   public get isRunning(): boolean {
     return Object.values(this.pools).some((pool) => pool.isRunning);
   }
-  constructor(config: Config) {
+  constructor(config: Config, gridUrl?: string) {
     super();
 
     this.failFast = config.failFast;
@@ -32,7 +32,7 @@ export default class Runner extends EventEmitter {
     this.reportDir = config.reportDir;
     this.browsers = Object.keys(config.browsers);
     this.browsers
-      .map((browser) => (this.pools[browser] = new Pool(config, browser)))
+      .map((browser) => (this.pools[browser] = new Pool(config, browser, gridUrl)))
       .map((pool) => pool.on('test', this.handlePoolMessage));
   }
 
