@@ -218,7 +218,7 @@ export interface Config {
   testTimeout: number;
   /**
    * Define pixelmatch diff options
-   * @default { threshold: 0, includeAA: true }
+   * @default { threshold: 0.05, includeAA: false }
    */
   diffOptions: DiffOptions;
   /**
