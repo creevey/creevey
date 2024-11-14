@@ -127,7 +127,7 @@ export default class Pool extends EventEmitter {
     const worker = cluster.fork();
     const message = await new Promise((resolve: (value: WorkerMessage) => void) => {
       const readyHandler = (message: unknown): void => {
-        if (!isWorkerMessage(message) || message.type != 'ready') return;
+        if (!isWorkerMessage(message) || message.type == 'port') return;
         worker.off('message', readyHandler);
         resolve(message);
       };
