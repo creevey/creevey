@@ -573,13 +573,14 @@
 
 ## The new beginning
 
-- [ ] Use odiff
+- [x] Use odiff
 - [ ] Kontur creevey config
 - [ ] Add similar to playwright tracing
 - [ ] Show instructions for git-lfs
 - [x] Replace mocha to manual runner (or another variant)
-- [ ] Remove chai and provide `expect` specially for images (maybe another API)
+- [x] Remove chai and provide `expect` specially for images (maybe another API)
 - [ ] Try pkgroll or use storybook addon-kit template
 - [ ] Move some deps used in components to devDeps
+- [ ] Use `birpc` for communication between workers
 
 - Add shortcuts for approve/view switch/image switch

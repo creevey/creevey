@@ -1,6 +1,6 @@
 import { Config } from 'src/types';
-import { waitOnUrl } from '../utils';
-import { logger } from '../logger';
+import { waitOnUrl } from './utils.js';
+import { logger } from './logger';
 import { exec } from 'node:child_process';
 
 const RESPONSE_FAST_CHECK_TIMEOUT_MS = 3000;

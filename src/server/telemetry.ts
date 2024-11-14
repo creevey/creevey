@@ -151,7 +151,7 @@ export async function sendScreenshotsCount(
         name,
         typeof browser === 'object'
           ? {
-              name: browser.name,
+              name: name,
               gridUrl: browser.gridUrl ? sanitizeGridUrl(browser.gridUrl) : undefined,
               browserName: browser.browserName,
               browserVersion: browser.browserVersion,
