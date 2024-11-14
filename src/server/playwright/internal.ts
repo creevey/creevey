@@ -144,12 +144,20 @@ export class InternalBrowser {
     );
   }
 
-  async loadStoriesFromBrowser(): Promise<StoriesRaw> {
-    const stories = await this.#page.evaluate<StoriesRaw | undefined>(() => window.__CREEVEY_GET_STORIES__());
+  async loadStoriesFromBrowser(retry = false): Promise<StoriesRaw> {
+    try {
+      const stories = await this.#page.evaluate<StoriesRaw | undefined>(() => window.__CREEVEY_GET_STORIES__());
 
-    if (!stories) throw new Error("Can't get stories, it seems creevey or storybook API isn't available");
+      if (!stories) throw new Error("Can't get stories, it seems creevey or storybook API isn't available");
 
-    return stories;
+      return stories;
+    } catch (error) {
+      // TODO Check how other solutions with playwright get stories from storybook
+      if (retry) throw error;
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // NOTE: Try one more time because of dynamic nature of vite and storybook
+      return this.loadStoriesFromBrowser(true);
+    }
   }
 
   static async getBrowser(

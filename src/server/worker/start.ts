@@ -166,7 +166,20 @@ export async function start(browser: string, gridUrl: string, config: Config, op
     : await getMatchers(imagesContext, config);
   chai.use(chaiImage(matchImage, matchImages));
 
-  const tests = await getTestsFromStories(config, browser, webdriver);
+  const tests = await (async () => {
+    try {
+      return await getTestsFromStories(config, browser, webdriver);
+    } catch (error) {
+      workerLogger.error('Failed to get tests from stories:', error);
+      emitWorkerMessage({
+        type: 'error',
+        payload: { subtype: 'browser', error: serializeError(error) },
+      });
+      return null;
+    }
+  })();
+
+  if (!tests) return;
 
   subscribeOn('test', (message: TestMessage) => {
     if (message.type != 'start') return;
@@ -194,6 +207,7 @@ export async function start(browser: string, gridUrl: string, config: Config, op
 
       // NOTE: Deprecated
       expect: chai.expect,
+      //TODO Move things below to the separate module
       until: until,
       keys: Key,
     };
