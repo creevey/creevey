@@ -1,14 +1,15 @@
 import fs from 'fs';
 import path from 'path';
 import { pathToFileURL } from 'url';
-import { loadStories as browserStoriesProvider } from './storybook/providers/browser.js';
+import { loadStories as browserStoriesProvider } from './providers/browser.js';
 import { Config, BrowserConfig, BrowserConfigObject, Options, isDefined } from '../types.js';
 import { configExt, loadThroughTSX } from './utils.js';
 import { CreeveyReporter, TeamcityReporter } from './reporter.js';
+import { SeleniumWebdriver } from './selenium/webdriver.js';
 
 export const defaultBrowser = 'chrome';
 
-export const defaultConfig: Omit<Config, 'gridUrl' | 'storiesProvider' | 'testsDir' | 'tsConfig'> = {
+export const defaultConfig: Omit<Config, 'gridUrl' | 'testsDir' | 'tsConfig'> = {
   disableTelemetry: false,
   useDocker: true,
   dockerImage: 'aerokube/selenoid:latest-release',
@@ -19,13 +20,14 @@ export const defaultConfig: Omit<Config, 'gridUrl' | 'storiesProvider' | 'testsD
   screenDir: path.resolve('images'),
   reportDir: path.resolve('report'),
   reporter: process.env.TEAMCITY_VERSION ? TeamcityReporter : CreeveyReporter,
+  storiesProvider: browserStoriesProvider,
+  webdriver: SeleniumWebdriver,
   maxRetries: 0,
   testTimeout: 30000,
   diffOptions: { threshold: 0, includeAA: true },
   odiffOptions: { threshold: 0, antialiasing: true },
   browsers: { [defaultBrowser]: true },
   hooks: {},
-  babelOptions: (_) => _,
   testsRegex: /\.creevey\.(t|j)s$/,
 };
 
@@ -68,8 +70,6 @@ export async function readConfig(options: Options): Promise<Config> {
 
     Object.assign(userConfig, configData);
   }
-
-  if (!userConfig.storiesProvider) userConfig.storiesProvider = browserStoriesProvider;
 
   if (options.failFast != undefined) userConfig.failFast = Boolean(options.failFast);
   if (options.reportDir) userConfig.reportDir = path.resolve(options.reportDir);

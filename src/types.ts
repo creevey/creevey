@@ -1,11 +1,13 @@
 import type { StoryContextForEnhancers, DecoratorFunction } from '@storybook/csf';
 import type { IKey } from 'selenium-webdriver/lib/input.js';
 import type { Worker as ClusterWorker } from 'cluster';
-import type { until, WebDriver, WebElement } from 'selenium-webdriver';
+import type { /*Builder,*/ until } from 'selenium-webdriver';
 import type Pixelmatch from 'pixelmatch';
 import type { ODiffOptions } from 'odiff-bin';
 import type { expect } from 'chai';
 import type EventEmitter from 'events';
+import type Logger from 'loglevel';
+// import type { Browser } from 'playwright-core';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type DiffOptions = typeof Pixelmatch extends (
@@ -81,29 +83,30 @@ export interface CreeveyStory {
   };
 }
 
-export interface CreeveyBrowser<T extends WebDriver> {
-  loadStoriesFromBrowser(): Promise<StoriesRaw>;
+// TODO Rework browser config
+/*
+export class ChromeConfig {
+  browserName: 'chrome'
 
-  getBrowser(config: Config, options: Options & { browser: string }): Promise<T | null>;
-
-  closeBrowser(): Promise<void>;
-
-  switchStory(story: StoryInput, context: CreeveyTestContext): Promise<CreeveyTestContext>;
+  constructor({ limit, version, ... })
 }
-
-export interface Capabilities {
+*/
+export interface BrowserConfigObject {
   browserName: string;
-  browserVersion?: string;
-  platformName?: string;
   /**
-   * @deprecated use `browserVersion` instead
+   * Browser version. Ignored with Playwright webdriver
    */
-  version?: string;
-  [prop: string]: unknown;
-}
-
-export type BrowserConfigObject = Capabilities & {
+  browserVersion?: string;
+  /**
+   * Operation system name. Ignored with Playwright webdriver
+   */
+  platformName?: string;
+  // customizeBuilder?: (builder: Builder) => Builder;
   limit?: number;
+  /**
+   * Selenium grid url
+   * @default config.gridUrl
+   */
   gridUrl?: string;
   storybookUrl?: string;
   /**
@@ -113,7 +116,7 @@ export type BrowserConfigObject = Capabilities & {
   _storybookGlobals?: StorybookGlobals;
   /**
    * Specify custom docker image. Used only with `useDocker == true`
-   * @default `selenoid/${browserName}:${browserVersion ?? 'latest'}`
+   * @default `selenoid/${browserName}:${browserVersion ?? 'latest'}` or `mcr.microsoft.com/playwright:${playwrightVersion}`
    */
   dockerImage?: string;
   /**
@@ -121,12 +124,35 @@ export type BrowserConfigObject = Capabilities & {
    * Used only with `useDocker == false`
    */
   webdriverCommand?: string[];
+  // TODO Check version compatibility
+  // playwrightVersion?: string;
+  // /**
+  //  * Use to start standalone playwright browser
+  //  */
+  // playwrightBrowser?: () => Promise<Browser>;
   viewport?: { width: number; height: number };
-};
+
+  [name: string]: unknown;
+}
 
 export type StorybookGlobals = Record<string, unknown>;
 
 export type BrowserConfig = boolean | string | BrowserConfigObject;
+
+export type CreeveyWebdriverConstructor = new (
+  browser: string,
+  gridUrl: string,
+  config: Config,
+  options: Options,
+) => CreeveyWebdriver;
+
+export interface CreeveyWebdriver {
+  getSessionId(): Promise<string>;
+  openBrowser(fresh?: boolean): Promise<CreeveyWebdriver | null>;
+  closeBrowser(): Promise<void>;
+  loadStoriesFromBrowser(): Promise<StoriesRaw>;
+  switchStory(story: StoryInput, context: BaseCreeveyTestContext, logger: Logger.Logger): Promise<CreeveyTestContext>;
+}
 
 export interface HookConfig {
   before?: () => unknown;
@@ -198,7 +224,7 @@ export interface Config {
   /**
    *
    */
-  odiffOptions: ODiffOptions;
+  odiffOptions: ODiffOptions; // TODO Update description
   /**
    * Browser capabilities
    * @default { chrome: true }
@@ -239,9 +265,9 @@ export interface Config {
    */
   storiesProvider: StoriesProvider; // TODO Update description
   /**
-   * Define custom babel options for load stories transformation
+   *
    */
-  babelOptions: (options: Record<string, unknown>) => Record<string, unknown>;
+  webdriver: CreeveyWebdriverConstructor; // TODO Update description
   /**
    * Allows you to start selenoid without docker
    * and use standalone browsers
@@ -273,7 +299,6 @@ export interface Config {
   dockerImagePlatform: string;
   testsRegex?: RegExp;
   testsDir?: string;
-  tsConfig?: string;
   /**
    * Telemetry contains information about Creevey and Storybook versions, used Creevey config, browsers and tests meta.
    * It's being sent only for projects from git.skbkontur.ru
@@ -282,9 +307,12 @@ export interface Config {
   disableTelemetry?: boolean;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export interface StoriesProvider<T = any> {
-  (config: Config, options: T, storiesListener: (stories: Map<string, StoryInput[]>) => void): Promise<StoriesRaw>;
+export interface StoriesProvider {
+  (
+    config: Config,
+    storiesListener: (stories: Map<string, StoryInput[]>) => void,
+    webdriver?: CreeveyWebdriver,
+  ): Promise<StoriesRaw>;
   providerName?: string;
 }
 
@@ -305,6 +333,7 @@ export interface Options {
   reporter?: string;
   screenDir?: string;
   reportDir?: string;
+  gridUrl?: string;
   storybookUrl?: string;
   failFast?: boolean;
   odiff?: boolean;
@@ -314,6 +343,7 @@ export type WorkerError = 'browser' | 'test' | 'unknown';
 
 export type WorkerMessage =
   | { type: 'ready'; payload?: never }
+  | { type: 'port'; payload: { port: number } }
   | { type: 'error'; payload: { subtype: WorkerError; error: string } };
 
 export type StoriesMessage =
@@ -326,21 +356,17 @@ export type TestMessage =
   | { type: 'start'; payload: { id: string; path: string[]; retries: number } }
   | { type: 'end'; payload: TestResult };
 
-export type DockerMessage = { type: 'start'; payload?: never } | { type: 'success'; payload: { gridUrl: string } };
-
 export type ShutdownMessage = object;
 
 export type ProcessMessage =
   | (WorkerMessage & { scope: 'worker' })
   | (StoriesMessage & { scope: 'stories' })
   | (TestMessage & { scope: 'test' })
-  | (DockerMessage & { scope: 'docker' })
   | (ShutdownMessage & { scope: 'shutdown' });
 
 export type WorkerHandler = (message: WorkerMessage) => void;
 export type StoriesHandler = (message: StoriesMessage) => void;
 export type TestHandler = (message: TestMessage) => void;
-export type DockerHandler = (message: DockerMessage) => void;
 export type ShutdownHandler = (message: ShutdownMessage) => void;
 
 export interface Worker extends ClusterWorker {
@@ -387,7 +413,6 @@ export interface TestData extends TestMeta {
 
 export interface BaseCreeveyTestContext {
   browserName: string;
-  browser: WebDriver;
   /**
    * @deprecated In near future Creevey will additionally support Playwright as a webdriver, so any Selenium specific things might not be available. Please import `until` explicitly
    */
@@ -403,18 +428,15 @@ export interface BaseCreeveyTestContext {
   /**
    * @internal
    */
-  screenshots: { imageName?: string; screenshot: string }[];
-  matchImage: (image: string | Buffer, imageName?: string) => Promise<void>;
-  matchImages: (images: Record<string, string | Buffer>) => Promise<void>;
+  screenshots: { imageName?: string; screenshot: Buffer }[];
+  matchImage: (image: Buffer, imageName?: string) => Promise<void>;
+  matchImages: (images: Record<string, Buffer>) => Promise<void>;
 }
 
 export interface CreeveyTestContext extends BaseCreeveyTestContext {
-  takeScreenshot: () => Promise<string>;
+  takeScreenshot: () => Promise<Buffer>;
   updateStoryArgs: (updatedArgs: Record<string, unknown>) => Promise<void>;
-  /**
-   * @deprecated In near future Creevey will additionally support Playwright as a webdriver, so any Selenium specific things might not be available. The type of `captureElement` will be changed to `string`
-   */
-  readonly captureElement: Promise<WebElement> | undefined;
+  captureElement: string | null;
 }
 
 export enum TEST_EVENTS {
@@ -578,8 +600,4 @@ export function isStoriesMessage(message: unknown): message is StoriesMessage {
 
 export function isTestMessage(message: unknown): message is TestMessage {
   return isProcessMessage(message) && message.scope == 'test';
-}
-
-export function isDockerMessage(message: unknown): message is DockerMessage {
-  return isProcessMessage(message) && message.scope == 'docker';
 }

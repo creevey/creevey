@@ -8,18 +8,10 @@ import { register as esmRegister } from 'tsx/esm/api';
 import { register as cjsRegister } from 'tsx/cjs/api';
 import { SkipOptions, SkipOption, isDefined, TestData, noop, ServerTest } from '../types.js';
 import { emitShutdownMessage, sendShutdownMessage } from './messages.js';
-import Logger from 'loglevel';
-import chalk from 'chalk';
-import { networkInterfaces } from 'os';
-import { logger as defaultLogger } from './logger.js';
 
 const importMetaUrl = pathToFileURL(__filename).href;
 
 export const isShuttingDown = { current: false };
-
-export const storybookRootID = 'storybook-root';
-export const LOCALHOST_REGEXP = /(localhost|127\.0\.0\.1)/i;
-const DOCKER_INTERNAL = 'host.docker.internal';
 
 export const configExt = ['.js', '.mjs', '.ts', '.cjs', '.mts', '.cts'];
 
@@ -31,15 +23,6 @@ function matchBy(pattern: string | string[] | RegExp | undefined, value: string)
     (Array.isArray(pattern) && pattern.includes(value)) ||
     (pattern instanceof RegExp && pattern.test(value)) ||
     !isDefined(pattern)
-  );
-}
-
-export function getAddresses(): string[] {
-  // TODO Check if docker is used
-  return [DOCKER_INTERNAL].concat(
-    ...Object.values(networkInterfaces())
-      .filter(isDefined)
-      .map((network) => network.filter((info) => info.family == 'IPv4').map((info) => info.address)),
   );
 }
 
@@ -113,19 +96,16 @@ export async function shutdownWorkers(): Promise<void> {
   emitShutdownMessage();
 }
 
-export function shutdown(): void {
-  process.exit();
-}
-
 export async function getCreeveyCache(): Promise<string | undefined> {
   const { default: findCacheDir } = await import('find-cache-dir');
   return findCacheDir({ name: 'creevey', cwd: dirname(fileURLToPath(importMetaUrl)) });
 }
 
-export async function runSequence(seq: (() => unknown)[], predicate: () => boolean): Promise<void> {
+export async function runSequence(seq: (() => unknown)[], predicate: () => boolean): Promise<boolean> {
   for (const fn of seq) {
     if (predicate()) await fn();
   }
+  return predicate();
 }
 
 export function getTestPath(test: ServerTest): string[] {
@@ -147,30 +127,6 @@ export function testsToImages(tests: (TestData | undefined)[]): Set<string> {
         ),
     ),
   );
-}
-
-export function appendIframePath(url: string): string {
-  return `${url.replace(/\/$/, '')}/iframe.html`;
-}
-
-export async function resolveStorybookUrl(
-  storybookUrl: string,
-  checkUrl: (url: string) => Promise<boolean>,
-  logger: Logger.Logger = defaultLogger,
-): Promise<string> {
-  logger.debug('Resolving storybook url');
-  const addresses = getAddresses();
-  for (const ip of addresses) {
-    const resolvedUrl = storybookUrl.replace(LOCALHOST_REGEXP, ip);
-    logger.debug(`Checking storybook availability on ${chalk.magenta(resolvedUrl)}`);
-    if (await checkUrl(resolvedUrl)) {
-      logger.debug(`Resolved storybook url ${chalk.magenta(resolvedUrl)}`);
-      return resolvedUrl;
-    }
-  }
-  const error = new Error('Please specify `storybookUrl` with IP address that accessible from remote browser');
-  error.name = 'ResolveUrlError';
-  throw error;
 }
 
 // https://tuhrig.de/how-to-know-you-are-inside-a-docker-container/
