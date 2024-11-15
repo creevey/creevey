@@ -3,8 +3,16 @@ import Logger from 'loglevel';
 import chalk from 'chalk';
 import { v4 } from 'uuid';
 import prefix from 'loglevel-plugin-prefix';
-import { SET_GLOBALS, STORY_RENDERED, UPDATE_STORY_ARGS } from '@storybook/core-events';
-import { BrowserConfigObject, Config, Options, StoriesRaw, StoryInput, StorybookGlobals, noop } from '../../types';
+import {
+  BrowserConfigObject,
+  Config,
+  Options,
+  StoriesRaw,
+  StoryInput,
+  StorybookEvents,
+  StorybookGlobals,
+  noop,
+} from '../../types';
 import { subscribeOn } from '../messages';
 import { appendIframePath, getAddresses, LOCALHOST_REGEXP, resolveStorybookUrl, storybookRootID } from '../webdriver';
 import { isShuttingDown, runSequence } from '../utils';
@@ -140,7 +148,7 @@ export class InternalBrowser {
           });
         });
       },
-      [story.id, updatedArgs, UPDATE_STORY_ARGS, STORY_RENDERED] as const,
+      [story.id, updatedArgs, StorybookEvents.UPDATE_STORY_ARGS, StorybookEvents.STORY_RENDERED] as const,
     );
   }
 
@@ -167,26 +175,42 @@ export class InternalBrowser {
     options: Options,
   ): Promise<InternalBrowser | null> {
     const browserConfig = config.browsers[browserName] as BrowserConfigObject;
-    const { storybookUrl: address = config.storybookUrl, viewport, _storybookGlobals } = browserConfig;
+    const {
+      storybookUrl: address = config.storybookUrl,
+      viewport,
+      _storybookGlobals,
+      ...userCapabilities
+    } = browserConfig;
 
     let browser: Browser | null = null;
 
-    // TODO Support Selenium Grid 4
-    switch (browserConfig.browserName) {
-      case 'chromium':
-        browser = await tryConnect(chromium, gridUrl);
-        break;
-      case 'firefox':
-        browser = await tryConnect(firefox, gridUrl);
-        break;
-      case 'webkit':
-        browser = await tryConnect(webkit, gridUrl);
-        break;
+    if (new URL(gridUrl).protocol === 'ws:') {
+      switch (browserConfig.browserName) {
+        case 'chromium':
+          browser = await tryConnect(chromium, gridUrl);
+          break;
+        case 'firefox':
+          browser = await tryConnect(firefox, gridUrl);
+          break;
+        case 'webkit':
+          browser = await tryConnect(webkit, gridUrl);
+          break;
 
-      default:
-        throw new Error(
-          `Unknown browser ${browserConfig.browserName}. Playwright supports browsers: chromium, firefox, webkit`,
-        );
+        default:
+          logger.error(
+            `Unknown browser ${browserConfig.browserName}. Playwright supports browsers: chromium, firefox, webkit`,
+          );
+      }
+    } else {
+      if (browserConfig.browserName != 'chrome') {
+        logger.error("Playwright's Selenium Grid feature supports only chrome browser");
+        return null;
+      }
+
+      process.env.SELENIUM_REMOTE_URL = gridUrl;
+      process.env.SELENIUM_REMOTE_CAPABILITIES = JSON.stringify(userCapabilities);
+
+      browser = await chromium.launch();
     }
 
     if (!browser) {
@@ -317,7 +341,7 @@ export class InternalBrowser {
               if (typeof window.__STORYBOOK_ADDONS_CHANNEL__ == 'undefined') return true;
               if (window.__STORYBOOK_ADDONS_CHANNEL__.last(SET_GLOBALS) == undefined) return true;
               return false;
-            }, SET_GLOBALS);
+            }, StorybookEvents.SET_GLOBALS);
           } catch (e: unknown) {
             this.#logger.debug('An error has been caught during the script:', e);
           }

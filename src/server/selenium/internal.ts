@@ -1,5 +1,4 @@
 import { Args } from '@storybook/csf';
-import { SET_GLOBALS, UPDATE_STORY_ARGS, STORY_RENDERED } from '@storybook/core-events';
 import chalk from 'chalk';
 import http from 'http';
 import https from 'https';
@@ -22,6 +21,7 @@ import {
   StoriesRaw,
   Options,
   ServerTest,
+  StorybookEvents,
 } from '../../types.js';
 import { colors, logger } from '../logger.js';
 import { subscribeOn } from '../messages.js';
@@ -338,8 +338,8 @@ export class InternalBrowser {
       },
       story.id,
       updatedArgs,
-      UPDATE_STORY_ARGS,
-      STORY_RENDERED,
+      StorybookEvents.UPDATE_STORY_ARGS,
+      StorybookEvents.STORY_RENDERED,
     );
   }
 
@@ -544,7 +544,7 @@ export class InternalBrowser {
               if (typeof window.__STORYBOOK_ADDONS_CHANNEL__ == 'undefined') return true;
               if (window.__STORYBOOK_ADDONS_CHANNEL__.last(SET_GLOBALS) == undefined) return true;
               return false;
-            }, SET_GLOBALS);
+            }, StorybookEvents.SET_GLOBALS);
           } catch (e: unknown) {
             this.#logger.debug('An error has been caught during the script:', e);
           }

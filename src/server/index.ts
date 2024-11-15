@@ -12,7 +12,6 @@ import { buildImage } from './docker.js';
 async function startWebdriverServer(browser: string, config: Config, options: Options): Promise<string | undefined> {
   if (config.webdriver === SeleniumWebdriver) {
     if (cluster.isPrimary) {
-      // TODO Get random free port
       const { startSelenoidContainer, startSelenoidStandalone } = await import('./selenium/selenoid.js');
       const gridUrl = 'http://localhost:4444/wd/hub';
       if (config.useDocker) {
@@ -24,8 +23,9 @@ async function startWebdriverServer(browser: string, config: Config, options: Op
     }
     // TODO Worker might want to use docker image of browser or start standalone selenium
   } else {
-    // TODO start standalone playwright server (useDocker == false)
+    if (config.gridUrl) return undefined;
 
+    // TODO start standalone playwright server (useDocker == false)
     const {
       default: { version },
     } = await import('playwright-core/package.json', { with: { type: 'json' } });
@@ -33,6 +33,8 @@ async function startWebdriverServer(browser: string, config: Config, options: Op
     if (cluster.isWorker) {
       // TODO Re-use dockerImage
 
+      // TODO Use https://hub.docker.com/r/playwright/chrome
+      // NOTE It will be possible to use `chrome` browserName
       const { startPlaywrightContainer } = await import('./playwright/docker.js');
       const { browserName } = config.browsers[browser] as BrowserConfigObject;
 
@@ -91,6 +93,21 @@ export default async function (options: Options): Promise<void> {
       return;
     }
     case cluster.isPrimary: {
+      if (config.webdriver === SeleniumWebdriver) {
+        try {
+          await import('selenium-webdriver');
+        } catch {
+          logger.error('Failed to start Creevey, missing required dependency: "selenium-webdriver"');
+          process.exit(-1);
+        }
+      } else {
+        try {
+          await import('playwright-core');
+        } catch {
+          logger.error('Failed to start Creevey, missing required dependency: "playwright-core"');
+          process.exit(-1);
+        }
+      }
       logger.info('Starting Master Process');
 
       const resolveApi = (await import('./master/server.js')).start(config.reportDir, port, ui);
