@@ -1,6 +1,7 @@
 import semver from 'semver';
 
 // TODO Support custom docker images
+// TODO Support nexus
 export function playwrightDockerFile(browser: string, version: string): string {
   const sv = semver.coerce(version);
 

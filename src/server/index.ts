@@ -8,6 +8,8 @@ import { SeleniumWebdriver } from './selenium/webdriver.js';
 import { LOCALHOST_REGEXP } from './webdriver.js';
 import { isInsideDocker } from './utils.js';
 import { sendWorkerMessage } from './messages.js';
+import { playwrightDockerFile } from './playwright/docker-file.js';
+import { buildImage } from './docker.js';
 
 async function startWebdriverServer(browser: string, config: Config, options: Options): Promise<string | undefined> {
   if (config.webdriver === SeleniumWebdriver) {
@@ -26,15 +28,31 @@ async function startWebdriverServer(browser: string, config: Config, options: Op
   } else {
     // TODO start standalone playwright server (useDocker == false)
 
+    const {
+      default: { version },
+    } = await import('playwright-core/package.json', { with: { type: 'json' } });
+
     if (cluster.isWorker) {
       // TODO Re-use dockerImage
 
       const { startPlaywrightContainer } = await import('./playwright/docker.js');
       const { browserName } = config.browsers[browser] as BrowserConfigObject;
-      const host = await startPlaywrightContainer(browserName, options.debug);
+
+      const imageName = `creevey/${browserName}:v${version}`;
+      const host = await startPlaywrightContainer(imageName, options.debug);
 
       return host;
     } else {
+      const browsers = [...new Set(Object.values(config.browsers).map((c) => (c as BrowserConfigObject).browserName))];
+      await Promise.all(
+        browsers.map(async (browserName) => {
+          const imageName = `creevey/${browserName}:v${version}`;
+          const dockerfile = playwrightDockerFile(browserName, version);
+
+          await buildImage(imageName, dockerfile);
+        }),
+      );
+
       const { default: getPort } = await import('get-port');
 
       cluster.on('message', (worker, message: unknown) => {
