@@ -582,5 +582,6 @@
 - [ ] Try pkgroll or use storybook addon-kit template
 - [ ] Move some deps used in components to devDeps
 - [ ] Use `birpc` for communication between workers
+- [ ] Replace @storybook/core-events
 
 - Add shortcuts for approve/view switch/image switch
