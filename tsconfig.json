@@ -28,7 +28,9 @@
     "types/*",
     "tests/**/*",
     "vite.config.mts",
-    "vitest.config.mts"
+    "vitest.config.mts",
+    "playwright.d.ts",
+    "selenium.d.ts"
   ],
   "exclude": ["report", "dist", "scripts"]
 }

@@ -2,7 +2,6 @@ import chai from 'chai';
 import chalk from 'chalk';
 import Logger from 'loglevel';
 import EventEmitter from 'events';
-import { Key, until, WebDriver } from 'selenium-webdriver';
 import {
   BaseCreeveyTestContext,
   Config,
@@ -19,7 +18,6 @@ import {
 } from '../../types.js';
 import { subscribeOn, emitTestMessage, emitWorkerMessage } from '../messages.js';
 import chaiImage from './chai-image.js';
-import { SeleniumWebdriver } from '../selenium/webdriver.js';
 import { getMatchers, getOdiffMatchers, ImageContext } from './match-image.js';
 import { loadTestsFromStories } from '../stories.js';
 import { logger } from '../logger.js';
@@ -47,22 +45,6 @@ async function getTestsFromStories(
     .forEach((test) => testsById.set(test.id, test));
 
   return testsById;
-}
-
-async function outputTraceLogs(browser: WebDriver, test: ServerTest, logger: Logger.Logger): Promise<void> {
-  const output: string[] = [];
-  const types = await browser.manage().logs().getAvailableLogTypes();
-  for (const type of types) {
-    const logs = await browser.manage().logs().get(type);
-    output.push(logs.map((log) => JSON.stringify(log.toJSON(), null, 2)).join('\n'));
-  }
-  logger.debug(
-    '----------',
-    getTestPath(test).join('/'),
-    '----------\n',
-    output.join('\n'),
-    '\n----------------------------------------------------------------------------------------------------',
-  );
 }
 
 function runHandler(browserName: string, images: Partial<Record<string, Images>>, error?: unknown): void {
@@ -202,8 +184,9 @@ export async function start(browser: string, gridUrl: string, config: Config, op
 
     const baseContext: BaseCreeveyTestContext = {
       browserName: browser,
-      // TODO Pass browser instance to test
-      // browser: browser,
+      // @ts-expect-error We defined separate d.ts declarations for each webdriver
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      webdriver: webdriver.browser,
       screenshots: [],
 
       matchImage: matchImage,
@@ -211,9 +194,6 @@ export async function start(browser: string, gridUrl: string, config: Config, op
 
       // NOTE: Deprecated
       expect: chai.expect,
-      //TODO Move things below to the separate module
-      until: until,
-      keys: Key,
     };
 
     imagesContext.attachments = [];
@@ -277,15 +257,7 @@ export async function start(browser: string, gridUrl: string, config: Config, op
       runner.emit(TEST_EVENTS.TEST_END, fakeTest);
       runner.emit(TEST_EVENTS.RUN_END);
 
-      if (options.trace) {
-        try {
-          if (webdriver instanceof SeleniumWebdriver && webdriver.browser) {
-            await outputTraceLogs(webdriver.browser, test, workerLogger);
-          }
-        } catch (_) {
-          /* noop */
-        }
-      }
+      await webdriver.afterTest(test);
 
       runHandler(baseContext.browserName, imagesContext.images, error);
     })().catch((error: unknown) => {

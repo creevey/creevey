@@ -1,7 +1,5 @@
 import type { StoryContextForEnhancers, DecoratorFunction } from '@storybook/csf';
-import type { IKey } from 'selenium-webdriver/lib/input.js';
 import type { Worker as ClusterWorker } from 'cluster';
-import type { /*Builder,*/ until } from 'selenium-webdriver';
 import type Pixelmatch from 'pixelmatch';
 import type { ODiffOptions } from 'odiff-bin';
 import type { expect } from 'chai';
@@ -152,6 +150,7 @@ export interface CreeveyWebdriver {
   closeBrowser(): Promise<void>;
   loadStoriesFromBrowser(): Promise<StoriesRaw>;
   switchStory(story: StoryInput, context: BaseCreeveyTestContext, logger: Logger.Logger): Promise<CreeveyTestContext>;
+  afterTest(test: ServerTest): Promise<void>;
 }
 
 export interface HookConfig {
@@ -413,14 +412,8 @@ export interface TestData extends TestMeta {
 
 export interface BaseCreeveyTestContext {
   browserName: string;
-  /**
-   * @deprecated In near future Creevey will additionally support Playwright as a webdriver, so any Selenium specific things might not be available. Please import `until` explicitly
-   */
-  until: typeof until;
-  /**
-   * @deprecated In near future Creevey will additionally support Playwright as a webdriver, so any Selenium specific things might not be available. Please import `keys` explicitly
-   */
-  keys: IKey;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  webdriver: any;
   /**
    * @deprecated Usually for screenshot testing you don't need other type of assertions except matching images, but if you really need it, please use external `expect` libs
    */

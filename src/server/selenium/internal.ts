@@ -13,10 +13,19 @@ import { Builder, By, Capabilities, Origin, WebDriver, WebElement, logging } fro
 // import { Options as SafariOptions } from 'selenium-webdriver/safari';
 // import { Options as FirefoxOptions } from 'selenium-webdriver/firefox';
 import { PageLoadStrategy } from 'selenium-webdriver/lib/capabilities.js';
-import { BrowserConfigObject, Config, noop, StorybookGlobals, StoryInput, StoriesRaw, Options } from '../../types.js';
+import {
+  BrowserConfigObject,
+  Config,
+  noop,
+  StorybookGlobals,
+  StoryInput,
+  StoriesRaw,
+  Options,
+  ServerTest,
+} from '../../types.js';
 import { colors, logger } from '../logger.js';
 import { subscribeOn } from '../messages.js';
-import { isShuttingDown, runSequence } from '../utils.js';
+import { getTestPath, isShuttingDown, runSequence } from '../utils.js';
 import {
   appendIframePath,
   getAddresses,
@@ -344,6 +353,24 @@ export class InternalBrowser {
     if (!stories) throw new Error("Can't get stories, it seems creevey or storybook API isn't available");
 
     return stories;
+  }
+
+  async afterTest(test: ServerTest): Promise<void> {
+    if (this.#logger.getLevel() === Logger.levels.TRACE) {
+      const output: string[] = [];
+      const types = await this.#browser.manage().logs().getAvailableLogTypes();
+      for (const type of types) {
+        const logs = await this.#browser.manage().logs().get(type);
+        output.push(logs.map((log) => JSON.stringify(log.toJSON(), null, 2)).join('\n'));
+      }
+      this.#logger.debug(
+        '----------',
+        getTestPath(test).join('/'),
+        '----------\n',
+        output.join('\n'),
+        '\n----------------------------------------------------------------------------------------------------',
+      );
+    }
   }
 
   static async getBrowser(
@@ -734,7 +761,7 @@ export class InternalBrowser {
         compositeImage.data[i + 3] = image.data[j + 3];
       }
     }
-    return compositeImage.data;
+    return PNG.sync.write(compositeImage);
   }
 
   private async removeIgnoreStyles(ignoreStyles: WebElement | null): Promise<void> {
