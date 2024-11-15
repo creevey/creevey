@@ -1,8 +1,15 @@
-import * as Events from '@storybook/core-events';
 import type { Renderer, StoryContextForEnhancers } from '@storybook/csf';
 import { makeDecorator, PreviewWeb, StoryStore } from '@storybook/preview-api';
 import { Channel } from '@storybook/channels';
-import { CaptureOptions, CreeveyStoryParams, isObject, noop, StoriesRaw, StorybookGlobals } from '../../types.js';
+import {
+  CaptureOptions,
+  CreeveyStoryParams,
+  isObject,
+  noop,
+  StoriesRaw,
+  StorybookEvents,
+  StorybookGlobals,
+} from '../../types.js';
 import { serializeRawStories } from '../../shared/index.js';
 import { getConnectionUrl } from '../shared/helpers.js';
 
@@ -62,12 +69,12 @@ function catchRenderError(channel: Channel): Promise<void> & { cancel: () => voi
     rejectCallback(exception);
   }
   function removeHandlers(): void {
-    channel.off(Events.STORY_ERRORED, errorHandler);
-    channel.off(Events.STORY_THREW_EXCEPTION, errorHandler);
+    channel.off(StorybookEvents.STORY_ERRORED, errorHandler);
+    channel.off(StorybookEvents.STORY_THREW_EXCEPTION, errorHandler);
   }
 
-  channel.once(Events.STORY_ERRORED, errorHandler);
-  channel.once(Events.STORY_THREW_EXCEPTION, exceptionHandler);
+  channel.once(StorybookEvents.STORY_ERRORED, errorHandler);
+  channel.once(StorybookEvents.STORY_THREW_EXCEPTION, exceptionHandler);
 
   return Object.assign(promise, { cancel: removeHandlers });
 }
@@ -79,10 +86,10 @@ function waitForStoryRendered(channel: Channel): Promise<void> & { cancel: () =>
     resolveCallback();
   }
   function removeHandlers(): void {
-    channel.off(Events.STORY_RENDERED, renderHandler);
+    channel.off(StorybookEvents.STORY_RENDERED, renderHandler);
   }
 
-  channel.once(Events.STORY_RENDERED, renderHandler);
+  channel.once(StorybookEvents.STORY_RENDERED, renderHandler);
 
   return Object.assign(promise, { cancel: removeHandlers });
 }
@@ -166,7 +173,7 @@ export function withCreevey(): ReturnType<typeof makeDecorator> {
     return stories;
   }
 
-  // TODO Use Events.STORY_RENDER_PHASE_CHANGED: `loading/rendering/completed` with storyId
+  // TODO Use StorybookEvents.STORY_RENDER_PHASE_CHANGED: `loading/rendering/completed` with storyId
   // TODO Check other statuses and statuses with play function
   async function selectStory(
     storyId: string,
@@ -188,8 +195,8 @@ export function withCreevey(): ReturnType<typeof makeDecorator> {
     const capturePromise = waitForCaptureCall().then(() => (isCaptureCalled = true));
 
     setTimeout(() => {
-      if (storyId == currentStory) channel.emit(Events.FORCE_REMOUNT, { storyId });
-      else channel.emit(Events.SET_CURRENT_STORY, { storyId });
+      if (storyId == currentStory) channel.emit(StorybookEvents.FORCE_REMOUNT, { storyId });
+      else channel.emit(StorybookEvents.SET_CURRENT_STORY, { storyId });
     }, 0);
 
     try {
@@ -219,7 +226,7 @@ export function withCreevey(): ReturnType<typeof makeDecorator> {
   }
 
   function updateGlobals(globals: StorybookGlobals): void {
-    addonsChannel().emit(Events.UPDATE_GLOBALS, { globals });
+    addonsChannel().emit(StorybookEvents.UPDATE_GLOBALS, { globals });
   }
 
   function insertIgnoreStyles(ignoreSelectors: string[]): HTMLStyleElement {

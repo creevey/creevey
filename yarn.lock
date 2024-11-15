@@ -1451,48 +1451,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/client-logger@npm:^8.4.1":
-  version: 8.4.1
-  resolution: "@storybook/client-logger@npm:8.4.1"
-  peerDependencies:
-    storybook: ^8.2.0 || ^8.3.0-0 || ^8.4.0-0 || ^8.5.0-0 || ^8.6.0-0
-  checksum: 10c0/689502ad8b86f620a1855e394a2a18c371fc4f46f4d65e98b718c0f5a3591a076c1a838a5a8ab05f6ad2b7f7a0cda5d57ed145aa92af5060a69e477242eb5522
-  languageName: node
-  linkType: hard
-
 "@storybook/components@npm:8.4.1, @storybook/components@npm:^8.4.1":
   version: 8.4.1
   resolution: "@storybook/components@npm:8.4.1"
   peerDependencies:
     storybook: ^8.2.0 || ^8.3.0-0 || ^8.4.0-0 || ^8.5.0-0 || ^8.6.0-0
   checksum: 10c0/1cc7fb2e16b329277411960db2b6ae1aa4244c729670a1d55dfc5124031beba369056533983b3e5245d9b5648f878f4134a86dcc98cf499cd16b70f1ad17d6f8
-  languageName: node
-  linkType: hard
-
-"@storybook/core-common@npm:^8.4.1":
-  version: 8.4.1
-  resolution: "@storybook/core-common@npm:8.4.1"
-  peerDependencies:
-    storybook: ^8.2.0 || ^8.3.0-0 || ^8.4.0-0 || ^8.5.0-0 || ^8.6.0-0
-  checksum: 10c0/bbbff0e94726ec4e0545673ad20cc9892204f4ad971379327e27d7f7b8109a52b79a886d9cc98d01bf8d611e0b1056555eeef4024cbd0b1f97add5ccd7c4bfe8
-  languageName: node
-  linkType: hard
-
-"@storybook/core-events@npm:^8.4.1":
-  version: 8.4.1
-  resolution: "@storybook/core-events@npm:8.4.1"
-  peerDependencies:
-    storybook: ^8.2.0 || ^8.3.0-0 || ^8.4.0-0 || ^8.5.0-0 || ^8.6.0-0
-  checksum: 10c0/f872c329c0780b372999573c822124392e555ca687af7f5c2c157aac59ff469090d6f0c97d50264e0f305c97538ff12bcc9c52ba1f5dc7e35306af4b61d8d479
-  languageName: node
-  linkType: hard
-
-"@storybook/core-server@npm:^8.4.1":
-  version: 8.4.1
-  resolution: "@storybook/core-server@npm:8.4.1"
-  peerDependencies:
-    storybook: ^8.2.0 || ^8.3.0-0 || ^8.4.0-0 || ^8.5.0-0 || ^8.6.0-0
-  checksum: 10c0/0ac9821e132deae845f50a628f1d81099574f6b6be5c7e800015dc2ac46d98b83c840b7fd1af5d7a46d847343dd31196fc82420d4cda02001e50a7fad5c7cd72
   languageName: node
   linkType: hard
 
@@ -3633,11 +3597,7 @@ __metadata:
     "@storybook/addon-interactions": "npm:^8.4.1"
     "@storybook/blocks": "npm:^8.4.1"
     "@storybook/channels": "npm:^8.4.1"
-    "@storybook/client-logger": "npm:^8.4.1"
     "@storybook/components": "npm:^8.4.1"
-    "@storybook/core-common": "npm:^8.4.1"
-    "@storybook/core-events": "npm:^8.4.1"
-    "@storybook/core-server": "npm:^8.4.1"
     "@storybook/csf": "npm:^0.1.11"
     "@storybook/icons": "npm:^1.2.12"
     "@storybook/manager-api": "npm:^8.4.1"

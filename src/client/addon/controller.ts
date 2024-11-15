@@ -1,7 +1,14 @@
 import { Addon_TypesEnum } from '@storybook/types';
-import { SET_STORIES, STORY_RENDERED } from '@storybook/core-events';
 import { denormalizeStoryParameters } from '../../shared/index.js';
-import { CreeveyStatus, CreeveyUpdate, isDefined, TestData, TestStatus, StoriesRaw } from '../../types.js';
+import {
+  CreeveyStatus,
+  CreeveyUpdate,
+  isDefined,
+  TestData,
+  TestStatus,
+  StoriesRaw,
+  StorybookEvents,
+} from '../../types.js';
 import { initCreeveyClientApi, CreeveyClientApi } from '../shared/creeveyClientApi.js';
 import { calcStatus } from '../shared/helpers.js';
 import { getEmojiByTestStatus } from './utils.js';
@@ -25,8 +32,8 @@ export class CreeveyController {
     this.storybookApi = storybookApi;
   }
   initAll = async (): Promise<void> => {
-    this.storybookApi.on(STORY_RENDERED, this.onStoryRendered);
-    this.storybookApi.on(SET_STORIES, this.onSetStories);
+    this.storybookApi.on(StorybookEvents.STORY_RENDERED, this.onStoryRendered);
+    this.storybookApi.on(StorybookEvents.SET_STORIES, this.onSetStories);
     this.creeveyApi = await initCreeveyClientApi();
     this.creeveyApi.onUpdate(this.handleCreeveyUpdate);
     this.status = await this.creeveyApi.status;
@@ -93,7 +100,7 @@ export class CreeveyController {
       this.stories = prevStories;
       this.setPanelsTitle();
       // TODO Check setStories method in 6.x and migrate properly
-      this.storybookApi.emit(SET_STORIES, this.stories);
+      this.storybookApi.emit(StorybookEvents.SET_STORIES, this.stories);
     }
     this.updateStatusListeners.forEach((x) => {
       x(update);
@@ -213,7 +220,7 @@ export class CreeveyController {
     });
 
     // TODO Check setStories method in 6.x and migrate properly
-    this.storybookApi.emit(SET_STORIES, this.stories);
+    this.storybookApi.emit(StorybookEvents.SET_STORIES, this.stories);
   }
 
   addStatusToStoryName(name: string, status: TestStatus | undefined, skip: string | boolean): string {

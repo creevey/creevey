@@ -41,6 +41,18 @@ export interface StoryMeta {
   };
 }
 
+export enum StorybookEvents {
+  SET_STORIES = 'setStories',
+  SET_CURRENT_STORY = 'setCurrentStory',
+  FORCE_REMOUNT = 'forceRemount',
+  STORY_RENDERED = 'storyRendered',
+  STORY_ERRORED = 'storyErrored',
+  STORY_THREW_EXCEPTION = 'storyThrewException',
+  UPDATE_STORY_ARGS = 'updateStoryArgs',
+  SET_GLOBALS = 'setGlobals',
+  UPDATE_GLOBALS = 'updateGlobals',
+}
+
 export interface CreeveyMeta {
   parameters?: {
     creevey?: CreeveyStoryParams;

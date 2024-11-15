@@ -21,6 +21,7 @@ function shutdownOnException(reason: unknown): void {
 
 process.on('uncaughtException', shutdownOnException);
 process.on('unhandledRejection', shutdownOnException);
+// TODO SIGINT Stuck with selenium
 process.on('SIGINT', () => {
   isShuttingDown.current = true;
 });
