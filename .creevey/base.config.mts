@@ -1,6 +1,6 @@
 import path from 'path';
 import { config as dotenv } from 'dotenv';
-import { PlaywrightWebdriver } from '../src/index.js';
+import { PlaywrightWebdriver } from '../src/playwright.js';
 import { isInsideDocker } from '../src/server/utils.js';
 import { CreeveyConfig } from '../src/types.js';
 import { fileURLToPath } from 'url';

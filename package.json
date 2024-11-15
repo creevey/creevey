@@ -10,6 +10,14 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": "./dist/index.js",
+    "./playwright": {
+      "default": "./dist/playwright.js",
+      "types": "./dist/playwright.d.ts"
+    },
+    "./selenium": {
+      "default": "./dist/selenium.js",
+      "types": "./dist/selenium.d.ts"
+    },
     "./manager": "./dist/client/addon/manager.js",
     "./preview": "./dist/client/addon/preview.js",
     "./preset": "./dist/client/addon/preset.js",
@@ -58,7 +66,7 @@
     "build": "yarn prebuild && yarn build:client && yarn build:creevey && yarn postbuild",
     "build:client": "vite build",
     "build:creevey": "tsc --build tsconfig.prod.json",
-    "postbuild": "cp \"scripts/dist/index.d.ts\" dist/",
+    "postbuild": "cp \"\"scripts/dist/*.d.ts\"\" dist/",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
     "build-storybook": "storybook build",
     "chromatic": "chromatic --project-token=chpt_80df83ca94e6fb4",

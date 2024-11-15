@@ -5,11 +5,11 @@ import { loadStories as browserStoriesProvider } from './providers/browser.js';
 import { Config, BrowserConfig, BrowserConfigObject, Options, isDefined } from '../types.js';
 import { configExt, loadThroughTSX } from './utils.js';
 import { CreeveyReporter, TeamcityReporter } from './reporter.js';
-import { SeleniumWebdriver } from './selenium/webdriver.js';
+import { logger } from './logger.js';
 
 export const defaultBrowser = 'chrome';
 
-export const defaultConfig: Omit<Config, 'gridUrl' | 'testsDir' | 'tsConfig'> = {
+export const defaultConfig: Omit<Config, 'gridUrl' | 'testsDir' | 'tsConfig' | 'webdriver'> = {
   disableTelemetry: false,
   useWorkerQueue: false,
   useDocker: true,
@@ -22,7 +22,6 @@ export const defaultConfig: Omit<Config, 'gridUrl' | 'testsDir' | 'tsConfig'> = 
   reportDir: path.resolve('report'),
   reporter: process.env.TEAMCITY_VERSION ? TeamcityReporter : CreeveyReporter,
   storiesProvider: browserStoriesProvider,
-  webdriver: SeleniumWebdriver,
   maxRetries: 0,
   testTimeout: 30000,
   diffOptions: { threshold: 0.05, includeAA: false },
@@ -63,11 +62,23 @@ export async function readConfig(options: Options): Promise<Config> {
   const userConfig: typeof defaultConfig & Partial<Pick<Config, 'gridUrl' | 'storiesProvider'>> = { ...defaultConfig };
 
   if (isDefined(configPath)) {
-    const configModule = await loadThroughTSX<{ default: Partial<Config> } | Partial<Config>>((load) => {
+    const configModule = await loadThroughTSX<
+      { default: { default: Partial<Config> } | Partial<Config> } | Partial<Config>
+    >((load) => {
       const configFileUrl = pathToFileURL(configPath).toString();
       return load(configFileUrl);
     });
-    const configData = 'default' in configModule ? configModule.default : configModule;
+    let configData = 'default' in configModule ? configModule.default : configModule;
+    // NOTE In node > 18 with commonjs project and esm config with tsconfig moduleResolution nodeNext there is additional 'default'
+    configData = 'default' in configData ? configData.default : configData;
+
+    if (!configData.webdriver) {
+      const { SeleniumWebdriver } = await import('./selenium/webdriver.js');
+      logger.warn(
+        "Creevey supports `Selenium` and `Playwright` webdrivers. For backward compatibility `Selenium` is used by default, but it might changed in the future. Please explicitly specify one of webdrivers in your Creevey's config",
+      );
+      configData.webdriver = SeleniumWebdriver;
+    }
 
     Object.assign(userConfig, configData);
   }

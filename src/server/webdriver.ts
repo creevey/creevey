@@ -10,6 +10,7 @@ import {
   CreeveyStoryParams,
   StoriesRaw,
   CreeveyWebdriver,
+  ServerTest,
 } from '../types.js';
 import { emitStoriesMessage, subscribeOn } from './messages.js';
 
@@ -68,6 +69,8 @@ export abstract class CreeveyWebdriverBase implements CreeveyWebdriver {
   abstract closeBrowser(): Promise<void>;
 
   abstract loadStoriesFromBrowser(): Promise<StoriesRaw>;
+
+  abstract afterTest(test: ServerTest): Promise<void>;
 
   async switchStory(story: StoryInput, context: BaseCreeveyTestContext): Promise<CreeveyTestContext> {
     const { id, title, name, parameters } = story;

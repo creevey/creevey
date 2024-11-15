@@ -3738,7 +3738,7 @@ __metadata:
     selenium-webdriver:
       optional: true
   bin:
-    creevey: ./dist/cli.js
+    creevey: dist/cli.js
   languageName: unknown
   linkType: soft
 

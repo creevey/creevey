@@ -1,19 +1,9 @@
-import { buildImage, runImage } from '../docker';
+import { runImage } from '../docker';
 import { emitWorkerMessage, subscribeOn } from '../messages';
 import { isInsideDocker } from '../utils';
 import { LOCALHOST_REGEXP } from '../webdriver';
-import { playwrightDockerFile } from './docker-file';
 
-export async function startPlaywrightContainer(browserName: string, debug: boolean): Promise<string> {
-  const {
-    default: { version },
-  } = await import('playwright-core/package.json', { with: { type: 'json' } });
-
-  const imageName = `creevey/${browserName}:v${version}`;
-  const dockerfile = playwrightDockerFile(browserName, version);
-
-  await buildImage(imageName, dockerfile);
-
+export async function startPlaywrightContainer(imageName: string, debug: boolean): Promise<string> {
   const port = await new Promise<number>((resolve) => {
     subscribeOn('worker', (message) => {
       if (message.type == 'port') {

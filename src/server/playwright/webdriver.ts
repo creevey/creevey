@@ -1,5 +1,6 @@
+/// <reference types="../../../types/playwright-context" />
 import { Args } from '@storybook/csf';
-import { Config, Options, StoriesRaw, StoryInput } from '../../types';
+import { Config, Options, ServerTest, StoriesRaw, StoryInput } from '../../types';
 import { logger } from '../logger';
 import { subscribeOn } from '../messages';
 import { CreeveyWebdriverBase } from '../webdriver';
@@ -83,6 +84,10 @@ export class PlaywrightWebdriver extends CreeveyWebdriverBase {
     }
 
     return this.#browser.loadStoriesFromBrowser();
+  }
+
+  afterTest(_test: ServerTest): Promise<void> {
+    return Promise.resolve(undefined);
   }
 
   protected async takeScreenshot(
