@@ -121,6 +121,8 @@ export default class Pool extends EventEmitter {
   }
 
   private async forkWorker(retry = 0): Promise<Worker | { error: string }> {
+    if (isShuttingDown.current) return { error: 'Master process is shutting down' };
+
     cluster.setupPrimary({
       args: ['--browser', this.browser, ...(this.gridUrl ? ['--gridUrl', this.gridUrl] : []), ...process.argv.slice(2)],
     });
