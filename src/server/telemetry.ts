@@ -154,12 +154,16 @@ export async function sendScreenshotsCount(
               name: name,
               gridUrl: browser.gridUrl ? sanitizeGridUrl(browser.gridUrl) : undefined,
               browserName: browser.browserName,
-              browserVersion: browser.browserVersion,
-              platformName: browser.platformName,
+              // @ts-expect-error Support old config version
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+              browserVersion: browser.seleniumCapabilities?.browserVersion ?? browser.browserVersion,
+              // @ts-expect-error Support old config version
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+              platformName: browser.seleniumCapabilities?.platformName ?? browser.platformName,
               viewport: browser.viewport,
               limit: browser.limit,
               dockerImage: browser.dockerImage,
-              'se:teamname': browser['se:teamname'],
+              'se:teamname': browser.seleniumCapabilities?.['se:teamname'],
             }
           : browser,
       ]),

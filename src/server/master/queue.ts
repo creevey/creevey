@@ -22,11 +22,16 @@ export class WorkerQueue {
   }
 
   private async process() {
-    if ((this.useQueue && this.isProcessing) || isShuttingDown.current) return;
+    if (this.useQueue && this.isProcessing) return;
 
     const { browser, gridUrl, retry, resolve } = this.queue.pop() ?? {};
 
     if (browser == undefined || retry == undefined || resolve == undefined) return;
+
+    if (isShuttingDown.current) {
+      resolve({ error: 'Master process is shutting down' });
+      return;
+    }
 
     this.isProcessing = true;
 
