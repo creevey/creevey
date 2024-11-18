@@ -94,21 +94,25 @@ async function openUrlAndWaitForPageSource(
 }
 
 async function buildWebdriver(
-  browserName: string,
+  browser: string,
   gridUrl: string,
   config: Config,
   options: Options,
 ): Promise<WebDriver | null> {
-  const browserConfig = config.browsers[browserName] as BrowserConfigObject;
-  const { /*customizeBuilder,*/ seleniumCapabilities } = browserConfig;
+  const browserConfig = config.browsers[browser] as BrowserConfigObject;
+  const { /*customizeBuilder,*/ seleniumCapabilities, browserName } = browserConfig;
 
   const url = new URL(gridUrl);
   url.username = url.username ? '********' : '';
   url.password = url.password ? '********' : '';
-  logger().debug(`(${browserName}) Connecting to Selenium ${chalk.magenta(url.toString())}`);
+  logger().debug(`Connecting to Selenium ${chalk.magenta(url.toString())}`);
 
   // TODO Define some capabilities explicitly and define typings
-  const capabilities = new Capabilities({ ...seleniumCapabilities, pageLoadStrategy: PageLoadStrategy.EAGER });
+  const capabilities = new Capabilities({
+    browserName,
+    ...seleniumCapabilities,
+    pageLoadStrategy: PageLoadStrategy.EAGER,
+  });
   const prefs = new logging.Preferences();
 
   if (options.trace) {
@@ -121,13 +125,13 @@ async function buildWebdriver(
   // TODO Validate browsers, versions, and platform
   // TODO Use `customizeBuilder`
 
-  let browser: WebDriver | null;
+  let webdriver: WebDriver | null;
 
   try {
     const maxRetries = 5;
     let retries = 0;
     do {
-      browser = await Promise.race([
+      webdriver = await Promise.race([
         new Promise<null>((resolve) => {
           setTimeout(() => {
             retries += 1;
@@ -148,7 +152,7 @@ async function buildWebdriver(
           // chrome.enableBidi();
           // firefox.enableBidi();
 
-          const browser = await new Builder()
+          const driver = await new Builder()
             // .setIeOptions(ie)
             // .setEdgeOptions(edge)
             // .setChromeOptions(chrome)
@@ -159,27 +163,27 @@ async function buildWebdriver(
             .setLoggingPrefs(prefs) // NOTE: Should go last
             .build();
 
-          // const id = await browser.getWindowHandle();
-          // context = await BrowsingContext(browser, { browsingContextId: id });
+          // const id = await driver.getWindowHandle();
+          // context = await BrowsingContext(driver, { browsingContextId: id });
 
           if (retry != retries) {
-            void browser.quit();
+            void driver.quit();
             return null;
           }
 
-          return browser;
+          return driver;
         })(),
       ]);
-      if (browser) break;
+      if (webdriver) break;
     } while (retries < maxRetries);
 
-    if (!browser) throw new Error('Failed to initialize session to Selenium Grid due to many retries');
+    if (!webdriver) throw new Error('Failed to initialize session to Selenium Grid due to many retries');
   } catch (error) {
-    logger().error(`(${browserName}) Failed to start browser:`, error);
+    logger().error(`Failed to start browser:`, error);
     return null;
   }
 
-  return browser;
+  return webdriver;
 }
 
 export class InternalBrowser {
@@ -513,6 +517,7 @@ export class InternalBrowser {
 
         await this.#browser.get(appendIframePath(resolvedUrl));
       } else {
+        // TODO Pageload timeout 10s
         // NOTE: getUrlChecker already calls `browser.get` so we don't need another one
         await resolveStorybookUrl(appendIframePath(storybookUrl), (url) => this.checkUrl(url));
       }
