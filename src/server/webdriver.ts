@@ -26,6 +26,7 @@ export async function resolveStorybookUrl(
 ): Promise<string> {
   logger.debug('Resolving storybook url');
   const addresses = getAddresses();
+  // TODO Use Promise.race?
   for (const ip of addresses) {
     const resolvedUrl = storybookUrl.replace(LOCALHOST_REGEXP, ip);
     logger.debug(`Checking storybook availability on ${chalk.magenta(resolvedUrl)}`);
