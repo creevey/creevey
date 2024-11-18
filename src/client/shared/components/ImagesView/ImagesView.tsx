@@ -6,6 +6,7 @@ import { SlideView } from './SlideView.js';
 import { BlendView } from './BlendView.js';
 import { Images, ImagesViewMode } from '../../../../types.js';
 import { getBorderColor, themeBorderColors, ViewProps } from './common.js';
+import { DiffView } from './DiffView.js';
 
 interface ImagesViewProps {
   url?: string;
@@ -19,6 +20,7 @@ const views: Record<ImagesViewMode, FunctionComponent<ViewProps>> = {
   swap: SwapView,
   slide: SlideView,
   blend: BlendView,
+  diff: DiffView,
 };
 
 const Container = styled.div({

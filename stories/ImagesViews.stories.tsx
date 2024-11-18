@@ -43,3 +43,5 @@ export const Slide: StoryObj<typeof ImagesView> = {
 };
 
 export const Blend: StoryObj<typeof ImagesView> = { args: { mode: 'blend' } };
+
+export const Diff: StoryObj<typeof ImagesView> = { args: { mode: 'diff' } };
