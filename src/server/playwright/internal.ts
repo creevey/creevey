@@ -270,7 +270,6 @@ export class InternalBrowser {
       },
     });
 
-    this.#page.setDefaultNavigationTimeout(10000);
     this.#page.setDefaultTimeout(60000);
 
     return await runSequence(
@@ -302,6 +301,7 @@ export class InternalBrowser {
 
         await this.#page.goto(appendIframePath(resolvedUrl));
       } else {
+        // TODO this.#page.setDefaultNavigationTimeout(10000);
         await resolveStorybookUrl(appendIframePath(storybookUrl), (url) => this.checkUrl(url), this.#logger);
       }
     } catch (error) {
