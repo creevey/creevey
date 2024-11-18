@@ -10,6 +10,7 @@
 .teamcity
 .prettier*
 .storybook
+.yarnrc.yml
 .gitlab-ci.yml
 .gitattributes
 TODO.md
