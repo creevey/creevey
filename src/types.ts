@@ -5,6 +5,7 @@ import type { ODiffOptions } from 'odiff-bin';
 import type { expect } from 'chai';
 import type EventEmitter from 'events';
 import type Logger from 'loglevel';
+import { LaunchOptions } from 'playwright-core';
 // import type { Browser } from 'playwright-core';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -103,14 +104,6 @@ export class ChromeConfig {
 */
 export interface BrowserConfigObject {
   browserName: string;
-  /**
-   * Browser version. Ignored with Playwright webdriver
-   */
-  browserVersion?: string;
-  /**
-   * Operation system name. Ignored with Playwright webdriver
-   */
-  platformName?: string;
   // customizeBuilder?: (builder: Builder) => Builder;
   limit?: number;
   /**
@@ -134,15 +127,25 @@ export interface BrowserConfigObject {
    * Used only with `useDocker == false`
    */
   webdriverCommand?: string[];
-  // TODO Check version compatibility
-  // playwrightVersion?: string;
   // /**
   //  * Use to start standalone playwright browser
   //  */
   // playwrightBrowser?: () => Promise<Browser>;
   viewport?: { width: number; height: number };
 
-  [name: string]: unknown;
+  seleniumCapabilities?: {
+    /**
+     * Browser version. Ignored with Playwright webdriver
+     */
+    browserVersion?: string;
+    /**
+     * Operation system name. Ignored with Playwright webdriver
+     */
+    platformName?: string;
+    [name: string]: unknown;
+  };
+
+  playwrightOptions?: Omit<LaunchOptions, 'logger'>;
 }
 
 export type StorybookGlobals = Record<string, unknown>;

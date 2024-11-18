@@ -30,7 +30,7 @@ async function createSelenoidConfig(
   browsers.forEach(
     ({
       browserName,
-      browserVersion = 'latest',
+      seleniumCapabilities: { browserVersion = 'latest' } = {},
       dockerImage = `selenoid/${browserName}:${browserVersion}`,
       webdriverCommand = [],
     }) => {
@@ -117,7 +117,7 @@ export async function startSelenoidContainer(config: Config, debug: boolean): Pr
   browsers.forEach(
     ({
       browserName,
-      browserVersion = 'latest',
+      seleniumCapabilities: { browserVersion = 'latest' } = {},
       limit: browserLimit = 1,
       dockerImage = `selenoid/${browserName}:${browserVersion}`,
     }) => {

@@ -100,7 +100,7 @@ async function buildWebdriver(
   options: Options,
 ): Promise<WebDriver | null> {
   const browserConfig = config.browsers[browserName] as BrowserConfigObject;
-  const { _storybookGlobals, /*customizeBuilder,*/ ...userCapabilities } = browserConfig;
+  const { /*customizeBuilder,*/ seleniumCapabilities } = browserConfig;
 
   const url = new URL(gridUrl);
   url.username = url.username ? '********' : '';
@@ -108,7 +108,7 @@ async function buildWebdriver(
   logger().debug(`(${browserName}) Connecting to Selenium ${chalk.magenta(url.toString())}`);
 
   // TODO Define some capabilities explicitly and define typings
-  const capabilities = new Capabilities({ ...userCapabilities, pageLoadStrategy: PageLoadStrategy.EAGER });
+  const capabilities = new Capabilities({ ...seleniumCapabilities, pageLoadStrategy: PageLoadStrategy.EAGER });
   const prefs = new logging.Preferences();
 
   if (options.trace) {

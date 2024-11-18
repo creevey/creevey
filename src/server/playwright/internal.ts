@@ -179,7 +179,8 @@ export class InternalBrowser {
       storybookUrl: address = config.storybookUrl,
       viewport,
       _storybookGlobals,
-      ...userCapabilities
+      seleniumCapabilities,
+      playwrightOptions,
     } = browserConfig;
 
     let browser: Browser | null = null;
@@ -208,9 +209,9 @@ export class InternalBrowser {
       }
 
       process.env.SELENIUM_REMOTE_URL = gridUrl;
-      process.env.SELENIUM_REMOTE_CAPABILITIES = JSON.stringify(userCapabilities);
+      process.env.SELENIUM_REMOTE_CAPABILITIES = JSON.stringify(seleniumCapabilities);
 
-      browser = await chromium.launch();
+      browser = await chromium.launch(playwrightOptions);
     }
 
     if (!browser) {
