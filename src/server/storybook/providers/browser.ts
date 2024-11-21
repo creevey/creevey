@@ -18,7 +18,7 @@ export const loadStories: StoriesProvider = async (_config, _options, storiesLis
           if (message.type == 'set') {
             const { stories, oldTests } = message.payload;
             if (oldTests.length > 0)
-              logger.warn(
+              logger().warn(
                 `If you use browser stories provider of CSFv3 Storybook feature\n` +
                   `Creevey will not load tests defined in story parameters from following stories:\n` +
                   oldTests.join('\n'),

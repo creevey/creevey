@@ -10,12 +10,16 @@ export const colors = {
   ERROR: chalk.red,
 };
 
+let rootName = 'Creevey';
+
 prefix.reg(Logger);
 prefix.apply(Logger, {
-  format(level, name = 'Creevey') {
+  format(level, name = rootName) {
     const levelColor = colors[level.toUpperCase() as keyof typeof colors];
     return `[${name}:${chalk.gray(process.pid)}] ${levelColor(level)} =>`;
   },
 });
 
-export const logger = Logger.getLogger('Creevey');
+export const setRootName = (newName: string) => (rootName = newName);
+
+export const logger = () => Logger.getLogger(rootName);

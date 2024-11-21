@@ -1,10 +1,9 @@
-import cluster, { Worker as ClusterWorker } from 'cluster';
+import { Worker as ClusterWorker } from 'cluster';
 import { EventEmitter } from 'events';
-import { Worker, Config, TestResult, BrowserConfig, WorkerMessage, TestStatus, isWorkerMessage } from '../../types.js';
-import { sendTestMessage, sendShutdownMessage, subscribeOnWorker } from '../messages.js';
-import { isShuttingDown } from '../utils.js';
-
-const FORK_RETRIES = 5;
+import { Worker, Config, TestResult, BrowserConfig, TestStatus } from '../../types.js';
+import { sendTestMessage, subscribeOnWorker } from '../messages.js';
+import { gracefullyKill, isShuttingDown } from '../utils.js';
+import { WorkerQueue } from './queue.js';
 
 interface WorkerTest {
   id: string;
@@ -23,6 +22,7 @@ export default class Pool extends EventEmitter {
     return this.workers.length !== this.freeWorkers.length;
   }
   constructor(
+    public scheduler: WorkerQueue,
     config: Config,
     private browser: string,
   ) {
@@ -35,10 +35,9 @@ export default class Pool extends EventEmitter {
 
   async init(): Promise<void> {
     const poolSize = Math.max(1, this.config.limit ?? 1);
-    // TODO Init queue for workers to smooth browser starting load
-    this.workers = (await Promise.all(Array.from({ length: poolSize }).map(() => this.forkWorker()))).filter(
-      (workerOrError): workerOrError is Worker => workerOrError instanceof ClusterWorker,
-    );
+    this.workers = (
+      await Promise.all(Array.from({ length: poolSize }).map(() => this.scheduler.forkWorker(this.browser)))
+    ).filter((workerOrError): workerOrError is Worker => workerOrError instanceof ClusterWorker);
     if (this.workers.length != poolSize)
       throw new Error(`Can't instantiate workers for ${this.browser} due many errors`);
     this.workers.forEach((worker) => {
@@ -55,7 +54,7 @@ export default class Pool extends EventEmitter {
     return true;
   }
 
-  stop(): void {
+  stop() {
     if (!this.isRunning) {
       this.emit('stop');
       return;
@@ -65,7 +64,7 @@ export default class Pool extends EventEmitter {
     this.queue = [];
   }
 
-  process(): void {
+  process() {
     const worker = this.getFreeWorker();
     const test = this.queue.at(0);
 
@@ -88,7 +87,9 @@ export default class Pool extends EventEmitter {
 
     sendTestMessage(worker, { type: 'start', payload: test });
 
-    this.process();
+    setImmediate(() => {
+      this.process();
+    });
   }
 
   private sendStatus(message: { id: string; status: TestStatus; result?: TestResult }): void {
@@ -109,34 +110,12 @@ export default class Pool extends EventEmitter {
     return this.aliveWorkers.filter((worker) => !worker.isRunning);
   }
 
-  private async forkWorker(retry = 0): Promise<Worker | { error: string }> {
-    cluster.setupPrimary({
-      args: ['--browser', this.browser, ...process.argv.slice(2)],
-    });
-    const worker = cluster.fork();
-    const message = await new Promise((resolve: (value: WorkerMessage) => void) => {
-      const readyHandler = (message: unknown): void => {
-        if (!isWorkerMessage(message)) return;
-        worker.off('message', readyHandler);
-        resolve(message);
-      };
-      worker.on('message', readyHandler);
-    });
-
-    if (message.type != 'error') return worker;
-
-    this.gracefullyKill(worker);
-
-    if (retry == FORK_RETRIES) return message.payload;
-    return this.forkWorker(retry + 1);
-  }
-
   private exitHandler(worker: Worker): void {
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     worker.once('exit', async () => {
       if (isShuttingDown.current) return;
 
-      const workerOrError = await this.forkWorker();
+      const workerOrError = await this.scheduler.forkWorker(this.browser);
 
       if (!(workerOrError instanceof ClusterWorker))
         throw new Error(`Can't instantiate worker for ${this.browser} due many errors`);
@@ -145,17 +124,6 @@ export default class Pool extends EventEmitter {
       this.workers[this.workers.indexOf(worker)] = workerOrError;
       this.process();
     });
-  }
-
-  private gracefullyKill(worker: Worker): void {
-    worker.isShuttingDown = true;
-    const timeout = setTimeout(() => {
-      worker.kill();
-    }, 10000);
-    worker.on('exit', () => {
-      clearTimeout(timeout);
-    });
-    sendShutdownMessage(worker);
   }
 
   private shouldRetry(test: WorkerTest): boolean {
@@ -188,7 +156,7 @@ export default class Pool extends EventEmitter {
           unsubscribe();
         });
 
-        this.gracefullyKill(worker);
+        gracefullyKill(worker);
 
         this.handleTestResult(worker, test, { status: 'failed', ...message.payload });
       }),

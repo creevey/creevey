@@ -42,7 +42,10 @@ function outputUnnecessaryImages(imagesDir: string, images: Set<string>): void {
     .map((imagePath) => path.posix.relative(imagesDir, imagePath))
     .filter((imagePath) => !images.has(imagePath));
   if (unnecessaryImages.length > 0) {
-    logger.warn('We found unnecessary screenshot images, those can be safely removed:\n', unnecessaryImages.join('\n'));
+    logger().warn(
+      'We found unnecessary screenshot images, those can be safely removed:\n',
+      unnecessaryImages.join('\n'),
+    );
   }
 }
 
@@ -79,10 +82,10 @@ export async function start(config: Config, options: Options, resolveApi: (api: 
 
   if (options.ui) {
     resolveApi(creeveyApi(runner));
-    logger.info(`Started on http://localhost:${options.port}`);
+    logger().info(`Started on http://localhost:${options.port}`);
   } else {
     if (Object.values(runner.status.tests).filter((test) => test && !test.skip).length == 0) {
-      logger.warn("Don't have any tests to run");
+      logger().warn("Don't have any tests to run");
 
       void shutdownWorkers().then(() => process.exit());
       return;
@@ -99,7 +102,7 @@ export async function start(config: Config, options: Options, resolveApi: (api: 
       void sendScreenshotsCount(config, options, runner.status)
         .catch((reason: unknown) => {
           const error = reason instanceof Error ? (reason.stack ?? reason.message) : (reason as string);
-          logger.warn(`Can't send telemetry: ${error}`);
+          logger().warn(`Can't send telemetry: ${error}`);
         })
         .finally(() => {
           void shutdownWorkers().then(() => process.exit());

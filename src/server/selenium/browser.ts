@@ -29,6 +29,7 @@ import {
 import { colors, logger } from '../logger.js';
 import { emitStoriesMessage, subscribeOn } from '../messages.js';
 import { isShuttingDown, LOCALHOST_REGEXP, runSequence } from '../utils.js';
+import { Preferences } from 'selenium-webdriver/lib/logging.js';
 
 interface ElementRect {
   top: number;
@@ -50,7 +51,6 @@ declare global {
 
 const storybookRootID = 'storybook-root';
 const DOCKER_INTERNAL = 'host.docker.internal';
-let browserLogger = logger;
 let browserName = '';
 let browser: WebDriver | null = null;
 // let context: UnPromise<ReturnType<typeof BrowsingContext>> | null = null;
@@ -99,19 +99,17 @@ function getAddresses(): string[] {
 }
 
 async function resolveStorybookUrl(storybookUrl: string, checkUrl: (url: string) => Promise<boolean>): Promise<string> {
-  browserLogger.debug('Resolving storybook url');
+  logger().debug('Resolving storybook url');
   const addresses = getAddresses();
   for (const ip of addresses) {
     const resolvedUrl = storybookUrl.replace(LOCALHOST_REGEXP, ip);
-    browserLogger.debug(`Checking storybook availability on ${chalk.magenta(resolvedUrl)}`);
+    logger().debug(`Checking storybook availability on ${chalk.magenta(resolvedUrl)}`);
     if (await checkUrl(resolvedUrl)) {
-      browserLogger.debug(`Resolved storybook url ${chalk.magenta(resolvedUrl)}`);
+      logger().debug(`Resolved storybook url ${chalk.magenta(resolvedUrl)}`);
       return resolvedUrl;
     }
   }
-  const error = new Error('Please specify `storybookUrl` with IP address that accessible from remote browser');
-  error.name = 'ResolveUrlError';
-  throw error;
+  throw new Error('Please specify `storybookUrl` with IP address that accessible from remote browser');
 }
 
 async function openUrlAndWaitForPageSource(
@@ -135,9 +133,9 @@ function getUrlChecker(browser: WebDriver): (url: string) => Promise<boolean> {
   return async (url: string): Promise<boolean> => {
     try {
       // NOTE: Before trying a new url, reset the current one
-      browserLogger.debug(`Opening ${chalk.magenta('about:blank')} page`);
+      logger().debug(`Opening ${chalk.magenta('about:blank')} page`);
       await openUrlAndWaitForPageSource(browser, 'about:blank', (source: string) => !source.includes('<body></body>'));
-      browserLogger.debug(`Opening ${chalk.magenta(url)} and checking the page source`);
+      logger().debug(`Opening ${chalk.magenta(url)} and checking the page source`);
       const source = await openUrlAndWaitForPageSource(
         browser,
         url,
@@ -149,7 +147,7 @@ function getUrlChecker(browser: WebDriver): (url: string) => Promise<boolean> {
       // because other add significant delay and some of them don't work in earlier chrome versions
       // Browsers always load page successful even it's failed
       // So we just check `root` element
-      browserLogger.debug(`Checking ${chalk.cyan(`#${storybookRootID}`)} existence on ${chalk.magenta(url)}`);
+      logger().debug(`Checking ${chalk.cyan(`#${storybookRootID}`)} existence on ${chalk.magenta(url)}`);
       return source.includes(`id="${storybookRootID}"`);
     } catch {
       return false;
@@ -157,8 +155,70 @@ function getUrlChecker(browser: WebDriver): (url: string) => Promise<boolean> {
   };
 }
 
+async function buildWebdriver(
+  gridUrl: string,
+  capabilities: Capabilities,
+  prefs: Preferences,
+): Promise<readonly [string, WebDriver]> {
+  const maxRetries = 5;
+  let maybeResult = null;
+  let retries = 0;
+  do {
+    maybeResult = await Promise.race([
+      new Promise<null>((resolve) => {
+        setTimeout(() => {
+          retries += 1;
+          resolve(null);
+        }, 120_000);
+      }),
+      (async () => {
+        if (retries > 0) {
+          logger().debug(`Trying to initialize session to Selenium Grid: retried ${retries} of ${maxRetries}`);
+        }
+        const retry = retries;
+        // const ie = new IeOptions();
+        // const edge = new EdgeOptions();
+        // const chrome = new ChromeOptions();
+        // const safari = new SafariOptions();
+        // const firefox = new FirefoxOptions();
+        // edge.enableBidi();
+        // chrome.enableBidi();
+        // firefox.enableBidi();
+
+        const browser = await new Builder()
+          // .setIeOptions(ie)
+          // .setEdgeOptions(edge)
+          // .setChromeOptions(chrome)
+          // .setSafariOptions(safari)
+          // .setFirefoxOptions(firefox)
+          .usingServer(gridUrl)
+          .withCapabilities(capabilities)
+          .setLoggingPrefs(prefs) // NOTE: Should go last
+          .build();
+
+        // const id = await browser.getWindowHandle();
+        // context = await BrowsingContext(browser, { browsingContextId: id });
+
+        const sessionId = (await browser.getSession()).getId();
+
+        if (retry != retries) {
+          void browser.quit();
+          return null;
+        }
+
+        return [sessionId, browser] as const;
+      })(),
+    ]);
+    if (maybeResult) break;
+  } while (retries < maxRetries);
+
+  if (!maybeResult) throw new Error('Failed to initialize session to Selenium Grid due to many retries');
+
+  return maybeResult;
+}
+
 async function waitForStorybook(browser: WebDriver): Promise<void> {
-  browserLogger.debug('Waiting for `setStories` event to make sure that storybook is initiated');
+  logger().debug('Waiting for `setStories` event to make sure that storybook is initiated');
 
   const isTimeout = await Promise.race([
     new Promise<boolean>((resolve) => {
@@ -176,7 +236,7 @@ async function waitForStorybook(browser: WebDriver): Promise<void> {
             return false;
           }, SET_GLOBALS);
         } catch (e: unknown) {
-          browserLogger.debug('An error has been caught during the script:', e);
+          logger().debug('An error has been caught during the script:', e);
         }
       } while (wait);
       return false;
@@ -188,7 +248,7 @@ async function waitForStorybook(browser: WebDriver): Promise<void> {
 }
 
 async function resetMousePosition(browser: WebDriver): Promise<void> {
-  browserLogger.debug('Resetting mouse position to the top-left corner');
+  logger().debug('Resetting mouse position to the top-left corner');
   const browserName = (await browser.getCapabilities()).getBrowserName();
   const [browserVersion] =
     (await browser.getCapabilities()).getBrowserVersion()?.split('.') ??
@@ -236,7 +296,7 @@ async function resizeViewport(browser: WebDriver, viewport: { width: number; hei
     },
   );
 
-  browserLogger.debug(`Resizing viewport from ${innerWidth}x${innerHeight} to ${viewport.width}x${viewport.height}`);
+  logger().debug(`Resizing viewport from ${innerWidth}x${innerHeight} to ${viewport.width}x${viewport.height}`);
 
   const dWidth = windowRect.width - innerWidth;
   const dHeight = windowRect.height - innerHeight;
@@ -367,7 +427,7 @@ export async function takeScreenshot(
 
   const ignoreStyles = await insertIgnoreStyles(browser, ignoreElements);
 
-  if (browserLogger.getLevel() <= Logger.levels.DEBUG) {
+  if (logger().getLevel() <= Logger.levels.DEBUG) {
     const { innerWidth, innerHeight } = await browser.executeScript<{ innerWidth: number; innerHeight: number }>(
       function () {
         return {
@@ -376,16 +436,16 @@ export async function takeScreenshot(
         };
       },
     );
-    browserLogger.debug(`Viewport size is: ${innerWidth}x${innerHeight}`);
+    logger().debug(`Viewport size is: ${innerWidth}x${innerHeight}`);
   }
 
   try {
     if (!captureElement) {
-      browserLogger.debug('Capturing viewport screenshot');
+      logger().debug('Capturing viewport screenshot');
       screenshot = await browser.takeScreenshot();
-      browserLogger.debug('Viewport screenshot is captured');
+      logger().debug('Viewport screenshot is captured');
     } else {
-      browserLogger.debug(`Checking is element ${chalk.cyan(captureElement)} fit into viewport`);
+      logger().debug(`Checking is element ${chalk.cyan(captureElement)} fit into viewport`);
       const rects = await browser.executeScript<{ elementRect: ElementRect; windowRect: ElementRect } | undefined>(
         function (selector: string): { elementRect: ElementRect; windowRect: ElementRect } | undefined {
           window.scrollTo(0, 0); // TODO Maybe we should remove same code from `resetMousePosition`
@@ -425,11 +485,9 @@ export async function takeScreenshot(
         elementRect.height + elementRect.top <= windowRect.height;
 
       if (isFitIntoViewport) {
-        browserLogger.debug(
-          `Capturing ${chalk.cyan(captureElement)} with size: ${elementRect.width}x${elementRect.height}`,
-        );
+        logger().debug(`Capturing ${chalk.cyan(captureElement)} with size: ${elementRect.width}x${elementRect.height}`);
       } else
-        browserLogger.debug(
+        logger().debug(
           `Capturing composite screenshot image of ${chalk.cyan(captureElement)} with size: ${elementRect.width}x${elementRect.height}`,
         );
 
@@ -445,7 +503,7 @@ export async function takeScreenshot(
         : // TODO pointer-events: none, need to research
           await takeCompositeScreenshot(browser, windowRect, elementRect);
 
-      browserLogger.debug(`${chalk.cyan(captureElement)} is captured`);
+      logger().debug(`${chalk.cyan(captureElement)} is captured`);
     }
   } finally {
     await removeIgnoreStyles(browser, ignoreStyles);
@@ -455,7 +513,7 @@ export async function takeScreenshot(
 }
 
 async function selectStory(browser: WebDriver, storyId: string, waitForReady = false): Promise<boolean> {
-  browserLogger.debug(`Triggering 'SetCurrentStory' event with storyId ${chalk.magenta(storyId)}`);
+  logger().debug(`Triggering 'SetCurrentStory' event with storyId ${chalk.magenta(storyId)}`);
 
   const result = await browser.executeAsyncScript<[error?: string | null, isCaptureCalled?: boolean] | null>(
     function (
@@ -483,7 +541,7 @@ async function selectStory(browser: WebDriver, storyId: string, waitForReady = f
 }
 
 export async function updateStorybookGlobals(browser: WebDriver, globals: StorybookGlobals): Promise<void> {
-  browserLogger.debug('Applying storybook globals');
+  logger().debug('Applying storybook globals');
   await browser.executeScript(function (globals: StorybookGlobals) {
     window.__CREEVEY_UPDATE_GLOBALS__(globals);
   }, globals);
@@ -504,11 +562,11 @@ async function openStorybookPage(
 
   try {
     if (resolver) {
-      browserLogger.debug('Resolving storybook url with custom resolver');
+      logger().debug('Resolving storybook url with custom resolver');
 
       const resolvedUrl = await resolver();
 
-      browserLogger.debug(`Resolver storybook url ${resolvedUrl}`);
+      logger().debug(`Resolver storybook url ${resolvedUrl}`);
 
       await browser.get(appendIframePath(resolvedUrl));
     } else {
@@ -516,7 +574,7 @@ async function openStorybookPage(
       await resolveStorybookUrl(appendIframePath(storybookUrl), getUrlChecker(browser));
     }
   } catch (error) {
-    browserLogger.error('Failed to resolve storybook URL', error instanceof Error ? error.message : '');
+    logger().error('Failed to resolve storybook URL', error instanceof Error ? error.message : '');
     throw error;
   }
 }
@@ -598,73 +656,53 @@ export async function getBrowser(config: Config, options: Options & { browser: s
     browser = null;
   });
 
+  const url = new URL(gridUrl);
+  url.username = url.username ? '********' : '';
+  url.password = url.password ? '********' : '';
+  logger().debug(`(${browserName}) Connecting to Selenium ${chalk.magenta(url.toString())}`);
+
+  const prefs = new logging.Preferences();
+
+  if (options.trace) {
+    for (const type of Object.values(logging.Type)) {
+      prefs.setLevel(type as string, logging.Level.ALL);
+    }
+  }
+
+  let sessionId;
+  let browserHost = '';
+
+  [sessionId, browser] = await buildWebdriver(gridUrl, capabilities, prefs);
+
   try {
-    const url = new URL(gridUrl);
-    url.username = url.username ? '********' : '';
-    url.password = url.password ? '********' : '';
-    browserLogger.debug(`(${browserName}) Connecting to Selenium ${chalk.magenta(url.toString())}`);
+    const { Name } = await getSessionData(gridUrl, sessionId);
+    if (typeof Name == 'string') browserHost = Name;
+  } catch {
+    /* noop */
+  }
 
-    const prefs = new logging.Preferences();
+  logger().debug(
+    `(${browserName}) Connected successful with ${[chalk.green(browserHost), chalk.magenta(sessionId)]
+      .filter(Boolean)
+      .join(':')}`,
+  );
 
-    if (options.trace) {
-      for (const type of Object.values(logging.Type)) {
-        prefs.setLevel(type as string, logging.Level.ALL);
-      }
-    }
+  prefix.apply(logger(), {
+    format(level) {
+      const levelColor = colors[level.toUpperCase() as keyof typeof colors];
+      return `[${browserName}:${chalk.gray(process.pid)}] ${levelColor(level)} => ${chalk.gray(sessionId)}`;
+    },
+  });
 
-    // const ie = new IeOptions();
-    // const edge = new EdgeOptions();
-    // const chrome = new ChromeOptions();
-    // const safari = new SafariOptions();
-    // const firefox = new FirefoxOptions();
-    // edge.enableBidi();
-    // chrome.enableBidi();
-    // firefox.enableBidi();
-
-    browser = await new Builder()
-      // .setIeOptions(ie)
-      // .setEdgeOptions(edge)
-      // .setChromeOptions(chrome)
-      // .setSafariOptions(safari)
-      // .setFirefoxOptions(firefox)
-      .usingServer(gridUrl)
-      .withCapabilities(capabilities)
-      .setLoggingPrefs(prefs) // NOTE: Should go last
-      .build();
-
-    // const id = await browser.getWindowHandle();
-    // context = await BrowsingContext(browser, { browsingContextId: id });
-
-    const sessionId = (await browser.getSession()).getId();
-    let browserHost = '';
-
-    try {
-      const { Name } = await getSessionData(gridUrl, sessionId);
-      if (typeof Name == 'string') browserHost = Name;
-    } catch {
-      /* noop */
-    }
-
-    browserLogger.debug(
-      `(${browserName}) Connected successful with ${[chalk.green(browserHost), chalk.magenta(sessionId)]
-        .filter(Boolean)
-        .join(':')}`,
-    );
-
-    browserLogger = Logger.getLogger(sessionId);
-
-    prefix.apply(browserLogger, {
-      format(level) {
-        const levelColor = colors[level.toUpperCase() as keyof typeof colors];
-        return `[${browserName}:${chalk.gray(sessionId)}] ${levelColor(level)} =>`;
-      },
-    });
-
+  try {
     await runSequence(
       [
         () => browser?.manage().setTimeouts({ pageLoad: 10000, script: 60000 }),
         () => browser && openStorybookPage(browser, realAddress, config.resolveStorybookUrl),
         () => browser && waitForStorybook(browser),
+        () => browser && resolveCreeveyHost(browser, options.port),
+        () => browser && updateBrowserGlobalVariables(browser),
+        () => _storybookGlobals && browser && updateStorybookGlobals(browser, _storybookGlobals),
         // NOTE: Selenium draws automation toolbar with some delay after webdriver initialization
         // NOTE: So if we resize window right after getting webdriver instance we might get situation
         // NOTE: When the toolbar appears after resize and final viewport size become smaller than we set
@@ -674,23 +712,17 @@ export async function getBrowser(config: Config, options: Options & { browser: s
     );
   } catch (originalError) {
     if (isShuttingDown.current) {
-      browser?.quit().catch(noop);
+      browser.quit().catch(noop);
       browser = null;
       return null;
     }
-    if (originalError instanceof Error && originalError.name == 'ResolveUrlError') throw originalError;
-    const error = new Error(`Can't load storybook root page by URL ${(await browser?.getCurrentUrl()) ?? realAddress}`);
+    const currentUrl = await browser.getCurrentUrl();
+    const error = new Error(
+      `Can't load storybook root page${currentUrl ? ` by URL ${currentUrl}` : ''}: ${originalError instanceof Error ? originalError.message : ((originalError ?? 'Unknown error') as string)}`,
+    );
     if (originalError instanceof Error) error.stack = originalError.stack;
     throw error;
   }
-
-  if (_storybookGlobals) {
-    await updateStorybookGlobals(browser, _storybookGlobals);
-  }
-
-  await resolveCreeveyHost(browser, options.port);
-
-  await updateBrowserGlobalVariables(browser);
 
   return browser;
 }
@@ -762,7 +794,7 @@ export async function switchStory(this: Context): Promise<void> {
     ignoreElements,
   } = (parameters.creevey ?? {}) as CreeveyStoryParams;
 
-  browserLogger.debug(`Switching to story ${chalk.cyan(title)}/${chalk.cyan(name)} by id ${chalk.magenta(id)}`);
+  logger().debug(`Switching to story ${chalk.cyan(title)}/${chalk.cyan(name)} by id ${chalk.magenta(id)}`);
 
   if (captureElement)
     Object.defineProperty(this, 'captureElement', {
@@ -813,7 +845,7 @@ export async function switchStory(this: Context): Promise<void> {
 
   unsubscribe();
 
-  browserLogger.debug(`Story ${chalk.magenta(id)} ready for capturing`);
+  logger().debug(`Story ${chalk.magenta(id)} ready for capturing`);
 }
 
 async function insertIgnoreStyles(
@@ -823,7 +855,7 @@ async function insertIgnoreStyles(
   const ignoreSelectors = Array.prototype.concat(ignoreElements).filter(Boolean);
   if (!ignoreSelectors.length) return null;
 
-  browserLogger.debug('Hiding ignored elements before capturing');
+  logger().debug('Hiding ignored elements before capturing');
 
   return await browser.executeScript(function (ignoreSelectors: string[]) {
     return window.__CREEVEY_INSERT_IGNORE_STYLES__(ignoreSelectors);
@@ -832,7 +864,7 @@ async function insertIgnoreStyles(
 
 async function removeIgnoreStyles(browser: WebDriver, ignoreStyles: WebElement | null): Promise<void> {
   if (ignoreStyles) {
-    browserLogger.debug('Revert hiding ignored elements');
+    logger().debug('Revert hiding ignored elements');
     await browser.executeScript(function (ignoreStyles: HTMLStyleElement) {
       window.__CREEVEY_REMOVE_IGNORE_STYLES__(ignoreStyles);
     }, ignoreStyles);

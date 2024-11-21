@@ -13,12 +13,14 @@ import {
   TestMeta,
 } from '../../types.js';
 import Pool from './pool.js';
+import { WorkerQueue } from './queue.js';
 
 export default class Runner extends EventEmitter {
   private failFast: boolean;
   private screenDir: string;
   private reportDir: string;
   private browsers: string[];
+  private scheduler: WorkerQueue;
   private pools: Record<string, Pool> = {};
   tests: Partial<Record<string, ServerTest>> = {};
   public get isRunning(): boolean {
@@ -30,9 +32,10 @@ export default class Runner extends EventEmitter {
     this.failFast = config.failFast;
     this.screenDir = config.screenDir;
     this.reportDir = config.reportDir;
+    this.scheduler = new WorkerQueue(config.useWorkerQueue);
     this.browsers = Object.keys(config.browsers);
     this.browsers
-      .map((browser) => (this.pools[browser] = new Pool(config, browser)))
+      .map((browser) => (this.pools[browser] = new Pool(this.scheduler, config, browser)))
       .map((pool) => pool.on('test', this.handlePoolMessage));
   }
 

@@ -33,14 +33,14 @@ export default async function (options: Options): Promise<void> {
       return;
     }
     case cluster.isPrimary: {
-      logger.info('Starting Master Process');
+      logger().info('Starting Master Process');
 
       const resolveApi = (await import('./master/server.js')).start(config.reportDir, port, ui);
 
       return (await import('./master/index.js')).start(config, options, resolveApi);
     }
     default: {
-      logger.info(`Starting Worker for ${browser}`);
+      logger().info(`Starting Worker for ${browser}`);
 
       return (await import('./worker/index.js')).start(config, {
         ...options,

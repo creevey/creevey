@@ -9,6 +9,7 @@ export const defaultBrowser = 'chrome';
 
 export const defaultConfig: Omit<Config, 'gridUrl' | 'storiesProvider' | 'testsDir' | 'tsConfig'> = {
   disableTelemetry: false,
+  useWorkerQueue: false,
   useDocker: true,
   dockerImage: 'aerokube/selenoid:latest-release',
   dockerImagePlatform: '',

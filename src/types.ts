@@ -235,6 +235,11 @@ export interface Config {
    */
   failFast: boolean;
   /**
+   * Start workers in sequential queue
+   * @default false
+   */
+  useWorkerQueue: boolean;
+  /**
    * Specify platform for docker images
    */
   dockerImagePlatform: string;

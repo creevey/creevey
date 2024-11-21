@@ -23,7 +23,7 @@ export async function pullImages(
   if (auth) args.authconfig = auth;
   if (platform) args.platform = platform;
 
-  logger.info('Pull docker images');
+  logger().info('Pull docker images');
   for (const image of images) {
     await new Promise<void>((resolve, reject) => {
       const spinner = ora(`${image}: Pull start`).start();

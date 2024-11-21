@@ -24,11 +24,11 @@ export class CreeveyReporter extends reporters.Base {
     super(runner);
 
     const { sessionId, topLevelSuite } = options.reporterOptions as ReporterOptions;
-    const testLogger = Logger.getLogger(topLevelSuite);
+    const testLogger = Logger.getLogger(sessionId);
 
     prefix.apply(testLogger, {
       format(level) {
-        return `${testLevels[level]} => (${topLevelSuite}:${chalk.gray(sessionId)})`;
+        return `[${topLevelSuite}:${chalk.gray(process.pid)}] ${testLevels[level]} => ${chalk.gray(sessionId)}`;
       },
     });
 

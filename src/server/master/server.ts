@@ -95,7 +95,7 @@ export function start(reportDir: string, port: number, ui: boolean): (api: Creev
   app.use(mount('/report', serve(reportDir)));
 
   wss.on('error', (error) => {
-    logger.error(error);
+    logger().error(error);
   });
 
   server.listen(port);

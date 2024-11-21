@@ -7,7 +7,7 @@ import { createRequire } from 'module';
 import findCacheDir from 'find-cache-dir';
 import { register as esmRegister } from 'tsx/esm/api';
 import { register as cjsRegister } from 'tsx/cjs/api';
-import { SkipOptions, SkipOption, isDefined, TestData, noop, ServerTest } from '../types.js';
+import { SkipOptions, SkipOption, isDefined, TestData, noop, ServerTest, Worker } from '../types.js';
 import { emitShutdownMessage, sendShutdownMessage } from './messages.js';
 
 const importMetaUrl = pathToFileURL(__filename).href;
@@ -97,6 +97,17 @@ export async function shutdownWorkers(): Promise<void> {
       ),
   );
   emitShutdownMessage();
+}
+
+export function gracefullyKill(worker: Worker): void {
+  worker.isShuttingDown = true;
+  const timeout = setTimeout(() => {
+    worker.kill();
+  }, 10000);
+  worker.on('exit', () => {
+    clearTimeout(timeout);
+  });
+  sendShutdownMessage(worker);
 }
 
 export function shutdown(): void {

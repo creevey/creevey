@@ -140,9 +140,11 @@ export async function start(config: Config, options: Options & { browser: string
     try {
       return await getBrowser(config, options);
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : ((error ?? 'Unknown error') as string);
+      logger().error('Failed to initiate webdriver:', errorMessage);
       emitWorkerMessage({
         type: 'error',
-        payload: { error: error instanceof Error ? error.message : ((error ?? 'Unknown error') as string) },
+        payload: { error: errorMessage },
       });
       return null;
     }
@@ -163,7 +165,7 @@ export async function start(config: Config, options: Options & { browser: string
     () =>
       // NOTE Simple way to keep session alive
       void browser.getCurrentUrl().then((url) => {
-        logger.debug(`${options.browser}:${chalk.gray(sessionId)}`, 'current url', chalk.magenta(url));
+        logger().debug('current url', chalk.magenta(url));
       }),
     10 * 1000,
   );
@@ -191,9 +193,8 @@ export async function start(config: Config, options: Options & { browser: string
         const logs = await browser.manage().logs().get(type);
         output.push(logs.map((log) => JSON.stringify(log.toJSON(), null, 2)).join('\n'));
       }
-      logger.debug(
+      logger().debug(
         '----------',
-        sessionId,
         this.currentTest?.titlePath().join('/'),
         '----------\n',
         output.join('\n'),
@@ -235,7 +236,7 @@ export async function start(config: Config, options: Options & { browser: string
     });
   });
 
-  logger.info(`${options.browser}:${chalk.gray(sessionId)} is ready`);
+  logger().info('Worker is ready');
 
   emitWorkerMessage({ type: 'ready' });
 }

@@ -54,7 +54,7 @@ async function parseParams(
 
   if (listener) {
     chokidar.watch(testFiles).on('change', (filePath) => {
-      logger.debug(`changed: ${filePath}`);
+      logger().debug(`changed: ${filePath}`);
 
       // doesn't work, always returns {} due modules caching
       // see https://github.com/nodejs/modules/issues/307
