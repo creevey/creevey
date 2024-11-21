@@ -53,7 +53,7 @@ export class PlaywrightWebdriver extends CreeveyWebdriverBase {
       try {
         return await import('./internal.js');
       } catch (error) {
-        logger.error(error);
+        logger().error(error);
         return null;
       }
     })();

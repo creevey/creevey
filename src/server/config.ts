@@ -74,7 +74,7 @@ export async function readConfig(options: Options): Promise<Config> {
 
     if (!configData.webdriver) {
       const { SeleniumWebdriver } = await import('./selenium/webdriver.js');
-      logger.warn(
+      logger().warn(
         "Creevey supports `Selenium` and `Playwright` webdrivers. For backward compatibility `Selenium` is used by default, but it might changed in the future. Please explicitly specify one of webdrivers in your Creevey's config",
       );
       configData.webdriver = SeleniumWebdriver;

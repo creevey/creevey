@@ -38,7 +38,7 @@ if ('browser' in argv && argv.browser) setRootName(argv.browser);
 
 // eslint-disable-next-line @typescript-eslint/no-deprecated
 if (cluster.isPrimary && argv.reporter) {
-  logger.warn(`--reporter option has been removed please describe reporter in config file:
+  logger().warn(`--reporter option has been removed please describe reporter in config file:
     import { reporters } from 'mocha';
 
     const config = {

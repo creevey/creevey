@@ -4,7 +4,6 @@ import type Pixelmatch from 'pixelmatch';
 import type { ODiffOptions } from 'odiff-bin';
 import type { expect } from 'chai';
 import type EventEmitter from 'events';
-import type Logger from 'loglevel';
 import { LaunchOptions } from 'playwright-core';
 // import type { Browser } from 'playwright-core';
 

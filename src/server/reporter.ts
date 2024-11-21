@@ -22,7 +22,7 @@ export class CreeveyReporter {
   // TODO Output in better way, like vitest, maybe
   constructor(runner: EventEmitter, options: { reporterOptions: { creevey: ReporterOptions } }) {
     const { sessionId, browserName } = options.reporterOptions.creevey;
-    const testLogger = Logger.getLogger(browserName);
+    const testLogger = Logger.getLogger(sessionId);
 
     prefix.apply(testLogger, {
       format(level) {
