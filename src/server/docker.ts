@@ -61,7 +61,7 @@ export async function buildImage(imageName: string, dockerfile: string): Promise
   const images = await docker.listImages({ filters: { label: [`creevey=${imageName}`] } });
 
   if (images.at(0)) {
-    logger.info(`Image ${imageName} already exists`);
+    logger().info(`Image ${imageName} already exists`);
     return;
   }
 

@@ -1,5 +1,4 @@
 import { Browser, BrowserType, Page, chromium, firefox, webkit } from 'playwright-core';
-import Logger from 'loglevel';
 import chalk from 'chalk';
 import { v4 } from 'uuid';
 import prefix from 'loglevel-plugin-prefix';
@@ -28,7 +27,7 @@ async function tryConnect(type: BrowserType, gridUrl: string): Promise<Browser |
       (resolve) =>
         (timeout = setTimeout(() => {
           isTimeout = true;
-          logger.error(`Can't connect to ${type.name()} playwright browser`, error);
+          logger().error(`Can't connect to ${type.name()} playwright browser`, error);
           resolve(null);
         }, 10000)),
     ),
@@ -57,13 +56,11 @@ export class InternalBrowser {
   #sessionId: string = v4();
   #serverHost: string | null = null;
   #serverPort: number;
-  #logger: Logger.Logger;
   #unsubscribe: () => void = noop;
   constructor(browser: Browser, page: Page, port: number) {
     this.#browser = browser;
     this.#page = page;
     this.#serverPort = port;
-    this.#logger = Logger.getLogger(this.#sessionId);
     this.#unsubscribe = subscribeOn('shutdown', () => {
       void this.closeBrowser();
     });
@@ -113,7 +110,7 @@ export class InternalBrowser {
     await this.updateBrowserGlobalVariables();
     await this.resetMousePosition();
 
-    this.#logger.debug(`Triggering 'SetCurrentStory' event with storyId ${chalk.magenta(id)}`);
+    logger().debug(`Triggering 'SetCurrentStory' event with storyId ${chalk.magenta(id)}`);
 
     const result = await this.#page.evaluate<
       [error?: string | null, isCaptureCalled?: boolean] | null,
@@ -198,13 +195,13 @@ export class InternalBrowser {
           break;
 
         default:
-          logger.error(
+          logger().error(
             `Unknown browser ${browserConfig.browserName}. Playwright supports browsers: chromium, firefox, webkit`,
           );
       }
     } else {
       if (browserConfig.browserName != 'chrome') {
-        logger.error("Playwright's Selenium Grid feature supports only chrome browser");
+        logger().error("Playwright's Selenium Grid feature supports only chrome browser");
         return null;
       }
 
@@ -242,7 +239,7 @@ export class InternalBrowser {
       const error = new Error(`Can't load storybook root page: ${message}`);
       if (originalError instanceof Error) error.stack = originalError.stack;
 
-      logger.error(error);
+      logger().error(error);
 
       return null;
     }
@@ -263,10 +260,10 @@ export class InternalBrowser {
   }) {
     const sessionId = this.#sessionId;
 
-    prefix.apply(this.#logger, {
+    prefix.apply(logger(), {
       format(level) {
         const levelColor = colors[level.toUpperCase() as keyof typeof colors];
-        return `[${browserName}:${chalk.gray(sessionId)}] ${levelColor(level)} =>`;
+        return `[${browserName}:${chalk.gray(process.pid)}] ${levelColor(level)} => ${chalk.gray(sessionId)}`;
       },
     });
 
@@ -293,30 +290,30 @@ export class InternalBrowser {
 
     try {
       if (resolver) {
-        this.#logger.debug('Resolving storybook url with custom resolver');
+        logger().debug('Resolving storybook url with custom resolver');
 
         const resolvedUrl = await resolver();
 
-        this.#logger.debug(`Resolver storybook url ${resolvedUrl}`);
+        logger().debug(`Resolver storybook url ${resolvedUrl}`);
 
         await this.#page.goto(appendIframePath(resolvedUrl));
       } else {
         // TODO this.#page.setDefaultNavigationTimeout(60000);
-        await resolveStorybookUrl(appendIframePath(storybookUrl), (url) => this.checkUrl(url), this.#logger);
+        await resolveStorybookUrl(appendIframePath(storybookUrl), (url) => this.checkUrl(url));
       }
     } catch (error) {
-      this.#logger.error('Failed to resolve storybook URL', error instanceof Error ? error.message : '');
+      logger().error('Failed to resolve storybook URL', error instanceof Error ? error.message : '');
       throw error;
     }
   }
 
   private async checkUrl(url: string): Promise<boolean> {
     try {
-      this.#logger.debug(`Opening ${chalk.magenta(url)} and checking the page source`);
+      logger().debug(`Opening ${chalk.magenta(url)} and checking the page source`);
       const response = await this.#page.goto(url, { waitUntil: 'commit' });
       const source = await response?.text();
 
-      this.#logger.debug(`Checking ${chalk.cyan(`#${storybookRootID}`)} existence on ${chalk.magenta(url)}`);
+      logger().debug(`Checking ${chalk.cyan(`#${storybookRootID}`)} existence on ${chalk.magenta(url)}`);
       return source?.includes(`id="${storybookRootID}"`) ?? false;
     } catch {
       return false;
@@ -325,7 +322,7 @@ export class InternalBrowser {
 
   private async waitForStorybook(): Promise<void> {
     // TODO Duplicated code with selenium
-    this.#logger.debug('Waiting for `setStories` event to make sure that storybook is initiated');
+    logger().debug('Waiting for `setStories` event to make sure that storybook is initiated');
 
     const isTimeout = await Promise.race([
       new Promise<boolean>((resolve) => {
@@ -344,7 +341,7 @@ export class InternalBrowser {
               return false;
             }, StorybookEvents.SET_GLOBALS);
           } catch (e: unknown) {
-            this.#logger.debug('An error has been caught during the script:', e);
+            logger().debug('An error has been caught during the script:', e);
           }
         } while (wait);
         return false;
@@ -358,7 +355,7 @@ export class InternalBrowser {
   private async updateStorybookGlobals(globals?: StorybookGlobals): Promise<void> {
     if (!globals) return;
 
-    this.#logger.debug('Applying storybook globals');
+    logger().debug('Applying storybook globals');
     await this.#page.evaluate((globals: StorybookGlobals) => {
       window.__CREEVEY_UPDATE_GLOBALS__(globals);
     }, globals);
