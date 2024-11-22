@@ -31,7 +31,7 @@ export class CreeveyReporter {
     });
 
     runner.on(TEST_EVENTS.TEST_BEGIN, (test: FakeTest) => {
-      testLogger.warn(chalk.cyan(test.titlePath().join('/')), chalk.gray(`(${test.duration} ms)`));
+      testLogger.warn(chalk.cyan(test.titlePath().join('/')));
     });
     runner.on(TEST_EVENTS.TEST_PASS, (test: FakeTest) => {
       testLogger.info(chalk.cyan(test.titlePath().join('/')), chalk.gray(`(${test.duration} ms)`));
@@ -39,6 +39,7 @@ export class CreeveyReporter {
     runner.on(TEST_EVENTS.TEST_FAIL, (test: FakeTest, error) => {
       testLogger.error(
         chalk.cyan(test.titlePath().join('/')),
+        chalk.gray(`(${test.duration} ms)`),
         '\n  ',
         this.getErrors(
           error,

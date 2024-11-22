@@ -433,13 +433,11 @@ export class InternalBrowser {
 
       return done ? internalBrowser : null;
     } catch (originalError) {
-      const currentUrl = await browser.getCurrentUrl();
-
       void internalBrowser.closeBrowser();
 
       const message =
         originalError instanceof Error ? originalError.message : ((originalError ?? 'Unknown error') as string);
-      const error = new Error(`Can't load storybook root page${currentUrl ? ` by URL ${currentUrl}` : ''}: ${message}`);
+      const error = new Error(`Can't load storybook root page: ${message}`);
       if (originalError instanceof Error) error.stack = originalError.stack;
 
       logger().error(error);
@@ -567,19 +565,15 @@ export class InternalBrowser {
       (async () => {
         let wait = true;
         do {
-          try {
-            // TODO Research a different way to ensure storybook is initiated
-            wait = await this.#browser.executeScript<boolean>(function (SET_GLOBALS: string): boolean {
-              // TODO Maybe use
-              // import { global } from '@storybook/global';
-              // global.IS_STORYBOOK
-              if (typeof window.__STORYBOOK_ADDONS_CHANNEL__ == 'undefined') return true;
-              if (window.__STORYBOOK_ADDONS_CHANNEL__.last(SET_GLOBALS) == undefined) return true;
-              return false;
-            }, StorybookEvents.SET_GLOBALS);
-          } catch (e: unknown) {
-            logger().debug('An error has been caught during the script:', e);
-          }
+          // TODO Research a different way to ensure storybook is initiated
+          wait = await this.#browser.executeScript<boolean>(function (SET_GLOBALS: string): boolean {
+            // TODO Maybe use
+            // import { global } from '@storybook/global';
+            // global.IS_STORYBOOK
+            if (typeof window.__STORYBOOK_ADDONS_CHANNEL__ == 'undefined') return true;
+            if (window.__STORYBOOK_ADDONS_CHANNEL__.last(SET_GLOBALS) == undefined) return true;
+            return false;
+          }, StorybookEvents.SET_GLOBALS);
         } while (wait);
         return false;
       })(),
