@@ -276,8 +276,9 @@ async function resetMousePosition(browser: WebDriver): Promise<void> {
         y: Math.ceil((-1 * height) / 2) - top,
       })
       .perform();
-  } else if (browserName == 'firefox' && browserVersion == '61') {
+  } else if (browserName == 'firefox') {
     // NOTE Firefox for some reason moving by 0 x 0 move cursor in bottom left corner :sad:
+    // NOTE In recent versions (eg 128.0) moving by 0 x 0 doesn't work at all
     await browser.actions().move({ origin: Origin.VIEWPORT, x: 0, y: 1 }).perform();
   } else {
     // NOTE IE don't emit move events until force window focus or connect by RDP on virtual machine
