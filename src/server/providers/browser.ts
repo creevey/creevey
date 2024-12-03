@@ -5,6 +5,7 @@ import { isDefined } from '../../types.js';
 import { logger } from '../logger.js';
 import { deserializeRawStories } from '../../shared/index.js';
 
+// TODO Don't have updates from stories
 export const loadStories: StoriesProvider = async (_config, storiesListener, webdriver) => {
   if (cluster.isPrimary) {
     return new Promise<StoriesRaw>((resolve) => {
