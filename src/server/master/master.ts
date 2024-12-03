@@ -21,11 +21,8 @@ function mergeTests(
   return testsFromStories;
 }
 
-export default async function master(
-  config: Config,
-  options: { watch: boolean; debug: boolean; port: number },
-): Promise<Runner> {
-  const runner = new Runner(config);
+export default async function master(config: Config, gridUrl?: string): Promise<Runner> {
+  const runner = new Runner(config, gridUrl);
   const reportDataPath = path.join(config.reportDir, 'data.js');
   const testsFromReport = tryToLoadTestsData(reportDataPath) ?? {};
 
@@ -33,7 +30,7 @@ export default async function master(
 
   const tests = await loadTestsFromStories(
     Object.keys(config.browsers),
-    (listener) => config.storiesProvider(config, options, listener),
+    (listener) => config.storiesProvider(config, listener),
     (testsDiff) => {
       runner.updateTests(testsDiff);
       saveTestsJson(runner.tests, config.reportDir);

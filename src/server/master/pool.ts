@@ -1,6 +1,6 @@
 import { Worker as ClusterWorker } from 'cluster';
 import { EventEmitter } from 'events';
-import { Worker, Config, TestResult, BrowserConfig, TestStatus } from '../../types.js';
+import { Worker, Config, TestResult, BrowserConfigObject, TestStatus } from '../../types.js';
 import { sendTestMessage, subscribeOnWorker } from '../messages.js';
 import { gracefullyKill, isShuttingDown } from '../utils.js';
 import { WorkerQueue } from './queue.js';
@@ -13,11 +13,12 @@ interface WorkerTest {
 
 export default class Pool extends EventEmitter {
   private maxRetries: number;
-  private config: BrowserConfig;
+  private config: BrowserConfigObject;
   private workers: Worker[] = [];
   private queue: WorkerTest[] = [];
   private forcedStop = false;
   private failFast: boolean;
+  private gridUrl?: string;
   public get isRunning(): boolean {
     return this.workers.length !== this.freeWorkers.length;
   }
@@ -25,18 +26,22 @@ export default class Pool extends EventEmitter {
     public scheduler: WorkerQueue,
     config: Config,
     private browser: string,
+    gridUrl?: string,
   ) {
     super();
 
     this.failFast = config.failFast;
     this.maxRetries = config.maxRetries;
-    this.config = config.browsers[browser] as BrowserConfig;
+    this.config = config.browsers[browser] as BrowserConfigObject;
+    this.gridUrl = this.config.gridUrl ?? gridUrl;
   }
 
   async init(): Promise<void> {
     const poolSize = Math.max(1, this.config.limit ?? 1);
     this.workers = (
-      await Promise.all(Array.from({ length: poolSize }).map(() => this.scheduler.forkWorker(this.browser)))
+      await Promise.all(
+        Array.from({ length: poolSize }).map(() => this.scheduler.forkWorker(this.browser, this.gridUrl)),
+      )
     ).filter((workerOrError): workerOrError is Worker => workerOrError instanceof ClusterWorker);
     if (this.workers.length != poolSize)
       throw new Error(`Can't instantiate workers for ${this.browser} due many errors`);
@@ -115,7 +120,7 @@ export default class Pool extends EventEmitter {
     worker.once('exit', async () => {
       if (isShuttingDown.current) return;
 
-      const workerOrError = await this.scheduler.forkWorker(this.browser);
+      const workerOrError = await this.scheduler.forkWorker(this.browser, this.gridUrl);
 
       if (!(workerOrError instanceof ClusterWorker))
         throw new Error(`Can't instantiate worker for ${this.browser} due many errors`);
@@ -156,9 +161,11 @@ export default class Pool extends EventEmitter {
           unsubscribe();
         });
 
-        gracefullyKill(worker);
+        if (message.payload.subtype == 'unknown') {
+          gracefullyKill(worker);
+        }
 
-        this.handleTestResult(worker, test, { status: 'failed', ...message.payload });
+        this.handleTestResult(worker, test, { status: 'failed', error: message.payload.error });
       }),
       subscribeOnWorker(worker, 'test', (message) => {
         if (message.type != 'end') return;

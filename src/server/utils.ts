@@ -4,7 +4,6 @@ import cluster from 'cluster';
 import { dirname } from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { createRequire } from 'module';
-import findCacheDir from 'find-cache-dir';
 import { register as esmRegister } from 'tsx/esm/api';
 import { register as cjsRegister } from 'tsx/cjs/api';
 import { SkipOptions, SkipOption, isDefined, TestData, noop, ServerTest, Worker } from '../types.js';
@@ -13,8 +12,6 @@ import { emitShutdownMessage, sendShutdownMessage } from './messages.js';
 const importMetaUrl = pathToFileURL(__filename).href;
 
 export const isShuttingDown = { current: false };
-
-export const LOCALHOST_REGEXP = /(localhost|127\.0\.0\.1)/i;
 
 export const configExt = ['.js', '.mjs', '.ts', '.cjs', '.mts', '.cts'];
 
@@ -110,18 +107,20 @@ export function gracefullyKill(worker: Worker): void {
   sendShutdownMessage(worker);
 }
 
-export function shutdown(): void {
-  process.exit();
-}
-
-export function getCreeveyCache(): string | undefined {
+export async function getCreeveyCache(): Promise<string | undefined> {
+  const { default: findCacheDir } = await import('find-cache-dir');
   return findCacheDir({ name: 'creevey', cwd: dirname(fileURLToPath(importMetaUrl)) });
 }
 
-export async function runSequence(seq: (() => unknown)[], predicate: () => boolean): Promise<void> {
+export async function runSequence(seq: (() => unknown)[], predicate: () => boolean): Promise<boolean> {
   for (const fn of seq) {
     if (predicate()) await fn();
   }
+  return predicate();
+}
+
+export function getTestPath(test: ServerTest): string[] {
+  return [...test.storyPath, test.testName, test.browser].filter(isDefined);
 }
 
 export function testsToImages(tests: (TestData | undefined)[]): Set<string> {
@@ -200,6 +199,7 @@ const [nodeVersion] = process.versions.node.split('.').map(Number);
 export async function loadThroughTSX<T>(
   callback: (load: (modulePath: string) => Promise<T>) => Promise<T>,
 ): Promise<T> {
+  // TODO Check if it work in node18 and type: 'module'
   const unregister = nodeVersion > 18 ? esmRegister() : cjsRegister();
 
   const result = await callback((modulePath) =>

@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { JSX } from 'react';
 import { styled, withTheme } from '@storybook/theming';
-import { Button, Icons } from '@storybook/components';
+import { Button } from '@storybook/components';
+import { ChevronRightIcon } from '@storybook/icons';
 import { useCreeveyContext } from '../../CreeveyContext.js';
 
 const Sticky = withTheme(
   styled.div(({ theme }) => ({
-    padding: '24px 16px 8px 16px',
+    padding: '24px 32px 8px',
     background: theme.background.content,
     height: '50px',
     zIndex: 5,
@@ -25,11 +26,11 @@ export function SideBarFooter(): JSX.Element {
   return (
     <Sticky>
       <Container>
-        <Button secondary onClick={onImageApprove} disabled={!onImageApprove} style={{ paddingRight: 8 }}>
+        <Button variant="solid" size="medium" onClick={onImageApprove} disabled={!onImageApprove}>
           Approve
-          <Icons icon="arrowright" style={{ paddingLeft: 4 }} />
+          <ChevronRightIcon />
         </Button>
-        <Button secondary outline onClick={onApproveAll}>
+        <Button variant="outline" size="medium" onClick={onApproveAll}>
           Approve all
         </Button>
       </Container>

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { JSX, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Loader } from '@storybook/components';
 import { styled, withTheme } from '@storybook/theming';
 import { getBorderColor, themeBorderColors, ViewPropsWithTheme } from './common.js';
