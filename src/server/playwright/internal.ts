@@ -96,7 +96,12 @@ export class InternalBrowser {
     if (captureElement) {
       const element = await this.#page.$(captureElement);
       if (!element) throw new Error(`Element with selector ${captureElement} not found`);
-      return element.screenshot({ animations: 'disabled', mask });
+
+      return element.screenshot({
+        animations: 'disabled',
+        mask,
+        style: ':root { overflow: hidden !important; }',
+      });
     }
     return this.#page.screenshot({ animations: 'disabled', mask, fullPage: true });
   }

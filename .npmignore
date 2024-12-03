@@ -17,6 +17,7 @@ TODO.md
 PROTO.md
 tsconfig.json
 tsconfig.prod.json
+chromatic.config.json
 tsconfig.prod.tsbuildinfo
 vite.config.mts
 vitest.config.mts

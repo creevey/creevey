@@ -62,6 +62,7 @@ const SelectAllContainer = styled.div({
 });
 
 const TestsContainer = styled.div({
+  marginBottom: '8px',
   position: 'relative',
   height: '100%',
 });
