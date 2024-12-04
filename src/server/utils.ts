@@ -3,7 +3,6 @@ import { get } from 'https';
 import cluster from 'cluster';
 import { dirname } from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
-import { createRequire } from 'module';
 import { register as esmRegister } from 'tsx/esm/api';
 import { register as cjsRegister } from 'tsx/cjs/api';
 import { SkipOptions, SkipOption, isDefined, TestData, noop, ServerTest, Worker } from '../types.js';
@@ -186,10 +185,10 @@ export function readDirRecursive(dirPath: string): string[] {
   );
 }
 
-const _require = createRequire(importMetaUrl);
 export function tryToLoadTestsData(filename: string): Partial<Record<string, ServerTest>> | undefined {
   try {
-    return _require(filename) as Partial<Record<string, ServerTest>>;
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    return require(filename) as Partial<Record<string, ServerTest>>;
   } catch {
     /* noop */
   }

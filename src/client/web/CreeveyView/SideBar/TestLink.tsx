@@ -1,9 +1,8 @@
 import React, { JSX, useEffect, useCallback, useContext, useMemo, useRef } from 'react';
 import { CreeveyTest } from '../../../../types.js';
 import { TestStatusIcon } from './TestStatusIcon.js';
-import { CreeveyContext } from '../../CreeveyContext.js';
+import { useCreeveyContext } from '../../CreeveyContext.js';
 import { SideBarContext } from './SideBar.js';
-import { KeyboardEventsContext } from '../../KeyboardEventsContext.js';
 import { Button, Container, SuiteContainer, SuiteTitle } from './SuiteLink.js';
 import { Checkbox, CheckboxContainer } from './Checkbox.js';
 import { getTestPath } from '../../../shared/helpers.js';
@@ -20,9 +19,8 @@ const TestContainer = styled(SuiteContainer)({
 });
 
 export function TestLink({ title, opened, test }: TestLinkProps): JSX.Element {
-  const { onSuiteToggle } = useContext(CreeveyContext);
+  const { onSuiteToggle, sidebarFocusedItem, setSidebarFocusedItem } = useCreeveyContext();
   const { onOpenTest } = useContext(SideBarContext);
-  const { sidebarFocusedItem, setSidebarFocusedItem } = useContext(KeyboardEventsContext);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
 
   const emptyResults = (test.results?.length ?? 0) == 0;

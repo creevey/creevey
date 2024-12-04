@@ -191,11 +191,13 @@ export class InternalBrowser {
   #browser: WebDriver;
   #serverHost: string | null = null;
   #serverPort: number;
+  #storybookGlobals?: StorybookGlobals;
   #unsubscribe: () => void = noop;
   #keepAliveInterval: NodeJS.Timeout | null = null;
-  constructor(browser: WebDriver, port: number) {
+  constructor(browser: WebDriver, port: number, storybookGlobals?: StorybookGlobals) {
     this.#browser = browser;
     this.#serverPort = port;
+    this.#storybookGlobals = storybookGlobals;
     this.#unsubscribe = subscribeOn('shutdown', () => {
       void this.closeBrowser();
     });
@@ -321,6 +323,7 @@ export class InternalBrowser {
 
   async selectStory(id: string, waitForReady = false): Promise<boolean> {
     // NOTE: Global variables might be reset after hot reload. I think it's workaround, maybe we need better solution
+    await this.updateStorybookGlobals();
     await this.updateBrowserGlobalVariables();
     await this.resetMousePosition();
 
@@ -417,7 +420,7 @@ export class InternalBrowser {
 
     if (!browser) return null;
 
-    const internalBrowser = new InternalBrowser(browser, options.port);
+    const internalBrowser = new InternalBrowser(browser, options.port, _storybookGlobals);
 
     try {
       if (isShuttingDown.current) return null;
@@ -427,7 +430,6 @@ export class InternalBrowser {
         gridUrl,
         viewport,
         storybookUrl: address,
-        storybookGlobals: _storybookGlobals,
         resolveStorybookUrl: config.resolveStorybookUrl,
       });
 
@@ -451,14 +453,12 @@ export class InternalBrowser {
     gridUrl,
     viewport,
     storybookUrl,
-    storybookGlobals,
     resolveStorybookUrl,
   }: {
     browserName: string;
     gridUrl: string;
     viewport?: { width: number; height: number };
     storybookUrl: string;
-    storybookGlobals?: StorybookGlobals;
     resolveStorybookUrl?: () => Promise<string>;
   }): Promise<boolean> {
     const sessionId = (await this.#browser.getSession()).getId();
@@ -485,7 +485,7 @@ export class InternalBrowser {
         () => this.#browser.manage().setTimeouts({ pageLoad: 60000, script: 60000 }),
         () => this.openStorybookPage(storybookUrl, resolveStorybookUrl),
         () => this.waitForStorybook(),
-        () => this.updateStorybookGlobals(storybookGlobals),
+        () => this.updateStorybookGlobals(),
         () => this.resolveCreeveyHost(),
         () => this.updateBrowserGlobalVariables(),
         // NOTE: Selenium draws automation toolbar with some delay after webdriver initialization
@@ -583,13 +583,13 @@ export class InternalBrowser {
     if (isTimeout) throw new Error('Failed to wait `setStories` event');
   }
 
-  private async updateStorybookGlobals(globals?: StorybookGlobals): Promise<void> {
-    if (!globals) return;
+  private async updateStorybookGlobals(): Promise<void> {
+    if (!this.#storybookGlobals) return;
 
     logger().debug('Applying storybook globals');
     await this.#browser.executeScript(function (globals: StorybookGlobals) {
       window.__CREEVEY_UPDATE_GLOBALS__(globals);
-    }, globals);
+    }, this.#storybookGlobals);
   }
 
   private async resolveCreeveyHost(): Promise<void> {

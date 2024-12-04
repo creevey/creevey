@@ -70,6 +70,7 @@ export const ImagePreview = withTheme(
       onClick(imageName);
     };
 
+    // TODO Add image name as a title
     return (
       <Button
         onClick={handleClick}

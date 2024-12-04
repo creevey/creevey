@@ -1,11 +1,11 @@
-import React, { JSX, useState } from 'react';
+import React, { JSX, useCallback, useEffect, useState } from 'react';
 import { Placeholder, ScrollArea } from '@storybook/components';
 import { styled, withTheme, Theme } from '@storybook/theming';
 import { ImagesView } from './ImagesView/ImagesView.js';
 import { PageHeader } from './PageHeader/PageHeader.js';
 import { PageFooter } from './PageFooter/PageFooter.js';
 import { getImageUrl } from '../helpers.js';
-import { getViewMode, VIEW_MODE_KEY } from '../viewMode.js';
+import { getViewMode, VIEW_MODE_KEY, viewModes } from '../viewMode.js';
 import { ImagesViewMode, TestResult } from '../../../types.js';
 
 interface ResultsPageProps {
@@ -77,10 +77,31 @@ export function ResultsPageInternal({
       )
     : [];
 
-  const handleChangeViewMode = (mode: ImagesViewMode): void => {
-    localStorage.setItem(VIEW_MODE_KEY, mode);
-    setViewMode(mode);
-  };
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (!canApprove) return;
+      if (e.code === 'Tab') {
+        e.preventDefault();
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        if (e.shiftKey) setViewMode((mode) => viewModes.at((viewModes.indexOf(mode) - 1) % viewModes.length)!);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        else setViewMode((mode) => viewModes.at((viewModes.indexOf(mode) + 1) % viewModes.length)!);
+      }
+    },
+    [canApprove],
+  );
+
+  useEffect(() => {
+    localStorage.setItem(VIEW_MODE_KEY, viewMode);
+  }, [viewMode]);
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown, false);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown, false);
+    };
+  }, [handleKeyDown]);
 
   return (
     <Container height={height}>
@@ -92,7 +113,7 @@ export function ResultsPageInternal({
           errorMessage={result.error}
           showViewModes={hasDiffAndExpect}
           viewMode={viewMode}
-          onViewModeChange={handleChangeViewMode}
+          onViewModeChange={setViewMode}
           onImageChange={onImageChange}
           imagesWithError={imagesWithError}
         />

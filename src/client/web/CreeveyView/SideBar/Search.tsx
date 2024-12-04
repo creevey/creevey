@@ -1,7 +1,7 @@
-import React, { JSX, ChangeEvent, useContext, useRef, useState } from 'react';
+import React, { JSX, ChangeEvent, useRef, useState } from 'react';
 import { SearchIcon, CloseAltIcon } from '@storybook/icons';
 import { styled, Theme, withTheme } from '@storybook/theming';
-import { KeyboardEventsContext } from '../../KeyboardEventsContext.js';
+import { useCreeveyContext } from '../../CreeveyContext.js';
 
 interface SearchProps {
   onChange: (arg: string) => void;
@@ -100,7 +100,7 @@ const FilterForm = withTheme(
 );
 
 export const Search = ({ onChange, value }: SearchProps): JSX.Element => {
-  const { setSidebarFocusedItem } = useContext(KeyboardEventsContext);
+  const { setSidebarFocusedItem } = useCreeveyContext();
   const [focussed, onSetFocussed] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
 

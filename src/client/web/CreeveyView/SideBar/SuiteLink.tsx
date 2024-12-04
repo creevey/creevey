@@ -1,11 +1,10 @@
-import React, { JSX, useRef, useContext, useEffect, useMemo } from 'react';
+import React, { JSX, useRef, useEffect, useMemo } from 'react';
 import { ChevronDownIcon, ChevronRightIcon } from '@storybook/icons';
 import { styled, withTheme, Theme } from '@storybook/theming';
 import { Checkbox, CheckboxContainer } from './Checkbox.js';
 import { TestStatusIcon } from './TestStatusIcon.js';
 import { CreeveySuite, isTest } from '../../../../types.js';
-import { CreeveyContext } from '../../CreeveyContext.js';
-import { KeyboardEventsContext } from '../../KeyboardEventsContext.js';
+import { useCreeveyContext } from '../../CreeveyContext.js';
 
 export interface SuiteLinkProps {
   title: string;
@@ -79,8 +78,7 @@ export const SuiteTitle = styled.span({
 });
 
 export function SuiteLink({ title, suite, 'data-testid': dataTid }: SuiteLinkProps): JSX.Element {
-  const { onSuiteOpen, onSuiteToggle } = useContext(CreeveyContext);
-  const { sidebarFocusedItem, setSidebarFocusedItem } = useContext(KeyboardEventsContext);
+  const { onSuiteOpen, onSuiteToggle, sidebarFocusedItem, setSidebarFocusedItem } = useCreeveyContext();
   const checkboxRef = useRef<Checkbox>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
 
