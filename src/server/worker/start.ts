@@ -222,13 +222,17 @@ export async function start(browser: string, gridUrl: string, config: Config, op
       runner.emit(TEST_EVENTS.RUN_BEGIN);
       runner.emit(TEST_EVENTS.TEST_BEGIN, fakeTest);
 
+      let timeout;
+      let isRejected = false;
       const start = Date.now();
       try {
         await Promise.race([
-          new Promise((reject) =>
-            setTimeout(() => {
-              reject(`Timeout of ${config.testTimeout}ms exceeded`);
-            }, config.testTimeout),
+          new Promise(
+            (_, reject) =>
+              (timeout = setTimeout(() => {
+                isRejected = true;
+                reject(new Error(`Timeout of ${config.testTimeout}ms exceeded`));
+              }, config.testTimeout)),
           ),
           (async () => {
             const context = await webdriver.switchStory(test.story, baseContext);
@@ -240,6 +244,7 @@ export async function start(browser: string, gridUrl: string, config: Config, op
         fakeTest.err = error;
       }
       const duration = Date.now() - start;
+      clearTimeout(timeout);
       fakeTest.attachments = imagesContext.attachments;
       fakeTest.state = error ? 'failed' : 'passed';
       fakeTest.duration = duration;
@@ -255,7 +260,15 @@ export async function start(browser: string, gridUrl: string, config: Config, op
 
       await webdriver.afterTest(test);
 
-      runHandler(baseContext.browserName, imagesContext.images, error);
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      if (isRejected) {
+        emitWorkerMessage({
+          type: 'error',
+          payload: { subtype: 'unknown', error: serializeError(error) },
+        });
+      } else {
+        runHandler(baseContext.browserName, imagesContext.images, error);
+      }
     })().catch((error: unknown) => {
       logger().error('Unexpected error:', error);
       emitWorkerMessage({

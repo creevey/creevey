@@ -1,4 +1,5 @@
 import cluster from 'cluster';
+import path from 'path';
 import { readConfig, defaultBrowser } from './config.js';
 import { Options, Config, BrowserConfigObject, isWorkerMessage } from '../types.js';
 import { logger } from './logger.js';
@@ -10,6 +11,7 @@ import { isInsideDocker } from './utils.js';
 import { sendWorkerMessage } from './messages.js';
 import { playwrightDockerFile } from './playwright/docker-file.js';
 import { buildImage } from './docker.js';
+import { writeFile } from 'fs/promises';
 
 async function startWebdriverServer(browser: string, config: Config, options: Options): Promise<string | undefined> {
   if (config.webdriver === SeleniumWebdriver) {
@@ -80,6 +82,9 @@ export default async function (options: Options): Promise<void> {
   const config = await readConfig(options);
   const { browser = defaultBrowser, update, ui, port } = options;
   let gridUrl = cluster.isPrimary ? config.gridUrl : options.gridUrl;
+
+  // TODO Add package.json with `"type": "commonjs"` as workaround for esm packages to load `data.js`
+  await writeFile(path.join(config.reportDir, 'package.json'), '{"type": "commonjs"}');
 
   // NOTE: We don't need docker nor selenoid for update option
   if (

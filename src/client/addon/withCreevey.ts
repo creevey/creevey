@@ -12,6 +12,7 @@ import {
 } from '../../types.js';
 import { serializeRawStories } from '../../shared/index.js';
 import { getConnectionUrl } from '../shared/helpers.js';
+import isEqual from 'lodash/isEqual.js';
 
 declare global {
   interface Window {
@@ -139,6 +140,7 @@ let captureResolver: () => void;
 let waitForCreevey: Promise<void>;
 let creeveyReady: () => void;
 let setStoriesCounter = 0;
+let globals = {};
 
 export function withCreevey(): ReturnType<typeof makeDecorator> {
   const addonsChannel = (): Channel => window.__STORYBOOK_ADDONS_CHANNEL__;
@@ -225,7 +227,10 @@ export function withCreevey(): ReturnType<typeof makeDecorator> {
     }
   }
 
-  function updateGlobals(globals: StorybookGlobals): void {
+  function updateGlobals(newGlobals: StorybookGlobals): void {
+    if (isEqual(globals, newGlobals)) return;
+
+    globals = newGlobals;
     addonsChannel().emit(StorybookEvents.UPDATE_GLOBALS, { globals });
   }
 

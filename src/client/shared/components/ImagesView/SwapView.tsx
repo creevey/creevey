@@ -46,6 +46,24 @@ export const SwapView = withTheme(({ theme, expect, actual, diff }: ViewPropsWit
     setImage((prevImage) => (prevImage == 'actual' ? 'expect' : 'actual'));
   }, []);
 
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.code === 'Space' && e.altKey) {
+        e.preventDefault();
+        handleChangeView();
+      }
+    },
+    [handleChangeView],
+  );
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown, false);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown, false);
+    };
+  }, [handleKeyDown]);
+
   useEffect(() => {
     if (loaded) readyForCapture();
   }, [loaded]);

@@ -17,7 +17,7 @@ import {
   CreeveyViewFilter,
   getFailedTests,
 } from '../shared/helpers.js';
-import { CreeveyContext } from './CreeveyContext.js';
+import { CreeveyContext, FocusableItem } from './CreeveyContext.js';
 import { KeyboardEvents } from './KeyboardEventsContext.js';
 import { SideBar } from './CreeveyView/SideBar/index.js';
 import { ResultsPage } from '../shared/components/ResultsPage.js';
@@ -59,8 +59,9 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
   const failedTests = useMemo(() => getFailedTests(tests), [tests]);
 
   const [retry, setRetry] = useState(openedTest?.results?.length ?? 0);
-  const result = openedTest?.results?.[retry - 1] ?? { images: {} };
-  const [imageName, setImageName] = useState(Object.keys(result.images ?? {})[0] ?? '');
+  const result = useMemo(() => openedTest?.results?.[retry - 1], [openedTest, retry]);
+  const [imageName, setImageName] = useState(Object.keys(result?.images ?? {})[0] ?? '');
+  const [sidebarFocusedItem, setSidebarFocusedItem] = useState<FocusableItem>([]);
   const canApprove = useMemo(
     () =>
       Boolean(
@@ -94,6 +95,7 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
     (test: CreeveyTest): void => {
       const testPath = getTestPath(test);
       setSearchParams(testPath);
+      setSidebarFocusedItem(testPath);
       updateTests((draft) => {
         openSuite(draft, testPath, true);
         openTest(testPath);
@@ -103,11 +105,24 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
   );
 
   const handleGoToNextFailedTest = useCallback(() => {
-    if (failedTests.length <= 1) return;
+    if (failedTests.length == 0) return;
     const currentTest = failedTests.findIndex((t) => t.id === openedTest?.id);
-    const nextFailedTest = failedTests[currentTest + 1] || failedTests[0];
-    handleOpenTest(nextFailedTest);
-  }, [failedTests, handleOpenTest, openedTest?.id]);
+    const failedImages = Object.entries(result?.images ?? {})
+      .filter(([name, image]) =>
+        // TODO Move to helpers, it duplicates in a few places
+        Boolean(image?.error != null && openedTest?.approved?.[name] != retry - 1 && result?.status != 'success'),
+      )
+      .map(([name]) => name);
+    if (
+      failedImages.length > 1 &&
+      (failedTests.length == 1 || failedImages.indexOf(imageName) < failedImages.length - 1)
+    ) {
+      setImageName((name) => failedImages[failedImages.indexOf(name) + 1] ?? failedImages[0]);
+    } else {
+      const nextFailedTest = failedTests[currentTest + 1] ?? failedTests[0];
+      handleOpenTest(nextFailedTest);
+    }
+  }, [failedTests, handleOpenTest, openedTest, retry, result, imageName]);
 
   const handleImageApproveNew = useCallback((): void => {
     const id = openedTest?.id;
@@ -189,12 +204,15 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
       value={{
         isReport: initialState.isReport,
         isRunning,
+        onImageNext: canApprove ? handleGoToNextFailedTest : undefined,
         onImageApprove: canApprove ? handleImageApproveAndGoNext : undefined,
         onApproveAll: handleApproveAll,
         onStart: handleStart,
         onStop: handleStop,
         onSuiteOpen: handleSuiteOpen,
         onSuiteToggle: handleSuiteToggle,
+        sidebarFocusedItem,
+        setSidebarFocusedItem,
       }}
     >
       <ThemeProvider theme={ensure(themes[theme])}>

@@ -56,11 +56,13 @@ export class InternalBrowser {
   #sessionId: string = v4();
   #serverHost: string | null = null;
   #serverPort: number;
+  #storybookGlobals?: StorybookGlobals;
   #unsubscribe: () => void = noop;
-  constructor(browser: Browser, page: Page, port: number) {
+  constructor(browser: Browser, page: Page, port: number, storybookGlobals?: StorybookGlobals) {
     this.#browser = browser;
     this.#page = page;
     this.#serverPort = port;
+    this.#storybookGlobals = storybookGlobals;
     this.#unsubscribe = subscribeOn('shutdown', () => {
       void this.closeBrowser();
     });
@@ -112,6 +114,7 @@ export class InternalBrowser {
 
   async selectStory(id: string, waitForReady = false): Promise<boolean> {
     // NOTE: Global variables might be reset after hot reload. I think it's workaround, maybe we need better solution
+    await this.updateStorybookGlobals();
     await this.updateBrowserGlobalVariables();
     await this.resetMousePosition();
 
@@ -224,7 +227,7 @@ export class InternalBrowser {
 
     // TODO Add debug output
 
-    const internalBrowser = new InternalBrowser(browser, page, options.port);
+    const internalBrowser = new InternalBrowser(browser, page, options.port, _storybookGlobals);
 
     try {
       if (isShuttingDown.current) return null;
@@ -232,7 +235,6 @@ export class InternalBrowser {
         browserName,
         viewport,
         storybookUrl: address,
-        storybookGlobals: _storybookGlobals,
         resolveStorybookUrl: config.resolveStorybookUrl,
       });
 
@@ -254,13 +256,11 @@ export class InternalBrowser {
     browserName,
     viewport,
     storybookUrl,
-    storybookGlobals,
     resolveStorybookUrl,
   }: {
     browserName: string;
     viewport?: { width: number; height: number };
     storybookUrl: string;
-    storybookGlobals?: StorybookGlobals;
     resolveStorybookUrl?: () => Promise<string>;
   }) {
     const sessionId = this.#sessionId;
@@ -278,7 +278,7 @@ export class InternalBrowser {
       [
         () => this.openStorybookPage(storybookUrl, resolveStorybookUrl),
         () => this.waitForStorybook(),
-        () => this.updateStorybookGlobals(storybookGlobals),
+        () => this.updateStorybookGlobals(),
         () => this.resolveCreeveyHost(),
         () => this.updateBrowserGlobalVariables(),
         () => this.resizeViewport(viewport),
@@ -357,13 +357,13 @@ export class InternalBrowser {
     if (isTimeout) throw new Error('Failed to wait `setStories` event');
   }
 
-  private async updateStorybookGlobals(globals?: StorybookGlobals): Promise<void> {
-    if (!globals) return;
+  private async updateStorybookGlobals(): Promise<void> {
+    if (!this.#storybookGlobals) return;
 
     logger().debug('Applying storybook globals');
     await this.#page.evaluate((globals: StorybookGlobals) => {
       window.__CREEVEY_UPDATE_GLOBALS__(globals);
-    }, globals);
+    }, this.#storybookGlobals);
   }
 
   private async resolveCreeveyHost(): Promise<void> {

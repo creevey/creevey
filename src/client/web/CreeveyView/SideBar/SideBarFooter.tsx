@@ -1,4 +1,4 @@
-import React, { JSX } from 'react';
+import React, { JSX, useCallback, useEffect, useState } from 'react';
 import { styled, withTheme } from '@storybook/theming';
 import { Button } from '@storybook/components';
 import { ChevronRightIcon } from '@storybook/icons';
@@ -21,15 +21,46 @@ const Container = styled.div({
 });
 
 export function SideBarFooter(): JSX.Element {
-  const { onApproveAll, onImageApprove } = useCreeveyContext();
+  const { onApproveAll, onImageApprove, onImageNext } = useCreeveyContext();
+  const [isAlt, setIsAlt] = useState(false);
+
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.code === 'AltLeft') {
+      e.preventDefault();
+      setIsAlt(true);
+    }
+  }, []);
+  const handleKeyUp = useCallback((e: KeyboardEvent) => {
+    if (e.code === 'AltLeft') {
+      e.preventDefault();
+      setIsAlt(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown, false);
+    document.addEventListener('keyup', handleKeyUp, false);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown, false);
+      document.removeEventListener('keyup', handleKeyUp, false);
+    };
+  }, [handleKeyDown, handleKeyUp]);
 
   return (
     <Sticky>
       <Container>
-        <Button variant="solid" size="medium" onClick={onImageApprove} disabled={!onImageApprove}>
-          Approve
-          <ChevronRightIcon />
-        </Button>
+        {isAlt ? (
+          <Button variant="outline" size="medium" onClick={onImageNext} disabled={!onImageApprove}>
+            Next
+            <ChevronRightIcon />
+          </Button>
+        ) : (
+          <Button variant="solid" size="medium" onClick={onImageApprove} disabled={!onImageApprove}>
+            Approve
+            <ChevronRightIcon />
+          </Button>
+        )}
         <Button variant="outline" size="medium" onClick={onApproveAll}>
           Approve all
         </Button>
