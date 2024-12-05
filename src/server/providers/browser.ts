@@ -24,7 +24,7 @@ export const loadStories: StoriesProvider = async (_config, storiesListener, web
                   oldTests.join('\n'),
               );
             unsubscribe();
-            resolve(stories);
+            resolve(deserializeRawStories(stories));
           }
         });
         sendStoriesMessage(worker, { type: 'get' });
@@ -37,10 +37,11 @@ export const loadStories: StoriesProvider = async (_config, storiesListener, web
   } else {
     subscribeOn('stories', (message) => {
       if (message.type == 'get')
-        emitStoriesMessage({ type: 'set', payload: { stories, oldTests: storiesWithOldTests } });
+        emitStoriesMessage({ type: 'set', payload: { stories: rawStories, oldTests: storiesWithOldTests } });
       if (message.type == 'update') storiesListener(new Map(message.payload));
     });
-    const stories = deserializeRawStories((await webdriver?.loadStoriesFromBrowser()) ?? {});
+    const rawStories = (await webdriver?.loadStoriesFromBrowser()) ?? {};
+    const stories = deserializeRawStories(rawStories);
 
     const storiesWithOldTests: string[] = [];
 
