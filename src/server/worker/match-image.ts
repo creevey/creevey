@@ -21,6 +21,10 @@ interface ImagePaths {
   reportImageDir: string;
 }
 
+function toBuffer(bufferOrBase64: Buffer | string) {
+  return typeof bufferOrBase64 === 'string' ? Buffer.from(bufferOrBase64, 'base64') : bufferOrBase64;
+}
+
 async function getStat(filePath: string): Promise<Stats | null> {
   try {
     return await stat(filePath);
@@ -228,17 +232,17 @@ export async function getMatchers(ctx: ImageContext, config: Config) {
   }
 
   return {
-    matchImage: async (image: Buffer, imageName?: string) => {
-      const errorMessage = await assertImage(image, imageName);
+    matchImage: async (image: Buffer | string, imageName?: string) => {
+      const errorMessage = await assertImage(toBuffer(image), imageName);
       if (errorMessage) {
         throw createImageError(imageName ? { [imageName]: errorMessage } : errorMessage);
       }
     },
-    matchImages: async (images: Record<string, Buffer>) => {
+    matchImages: async (images: Record<string, Buffer | string>) => {
       const errors: Record<string, string> = {};
       await Promise.all(
         Object.entries(images).map(async ([imageName, image]) => {
-          const errorMessage = await assertImage(image, imageName);
+          const errorMessage = await assertImage(toBuffer(image), imageName);
           if (errorMessage) {
             errors[imageName] = errorMessage;
           }
@@ -279,17 +283,17 @@ export function getOdiffMatchers(ctx: ImageContext, config: Config) {
   }
 
   return {
-    matchImage: async (image: Buffer, imageName?: string) => {
-      const errorMessage = await assertImage(image, imageName);
+    matchImage: async (image: Buffer | string, imageName?: string) => {
+      const errorMessage = await assertImage(toBuffer(image), imageName);
       if (errorMessage) {
         throw createImageError(imageName ? { [imageName]: errorMessage } : errorMessage);
       }
     },
-    matchImages: async (images: Record<string, Buffer>) => {
+    matchImages: async (images: Record<string, Buffer | string>) => {
       const errors: Record<string, string> = {};
       await Promise.all(
         Object.entries(images).map(async ([imageName, image]) => {
-          const errorMessage = await assertImage(image, imageName);
+          const errorMessage = await assertImage(toBuffer(image), imageName);
           if (errorMessage) {
             errors[imageName] = errorMessage;
           }
