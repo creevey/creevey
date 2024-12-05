@@ -11,7 +11,7 @@ import { isInsideDocker } from './utils.js';
 import { sendWorkerMessage } from './messages.js';
 import { playwrightDockerFile } from './playwright/docker-file.js';
 import { buildImage } from './docker.js';
-import { writeFile } from 'fs/promises';
+import { mkdir, writeFile } from 'fs/promises';
 
 async function startWebdriverServer(browser: string, config: Config, options: Options): Promise<string | undefined> {
   if (config.webdriver === SeleniumWebdriver) {
@@ -84,6 +84,7 @@ export default async function (options: Options): Promise<void> {
   let gridUrl = cluster.isPrimary ? config.gridUrl : options.gridUrl;
 
   // TODO Add package.json with `"type": "commonjs"` as workaround for esm packages to load `data.js`
+  await mkdir(config.reportDir, { recursive: true });
   await writeFile(path.join(config.reportDir, 'package.json'), '{"type": "commonjs"}');
 
   // NOTE: We don't need docker nor selenoid for update option
