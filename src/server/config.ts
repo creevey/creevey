@@ -28,7 +28,7 @@ export const defaultConfig: Omit<Config, 'gridUrl' | 'testsDir' | 'tsConfig' | '
   odiffOptions: { threshold: 0.1, antialiasing: true },
   browsers: { [defaultBrowser]: true },
   hooks: {},
-  testsRegex: /\.creevey\.(t|j)s$/,
+  testsRegex: /\.creevey\.(m|c)?(t|j)s$/,
 };
 
 function normalizeBrowserConfig(name: string, config: BrowserConfig): BrowserConfigObject {

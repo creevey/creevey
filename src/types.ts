@@ -447,8 +447,8 @@ export interface BaseCreeveyTestContext {
    * @internal
    */
   screenshots: { imageName?: string; screenshot: Buffer }[];
-  matchImage: (image: Buffer, imageName?: string) => Promise<void>;
-  matchImages: (images: Record<string, Buffer>) => Promise<void>;
+  matchImage: (image: Buffer | string, imageName?: string) => Promise<void>;
+  matchImages: (images: Record<string, Buffer | string>) => Promise<void>;
 }
 
 export interface CreeveyTestContext extends BaseCreeveyTestContext {
