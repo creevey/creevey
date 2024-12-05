@@ -80,11 +80,16 @@ export class TeamcityReporter {
       console.log(`##teamcity[testStarted name='${this.escape(test.title)}' flowId='${process.pid}']`);
     });
 
+    runner.on(TEST_EVENTS.TEST_PASS, (test: FakeTest) => {
+      console.log(`##teamcity[testFinished name='${this.escape(test.title)}' flowId='${process.pid}']`);
+    });
+
     runner.on(TEST_EVENTS.TEST_FAIL, (test: FakeTest, error: Error) => {
       Object.entries(reporterOptions.images).forEach(([name, image]) => {
         if (!image) return;
         const filePath = test
           .titlePath()
+          .slice(0, -1)
           .concat(name == browserName ? [] : [browserName])
           .map(this.escape)
           .join('/');
