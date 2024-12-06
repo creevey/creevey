@@ -31,14 +31,14 @@ export class CreeveyReporter {
     });
 
     runner.on(TEST_EVENTS.TEST_BEGIN, (test: FakeTest) => {
-      testLogger.warn(chalk.cyan(test.titlePath().join('/')));
+      testLogger.warn(chalk.cyan(test.fullTitle()));
     });
     runner.on(TEST_EVENTS.TEST_PASS, (test: FakeTest) => {
-      testLogger.info(chalk.cyan(test.titlePath().join('/')), chalk.gray(`(${test.duration} ms)`));
+      testLogger.info(chalk.cyan(test.fullTitle()), chalk.gray(`(${test.duration} ms)`));
     });
     runner.on(TEST_EVENTS.TEST_FAIL, (test: FakeTest, error) => {
       testLogger.error(
-        chalk.cyan(test.titlePath().join('/')),
+        chalk.cyan(test.fullTitle()),
         chalk.gray(`(${test.duration} ms)`),
         '\n  ',
         this.getErrors(
@@ -77,11 +77,11 @@ export class TeamcityReporter {
     const reporterOptions = options.reporterOptions.creevey;
 
     runner.on(TEST_EVENTS.TEST_BEGIN, (test: FakeTest) => {
-      console.log(`##teamcity[testStarted name='${this.escape(test.title)}' flowId='${process.pid}']`);
+      console.log(`##teamcity[testStarted name='${this.escape(test.fullTitle())}' flowId='${process.pid}']`);
     });
 
     runner.on(TEST_EVENTS.TEST_PASS, (test: FakeTest) => {
-      console.log(`##teamcity[testFinished name='${this.escape(test.title)}' flowId='${process.pid}']`);
+      console.log(`##teamcity[testFinished name='${this.escape(test.fullTitle())}' flowId='${process.pid}']`);
     });
 
     runner.on(TEST_EVENTS.TEST_FAIL, (test: FakeTest, error: Error) => {
@@ -103,7 +103,7 @@ export class TeamcityReporter {
             );
             console.log(
               `##teamcity[testMetadata testName='${this.escape(
-                test.title,
+                test.fullTitle(),
               )}' type='image' value='report/${filePath}/${fileName}' flowId='${process.pid}']`,
             );
           });
@@ -113,10 +113,10 @@ export class TeamcityReporter {
       // https://teamcity-support.jetbrains.com/hc/en-us/community/posts/207216829-Count-test-as-successful-if-at-least-one-try-is-successful?page=1#community_comment_207394125
 
       if (reporterOptions.willRetry)
-        console.log(`##teamcity[testFinished name='${this.escape(test.title)}' flowId='${process.pid}']`);
+        console.log(`##teamcity[testFinished name='${this.escape(test.fullTitle())}' flowId='${process.pid}']`);
       else
         console.log(
-          `##teamcity[testFailed name='${this.escape(test.title)}' message='${this.escape(
+          `##teamcity[testFailed name='${this.escape(test.fullTitle())}' message='${this.escape(
             error.message,
           )}' details='${this.escape(error.stack ?? '')}' flowId='${process.pid}']`,
         );

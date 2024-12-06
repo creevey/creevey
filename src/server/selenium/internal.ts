@@ -24,7 +24,7 @@ import {
   StorybookEvents,
 } from '../../types.js';
 import { colors, logger } from '../logger.js';
-import { subscribeOn } from '../messages.js';
+import { emitWorkerMessage, subscribeOn } from '../messages.js';
 import { getTestPath, isShuttingDown, runSequence } from '../utils.js';
 import {
   appendIframePath,
@@ -831,9 +831,18 @@ export class InternalBrowser {
   private keepAlive(): void {
     this.#keepAliveInterval = setInterval(() => {
       // NOTE Simple way to keep session alive
-      void this.#browser.getCurrentUrl().then((url) => {
-        logger().debug('current url', chalk.magenta(url));
-      });
+      void this.#browser
+        .getCurrentUrl()
+        .then((url) => {
+          logger().debug('current url', chalk.magenta(url));
+        })
+        .catch((error: unknown) => {
+          logger().error(error);
+          emitWorkerMessage({
+            type: 'error',
+            payload: { subtype: 'browser', error: 'Failed to ping browser' },
+          });
+        });
     }, 10 * 1000);
   }
 }
