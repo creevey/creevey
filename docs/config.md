@@ -47,6 +47,9 @@ module.exports = {
   // Default Storybook url
   storybookUrl: 'http://localhost:6006',
 
+  // Command to automatically start Storybook if it is not running
+  storybookAutorunCmd: 'yarn storybook',
+
   // Where original images are stored
   screenDir: path.join(__dirname, '../images'),
 
