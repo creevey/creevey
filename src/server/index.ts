@@ -3,7 +3,7 @@ import { readConfig, defaultBrowser } from './config.js';
 import { Options, Config, BrowserConfig } from '../types.js';
 import { logger } from './logger.js';
 import { shutdownWithError } from './utils.js';
-import { tryAutorunStorybook, checkIsStorybookConnected } from './storybook/connection.js';
+import { getStorybookUrl, tryAutorunStorybook, checkIsStorybookConnected } from './storybook/connection.js';
 
 // NOTE: Impure function, mutate config by adding gridUrl prop
 async function startWebdriverServer(config: Config, options: Options): Promise<void> {
@@ -30,19 +30,25 @@ export default async function (options: Options): Promise<void> {
   }
 
   if (cluster.isPrimary) {
-    if (config.storybookAutorunCmd) {
-      logger().info(
-        `Storybook should be started via \`${config.storybookAutorunCmd}\` and be accessible at ${config.storybookUrl}`,
-      );
+    const url = await getStorybookUrl(config);
+
+    if (!url) {
+      logger().error(`Creevey can't access storybook. Set \`storybookUrl\` or \`resolveStorybookUrl\` in config`);
+      shutdownWithError();
+      return;
+    }
+
+    if (url && config.storybookAutorunCmd) {
+      logger().info(`Storybook should be started via \`${config.storybookAutorunCmd}\` and be accessible at ${url}`);
       logger().info('Waiting Storybook...');
-      await tryAutorunStorybook(config);
+      await tryAutorunStorybook(url, config.storybookAutorunCmd);
     } else {
-      logger().info(`Storybook should be started and be accessible at ${config.storybookUrl}`);
+      logger().info(`Storybook should be started and be accessible at ${url}`);
       logger().info("Tip: you can start Storybook automatically by adding `storybookAutorunCmd` to Creevey's config");
       logger().info('Waiting Storybook...');
     }
 
-    const isConnected = await checkIsStorybookConnected(config);
+    const isConnected = await checkIsStorybookConnected(url);
     if (isConnected) {
       logger().info('Storybook connected!\n');
     } else {
