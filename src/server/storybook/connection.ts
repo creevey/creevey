@@ -8,7 +8,7 @@ const RESPONSE_CHECK_TIMEOUT_MS = 10000;
 const RESPONSE_CHECK_INTERVAL_MS = 200;
 
 export async function getStorybookUrl({ storybookUrl, resolveStorybookUrl }: Config) {
-  return storybookUrl ? storybookUrl : resolveStorybookUrl?.();
+  return resolveStorybookUrl ? resolveStorybookUrl() : storybookUrl;
 }
 
 export async function tryAutorunStorybook(url: string, storybookAutorunCmd: string) {
