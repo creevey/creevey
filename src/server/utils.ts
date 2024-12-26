@@ -1,5 +1,6 @@
 import fs from 'fs';
-import { get } from 'https';
+import https from 'https';
+import http from 'http';
 import cluster from 'cluster';
 import { dirname } from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
@@ -114,6 +115,10 @@ export function shutdown(): void {
   process.exit();
 }
 
+export function shutdownWithError(): void {
+  process.exit(1);
+}
+
 export function getCreeveyCache(): string | undefined {
   return findCacheDir({ name: 'creevey', cwd: dirname(fileURLToPath(importMetaUrl)) });
 }
@@ -147,7 +152,7 @@ export const isInsideDocker =
 
 export const downloadBinary = (downloadUrl: string, destination: string): Promise<void> =>
   new Promise((resolve, reject) =>
-    get(downloadUrl, (response) => {
+    https.get(downloadUrl, (response) => {
       if (response.statusCode == 302) {
         const { location } = response.headers;
         if (!location) {
@@ -214,4 +219,27 @@ export async function loadThroughTSX<T>(
   await unregister();
 
   return result;
+}
+
+export function waitOnUrl(url: string, timeout: number, delay: number) {
+  const startTime = Date.now();
+  return new Promise<void>((resolve, reject) => {
+    const interval = setInterval(() => {
+      http
+        .get(url, (response) => {
+          if (response.statusCode === 200) {
+            clearInterval(interval);
+            resolve();
+          }
+        })
+        .on('error', () => {
+          // Ignore HTTP errors
+        });
+
+      if (Date.now() - startTime > timeout) {
+        clearInterval(interval);
+        reject(new Error(`${url} didn't respond within ${timeout / 1000} seconds`));
+      }
+    }, delay);
+  });
 }

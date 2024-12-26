@@ -147,6 +147,11 @@ export interface Config {
    */
   resolveStorybookUrl?: () => Promise<string>;
   /**
+   * Command to automatically start Storybook if it is not running.
+   * For example, `npm run storybook`, `yarn run storybook` etc.
+   */
+  storybookAutorunCmd?: string;
+  /**
    * Absolute path to directory with reference images
    * @default path.join(process.cwd(), './images')
    */
@@ -276,6 +281,7 @@ export interface Options {
   screenDir?: string;
   reportDir?: string;
   storybookUrl?: string;
+  storybookAutorunCmd?: string;
   saveReport: boolean;
   failFast?: boolean;
 }
