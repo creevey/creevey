@@ -61,6 +61,16 @@ export async function buildImage(imageName: string, dockerfile: string): Promise
   const images = await docker.listImages({ filters: { label: [`creevey=${imageName}`] } });
 
   if (images.at(0)) {
+    await Promise.all(
+      (await docker.listContainers({ all: true, filters: { label: [`creevey=${imageName}`] } })).map(async (info) => {
+        const container = docker.getContainer(info.Id);
+        try {
+          await container.remove({ force: true });
+        } catch {
+          /* noop */
+        }
+      }),
+    );
     logger().info(`Image ${imageName} already exists`);
     return;
   }
@@ -111,18 +121,6 @@ export async function runImage(
   options: Record<string, unknown>,
   debug: boolean,
 ): Promise<string> {
-  await Promise.all(
-    (await docker.listContainers({ all: true, filters: { ancestor: [image] } })).map(async (info) => {
-      const container = docker.getContainer(info.Id);
-      try {
-        await container.stop();
-      } catch {
-        /* noop */
-      }
-      await container.remove();
-    }),
-  );
-
   const hub = docker.run(image, args, debug ? process.stdout : new DevNull(), options, (error) => {
     if (error) throw error;
   });
@@ -132,8 +130,7 @@ export async function runImage(
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       subscribeOn('shutdown', async () => {
         try {
-          await container.stop();
-          await container.remove();
+          await container.remove({ force: true });
         } catch {
           /* noop */
         }
