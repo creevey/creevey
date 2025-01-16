@@ -11,7 +11,6 @@ import {
   getTestByPath,
   removeTests,
   getTestPath,
-  useTheme,
   setSearchParams,
   getTestPathFromSearch,
   CreeveyViewFilter,
@@ -22,6 +21,7 @@ import { KeyboardEvents } from './KeyboardEventsContext.js';
 import { SideBar } from './CreeveyView/SideBar/index.js';
 import { ResultsPage } from '../shared/components/ResultsPage.js';
 import { Toggle } from './CreeveyView/SideBar/Toggle.js';
+import { useTheme } from './themes.js';
 
 export interface CreeveyAppProps {
   api?: CreeveyClientApi;
