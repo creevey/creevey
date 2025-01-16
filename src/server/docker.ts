@@ -1,4 +1,5 @@
 import tar from 'tar-stream';
+import Logger from 'loglevel';
 import { Writable } from 'stream';
 import Dockerode, { Container } from 'dockerode';
 import { DockerAuth } from '../types.js';
@@ -80,15 +81,20 @@ export async function buildImage(imageName: string, dockerfile: string): Promise
   pack.finalize();
 
   const { default: yoctoSpinner } = await import('yocto-spinner');
-  const spinner = yoctoSpinner({ text: `${imageName}: Build start` }).start();
+  const spinner = yoctoSpinner({ text: `${imageName}: Build start` });
+  if (logger().getLevel() > Logger.levels.DEBUG) {
+    spinner.start();
+  }
+  let isFailed = false;
   await new Promise<void>((resolve, reject) => {
     void docker.buildImage(
       // @ts-expect-error Type incompatibility AsyncIterator and AsyncIterableIterator
       pack,
-      { t: imageName, labels: { creevey: imageName } },
+      // TODO Support buildkit decode grpc (version: '2')
+      { t: imageName, labels: { creevey: imageName }, version: '1' },
       (buildError: Error | null, stream) => {
         if (buildError || !stream) {
-          spinner.error(buildError?.message);
+          // spinner.error(buildError?.message);
           reject(buildError ?? new Error('Unknown error'));
           return;
         }
@@ -96,6 +102,8 @@ export async function buildImage(imageName: string, dockerfile: string): Promise
         docker.modem.followProgress(stream, onFinished, onProgress);
 
         function onFinished(error: Error | null): void {
+          if (isFailed) return;
+
           if (error) {
             spinner.error(error.message);
             reject(error);
@@ -105,10 +113,23 @@ export async function buildImage(imageName: string, dockerfile: string): Promise
           resolve();
         }
 
-        function onProgress(event: { id: string; status: string; progress?: string }): void {
-          if (!/^[a-z0-9]{12}$/i.test(event.id)) return;
-
-          spinner.text = `${imageName}: [${event.id}] ${event.status} ${event.progress ? event.progress : ''}`;
+        function onProgress(
+          event:
+            | { stream: string }
+            | { errorDetail: { code: number; message: string }; error: string }
+            | { id: string; aux: string }, // NOTE: Only with `version: '2'`
+        ): void {
+          if ('stream' in event) {
+            if (logger().getLevel() <= Logger.levels.DEBUG) {
+              logger().debug(event.stream.trim());
+            } else {
+              spinner.text = `${imageName}: [Build] - ${event.stream}`;
+            }
+          } else if ('errorDetail' in event) {
+            isFailed = true;
+            spinner.error(event.error);
+            reject(new Error(event.error));
+          }
         }
       },
     );
