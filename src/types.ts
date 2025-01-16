@@ -102,6 +102,7 @@ export class ChromeConfig {
 }
 */
 export interface BrowserConfigObject {
+  // TODO Restrict browser names for playwright images
   browserName: string;
   // customizeBuilder?: (builder: Builder) => Builder;
   limit?: number;
