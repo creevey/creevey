@@ -16,6 +16,7 @@ import isEqual from 'lodash/isEqual.js';
 
 declare global {
   interface Window {
+    __CREEVEY_ENV__: boolean;
     __CREEVEY_SERVER_HOST__: string;
     __CREEVEY_SERVER_PORT__: number;
     __CREEVEY_WORKER_ID__: number;
@@ -279,6 +280,7 @@ export function withCreevey(): ReturnType<typeof makeDecorator> {
     });
   }
 
+  window.__CREEVEY_ENV__ = false;
   window.__CREEVEY_GET_STORIES__ = getStories;
   window.__CREEVEY_SELECT_STORY__ = selectStory;
   window.__CREEVEY_UPDATE_GLOBALS__ = updateGlobals;
