@@ -394,6 +394,7 @@ export class InternalBrowser {
   private async updateBrowserGlobalVariables() {
     await this.#page.evaluate(
       ([workerId, creeveyHost, creeveyPort]) => {
+        window.__CREEVEY_ENV__ = true;
         window.__CREEVEY_WORKER_ID__ = workerId;
         window.__CREEVEY_SERVER_HOST__ = creeveyHost ?? 'localhost';
         window.__CREEVEY_SERVER_PORT__ = creeveyPort;
