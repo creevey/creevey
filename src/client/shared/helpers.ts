@@ -1,4 +1,3 @@
-import { themes, ThemeVars } from '@storybook/theming';
 import { parse, stringify } from 'qs';
 import { RefObject, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { TestData, isTest, isDefined, TestStatus, CreeveySuite, CreeveyTest, CreeveyStatus } from '../../types.js';
@@ -391,27 +390,6 @@ export function useCalcScale(diffImageRef: RefObject<HTMLImageElement>, loaded: 
   useLayoutEffect(calcScale, [calcScale]);
 
   return scale;
-}
-
-const CREEVEY_THEME = 'Creevey_theme';
-
-function isTheme(theme?: string | null): theme is ThemeVars['base'] {
-  return isDefined(theme) && Object.prototype.hasOwnProperty.call(themes, theme);
-}
-
-function initialTheme(): ThemeVars['base'] {
-  const theme = localStorage.getItem(CREEVEY_THEME);
-  return isTheme(theme) ? theme : 'light';
-}
-
-export function useTheme(): [ThemeVars['base'], (theme: ThemeVars['base']) => void] {
-  const [theme, setTheme] = useState<ThemeVars['base']>(initialTheme());
-
-  useEffect(() => {
-    localStorage.setItem(CREEVEY_THEME, theme);
-  }, [theme]);
-
-  return [theme, setTheme];
 }
 
 export function setSearchParams(testPath: string[]): void {
