@@ -1,4 +1,4 @@
-import React, { JSX, useCallback, useEffect, useState } from 'react';
+import React, { JSX, useCallback, useContext, useEffect, useState } from 'react';
 import { Placeholder, ScrollArea } from '@storybook/components';
 import { styled, withTheme, Theme } from '@storybook/theming';
 import { ImagesView } from './ImagesView/ImagesView.js';
@@ -7,6 +7,7 @@ import { PageFooter } from './PageFooter/PageFooter.js';
 import { getImageUrl } from '../helpers.js';
 import { getViewMode, VIEW_MODE_KEY, viewModes } from '../viewMode.js';
 import { ImagesViewMode, TestResult } from '../../../types.js';
+import { CreeveyContext } from '../../web/CreeveyContext.js';
 
 interface ResultsPageProps {
   path: string[];
@@ -65,8 +66,9 @@ export function ResultsPageInternal({
   onRetryChange,
 }: ResultsPageProps): JSX.Element {
   const result = results[retry - 1] ?? {};
+  const { isReport } = useContext(CreeveyContext);
   const [viewMode, setViewMode] = useState<ImagesViewMode>(getViewMode());
-  const url = getImageUrl(path, imageName);
+  const url = getImageUrl(path, imageName, isReport);
   const image = result.images?.[imageName];
   const canApprove = Boolean(image && approved?.[imageName] != retry - 1 && result.status != 'success');
   const hasDiffAndExpect = canApprove && Boolean(image?.diff && image.expect);
