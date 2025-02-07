@@ -1,5 +1,5 @@
 /// <reference types="../../../types/selenium-context" />
-import { Args } from '@storybook/csf';
+import type { Args } from '@storybook/csf';
 import { Config, StorybookGlobals, StoryInput, StoriesRaw, Options, ServerTest } from '../../types.js';
 import { subscribeOn } from '../messages.js';
 import { CreeveyWebdriverBase } from '../webdriver.js';
