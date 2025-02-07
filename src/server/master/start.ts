@@ -20,7 +20,6 @@ async function copyStatics(reportDir: string): Promise<void> {
     .map((dirent) => dirent.name);
   await mkdir(path.join(reportDir, 'assets'), { recursive: true });
   await copyFile(path.join(clientDir, 'index.html'), path.join(reportDir, 'index.html'));
-  await copyFile(path.join(clientDir, 'assets', 'index.html'), path.join(reportDir, 'index.html'));
   for (const asset of assets) {
     await copyFile(path.join(clientDir, 'assets', asset), path.join(reportDir, 'assets', asset));
   }
