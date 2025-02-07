@@ -15,12 +15,14 @@ const importMetaUrl = pathToFileURL(__filename).href;
 
 async function copyStatics(reportDir: string): Promise<void> {
   const clientDir = path.join(path.dirname(fileURLToPath(importMetaUrl)), '../../client/web');
-  const files = (await readdir(clientDir, { withFileTypes: true }))
-    .filter((dirent) => dirent.isFile() && !dirent.name.endsWith('.d.ts') && !dirent.name.endsWith('.tsx'))
+  const assets = (await readdir(path.join(clientDir, 'assets'), { withFileTypes: true }))
+    .filter((dirent) => dirent.isFile())
     .map((dirent) => dirent.name);
-  await mkdir(reportDir, { recursive: true });
-  for (const file of files) {
-    await copyFile(path.join(clientDir, file), path.join(reportDir, file));
+  await mkdir(path.join(reportDir, 'assets'), { recursive: true });
+  await copyFile(path.join(clientDir, 'index.html'), path.join(reportDir, 'index.html'));
+  await copyFile(path.join(clientDir, 'assets', 'index.html'), path.join(reportDir, 'index.html'));
+  for (const asset of assets) {
+    await copyFile(path.join(clientDir, 'assets', asset), path.join(reportDir, 'assets', asset));
   }
 }
 
