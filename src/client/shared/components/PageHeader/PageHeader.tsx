@@ -1,4 +1,4 @@
-import React, { JSX, useEffect } from 'react';
+import React, { JSX, useContext, useEffect } from 'react';
 import { Tabs } from '@storybook/components';
 import { CloseAltIcon } from '@storybook/icons';
 import { styled, withTheme, Theme } from '@storybook/theming';
@@ -6,6 +6,7 @@ import { ImagesViewMode, Images } from '../../../../types.js';
 import { getImageUrl } from '../../helpers.js';
 import { ImagePreview } from './ImagePreview.js';
 import { viewModes } from '../../viewMode.js';
+import { CreeveyContext } from '../../../web/CreeveyContext.js';
 
 interface PageHeaderProps {
   title: string[];
@@ -76,6 +77,7 @@ export function PageHeader({
   onImageChange,
   onViewModeChange,
 }: PageHeaderProps): JSX.Element | null {
+  const { isReport } = useContext(CreeveyContext);
   const imageEntires = Object.entries(images) as [string, Images][];
 
   const handleViewModeChange = (mode: string): void => {
@@ -110,7 +112,7 @@ export function PageHeader({
             <ImagePreview
               key={name}
               imageName={name}
-              url={`${getImageUrl(title, name)}/${image.actual}`}
+              url={`${getImageUrl(title, name, isReport)}/${image.actual}`}
               isActive={name === imageName}
               onClick={onImageChange}
               error={imagesWithError.includes(name)}

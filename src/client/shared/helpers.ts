@@ -299,12 +299,14 @@ export function getConnectionUrl(): string {
     .join(':');
 }
 
-export function getImageUrl(path: string[], imageName: string): string {
+export function getImageUrl(path: string[], imageName: string, isReport?: boolean): string {
   // path => [title, story, test, browser]
   const browser = path.slice(-1)[0];
   const imagesUrl = window.location.host
     ? `${window.location.protocol}//${getConnectionUrl()}${
-        window.location.pathname == '/' ? '/report' : window.location.pathname.split('/').slice(0, -1).join('/')
+        window.location.pathname == '/' && !isReport
+          ? '/report'
+          : window.location.pathname.split('/').slice(0, -1).join('/')
       }/${encodeURI(path.slice(0, -1).join('/'))}`
     : encodeURI(path.slice(0, -1).join('/'));
 
