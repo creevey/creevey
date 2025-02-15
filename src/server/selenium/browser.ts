@@ -698,7 +698,7 @@ export async function getBrowser(config: Config, options: Options & { browser: s
   try {
     await runSequence(
       [
-        () => browser?.manage().setTimeouts({ pageLoad: 10000, script: 60000 }),
+        () => browser?.manage().setTimeouts({ pageLoad: 60000, script: 60000 }),
         () => browser && openStorybookPage(browser, realAddress, config.resolveStorybookUrl),
         () => browser && waitForStorybook(browser),
         () => browser && resolveCreeveyHost(browser, options.port),
