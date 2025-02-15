@@ -5,10 +5,11 @@ import { Options, Config, BrowserConfigObject, isWorkerMessage } from '../types.
 import { logger } from './logger.js';
 import { SeleniumWebdriver } from './selenium/webdriver.js';
 import { LOCALHOST_REGEXP } from './webdriver.js';
-import { isInsideDocker } from './utils.js';
+import { isInsideDocker, shutdownWithError } from './utils.js';
 import { sendWorkerMessage } from './messages.js';
 import { buildImage } from './docker.js';
 import { mkdir, writeFile } from 'fs/promises';
+import { getStorybookUrl, tryAutorunStorybook, checkIsStorybookConnected } from './connection.js';
 
 async function startWebdriverServer(browser: string, config: Config, options: Options): Promise<string | undefined> {
   if (config.webdriver === SeleniumWebdriver) {
@@ -94,6 +95,34 @@ export default async function (options: Options): Promise<void> {
     !update
   ) {
     gridUrl = await startWebdriverServer(browser, config, options);
+  }
+
+  if (cluster.isPrimary) {
+    const url = await getStorybookUrl(config);
+
+    if (!url) {
+      logger().error(`Creevey can't access storybook. Set \`storybookUrl\` or \`resolveStorybookUrl\` in config`);
+      shutdownWithError();
+      return;
+    }
+
+    if (url && config.storybookAutorunCmd) {
+      logger().info(`Storybook should be started via \`${config.storybookAutorunCmd}\` and be accessible at ${url}`);
+      logger().info('Waiting Storybook...');
+      await tryAutorunStorybook(url, config.storybookAutorunCmd);
+    } else {
+      logger().info(`Storybook should be started and be accessible at ${url}`);
+      logger().info("Tip: you can start Storybook automatically by adding `storybookAutorunCmd` to Creevey's config");
+      logger().info('Waiting Storybook...');
+    }
+
+    const isConnected = await checkIsStorybookConnected(url);
+    if (isConnected) {
+      logger().info('Storybook connected!\n');
+    } else {
+      logger().error('Storybook is not responding. Please start Storybook and restart Creevey');
+      shutdownWithError();
+    }
   }
 
   switch (true) {
