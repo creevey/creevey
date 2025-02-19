@@ -3795,7 +3795,7 @@ __metadata:
     odiff-bin: "npm:^3.2.0"
     pinst: "npm:^3.0.0"
     pixelmatch: "npm:^6.0.0"
-    playwright-core: "npm:^1.49.1"
+    playwright-core: "npm:^1.50.1"
     pngjs: "npm:^7.0.0"
     polished: "npm:^4.3.1"
     prettier: "npm:^3.4.2"
@@ -3819,10 +3819,10 @@ __metadata:
     ws: "npm:^8.18.0"
     yocto-spinner: "npm:^0.1.2"
   peerDependencies:
-    playwright: "*"
+    playwright-core: "*"
     selenium-webdriver: "*"
   peerDependenciesMeta:
-    playwright:
+    playwright-core:
       optional: true
     selenium-webdriver:
       optional: true
@@ -7200,12 +7200,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:^1.49.1":
-  version: 1.49.1
-  resolution: "playwright-core@npm:1.49.1"
+"playwright-core@npm:^1.50.1":
+  version: 1.50.1
+  resolution: "playwright-core@npm:1.50.1"
   bin:
     playwright-core: cli.js
-  checksum: 10c0/990b619c75715cd98b2c10c1180a126e3a454b247063b8352bc67792fe01183ec07f31d30c8714c3768cefed12886d1d64ac06da701f2baafc2cad9b439e3919
+  checksum: 10c0/c158764257d870897c31807a830ddcc3f5aaf4376719e05aeada3489a01f751650b2dc43e027201a40405a1b075084e89f58cd3730a985a229efe9d8cecfe360
   languageName: node
   linkType: hard
 

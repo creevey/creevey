@@ -9,12 +9,26 @@ import { register as cjsRegister } from 'tsx/cjs/api';
 import { SkipOptions, SkipOption, isDefined, TestData, noop, ServerTest, Worker } from '../types.js';
 import { emitShutdownMessage, sendShutdownMessage } from './messages.js';
 import { LOCALHOST_REGEXP } from './webdriver.js';
+import assert from 'assert';
 
 const importMetaUrl = pathToFileURL(__filename).href;
 
 export const isShuttingDown = { current: false };
 
 export const configExt = ['.js', '.mjs', '.ts', '.cjs', '.mts', '.cts'];
+
+const browserTypes = {
+  chromium: 'chromium',
+  'chromium-headless-shell': 'chromium',
+  chrome: 'chromium',
+  'chrome-beta': 'chromium',
+  msedge: 'chromium',
+  'msedge-beta': 'chromium',
+  'msedge-dev': 'chromium',
+  'bidi-chromium': 'chromium',
+  firefox: 'firefox',
+  webkit: 'webkit',
+} as const;
 
 export const skipOptionKeys = ['in', 'kinds', 'stories', 'tests', 'reason'];
 
@@ -112,6 +126,15 @@ export function shutdownWithError(): void {
   process.exit(1);
 }
 
+export function resolvePlaywrightBrowserType(browserName: string): (typeof browserTypes)[keyof typeof browserTypes] {
+  assert(
+    browserName in browserTypes,
+    new Error(`Failed to match browser name "${browserName}" to playwright browserType`),
+  );
+
+  return browserTypes[browserName as keyof typeof browserTypes];
+}
+
 export async function getCreeveyCache(): Promise<string | undefined> {
   const { default: findCacheDir } = await import('find-cache-dir');
   return findCacheDir({ name: 'creevey', cwd: dirname(fileURLToPath(importMetaUrl)) });
@@ -147,7 +170,8 @@ export function testsToImages(tests: (TestData | undefined)[]): Set<string> {
 
 // https://tuhrig.de/how-to-know-you-are-inside-a-docker-container/
 export const isInsideDocker =
-  fs.existsSync('/proc/1/cgroup') && fs.readFileSync('/proc/1/cgroup', 'utf-8').includes('docker');
+  (fs.existsSync('/proc/1/cgroup') && fs.readFileSync('/proc/1/cgroup', 'utf-8').includes('docker')) ||
+  process.env.DOCKER === 'true';
 
 export const downloadBinary = (downloadUrl: string, destination: string): Promise<void> =>
   new Promise((resolve, reject) =>

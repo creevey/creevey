@@ -14,7 +14,7 @@ import { sendScreenshotsCount } from '../telemetry.js';
 const importMetaUrl = pathToFileURL(__filename).href;
 
 async function copyStatics(reportDir: string): Promise<void> {
-  const clientDir = path.join(path.dirname(fileURLToPath(importMetaUrl)), '../../client/web');
+  const clientDir = path.join(path.dirname(fileURLToPath(importMetaUrl)), '../../../dist/client/web');
   const assets = (await readdir(path.join(clientDir, 'assets'), { withFileTypes: true }))
     .filter((dirent) => dirent.isFile())
     .map((dirent) => dirent.name);

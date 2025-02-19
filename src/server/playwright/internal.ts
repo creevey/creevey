@@ -14,9 +14,15 @@ import {
 } from '../../types';
 import { subscribeOn } from '../messages';
 import { appendIframePath, getAddresses, LOCALHOST_REGEXP, resolveStorybookUrl, storybookRootID } from '../webdriver';
-import { isShuttingDown, runSequence } from '../utils';
+import { isShuttingDown, resolvePlaywrightBrowserType, runSequence } from '../utils';
 import { colors, logger } from '../logger';
-import { Args } from '@storybook/csf';
+import type { Args } from '@storybook/csf';
+
+const browsers = {
+  chromium,
+  firefox,
+  webkit,
+};
 
 async function tryConnect(type: BrowserType, gridUrl: string): Promise<Browser | null> {
   let timeout: NodeJS.Timeout | null = null;
@@ -157,20 +163,12 @@ export class InternalBrowser {
     );
   }
 
-  async loadStoriesFromBrowser(retry = false): Promise<StoriesRaw> {
-    try {
-      const stories = await this.#page.evaluate<StoriesRaw | undefined>(() => window.__CREEVEY_GET_STORIES__());
+  async loadStoriesFromBrowser(): Promise<StoriesRaw> {
+    const stories = await this.#page.evaluate<StoriesRaw | undefined>(() => window.__CREEVEY_GET_STORIES__());
 
-      if (!stories) throw new Error("Can't get stories, it seems creevey or storybook API isn't available");
+    if (!stories) throw new Error("Can't get stories, it seems creevey or storybook API isn't available");
 
-      return stories;
-    } catch (error) {
-      // TODO Check how other solutions with playwright get stories from storybook
-      if (retry) throw error;
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      // NOTE: Try one more time because of dynamic nature of vite and storybook
-      return this.loadStoriesFromBrowser(true);
-    }
+    return stories;
   }
 
   static async getBrowser(
@@ -190,25 +188,13 @@ export class InternalBrowser {
 
     let browser: Browser | null = null;
 
-    if (new URL(gridUrl).protocol === 'ws:') {
-      switch (browserConfig.browserName) {
-        case 'chromium':
-          browser = await tryConnect(chromium, gridUrl);
-          break;
-        case 'firefox':
-          browser = await tryConnect(firefox, gridUrl);
-          break;
-        case 'webkit':
-          browser = await tryConnect(webkit, gridUrl);
-          break;
-
-        default:
-          logger().error(
-            `Unknown browser ${browserConfig.browserName}. Playwright supports browsers: chromium, firefox, webkit`,
-          );
-      }
+    const parsedUrl = new URL(gridUrl);
+    if (parsedUrl.protocol === 'ws:') {
+      browser = await tryConnect(browsers[resolvePlaywrightBrowserType(browserConfig.browserName)], gridUrl);
+    } else if (parsedUrl.protocol === 'creevey:') {
+      browser = await browsers[resolvePlaywrightBrowserType(browserConfig.browserName)].launch(playwrightOptions);
     } else {
-      if (browserConfig.browserName != 'chrome') {
+      if (browserConfig.browserName !== 'chrome') {
         logger().error("Playwright's Selenium Grid feature supports only chrome browser");
         return null;
       }
@@ -223,7 +209,13 @@ export class InternalBrowser {
       return null;
     }
 
+    // TODO Record video
     const page = await browser.newPage();
+    // TODO Support tracing
+    // if (playwrightOptions?.trace) {
+    //   const context = page.context();
+    //   await context.tracing.start(playwrightOptions.trace);
+    // }
 
     // TODO Add debug output
 
@@ -278,6 +270,7 @@ export class InternalBrowser {
       [
         () => this.openStorybookPage(storybookUrl, resolveStorybookUrl),
         () => this.waitForStorybook(),
+        () => this.triggerViteReload(),
         () => this.updateStorybookGlobals(),
         () => this.resolveCreeveyHost(),
         () => this.updateBrowserGlobalVariables(),
@@ -304,7 +297,8 @@ export class InternalBrowser {
         await this.#page.goto(appendIframePath(resolvedUrl));
       } else {
         // TODO this.#page.setDefaultNavigationTimeout(60000);
-        await resolveStorybookUrl(appendIframePath(storybookUrl), (url) => this.checkUrl(url));
+        const resolvedUrl = await resolveStorybookUrl(appendIframePath(storybookUrl), (url) => this.checkUrl(url));
+        await this.#page.goto(resolvedUrl);
       }
     } catch (error) {
       logger().error('Failed to resolve storybook URL', error instanceof Error ? error.message : '');
@@ -313,15 +307,18 @@ export class InternalBrowser {
   }
 
   private async checkUrl(url: string): Promise<boolean> {
+    const page = await this.#browser.newPage();
     try {
       logger().debug(`Opening ${chalk.magenta(url)} and checking the page source`);
-      const response = await this.#page.goto(url, { waitUntil: 'commit' });
+      const response = await page.goto(url, { waitUntil: 'commit' });
       const source = await response?.text();
 
       logger().debug(`Checking ${chalk.cyan(`#${storybookRootID}`)} existence on ${chalk.magenta(url)}`);
       return source?.includes(`id="${storybookRootID}"`) ?? false;
     } catch {
       return false;
+    } finally {
+      await page.close();
     }
   }
 
@@ -340,6 +337,7 @@ export class InternalBrowser {
         do {
           try {
             // TODO Research a different way to ensure storybook is initiated
+            // TODO Maybe use `__STORYBOOK_PREVIEW__.extract()`
             wait = await this.#page.evaluate((SET_GLOBALS: string) => {
               if (typeof window.__STORYBOOK_ADDONS_CHANNEL__ == 'undefined') return true;
               if (window.__STORYBOOK_ADDONS_CHANNEL__.last(SET_GLOBALS) == undefined) return true;
@@ -348,6 +346,7 @@ export class InternalBrowser {
           } catch (e: unknown) {
             logger().debug('An error has been caught during the script:', e);
           }
+          if (wait) await new Promise((resolve) => setTimeout(resolve, 1000));
         } while (wait);
         return false;
       })(),
@@ -355,6 +354,18 @@ export class InternalBrowser {
 
     // TODO Change the message to describe a reason why it might happen
     if (isTimeout) throw new Error('Failed to wait `setStories` event');
+  }
+
+  private async triggerViteReload(): Promise<void> {
+    // NOTE: On the first load, Vite might try to optimize some dependencies and reload the page
+    // We need to trigger reload earlier to avoid unnecessary reloads further
+    try {
+      await this.#page.evaluate(async () => {
+        await window.__STORYBOOK_PREVIEW__.extract();
+      });
+    } catch {
+      await this.waitForStorybook();
+    }
   }
 
   private async updateStorybookGlobals(): Promise<void> {
@@ -392,6 +403,7 @@ export class InternalBrowser {
   }
 
   private async updateBrowserGlobalVariables() {
+    logger().debug('Updating browser global variables');
     await this.#page.evaluate(
       ([workerId, creeveyHost, creeveyPort]) => {
         window.__CREEVEY_ENV__ = true;
@@ -406,10 +418,12 @@ export class InternalBrowser {
   private async resizeViewport(viewport?: { width: number; height: number }): Promise<void> {
     if (!viewport) return;
 
+    logger().debug('Resizing viewport to', viewport);
     await this.#page.setViewportSize(viewport);
   }
 
   private async resetMousePosition(): Promise<void> {
+    logger().debug('Resetting mouse position to (0, 0)');
     await this.#page.mouse.move(0, 0);
   }
 }

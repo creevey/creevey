@@ -9,7 +9,7 @@ dotenv();
 
 const config: CreeveyConfig = {
   webdriver: PlaywrightWebdriver,
-  useDocker: isInsideDocker ? false : true,
+  useDocker: !isInsideDocker,
   maxRetries: process.env.CI ? 5 : 0,
   screenDir: path.join(path.dirname(fileURLToPath(import.meta.url)), '../stories/images'),
 };
