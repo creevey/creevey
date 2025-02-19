@@ -5,7 +5,7 @@ import { Options, Config, BrowserConfigObject, isWorkerMessage } from '../types.
 import { logger } from './logger.js';
 import { SeleniumWebdriver } from './selenium/webdriver.js';
 import { LOCALHOST_REGEXP } from './webdriver.js';
-import { isInsideDocker, shutdownWithError } from './utils.js';
+import { isInsideDocker, resolvePlaywrightBrowserType, shutdownWithError } from './utils.js';
 import { sendWorkerMessage } from './messages.js';
 import { buildImage } from './docker.js';
 import { mkdir, writeFile } from 'fs/promises';
@@ -27,7 +27,13 @@ async function startWebdriverServer(browser: string, config: Config, options: Op
   } else {
     if (config.gridUrl) return undefined;
 
-    // TODO start standalone playwright server (useDocker == false)
+    if (!config.useDocker) {
+      if (cluster.isPrimary) return undefined;
+
+      const { browserName } = config.browsers[browser] as BrowserConfigObject;
+      return `creevey://${resolvePlaywrightBrowserType(browserName)}.playwright`;
+    }
+
     const {
       default: { version },
     } = await import('playwright-core/package.json', { with: { type: 'json' } });

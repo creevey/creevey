@@ -4,7 +4,7 @@ import type Pixelmatch from 'pixelmatch';
 import type { ODiffOptions } from 'odiff-bin';
 import type { expect } from 'chai';
 import type EventEmitter from 'events';
-import { LaunchOptions } from 'playwright-core';
+import type { LaunchOptions } from 'playwright-core';
 // import type { Browser } from 'playwright-core';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -145,7 +145,14 @@ export interface BrowserConfigObject {
     [name: string]: unknown;
   };
 
-  playwrightOptions?: Omit<LaunchOptions, 'logger'>;
+  playwrightOptions?: Omit<LaunchOptions, 'logger'> & {
+    trace?: {
+      screenshots?: boolean;
+      snapshots?: boolean;
+      sources?: boolean;
+      path: string;
+    };
+  };
 }
 
 export type StorybookGlobals = Record<string, unknown>;

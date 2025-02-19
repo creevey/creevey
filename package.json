@@ -74,11 +74,11 @@
     "node": ">=18.0"
   },
   "peerDependencies": {
-    "playwright": "*",
+    "playwright-core": "*",
     "selenium-webdriver": "*"
   },
   "peerDependenciesMeta": {
-    "playwright": {
+    "playwright-core": {
       "optional": true
     },
     "selenium-webdriver": {
@@ -175,7 +175,7 @@
     "immer": "^10.1.1",
     "lint-staged": "^15.3.0",
     "pinst": "^3.0.0",
-    "playwright-core": "^1.49.1",
+    "playwright-core": "^1.50.1",
     "prettier": "^3.4.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
