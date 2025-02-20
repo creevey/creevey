@@ -31,7 +31,7 @@ process.on('SIGINT', () => {
 
 const argv = minimist<Options>(process.argv.slice(2), {
   string: ['browser', 'config', 'reporter', 'reportDir', 'screenDir', 'gridUrl', 'storybookUrl'],
-  boolean: ['debug', 'trace', 'ui', 'odiff'],
+  boolean: ['debug', 'trace', 'ui', 'odiff', 'noDocker'],
   default: { port: 3000 },
   alias: { port: 'p', config: 'c', debug: 'd', update: 'u' },
 });

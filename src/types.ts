@@ -369,6 +369,7 @@ export interface Options {
   storybookAutorunCmd?: string;
   failFast?: boolean;
   odiff?: boolean;
+  noDocker?: boolean;
 }
 
 export type WorkerError = 'browser' | 'test' | 'unknown';
