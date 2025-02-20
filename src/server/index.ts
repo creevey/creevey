@@ -1,5 +1,8 @@
 import cluster from 'cluster';
 import path from 'path';
+import { exec } from 'shelljs';
+import { getUserAgent } from 'package-manager-detector/detect';
+import { resolveCommand } from 'package-manager-detector/commands';
 import { readConfig, defaultBrowser } from './config.js';
 import { Options, Config, BrowserConfigObject, isWorkerMessage } from '../types.js';
 import { logger } from './logger.js';
@@ -10,6 +13,7 @@ import { isInsideDocker, resolvePlaywrightBrowserType, shutdownWithError } from 
 import { sendWorkerMessage } from './messages.js';
 import { buildImage } from './docker.js';
 import { mkdir, writeFile } from 'fs/promises';
+import assert from 'assert';
 
 async function startWebdriverServer(browser: string, config: Config, options: Options): Promise<string | undefined> {
   if (config.webdriver === SeleniumWebdriver) {
@@ -104,25 +108,41 @@ export default async function (options: Options): Promise<void> {
   }
 
   if (cluster.isPrimary && process.env.CI !== 'true') {
-    const url = await getStorybookUrl(config);
+    const [localUrl, remoteUrl] = getStorybookUrl(config, options);
+    const pm = getUserAgent();
+    assert(pm, new Error('Failed to detect current package manager'));
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const { command, args } = resolveCommand(pm, 'run', ['storybook', 'dev'])!;
 
-    if (!url) {
-      logger().error(`Creevey can't access storybook. Set \`storybookUrl\` or \`resolveStorybookUrl\` in config`);
-      shutdownWithError();
-      return;
-    }
+    if (options.startStorybook) {
+      const cmd = [command, ...args, '--ci', '--exact-port', options.storybookPort, '-p', options.storybookPort].join(
+        ' ',
+      );
 
-    if (url && config.storybookAutorunCmd) {
-      logger().info(`Storybook should be started via \`${config.storybookAutorunCmd}\` and be accessible at ${url}`);
+      logger().info(`Start Storybook via \`${cmd}\`, it should be accessible at:`);
+      if (localUrl) logger().info(`Local - ${localUrl}`);
+      logger().info(`On your network - ${remoteUrl}`);
       logger().info('Waiting Storybook...');
-      await tryAutorunStorybook(url, config.storybookAutorunCmd);
+
+      exec(cmd, { async: true });
+    } else if (config.storybookAutorunCmd) {
+      logger().info(`Storybook should be started via \`${config.storybookAutorunCmd}\` and be accessible at:`);
+      if (localUrl) logger().info(`Local - ${localUrl}`);
+      logger().info(`On your network - ${remoteUrl}`);
+      logger().info('Waiting Storybook...');
+
+      await tryAutorunStorybook(localUrl ?? remoteUrl, config.storybookAutorunCmd);
     } else {
-      logger().info(`Storybook should be started and be accessible at ${url}`);
-      logger().info("Tip: you can start Storybook automatically by adding `storybookAutorunCmd` to Creevey's config");
+      logger().info('Storybook should be started and be accessible at:');
+      if (localUrl) logger().info(`Local - ${localUrl}`);
+      logger().info(`On your network - ${remoteUrl}`);
+      logger().info(
+        'Tip: Creevey can start Storybook automatically by using `-s` option at the command line. (e.g., yarn/npm run creevey -s)',
+      );
       logger().info('Waiting Storybook...');
     }
 
-    const isConnected = await checkIsStorybookConnected(url);
+    const isConnected = await checkIsStorybookConnected(localUrl ?? remoteUrl);
     if (isConnected) {
       logger().info('Storybook connected!\n');
     } else {

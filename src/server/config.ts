@@ -84,11 +84,20 @@ export async function readConfig(options: Options): Promise<Config> {
     Object.assign(userConfig, configData);
   }
 
+  if (userConfig.resolveStorybookUrl && !options.storybookUrl) {
+    userConfig.storybookUrl = await userConfig.resolveStorybookUrl();
+  }
+
   if (options.noDocker) userConfig.useDocker = false;
   if (options.failFast != undefined) userConfig.failFast = Boolean(options.failFast);
   if (options.reportDir) userConfig.reportDir = path.resolve(options.reportDir);
   if (options.screenDir) userConfig.screenDir = path.resolve(options.screenDir);
   if (options.storybookUrl) userConfig.storybookUrl = options.storybookUrl;
+  if (options.storybookPort) {
+    const url = new URL(userConfig.storybookUrl);
+    url.port = options.storybookPort;
+    userConfig.storybookUrl = url.toString();
+  }
   if (options.storybookAutorunCmd) userConfig.storybookAutorunCmd = options.storybookAutorunCmd;
 
   // NOTE: Hack to pass typescript checking

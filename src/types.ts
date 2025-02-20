@@ -365,7 +365,9 @@ export interface Options {
   screenDir?: string;
   reportDir?: string;
   gridUrl?: string;
+  startStorybook?: boolean;
   storybookUrl?: string;
+  storybookPort: string;
   storybookAutorunCmd?: string;
   failFast?: boolean;
   odiff?: boolean;
