@@ -227,7 +227,6 @@ export class InternalBrowser {
         browserName,
         viewport,
         storybookUrl: address,
-        resolveStorybookUrl: config.resolveStorybookUrl,
       });
 
       return done ? internalBrowser : null;
@@ -248,12 +247,10 @@ export class InternalBrowser {
     browserName,
     viewport,
     storybookUrl,
-    resolveStorybookUrl,
   }: {
     browserName: string;
     viewport?: { width: number; height: number };
     storybookUrl: string;
-    resolveStorybookUrl?: () => Promise<string>;
   }) {
     const sessionId = this.#sessionId;
 
@@ -268,7 +265,7 @@ export class InternalBrowser {
 
     return await runSequence(
       [
-        () => this.openStorybookPage(storybookUrl, resolveStorybookUrl),
+        () => this.openStorybookPage(storybookUrl),
         () => this.waitForStorybook(),
         () => this.triggerViteReload(),
         () => this.updateStorybookGlobals(),
@@ -280,26 +277,16 @@ export class InternalBrowser {
     );
   }
 
-  private async openStorybookPage(storybookUrl: string, resolver?: () => Promise<string>): Promise<void> {
+  private async openStorybookPage(storybookUrl: string): Promise<void> {
     if (!LOCALHOST_REGEXP.test(storybookUrl)) {
       await this.#page.goto(appendIframePath(storybookUrl));
       return;
     }
 
     try {
-      if (resolver) {
-        logger().debug('Resolving storybook url with custom resolver');
-
-        const resolvedUrl = await resolver();
-
-        logger().debug(`Resolver storybook url ${resolvedUrl}`);
-
-        await this.#page.goto(appendIframePath(resolvedUrl));
-      } else {
-        // TODO this.#page.setDefaultNavigationTimeout(60000);
-        const resolvedUrl = await resolveStorybookUrl(appendIframePath(storybookUrl), (url) => this.checkUrl(url));
-        await this.#page.goto(resolvedUrl);
-      }
+      // TODO this.#page.setDefaultNavigationTimeout(60000);
+      const resolvedUrl = await resolveStorybookUrl(appendIframePath(storybookUrl), (url) => this.checkUrl(url));
+      await this.#page.goto(resolvedUrl);
     } catch (error) {
       logger().error('Failed to resolve storybook URL', error instanceof Error ? error.message : '');
       throw error;

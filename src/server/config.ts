@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import cluster from 'cluster';
 import { pathToFileURL } from 'url';
 import { loadStories as hybridStoriesProvider } from './providers/hybrid.js';
 import { Config, BrowserConfig, BrowserConfigObject, Options, isDefined } from '../types.js';
@@ -93,12 +94,20 @@ export async function readConfig(options: Options): Promise<Config> {
   if (options.reportDir) userConfig.reportDir = path.resolve(options.reportDir);
   if (options.screenDir) userConfig.screenDir = path.resolve(options.screenDir);
   if (options.storybookUrl) userConfig.storybookUrl = options.storybookUrl;
-  if (options.storybookPort) {
+  if (options.storybookPort && cluster.isPrimary) {
     const url = new URL(userConfig.storybookUrl);
     url.port = options.storybookPort;
     userConfig.storybookUrl = url.toString();
   }
-  if (options.storybookAutorunCmd) userConfig.storybookAutorunCmd = options.storybookAutorunCmd;
+  if (typeof options.storybookStart === 'string') userConfig.storybookAutorunCmd = options.storybookStart;
+
+  if (options.storybookStart && cluster.isPrimary) {
+    const { default: getPort } = await import('get-port');
+    const url = new URL(userConfig.storybookUrl);
+    const port = await getPort({ port: Number(url.port) });
+    url.port = `${port}`;
+    userConfig.storybookUrl = url.toString();
+  }
 
   // NOTE: Hack to pass typescript checking
   const config = userConfig as Config;
