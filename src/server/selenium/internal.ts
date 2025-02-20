@@ -430,7 +430,6 @@ export class InternalBrowser {
         gridUrl,
         viewport,
         storybookUrl: address,
-        resolveStorybookUrl: config.resolveStorybookUrl,
       });
 
       return done ? internalBrowser : null;
@@ -453,13 +452,11 @@ export class InternalBrowser {
     gridUrl,
     viewport,
     storybookUrl,
-    resolveStorybookUrl,
   }: {
     browserName: string;
     gridUrl: string;
     viewport?: { width: number; height: number };
     storybookUrl: string;
-    resolveStorybookUrl?: () => Promise<string>;
   }): Promise<boolean> {
     const sessionId = (await this.#browser.getSession()).getId();
     let browserHost = '';
@@ -483,7 +480,7 @@ export class InternalBrowser {
     return await runSequence(
       [
         () => this.#browser.manage().setTimeouts({ pageLoad: 60000, script: 60000 }),
-        () => this.openStorybookPage(storybookUrl, resolveStorybookUrl),
+        () => this.openStorybookPage(storybookUrl),
         () => this.waitForStorybook(),
         () => this.updateStorybookGlobals(),
         () => this.resolveCreeveyHost(),
@@ -500,25 +497,15 @@ export class InternalBrowser {
     );
   }
 
-  private async openStorybookPage(storybookUrl: string, resolver?: () => Promise<string>): Promise<void> {
+  private async openStorybookPage(storybookUrl: string): Promise<void> {
     if (!LOCALHOST_REGEXP.test(storybookUrl)) {
       return this.#browser.get(appendIframePath(storybookUrl));
     }
 
     try {
-      if (resolver) {
-        logger().debug('Resolving storybook url with custom resolver');
-
-        const resolvedUrl = await resolver();
-
-        logger().debug(`Resolver storybook url ${resolvedUrl}`);
-
-        await this.#browser.get(appendIframePath(resolvedUrl));
-      } else {
-        // TODO Pageload timeout 10s
-        // NOTE: getUrlChecker already calls `browser.get` so we don't need another one
-        await resolveStorybookUrl(appendIframePath(storybookUrl), (url) => this.checkUrl(url));
-      }
+      // TODO Pageload timeout 10s
+      // NOTE: getUrlChecker already calls `browser.get` so we don't need another one
+      await resolveStorybookUrl(appendIframePath(storybookUrl), (url) => this.checkUrl(url));
     } catch (error) {
       logger().error('Failed to resolve storybook URL', error instanceof Error ? error.message : '');
       throw error;

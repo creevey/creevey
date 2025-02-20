@@ -19,6 +19,7 @@ export default class Pool extends EventEmitter {
   private forcedStop = false;
   private failFast: boolean;
   private gridUrl?: string;
+  private storybookUrl: string;
   public get isRunning(): boolean {
     return this.workers.length !== this.freeWorkers.length;
   }
@@ -34,13 +35,16 @@ export default class Pool extends EventEmitter {
     this.maxRetries = config.maxRetries;
     this.config = config.browsers[browser] as BrowserConfigObject;
     this.gridUrl = this.config.gridUrl ?? gridUrl;
+    this.storybookUrl = this.config.storybookUrl ?? config.storybookUrl;
   }
 
   async init(): Promise<void> {
     const poolSize = Math.max(1, this.config.limit ?? 1);
     this.workers = (
       await Promise.all(
-        Array.from({ length: poolSize }).map(() => this.scheduler.forkWorker(this.browser, this.gridUrl)),
+        Array.from({ length: poolSize }).map(() =>
+          this.scheduler.forkWorker(this.browser, this.storybookUrl, this.gridUrl),
+        ),
       )
     ).filter((workerOrError): workerOrError is Worker => workerOrError instanceof ClusterWorker);
     if (this.workers.length != poolSize)
@@ -120,7 +124,7 @@ export default class Pool extends EventEmitter {
     worker.once('exit', async () => {
       if (isShuttingDown.current) return;
 
-      const workerOrError = await this.scheduler.forkWorker(this.browser, this.gridUrl);
+      const workerOrError = await this.scheduler.forkWorker(this.browser, this.storybookUrl, this.gridUrl);
 
       if (!(workerOrError instanceof ClusterWorker))
         throw new Error(`Can't instantiate worker for ${this.browser} due many errors`);
