@@ -370,6 +370,7 @@ export interface Options {
   saveReport: boolean;
   failFast?: boolean;
   odiff?: boolean;
+  noDocker?: boolean;
 }
 
 export type WorkerError = 'browser' | 'test' | 'unknown';

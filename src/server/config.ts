@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { pathToFileURL } from 'url';
-import { loadStories as browserStoriesProvider } from './providers/browser.js';
+import { loadStories as hybridStoriesProvider } from './providers/hybrid.js';
 import { Config, BrowserConfig, BrowserConfigObject, Options, isDefined } from '../types.js';
 import { configExt, loadThroughTSX } from './utils.js';
 import { CreeveyReporter, TeamcityReporter } from './reporter.js';
@@ -9,19 +9,20 @@ import { logger } from './logger.js';
 
 export const defaultBrowser = 'chrome';
 
-export const defaultConfig: Omit<Config, 'gridUrl' | 'testsDir' | 'tsConfig' | 'webdriver'> = {
+export const defaultConfig: Omit<Config, 'gridUrl' | 'tsConfig' | 'webdriver'> = {
   disableTelemetry: false,
   useWorkerQueue: false,
   useDocker: true,
-  dockerImage: 'aerokube/selenoid:latest-release',
+  dockerImage: 'aerokube/selenoid:latest-release', // TODO What about playwright?
   dockerImagePlatform: '',
   pullImages: true,
   failFast: false,
   storybookUrl: 'http://localhost:6006',
   screenDir: path.resolve('images'),
   reportDir: path.resolve('report'),
+  testsDir: path.resolve('src'),
   reporter: process.env.TEAMCITY_VERSION ? TeamcityReporter : CreeveyReporter,
-  storiesProvider: browserStoriesProvider,
+  storiesProvider: hybridStoriesProvider,
   maxRetries: 0,
   testTimeout: 30000,
   diffOptions: { threshold: 0.1, includeAA: false },
@@ -83,6 +84,7 @@ export async function readConfig(options: Options): Promise<Config> {
     Object.assign(userConfig, configData);
   }
 
+  if (options.noDocker) userConfig.useDocker = false;
   if (options.failFast != undefined) userConfig.failFast = Boolean(options.failFast);
   if (options.reportDir) userConfig.reportDir = path.resolve(options.reportDir);
   if (options.screenDir) userConfig.screenDir = path.resolve(options.screenDir);
