@@ -3810,6 +3810,7 @@ __metadata:
     storybook: "npm:^8.4.7"
     tar-stream: "npm:^3.1.7"
     tmp: "npm:^0.2.3"
+    tree-kill: "npm:^1.2.2"
     tsx: "npm:^4.19.2"
     typescript: "npm:^5.7.3"
     typescript-eslint: "npm:^8.19.1"

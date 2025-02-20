@@ -10,10 +10,11 @@ import { getStorybookUrl, checkIsStorybookConnected } from './connection.js';
 import { SeleniumWebdriver } from './selenium/webdriver.js';
 import { LOCALHOST_REGEXP } from './webdriver.js';
 import { isInsideDocker, resolvePlaywrightBrowserType, shutdownWithError } from './utils.js';
-import { sendWorkerMessage } from './messages.js';
+import { sendWorkerMessage, subscribeOn } from './messages.js';
 import { buildImage } from './docker.js';
 import { mkdir, writeFile } from 'fs/promises';
 import assert from 'assert';
+import kill from 'tree-kill';
 
 async function startWebdriverServer(browser: string, config: Config, options: Options): Promise<string | undefined> {
   if (config.webdriver === SeleniumWebdriver) {
@@ -123,7 +124,10 @@ export default async function (options: Options): Promise<void> {
       if (remoteUrl && localUrl != remoteUrl) logger().info(`On your network - ${remoteUrl}`);
       logger().info('Waiting Storybook...');
 
-      exec(storybookCommand, { async: true });
+      const storybook = exec(storybookCommand, { async: true });
+      subscribeOn('shutdown', () => {
+        if (storybook.pid) kill(storybook.pid);
+      });
     } else {
       logger().info('Storybook should be started and be accessible at:');
       logger().info(`Local - ${localUrl}`);

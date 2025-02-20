@@ -2,7 +2,8 @@ import path from 'path';
 import assert from 'assert';
 import { lstatSync, existsSync } from 'fs';
 import { mkdir, writeFile, copyFile } from 'fs/promises';
-import sh from 'shelljs';
+import { exec, chmod } from 'shelljs';
+import kill from 'tree-kill';
 import { Config, BrowserConfigObject } from '../../types.js';
 import { downloadBinary, getCreeveyCache } from '../utils.js';
 import { pullImages, runImage } from '../docker.js';
@@ -91,12 +92,12 @@ export async function startSelenoidStandalone(config: Config, debug: boolean): P
 
   // TODO Download browser webdrivers
   try {
-    if (process.platform != 'win32') sh.chmod('+x', binaryPath);
+    if (process.platform != 'win32') chmod('+x', binaryPath);
   } catch {
     /* noop */
   }
 
-  const selenoidProcess = sh.exec(`${binaryPath} -conf ./browsers.json -disable-docker`, {
+  const selenoidProcess = exec(`${binaryPath} -conf ./browsers.json -disable-docker`, {
     async: true,
     cwd: selenoidConfigDir,
   });
@@ -106,7 +107,9 @@ export async function startSelenoidStandalone(config: Config, debug: boolean): P
     selenoidProcess.stderr?.pipe(process.stderr);
   }
 
-  subscribeOn('shutdown', () => selenoidProcess.kill());
+  subscribeOn('shutdown', () => {
+    if (selenoidProcess.pid) kill(selenoidProcess.pid);
+  });
 }
 
 export async function startSelenoidContainer(config: Config, debug: boolean): Promise<string> {

@@ -3,6 +3,7 @@ import https from 'https';
 import http from 'http';
 import cluster from 'cluster';
 import { dirname } from 'path';
+import kill from 'tree-kill';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { register as esmRegister } from 'tsx/esm/api';
 import { register as cjsRegister } from 'tsx/cjs/api';
@@ -98,7 +99,7 @@ export async function shutdownWorkers(): Promise<void> {
         (worker) =>
           new Promise<void>((resolve) => {
             const timeout = setTimeout(() => {
-              worker.kill();
+              if (worker.process.pid) kill(worker.process.pid);
             }, 10000);
             worker.on('exit', () => {
               clearTimeout(timeout);
@@ -114,7 +115,7 @@ export async function shutdownWorkers(): Promise<void> {
 export function gracefullyKill(worker: Worker): void {
   worker.isShuttingDown = true;
   const timeout = setTimeout(() => {
-    worker.kill();
+    if (worker.process.pid) kill(worker.process.pid);
   }, 10000);
   worker.on('exit', () => {
     clearTimeout(timeout);
