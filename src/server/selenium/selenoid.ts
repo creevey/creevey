@@ -3,9 +3,8 @@ import assert from 'assert';
 import { lstatSync, existsSync } from 'fs';
 import { mkdir, writeFile, copyFile } from 'fs/promises';
 import { exec, chmod } from 'shelljs';
-import kill from 'tree-kill';
 import { Config, BrowserConfigObject } from '../../types.js';
-import { downloadBinary, getCreeveyCache } from '../utils.js';
+import { downloadBinary, getCreeveyCache, killTree } from '../utils.js';
 import { pullImages, runImage } from '../docker.js';
 import { subscribeOn } from '../messages.js';
 
@@ -108,7 +107,7 @@ export async function startSelenoidStandalone(config: Config, debug: boolean): P
   }
 
   subscribeOn('shutdown', () => {
-    if (selenoidProcess.pid) kill(selenoidProcess.pid);
+    if (selenoidProcess.pid) void killTree(selenoidProcess.pid);
   });
 }
 
