@@ -3,7 +3,6 @@ import https from 'https';
 import http from 'http';
 import cluster from 'cluster';
 import { dirname } from 'path';
-import kill from 'tree-kill';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { register as esmRegister } from 'tsx/esm/api';
 import { register as cjsRegister } from 'tsx/cjs/api';
@@ -11,6 +10,7 @@ import { SkipOptions, SkipOption, isDefined, TestData, noop, ServerTest, Worker 
 import { emitShutdownMessage, sendShutdownMessage } from './messages.js';
 import { LOCALHOST_REGEXP } from './webdriver.js';
 import assert from 'assert';
+import pidtree from 'pidtree';
 
 const importMetaUrl = pathToFileURL(__filename).href;
 
@@ -99,7 +99,7 @@ export async function shutdownWorkers(): Promise<void> {
         (worker) =>
           new Promise<void>((resolve) => {
             const timeout = setTimeout(() => {
-              if (worker.process.pid) kill(worker.process.pid);
+              if (worker.process.pid) void killTree(worker.process.pid);
             }, 10000);
             worker.on('exit', () => {
               clearTimeout(timeout);
@@ -115,12 +115,20 @@ export async function shutdownWorkers(): Promise<void> {
 export function gracefullyKill(worker: Worker): void {
   worker.isShuttingDown = true;
   const timeout = setTimeout(() => {
-    if (worker.process.pid) kill(worker.process.pid);
+    if (worker.process.pid) void killTree(worker.process.pid);
   }, 10000);
   worker.on('exit', () => {
     clearTimeout(timeout);
   });
   sendShutdownMessage(worker);
+}
+
+export async function killTree(rootPid: number): Promise<void> {
+  await pidtree(rootPid).then((pids) => {
+    [...pids, rootPid].forEach((pid) => {
+      process.kill(pid, 'SIGKILL');
+    });
+  });
 }
 
 export function shutdownWithError(): void {

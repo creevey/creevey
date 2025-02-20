@@ -9,12 +9,11 @@ import { logger } from './logger.js';
 import { getStorybookUrl, checkIsStorybookConnected } from './connection.js';
 import { SeleniumWebdriver } from './selenium/webdriver.js';
 import { LOCALHOST_REGEXP } from './webdriver.js';
-import { isInsideDocker, resolvePlaywrightBrowserType, shutdownWithError } from './utils.js';
+import { isInsideDocker, killTree, resolvePlaywrightBrowserType, shutdownWithError } from './utils.js';
 import { sendWorkerMessage, subscribeOn } from './messages.js';
 import { buildImage } from './docker.js';
 import { mkdir, writeFile } from 'fs/promises';
 import assert from 'assert';
-import kill from 'tree-kill';
 
 async function startWebdriverServer(browser: string, config: Config, options: Options): Promise<string | undefined> {
   if (config.webdriver === SeleniumWebdriver) {
@@ -126,7 +125,7 @@ export default async function (options: Options): Promise<void> {
 
       const storybook = exec(storybookCommand, { async: true });
       subscribeOn('shutdown', () => {
-        if (storybook.pid) kill(storybook.pid);
+        if (storybook.pid) void killTree(storybook.pid);
       });
     } else {
       logger().info('Storybook should be started and be accessible at:');

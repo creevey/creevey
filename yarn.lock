@@ -3794,6 +3794,7 @@ __metadata:
     minimist: "npm:^1.2.8"
     odiff-bin: "npm:^3.2.0"
     package-manager-detector: "npm:^0.2.9"
+    pidtree: "npm:^0.6.0"
     pinst: "npm:^3.0.0"
     pixelmatch: "npm:^6.0.0"
     playwright-core: "npm:^1.50.1"
@@ -3810,7 +3811,6 @@ __metadata:
     storybook: "npm:^8.4.7"
     tar-stream: "npm:^3.1.7"
     tmp: "npm:^0.2.3"
-    tree-kill: "npm:^1.2.2"
     tsx: "npm:^4.19.2"
     typescript: "npm:^5.7.3"
     typescript-eslint: "npm:^8.19.1"
@@ -7171,7 +7171,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pidtree@npm:~0.6.0":
+"pidtree@npm:^0.6.0, pidtree@npm:~0.6.0":
   version: 0.6.0
   resolution: "pidtree@npm:0.6.0"
   bin:
