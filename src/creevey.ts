@@ -30,14 +30,15 @@ process.on('SIGINT', () => {
 });
 
 const argv = minimist<Options>(process.argv.slice(2), {
-  string: ['browser', 'config', 'reporter', 'reportDir', 'screenDir', 'gridUrl', 'storybookUrl'],
-  boolean: ['debug', 'trace', 'ui', 'odiff', 'noDocker'],
-  default: { port: 3000 },
-  alias: { port: 'p', config: 'c', debug: 'd', update: 'u' },
+  string: ['browser', 'config', 'reporter', 'reportDir', 'screenDir', 'gridUrl', 'storybookUrl', 'storybookPort'],
+  boolean: ['debug', 'trace', 'ui', 'odiff', 'noDocker', 'startStorybook'],
+  default: { port: '3000', storybookPort: '6006' },
+  alias: { port: 'p', config: 'c', debug: 'd', update: 'u', startStorybook: 's' },
 });
 
 if ('port' in argv && !isNaN(argv.port)) argv.port = Number(argv.port);
 if ('browser' in argv && argv.browser) setRootName(argv.browser);
+if ('storybookUrl' in argv && argv.storybookUrl) argv.storybookPort = new URL(argv.storybookUrl).port;
 
 // eslint-disable-next-line @typescript-eslint/no-deprecated
 if (cluster.isPrimary && argv.reporter) {

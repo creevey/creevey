@@ -3793,6 +3793,7 @@ __metadata:
     micromatch: "npm:^4.0.8"
     minimist: "npm:^1.2.8"
     odiff-bin: "npm:^3.2.0"
+    package-manager-detector: "npm:^0.2.9"
     pinst: "npm:^3.0.0"
     pixelmatch: "npm:^6.0.0"
     playwright-core: "npm:^1.50.1"
@@ -7029,6 +7030,13 @@ __metadata:
   version: 1.0.0
   resolution: "package-json-from-dist@npm:1.0.0"
   checksum: 10c0/e3ffaf6ac1040ab6082a658230c041ad14e72fabe99076a2081bb1d5d41210f11872403fc09082daf4387fc0baa6577f96c9c0e94c90c394fd57794b66aa4033
+  languageName: node
+  linkType: hard
+
+"package-manager-detector@npm:^0.2.9":
+  version: 0.2.9
+  resolution: "package-manager-detector@npm:0.2.9"
+  checksum: 10c0/5fe1e80743fd110954f1904be4be32f34fc46c17b05e9e47a81e2f5777e474366cb570ed3b697a5ae8290860b53ac4b309898b24919dc1ddeb6d4097429113e1
   languageName: node
   linkType: hard
 

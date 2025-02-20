@@ -123,6 +123,7 @@
     "micromatch": "^4.0.8",
     "minimist": "^1.2.8",
     "odiff-bin": "^3.2.0",
+    "package-manager-detector": "^0.2.9",
     "pixelmatch": "^6.0.0",
     "pngjs": "^7.0.0",
     "polished": "^4.3.1",
