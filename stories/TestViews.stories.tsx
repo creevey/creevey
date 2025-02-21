@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, PropsWithChildren } from 'react';
 import { styled } from '@storybook/theming';
 import { Meta, StoryObj } from '@storybook/react';
 
@@ -34,7 +34,7 @@ const Wrapper = styled.span({
   fontSize: '64px',
 });
 
-const ComponentChunk: FunctionComponent = (props) => (
+const ComponentChunk: FunctionComponent<PropsWithChildren> = (props) => (
   <ChunkContainer data-testid="Tile">
     <Wrapper data-testid="TileContent">{props.children}</Wrapper>
   </ChunkContainer>

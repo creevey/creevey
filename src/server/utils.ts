@@ -4,20 +4,31 @@ import http from 'http';
 import cluster from 'cluster';
 import { dirname } from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
-import { createRequire } from 'module';
-import findCacheDir from 'find-cache-dir';
 import { register as esmRegister } from 'tsx/esm/api';
 import { register as cjsRegister } from 'tsx/cjs/api';
 import { SkipOptions, SkipOption, isDefined, TestData, noop, ServerTest, Worker } from '../types.js';
 import { emitShutdownMessage, sendShutdownMessage } from './messages.js';
+import assert from 'assert';
+import pidtree from 'pidtree';
 
 const importMetaUrl = pathToFileURL(__filename).href;
 
 export const isShuttingDown = { current: false };
 
-export const LOCALHOST_REGEXP = /(localhost|127\.0\.0\.1)/i;
-
 export const configExt = ['.js', '.mjs', '.ts', '.cjs', '.mts', '.cts'];
+
+const browserTypes = {
+  chromium: 'chromium',
+  'chromium-headless-shell': 'chromium',
+  chrome: 'chromium',
+  'chrome-beta': 'chromium',
+  msedge: 'chromium',
+  'msedge-beta': 'chromium',
+  'msedge-dev': 'chromium',
+  'bidi-chromium': 'chromium',
+  firefox: 'firefox',
+  webkit: 'webkit',
+} as const;
 
 export const skipOptionKeys = ['in', 'kinds', 'stories', 'tests', 'reason'];
 
@@ -87,7 +98,7 @@ export async function shutdownWorkers(): Promise<void> {
         (worker) =>
           new Promise<void>((resolve) => {
             const timeout = setTimeout(() => {
-              worker.kill();
+              if (worker.process.pid) void killTree(worker.process.pid);
             }, 10000);
             worker.on('exit', () => {
               clearTimeout(timeout);
@@ -103,12 +114,24 @@ export async function shutdownWorkers(): Promise<void> {
 export function gracefullyKill(worker: Worker): void {
   worker.isShuttingDown = true;
   const timeout = setTimeout(() => {
-    worker.kill();
+    if (worker.process.pid) void killTree(worker.process.pid);
   }, 10000);
   worker.on('exit', () => {
     clearTimeout(timeout);
   });
   sendShutdownMessage(worker);
+}
+
+export async function killTree(rootPid: number): Promise<void> {
+  const pids = await pidtree(rootPid, { root: true });
+
+  pids.forEach((pid) => {
+    try {
+      process.kill(pid, 'SIGKILL');
+    } catch {
+      /* noop */
+    }
+  });
 }
 
 export function shutdown(): void {
@@ -119,14 +142,29 @@ export function shutdownWithError(): void {
   process.exit(1);
 }
 
-export function getCreeveyCache(): string | undefined {
+export function resolvePlaywrightBrowserType(browserName: string): (typeof browserTypes)[keyof typeof browserTypes] {
+  assert(
+    browserName in browserTypes,
+    new Error(`Failed to match browser name "${browserName}" to playwright browserType`),
+  );
+
+  return browserTypes[browserName as keyof typeof browserTypes];
+}
+
+export async function getCreeveyCache(): Promise<string | undefined> {
+  const { default: findCacheDir } = await import('find-cache-dir');
   return findCacheDir({ name: 'creevey', cwd: dirname(fileURLToPath(importMetaUrl)) });
 }
 
-export async function runSequence(seq: (() => unknown)[], predicate: () => boolean): Promise<void> {
+export async function runSequence(seq: (() => unknown)[], predicate: () => boolean): Promise<boolean> {
   for (const fn of seq) {
     if (predicate()) await fn();
   }
+  return predicate();
+}
+
+export function getTestPath(test: ServerTest): string[] {
+  return [...test.storyPath, test.testName, test.browser].filter(isDefined);
 }
 
 export function testsToImages(tests: (TestData | undefined)[]): Set<string> {
@@ -148,7 +186,8 @@ export function testsToImages(tests: (TestData | undefined)[]): Set<string> {
 
 // https://tuhrig.de/how-to-know-you-are-inside-a-docker-container/
 export const isInsideDocker =
-  fs.existsSync('/proc/1/cgroup') && fs.readFileSync('/proc/1/cgroup', 'utf-8').includes('docker');
+  (fs.existsSync('/proc/1/cgroup') && fs.readFileSync('/proc/1/cgroup', 'utf-8').includes('docker')) ||
+  process.env.DOCKER === 'true';
 
 export const downloadBinary = (downloadUrl: string, destination: string): Promise<void> =>
   new Promise((resolve, reject) =>
@@ -192,10 +231,10 @@ export function readDirRecursive(dirPath: string): string[] {
   );
 }
 
-const _require = createRequire(importMetaUrl);
 export function tryToLoadTestsData(filename: string): Partial<Record<string, ServerTest>> | undefined {
   try {
-    return _require(filename) as Partial<Record<string, ServerTest>>;
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    return require(filename) as Partial<Record<string, ServerTest>>;
   } catch {
     /* noop */
   }
@@ -205,6 +244,7 @@ const [nodeVersion] = process.versions.node.split('.').map(Number);
 export async function loadThroughTSX<T>(
   callback: (load: (modulePath: string) => Promise<T>) => Promise<T>,
 ): Promise<T> {
+  // TODO Check if it work in node18 and type: 'module'
   const unregister = nodeVersion > 18 ? esmRegister() : cjsRegister();
 
   const result = await callback((modulePath) =>

@@ -1,10 +1,12 @@
-import React, { useEffect } from 'react';
-import { Icons, Tabs } from '@storybook/components';
+import React, { JSX, useContext, useEffect } from 'react';
+import { Tabs } from '@storybook/components';
+import { CloseAltIcon } from '@storybook/icons';
 import { styled, withTheme, Theme } from '@storybook/theming';
 import { ImagesViewMode, Images } from '../../../../types.js';
 import { getImageUrl } from '../../helpers.js';
 import { ImagePreview } from './ImagePreview.js';
 import { viewModes } from '../../viewMode.js';
+import { CreeveyContext } from '../../../web/CreeveyContext.js';
 
 interface PageHeaderProps {
   title: string[];
@@ -75,6 +77,7 @@ export function PageHeader({
   onImageChange,
   onViewModeChange,
 }: PageHeaderProps): JSX.Element | null {
+  const { isReport } = useContext(CreeveyContext);
   const imageEntires = Object.entries(images) as [string, Images][];
 
   const handleViewModeChange = (mode: string): void => {
@@ -99,7 +102,7 @@ export function PageHeader({
       <H1>{title.flatMap((token) => [token, <HeaderDivider key={token}>/</HeaderDivider>]).slice(0, -1)}</H1>
       {error && (
         <ErrorContainer>
-          <Icons icon="closeAlt" />
+          <CloseAltIcon />
           <pre>{error}</pre>
         </ErrorContainer>
       )}
@@ -109,7 +112,7 @@ export function PageHeader({
             <ImagePreview
               key={name}
               imageName={name}
-              url={`${getImageUrl(title, name)}/${image.actual}`}
+              url={`${getImageUrl(title, name, isReport)}/${image.actual}`}
               isActive={name === imageName}
               onClick={onImageChange}
               error={imagesWithError.includes(name)}

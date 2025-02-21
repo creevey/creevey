@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { JSX } from 'react';
 import { styled, withTheme, Theme } from '@storybook/theming';
 
 const IMG_SIZE = 64;
@@ -70,6 +70,7 @@ export const ImagePreview = withTheme(
       onClick(imageName);
     };
 
+    // TODO Add image name as a title
     return (
       <Button
         onClick={handleClick}

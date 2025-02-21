@@ -1,12 +1,12 @@
 import cluster from 'cluster';
-import type { CreeveyStory, StoriesProvider, StoriesRaw } from '../../../types.js';
-import { loadStoriesFromBrowser } from '../../selenium/index.js';
-import { emitStoriesMessage, sendStoriesMessage, subscribeOn, subscribeOnWorker } from '../../messages.js';
-import { isDefined } from '../../../types.js';
-import { logger } from '../../logger.js';
-import { deserializeRawStories } from '../../../shared/index.js';
+import type { CreeveyStory, StoriesProvider, StoriesRaw } from '../../types.js';
+import { emitStoriesMessage, sendStoriesMessage, subscribeOn, subscribeOnWorker } from '../messages.js';
+import { isDefined } from '../../types.js';
+import { logger } from '../logger.js';
+import { deserializeRawStories } from '../../shared/index.js';
 
-export const loadStories: StoriesProvider = async (_config, _options, storiesListener) => {
+// TODO Don't have updates from stories
+export const loadStories: StoriesProvider = async (_config, storiesListener, webdriver) => {
   if (cluster.isPrimary) {
     return new Promise<StoriesRaw>((resolve) => {
       const worker = Object.values(cluster.workers ?? {})
@@ -24,7 +24,7 @@ export const loadStories: StoriesProvider = async (_config, _options, storiesLis
                   oldTests.join('\n'),
               );
             unsubscribe();
-            resolve(stories);
+            resolve(deserializeRawStories(stories));
           }
         });
         sendStoriesMessage(worker, { type: 'get' });
@@ -37,10 +37,11 @@ export const loadStories: StoriesProvider = async (_config, _options, storiesLis
   } else {
     subscribeOn('stories', (message) => {
       if (message.type == 'get')
-        emitStoriesMessage({ type: 'set', payload: { stories, oldTests: storiesWithOldTests } });
+        emitStoriesMessage({ type: 'set', payload: { stories: rawStories, oldTests: storiesWithOldTests } });
       if (message.type == 'update') storiesListener(new Map(message.payload));
     });
-    const stories = deserializeRawStories(await loadStoriesFromBrowser());
+    const rawStories = (await webdriver?.loadStoriesFromBrowser()) ?? {};
+    const stories = deserializeRawStories(rawStories);
 
     const storiesWithOldTests: string[] = [];
 

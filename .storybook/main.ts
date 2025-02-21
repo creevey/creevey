@@ -1,11 +1,12 @@
-// TODO Update config to 7.x
-export default {
-  stories: ['../stories/**/*.stories.@(md|ts)x'],
+import { StorybookConfig } from '@storybook/react-vite';
+import { mergeConfig } from 'vite';
+
+const config: StorybookConfig = {
+  stories: ['../stories/**/*.stories.tsx', '../stories/**/*.mdx'],
   addons: [
-    '@storybook/addon-links',
     '@storybook/addon-essentials',
-    '@storybook/addon-onboarding',
     '@storybook/addon-interactions',
+    '@chromatic-com/storybook',
     {
       name: './../src/client/addon/preset',
       options: { clientPort: 8000 },
@@ -13,8 +14,11 @@ export default {
   ],
   framework: {
     name: '@storybook/react-vite',
+    options: {},
   },
-  docs: {
-    autodocs: 'tag',
+  viteFinal: (config) => {
+    return mergeConfig(config, { server: { allowedHosts: ['host.docker.internal'] } });
   },
 };
+
+export default config;

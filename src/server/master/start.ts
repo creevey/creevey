@@ -5,7 +5,7 @@ import { copyFile, readdir, mkdir, writeFile } from 'fs/promises';
 import master from './master.js';
 import creeveyApi, { CreeveyApi } from './api.js';
 import { Config, Options, TestData, isDefined } from '../../types.js';
-import { shutdown, shutdownWorkers, testsToImages, readDirRecursive } from '../utils.js';
+import { shutdownWorkers, testsToImages, readDirRecursive } from '../utils.js';
 import { subscribeOn } from '../messages.js';
 import Runner from './runner.js';
 import { logger } from '../logger.js';
@@ -14,13 +14,14 @@ import { sendScreenshotsCount } from '../telemetry.js';
 const importMetaUrl = pathToFileURL(__filename).href;
 
 async function copyStatics(reportDir: string): Promise<void> {
-  const clientDir = path.join(path.dirname(fileURLToPath(importMetaUrl)), '../../client/web');
-  const files = (await readdir(clientDir, { withFileTypes: true }))
-    .filter((dirent) => dirent.isFile() && !dirent.name.endsWith('.d.ts') && !dirent.name.endsWith('.tsx'))
+  const clientDir = path.join(path.dirname(fileURLToPath(importMetaUrl)), '../../../dist/client/web');
+  const assets = (await readdir(path.join(clientDir, 'assets'), { withFileTypes: true }))
+    .filter((dirent) => dirent.isFile())
     .map((dirent) => dirent.name);
-  await mkdir(reportDir, { recursive: true });
-  for (const file of files) {
-    await copyFile(path.join(clientDir, file), path.join(reportDir, file));
+  await mkdir(path.join(reportDir, 'assets'), { recursive: true });
+  await copyFile(path.join(clientDir, 'index.html'), path.join(reportDir, 'index.html'));
+  for (const asset of assets) {
+    await copyFile(path.join(clientDir, 'assets', asset), path.join(reportDir, 'assets', asset));
   }
 }
 
@@ -49,13 +50,17 @@ function outputUnnecessaryImages(imagesDir: string, images: Set<string>): void {
   }
 }
 
-export async function start(config: Config, options: Options, resolveApi: (api: CreeveyApi) => void): Promise<void> {
+export async function start(
+  gridUrl: string | undefined,
+  config: Config,
+  options: Options,
+  resolveApi: (api: CreeveyApi) => void,
+): Promise<void> {
   let runner: Runner | null = null;
   if (config.hooks.before) {
     await config.hooks.before();
   }
   subscribeOn('shutdown', () => config.hooks.after?.());
-  process.removeListener('SIGINT', shutdown);
   process.on('SIGINT', () => {
     runner?.removeAllListeners('stop');
     if (runner?.isRunning) {
@@ -70,15 +75,13 @@ export async function start(config: Config, options: Options, resolveApi: (api: 
     }
   });
 
-  runner = await master(config, { watch: options.ui, debug: options.debug, port: options.port });
+  runner = await master(config, gridUrl);
 
-  if (options.saveReport) {
-    runner.on('stop', () => {
-      void copyStatics(config.reportDir).then(() =>
-        writeFile(path.join(config.reportDir, 'data.js'), reportDataModule(runner.status.tests)),
-      );
-    });
-  }
+  runner.on('stop', () => {
+    void copyStatics(config.reportDir).then(() =>
+      writeFile(path.join(config.reportDir, 'data.js'), reportDataModule(runner.status.tests)),
+    );
+  });
 
   if (options.ui) {
     resolveApi(creeveyApi(runner));
@@ -105,7 +108,8 @@ export async function start(config: Config, options: Options, resolveApi: (api: 
           logger().warn(`Can't send telemetry: ${error}`);
         })
         .finally(() => {
-          void shutdownWorkers().then(() => process.exit());
+          // NOTE: Take some time to kill processes
+          void shutdownWorkers().then(() => setTimeout(() => process.exit(), 500));
         });
     });
     // TODO grep

@@ -1,15 +1,22 @@
-import * as Events from '@storybook/core-events';
-import type { PreviewWeb } from '@storybook/preview-web';
-import type { AnyFramework, StoryContextForEnhancers } from '@storybook/csf';
-import type { StoryStore } from '@storybook/client-api';
-import { makeDecorator } from '@storybook/preview-api';
+import type { Renderer, StoryContextForEnhancers } from '@storybook/csf';
+import { makeDecorator, PreviewWeb, StoryStore } from '@storybook/preview-api';
 import { Channel } from '@storybook/channels';
-import { CaptureOptions, CreeveyStoryParams, isObject, noop, StoriesRaw, StorybookGlobals } from '../../types.js';
+import {
+  CaptureOptions,
+  CreeveyStoryParams,
+  isObject,
+  noop,
+  StoriesRaw,
+  StorybookEvents,
+  StorybookGlobals,
+} from '../../types.js';
 import { serializeRawStories } from '../../shared/index.js';
 import { getConnectionUrl } from '../shared/helpers.js';
+import isEqual from 'lodash/isEqual.js';
 
 declare global {
   interface Window {
+    __CREEVEY_ENV__: boolean;
     __CREEVEY_SERVER_HOST__: string;
     __CREEVEY_SERVER_PORT__: number;
     __CREEVEY_WORKER_ID__: number;
@@ -17,16 +24,15 @@ declare global {
     __CREEVEY_SELECT_STORY__: (
       storyId: string,
       shouldWaitForReady: boolean,
-      callback: (response: [error?: string | null, isCaptureCalled?: boolean]) => void,
-    ) => Promise<void>;
+    ) => Promise<[error?: string | null, isCaptureCalled?: boolean]>;
     __CREEVEY_UPDATE_GLOBALS__: (globals: StorybookGlobals) => void;
     __CREEVEY_INSERT_IGNORE_STYLES__: (ignoreElements: string[]) => HTMLStyleElement;
     __CREEVEY_REMOVE_IGNORE_STYLES__: (ignoreStyles: HTMLStyleElement) => void;
-    __CREEVEY_HAS_PLAY_COMPLETED_YET__: (callback: (isPlayCompleted: boolean) => void) => void;
+    __CREEVEY_HAS_PLAY_COMPLETED_YET__: () => Promise<boolean>;
     __CREEVEY_SET_READY_FOR_CAPTURE__?: () => void;
     __STORYBOOK_ADDONS_CHANNEL__: Channel;
-    __STORYBOOK_STORY_STORE__: StoryStore<AnyFramework>;
-    __STORYBOOK_PREVIEW__: PreviewWeb<AnyFramework>;
+    __STORYBOOK_STORY_STORE__: StoryStore<Renderer>;
+    __STORYBOOK_PREVIEW__: PreviewWeb<Renderer>;
   }
 }
 
@@ -65,12 +71,12 @@ function catchRenderError(channel: Channel): Promise<void> & { cancel: () => voi
     rejectCallback(exception);
   }
   function removeHandlers(): void {
-    channel.off(Events.STORY_ERRORED, errorHandler);
-    channel.off(Events.STORY_THREW_EXCEPTION, errorHandler);
+    channel.off(StorybookEvents.STORY_ERRORED, errorHandler);
+    channel.off(StorybookEvents.STORY_THREW_EXCEPTION, errorHandler);
   }
 
-  channel.once(Events.STORY_ERRORED, errorHandler);
-  channel.once(Events.STORY_THREW_EXCEPTION, exceptionHandler);
+  channel.once(StorybookEvents.STORY_ERRORED, errorHandler);
+  channel.once(StorybookEvents.STORY_THREW_EXCEPTION, exceptionHandler);
 
   return Object.assign(promise, { cancel: removeHandlers });
 }
@@ -82,10 +88,10 @@ function waitForStoryRendered(channel: Channel): Promise<void> & { cancel: () =>
     resolveCallback();
   }
   function removeHandlers(): void {
-    channel.off(Events.STORY_RENDERED, renderHandler);
+    channel.off(StorybookEvents.STORY_RENDERED, renderHandler);
   }
 
-  channel.once(Events.STORY_RENDERED, renderHandler);
+  channel.once(StorybookEvents.STORY_RENDERED, renderHandler);
 
   return Object.assign(promise, { cancel: removeHandlers });
 }
@@ -135,6 +141,7 @@ let captureResolver: () => void;
 let waitForCreevey: Promise<void>;
 let creeveyReady: () => void;
 let setStoriesCounter = 0;
+let globals = {};
 
 export function withCreevey(): ReturnType<typeof makeDecorator> {
   const addonsChannel = (): Channel => window.__STORYBOOK_ADDONS_CHANNEL__;
@@ -169,13 +176,12 @@ export function withCreevey(): ReturnType<typeof makeDecorator> {
     return stories;
   }
 
-  // TODO Use Events.STORY_RENDER_PHASE_CHANGED: `loading/rendering/completed` with storyId
+  // TODO Use StorybookEvents.STORY_RENDER_PHASE_CHANGED: `loading/rendering/completed` with storyId
   // TODO Check other statuses and statuses with play function
   async function selectStory(
     storyId: string,
     shouldWaitForReady: boolean,
-    callback: (response: [error?: string | null, isCaptureCalled?: boolean]) => void,
-  ): Promise<void> {
+  ): Promise<[error?: string | null, isCaptureCalled?: boolean]> {
     const currentStory = window.__STORYBOOK_PREVIEW__.currentSelection?.storyId ?? '';
 
     if (!isAnimationDisabled) disableAnimation();
@@ -192,8 +198,8 @@ export function withCreevey(): ReturnType<typeof makeDecorator> {
     const capturePromise = waitForCaptureCall().then(() => (isCaptureCalled = true));
 
     setTimeout(() => {
-      if (storyId == currentStory) channel.emit(Events.FORCE_REMOUNT, { storyId });
-      else channel.emit(Events.SET_CURRENT_STORY, { storyId });
+      if (storyId == currentStory) channel.emit(StorybookEvents.FORCE_REMOUNT, { storyId });
+      else channel.emit(StorybookEvents.SET_CURRENT_STORY, { storyId });
     }, 0);
 
     try {
@@ -205,7 +211,7 @@ export function withCreevey(): ReturnType<typeof makeDecorator> {
         })(),
         errorPromise,
       ]);
-      callback([null, isCaptureCalled]);
+      return [null, isCaptureCalled];
     } catch (reason) {
       // NOTE Event `STORY_THREW_EXCEPTION` triggered only in react and vue frameworks and return Error instance
       // NOTE Event `STORY_ERRORED` return error-like object without `name` field
@@ -215,15 +221,18 @@ export function withCreevey(): ReturnType<typeof makeDecorator> {
           : isObject(reason)
             ? `${reason.message as string}\n    ${reason.stack as string}`
             : (reason as string);
-      callback([errorMessage]);
+      return [errorMessage];
     } finally {
       renderPromise.cancel();
       errorPromise.cancel();
     }
   }
 
-  function updateGlobals(globals: StorybookGlobals): void {
-    addonsChannel().emit(Events.UPDATE_GLOBALS, { globals });
+  function updateGlobals(newGlobals: StorybookGlobals): void {
+    if (isEqual(globals, newGlobals)) return;
+
+    globals = newGlobals;
+    addonsChannel().emit(StorybookEvents.UPDATE_GLOBALS, { globals });
   }
 
   function insertIgnoreStyles(ignoreSelectors: string[]): HTMLStyleElement {
@@ -251,24 +260,27 @@ export function withCreevey(): ReturnType<typeof makeDecorator> {
     ignoreStyles.parentNode?.removeChild(ignoreStyles);
   }
 
-  function hasPlayCompletedYet(callback: (isPlayCompleted: boolean) => void): void {
-    creeveyReady();
-    let isCaptureCalled = false;
-    let isPlayCompleted = false;
+  function hasPlayCompletedYet(): Promise<boolean> {
+    return new Promise<boolean>((resolve) => {
+      creeveyReady();
+      let isCaptureCalled = false;
+      let isPlayCompleted = false;
 
-    const channel = addonsChannel();
-    void waitForStoryRendered(channel).then(() => {
-      if (isCaptureCalled) return;
-      isPlayCompleted = true;
-      callback(true);
-    });
-    void waitForCaptureCall().then(() => {
-      if (isPlayCompleted) return;
-      isCaptureCalled = true;
-      callback(false);
+      const channel = addonsChannel();
+      void waitForStoryRendered(channel).then(() => {
+        if (isCaptureCalled) return;
+        isPlayCompleted = true;
+        resolve(true);
+      });
+      void waitForCaptureCall().then(() => {
+        if (isPlayCompleted) return;
+        isCaptureCalled = true;
+        resolve(false);
+      });
     });
   }
 
+  window.__CREEVEY_ENV__ = false;
   window.__CREEVEY_GET_STORIES__ = getStories;
   window.__CREEVEY_SELECT_STORY__ = selectStory;
   window.__CREEVEY_UPDATE_GLOBALS__ = updateGlobals;

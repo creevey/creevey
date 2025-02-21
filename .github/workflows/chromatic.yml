@@ -8,12 +8,14 @@ jobs:
       - uses: actions/checkout@v1
         with:
           lfs: true
+      - uses: volta-cli/action@v4
+        with:
+          registry-url: https://registry.npmjs.org
       - name: checkout lfs
         run: git lfs checkout
       - name: Install dependencies
         run: yarn
-      - name: Deploy to Chromatic
-        uses: chromaui/action@v1
+      - name: Run Chromatic
+        uses: chromaui/action@latest
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}

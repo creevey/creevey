@@ -1,5 +1,4 @@
-import React from 'react';
-
+import React, { JSX } from 'react';
 import { styled, withTheme } from '@storybook/theming';
 import { opacify } from 'polished';
 
