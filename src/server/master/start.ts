@@ -108,7 +108,8 @@ export async function start(
           logger().warn(`Can't send telemetry: ${error}`);
         })
         .finally(() => {
-          void shutdownWorkers().then(() => process.exit());
+          // NOTE: Take some time to kill processes
+          void shutdownWorkers().then(() => setTimeout(() => process.exit(), 500));
         });
     });
     // TODO grep
