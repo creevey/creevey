@@ -3673,11 +3673,11 @@ __metadata:
     storybook: "npm:^8.5.8"
     tar-stream: "npm:^3.1.7"
     tmp: "npm:^0.2.3"
-    tsx: "npm:^4.19.3"
+    tsx: "npm:^4.19.2"
     typescript: "npm:^5.7.3"
     typescript-eslint: "npm:^8.24.1"
     use-immer: "npm:^0.11.0"
-    uuid: "npm:^11.1.0"
+    uuid: "npm:^11.0.5"
     vite: "npm:^5.4.14"
     vitest: "npm:^2.1.9"
     ws: "npm:^8.18.0"
@@ -8556,7 +8556,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsx@npm:^4.19.3":
+"tsx@npm:^4.19.2":
   version: 4.19.3
   resolution: "tsx@npm:4.19.3"
   dependencies:
@@ -8868,7 +8868,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:^11.1.0":
+"uuid@npm:^11.0.5":
   version: 11.1.0
   resolution: "uuid@npm:11.1.0"
   bin:
