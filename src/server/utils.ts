@@ -124,10 +124,14 @@ export function gracefullyKill(worker: Worker): void {
 }
 
 export async function killTree(rootPid: number): Promise<void> {
-  await pidtree(rootPid).then((pids) => {
-    [...pids, rootPid].forEach((pid) => {
+  const pids = await pidtree(rootPid, { root: true });
+
+  pids.forEach((pid) => {
+    try {
       process.kill(pid, 'SIGKILL');
-    });
+    } catch {
+      /* noop */
+    }
   });
 }
 
