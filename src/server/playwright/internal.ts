@@ -1,6 +1,7 @@
 import { Browser, BrowserType, Page, chromium, firefox, webkit } from 'playwright-core';
 import chalk from 'chalk';
 import { v4 } from 'uuid';
+import Logger from 'loglevel';
 import prefix from 'loglevel-plugin-prefix';
 import {
   BrowserConfigObject,
@@ -217,6 +218,12 @@ export class InternalBrowser {
     //   await context.tracing.start(playwrightOptions.trace);
     // }
 
+    if (logger().getLevel() <= Logger.levels.DEBUG) {
+      page.on('console', (msg) => {
+        logger().debug(`Console message: ${msg.text()}`);
+      });
+    }
+
     // TODO Add debug output
 
     const internalBrowser = new InternalBrowser(browser, page, options.port, _storybookGlobals);
@@ -332,6 +339,7 @@ export class InternalBrowser {
             }, StorybookEvents.SET_GLOBALS);
           } catch (e: unknown) {
             logger().debug('An error has been caught during the script:', e);
+            if (this.#page.isClosed()) throw e;
           }
           if (wait) await new Promise((resolve) => setTimeout(resolve, 1000));
         } while (wait);

@@ -1,4 +1,7 @@
-export default {
+import { StorybookConfig } from '@storybook/react-vite';
+import { mergeConfig } from 'vite';
+
+const config: StorybookConfig = {
   stories: ['../stories/**/*.stories.tsx', '../stories/**/*.mdx'],
   addons: [
     '@storybook/addon-essentials',
@@ -11,5 +14,11 @@ export default {
   ],
   framework: {
     name: '@storybook/react-vite',
+    options: {},
+  },
+  viteFinal: (config) => {
+    return mergeConfig(config, { server: { allowedHosts: ['host.docker.internal'] } });
   },
 };
+
+export default config;

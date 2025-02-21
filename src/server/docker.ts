@@ -51,7 +51,7 @@ export async function pullImages(
         function onProgress(event: { id: string; status: string; progress?: string }): void {
           if (!/^[a-z0-9]{12}$/i.test(event.id)) return;
 
-          spinner.text = `${image}: [${event.id}] ${event.status} ${event.progress ? event.progress : ''}`;
+          spinner.text = `${image}: [${event.id}] ${event.status} ${event.progress ?? ''}`;
         }
       });
     });
