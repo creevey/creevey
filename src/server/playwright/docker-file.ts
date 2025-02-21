@@ -27,8 +27,8 @@ RUN echo "{ \\"type\\": \\"module\\" }" > package.json && \\
     echo "registry=${npmRegistry}" > .npmrc && \\`
         : ''
     }
-    npx -y playwright${sv ? `@${sv.format()}` : ''} install --with-deps ${browser} && \\
-    npm i playwright-core${sv ? `@${sv.format()}` : ''}
+    npm i playwright-core${sv ? `@${sv.format()}` : ''} && \\
+    npx -y playwright${sv ? `@${sv.format()}` : ''} install --with-deps ${browser}
 
 EXPOSE 4444
 
