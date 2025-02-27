@@ -181,8 +181,8 @@ export async function sendScreenshotsCount(
   const testsMeta = { runId: uuid, tests };
 
   const fullPathname = buildPathname('tests', testsMeta);
-  // NOTE: Keep request path shorter than 32k symbols
-  const chunksCount = Math.ceil(fullPathname.length / 32_000);
+  // NOTE: Keep request path shorter than 24k symbols
+  const chunksCount = Math.ceil(fullPathname.length / 24_000);
   let chunks: string[] = [];
   if (chunksCount > 1) {
     const testsString = JSON.stringify(tests);

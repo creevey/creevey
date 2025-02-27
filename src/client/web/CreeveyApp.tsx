@@ -137,6 +137,7 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
   }, [handleImageApproveNew, handleGoToNextFailedTest]);
 
   const handleApproveAll = useCallback(() => {
+    // TODO Update handled incorrectly
     api?.approveAll();
   }, [api]);
 
