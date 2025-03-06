@@ -221,25 +221,36 @@ export async function loadThroughTSX<T>(
   return result;
 }
 
-export function waitOnUrl(url: string, timeout: number, delay: number) {
+export function waitOnUrl(waitUrl: string, timeout: number, delay: number) {
+  const urls = [waitUrl];
+  if (!LOCALHOST_REGEXP.test(waitUrl)) {
+    const parsedUrl = new URL(waitUrl);
+    parsedUrl.host = 'localhost';
+    urls.push(parsedUrl.toString());
+  }
   const startTime = Date.now();
-  return new Promise<void>((resolve, reject) => {
-    const interval = setInterval(() => {
-      http
-        .get(url, (response) => {
-          if (response.statusCode === 200) {
-            clearInterval(interval);
-            resolve();
-          }
-        })
-        .on('error', () => {
-          // Ignore HTTP errors
-        });
+  return Promise.race(
+    urls.map(
+      (url) =>
+        new Promise<void>((resolve, reject) => {
+          const interval = setInterval(() => {
+            http
+              .get(url, (response) => {
+                if (response.statusCode === 200) {
+                  clearInterval(interval);
+                  resolve();
+                }
+              })
+              .on('error', () => {
+                // Ignore HTTP errors
+              });
 
-      if (Date.now() - startTime > timeout) {
-        clearInterval(interval);
-        reject(new Error(`${url} didn't respond within ${timeout / 1000} seconds`));
-      }
-    }, delay);
-  });
+            if (Date.now() - startTime > timeout) {
+              clearInterval(interval);
+              reject(new Error(`${url} didn't respond within ${timeout / 1000} seconds`));
+            }
+          }, delay);
+        }),
+    ),
+  );
 }
