@@ -699,7 +699,7 @@ export async function getBrowser(config: Config, options: Options & { browser: s
         () => browser?.manage().setTimeouts({ pageLoad: 60000, script: 60000 }),
         () => browser && openStorybookPage(browser, realAddress, config.resolveStorybookUrl),
         () => browser && waitForStorybook(browser),
-        () => browser && resolveCreeveyHost(browser, options.port, options.host),
+        () => browser && resolveCreeveyHost(browser, options.port, config.host),
         () => browser && updateBrowserGlobalVariables(browser),
         () => _storybookGlobals && browser && updateStorybookGlobals(browser, _storybookGlobals),
         // NOTE: Selenium draws automation toolbar with some delay after webdriver initialization

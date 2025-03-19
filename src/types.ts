@@ -263,11 +263,7 @@ export interface Config {
    * It can be used for networks behind NAT
    */
 
-  host: string;
-  /**
-   * Define a port where is creevey-server hosting.
-   */
-  port: number;
+  host?: string;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -281,7 +277,6 @@ export type CreeveyConfig = Partial<Config>;
 export interface Options {
   _: string[];
   config?: string;
-  host?: string;
   port: number;
   ui: boolean;
   update: boolean | string;
