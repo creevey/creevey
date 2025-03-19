@@ -18,6 +18,7 @@ async function startWebdriverServer(config: Config, options: Options): Promise<v
 
 export default async function (options: Options): Promise<void> {
   const config = await readConfig(options);
+  const host = config.host;
   const { browser = defaultBrowser, tests, update, ui, port } = options;
 
   // NOTE: We don't need docker nor selenoid for webpack or update options
@@ -65,7 +66,7 @@ export default async function (options: Options): Promise<void> {
     case cluster.isPrimary: {
       logger().info('Starting Master Process');
 
-      const resolveApi = (await import('./master/server.js')).start(config.reportDir, port, ui);
+      const resolveApi = (await import('./master/server.js')).start(config.reportDir, port, ui, host);
 
       return (await import('./master/index.js')).start(config, options, resolveApi);
     }

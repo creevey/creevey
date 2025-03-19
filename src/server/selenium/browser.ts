@@ -580,41 +580,39 @@ async function openStorybookPage(
   }
 }
 
-async function resolveCreeveyHost(browser: WebDriver, port: number): Promise<void> {
-  const addresses = getAddresses();
+async function resolveCreeveyHost(browser: WebDriver, port: number, host?: string): Promise<void> {
+  const fetcher = function (hosts: string[], port: number, callback: (host?: string | null) => void) {
+    void Promise.all(
+      hosts.map(function (host) {
+        return Promise.race([
+          // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+          fetch('http://' + host + ':' + port + '/ping').then(function (response) {
+            return response.text();
+          }),
+          new Promise((_resolve, reject) => {
+            setTimeout(reject, 5000);
+          }),
+        ])
+          .then(function (pong) {
+            return pong == 'pong' ? host : null;
+          })
+          .catch(function () {
+            return null;
+          });
+      }),
+    ).then(function (hosts) {
+      callback(
+        hosts.find(function (host) {
+          return host != null;
+        }),
+      );
+    });
+  };
+
+  const addresses = host ? [host] : getAddresses();
 
   creeveyServerPort = port;
-  creeveyServerHost = await browser.executeAsyncScript(
-    function (hosts: string[], port: number, callback: (host?: string | null) => void) {
-      void Promise.all(
-        hosts.map(function (host) {
-          return Promise.race([
-            // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-            fetch('http://' + host + ':' + port + '/ping').then(function (response) {
-              return response.text();
-            }),
-            new Promise((_resolve, reject) => {
-              setTimeout(reject, 5000);
-            }),
-          ])
-            .then(function (pong) {
-              return pong == 'pong' ? host : null;
-            })
-            .catch(function () {
-              return null;
-            });
-        }),
-      ).then(function (hosts) {
-        callback(
-          hosts.find(function (host) {
-            return host != null;
-          }),
-        );
-      });
-    },
-    addresses,
-    port,
-  );
+  creeveyServerHost = await browser.executeAsyncScript(fetcher, addresses, port);
 
   if (creeveyServerHost == null) throw new Error("Can't reach creevey server from a browser");
 }
@@ -701,7 +699,7 @@ export async function getBrowser(config: Config, options: Options & { browser: s
         () => browser?.manage().setTimeouts({ pageLoad: 60000, script: 60000 }),
         () => browser && openStorybookPage(browser, realAddress, config.resolveStorybookUrl),
         () => browser && waitForStorybook(browser),
-        () => browser && resolveCreeveyHost(browser, options.port),
+        () => browser && resolveCreeveyHost(browser, options.port, config.host),
         () => browser && updateBrowserGlobalVariables(browser),
         () => _storybookGlobals && browser && updateStorybookGlobals(browser, _storybookGlobals),
         // NOTE: Selenium draws automation toolbar with some delay after webdriver initialization
