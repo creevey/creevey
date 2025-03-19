@@ -29,7 +29,7 @@ export default async function (options: Options): Promise<void> {
     await startWebdriverServer(config, options);
   }
 
-  if (cluster.isPrimary) {
+  if (cluster.isPrimary && process.env.CI !== 'true') {
     const url = await getStorybookUrl(config);
 
     if (!url) {
