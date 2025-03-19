@@ -1,0 +1,5 @@
+{
+  "image": "mcr-proxy.kontur.host/devcontainers/typescript-node:20",
+  "updateRemoteUserUID": true
+}
+
