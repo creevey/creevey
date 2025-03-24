@@ -1,7 +1,8 @@
-import { BrowserConfig } from '../../src/types.js';
+import { BrowserConfigObject } from '../../src/types.js';
 
-const config: BrowserConfig = {
+const config: BrowserConfigObject = {
   browserName: 'firefox',
+  limit: 2,
   viewport: { width: 1024, height: 768 },
 };
 

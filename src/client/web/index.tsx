@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { CreeveyApp } from './CreeveyApp.js';
 
 import { initCreeveyClientApi, CreeveyClientApi } from '../shared/creeveyClientApi.js';
@@ -55,9 +55,10 @@ const CreeveyAppAsync = React.lazy(async () => {
   };
 });
 
-ReactDOM.render(
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const root = createRoot(document.getElementById('root')!);
+root.render(
   <Suspense fallback={<CreeveyLoader />}>
     <CreeveyAppAsync />
   </Suspense>,
-  document.getElementById('root'),
 );

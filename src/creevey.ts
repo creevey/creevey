@@ -1,9 +1,9 @@
 import cluster from 'cluster';
 import minimist from 'minimist';
 import creevey from './server/index.js';
-import { noop, Options } from './types.js';
+import { Options } from './types.js';
 import { emitWorkerMessage } from './server/messages.js';
-import { isShuttingDown, shutdown, shutdownWorkers } from './server/utils.js';
+import { isShuttingDown, shutdownWorkers } from './server/utils.js';
 import Logger from 'loglevel';
 import { logger, setRootName } from './server/logger.js';
 
@@ -15,24 +15,45 @@ function shutdownOnException(reason: unknown): void {
   logger().error(error);
 
   process.exitCode = -1;
-  if (cluster.isWorker) emitWorkerMessage({ type: 'error', payload: { error } });
+  if (cluster.isWorker) emitWorkerMessage({ type: 'error', payload: { subtype: 'unknown', error } });
   if (cluster.isPrimary) void shutdownWorkers();
 }
 
 process.on('uncaughtException', shutdownOnException);
 process.on('unhandledRejection', shutdownOnException);
-if (cluster.isWorker) process.on('SIGINT', noop);
-if (cluster.isPrimary) process.on('SIGINT', shutdown);
+// TODO SIGINT Stuck with selenium
+process.on('SIGINT', () => {
+  if (isShuttingDown.current) {
+    process.exit(-1);
+  }
+  isShuttingDown.current = true;
+});
 
 const argv = minimist<Options>(process.argv.slice(2), {
-  string: ['browser', 'config', 'reporter', 'reportDir', 'screenDir', 'storybookUrl'],
-  boolean: ['debug', 'trace', 'ui', 'saveReport', 'tests'],
-  default: { port: 3000, saveReport: true },
-  alias: { port: 'p', config: 'c', debug: 'd', update: 'u' },
+  string: ['browser', 'config', 'reporter', 'reportDir', 'screenDir', 'gridUrl', 'storybookUrl', 'storybookPort'],
+  boolean: ['debug', 'trace', 'ui', 'odiff', 'noDocker'],
+  default: { port: '3000' },
+  alias: { port: 'p', config: 'c', debug: 'd', update: 'u', storybookStart: 's' },
 });
 
 if ('port' in argv && !isNaN(argv.port)) argv.port = Number(argv.port);
 if ('browser' in argv && argv.browser) setRootName(argv.browser);
+
+// eslint-disable-next-line @typescript-eslint/no-deprecated
+if (cluster.isPrimary && argv.reporter) {
+  logger().warn(`--reporter option has been removed please describe reporter in config file:
+    import { reporters } from 'mocha';
+
+    const config = {
+      reporter: reporters.${
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
+        argv.reporter
+      },
+    };
+
+    export default config;
+  `);
+}
 
 // @ts-expect-error: define log level for storybook
 global.LOGLEVEL = argv.trace ? 'trace' : argv.debug ? 'debug' : 'warn';

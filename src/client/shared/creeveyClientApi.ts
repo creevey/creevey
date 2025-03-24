@@ -12,6 +12,7 @@ export interface CreeveyClientApi {
 
 export async function initCreeveyClientApi(): Promise<CreeveyClientApi> {
   let clientApiResolver: (api: CreeveyClientApi) => void = noop;
+  let clientApiRejecter: (error: Error | Event) => void = noop;
   const updateListeners = new Set<(update: CreeveyUpdate) => void>();
   let statusRequest: Promise<CreeveyStatus> | null = null;
   let statusResolver: (status: CreeveyStatus) => void = noop;
@@ -21,6 +22,10 @@ export async function initCreeveyClientApi(): Promise<CreeveyClientApi> {
   function send(request: Request): void {
     ws.send(JSON.stringify(request));
   }
+
+  ws.addEventListener('error', (event) => {
+    clientApiRejecter(event);
+  });
 
   ws.addEventListener('open', () => {
     clientApiResolver({
@@ -64,5 +69,8 @@ export async function initCreeveyClientApi(): Promise<CreeveyClientApi> {
   });
   // TODO Reconnect
 
-  return new Promise((resolve) => (clientApiResolver = resolve));
+  return new Promise((resolve, reject) => {
+    clientApiResolver = resolve;
+    clientApiRejecter = reject;
+  });
 }

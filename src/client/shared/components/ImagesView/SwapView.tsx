@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { JSX, useCallback, useEffect, useRef, useState } from 'react';
 import { Loader } from '@storybook/components';
 import { styled, withTheme } from '@storybook/theming';
 import { ViewPropsWithTheme, getBorderColor, themeBorderColors } from './common.js';
@@ -45,6 +45,24 @@ export const SwapView = withTheme(({ theme, expect, actual, diff }: ViewPropsWit
   const handleChangeView = useCallback((): void => {
     setImage((prevImage) => (prevImage == 'actual' ? 'expect' : 'actual'));
   }, []);
+
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.code === 'Space' && e.altKey) {
+        e.preventDefault();
+        handleChangeView();
+      }
+    },
+    [handleChangeView],
+  );
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown, false);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown, false);
+    };
+  }, [handleKeyDown]);
 
   useEffect(() => {
     if (loaded) readyForCapture();

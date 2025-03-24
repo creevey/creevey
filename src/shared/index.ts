@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { Parameters } from '@storybook/csf';
+import type { Parameters } from '@storybook/csf';
 import { SetStoriesData, StoriesRaw, CreeveyStoryParams, StoryInput } from '../types.js';
 import { deserializeRegExp, isSerializedRegExp, isRegExp, serializeRegExp } from './serializeRegExp.js';
 
