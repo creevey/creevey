@@ -35,7 +35,7 @@ async function startWebdriverServer(browser: string, config: Config, options: Op
       if (cluster.isPrimary) return undefined;
 
       const { browserName } = config.browsers[browser] as BrowserConfigObject;
-      return `creevey://${resolvePlaywrightBrowserType(browserName)}.playwright`;
+      return `creevey://${resolvePlaywrightBrowserType(browserName)}`;
     }
 
     const {
@@ -48,24 +48,21 @@ async function startWebdriverServer(browser: string, config: Config, options: Op
       const { browserName } = config.browsers[browser] as BrowserConfigObject;
 
       const imageName = `creevey/${browserName}:v${version}`;
-      const host = await startPlaywrightContainer(imageName, options.debug);
+      const host = await startPlaywrightContainer(imageName, browser, config, options.debug);
 
       return host;
     } else {
       const { playwrightDockerFile } = await import('./playwright/docker-file.js');
-      const browsers = [
-        ...new Set(
-          Object.values(config.browsers).map(
-            (c) => [(c as BrowserConfigObject).browserName, (c as BrowserConfigObject).playwrightOptions] as const,
-          ),
-        ),
-      ];
+      const {
+        default: { version: creeveyVersion },
+      } = await import('../../package.json', { with: { type: 'json' } });
+      const browsers = [...new Set(Object.values(config.browsers).map((c) => (c as BrowserConfigObject).browserName))];
       await Promise.all(
-        browsers.map(async ([browserName, launchOptions]) => {
+        browsers.map(async (browserName) => {
           const imageName = `creevey/${browserName}:v${version}`;
-          const dockerfile = playwrightDockerFile(browserName, version, launchOptions);
+          const dockerfile = await playwrightDockerFile(browserName, version);
 
-          await buildImage(imageName, dockerfile);
+          await buildImage(imageName, creeveyVersion, dockerfile);
         }),
       );
 

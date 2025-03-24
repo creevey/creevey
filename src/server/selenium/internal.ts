@@ -249,7 +249,7 @@ export class InternalBrowser {
         const rects = await this.#browser.executeScript<
           { elementRect: ElementRect; windowRect: ElementRect } | undefined
         >(function (selector: string): { elementRect: ElementRect; windowRect: ElementRect } | undefined {
-          window.scrollTo(0, 0); // TODO Maybe we should remove same code from `resetMousePosition`
+          window.scrollTo(0, 0);
           // eslint-disable-next-line no-var
           var element = document.querySelector(selector);
           if (!element) return;
@@ -297,12 +297,10 @@ export class InternalBrowser {
         //   ? context
         //     ? await context.captureElementScreenshot(await element.getId())
         //     : await browser.findElement(By.css(captureElement)).takeScreenshot()
-        //   : // TODO pointer-events: none, need to research
-        //     await takeCompositeScreenshot(browser, windowRect, elementRect);
+        //   : await takeCompositeScreenshot(browser, windowRect, elementRect);
         screenshot = isFitIntoViewport
           ? await this.#browser.findElement(By.css(captureElement)).takeScreenshot()
-          : // TODO pointer-events: none, need to research
-            await this.takeCompositeScreenshot(windowRect, elementRect);
+          : await this.takeCompositeScreenshot(windowRect, elementRect);
 
         logger().debug(`${chalk.cyan(captureElement)} is captured`);
       }
@@ -503,7 +501,6 @@ export class InternalBrowser {
     }
 
     try {
-      // TODO Pageload timeout 10s
       // NOTE: getUrlChecker already calls `browser.get` so we don't need another one
       await resolveStorybookUrl(appendIframePath(storybookUrl), (url) => this.checkUrl(url));
     } catch (error) {
@@ -541,7 +538,7 @@ export class InternalBrowser {
   }
 
   private async waitForStorybook(): Promise<void> {
-    logger().debug('Waiting for `setStories` event to make sure that storybook is initiated');
+    logger().debug('Waiting for Storybook to initiate');
 
     const isTimeout = await Promise.race([
       new Promise<boolean>((resolve) => {
@@ -554,9 +551,6 @@ export class InternalBrowser {
         do {
           // TODO Research a different way to ensure storybook is initiated
           wait = await this.#browser.executeScript<boolean>(function (SET_GLOBALS: string): boolean {
-            // TODO Maybe use
-            // import { global } from '@storybook/global';
-            // global.IS_STORYBOOK
             if (typeof window.__STORYBOOK_ADDONS_CHANNEL__ == 'undefined') return true;
             if (window.__STORYBOOK_ADDONS_CHANNEL__.last(SET_GLOBALS) == undefined) return true;
             return false;
@@ -566,8 +560,7 @@ export class InternalBrowser {
       })(),
     ]);
 
-    // TODO Change the message to describe a reason why it might happen
-    if (isTimeout) throw new Error('Failed to wait `setStories` event');
+    if (isTimeout) throw new Error('Failed to wait Storybook init');
   }
 
   private async updateStorybookGlobals(): Promise<void> {

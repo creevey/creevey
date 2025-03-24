@@ -42,7 +42,6 @@ export class SeleniumWebdriver extends CreeveyWebdriverBase {
 
   getSessionId(): Promise<string> {
     if (!this.#browser) {
-      // TODO Describe the error
       throw new Error('Browser is not initialized');
     }
 
@@ -89,7 +88,6 @@ export class SeleniumWebdriver extends CreeveyWebdriverBase {
 
   async loadStoriesFromBrowser(): Promise<StoriesRaw> {
     if (!this.#browser) {
-      // TODO Describe the error
       throw new Error('Browser is not initialized');
     }
 
@@ -98,7 +96,6 @@ export class SeleniumWebdriver extends CreeveyWebdriverBase {
 
   afterTest(test: ServerTest): Promise<void> {
     if (!this.#browser) {
-      // TODO Describe the error
       throw new Error('Browser is not initialized');
     }
 
@@ -110,7 +107,6 @@ export class SeleniumWebdriver extends CreeveyWebdriverBase {
     ignoreElements?: string | string[] | null,
   ): Promise<Buffer> {
     if (!this.#browser) {
-      // TODO Describe the error
       throw new Error('Browser is not initialized');
     }
 
@@ -119,7 +115,6 @@ export class SeleniumWebdriver extends CreeveyWebdriverBase {
 
   protected waitForComplete(callback: (isCompleted: boolean) => void): void {
     if (!this.#browser) {
-      // TODO Describe the error
       throw new Error('Browser is not initialized');
     }
 
@@ -128,7 +123,6 @@ export class SeleniumWebdriver extends CreeveyWebdriverBase {
 
   protected async selectStory(id: string, waitForReady?: boolean): Promise<boolean> {
     if (!this.#browser) {
-      // TODO Describe the error
       throw new Error('Browser is not initialized');
     }
 
@@ -137,7 +131,6 @@ export class SeleniumWebdriver extends CreeveyWebdriverBase {
 
   protected async updateStoryArgs(story: StoryInput, updatedArgs: Args): Promise<void> {
     if (!this.#browser) {
-      // TODO Describe the error
       throw new Error('Browser is not initialized');
     }
 

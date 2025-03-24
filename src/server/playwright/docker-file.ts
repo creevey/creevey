@@ -1,10 +1,12 @@
+import { readFile } from 'fs/promises';
+import { pathToFileURL } from 'url';
 import semver from 'semver';
 import { exec } from 'shelljs';
-import { LaunchOptions } from 'playwright-core';
-import { resolvePlaywrightBrowserType } from '../utils';
+
+const importMetaUrl = pathToFileURL(__filename).href;
 
 // TODO Support custom docker images
-export function playwrightDockerFile(browser: string, version: string, serverOptions?: LaunchOptions): string {
+export async function playwrightDockerFile(browser: string, version: string): Promise<string> {
   const sv = semver.coerce(version);
 
   let npmRegistry;
@@ -14,14 +16,19 @@ export function playwrightDockerFile(browser: string, version: string, serverOpt
     /* noop */
   }
 
+  const indexJs = await readFile(new URL('./index-source.mjs', importMetaUrl), 'utf-8');
+
   return `
 FROM node:lts
 
 WORKDIR /creevey
 
 RUN echo "{ \\"type\\": \\"module\\" }" > package.json && \\
-    echo "import { ${resolvePlaywrightBrowserType(browser)} as browser } from 'playwright-core';" >> index.js && \\
-    echo "const ws = await browser.launchServer({ ...${JSON.stringify(serverOptions)}, port: 4444, wsPath: 'creevey' })" >> index.js && \\${
+    ${indexJs
+      .split('\n')
+      .map((line) => `echo "${line.replace(/"/g, '\\"')}" >> index.js && \\`)
+      .join('\n')}
+    ${
       npmRegistry
         ? `
     echo "registry=${npmRegistry}" > .npmrc && \\`

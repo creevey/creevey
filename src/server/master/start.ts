@@ -109,7 +109,7 @@ export async function start(
         })
         .finally(() => {
           // NOTE: Take some time to kill processes
-          void shutdownWorkers().then(() => setTimeout(() => process.exit(), 500));
+          void shutdownWorkers().then(() => setTimeout(() => process.exit(), 1_000));
         });
     });
     // TODO grep

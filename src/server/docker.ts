@@ -5,6 +5,7 @@ import Dockerode, { Container } from 'dockerode';
 import { DockerAuth } from '../types.js';
 import { subscribeOn } from './messages.js';
 import { logger } from './logger.js';
+import { waitForBrowserClose } from './webdriver.js';
 
 const docker = new Dockerode();
 
@@ -58,12 +59,13 @@ export async function pullImages(
   }
 }
 
-export async function buildImage(imageName: string, dockerfile: string): Promise<void> {
+export async function buildImage(imageName: string, version: string, dockerfile: string): Promise<void> {
   const images = await docker.listImages({ filters: { label: [`creevey=${imageName}`] } });
 
-  if (images.at(0)) {
+  const containers = await docker.listContainers({ all: true, filters: { label: [`creevey=${imageName}`] } });
+  if (containers.length > 0) {
     await Promise.all(
-      (await docker.listContainers({ all: true, filters: { label: [`creevey=${imageName}`] } })).map(async (info) => {
+      containers.map(async (info) => {
         const container = docker.getContainer(info.Id);
         try {
           await container.remove({ force: true });
@@ -72,6 +74,23 @@ export async function buildImage(imageName: string, dockerfile: string): Promise
         }
       }),
     );
+  }
+
+  const oldImages = images.filter((info) => info.Labels.version !== version);
+  if (oldImages.length > 0) {
+    await Promise.all(
+      oldImages.map(async (info) => {
+        const image = docker.getImage(info.Id);
+        try {
+          await image.remove({ force: true });
+        } catch {
+          /* noop */
+        }
+      }),
+    );
+  }
+
+  if (oldImages.length !== images.length) {
     logger().info(`Image ${imageName} already exists`);
     return;
   }
@@ -91,7 +110,7 @@ export async function buildImage(imageName: string, dockerfile: string): Promise
       // @ts-expect-error Type incompatibility AsyncIterator and AsyncIterableIterator
       pack,
       // TODO Support buildkit decode grpc (version: '2')
-      { t: imageName, labels: { creevey: imageName }, version: '1' },
+      { t: imageName, labels: { creevey: imageName, version }, version: '1' },
       (buildError: Error | null, stream) => {
         if (buildError || !stream) {
           // spinner.error(buildError?.message);
@@ -151,6 +170,7 @@ export async function runImage(
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       subscribeOn('shutdown', async () => {
         try {
+          await Promise.race([waitForBrowserClose(), new Promise((resolve) => setTimeout(resolve, 2_000))]);
           await container.remove({ force: true });
         } catch {
           /* noop */

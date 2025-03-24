@@ -150,7 +150,6 @@ export interface BrowserConfigObject {
       screenshots?: boolean;
       snapshots?: boolean;
       sources?: boolean;
-      path: string;
     };
   };
 }

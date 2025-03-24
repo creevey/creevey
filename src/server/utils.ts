@@ -100,7 +100,7 @@ export async function shutdownWorkers(): Promise<void> {
           new Promise<void>((resolve) => {
             const timeout = setTimeout(() => {
               if (worker.process.pid) void killTree(worker.process.pid);
-            }, 10000);
+            }, 10_000);
             worker.on('exit', () => {
               clearTimeout(timeout);
               resolve();

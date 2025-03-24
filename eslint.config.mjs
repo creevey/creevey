@@ -25,7 +25,7 @@ const config = tseslint.config(
 
       parserOptions: {
         projectService: {
-          allowDefaultProject: ['*.{m,}js'],
+          allowDefaultProject: ['*.{m,}js', 'src/server/playwright/index-source.mjs'],
           defaultProject: 'tsconfig.json',
         },
       },

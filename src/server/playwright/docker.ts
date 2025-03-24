@@ -1,9 +1,17 @@
+import assert from 'assert';
 import { runImage } from '../docker';
 import { emitWorkerMessage, subscribeOn } from '../messages';
-import { isInsideDocker } from '../utils';
+import { getCreeveyCache, isInsideDocker, resolvePlaywrightBrowserType } from '../utils';
 import { LOCALHOST_REGEXP } from '../webdriver';
+import type { BrowserConfigObject, Config } from '../../types';
 
-export async function startPlaywrightContainer(imageName: string, debug: boolean): Promise<string> {
+export async function startPlaywrightContainer(
+  imageName: string,
+  browser: string,
+  config: Config,
+  debug: boolean,
+): Promise<string> {
+  const { browserName, playwrightOptions } = config.browsers[browser] as BrowserConfigObject;
   const port = await new Promise<number>((resolve) => {
     subscribeOn('worker', (message) => {
       if (message.type == 'port') {
@@ -13,13 +21,18 @@ export async function startPlaywrightContainer(imageName: string, debug: boolean
     emitWorkerMessage({ type: 'port', payload: { port: -1 } });
   });
 
+  const cacheDir = await getCreeveyCache();
+
+  assert(cacheDir, "Couldn't get cache directory");
+
   const host = await runImage(
     imageName,
-    [],
+    [JSON.stringify({ ...playwrightOptions, browser: resolvePlaywrightBrowserType(browserName) })],
     {
       ExposedPorts: { [`${port}/tcp`]: {} },
       HostConfig: {
         PortBindings: { ['4444/tcp']: [{ HostPort: `${port}` }] },
+        Binds: [`${cacheDir}/${process.pid}:/creevey/traces`],
       },
     },
     debug,

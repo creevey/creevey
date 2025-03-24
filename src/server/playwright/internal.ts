@@ -1,8 +1,10 @@
-import { Browser, BrowserType, Page, chromium, firefox, webkit } from 'playwright-core';
+import path from 'path';
+import { Browser, BrowserContext, BrowserType, Page, chromium, firefox, webkit } from 'playwright-core';
 import chalk from 'chalk';
 import { v4 } from 'uuid';
 import Logger from 'loglevel';
 import prefix from 'loglevel-plugin-prefix';
+import type { Args } from '@storybook/csf';
 import {
   BrowserConfigObject,
   Config,
@@ -11,13 +13,18 @@ import {
   StoryInput,
   StorybookEvents,
   StorybookGlobals,
-  noop,
 } from '../../types';
-import { subscribeOn } from '../messages';
-import { appendIframePath, getAddresses, LOCALHOST_REGEXP, resolveStorybookUrl, storybookRootID } from '../webdriver';
-import { isShuttingDown, resolvePlaywrightBrowserType, runSequence } from '../utils';
+import {
+  appendIframePath,
+  getAddresses,
+  LOCALHOST_REGEXP,
+  openBrowser,
+  resolveStorybookUrl,
+  storybookRootID,
+} from '../webdriver';
+import { getCreeveyCache, isShuttingDown, resolvePlaywrightBrowserType, runSequence } from '../utils';
 import { colors, logger } from '../logger';
-import type { Args } from '@storybook/csf';
+import assert from 'assert';
 
 const browsers = {
   chromium,
@@ -59,22 +66,34 @@ async function tryConnect(type: BrowserType, gridUrl: string): Promise<Browser |
 export class InternalBrowser {
   #isShuttingDown = false;
   #browser: Browser;
+  #context: BrowserContext;
   #page: Page;
+  #traceDir: string;
   #sessionId: string = v4();
   #serverHost: string | null = null;
   #serverPort: number;
+  #debug: boolean;
   #storybookGlobals?: StorybookGlobals;
-  #unsubscribe: () => void = noop;
-  constructor(browser: Browser, page: Page, port: number, storybookGlobals?: StorybookGlobals) {
+  #closeBrowser = openBrowser();
+  constructor(
+    browser: Browser,
+    context: BrowserContext,
+    page: Page,
+    traceDir: string,
+    port: number,
+    debug: boolean,
+    storybookGlobals?: StorybookGlobals,
+  ) {
     this.#browser = browser;
+    this.#context = context;
     this.#page = page;
+    this.#traceDir = traceDir;
     this.#serverPort = port;
+    this.#debug = debug;
     this.#storybookGlobals = storybookGlobals;
-    this.#unsubscribe = subscribeOn('shutdown', () => {
-      void this.closeBrowser();
-    });
   }
 
+  // TODO Expose #browser and #context in tests
   get browser() {
     return this.#page;
   }
@@ -87,19 +106,21 @@ export class InternalBrowser {
     if (this.#isShuttingDown) return;
 
     this.#isShuttingDown = true;
-    this.#unsubscribe();
 
     try {
+      if (this.#debug) await this.#context.tracing.stop({ path: path.join(this.#traceDir, 'trace.zip') });
       await this.#page.close();
+      if (this.#debug) await this.#page.video()?.saveAs(path.join(this.#traceDir, 'video.webm'));
+      await this.#context.close();
       await this.#browser.close();
-    } catch (_) {
+    } catch {
       /* noop */
+    } finally {
+      this.#closeBrowser();
     }
   }
 
   async takeScreenshot(captureElement?: string | null, ignoreElements?: string | string[] | null): Promise<Buffer> {
-    // TODO Implement features from selenium `takeScreenshot`
-    // TODO Do we need scroll bar hack from selenium?
     const ignore = Array.isArray(ignoreElements) ? ignoreElements : ignoreElements ? [ignoreElements] : [];
     const mask = ignore.map((el) => this.#page.locator(el));
     if (captureElement) {
@@ -186,14 +207,24 @@ export class InternalBrowser {
       seleniumCapabilities,
       playwrightOptions,
     } = browserConfig;
+    const parsedUrl = new URL(gridUrl);
+    const tracesDir = path.join(
+      playwrightOptions?.tracesDir ?? path.join(config.reportDir, 'traces'),
+      process.pid.toString(),
+    );
+    const cacheDir = await getCreeveyCache();
+
+    assert(cacheDir, "Couldn't get cache directory");
 
     let browser: Browser | null = null;
 
-    const parsedUrl = new URL(gridUrl);
     if (parsedUrl.protocol === 'ws:') {
       browser = await tryConnect(browsers[resolvePlaywrightBrowserType(browserConfig.browserName)], gridUrl);
     } else if (parsedUrl.protocol === 'creevey:') {
-      browser = await browsers[resolvePlaywrightBrowserType(browserConfig.browserName)].launch(playwrightOptions);
+      browser = await browsers[resolvePlaywrightBrowserType(browserConfig.browserName)].launch({
+        ...playwrightOptions,
+        tracesDir: path.join(cacheDir, `${process.pid}`),
+      });
     } else {
       if (browserConfig.browserName !== 'chrome') {
         logger().error("Playwright's Selenium Grid feature supports only chrome browser");
@@ -203,20 +234,29 @@ export class InternalBrowser {
       process.env.SELENIUM_REMOTE_URL = gridUrl;
       process.env.SELENIUM_REMOTE_CAPABILITIES = JSON.stringify(seleniumCapabilities);
 
-      browser = await chromium.launch(playwrightOptions);
+      browser = await chromium.launch({ ...playwrightOptions, tracesDir: path.join(cacheDir, `${process.pid}`) });
     }
 
     if (!browser) {
       return null;
     }
 
-    // TODO Record video
-    const page = await browser.newPage();
-    // TODO Support tracing
-    // if (playwrightOptions?.trace) {
-    //   const context = page.context();
-    //   await context.tracing.start(playwrightOptions.trace);
-    // }
+    const context = await browser.newContext({
+      recordVideo: options.debug
+        ? {
+            dir: path.join(cacheDir, `${process.pid}`),
+            size: viewport,
+          }
+        : undefined,
+      screen: viewport,
+      viewport,
+    });
+    const page = await context.newPage();
+    if (options.debug) {
+      await context.tracing.start(
+        Object.assign({ screenshots: true, snapshots: true, sources: true }, playwrightOptions?.trace),
+      );
+    }
 
     if (logger().getLevel() <= Logger.levels.DEBUG) {
       page.on('console', (msg) => {
@@ -224,15 +264,20 @@ export class InternalBrowser {
       });
     }
 
-    // TODO Add debug output
-
-    const internalBrowser = new InternalBrowser(browser, page, options.port, _storybookGlobals);
+    const internalBrowser = new InternalBrowser(
+      browser,
+      context,
+      page,
+      tracesDir,
+      options.port,
+      options.debug,
+      _storybookGlobals,
+    );
 
     try {
       if (isShuttingDown.current) return null;
       const done = await internalBrowser.init({
         browserName,
-        viewport,
         storybookUrl: address,
       });
 
@@ -250,15 +295,7 @@ export class InternalBrowser {
     }
   }
 
-  private async init({
-    browserName,
-    viewport,
-    storybookUrl,
-  }: {
-    browserName: string;
-    viewport?: { width: number; height: number };
-    storybookUrl: string;
-  }) {
+  private async init({ browserName, storybookUrl }: { browserName: string; storybookUrl: string }) {
     const sessionId = this.#sessionId;
 
     prefix.apply(logger(), {
@@ -278,7 +315,6 @@ export class InternalBrowser {
         () => this.updateStorybookGlobals(),
         () => this.resolveCreeveyHost(),
         () => this.updateBrowserGlobalVariables(),
-        () => this.resizeViewport(viewport),
       ],
       () => !this.#isShuttingDown,
     );
@@ -291,7 +327,6 @@ export class InternalBrowser {
     }
 
     try {
-      // TODO this.#page.setDefaultNavigationTimeout(60000);
       const resolvedUrl = await resolveStorybookUrl(appendIframePath(storybookUrl), (url) => this.checkUrl(url));
       await this.#page.goto(resolvedUrl);
     } catch (error) {
@@ -317,8 +352,7 @@ export class InternalBrowser {
   }
 
   private async waitForStorybook(): Promise<void> {
-    // TODO Duplicated code with selenium
-    logger().debug('Waiting for `setStories` event to make sure that storybook is initiated');
+    logger().debug('Waiting for Storybook to initiate');
 
     const isTimeout = await Promise.race([
       new Promise<boolean>((resolve) => {
@@ -331,7 +365,6 @@ export class InternalBrowser {
         do {
           try {
             // TODO Research a different way to ensure storybook is initiated
-            // TODO Maybe use `__STORYBOOK_PREVIEW__.extract()`
             wait = await this.#page.evaluate((SET_GLOBALS: string) => {
               if (typeof window.__STORYBOOK_ADDONS_CHANNEL__ == 'undefined') return true;
               if (window.__STORYBOOK_ADDONS_CHANNEL__.last(SET_GLOBALS) == undefined) return true;
@@ -347,10 +380,10 @@ export class InternalBrowser {
       })(),
     ]);
 
-    // TODO Change the message to describe a reason why it might happen
-    if (isTimeout) throw new Error('Failed to wait `setStories` event');
+    if (isTimeout) throw new Error('Failed to wait Storybook init');
   }
 
+  // TODO Doesn't work for some reason, maybe because of race-condition
   private async triggerViteReload(): Promise<void> {
     // NOTE: On the first load, Vite might try to optimize some dependencies and reload the page
     // We need to trigger reload earlier to avoid unnecessary reloads further
@@ -408,13 +441,6 @@ export class InternalBrowser {
       },
       [process.pid, this.#serverHost, this.#serverPort] as const,
     );
-  }
-
-  private async resizeViewport(viewport?: { width: number; height: number }): Promise<void> {
-    if (!viewport) return;
-
-    logger().debug('Resizing viewport to', viewport);
-    await this.#page.setViewportSize(viewport);
   }
 
   private async resetMousePosition(): Promise<void> {
