@@ -16,7 +16,7 @@ import { deserializeStory } from '../../shared/index.js';
 
 const importMetaUrl = pathToFileURL(__filename).href;
 
-export function start(reportDir: string, port: number, ui: boolean): (api: CreeveyApi) => void {
+export function start(reportDir: string, port: number, ui: boolean, host?: string): (api: CreeveyApi) => void {
   let resolveApi: (api: CreeveyApi) => void = noop;
   let setStoriesCounter = 0;
   const creeveyApi = new Promise<CreeveyApi>((resolve) => (resolveApi = resolve));
@@ -98,7 +98,7 @@ export function start(reportDir: string, port: number, ui: boolean): (api: Creev
     logger().error(error);
   });
 
-  server.listen(port);
+  server.listen(port, host);
 
   subscribeOn('shutdown', () => {
     server.close();

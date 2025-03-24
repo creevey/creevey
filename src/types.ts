@@ -257,6 +257,13 @@ export interface Config {
    * @default false
    */
   disableTelemetry?: boolean;
+
+  /**
+   * Define a host where is creevey-server hosting.
+   * It can be used for networks behind NAT
+   */
+
+  host?: string;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
