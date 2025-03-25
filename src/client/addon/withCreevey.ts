@@ -1,5 +1,5 @@
-import type { Renderer, StoryContextForEnhancers } from '@storybook/csf';
-import { makeDecorator, PreviewWeb, StoryStore } from '@storybook/preview-api';
+import type { Renderer, LegacyStoryFn, StoryContext, StoryContextForEnhancers } from '@storybook/types';
+import type { PreviewWeb, StoryStore } from '@storybook/preview-api';
 import { Channel } from '@storybook/channels';
 import {
   CaptureOptions,
@@ -143,7 +143,7 @@ let creeveyReady: () => void;
 let setStoriesCounter = 0;
 let globals = {};
 
-export function withCreevey(): ReturnType<typeof makeDecorator> {
+export function withCreevey() {
   const addonsChannel = (): Channel => window.__STORYBOOK_ADDONS_CHANNEL__;
 
   let isAnimationDisabled = false;
@@ -289,37 +289,31 @@ export function withCreevey(): ReturnType<typeof makeDecorator> {
   window.__CREEVEY_HAS_PLAY_COMPLETED_YET__ = hasPlayCompletedYet;
   window.__CREEVEY_SET_READY_FOR_CAPTURE__ = noop;
 
-  return makeDecorator({
-    name: 'withCreevey',
-    parameterName: 'creevey',
+  return (getStory: LegacyStoryFn, context: StoryContext): ReturnType<LegacyStoryFn> => {
+    // TODO Define proper types, like captureElement is a promise
+    const { captureElement } = (context.parameters.creevey = (context.parameters.creevey ?? {}) as CreeveyStoryParams);
+    Object.defineProperty(context.parameters.creevey, 'captureElement', {
+      get() {
+        switch (true) {
+          case captureElement === undefined:
+            return Promise.resolve(context.canvasElement);
+          case captureElement === null:
+            return Promise.resolve(document.documentElement);
+          case typeof captureElement == 'string':
+            return Promise.resolve((context.canvasElement as Element).querySelector(captureElement));
+          case typeof captureElement == 'function':
+            // TODO Define type for it
+            return Promise.resolve(
+              (captureElement as unknown as (ctx: typeof context) => Promise<HTMLElement> | HTMLElement)(context),
+            );
+        }
+      },
+      enumerable: true,
+      configurable: true,
+    });
 
-    wrapper: (getStory, context) => {
-      // TODO Define proper types, like captureElement is a promise
-      const { captureElement } = (context.parameters.creevey = (context.parameters.creevey ??
-        {}) as CreeveyStoryParams);
-      Object.defineProperty(context.parameters.creevey, 'captureElement', {
-        get() {
-          switch (true) {
-            case captureElement === undefined:
-              return Promise.resolve(context.canvasElement);
-            case captureElement === null:
-              return Promise.resolve(document.documentElement);
-            case typeof captureElement == 'string':
-              return Promise.resolve((context.canvasElement as Element).querySelector(captureElement));
-            case typeof captureElement == 'function':
-              // TODO Define type for it
-              return Promise.resolve(
-                (captureElement as unknown as (ctx: typeof context) => Promise<HTMLElement> | HTMLElement)(context),
-              );
-          }
-        },
-        enumerable: true,
-        configurable: true,
-      });
-
-      return getStory(context);
-    },
-  });
+    return getStory(context);
+  };
 }
 
 // TODO It's not accessible from the outside the package

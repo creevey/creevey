@@ -1,4 +1,4 @@
-import type { Args } from '@storybook/csf';
+import type { Args } from '@storybook/types';
 import chalk from 'chalk';
 import http from 'http';
 import https from 'https';

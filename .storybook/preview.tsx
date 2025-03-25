@@ -2,7 +2,7 @@ import React, { JSX } from 'react';
 import { ThemeProvider, themes, ensure } from '@storybook/theming';
 import { CreeveyContext } from '../src/client/web/CreeveyContext.js';
 import { noop } from '../src/types.js';
-import type { DecoratorFunction } from '@storybook/csf';
+import type { DecoratorFunction } from '@storybook/types';
 
 export const decorators: DecoratorFunction[] = [
   (storyFn, context): JSX.Element => (

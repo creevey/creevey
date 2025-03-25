@@ -1,4 +1,4 @@
-import type { StoryContextForEnhancers, DecoratorFunction } from '@storybook/csf';
+import type { StoryContextForEnhancers, DecoratorFunction } from '@storybook/types';
 import type { Worker as ClusterWorker } from 'cluster';
 import type Pixelmatch from 'pixelmatch';
 import type { ODiffOptions } from 'odiff-bin';
