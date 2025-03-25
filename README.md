@@ -1,7 +1,5 @@
 [<img width="274" alt="Creevey" src="https://user-images.githubusercontent.com/4607770/220418756-89cf4f54-ccb7-4086-a74c-a044ea1d2a61.png">](https://harrypotter.fandom.com/wiki/Colin_Creevey)
 
-**IMPORTANT** _Looking for any help with maintaining_
-
 Cross-browser screenshot testing tool for [Storybook](https://storybook.js.org/) with fancy UI Runner.
 
 [![Creevey downloads](https://img.shields.io/npm/dt/creevey)](https://www.npmjs.com/package/creevey)
@@ -28,19 +26,20 @@ It named after [Colin Creevey](https://harrypotter.fandom.com/wiki/Colin_Creevey
 - [Pre-requisites](#pre-requisites)
 - [How to Start](#how-to-start)
 - [Comparison with other tools](#comparison-with-other-tools)
-- [Config/Options](docs/config.md)
-- [Examples](https://github.com/wKich/creevey-examples)
-- Advanced usage
-  - [Write tests](docs/tests.md)
-  - [Use your Selenium Grid (LambdaTest/BrowserStack/SauceLabs/etc)](docs/grid.md)
+- [Config](docs/config.md)
+- [CLI commands](docs/cli.md)
+- [Storybook parameters](docs/storybook.md)
+- [Write interactive tests](docs/tests.md)
+- [Use your Selenium Grid (LambdaTest/BrowserStack/SauceLabs/etc)](docs/grid.md)
 - [Future plans](#future-plans)
 - [Known issues](#known-issues)
 - [Used by](#used-by)
 
 ## Pre-requisites
 
-- Make sure you have installed [Docker](https://www.docker.com/products/docker-desktop). But if you going to use your own separate Selenium Grid, you don't need `Docker`.
-- Supported Storybook versions: `^6.4.0`.
+- Make sure you have installed [Docker](https://www.docker.com/products/docker-desktop). If you are going to use Selenium Grid or run screenshot tests exclusively in CI you don't need Docker in that case.
+- Supported Storybook versions: >= 7.x.x
+- Supported Node.js versions: >= 18.x.x
 
 ## How to start
 
@@ -53,44 +52,38 @@ yarn add -D creevey
 - Add addon `creevey` into your storybook config
 
 ```js
-// .storybook/main.js
-module.exports = {
-  stories: [
-    /* ... */
-  ],
+// .storybook/main.ts
+const config: StorybookConfig = {
+  stories: [ /* ... */ ],
   addons: [
     /* ... */
     'creevey',
   ],
 };
+
+export default config;
 ```
 
-- Start storybook and then start Creevey UI Runner in separate terminal. (To start tests from CLI, run Creevey without `--ui` flag)
+- Start Creevey UI Runner, which starts Storybook automatically. (To start tests from CLI, run Creevey without `--ui` flag)
 
 ```bash
-yarn start-storybook -p 6006
-yarn creevey --ui
+yarn creevey -s --ui
 ```
 
-And that's it.
+- Open [http://localhost:3000](http://localhost:3000) in your browser. And that's it.
 
-**NOTE:** In first run you may noticed, that all your tests are failing, it because you don't have source screenshot images yet. If you think, that all images are acceptable, you may approve them all in one command `yarn creevey --update`.
+**NOTE:** In first run you may noticed, that all your tests are failing, it because you don't have source screenshot images yet. If you think, that all images are acceptable, you can approve them all from UI.
 
 **NOTE:** Creevey captures screenshot of the `#storybook-root` element and sometimes you need to capture a whole browser viewport. To achieve this you could define `captureElement` Creevey parameter for story or kind. Or you may pass any different css selector.
 
 ```tsx
 // stories/MyModal.stories.tsx
-
-// NOTE: Define parameter for all stories
 export default {
   title: 'MyModal',
-  parameters: { creevey: { captureElement: null } },
+  component: MyModal,
 };
 
-// NOTE: Or define it for specific one
-
-export const MyModalStory = () => <MyModal />;
-MyModalStory.parameters = { creevey: { captureElement: null } };
+export const MyModalStory = { creevey: { captureElement: null } };
 ```
 
 ## Comparison with other tools
@@ -109,18 +102,10 @@ MyModalStory.parameters = { creevey: { captureElement: null } };
 
 ## Future plans
 
-- Allow use different webdrivers not only `selenium`, but also `puppeteer` or `playwright`.
-- Add ability to ignore elements.
 - Allow to define different viewport sizes for specific stories or capture story with different args.
 - And more, check [TODO](TODO.md) for more details. Also feel free to ask about feature that you want
 
 ## Known issues
-
-### Creevey is trying to build storybook but fail or tests don't work
-
-This might happens because Creevey patches storybook webpack config and build nodejs bundle with stories meta information. And in some cases Creevey couldn't properly remove all unnecessary code cause of side-effects in stories files or you create stories dynamically. Try to rewrite such places. If it still doesn't help, [send to me](mailto:creevey@kich.dev) bundle that Creevey created (it located in `node_modules/creevey/.cache/creevey/storybook/main.js`)
-
-A little bit later I'll add possibility to run tests without building that bundle, so it fixes this issue.
 
 ### Docker-in-Docker
 
@@ -137,13 +122,6 @@ This cause to flaky screenshots. Possible solutions:
 - Increase threshold ratio in Creevey config `diffOptions: { threshold: 0.1 }`
 - Replace border to box-shadow `border: 1px solid red` -> `box-shadow: 0 0 0 1px red`
 - Set max retries to more than 5
-
-### You can't directly import `selenium-webdriver` package in story file
-
-Because tests defined in story parameters and `selenium-webdriver` depends on nodejs builtin packages. Storybook may fail to build browser bundle. To avoid import use these workarounds:
-
-- `.findElement(By.css('#storybook-root'))` -> `.findElement({ css: '#storybook-root' })`
-- `.sendKeys(Keys.ENTER)` -> `.sendKeys(this.keys.ENTER)`
 
 ## Used by
 

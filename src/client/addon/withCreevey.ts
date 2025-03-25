@@ -322,6 +322,7 @@ export function withCreevey(): ReturnType<typeof makeDecorator> {
   });
 }
 
+// TODO It's not accessible from the outside the package
 export async function capture(options?: CaptureOptions): Promise<void> {
   if (!isTestBrowser) return;
 

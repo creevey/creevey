@@ -1,215 +1,226 @@
-## Config/Options
+# Creevey Configuration Examples
 
-### CLI Options
+Creevey is highly configurable and can be tailored to your specific needs. Here are some examples of how to configure Creevey for your Storybook.
 
-- `--config` — Specify path to config file. Default `.creevey/config.js` or `creevey.config.js`
-- `--ui` — Start runner web server
-- `--update` — Approve all images from `report` directory
-- `--port` — Specify port for web server. Default `3000`
-- `--reportDir` — Path where reports will be stored
-- `--screenDir` — Path where reference images are located
-- `--debug` — Enable debug output
+## Zero Configuration
 
-### Creevey config
+The simplest way to get started with Creevey, just run it without any configuration:
 
-In default configuration Creevey take screenshots of `#storybook-root` element only for chrome browser in one concurrent instance, to run tests in different browsers or speedup tests and run in parallel, you need to define config file `.creevey/config.js`
+```bash
+yarn creevey -s
+```
+
+This will start Creevey with default settings, using Chrome as the browser and also start Storybook hosted at `http://localhost:6006`. Adding `--ui` flag will start the web server for the UI Runner.
+
+**NOTE** By default, Creevey uses Selenium WebDriver, but it's done for backward compatibility and it's recommended to define webdriver explicitly in the configuration.
 
 ```ts
-module.exports = {
+// creevey.config.ts
+import { SeleniumWebdriver } from 'creevey/selenium';
+
+const config = {
+  webdriver: SeleniumWebdriver,
+};
+
+// or use Playwright instead
+
+import { PlaywrightWebdriver } from 'creevey/playwright';
+
+const config = {
+  webdriver: PlaywrightWebdriver,
+};
+```
+
+## Basic Configuration
+
+The minimal configuration to test your stories might be:
+
+```ts
+// creevey.config.ts
+import { CreeveyConfig } from 'creevey';
+import { PlaywrightWebdriver } from 'creevey/playwright';
+
+const config: CreeveyConfig = {
+  webdriver: PlaywrightWebdriver,
+
+  // The URL where your Storybook is hosted
+  storybookUrl: 'http://localhost:9000',
+
+  // Define which browsers to use for testing
   browsers: {
-    chrome: {
-      browserName: 'chrome',
-      // Define initial viewport size
-      viewport: { width: 1024, height: 720 },
-      // Increase parallel sessions
+    chromium: {
+      // The browser type name which will be used by Playwright
+      browserName: 'chromium',
+      // Default viewport dimensions
+      viewport: { width: 1024, height: 768 },
+      // Limit of retries for failed tests
+      maxRetries: 2,
+    },
+  },
+};
+
+export default config;
+```
+
+## Multiple Browsers Configuration
+
+It's possible to est your stories across different browsers:
+
+```ts
+// creevey.config.ts
+import { CreeveyConfig } from 'creevey';
+import { PlaywrightWebdriver } from 'creevey/playwright';
+
+const config: CreeveyConfig = {
+  webdriver: PlaywrightWebdriver,
+
+  browsers: {
+    chromium: {
+      browserName: 'chromium',
+      // Amount of parallel browser sessions
       limit: 2,
     },
     firefox: {
       browserName: 'firefox',
-      viewport: { width: 1024, height: 720 },
+      limit: 2,
     },
   },
 };
+
+export default config;
 ```
 
-### All possible config options
+## Test stories with different themes
 
-:warning: **WARN** :warning: This config is just an example with all possible options. :warning: **WARN** :warning:
+Test your components with different themes:
 
 ```ts
-const path = require('path');
+// creevey.config.ts
+import { CreeveyConfig } from 'creevey';
+import { PlaywrightWebdriver } from 'creevey/playwright';
 
-module.exports = {
-  // Specify custom Selenium Grid url (see usage below)
-  // In most cases you don't need this option
-  gridUrl: '<gridUrl>/wd/hub',
+const config: CreeveyConfig = {
+  webdriver: PlaywrightWebdriver,
+  browsers: {
+    dark: {
+      browserName: 'chromium',
+      // Define a storybook globals which will be applied to the stories
+      _storybookGlobals: {
+        theme: 'dark',
+      },
+    },
+    light: {
+      browserName: 'chromium',
+      _storybookGlobals: {
+        theme: 'light',
+      },
+    },
+  },
+};
 
-  // Default Storybook url
-  storybookUrl: 'http://localhost:6006',
+export default config;
+```
 
-  // Command to automatically start Storybook if it is not running
-  storybookAutorunCmd: 'yarn storybook',
+## Using dedicated Selenium Grid server
 
-  // Where original images are stored
-  screenDir: path.join(__dirname, '../images'),
+Use Selenium Grid for distributed testing:
 
-  // Report directory that contains data from previous runs
-  reportDir: path.join(__dirname, '../report'),
+```ts
+// creevey.config.ts
+import { CreeveyConfig } from 'creevey';
+import { SeleniumWebdriver } from 'creevey/selenium';
+
+const config: CreeveyConfig = {
+  webdriver: SeleniumWebdriver,
+  // Selenium Grid connection settings
+  gridUrl: 'http://selenium-hub:4444/wd/hub',
+  browsers: {
+    chrome: {
+      browserName: 'chrome',
+      // You can define any additional selenium capabilities here
+      // https://w3c.github.io/webdriver/#capabilities
+      seleniumCapabilities: {
+        browserVersion: '128.0',
+        platformName: 'linux',
+      },
+    },
+  },
+};
+
+export default config;
+```
+
+## Playwright configuration options
+
+Leverage Playwright for testing:
+
+```ts
+// creevey.config.ts
+import { CreeveyConfig } from 'creevey';
+import { PlaywrightWebdriver } from 'creevey/playwright';
+
+const config: CreeveyConfig = {
+  webdriver: PlaywrightWebdriver,
+  browsers: {
+    chromium: {
+      browserName: 'chromium',
+      // Playwright-specific options
+      // https://playwright.dev/docs/api/class-browsertype#browser-type-launch-server
+      playwrightOptions: {
+        headless: false,
+        channel: 'chrome-canary',
+        slowMo: 50, // Slow down Playwright operations by 50ms
+      },
+    },
+  },
+};
+
+export default config;
+```
+
+## Advanced Configuration
+
+Comprehensive example combining multiple features and additional options:
+
+```ts
+// creevey.config.ts
+import path from 'path';
+import MochaJUnitReporter from 'mocha-junit-reporter';
+import { CreeveyConfig } from 'creevey';
+import { PlaywrightWebdriver } from 'creevey/playwright';
+
+const config: CreeveyConfig = {
+  webdriver: PlaywrightWebdriver,
+
+  // It's possible to resolve Storybook URL at the runtime
+  resolveStorybookUrl: () =>
+    fetch('https://example.com/resolve-ip')
+      .then((res) => res.text())
+      .then((data) => `http://${data}:6006`),
+
+  // Define custom reference screenshots directory
+  screenDir: path.join(process.cwd(), 'screenshots'),
+
+  // Define custom report directory
+  reportDir: path.join(process.cwd(), 'reports'),
+
+  // Define path where Creevey tests are located
+  testDir: path.join(process.cwd(), 'tests'),
+
+  // You can use any Mocha-like reporter
+  reporter: MochaJUnitReporter,
 
   // Pixelmatch options
   diffOptions: { threshold: 0.1 },
 
-  // How many times test should be retried before to consider it as failed
-  maxRetries: 2,
+  // Regex pattern to match test files
+  testsRegex: /\.creevey\.ts$/,
 
-  // Describe browsers and their options
+  // Disable using docker, to start browsers locally, it's useful for CI
+  useDocker: process.env.CI,
+
   browsers: {
-    // Shorthand declarations of browsers
-    chrome: true,
-    ff: 'firefox',
-
-    otherChrome: {
-      browserName: 'chrome',
-      // Define initial viewport size
-      viewport: { width: 1024, height: 720 },
-      // Increase parallel sessions
-      limit: 2,
-      /* Also you can define any browser capabilities here */
-      version: '86.0',
-      // It's possible to set Storybook's globals
-      // https://github.com/storybookjs/storybook/blob/v6.0.0/docs/essentials/toolbars-and-globals.md
-      // NOTE: This is an experimental feature and will be replaced in future
-      _storybookGlobals: {
-        myTheme: 'dark',
-      },
-    },
-
-    // You can override some global options for specific browser
-    ie11: {
-      browserName: 'internet explorer',
-      // Like user another Selenium Grid url
-      gridUrl: '<anotherGridUrl>/wd/hub',
-      // Or use different storybook instance
-      storybookUrl: 'http://mystoryhost:6007',
-      // And use you own docker image
-      // By default Creevey will use selenoid image according browser name and version:
-      // `selenoid/${browserName}:${version ?? 'latest'}` image
-      dockerImage: 'microsoft/ie:11.0',
-    },
-  },
-
-  // You may want to do something before tests started (for example start browserstack-local)
-  hooks: {
-    async before() {
-      /* ... */
-    },
-    async after() {
-      /* ... */
-    },
+    /* ... */
   },
 };
 ```
-
-### Storybook parameters
-
-Also you could define parameters on `global`, `kind` or `story` levels. All these parameters are deeply merged by Storybook for each story. But bear in mind when you define skip option as an array Storybook treats it as primitive value and doesn't merge with other skip options.
-
-```tsx
-// .storybook/preview.tsx
-export const parameters = {
-  creevey: {
-    // Skip all *hover tests in IE11 on the global level
-    skip: {
-      "hovers don't work in ie11": { in: 'ie11', tests: /.*hover$/ },
-    },
-  },
-};
-```
-
-```tsx
-import React from 'react';
-import { Meta, Story } from '@storybook/react';
-import { CreeveyMeta, CreeveyStory } from 'creevey';
-import MyComponent from './src/components/MyComponent';
-
-export default {
-  title: 'MyComponent'
-  parameters: {
-    creevey: {
-      // You could skip some browsers/stories or even specific tests
-      skip: {
-        "`MyComponent` doesn't support ie11": { in: 'ie11' },
-        "Loading stories are flaky in firefox": { in: 'firefox', stories: 'Loading' },
-        "`MyComponent` hovering doesn't work correctly": {
-          in: ['firefox', 'chrome'],
-          tests: /.*hover$/,
-        },
-      },
-    },
-  },
-} as Meta & CreeveyMeta;
-
-export const Basic: Story & CreeveyStory = () => <MyComponent />;
-Basic.parameters = {
-  creevey: {
-    captureElement: '.container',
-    // elements to ignore in capturing screenshot
-    ignoreElements: ['button', '.local-time'],
-    // Delay before test starts in ms
-    delay: 1000,
-    tests: {
-      /* ... */
-    },
-  },
-};
-```
-
-### `skip` option examples:
-
-```ts
-interface SkipOption {
-  in?: string | string[] | RegExp;
-  kinds?: string | string[] | RegExp;
-  stories?: string | string[] | RegExp;
-  tests?: string | string[] | RegExp;
-}
-
-type SkipOptions = boolean | string | Record<string, SkipOption | SkipOption[]>;
-```
-
-- Skip all stories for all browsers:
-  - `skip: true`
-  - `skip: 'Skip reason message'`
-  - `skip: { 'Skip reason message': true }`
-- Skip all stories for specific browsers:
-  - `skip: { 'Skip reason message': { in: 'ie11' } }`
-  - `skip: { 'Skip reason message': { in: ['ie11', 'chrome'] } }`
-  - `skip: { 'Skip reason message': { in: /^fire.*/ } }`
-- Skip all stories in specific kinds:
-  - `skip: { 'Skip reason message': { kinds: 'Button' } }`
-  - `skip: { 'Skip reason message': { kinds: ['Button', 'Input'] } }`
-  - `skip: { 'Skip reason message': { kinds: /.*Modal$/ } }`
-- Skip all tests in specific stories:
-  - `skip: { 'Skip reason message': { stories: 'simple' } }`
-  - `skip: { 'Skip reason message': { stories: ['simple', 'special'] } }`
-  - `skip: { 'Skip reason message': { stories: /.*large$/ } }`
-- Skip specific tests:
-  - `skip: { 'Skip reason message': { tests: 'click' } }`
-  - `skip: { 'Skip reason message': { tests: ['hover', 'click'] } }`
-  - `skip: { 'Skip reason message': { tests: /^press.*$/ } }`
-- Multiple skip options:
-  - for one reason
-    ```
-    skip: {
-      "reason": [{ /* ... */ }, { /* ... */ }],
-    }
-    ```
-  - for several reasons
-    ```
-    skip: {
-      "reason 1": { /* ... */ },
-      "reason 2": { /* ... */ },
-    }
-    ```
-
-NOTE: If you try to skip stories by story name, the storybook name format will be used (For more info see [storybook-export-vs-name-handling](https://storybook.js.org/docs/formats/component-story-format/#storybook-export-vs-name-handling))
