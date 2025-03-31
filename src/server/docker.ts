@@ -3,9 +3,8 @@ import Logger from 'loglevel';
 import { Writable } from 'stream';
 import Dockerode, { Container } from 'dockerode';
 import { DockerAuth } from '../types.js';
-import { subscribeOn } from './messages.js';
 import { logger } from './logger.js';
-import { waitForBrowserClose } from './webdriver.js';
+import { setWorkerContainer } from './worker/context.js';
 
 const docker = new Dockerode();
 
@@ -167,15 +166,7 @@ export async function runImage(
 
   return new Promise((resolve) => {
     hub.once('container', (container: Container) => {
-      // eslint-disable-next-line @typescript-eslint/no-misused-promises
-      subscribeOn('shutdown', async () => {
-        try {
-          await Promise.race([waitForBrowserClose(), new Promise((resolve) => setTimeout(resolve, 2_000))]);
-          await container.remove({ force: true });
-        } catch {
-          /* noop */
-        }
-      });
+      setWorkerContainer(container);
     });
     hub.once(
       'start',

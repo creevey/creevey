@@ -5,6 +5,7 @@ import { subscribeOn } from '../messages.js';
 import { CreeveyWebdriverBase } from '../webdriver.js';
 import type { InternalBrowser } from './internal.js';
 import { logger } from '../logger.js';
+import { removeWorkerContainer } from '../worker/context.js';
 
 declare global {
   interface Window {
@@ -31,7 +32,9 @@ export class SeleniumWebdriver extends CreeveyWebdriverBase {
     this.#options = options;
 
     subscribeOn('shutdown', () => {
-      void this.#browser?.closeBrowser().finally(() => process.exit());
+      void this.#browser?.closeBrowser().finally(() => {
+        void removeWorkerContainer().finally(() => process.exit());
+      });
       this.#browser = null;
     });
   }
