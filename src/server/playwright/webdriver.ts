@@ -23,7 +23,7 @@ export class PlaywrightWebdriver extends CreeveyWebdriverBase {
 
     subscribeOn('shutdown', () => {
       void this.#browser?.closeBrowser().finally(() => {
-        void removeWorkerContainer().finally(() => () => process.exit());
+        void removeWorkerContainer().finally(() => process.exit());
       });
       this.#browser = null;
     });

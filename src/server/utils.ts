@@ -106,6 +106,7 @@ export async function shutdownWorkers(): Promise<void> {
               resolve();
             });
             sendShutdownMessage(worker);
+            worker.disconnect();
           }),
       ),
   );
