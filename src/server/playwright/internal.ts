@@ -1,5 +1,14 @@
 import path from 'path';
-import { Browser, BrowserContext, BrowserType, Page, chromium, firefox, webkit } from 'playwright-core';
+import {
+  Browser,
+  BrowserContext,
+  BrowserContextOptions,
+  BrowserType,
+  Page,
+  chromium,
+  firefox,
+  webkit,
+} from 'playwright-core';
 import chalk from 'chalk';
 import { v4 } from 'uuid';
 import Logger from 'loglevel';
@@ -61,6 +70,29 @@ async function tryConnect(type: BrowserType, gridUrl: string): Promise<Browser |
       return browser;
     })(),
   ]);
+}
+
+async function tryCreateBrowserContext(
+  browser: Browser,
+  options: BrowserContextOptions,
+): Promise<{ context: BrowserContext; page: Page }> {
+  try {
+    const context = await browser.newContext(options);
+    const page = await context.newPage();
+    return { context, page };
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('ffmpeg')) {
+      logger().warn('Failed to create browser context with video recording. Video recording will be disabled.');
+      logger().warn(error);
+      const context = await browser.newContext({
+        ...options,
+        recordVideo: undefined,
+      });
+      const page = await context.newPage();
+      return { context, page };
+    }
+    throw error;
+  }
 }
 
 export class InternalBrowser {
@@ -241,7 +273,7 @@ export class InternalBrowser {
       return null;
     }
 
-    const context = await browser.newContext({
+    const { context, page } = await tryCreateBrowserContext(browser, {
       recordVideo: options.debug
         ? {
             dir: path.join(cacheDir, `${process.pid}`),
@@ -251,7 +283,6 @@ export class InternalBrowser {
       screen: viewport,
       viewport,
     });
-    const page = await context.newPage();
     if (options.debug) {
       await context.tracing.start(
         Object.assign({ screenshots: true, snapshots: true, sources: true }, playwrightOptions?.trace),
