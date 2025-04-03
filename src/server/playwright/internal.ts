@@ -159,13 +159,15 @@ export class InternalBrowser {
       const element = await this.#page.$(captureElement);
       if (!element) throw new Error(`Element with selector ${captureElement} not found`);
 
+      logger().debug(`Capturing ${chalk.cyan(captureElement)} element`);
       return element.screenshot({
         animations: 'disabled',
         mask,
         style: ':root { overflow: hidden !important; }',
       });
     }
-    return this.#page.screenshot({ animations: 'disabled', mask, fullPage: true });
+    logger().debug('Capturing viewport screenshot');
+    return this.#page.screenshot({ animations: 'disabled', mask });
   }
 
   waitForComplete(callback: (isCompleted: boolean) => void): void {
