@@ -105,8 +105,6 @@ export const story = (
 
 export const test = (title: string, testFn: CreeveyTestFunction): void => {
   const storyId = getStoryId(kindTitle, storyTitle);
-  if (!result[storyId]) {
-    result[storyId] = {};
-  }
+  result[storyId] ??= {};
   result[storyId].tests = Object.assign({}, result[storyId].tests, { [title]: testFn });
 };

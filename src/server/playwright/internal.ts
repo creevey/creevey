@@ -13,7 +13,7 @@ import chalk from 'chalk';
 import { v4 } from 'uuid';
 import Logger from 'loglevel';
 import prefix from 'loglevel-plugin-prefix';
-import type { Args } from '@storybook/csf';
+import type { Args } from '@storybook/types';
 import {
   BrowserConfigObject,
   Config,

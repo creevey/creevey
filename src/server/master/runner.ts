@@ -52,9 +52,7 @@ export default class Runner extends EventEmitter {
       this.sendUpdate({ tests: { [id]: { id, browser, testName, storyPath, status: test.status, storyId } } });
       return;
     }
-    if (!test.results) {
-      test.results = [];
-    }
+    test.results ??= [];
     test.results.push(result);
 
     if (status == 'failed') {
@@ -201,9 +199,7 @@ export default class Runner extends EventEmitter {
         if (!image) continue;
         await this.copyImage(test, name, image.actual);
 
-        if (!test.approved) {
-          test.approved = {};
-        }
+        test.approved ??= {};
         test.approved[name] = retry;
         test.status = 'approved';
 
@@ -227,9 +223,7 @@ export default class Runner extends EventEmitter {
     if (!result.images) return;
     const images = result.images[image];
     if (!images) return;
-    if (!test.approved) {
-      test.approved = {};
-    }
+    test.approved ??= {};
     const { browser, testName, storyPath, storyId } = test;
 
     await this.copyImage(test, image, images.actual);

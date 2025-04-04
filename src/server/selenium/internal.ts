@@ -1,4 +1,4 @@
-import type { Args } from '@storybook/csf';
+import type { Args } from '@storybook/types';
 import chalk from 'chalk';
 import http from 'http';
 import https from 'https';
@@ -266,9 +266,7 @@ export class InternalBrowser {
             },
             // NOTE page_Offset is used only for IE9-11
             windowRect: {
-              // eslint-disable-next-line @typescript-eslint/no-deprecated
               top: Math.round(window.scrollY || window.pageYOffset),
-              // eslint-disable-next-line @typescript-eslint/no-deprecated
               left: Math.round(window.scrollX || window.pageXOffset),
               width: window.innerWidth,
               height: window.innerHeight,

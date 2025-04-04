@@ -18,16 +18,16 @@ export async function playwrightDockerFile(browser: string, version: string): Pr
 
   const indexJs = await readFile(new URL('./index-source.mjs', importMetaUrl), 'utf-8');
 
-  return `
+  const dockerfile = `
 FROM node:lts
 
 WORKDIR /creevey
 
 RUN echo "{ \\"type\\": \\"module\\" }" > package.json && \\
-    ${indexJs
-      .split('\n')
-      .map((line) => `echo "${line.replace(/"/g, '\\"')}" >> index.js && \\`)
-      .join('\n')}
+${indexJs
+  .split('\n')
+  .map((line) => `    echo "${line.replace(/"/g, '\\"')}" >> index.js && \\`)
+  .join('\n')}
     ${
       npmRegistry
         ? `
@@ -41,4 +41,6 @@ EXPOSE 4444
 
 ENTRYPOINT [ "node", "./index.js" ]
 `;
+
+  return dockerfile.replace(/\\\n\s*\\?\n/g, '\\\n');
 }

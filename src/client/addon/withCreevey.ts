@@ -1,4 +1,4 @@
-import type { Renderer, StoryContextForEnhancers } from '@storybook/csf';
+import type { Renderer, StoryContextForEnhancers } from '@storybook/types';
 import { makeDecorator, PreviewWeb, StoryStore } from '@storybook/preview-api';
 import { Channel } from '@storybook/channels';
 import {

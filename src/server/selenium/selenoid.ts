@@ -34,7 +34,7 @@ async function createSelenoidConfig(
       dockerImage = `selenoid/${browserName}:${browserVersion}`,
       webdriverCommand = [],
     }) => {
-      if (!selenoidConfig[browserName]) selenoidConfig[browserName] = { default: browserVersion, versions: {} };
+      selenoidConfig[browserName] ??= { default: browserVersion, versions: {} };
       if (!useDocker && webdriverCommand.length == 0)
         throw new Error('Please specify "webdriverCommand" browser option with path to browser webdriver');
       selenoidConfig[browserName].versions[browserVersion] = {
