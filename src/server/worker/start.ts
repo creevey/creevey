@@ -1,16 +1,12 @@
 import chai from 'chai';
-import EventEmitter from 'events';
 import {
   BaseCreeveyTestContext,
   Config,
   CreeveyWebdriver,
-  FakeSuite,
-  FakeTest,
-  Images,
   Options,
   ServerTest,
-  TEST_EVENTS,
   TestMessage,
+  TestResult,
   isDefined,
   isImageError,
 } from '../../types.js';
@@ -45,9 +41,10 @@ async function getTestsFromStories(
   return testsById;
 }
 
-function runHandler(browserName: string, images: Partial<Record<string, Images>>, error?: unknown): void {
+function runHandler(browserName: string, result: Omit<TestResult, 'status'>, error?: unknown): void {
   // TODO How handle browser corruption?
-  if (isImageError(error)) {
+  const { images } = result;
+  if (images != null && isImageError(error)) {
     if (typeof error.images == 'string') {
       const image = images[browserName];
       if (image) image.error = error.images;
@@ -60,25 +57,31 @@ function runHandler(browserName: string, images: Partial<Record<string, Images>>
     }
   }
 
-  if (error || Object.values(images).some((image) => image?.error != null)) {
-    const errorMessage = serializeError(error);
+  if (error || (images != null && Object.values(images).some((image) => image?.error != null))) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const errorMessage = result.error!;
 
     const isUnexpectedError =
       hasTimeout(errorMessage) ||
       hasDisconnected(errorMessage) ||
-      Object.values(images).some((image) => hasTimeout(image?.error));
+      (images != null && Object.values(images).some((image) => hasTimeout(image?.error)));
     if (isUnexpectedError) emitWorkerMessage({ type: 'error', payload: { subtype: 'unknown', error: errorMessage } });
     else
       emitTestMessage({
         type: 'end',
         payload: {
           status: 'failed',
-          images,
-          error: errorMessage,
+          ...result,
         },
       });
   } else {
-    emitTestMessage({ type: 'end', payload: { status: 'success', images } });
+    emitTestMessage({
+      type: 'end',
+      payload: {
+        status: 'success',
+        ...result,
+      },
+    });
   }
 }
 
@@ -112,7 +115,6 @@ function hasTimeout(str: string | null | undefined): boolean {
 }
 
 export async function start(browser: string, gridUrl: string, config: Config, options: Options): Promise<void> {
-  let retries = 0;
   const imagesContext: ImageContext = {
     attachments: [],
     testFullPath: [],
@@ -122,26 +124,6 @@ export async function start(browser: string, gridUrl: string, config: Config, op
   const [sessionId, webdriver] = (await setupWebdriver(new Webdriver(browser, gridUrl, config, options))) ?? [];
 
   if (!webdriver || !sessionId) return;
-
-  const reporterOptions = {
-    ...config.reporterOptions,
-    creevey: {
-      sessionId,
-      reportDir: config.reportDir,
-      browserName: browser,
-      get willRetry() {
-        return retries < config.maxRetries;
-      },
-      get images() {
-        return imagesContext.images;
-      },
-    },
-  };
-
-  class FakeRunner extends EventEmitter {}
-  const runner = new FakeRunner();
-  const Reporter = config.reporter;
-  new Reporter(runner, { reporterOptions });
 
   const { matchImage, matchImages } = options.odiff
     ? getOdiffMatchers(imagesContext, config)
@@ -196,32 +178,9 @@ export async function start(browser: string, gridUrl: string, config: Config, op
     imagesContext.testFullPath = getTestPath(test);
     imagesContext.images = {};
 
-    retries = message.payload.retries;
     let error = undefined;
 
-    const fakeSuite: FakeSuite = {
-      title: test.storyPath.slice(0, -1).join('/'),
-      fullTitle: () => fakeSuite.title,
-      titlePath: () => [fakeSuite.title],
-      tests: [],
-    };
-
-    const fakeTest: FakeTest = {
-      parent: fakeSuite,
-      title: [test.story.name, test.testName, test.browser].filter(isDefined).join('/'),
-      fullTitle: () => getTestPath(test).join('/'),
-      titlePath: () => getTestPath(test),
-      currentRetry: () => retries,
-      retires: () => config.maxRetries,
-      slow: () => 1000,
-    };
-
-    fakeSuite.tests.push(fakeTest);
-
     void (async () => {
-      runner.emit(TEST_EVENTS.RUN_BEGIN);
-      runner.emit(TEST_EVENTS.TEST_BEGIN, fakeTest);
-
       let timeout;
       let isRejected = false;
       const start = Date.now();
@@ -241,22 +200,9 @@ export async function start(browser: string, gridUrl: string, config: Config, op
         ]);
       } catch (testError) {
         error = testError;
-        fakeTest.err = error;
       }
       const duration = Date.now() - start;
       clearTimeout(timeout);
-      fakeTest.attachments = imagesContext.attachments;
-      fakeTest.state = error ? 'failed' : 'passed';
-      fakeTest.duration = duration;
-      fakeTest.speed = duration > fakeTest.slow() ? 'slow' : duration / 2 > fakeTest.slow() ? 'medium' : 'fast';
-
-      if (error) {
-        runner.emit(TEST_EVENTS.TEST_FAIL, fakeTest, error);
-      } else {
-        runner.emit(TEST_EVENTS.TEST_PASS, fakeTest);
-      }
-      runner.emit(TEST_EVENTS.TEST_END, fakeTest);
-      runner.emit(TEST_EVENTS.RUN_END);
 
       await webdriver.afterTest(test);
 
@@ -267,7 +213,14 @@ export async function start(browser: string, gridUrl: string, config: Config, op
           payload: { subtype: 'unknown', error: serializeError(error) },
         });
       } else {
-        runHandler(baseContext.browserName, imagesContext.images, error);
+        const result = {
+          images: imagesContext.images,
+          error: serializeError(error),
+          duration,
+          attachments: imagesContext.attachments,
+          retries: message.payload.retries,
+        };
+        runHandler(baseContext.browserName, result, error);
       }
     })().catch((error: unknown) => {
       logger().error('Unexpected error:', error);

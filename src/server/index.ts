@@ -104,14 +104,14 @@ export default async function (options: Options): Promise<void> {
     gridUrl = await startWebdriverServer(browser, config, options);
   }
 
-  if (cluster.isPrimary && process.env.CI !== 'true') {
+  if (cluster.isPrimary) {
     const [localUrl, remoteUrl] = getStorybookUrl(config, options);
-    const pm = getUserAgent();
-    assert(pm, new Error('Failed to detect current package manager'));
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const { command, args } = resolveCommand(pm, 'run', ['storybook', 'dev'])!;
 
     if (options.storybookStart) {
+      const pm = getUserAgent();
+      assert(pm, new Error('Failed to detect current package manager'));
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const { command, args } = resolveCommand(pm, 'run', ['storybook', 'dev'])!;
       const storybookPort = new URL(localUrl).port;
       const storybookCommand = `${config.storybookAutorunCmd ?? [command, ...args, '--ci'].join(' ')} -p ${storybookPort}`;
 
@@ -134,12 +134,14 @@ export default async function (options: Options): Promise<void> {
       logger().info('Waiting Storybook...');
     }
 
-    const isConnected = await checkIsStorybookConnected(localUrl);
-    if (isConnected) {
-      logger().info('Storybook connected!\n');
-    } else {
-      logger().error('Storybook is not responding. Please start Storybook and restart Creevey');
-      shutdownWithError();
+    if (options.storybookStart || process.env.CI !== 'true') {
+      const isConnected = await checkIsStorybookConnected(localUrl);
+      if (isConnected) {
+        logger().info('Storybook connected!\n');
+      } else {
+        logger().error('Storybook is not responding. Please start Storybook and restart Creevey');
+        shutdownWithError();
+      }
     }
   }
 

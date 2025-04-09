@@ -21,7 +21,7 @@ const simpleTests: () => CreeveyStatus['tests'] = () => ({
     storyPath: ['root', 'simple'],
     storyId: '',
     skip: false,
-    results: [{ status: 'success' }],
+    results: [{ status: 'success', retries: 0 }],
   },
   3: { id: '3', browser: 'skipped', storyPath: ['root', 'simple'], storyId: '', skip: true },
   4: { id: '4', browser: 'empty', storyPath: ['root', 'skipped'], storyId: '', skip: true },
@@ -31,7 +31,7 @@ const simpleTests: () => CreeveyStatus['tests'] = () => ({
     storyPath: ['root', 'simple'],
     storyId: '',
     skip: false,
-    results: [{ status: 'success' }],
+    results: [{ status: 'success', retries: 0 }],
   },
 });
 const statusTests: () => CreeveyStatus['tests'] = () => ({

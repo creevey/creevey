@@ -7,7 +7,7 @@ const Kind: Meta<typeof ResultsPage> = {
   args: {
     path: ['chrome'],
     showTitle: true,
-    results: [{ status: 'failed' }],
+    results: [{ status: 'failed', retries: 0 }],
   },
 };
 

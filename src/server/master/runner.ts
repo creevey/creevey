@@ -11,9 +11,13 @@ import {
   TestStatus,
   ServerTest,
   TestMeta,
+  TEST_EVENTS,
+  FakeSuite,
+  FakeTest,
 } from '../../types.js';
 import Pool from './pool.js';
 import { WorkerQueue } from './queue.js';
+import { getTestPath } from '../utils.js';
 
 export default class Runner extends EventEmitter {
   private failFast: boolean;
@@ -22,6 +26,8 @@ export default class Runner extends EventEmitter {
   private browsers: string[];
   private scheduler: WorkerQueue;
   private pools: Record<string, Pool> = {};
+  private fakeRunner: EventEmitter;
+  private config: Config;
   tests: Partial<Record<string, ServerTest>> = {};
   public get isRunning(): boolean {
     return Object.values(this.pools).some((pool) => pool.isRunning);
@@ -29,11 +35,19 @@ export default class Runner extends EventEmitter {
   constructor(config: Config, gridUrl?: string) {
     super();
 
+    this.config = config;
     this.failFast = config.failFast;
     this.screenDir = config.screenDir;
     this.reportDir = config.reportDir;
     this.scheduler = new WorkerQueue(config.useWorkerQueue);
     this.browsers = Object.keys(config.browsers);
+
+    class FakeRunner extends EventEmitter {}
+    const runner = new FakeRunner();
+    const Reporter = config.reporter;
+    new Reporter(runner, { reporterOptions: config.reporterOptions });
+    this.fakeRunner = runner;
+
     this.browsers
       .map((browser) => (this.pools[browser] = new Pool(this.scheduler, config, browser, gridUrl)))
       .map((pool) => pool.on('test', this.handlePoolMessage));
@@ -45,10 +59,38 @@ export default class Runner extends EventEmitter {
 
     if (!test) return;
     const { browser, testName, storyPath, storyId } = test;
+
+    const fakeSuite: FakeSuite = {
+      title: test.storyPath.slice(0, -1).join('/'),
+      fullTitle: () => fakeSuite.title,
+      titlePath: () => [fakeSuite.title],
+      tests: [],
+    };
+
+    const fakeTest: FakeTest = {
+      parent: fakeSuite,
+      title: [test.story.name, testName, browser].filter(isDefined).join('/'),
+      fullTitle: () => getTestPath(test).join('/'),
+      titlePath: () => getTestPath(test),
+      currentRetry: () => result?.retries,
+      retires: () => this.config.maxRetries,
+      slow: () => 1000,
+      creevey: {
+        reportDir: this.reportDir,
+        sessionId: id, // TODO SessionId
+        browserName: browser,
+        willRetry: (result?.retries ?? 0) < this.config.maxRetries,
+        images: result?.images ?? {},
+      },
+    };
+
+    fakeSuite.tests.push(fakeTest);
+
     // TODO Handle 'retrying' status
     test.status = status == 'retrying' ? 'failed' : status;
     if (!result) {
       // NOTE: Running status
+      this.fakeRunner.emit(TEST_EVENTS.TEST_BEGIN, fakeTest);
       this.sendUpdate({ tests: { [id]: { id, browser, testName, storyPath, status: test.status, storyId } } });
       return;
     }
@@ -58,6 +100,24 @@ export default class Runner extends EventEmitter {
     if (status == 'failed') {
       test.approved = null;
     }
+
+    const { duration, attachments } = result;
+
+    fakeTest.duration = duration;
+    fakeTest.attachments = attachments;
+    fakeTest.state = result.status === 'failed' ? 'failed' : 'passed';
+    if (duration !== undefined) {
+      fakeTest.speed = duration > fakeTest.slow() ? 'slow' : duration / 2 > fakeTest.slow() ? 'medium' : 'fast';
+    }
+
+    if (result.status === 'failed') {
+      fakeTest.err = result.error;
+      this.fakeRunner.emit(TEST_EVENTS.TEST_FAIL, fakeTest, result.error);
+    } else {
+      this.fakeRunner.emit(TEST_EVENTS.TEST_PASS, fakeTest);
+    }
+
+    this.fakeRunner.emit(TEST_EVENTS.TEST_END, fakeTest);
 
     this.sendUpdate({
       tests: {
@@ -79,6 +139,7 @@ export default class Runner extends EventEmitter {
 
   private handlePoolStop = (): void => {
     if (!this.isRunning) {
+      this.fakeRunner.emit(TEST_EVENTS.RUN_END);
       this.sendUpdate({ isRunning: false });
       this.emit('stop');
     }
@@ -148,6 +209,7 @@ export default class Runner extends EventEmitter {
       };
     }, {});
 
+    this.fakeRunner.emit(TEST_EVENTS.RUN_BEGIN);
     this.browsers.forEach((browser) => {
       const pool = this.pools[browser];
       const tests = testsByBrowser[browser];

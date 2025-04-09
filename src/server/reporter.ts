@@ -4,14 +4,6 @@ import prefix from 'loglevel-plugin-prefix';
 import { FakeTest, Images, isDefined, isImageError, TEST_EVENTS } from '../types.js';
 import EventEmitter from 'events';
 
-interface ReporterOptions {
-  reportDir: string;
-  sessionId: string;
-  browserName: string;
-  willRetry: boolean;
-  images: Partial<Record<string, Partial<Images>>>;
-}
-
 const testLevels: Record<string, string> = {
   INFO: chalk.green('PASS'),
   WARN: chalk.yellow('START'),
@@ -19,36 +11,43 @@ const testLevels: Record<string, string> = {
 };
 
 export class CreeveyReporter {
+  private logger: Logger.Logger | null = null;
   // TODO Output in better way, like vitest, maybe
-  constructor(runner: EventEmitter, options: { reporterOptions: { creevey: ReporterOptions } }) {
-    const { sessionId, browserName } = options.reporterOptions.creevey;
-    const testLogger = Logger.getLogger(sessionId);
-
-    prefix.apply(testLogger, {
-      format(level) {
-        return `[${browserName}:${chalk.gray(process.pid)}] ${testLevels[level]} => ${chalk.gray(sessionId)}`;
-      },
-    });
-
+  constructor(runner: EventEmitter) {
     runner.on(TEST_EVENTS.TEST_BEGIN, (test: FakeTest) => {
-      testLogger.warn(chalk.cyan(test.fullTitle()));
+      this.getLogger(test.creevey).warn(chalk.cyan(test.fullTitle()));
     });
     runner.on(TEST_EVENTS.TEST_PASS, (test: FakeTest) => {
-      testLogger.info(chalk.cyan(test.fullTitle()), chalk.gray(`(${test.duration} ms)`));
+      this.getLogger(test.creevey).info(chalk.cyan(test.fullTitle()), chalk.gray(`(${test.duration} ms)`));
     });
     runner.on(TEST_EVENTS.TEST_FAIL, (test: FakeTest, error) => {
-      testLogger.error(
+      this.getLogger(test.creevey).error(
         chalk.cyan(test.fullTitle()),
         chalk.gray(`(${test.duration} ms)`),
         '\n  ',
         this.getErrors(
           error,
-          (error, imageName) => `${chalk.bold(imageName ?? browserName)}:${error}`,
+          (error, imageName) => `${chalk.bold(imageName ?? test.creevey.browserName)}:${error}`,
           (error) => error.stack ?? error.message,
         ).join('\n  '),
       );
     });
   }
+
+  private getLogger(options: { sessionId: string; browserName: string }) {
+    if (this.logger) return this.logger;
+    const { sessionId, browserName } = options;
+    const testLogger = Logger.getLogger(sessionId);
+
+    this.logger = prefix.apply(testLogger, {
+      format(level) {
+        return `[${browserName}:${chalk.gray(process.pid)}] ${testLevels[level]} => ${chalk.gray(sessionId)}`;
+      },
+    });
+
+    return this.logger;
+  }
+
   private getErrors(
     error: unknown,
     imageErrorToString: (error: string, imageName?: string) => string,
@@ -72,10 +71,7 @@ export class CreeveyReporter {
 }
 
 export class TeamcityReporter {
-  constructor(runner: EventEmitter, options: { reporterOptions: { creevey: ReporterOptions } }) {
-    const browserName = this.escape(options.reporterOptions.creevey.browserName);
-    const reporterOptions = options.reporterOptions.creevey;
-
+  constructor(runner: EventEmitter) {
     runner.on(TEST_EVENTS.TEST_BEGIN, (test: FakeTest) => {
       console.log(`##teamcity[testStarted name='${this.escape(test.fullTitle())}' flowId='${process.pid}']`);
     });
@@ -85,7 +81,8 @@ export class TeamcityReporter {
     });
 
     runner.on(TEST_EVENTS.TEST_FAIL, (test: FakeTest, error: Error) => {
-      Object.entries(reporterOptions.images).forEach(([name, image]) => {
+      const browserName = this.escape(test.creevey.browserName);
+      Object.entries(test.creevey.images).forEach(([name, image]) => {
         if (!image) return;
         const filePath = test
           .titlePath()
@@ -99,7 +96,7 @@ export class TeamcityReporter {
           .filter(isDefined)
           .forEach((fileName) => {
             console.log(
-              `##teamcity[publishArtifacts '${reporterOptions.reportDir}/${filePath}/${fileName} => report/${filePath}']`,
+              `##teamcity[publishArtifacts '${test.creevey.reportDir}/${filePath}/${fileName} => report/${filePath}']`,
             );
             console.log(
               `##teamcity[testMetadata testName='${this.escape(
@@ -112,7 +109,7 @@ export class TeamcityReporter {
       // Output failed test as passed due TC don't support retry mechanic
       // https://teamcity-support.jetbrains.com/hc/en-us/community/posts/207216829-Count-test-as-successful-if-at-least-one-try-is-successful?page=1#community_comment_207394125
 
-      if (reporterOptions.willRetry)
+      if (test.creevey.willRetry)
         console.log(`##teamcity[testFinished name='${this.escape(test.fullTitle())}' flowId='${process.pid}']`);
       else
         console.log(

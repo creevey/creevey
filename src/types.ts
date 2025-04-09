@@ -419,10 +419,14 @@ export type TestStatus = 'unknown' | 'pending' | 'running' | 'failed' | 'approve
 
 export interface TestResult {
   status: 'failed' | 'success';
+  retries: number;
   // TODO Remove checks `name == browser` in TestResultsView
   // images?: Partial<{ [name: string]: Images }> | Images;
   images?: Partial<Record<string, Images>>;
   error?: string;
+  // Test metadata for reporting
+  duration?: number;
+  attachments?: string[];
 }
 
 export class ImagesError extends Error {
@@ -494,7 +498,7 @@ export interface FakeTest {
   title: string;
   fullTitle: () => string;
   titlePath: () => string[];
-  currentRetry: () => number;
+  currentRetry: () => number | undefined;
   retires: () => number;
   slow: () => number;
   duration?: number;
@@ -504,6 +508,15 @@ export interface FakeTest {
   err?: unknown;
   // NOTE: image files
   attachments?: string[];
+
+  // NOTE: Creevey specific fields
+  creevey: {
+    reportDir: string;
+    sessionId: string;
+    browserName: string;
+    willRetry: boolean;
+    images: Partial<Record<string, Partial<Images>>>;
+  };
 }
 
 export interface CreeveyStatus {

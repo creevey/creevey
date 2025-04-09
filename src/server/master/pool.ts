@@ -169,7 +169,7 @@ export default class Pool extends EventEmitter {
           gracefullyKill(worker);
         }
 
-        this.handleTestResult(worker, test, { status: 'failed', error: message.payload.error });
+        this.handleTestResult(worker, test, { status: 'failed', error: message.payload.error, retries: test.retries });
       }),
       subscribeOnWorker(worker, 'test', (message) => {
         if (message.type != 'end') return;
