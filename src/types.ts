@@ -474,6 +474,8 @@ export interface CreeveyTestContext extends BaseCreeveyTestContext {
 export enum TEST_EVENTS {
   RUN_BEGIN = 'start',
   RUN_END = 'end',
+  SUITE_BEGIN = 'suite',
+  SUITE_END = 'suite end',
   TEST_BEGIN = 'test',
   TEST_END = 'test end',
   TEST_FAIL = 'fail',

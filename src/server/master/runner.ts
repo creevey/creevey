@@ -19,6 +19,9 @@ import Pool from './pool.js';
 import { WorkerQueue } from './queue.js';
 import { getTestPath } from '../utils.js';
 
+// NOTE: This is workaround to fix parallel tests running with mocha-junit-reporter
+let isJUnit = false;
+
 export default class Runner extends EventEmitter {
   private failFast: boolean;
   private screenDir: string;
@@ -45,6 +48,11 @@ export default class Runner extends EventEmitter {
     class FakeRunner extends EventEmitter {}
     const runner = new FakeRunner();
     const Reporter = config.reporter;
+
+    if (Reporter.name == 'MochaJUnitReporter') {
+      isJUnit = true;
+    }
+
     new Reporter(runner, { reporterOptions: config.reporterOptions });
     this.fakeRunner = runner;
 
@@ -110,11 +118,19 @@ export default class Runner extends EventEmitter {
       fakeTest.speed = duration > fakeTest.slow() ? 'slow' : duration / 2 > fakeTest.slow() ? 'medium' : 'fast';
     }
 
+    if (isJUnit) {
+      this.fakeRunner.emit(TEST_EVENTS.SUITE_BEGIN, fakeSuite);
+    }
+
     if (result.status === 'failed') {
       fakeTest.err = result.error;
       this.fakeRunner.emit(TEST_EVENTS.TEST_FAIL, fakeTest, result.error);
     } else {
       this.fakeRunner.emit(TEST_EVENTS.TEST_PASS, fakeTest);
+    }
+
+    if (isJUnit) {
+      this.fakeRunner.emit(TEST_EVENTS.SUITE_END, fakeSuite);
     }
 
     this.fakeRunner.emit(TEST_EVENTS.TEST_END, fakeTest);
