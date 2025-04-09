@@ -22,6 +22,14 @@ import { getTestPath } from '../utils.js';
 // NOTE: This is workaround to fix parallel tests running with mocha-junit-reporter
 let isJUnit = false;
 
+class FakeRunner extends EventEmitter {
+  public stats = {
+    duration: 0,
+    failures: 0,
+    pending: 0,
+  };
+}
+
 export default class Runner extends EventEmitter {
   private failFast: boolean;
   private screenDir: string;
@@ -29,7 +37,7 @@ export default class Runner extends EventEmitter {
   private browsers: string[];
   private scheduler: WorkerQueue;
   private pools: Record<string, Pool> = {};
-  private fakeRunner: EventEmitter;
+  private fakeRunner: FakeRunner;
   private config: Config;
   tests: Partial<Record<string, ServerTest>> = {};
   public get isRunning(): boolean {
@@ -45,7 +53,6 @@ export default class Runner extends EventEmitter {
     this.scheduler = new WorkerQueue(config.useWorkerQueue);
     this.browsers = Object.keys(config.browsers);
 
-    class FakeRunner extends EventEmitter {}
     const runner = new FakeRunner();
     const Reporter = config.reporter;
 
@@ -85,7 +92,7 @@ export default class Runner extends EventEmitter {
       slow: () => 1000,
       creevey: {
         reportDir: this.reportDir,
-        sessionId: id, // TODO SessionId
+        sessionId: result?.sessionId ?? id,
         browserName: browser,
         willRetry: (result?.retries ?? 0) < this.config.maxRetries,
         images: result?.images ?? {},
@@ -125,8 +132,10 @@ export default class Runner extends EventEmitter {
     if (result.status === 'failed') {
       fakeTest.err = result.error;
       this.fakeRunner.emit(TEST_EVENTS.TEST_FAIL, fakeTest, result.error);
+      this.fakeRunner.stats.failures++;
     } else {
       this.fakeRunner.emit(TEST_EVENTS.TEST_PASS, fakeTest);
+      this.fakeRunner.stats.duration += duration ?? 0;
     }
 
     if (isJUnit) {

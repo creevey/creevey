@@ -427,6 +427,7 @@ export interface TestResult {
   // Test metadata for reporting
   duration?: number;
   attachments?: string[];
+  sessionId?: string;
 }
 
 export class ImagesError extends Error {
