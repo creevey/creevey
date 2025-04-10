@@ -30,6 +30,8 @@ export class JUnitReporter {
   private logger: IndentedLogger<void>;
   private suites: Record<string, FakeTest[]> = {};
   // TODO classnameTemplate
+  // TODO Output console logs
+  // TODO Output attachments
   constructor(runner: EventEmitter, options: { reportDir: string; reporterOptions: { outputFile?: string } }) {
     const { reportDir, reporterOptions } = options;
 
@@ -52,11 +54,11 @@ export class JUnitReporter {
       this.fileFd = openSync(this.reportFile, 'w+');
     });
     runner.on(TEST_EVENTS.TEST_PASS, (test: FakeTest) => {
-      const suite = this.suites[test.parent.title] ?? [];
+      const suite = (this.suites[test.parent.title] ??= []);
       suite.push(test);
     });
     runner.on(TEST_EVENTS.TEST_FAIL, (test: FakeTest) => {
-      const suite = this.suites[test.parent.title] ?? [];
+      const suite = (this.suites[test.parent.title] ??= []);
       suite.push(test);
     });
     runner.on(TEST_EVENTS.RUN_END, () => {
