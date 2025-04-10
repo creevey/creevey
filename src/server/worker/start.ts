@@ -215,6 +215,8 @@ export async function start(browser: string, gridUrl: string, config: Config, op
       } else {
         const result = {
           sessionId,
+          browserName: baseContext.browserName,
+          workerId: process.pid,
           images: imagesContext.images,
           error: serializeError(error),
           duration,

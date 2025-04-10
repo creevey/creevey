@@ -189,7 +189,7 @@ export interface DockerAuth {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type BaseReporter = new (runner: EventEmitter, options: { reporterOptions: any }) => void;
+export type BaseReporter = new (runner: EventEmitter, options: { reportDir: string; reporterOptions: any }) => void;
 
 export interface Config {
   /**
@@ -224,8 +224,9 @@ export interface Config {
   /**
    * Specify a custom reporter for test results. Creevey accepts only mocha-like reporters
    * @optional
+   * @default 'creevey'
    */
-  reporter: BaseReporter;
+  reporter: BaseReporter | 'creevey' | 'teamcity' | 'junit';
   /**
    * Options which are used by reporter
    */
@@ -428,6 +429,8 @@ export interface TestResult {
   duration?: number;
   attachments?: string[];
   sessionId?: string;
+  browserName?: string;
+  workerId?: number;
 }
 
 export class ImagesError extends Error {
@@ -508,15 +511,15 @@ export interface FakeTest {
   state?: 'failed' | 'passed';
   // NOTE > duration, > duration / 2, > 0
   speed?: 'slow' | 'medium' | 'fast';
-  err?: unknown;
+  err?: string;
   // NOTE: image files
   attachments?: string[];
 
   // NOTE: Creevey specific fields
   creevey: {
-    reportDir: string;
     sessionId: string;
     browserName: string;
+    workerId: number;
     willRetry: boolean;
     images: Partial<Record<string, Partial<Images>>>;
   };

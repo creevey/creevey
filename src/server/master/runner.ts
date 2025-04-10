@@ -18,6 +18,7 @@ import {
 import Pool from './pool.js';
 import { WorkerQueue } from './queue.js';
 import { getTestPath } from '../utils.js';
+import { getReporter } from '../reporters/index.js';
 
 // NOTE: This is workaround to fix parallel tests running with mocha-junit-reporter
 let isJUnit = false;
@@ -54,13 +55,13 @@ export default class Runner extends EventEmitter {
     this.browsers = Object.keys(config.browsers);
 
     const runner = new FakeRunner();
-    const Reporter = config.reporter;
+    const Reporter = getReporter(config.reporter);
 
     if (Reporter.name == 'MochaJUnitReporter') {
       isJUnit = true;
     }
 
-    new Reporter(runner, { reporterOptions: config.reporterOptions });
+    new Reporter(runner, { reportDir: this.reportDir, reporterOptions: config.reporterOptions });
     this.fakeRunner = runner;
 
     this.browsers
@@ -90,10 +91,11 @@ export default class Runner extends EventEmitter {
       currentRetry: () => result?.retries,
       retires: () => this.config.maxRetries,
       slow: () => 1000,
+      err: result?.error,
       creevey: {
-        reportDir: this.reportDir,
         sessionId: result?.sessionId ?? id,
-        browserName: browser,
+        browserName: result?.browserName ?? browser,
+        workerId: result?.workerId ?? process.pid,
         willRetry: (result?.retries ?? 0) < this.config.maxRetries,
         images: result?.images ?? {},
       },

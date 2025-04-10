@@ -5,7 +5,8 @@ import { pathToFileURL } from 'url';
 import { loadStories as hybridStoriesProvider } from './providers/hybrid.js';
 import { Config, BrowserConfig, BrowserConfigObject, Options, isDefined } from '../types.js';
 import { configExt, loadThroughTSX } from './utils.js';
-import { CreeveyReporter, TeamcityReporter } from './reporter.js';
+import { CreeveyReporter } from './reporters/creevey.js';
+import { TeamcityReporter } from './reporters/teamcity.js';
 import { logger } from './logger.js';
 
 export const defaultBrowser = 'chrome';
