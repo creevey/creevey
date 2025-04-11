@@ -14,6 +14,7 @@ import {
 } from '../../types.js';
 import Pool from './pool.js';
 import { WorkerQueue } from './queue.js';
+import { logger } from '../logger.js';
 
 export default class Runner extends EventEmitter {
   private failFast: boolean;
@@ -88,6 +89,7 @@ export default class Runner extends EventEmitter {
 
   public async init(): Promise<void> {
     await Promise.all(Object.values(this.pools).map((pool) => pool.init()));
+    logger().debug('Runner initialized');
   }
 
   public updateTests(testsDiff: Partial<Record<string, ServerTest>>): void {

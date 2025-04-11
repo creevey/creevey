@@ -108,6 +108,7 @@ export async function start(config: Config, options: Options, resolveApi: (api: 
           void shutdownWorkers().then(() => process.exit());
         });
     });
+    logger().debug('Starting tests');
     // TODO grep
     runner.start(Object.keys(runner.status.tests));
   }

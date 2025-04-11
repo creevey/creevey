@@ -1,7 +1,9 @@
+import cluster from 'cluster';
 import { pathToFileURL } from 'url';
 import { toId, storyNameFromExport } from '@storybook/csf';
 import { CreeveyStoryParams, CreeveyTestFunction } from '../../types.js';
 import { loadThroughTSX } from '../utils.js';
+import { logger } from '../logger.js';
 
 export type CreeveyParamsByStoryId = Record<string, CreeveyStoryParams>;
 
@@ -16,6 +18,8 @@ export default async function parse(files: string[]): Promise<CreeveyParamsBySto
       }),
     ),
   );
+
+  if (cluster.isPrimary) logger().debug('Tests parsed');
 
   return result as CreeveyParamsByStoryId;
 }

@@ -3,6 +3,7 @@ import { Config, TestData, isDefined, ServerTest } from '../../types.js';
 import { loadTestsFromStories, saveTestsJson } from '../stories.js';
 import Runner from './runner.js';
 import { tryToLoadTestsData } from '../utils.js';
+import { logger } from '../logger.js';
 
 function mergeTests(
   testsWithReports: Partial<Record<string, TestData>>,
@@ -39,6 +40,8 @@ export default async function master(
       saveTestsJson(runner.tests, config.reportDir);
     },
   );
+
+  logger().debug('Tests loaded');
 
   runner.tests = mergeTests(testsFromReport, tests);
   saveTestsJson(runner.tests, config.reportDir);

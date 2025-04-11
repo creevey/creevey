@@ -6,6 +6,7 @@ import { logger } from '../../logger.js';
 import parse, { CreeveyParamsByStoryId } from '../../testsFiles/parser.js';
 import { readDirRecursive } from '../../utils.js';
 import { combineParameters } from '../../../shared/index.js';
+import cluster from 'cluster';
 
 export const loadStories: StoriesProvider = async (
   _config: Config,
@@ -29,6 +30,10 @@ export const loadStories: StoriesProvider = async (
     });
     storiesListener(updatedStoriesByFiles);
   });
+
+  if (cluster.isPrimary) {
+    logger().debug('Stories loaded');
+  }
 
   // TODO fix test files hot reloading
   creeveyParamsByStoryId = await parseParams(_config /*, (data) => console.log(data) */);

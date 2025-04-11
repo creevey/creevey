@@ -4,6 +4,7 @@ import { Worker, Config, TestResult, BrowserConfig, TestStatus } from '../../typ
 import { sendTestMessage, subscribeOnWorker } from '../messages.js';
 import { gracefullyKill, isShuttingDown } from '../utils.js';
 import { WorkerQueue } from './queue.js';
+import { logger } from '../logger.js';
 
 interface WorkerTest {
   id: string;
@@ -43,10 +44,13 @@ export default class Pool extends EventEmitter {
     this.workers.forEach((worker) => {
       this.exitHandler(worker);
     });
+    logger().debug(`Pool for ${this.browser} initialized with ${this.workers.length} workers`);
   }
 
   start(tests: { id: string; path: string[] }[]): boolean {
     if (this.isRunning) return false;
+
+    logger().debug(`Starting ${tests.length} tests for ${this.browser}`);
 
     this.queue = tests.map(({ id, path }) => ({ id, path, retries: 0 }));
     this.process();
