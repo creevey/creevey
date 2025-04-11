@@ -715,10 +715,15 @@ export async function getBrowser(config: Config, options: Options & { browser: s
       browser = null;
       return null;
     }
+
     const currentUrl = await browser.getCurrentUrl();
     const error = new Error(
       `Can't load storybook root page${currentUrl ? ` by URL ${currentUrl}` : ''}: ${originalError instanceof Error ? originalError.message : ((originalError ?? 'Unknown error') as string)}`,
     );
+
+    browser.quit().catch(noop);
+    browser = null;
+
     if (originalError instanceof Error) error.stack = originalError.stack;
     throw error;
   }
