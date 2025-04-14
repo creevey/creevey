@@ -1,5 +1,5 @@
 import type { Renderer, StoryContextForEnhancers } from '@storybook/types';
-import { makeDecorator, PreviewWeb, StoryStore } from '@storybook/preview-api';
+import type { PreviewWeb, StoryStore } from '@storybook/preview-api';
 import { Channel } from '@storybook/channels';
 import {
   CaptureOptions,
@@ -13,6 +13,7 @@ import {
 import { serializeRawStories } from '../../shared/index.js';
 import { getConnectionUrl } from '../shared/helpers.js';
 import isEqual from 'lodash/isEqual.js';
+import { makeDecorator } from './makeDecorator.js';
 
 declare global {
   interface Window {
