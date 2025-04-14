@@ -94,6 +94,7 @@ export async function shutdownWorkers(): Promise<void> {
               resolve();
             });
             sendShutdownMessage(worker);
+            worker.disconnect();
           }),
       ),
   );
@@ -109,6 +110,7 @@ export function gracefullyKill(worker: Worker): void {
     clearTimeout(timeout);
   });
   sendShutdownMessage(worker);
+  worker.disconnect();
 }
 
 export function shutdown(): void {

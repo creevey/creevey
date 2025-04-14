@@ -11,7 +11,7 @@ export const defaultConfig: Omit<Config, 'gridUrl' | 'storiesProvider' | 'testsD
   disableTelemetry: false,
   useWorkerQueue: false,
   useDocker: true,
-  dockerImage: 'aerokube/selenoid:latest-release',
+  dockerImage: 'aerokube/selenoid:latest',
   dockerImagePlatform: '',
   pullImages: true,
   failFast: false,
