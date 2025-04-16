@@ -373,12 +373,32 @@ export class InternalBrowser {
   }
 
   async loadStoriesFromBrowser(): Promise<StoriesRaw> {
-    const stories = await this.#browser.executeAsyncScript<StoriesRaw | undefined>(function (
-      callback: (stories: StoriesRaw | undefined) => void,
+    const result = await this.#browser.executeAsyncScript<
+      [error?: { message: string; stack?: string } | null, stories?: StoriesRaw]
+    >(function (
+      callback: (response: [error?: { message: string; stack?: string } | null, stories?: StoriesRaw]) => void,
     ) {
-      void window.__CREEVEY_GET_STORIES__().then(callback);
+      window
+        .__CREEVEY_GET_STORIES__()
+        .then((stories) => {
+          callback([null, stories]);
+        })
+        .catch((error: unknown) => {
+          const errorInfo = {
+            message: error instanceof Error ? error.message : String(error),
+            stack: error instanceof Error ? error.stack : undefined,
+          };
+          callback([errorInfo]);
+        });
     });
 
+    const [error, stories] = result;
+
+    if (error) {
+      const errorObj = new Error(error.message);
+      if (error.stack) errorObj.stack = error.stack;
+      throw errorObj;
+    }
     if (!stories) throw new Error("Can't get stories, it seems creevey or storybook API isn't available");
 
     return stories;

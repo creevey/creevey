@@ -15,7 +15,7 @@ export const defaultConfig: Omit<Config, 'gridUrl' | 'tsConfig' | 'webdriver'> =
   disableTelemetry: false,
   useWorkerQueue: false,
   useDocker: true,
-  dockerImage: 'aerokube/selenoid:latest-release', // TODO What about playwright?
+  dockerImage: 'aerokube/selenoid:latest', // TODO What about playwright?
   dockerImagePlatform: '',
   pullImages: true,
   failFast: false,

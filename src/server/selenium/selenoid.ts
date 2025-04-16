@@ -7,6 +7,7 @@ import { Config, BrowserConfigObject } from '../../types.js';
 import { downloadBinary, getCreeveyCache, killTree } from '../utils.js';
 import { pullImages, runImage } from '../docker.js';
 import { subscribeOn } from '../messages.js';
+import { removeWorkerContainer } from '../worker/context.js';
 
 async function createSelenoidConfig(
   browsers: BrowserConfigObject[],
@@ -146,6 +147,10 @@ export async function startSelenoidContainer(config: Config, debug: boolean): Pr
       ],
     },
   };
+
+  subscribeOn('shutdown', () => {
+    void removeWorkerContainer();
+  });
 
   return runImage(selenoidImage, ['-limit', String(limit)], selenoidOptions, debug);
 }
