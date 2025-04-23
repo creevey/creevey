@@ -4,6 +4,16 @@
 
 Creevey is a cross-browser screenshot testing tool for Storybook with a fancy UI Runner. It allows developers to create, run, and manage visual regression tests for Storybook components across different browsers.
 
+## Complexity Assessment
+
+After thorough analysis, we've determined that Creevey is a **Level 3 (Intermediate Feature)** project based on:
+
+- **Multiple Technical Domains**: WebDriver automation, UI, server, Docker, image processing
+- **Distributed Architecture**: Client-server with workers and WebSockets
+- **Advanced Integration Points**: Storybook, Browsers, Docker, CI systems
+- **Parallel Processing**: Worker-based test execution
+- **Complex State Management**: Across server, client, and file system
+
 ## Key Features
 
 - Integration with Storybook as an addon
@@ -22,50 +32,93 @@ Creevey follows a client-server architecture:
 - **Client**: Web UI for test visualization and Storybook addon integration
 - **Workers**: Parallel execution of tests across multiple browser instances
 
+## Deep Dive Analyses
+
+We've completed in-depth analyses of several key components:
+
+### 1. WebDriver Architecture
+
+- Abstract base class `CreeveyWebdriverBase` that defines common interface
+- Two concrete implementations: `SeleniumWebdriver` and `PlaywrightWebdriver`
+- Delegation pattern with internal browser implementations
+- Helper functions for URL resolution and browser management
+
+### 2. Test Execution Flow
+
+- Story loading from Storybook through provider strategies
+- Worker-based parallel test execution
+- Message-based communication between master and workers
+- Screenshot capture and comparison logic
+- Result aggregation and reporting
+
+### 3. UI Architecture
+
+- React-based component hierarchy
+- Multiple image comparison visualization modes
+- WebSocket communication for real-time updates
+- State management through React Context and immer
+- Intuitive test navigation and management
+
+### 4. Docker Integration
+
+- Container-based browser isolation
+- Selenoid for Selenium WebDriver integration
+- Direct Playwright container management
+- Configuration options for custom environments
+- Support for Docker-in-Docker scenarios
+
+## Implementation Strategy
+
+Based on our planning and analysis, Creevey's implementation follows these phases:
+
+1. **Core Infrastructure**: Server initialization, WebDriver integration, Docker management
+2. **Storybook Integration**: Addon implementation, story discovery, test generation
+3. **UI Runner Development**: React components, WebSocket communication, test visualization
+4. **Testing and Optimization**: Cross-browser testing, performance optimization, error handling
+
 ## Current Understanding
 
-From exploration of the codebase, we can see that Creevey consists of:
+We now have a deep understanding of the following components:
 
-1. **Core Server Components**:
+- **WebDriver Abstraction**: How Creevey abstracts and implements different WebDriver technologies
+- **Worker Orchestration**: How parallel test execution is managed
+- **UI Components**: How the React-based UI is structured and functions
+- **Docker Integration**: How containers are used for browser isolation
+- **Inter-Process Communication**: How messages flow between components
 
-   - `src/server/index.ts`: Main server entry point
-   - `src/server/worker/`: Worker process management
-   - `src/server/selenium/` & `src/server/playwright/`: WebDriver implementations
-   - `src/server/docker.ts`: Docker integration for browser isolation
+## Design Patterns
 
-2. **Client Components**:
+The codebase leverages several architectural patterns:
 
-   - `src/client/web/`: UI Runner implementation
-   - `src/client/addon/`: Storybook addon integration
+1. **Client-Server Architecture**: Clear separation with WebSocket communication
+2. **Plugin Architecture**: Support for different WebDriver implementations
+3. **Worker-based Execution**: Parallel test execution via worker processes
+4. **Event-driven Communication**: WebSockets and event emitters
+5. **Configuration-driven Behavior**: Extensive configuration options
+6. **Component-based UI**: React components with clear responsibilities
 
-3. **Shared Types and Utilities**:
+## Areas for Further Investigation
 
-   - `src/types.ts`: Core type definitions
-   - `src/shared/`: Shared utilities
+- Image comparison algorithms and strategies
+- Storybook integration and addon implementation
+- Error handling and recovery mechanisms
+- Performance optimization opportunities
 
-4. **Configuration and Documentation**:
-   - `docs/`: Documentation files
-   - `.creevey/`: Configuration files
+## Technical Documentation
 
-## Code Structure
+We've created comprehensive documentation for several key components:
 
-The codebase follows a modular structure with clear separation of concerns:
+- **webdriver-architecture.md**: WebDriver abstractions and implementations
+- **test-execution-flow.md**: Complete test execution flow
+- **ui-architecture.md**: UI component structure and functionality
+- **docker-integration.md**: Docker integration details
 
-- Server-side code for test execution
-- Client-side code for UI presentation
-- Shared code for common functionality
-- Type definitions for type safety
+## Next Focus Areas
 
-## Technical Stack
-
-- **Language**: TypeScript
-- **Runtime**: Node.js (18.x+)
-- **Key Dependencies**:
-  - Storybook
-  - Selenium WebDriver / Playwright
-  - React
-  - Koa
-  - WebSockets
+- Image comparison algorithms
+- Storybook integration specifics
+- Performance optimization strategies
+- Potential improvement recommendations
 
 ## Development Status
 

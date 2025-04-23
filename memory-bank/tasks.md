@@ -1,44 +1,73 @@
 # Tasks
 
-## Current Exploration Tasks
+## Completed Exploration Tasks
 
 - [x] Explore project structure and codebase
 - [x] Read project documentation
 - [x] Initialize memory bank with project information
-- [ ] Understand WebDriver implementation details
-- [ ] Investigate UI Runner components
-- [ ] Review test execution flow
+- [x] Determine project complexity (Level 3)
+- [x] Create comprehensive planning document
+- [x] Understand WebDriver implementation details
+- [x] Investigate UI Runner components
+- [x] Review test execution flow
+- [x] Analyze Docker integration
+
+## Current Tasks
+
+- [ ] Analyze image comparison algorithms
+
+  - [ ] Examine pixelmatch implementation
+  - [ ] Study odiff integration
+  - [ ] Document comparison strategies
+  - [ ] Understand threshold configuration
+
+- [ ] Investigate Storybook integration
+  - [ ] Analyze addon implementation
+  - [ ] Study story loading mechanism
+  - [ ] Document communication between Storybook and Creevey
+  - [ ] Understand test generation from stories
+
+## Documentation Tasks
+
+- [x] Document WebDriver architecture
+- [x] Document test execution flow
+- [x] Document UI architecture
+- [x] Document Docker integration
+- [ ] Document image comparison algorithms
+- [ ] Document Storybook integration
+- [ ] Create comprehensive architecture diagram
+- [ ] Finalize technical documentation
 
 ## Potential Improvements
 
-- [ ] Add support for more browsers
-- [ ] Improve parallel test execution
-- [ ] Enhance UI Runner with additional visualization options
-- [ ] Add support for responsive testing (multiple viewport sizes)
-- [ ] Implement better error reporting and test debugging
-- [ ] Create more detailed documentation
+- [ ] Enhance image comparison algorithms
 
-## Upcoming Investigation Areas
+  - [ ] Implement better difference highlighting
+  - [ ] Add AI-assisted comparison options
+  - [ ] Support for ignoring dynamic content
 
-- [ ] Docker integration and configuration
-- [ ] WebDriver implementation details (Selenium vs Playwright)
-- [ ] Screenshot comparison algorithms
-- [ ] Performance optimization opportunities
-- [ ] CI integration best practices
-- [ ] Test writing patterns and best practices
+- [ ] Improve test execution and reporting
 
-## Documentation Needs
+  - [ ] Add more detailed error reporting
+  - [ ] Implement test grouping and prioritization
+  - [ ] Support for visual test coverage metrics
 
-- [ ] Create a detailed architecture diagram
-- [ ] Document common usage patterns
-- [ ] Create troubleshooting guide
-- [ ] Document API for test writers
-- [ ] Create examples for different testing scenarios
+- [ ] Enhance UI functionality
 
-## Technical Debt
+  - [ ] Add more visualization options
+  - [ ] Implement better filtering and search
+  - [ ] Create dashboard for test metrics
 
-- [ ] Review TODO.md and prioritize items
-- [ ] Identify potential refactoring opportunities
-- [ ] Analyze test coverage
+- [ ] Optimize performance
+  - [ ] Improve parallel test execution
+  - [ ] Optimize Docker container management
+  - [ ] Enhance image processing speed
+
+## Technical Debt Items
+
+- [ ] Review and prioritize TODO.md items
+- [ ] Identify code duplication in WebDriver implementations
 - [ ] Check for outdated dependencies
-- [ ] Review error handling throughout the codebase
+- [ ] Improve error handling throughout the codebase
+- [ ] Enhance test coverage for core components
+- [ ] Standardize configuration options
