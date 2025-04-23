@@ -71,6 +71,11 @@
 - [ ] Refactor WebDriver integration
 - [ ] Improve Docker integration
 - [ ] Optimize image processing
+- [x] Update incorrect reporter documentation
+  - [x] Remove deprecated --reporter CLI option from documentation
+  - [x] Create reporter-configuration.md with correct usage
+  - [x] Update CI integration examples to use config file approach
+  - [x] Update performance tuning examples to remove --reporter flag
 
 ## Completed Exploration Tasks
 

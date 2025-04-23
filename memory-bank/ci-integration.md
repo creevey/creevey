@@ -231,7 +231,7 @@ jobs:
             -v $(pwd):/app \
             -w /app \
             mcr.microsoft.com/playwright:v1.36.0-focal \
-            npx creevey --config creevey.config.docker.ts --reporter dot,html
+            npx creevey --config creevey.config.docker.ts
 
       - name: Upload visual test artifacts
         if: always()
@@ -301,7 +301,7 @@ visual-regression-compare:
     - git checkout $CI_COMMIT_SHA
     - npm ci
     - npm run build-storybook
-    - npx creevey --config creevey.config.ts --reporter dot,html,junit
+    - npx creevey --config creevey.config.ts
   artifacts:
     when: always
     paths:
@@ -340,7 +340,7 @@ jobs:
           command: npm run build-storybook
       - run:
           name: Run Creevey
-          command: npx creevey --config creevey.config.ts --reporter dot,html
+          command: npx creevey --config creevey.config.ts
       - store_artifacts:
           path: .creevey/report
           destination: creevey-report
@@ -374,7 +374,7 @@ jobs:
             git checkout << pipeline.git.revision >>
             npm ci
             npm run build-storybook
-            npx creevey --config creevey.config.ts --reporter dot,html
+            npx creevey --config creevey.config.ts
       - store_artifacts:
           path: .creevey/report
           destination: creevey-report
@@ -446,11 +446,11 @@ pipeline {
                             git checkout ${env.GIT_COMMIT}
                             npm ci
                             npm run build-storybook
-                            npx creevey --config creevey.config.ts --reporter dot,html,junit
+                            npx creevey --config creevey.config.ts
                         """
                     } else {
                         // For regular branches, just run the tests
-                        sh 'npx creevey --config creevey.config.ts --reporter dot,html,junit'
+                        sh 'npx creevey --config creevey.config.ts'
                     }
                 }
             }
@@ -537,7 +537,7 @@ jobs:
       - script: npm run build-storybook
         displayName: 'Build Storybook'
 
-      - script: npx creevey --config creevey.config.ts --reporter dot,html,junit
+      - script: npx creevey --config creevey.config.ts
         displayName: 'Run Creevey tests'
 
       - task: PublishTestResults@2
@@ -597,7 +597,7 @@ jobs:
           git checkout $(Build.SourceVersion)
           npm ci
           npm run build-storybook
-          npx creevey --config creevey.config.ts --reporter dot,html,junit
+          npx creevey --config creevey.config.ts
         displayName: 'Run comparison tests'
 
       - task: PublishTestResults@2

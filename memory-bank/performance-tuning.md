@@ -373,13 +373,13 @@ Run visual tests in stages to fail fast:
 - name: Quick visual check
   run: |
     # Run only critical components first
-    npx creevey --grep "Button|Form|Header" --reporter dot
+    npx creevey --grep "Button|Form|Header"
 
 - name: Full visual tests
   if: success()
   run: |
     # Run remaining tests only if critical ones pass
-    npx creevey --grep-invert "Button|Form|Header" --reporter dot,html
+    npx creevey --grep-invert "Button|Form|Header"
 ```
 
 ## Advanced Techniques
