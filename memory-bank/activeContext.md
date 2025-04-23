@@ -23,6 +23,7 @@ After thorough analysis, we've determined that Creevey is a **Level 3 (Intermedi
 - Web-based UI Runner for test visualization and management
 - Hot-reloading of tests during development
 - Support for CI/CD integration
+- Dual image comparison engines (pixelmatch and odiff-bin)
 
 ## Architecture Overview
 
@@ -67,6 +68,27 @@ We've completed in-depth analyses of several key components:
 - Configuration options for custom environments
 - Support for Docker-in-Docker scenarios
 
+### 5. Image Comparison System
+
+- Dual-engine approach with pixelmatch and odiff-bin
+- odiff-bin is a fast native image comparison tool written in OCaml
+- pixelmatch used as the fallback comparison engine
+- Configurable thresholds and anti-aliasing detection
+- Support for ignoring specific regions in images
+- Sophisticated handling of image layouts and sizes
+
+### 6. Storybook Integration
+
+- Custom Storybook addon implementation using the Storybook API
+- Multiple story providers for different Storybook versions
+- Hybrid provider that combines stories from Storybook and test files
+- Decorators to inject Creevey functionality into stories
+- Capture mechanism to take screenshots via WebDriver
+- Communication via Storybook channels and events
+- Synchronized test state between Storybook UI and Creevey server
+- Custom UI panels in Storybook for test visualization and control
+- Story parameter merging to combine Storybook parameters with test files
+
 ## Implementation Strategy
 
 Based on our planning and analysis, Creevey's implementation follows these phases:
@@ -85,6 +107,79 @@ We now have a deep understanding of the following components:
 - **UI Components**: How the React-based UI is structured and functions
 - **Docker Integration**: How containers are used for browser isolation
 - **Inter-Process Communication**: How messages flow between components
+- **Image Comparison**: How screenshots are compared and differences are highlighted
+- **Storybook Integration**: How Creevey integrates with Storybook to discover and test stories
+
+## Image Comparison Details
+
+Creevey implements two different image comparison engines:
+
+1. **pixelmatch**: A JavaScript-based pixel-by-pixel comparison library
+
+   - Configuration via `diffOptions` property
+   - Default threshold: 0.1
+   - Anti-aliasing detection optional (default: false)
+
+2. **odiff-bin**: A high-performance native comparison tool written in OCaml
+   - Configuration via `odiffOptions` property
+   - Default threshold: 0.1
+   - Anti-aliasing detection enabled by default
+   - Significantly faster than pixelmatch, especially for large images
+   - Advanced options like `ignoreRegions` and `diffColor`
+
+The comparison process includes:
+
+- Normalizing image sizes when needed
+- Detecting anti-aliased pixels to reduce false positives
+- Generating visual diff images with highlighted differences
+- Calculating difference metrics (count and percentage)
+- Handling cases where expected images don't exist
+
+## Storybook Integration Details
+
+Creevey provides deep integration with Storybook through several mechanisms:
+
+1. **Storybook Addon Architecture**:
+
+   - Registers as a Storybook addon through the `addons.register` API
+   - Adds custom panels to the Storybook UI for test visualization and management
+   - Creates toolbar items for quick test execution
+   - Utilizes Storybook's channel-based communication system
+
+2. **Story Discovery and Loading**:
+
+   - Two main story providers:
+     - `browserStoriesProvider`: Extracts stories directly from the Storybook UI (used with CSFv3)
+     - `hybridStoriesProvider`: Combines stories from Storybook with tests from separate files
+   - The `hybridStoriesProvider` is used by default in the configuration
+   - Watches for changes in story and test files for hot-reloading
+
+3. **Test Definition Approaches**:
+
+   - Inline tests defined directly in story parameters using `creevey` key
+   - Standalone test files that reference stories using `kind()` and `story()` functions
+   - Support for the latest CSF format including hoisted annotations
+
+4. **Story Rendering Control**:
+
+   - Uses Storybook's event system (`SET_CURRENT_STORY`, `FORCE_REMOUNT`, etc.)
+   - Waits for story rendering completion before taking screenshots
+   - Disables animations and transitions for consistent snapshots
+   - Supports waiting for custom ready signals from stories
+
+5. **Storybook UI Enhancements**:
+   - Adds status indicators to stories in the sidebar
+   - Provides test result visualizations in custom panels
+   - Supports approving test results directly from the UI
+   - Allows starting/stopping tests for individual stories or browser configurations
+
+The core of this integration lies in the communication between:
+
+- The Storybook addon client (running in the browser)
+- The Creevey server (managing test execution)
+- The WebDriver implementations (controlling browsers)
+
+This enables seamless visual regression testing directly from the Storybook development environment.
 
 ## Design Patterns
 
@@ -96,11 +191,12 @@ The codebase leverages several architectural patterns:
 4. **Event-driven Communication**: WebSockets and event emitters
 5. **Configuration-driven Behavior**: Extensive configuration options
 6. **Component-based UI**: React components with clear responsibilities
+7. **Strategy Pattern**: Multiple image comparison strategies
+8. **Decorator Pattern**: Enhancing stories with testing capabilities
+9. **Adapter Pattern**: Adapting different Storybook versions and WebDriver implementations
 
 ## Areas for Further Investigation
 
-- Image comparison algorithms and strategies
-- Storybook integration and addon implementation
 - Error handling and recovery mechanisms
 - Performance optimization opportunities
 
@@ -110,13 +206,11 @@ We've created comprehensive documentation for several key components:
 
 - **webdriver-architecture.md**: WebDriver abstractions and implementations
 - **test-execution-flow.md**: Complete test execution flow
-- **ui-architecture.md**: UI component structure and functionality
+- **ui-architecture.md**: Structure and functionality of the React-based UI
 - **docker-integration.md**: Docker integration details
 
 ## Next Focus Areas
 
-- Image comparison algorithms
-- Storybook integration specifics
 - Performance optimization strategies
 - Potential improvement recommendations
 

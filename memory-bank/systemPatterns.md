@@ -38,6 +38,13 @@
 - Context API for state management
 - Functional components with hooks for business logic
 
+### 7. Strategy Pattern for Image Comparison
+
+- Abstract interface for image comparison algorithms
+- Multiple concrete implementations (pixelmatch and odiff-bin)
+- Runtime selection based on configuration or context
+- Each implementation encapsulated with its own configuration options
+
 ## Code Patterns and Conventions
 
 ### TypeScript Usage
@@ -87,5 +94,8 @@
 ### Optimized Image Processing
 
 - Efficient image difference calculation
-- Support for multiple diff algorithms
+- Dual-engine approach with pixelmatch (JavaScript) and odiff-bin (native OCaml)
+- Strategy selection for optimal performance based on image size and complexity
 - Threshold-based comparison for reduced flakiness
+- Anti-aliasing detection to reduce false positives
+- Support for ignoring specific regions in images
