@@ -5,6 +5,7 @@
 .yarn
 .husky
 .github
+.cursor
 .vscode
 .creevey
 .teamcity
@@ -26,3 +27,4 @@ tests
 report
 scripts
 stories
+memory-bank
