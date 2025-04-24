@@ -1,5 +1,3 @@
-import path from 'path';
-import { copyFile, mkdir } from 'fs/promises';
 import { EventEmitter } from 'events';
 import {
   Config,
@@ -10,7 +8,6 @@ import {
   CreeveyUpdate,
   TestStatus,
   ServerTest,
-  TestMeta,
   TEST_EVENTS,
   FakeSuite,
   FakeTest,
@@ -19,6 +16,7 @@ import Pool from './pool.js';
 import { WorkerQueue } from './queue.js';
 import { getTestPath } from '../utils.js';
 import { getReporter } from '../reporters/index.js';
+import { TestsManager } from './testsManager.js';
 
 // NOTE: This is workaround to fix parallel tests running with mocha-junit-reporter
 let isJUnit = false;
@@ -33,24 +31,23 @@ class FakeRunner extends EventEmitter {
 
 export default class Runner extends EventEmitter {
   private failFast: boolean;
-  private screenDir: string;
-  private reportDir: string;
   private browsers: string[];
   private scheduler: WorkerQueue;
   private pools: Record<string, Pool> = {};
   private fakeRunner: FakeRunner;
   private config: Config;
-  tests: Partial<Record<string, ServerTest>> = {};
+  public testsManager: TestsManager;
+
   public get isRunning(): boolean {
     return Object.values(this.pools).some((pool) => pool.isRunning);
   }
-  constructor(config: Config, gridUrl?: string) {
+
+  constructor(config: Config, testsManager: TestsManager, gridUrl?: string) {
     super();
 
     this.config = config;
     this.failFast = config.failFast;
-    this.screenDir = config.screenDir;
-    this.reportDir = config.reportDir;
+    this.testsManager = testsManager;
     this.scheduler = new WorkerQueue(config.useWorkerQueue);
     this.browsers = Object.keys(config.browsers);
 
@@ -61,7 +58,7 @@ export default class Runner extends EventEmitter {
       isJUnit = true;
     }
 
-    new Reporter(runner, { reportDir: this.reportDir, reporterOptions: config.reporterOptions });
+    new Reporter(runner, { reportDir: config.reportDir, reporterOptions: config.reporterOptions });
     this.fakeRunner = runner;
 
     this.browsers
@@ -71,10 +68,10 @@ export default class Runner extends EventEmitter {
 
   private handlePoolMessage = (message: { id: string; status: TestStatus; result?: TestResult }): void => {
     const { id, status, result } = message;
-    const test = this.tests[id];
+    const test = this.testsManager.getTest(id);
 
     if (!test) return;
-    const { browser, testName, storyPath, storyId } = test;
+    const { browser, testName } = test;
 
     const fakeSuite: FakeSuite = {
       title: test.storyPath.slice(0, -1).join('/'),
@@ -103,19 +100,13 @@ export default class Runner extends EventEmitter {
 
     fakeSuite.tests.push(fakeTest);
 
-    // TODO Handle 'retrying' status
-    test.status = status == 'retrying' ? 'failed' : status;
-    if (!result) {
-      // NOTE: Running status
-      this.fakeRunner.emit(TEST_EVENTS.TEST_BEGIN, fakeTest);
-      this.sendUpdate({ tests: { [id]: { id, browser, testName, storyPath, status: test.status, storyId } } });
-      return;
-    }
-    test.results ??= [];
-    test.results.push(result);
+    const update = this.testsManager.updateTestStatus(id, status, result);
+    if (!update) return;
 
-    if (status == 'failed') {
-      test.approved = null;
+    if (!result) {
+      this.fakeRunner.emit(TEST_EVENTS.TEST_BEGIN, fakeTest);
+      this.sendUpdate(update);
+      return;
     }
 
     const { duration, attachments } = result;
@@ -146,20 +137,7 @@ export default class Runner extends EventEmitter {
 
     this.fakeRunner.emit(TEST_EVENTS.TEST_END, fakeTest);
 
-    this.sendUpdate({
-      tests: {
-        [id]: {
-          id,
-          browser,
-          testName,
-          storyPath,
-          status: test.status,
-          approved: test.approved,
-          results: [result],
-          storyId,
-        },
-      },
-    });
+    this.sendUpdate(update);
 
     if (this.failFast && status == 'failed') this.stop();
   };
@@ -177,31 +155,8 @@ export default class Runner extends EventEmitter {
   }
 
   public updateTests(testsDiff: Partial<Record<string, ServerTest>>): void {
-    const tests: CreeveyStatus['tests'] = {};
-    const removedTests: TestMeta[] = [];
-    Object.entries(testsDiff).forEach(([id, newTest]) => {
-      const oldTest = this.tests[id];
-      if (newTest) {
-        if (oldTest) {
-          this.tests[id] = {
-            ...newTest,
-            retries: oldTest.retries,
-            results: oldTest.results,
-            approved: oldTest.approved,
-          };
-        } else this.tests[id] = newTest;
-
-        const { story: _, fn: __, ...restTest } = newTest;
-        tests[id] = { ...restTest, status: 'unknown' };
-      } else if (oldTest) {
-        const { id, browser, testName, storyPath, storyId } = oldTest;
-        removedTests.push({ id, browser, testName, storyPath, storyId });
-        // TODO Use Map instead
-        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-        delete this.tests[id];
-      }
-    });
-    this.sendUpdate({ tests, removedTests });
+    const update = this.testsManager.updateTests(testsDiff);
+    if (update) this.sendUpdate(update);
   }
 
   public start(ids: string[]): void {
@@ -209,27 +164,32 @@ export default class Runner extends EventEmitter {
     if (this.isRunning) return;
 
     const testsToStart = ids
-      .map((id) => this.tests[id])
+      .map((id) => this.testsManager.getTest(id))
       .filter(isDefined)
       .filter((test) => !test.skip);
 
     if (testsToStart.length == 0) return;
 
+    const pendingTests: CreeveyUpdate['tests'] = testsToStart.reduce(
+      (update: CreeveyUpdate['tests'], { id, storyId, browser, testName, storyPath }) => ({
+        ...update,
+        [id]: { id, browser, testName, storyPath, status: 'pending', storyId },
+      }),
+      {},
+    );
+
     this.sendUpdate({
       isRunning: true,
-      tests: testsToStart.reduce(
-        (update: CreeveyUpdate['tests'], { id, storyId, browser, testName, storyPath }) => ({
-          ...update,
-          [id]: { id, browser, testName, storyPath, status: 'pending', storyId },
-        }),
-        {},
-      ),
+      tests: pendingTests,
     });
 
     const testsByBrowser: Partial<TestsByBrowser> = testsToStart.reduce((tests: Partial<TestsByBrowser>, test) => {
       const { id, browser, testName, storyPath } = test;
       const restPath = [...storyPath, testName].filter(isDefined);
-      test.status = 'pending';
+
+      // Update status to pending in TestsManager
+      this.testsManager.updateTestStatus(id, 'pending');
+
       return {
         ...tests,
         [browser]: [...(tests[browser] ?? []), { id, path: restPath }],
@@ -255,78 +215,23 @@ export default class Runner extends EventEmitter {
   }
 
   public get status(): CreeveyStatus {
-    const tests: CreeveyStatus['tests'] = {};
-    Object.values(this.tests)
-      .filter(isDefined)
-
-      .forEach(({ story: _, fn: __, ...test }) => (tests[test.id] = test));
     return {
       isRunning: this.isRunning,
-      tests,
+      tests: this.testsManager.getTestsData(),
       browsers: this.browsers,
     };
   }
 
-  private async copyImage(test: ServerTest, image: string, actual: string): Promise<void> {
-    const { browser, testName, storyPath } = test;
-    const restPath = [...storyPath, testName].filter(isDefined);
-    const testPath = path.join(...restPath, image == browser ? '' : browser);
-    const srcImagePath = path.join(this.reportDir, testPath, actual);
-    const dstImagePath = path.join(this.screenDir, testPath, `${image}.png`);
-    await mkdir(path.join(this.screenDir, testPath), { recursive: true });
-    await copyFile(srcImagePath, dstImagePath);
-  }
-
   public async approveAll(): Promise<void> {
-    const updatedTests: NonNullable<CreeveyUpdate['tests']> = {};
-    for (const test of Object.values(this.tests)) {
-      if (!test?.results) continue;
-      const retry = test.results.length - 1;
-      const { images, status } = test.results.at(retry) ?? {};
-      if (!images || status != 'failed') continue;
-      for (const [name, image] of Object.entries(images)) {
-        if (!image) continue;
-        await this.copyImage(test, name, image.actual);
-
-        test.approved ??= {};
-        test.approved[name] = retry;
-        test.status = 'approved';
-
-        updatedTests[test.id] = {
-          id: test.id,
-          browser: test.browser,
-          storyPath: test.storyPath,
-          storyId: test.storyId,
-          status: test.status,
-          approved: { [name]: retry },
-        };
-      }
-    }
-    this.sendUpdate({ tests: updatedTests });
+    const update = await this.testsManager.approveAllTests();
+    this.sendUpdate(update);
   }
 
-  public async approve({ id, retry, image }: ApprovePayload): Promise<void> {
-    const test = this.tests[id];
-    if (!test?.results) return;
-    const result = test.results[retry];
-    if (!result.images) return;
-    const images = result.images[image];
-    if (!images) return;
-    test.approved ??= {};
-    const { browser, testName, storyPath, storyId } = test;
-
-    await this.copyImage(test, image, images.actual);
-
-    test.approved[image] = retry;
-
-    if (Object.keys(result.images).every((name) => typeof test.approved?.[name] == 'number')) {
-      test.status = 'approved';
-    }
-
-    this.sendUpdate({
-      tests: { [id]: { id, browser, testName, storyPath, status: test.status, approved: { [image]: retry }, storyId } },
-    });
+  public async approve(payload: ApprovePayload): Promise<void> {
+    const update = await this.testsManager.approveTest(payload);
+    if (update) this.sendUpdate(update);
   }
+
   private sendUpdate(data: CreeveyUpdate): void {
     this.emit('update', data);
   }

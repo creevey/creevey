@@ -1,10 +1,10 @@
 import path from 'path';
 import { existsSync } from 'fs';
 import { fileURLToPath, pathToFileURL } from 'url';
-import { copyFile, readdir, mkdir, writeFile } from 'fs/promises';
+import { copyFile, readdir, mkdir } from 'fs/promises';
 import master from './master.js';
 import creeveyApi, { CreeveyApi } from './api.js';
-import { Config, Options, TestData, isDefined } from '../../types.js';
+import { Config, Options, isDefined } from '../../types.js';
 import { shutdownWorkers, testsToImages, readDirRecursive } from '../utils.js';
 import { subscribeOn } from '../messages.js';
 import Runner from './runner.js';
@@ -23,18 +23,6 @@ async function copyStatics(reportDir: string): Promise<void> {
   for (const asset of assets) {
     await copyFile(path.join(clientDir, 'assets', asset), path.join(reportDir, 'assets', asset));
   }
-}
-
-function reportDataModule(data: Partial<Record<string, TestData>>): string {
-  return `
-(function (root, factory) {
-  if (typeof module === 'object' && module.exports) {
-    module.exports = factory();
-  } else {
-    root.__CREEVEY_DATA__ = factory();
-  }
-}(this, function () { return ${JSON.stringify(data)} }));
-`;
 }
 
 function outputUnnecessaryImages(imagesDir: string, images: Set<string>): void {
@@ -78,9 +66,7 @@ export async function start(
   runner = await master(config, gridUrl);
 
   runner.on('stop', () => {
-    void copyStatics(config.reportDir).then(() =>
-      writeFile(path.join(config.reportDir, 'data.js'), reportDataModule(runner.status.tests)),
-    );
+    void copyStatics(config.reportDir).then(() => runner.testsManager.saveTestData());
   });
 
   if (options.ui) {

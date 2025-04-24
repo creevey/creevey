@@ -38,17 +38,25 @@
   - [x] Error message explanations
   - [x] Advanced troubleshooting steps
 
-## Current Tasks
-
 ### Implementation Tasks
 
-- [ ] Test Data Management Refactoring
-  - [ ] Create a dedicated TestsManager class
-  - [ ] Move test data operations from Runner to TestsManager
-  - [ ] Implement methods for loading, merging, and saving test data
-  - [ ] Refactor dependent components to use the new class
-  - [ ] Ensure backward compatibility
-  - [ ] Add tests for the new implementation
+- [x] Test Data Management Refactoring
+  - [x] Create a dedicated TestsManager class
+  - [x] Move test data operations from Runner to TestsManager
+  - [x] Implement methods for loading, merging, and saving test data
+  - [x] Refactor dependent components to use the new class
+  - [x] Ensure backward compatibility
+  - [x] Add tests for the new implementation
+
+## Current Tasks
+
+### Technical Debt
+
+- [ ] Address critical technical debt
+  - [ ] Update outdated dependencies
+  - [ ] Improve error handling throughout the codebase
+  - [ ] Enhance test coverage for core components
+  - [ ] Standardize configuration options
 
 ## Task Backlog
 
@@ -168,16 +176,13 @@
 
 ## Next Steps
 
-1. Begin implementation of priority improvements:
-
-   - Enhance test parallelization for faster execution
-   - Implement better error reporting for failed tests
-
-2. Address critical technical debt:
+1. Address critical technical debt:
 
    - Update outdated dependencies
    - Improve error handling
+   - Enhance test coverage for core components
+   - Standardize configuration options
 
-3. Prepare for future feature enhancements:
+2. Prepare for future feature enhancements:
    - Research AI-assisted image comparison
    - Design test grouping and prioritization system

@@ -1,5 +1,3 @@
-import path from 'path';
-import { mkdirSync, writeFileSync } from 'fs';
 import { createHash } from 'crypto';
 import _ from 'lodash';
 import type {
@@ -12,7 +10,7 @@ import type {
   CreeveyTestFunction,
   CreeveyTestContext,
 } from '../types.js';
-import { isDefined, isFunction } from '../types.js';
+import { isDefined } from '../types.js';
 import { shouldSkip } from './utils.js';
 
 function storyTestFabric(delay?: number, testFn?: CreeveyTestFunction) {
@@ -128,13 +126,4 @@ export async function loadTestsFromStories(
     );
 
   return tests;
-}
-
-export function saveTestsJson(tests: Record<string, unknown>, dstPath: string = process.cwd()): void {
-  mkdirSync(dstPath, { recursive: true });
-  writeFileSync(
-    path.join(dstPath, 'tests.json'),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    JSON.stringify(tests, (_, value) => (isFunction(value) ? value.toString() : value), 2),
-  );
 }
