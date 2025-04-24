@@ -146,6 +146,12 @@ export default async function (options: Options): Promise<void> {
   }
 
   switch (true) {
+    case Boolean(update) && Boolean(ui): {
+      // New UI Update mode
+      const { uiUpdate } = await import('./ui-update.js');
+      await uiUpdate(config, port);
+      return;
+    }
     case Boolean(update): {
       (await import('./update.js')).update(config, typeof update == 'string' ? update : undefined);
       return;
@@ -168,9 +174,7 @@ export default async function (options: Options): Promise<void> {
       }
       logger().info('Starting Master Process');
 
-      const resolveApi = (await import('./master/server.js')).start(config.reportDir, port, ui);
-
-      return (await import('./master/start.js')).start(gridUrl, config, options, resolveApi);
+      return (await import('./master/start.js')).start(gridUrl, config, options);
     }
     default: {
       logger().info(`Starting Worker for ${browser}`);

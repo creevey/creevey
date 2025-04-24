@@ -20,8 +20,25 @@ const Container = styled.div({
   justifyContent: 'space-between',
 });
 
+const UpdateModeBanner = withTheme(
+  styled.div(({ theme }) => ({
+    position: 'absolute',
+    bottom: '65px',
+    left: 0,
+    right: 0,
+    padding: '8px 32px',
+    backgroundColor: `${theme.color.positive}20`,
+    color: theme.color.positive,
+    fontSize: '12px',
+    textAlign: 'center',
+    fontWeight: 'bold',
+    borderTop: `1px solid ${theme.color.positive}50`,
+    borderBottom: `1px solid ${theme.color.positive}50`,
+  })),
+);
+
 export function SideBarFooter(): JSX.Element {
-  const { onApproveAll, onImageApprove, onImageNext } = useCreeveyContext();
+  const { onApproveAll, onImageApprove, onImageNext, isUpdateMode } = useCreeveyContext();
   const [isAlt, setIsAlt] = useState(false);
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
@@ -48,23 +65,28 @@ export function SideBarFooter(): JSX.Element {
   }, [handleKeyDown, handleKeyUp]);
 
   return (
-    <Sticky>
-      <Container>
-        {isAlt ? (
-          <Button variant="outline" size="medium" onClick={onImageNext} disabled={!onImageApprove}>
-            Next
-            <ChevronRightIcon />
+    <>
+      {isUpdateMode && (
+        <UpdateModeBanner>Update Mode: Review and approve screenshots from previous test runs</UpdateModeBanner>
+      )}
+      <Sticky>
+        <Container>
+          {isAlt ? (
+            <Button variant="outline" size="medium" onClick={onImageNext} disabled={!onImageApprove}>
+              Next
+              <ChevronRightIcon />
+            </Button>
+          ) : (
+            <Button variant="solid" size="medium" onClick={onImageApprove} disabled={!onImageApprove}>
+              Approve
+              <ChevronRightIcon />
+            </Button>
+          )}
+          <Button variant="outline" size="medium" onClick={onApproveAll}>
+            Approve all
           </Button>
-        ) : (
-          <Button variant="solid" size="medium" onClick={onImageApprove} disabled={!onImageApprove}>
-            Approve
-            <ChevronRightIcon />
-          </Button>
-        )}
-        <Button variant="outline" size="medium" onClick={onApproveAll}>
-          Approve all
-        </Button>
-      </Container>
-    </Sticky>
+        </Container>
+      </Sticky>
+    </>
   );
 }

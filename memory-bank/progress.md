@@ -26,11 +26,20 @@
 ### Implementation Tasks
 
 - [x] Test Data Management Refactoring
+
   - [x] Create TestsManager class
   - [x] Implement core test data operations
   - [x] Refactor Runner class to use TestsManager
   - [x] Update dependent components
   - [x] Add tests and documentation
+
+- [x] Update Mode Refactoring
+  - [x] Modify CreeveyStatus interface to include isUpdateMode property
+  - [x] Update server-side code to send isUpdateMode with status responses
+  - [x] Add isUpdateMode to CreeveyContext for direct access in components
+  - [x] Remove dependency on URL parameter for determining mode
+  - [x] Maintain backward compatibility
+  - [x] Update UI components to use context value directly
 
 ## Current Tasks
 
@@ -40,6 +49,7 @@
   - [ ] Update outdated dependencies
   - [ ] Improve error handling
   - [ ] Enhance test coverage
+  - [ ] Refactor method names in TestsManager for consistency
 
 ## Potential Improvements
 
@@ -54,6 +64,7 @@
 - Refactor WebDriver integration for better maintainability
 - Improve test result data structure
 - Enhance Docker configuration options
+- Standardize API naming conventions (approveTest -> approve, approveAllTests -> approveAll)
 
 ## Next Steps
 
@@ -62,6 +73,7 @@
    - Update outdated dependencies
    - Improve error handling
    - Enhance test coverage for core components
+   - Standardize method names across the codebase
 
 2. Prepare for future enhancements
    - Performance optimization
@@ -79,4 +91,5 @@
 - [x] **Milestone 8**: Complete development guide and supporting documentation
 - [x] **Milestone 9**: Complete all documentation tasks
 - [x] **Milestone 10**: Test Data Management Refactoring
-- [ ] **Milestone 11**: Technical Debt Reduction
+- [x] **Milestone 11**: Update Mode Refactoring
+- [ ] **Milestone 12**: Technical Debt Reduction

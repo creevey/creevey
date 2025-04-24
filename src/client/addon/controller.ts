@@ -22,7 +22,7 @@ export class CreeveyController {
   storyId = '';
   activeBrowser = '';
   selectedTestId = '';
-  status: CreeveyStatus = { isRunning: false, tests: {}, browsers: [] };
+  status: CreeveyStatus = { isRunning: false, tests: {}, browsers: [], isUpdateMode: false };
   creeveyApi: CreeveyClientApi | null = null;
   stories: StoriesRaw = {};
 

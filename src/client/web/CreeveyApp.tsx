@@ -29,6 +29,7 @@ export interface CreeveyAppProps {
     tests: CreeveySuite;
     isRunning: boolean;
     isReport: boolean;
+    isUpdateMode: boolean;
   };
 }
 
@@ -214,6 +215,7 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
         onSuiteToggle: handleSuiteToggle,
         sidebarFocusedItem,
         setSidebarFocusedItem,
+        isUpdateMode: initialState.isUpdateMode,
       }}
     >
       <ThemeProvider theme={ensure(themes[theme])}>

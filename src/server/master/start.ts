@@ -3,7 +3,7 @@ import { existsSync } from 'fs';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { copyFile, readdir, mkdir } from 'fs/promises';
 import master from './master.js';
-import creeveyApi, { CreeveyApi } from './api.js';
+import { CreeveyApi } from './api.js';
 import { Config, Options, isDefined } from '../../types.js';
 import { shutdownWorkers, testsToImages, readDirRecursive } from '../utils.js';
 import { subscribeOn } from '../messages.js';
@@ -38,12 +38,7 @@ function outputUnnecessaryImages(imagesDir: string, images: Set<string>): void {
   }
 }
 
-export async function start(
-  gridUrl: string | undefined,
-  config: Config,
-  options: Options,
-  resolveApi: (api: CreeveyApi) => void,
-): Promise<void> {
+export async function start(gridUrl: string | undefined, config: Config, options: Options): Promise<void> {
   let runner: Runner | null = null;
   if (config.hooks.before) {
     await config.hooks.before();
@@ -70,7 +65,17 @@ export async function start(
   });
 
   if (options.ui) {
-    resolveApi(creeveyApi(runner));
+    // Initialize TestsManager
+    const testsManager = runner.testsManager;
+
+    const resolveApi = (await import('./server.js')).start(config.reportDir, options.port, options.ui);
+
+    // Create the CreeveyApi instance using the existing runner
+    const api = new CreeveyApi(testsManager, runner);
+
+    // Resolve the API for the server
+    resolveApi(api);
+
     logger().info(`Started on http://localhost:${options.port}`);
   } else {
     if (Object.values(runner.status.tests).filter((test) => test && !test.skip).length == 0) {

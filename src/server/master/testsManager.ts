@@ -233,7 +233,7 @@ export class TestsManager {
    * Approve a specific test
    * @param payload Approval payload with test ID, retry index, and image name
    */
-  public async approveTest({ id, retry, image }: ApprovePayload): Promise<CreeveyUpdate | null> {
+  public async approve({ id, retry, image }: ApprovePayload): Promise<CreeveyUpdate | null> {
     const test = this.tests[id];
     if (!test?.results) return null;
     const result = test.results[retry];
@@ -269,7 +269,7 @@ export class TestsManager {
   /**
    * Approve all failed tests
    */
-  public async approveAllTests(): Promise<CreeveyUpdate> {
+  public async approveAll(): Promise<CreeveyUpdate> {
     const updatedTests: NonNullable<CreeveyUpdate['tests']> = {};
     for (const test of Object.values(this.tests)) {
       if (!test?.results) continue;

@@ -350,7 +350,15 @@ export interface Options {
   _: string[];
   config?: string;
   port: number;
+  /**
+   * Run in UI mode with web interface for reviewing test results
+   * When used with `update` flag, enables UI Update Mode for approving screenshots
+   */
   ui: boolean;
+  /**
+   * Run in update mode to approve failed tests
+   * When used with `ui` flag, enables UI Update Mode for approving screenshots from browser
+   */
   update: boolean | string;
   debug: boolean;
   trace: boolean;
@@ -526,6 +534,7 @@ export interface CreeveyStatus {
   isRunning: boolean;
   tests: Partial<Record<string, TestData>>;
   browsers: string[];
+  isUpdateMode: boolean;
 }
 
 export interface CreeveyUpdate {

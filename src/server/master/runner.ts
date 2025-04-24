@@ -219,16 +219,17 @@ export default class Runner extends EventEmitter {
       isRunning: this.isRunning,
       tests: this.testsManager.getTestsData(),
       browsers: this.browsers,
+      isUpdateMode: false,
     };
   }
 
   public async approveAll(): Promise<void> {
-    const update = await this.testsManager.approveAllTests();
+    const update = await this.testsManager.approveAll();
     this.sendUpdate(update);
   }
 
   public async approve(payload: ApprovePayload): Promise<void> {
-    const update = await this.testsManager.approveTest(payload);
+    const update = await this.testsManager.approve(payload);
     if (update) this.sendUpdate(update);
   }
 

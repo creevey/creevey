@@ -7,6 +7,7 @@ export type FocusableItem = null | SuitePath;
 export interface CreeveyContextType {
   isReport: boolean;
   isRunning: boolean;
+  isUpdateMode: boolean;
   onStop: () => void;
   onImageNext?: () => void;
   onImageApprove?: () => void;
@@ -21,6 +22,7 @@ export interface CreeveyContextType {
 export const CreeveyContext = React.createContext<CreeveyContextType>({
   isReport: true,
   isRunning: false,
+  isUpdateMode: false,
   onImageNext: noop,
   onImageApprove: noop,
   onApproveAll: noop,

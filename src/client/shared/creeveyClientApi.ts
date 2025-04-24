@@ -16,6 +16,7 @@ export async function initCreeveyClientApi(): Promise<CreeveyClientApi> {
   const updateListeners = new Set<(update: CreeveyUpdate) => void>();
   let statusRequest: Promise<CreeveyStatus> | null = null;
   let statusResolver: (status: CreeveyStatus) => void = noop;
+  let isUpdateMode = false;
 
   const ws = new WebSocket(`ws://${getConnectionUrl()}`);
 
@@ -30,9 +31,17 @@ export async function initCreeveyClientApi(): Promise<CreeveyClientApi> {
   ws.addEventListener('open', () => {
     clientApiResolver({
       start(ids: string[]) {
+        if (isUpdateMode) {
+          console.warn('Tests cannot be started in Update Mode. This mode is for approving screenshots only.');
+          return;
+        }
         send({ type: 'start', payload: ids });
       },
       stop() {
+        if (isUpdateMode) {
+          console.warn('Tests cannot be stopped in Update Mode. This mode is for approving screenshots only.');
+          return;
+        }
         send({ type: 'stop' });
       },
       approve(id: string, retry: number, image: string) {
@@ -62,6 +71,7 @@ export async function initCreeveyClientApi(): Promise<CreeveyClientApi> {
         fn(data.payload);
       });
     if (data.type == 'status') {
+      isUpdateMode = data.payload.isUpdateMode;
       statusResolver(data.payload);
       statusResolver = noop;
       statusRequest = null;

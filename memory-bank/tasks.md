@@ -41,12 +41,22 @@
 ### Implementation Tasks
 
 - [x] Test Data Management Refactoring
+
   - [x] Create a dedicated TestsManager class
   - [x] Move test data operations from Runner to TestsManager
   - [x] Implement methods for loading, merging, and saving test data
   - [x] Refactor dependent components to use the new class
   - [x] Ensure backward compatibility
   - [x] Add tests for the new implementation
+
+- [x] Update Mode Refactoring
+  - [x] Extend CreeveyStatus interface to include isUpdateMode property
+  - [x] Update server-side code to send isUpdateMode flag in status responses
+  - [x] Add isUpdateMode to the CreeveyContext for direct access by components
+  - [x] Remove dependency on URL parameter for determining update mode
+  - [x] Update UI components to use context value directly
+  - [x] Standardize method names for approval operations
+  - [x] Maintain backward compatibility with URL parameter approach
 
 ## Current Tasks
 
@@ -57,6 +67,7 @@
   - [ ] Improve error handling throughout the codebase
   - [ ] Enhance test coverage for core components
   - [ ] Standardize configuration options
+  - [ ] Complete API method name standardization (remaining TestsManager methods)
 
 ## Task Backlog
 
@@ -79,6 +90,12 @@
   - [ ] Design enhanced error format
   - [ ] Implement structured error logs
   - [ ] Add visual error indicators to UI
+- [x] Implement UI Update Mode
+  - [x] Create mode that combines --ui and --update flags
+  - [x] Load tests metadata from report
+  - [x] Enable browser-based screenshot review and approval
+  - [x] Update UI to show approval status
+  - [x] Add documentation for the new mode
 
 ### Maintenance Tasks
 
@@ -173,6 +190,7 @@
 - [ ] Improve error handling throughout the codebase
 - [ ] Enhance test coverage for core components
 - [ ] Standardize configuration options
+- [ ] Complete method naming standardization (TestsManager methods)
 
 ## Next Steps
 
@@ -182,6 +200,7 @@
    - Improve error handling
    - Enhance test coverage for core components
    - Standardize configuration options
+   - Complete method naming standardization
 
 2. Prepare for future feature enhancements:
    - Research AI-assisted image comparison

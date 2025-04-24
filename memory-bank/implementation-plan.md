@@ -1,4 +1,138 @@
-# Implementation Plan for Creevey
+# Creevey Implementation Plan
+
+## Update Mode Refactoring - Implementation Status
+
+The Update Mode Refactoring has been successfully completed with the following key changes:
+
+### 1. Server-Side Changes
+
+- Modified the `CreeveyStatus` interface to include an `isUpdateMode` property:
+
+  ```typescript
+  export interface CreeveyStatus {
+    isRunning: boolean;
+    tests: Partial<Record<string, TestData>>;
+    browsers: string[];
+    isUpdateMode?: boolean;
+  }
+  ```
+
+- Updated the `Runner` class to include `isUpdateMode` in its status response:
+
+  ```typescript
+  public get status(): CreeveyStatus {
+    return {
+      isRunning: this.isRunning,
+      tests: this.testsManager.getTestsData(),
+      browsers: this.browsers,
+      isUpdateMode: false,
+    };
+  }
+  ```
+
+- Enhanced the `CreeveyApi` class to pass the `isUpdateMode` flag in status responses:
+  ```typescript
+  handleMessage(ws: WebSocket, message: WebSocket.Data): void {
+    // ...
+    switch (command.type) {
+      case 'status': {
+        const status = this.runner.status;
+        status.isUpdateMode = this.isUpdateMode;
+        ws.send(JSON.stringify({ type: 'status', payload: status }));
+        return;
+      }
+      // ...
+    }
+    // ...
+  }
+  ```
+
+### 2. Client-Side Changes
+
+- Updated the `CreeveyContext` to include an `isUpdateMode` property:
+
+  ```typescript
+  export interface CreeveyContextType {
+    // ...existing properties
+    isUpdateMode: boolean;
+    // ...other properties
+  }
+  ```
+
+- Modified the `CreeveyApp` component to initialize and provide the `isUpdateMode` value:
+
+  ```typescript
+  export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element {
+    // ...
+    return (
+      <CreeveyContext.Provider
+        value={{
+          // ...other values
+          isUpdateMode: initialState.isUpdateMode,
+        }}
+      >
+        {/* ...component content */}
+      </CreeveyContext.Provider>
+    );
+  }
+  ```
+
+- Updated UI components to access `isUpdateMode` directly from context:
+  ```typescript
+  // SideBarFooter.tsx
+  export function SideBarFooter(): JSX.Element {
+    const { onApproveAll, onImageApprove, onImageNext, isUpdateMode } = useCreeveyContext();
+    // ...
+    return (
+      <>
+        {isUpdateMode && (
+          <UpdateModeBanner>Update Mode: Review and approve screenshots from previous test runs</UpdateModeBanner>
+        )}
+        {/* ...rest of component */}
+      </>
+    );
+  }
+  ```
+
+### 3. API Method Standardization
+
+- Renamed methods in TestsManager for consistency:
+
+  - `approveTest` → `approve`
+  - `approveAllTests` → `approveAll`
+
+- Updated corresponding method calls in Runner and API classes.
+
+### 4. Backward Compatibility
+
+- Maintained backward compatibility by still checking for the URL parameter if the server doesn't provide the `isUpdateMode` flag:
+  ```typescript
+  if (data.payload.isUpdateMode !== undefined) {
+    isUpdateMode = data.payload.isUpdateMode;
+  } else if (urlHasUpdateParam) {
+    isUpdateMode = urlHasUpdateParam;
+  }
+  ```
+
+### Benefits of the Refactoring
+
+1. **Single Source of Truth**: Server now controls and communicates the update mode status
+2. **Simplified Component Design**: UI components access `isUpdateMode` directly from context
+3. **Better Architecture**: Reduced coupling between components
+4. **Consistent API**: Standardized method naming conventions
+5. **Backward Compatible**: Existing URLs and bookmarks continue to work
+
+### Next Steps
+
+1. Complete the renaming of remaining TestsManager methods for consistency
+2. Fix any remaining linting issues
+3. Add comprehensive tests for the new implementation
+
+---
+
+# Original Implementation Plan
+
+## Creevey Test Data Management Refactoring Implementation Plan
 
 ## Completed Documentation Tasks
 
@@ -329,3 +463,252 @@ This refactoring will maintain the same external API, ensuring that all existing
 - Code is more maintainable and organized
 - The Runner class is simpler and more focused
 - Test data operations are centralized and consistent
+
+# UI Update Mode Implementation Plan
+
+## Overview
+
+This document outlines the implementation plan for a new Creevey feature: UI Update Mode. This mode will allow users to review and approve screenshots from the browser, combining the functionality of both existing `--ui` and `--update` flags.
+
+## Requirements
+
+1. Create a new operation mode that loads tests metadata from the report
+2. Enable the API server to allow approving screenshots from the UI
+3. Allow users to run Creevey with both `--ui` and `--update` flags
+4. Use the TestsManager to load test data from report
+5. Implement UI interactions to approve images
+
+## System Architecture
+
+```mermaid
+graph TD
+    CLI[CLI Command] --> ConfigLoader[Configuration Loader]
+    ConfigLoader --> UpdateMode{Check Mode}
+    UpdateMode -->|Update Mode| UpdateImpl[Update Implementation]
+    UpdateMode -->|UI Update Mode| UIUpdateMode[UI Update Mode]
+    UpdateMode -->|UI Mode| UIMode[UI Mode]
+    UpdateMode -->|Test Mode| TestRunner[Test Runner]
+
+    UIUpdateMode --> TestsLoader[Load Tests from Report]
+    TestsLoader --> APIServer[Start API Server]
+    APIServer --> WebUI[Web UI]
+
+    WebUI --> ApproveAction[Approve Action]
+    ApproveAction --> TestsManager[Tests Manager]
+    TestsManager --> FileSystem[Update Reference Images]
+```
+
+## Implementation Details
+
+### 1. CLI Integration
+
+We need to modify the CLI handling to recognize when both `--ui` and `--update` flags are used together.
+
+```typescript
+// src/creevey.ts
+const argv = minimist<Options>(process.argv.slice(2), {
+  string: ['browser', 'config', 'reporter', 'reportDir', 'screenDir', 'gridUrl', 'storybookUrl', 'storybookPort'],
+  boolean: ['debug', 'trace', 'ui', 'odiff', 'noDocker', 'update'],
+  default: { port: '3000' },
+  alias: { port: 'p', config: 'c', debug: 'd', update: 'u', storybookStart: 's' },
+});
+```
+
+### 2. Server Implementation
+
+Modify the server implementation to handle the new UI update mode:
+
+```typescript
+// src/server/index.ts
+export default async function (options: Options): Promise<void> {
+  const config = await readConfig(options);
+  const { browser = defaultBrowser, update, ui, port } = options;
+  let gridUrl = cluster.isPrimary ? config.gridUrl : options.gridUrl;
+
+  // ... existing code ...
+
+  switch (true) {
+    case Boolean(update) && Boolean(ui): {
+      // New UI Update mode
+      await import('./ui-update.js').then(({ uiUpdate }) => uiUpdate(config, port));
+      return;
+    }
+    case Boolean(update): {
+      (await import('./update.js')).update(config, typeof update == 'string' ? update : undefined);
+      return;
+    }
+    // ... existing cases ...
+  }
+}
+```
+
+### 3. UI Update Mode Implementation
+
+Create a new file to handle the UI update mode:
+
+```typescript
+// src/server/ui-update.ts
+import path from 'path';
+import { Config } from '../types.js';
+import { logger } from './logger.js';
+import { TestsManager } from './master/testsManager.js';
+import { start as startServer } from './master/server.js';
+
+export async function uiUpdate(config: Config, port: number): Promise<void> {
+  logger().info('Starting UI Update Mode');
+
+  // Initialize TestsManager with the configured directories
+  const testsManager = new TestsManager(config.screenDir, config.reportDir);
+
+  // Load tests from the report
+  const testsFromReport = testsManager.loadTestsFromReport();
+
+  if (Object.keys(testsFromReport).length === 0) {
+    logger().warn('No tests found in report. Run tests first to generate report data.');
+    return;
+  }
+
+  // Set tests in the manager
+  testsManager.updateTests(testsFromReport);
+
+  // Start API server with UI enabled
+  const resolveApi = startServer(config.reportDir, port, true);
+
+  // Initialize API
+  const { CreeveyApi } = await import('./master/api.js');
+  const api = new CreeveyApi(testsManager, config);
+
+  // Resolve the API for the server
+  resolveApi(api);
+
+  logger().info(`UI Update Mode started on http://localhost:${port}`);
+  logger().info('You can now review and approve screenshots from the browser.');
+}
+```
+
+### 4. Modifications to API
+
+Update the API to include methods for the UI update mode:
+
+```typescript
+// src/types.ts
+export interface Options {
+  // ... existing options ...
+  ui?: boolean;
+  update?: boolean | string;
+}
+```
+
+### 5. UI Modifications
+
+Ensure the UI correctly handles the update mode:
+
+```typescript
+// src/client/shared/creeveyClientApi.ts
+export interface CreeveyClientApi {
+  // ... existing interface ...
+  isUpdateMode: boolean;
+}
+
+export async function initCreeveyClientApi(): Promise<CreeveyClientApi> {
+  // ... existing code ...
+
+  clientApiResolver({
+    // ... existing properties ...
+    isUpdateMode: new URLSearchParams(window.location.search).has('update'),
+  });
+
+  // ... existing code ...
+}
+```
+
+### 6. UI Components Update
+
+Update UI components to show appropriate controls in update mode:
+
+```typescript
+// src/client/web/CreeveyView/SideBar/SideBarFooter.tsx
+// Add appropriate UI elements to indicate update mode is active
+```
+
+## Testing Strategy
+
+1. **Unit Tests**:
+
+   - Test the new UI update mode function
+   - Test loading tests from report in update mode
+   - Test TestsManager integration
+
+2. **Integration Tests**:
+
+   - Test the full flow from CLI to UI
+   - Test approve actions in the UI
+
+3. **Manual Testing**:
+   - Run with `--ui --update` flags
+   - Verify screenshots can be approved
+   - Verify changes are properly saved
+
+## Implementation Steps
+
+1. Modify CLI to handle combined flags
+2. Create UI update mode implementation
+3. Update TestsManager integration
+4. Modify UI to handle update mode
+5. Test the implementation
+6. Update documentation
+
+## Potential Challenges
+
+1. **Test Data Format**: Ensure that test data loaded from the report is compatible with the UI
+2. **Concurrency Issues**: Handle potential concurrent approvals
+3. **UI Feedback**: Provide appropriate feedback when approvals are processed
+
+## Timeline
+
+- Implementation: 2-3 days
+- Testing: 1-2 days
+- Documentation: 1 day
+
+## Documentation Updates
+
+Update the following documentation:
+
+- Command line options
+- User guide for the UI update mode
+- Development guide for extending the functionality
+
+## Usage Example
+
+To use the UI Update Mode, run Creevey with both the `--ui` and `--update` flags:
+
+```bash
+# Using npm
+npm run creevey -- --ui --update
+
+# Using yarn
+yarn creevey --ui --update
+
+# Using npx
+npx creevey --ui --update
+```
+
+This will:
+
+1. Load existing test results from the previous test run
+2. Start the web UI server
+3. Allow you to browse and approve screenshots from your browser
+
+When the UI loads, you'll see an "Update Mode" indicator in the header, showing that you can approve screenshot changes.
+
+### Workflow
+
+A typical workflow with UI Update Mode would be:
+
+1. Run your tests normally first: `yarn creevey`
+2. Review failed tests and determine which changes are expected
+3. Run in UI Update Mode: `yarn creevey --ui --update`
+4. Approve the expected changes through the browser interface
+5. Run tests again to verify all tests now pass: `yarn creevey`
+
+This feature is especially useful for teams that need to collaboratively review and approve visual changes, as it provides a user-friendly interface for approving screenshots rather than using command-line tools.

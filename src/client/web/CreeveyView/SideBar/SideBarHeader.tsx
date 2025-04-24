@@ -58,6 +58,27 @@ const Button = withTheme(
   })),
 );
 
+const UpdateModeIndicator = withTheme(
+  styled.div(({ theme }) => ({
+    marginLeft: '8px',
+    display: 'inline-block',
+    fontSize: '0.8em',
+    fontWeight: 'bold',
+    color: theme.color.positive,
+    backgroundColor: `${theme.color.positive}20`,
+    padding: '2px 6px',
+    borderRadius: '4px',
+  })),
+);
+
+const UpdateModeDescription = withTheme(
+  styled.div(({ theme }) => ({
+    fontSize: '0.8em',
+    color: theme.color.mediumdark,
+    marginTop: '4px',
+  })),
+);
+
 const MarginContainer = styled.div<{ left?: string; right?: string; top?: string; bottom?: string }>(
   ({ left, right, top, bottom }) => ({
     marginLeft: left ?? 0,
@@ -92,7 +113,7 @@ export function SideBarHeader({
   onFilterChange,
   canStart,
 }: SideBarHeaderProps): JSX.Element {
-  const { isReport, isRunning } = useContext(CreeveyContext);
+  const { isReport, isRunning, isUpdateMode } = useContext(CreeveyContext);
   const [filterInput, setFilterInput] = useState('');
 
   const handleClickByStatus = (status: TestStatus): void => {
@@ -114,10 +135,16 @@ export function SideBarHeader({
     <Sticky>
       <Container>
         <div>
-          <Header>colin.creevey</Header>
+          <Header>
+            colin.creevey
+            {isUpdateMode && <UpdateModeIndicator>Update Mode</UpdateModeIndicator>}
+          </Header>
+          {isUpdateMode && (
+            <UpdateModeDescription>Review and approve screenshots from previous test runs</UpdateModeDescription>
+          )}
           <TestsStatus {...testsStatus} onClickByStatus={handleClickByStatus} />
         </div>
-        {isReport ? null : (
+        {isReport || isUpdateMode ? null : (
           <MarginContainer top="10px">
             {isRunning ? (
               <Button variant="outline" onClick={onStop}>
