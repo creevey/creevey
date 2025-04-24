@@ -28,8 +28,12 @@
 ### Improvement Tasks
 
 - [ ] Begin implementing priority improvements
-  - [ ] Enhance test parallelization
-  - [ ] Improve error reporting for failed tests
+  - [ ] Test Data Management Refactoring
+    - [ ] Create TestsManager class
+    - [ ] Implement core test data operations
+    - [ ] Refactor Runner class to use TestsManager
+    - [ ] Update dependent components
+    - [ ] Add tests and documentation
 
 ## Potential Improvements
 
@@ -47,9 +51,21 @@
 
 ## Next Steps
 
-1. Review and prioritize improvement opportunities
-2. Begin implementing highest-priority improvements
-3. Address critical technical debt items
+1. Focus on Test Data Management Refactoring
+
+   - Create TestsManager class and core functionality
+   - Refactor Runner class to use TestsManager
+   - Update dependent components
+   - Add tests and ensure backward compatibility
+
+2. Address critical technical debt
+
+   - Update outdated dependencies
+   - Improve error handling
+
+3. Prepare for future enhancements after completing current priorities
+   - Performance optimization
+   - Error reporting enhancement
 
 ## Milestones
 
@@ -62,4 +78,5 @@
 - [x] **Milestone 7**: Create comprehensive architecture diagram
 - [x] **Milestone 8**: Complete development guide and supporting documentation
 - [x] **Milestone 9**: Complete all documentation tasks
-- [ ] **Milestone 10**: Implementation of priority improvements
+- [ ] **Milestone 10**: Test Data Management Refactoring
+- [ ] **Milestone 11**: Implementation of other priority improvements

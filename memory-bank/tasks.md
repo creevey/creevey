@@ -42,14 +42,13 @@
 
 ### Implementation Tasks
 
-- [ ] Enhance test parallelization
-  - [ ] Research optimal worker management strategy
-  - [ ] Implement improved thread pooling
-  - [ ] Add test sharding capabilities
-- [ ] Improve error reporting
-  - [ ] Design enhanced error format
-  - [ ] Implement structured error logs
-  - [ ] Add visual error indicators to UI
+- [ ] Test Data Management Refactoring
+  - [ ] Create a dedicated TestsManager class
+  - [ ] Move test data operations from Runner to TestsManager
+  - [ ] Implement methods for loading, merging, and saving test data
+  - [ ] Refactor dependent components to use the new class
+  - [ ] Ensure backward compatibility
+  - [ ] Add tests for the new implementation
 
 ## Task Backlog
 
@@ -64,6 +63,14 @@
 - [ ] Implement smarter test retries
 - [ ] Enhance image comparison algorithm
 - [ ] Add AI-assisted comparison options
+- [ ] Enhance test parallelization
+  - [ ] Research optimal worker management strategy
+  - [ ] Implement improved thread pooling
+  - [ ] Add test sharding capabilities
+- [ ] Improve error reporting
+  - [ ] Design enhanced error format
+  - [ ] Implement structured error logs
+  - [ ] Add visual error indicators to UI
 
 ### Maintenance Tasks
 
