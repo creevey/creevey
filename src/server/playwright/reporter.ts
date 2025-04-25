@@ -1,10 +1,10 @@
 import type { Reporter, FullConfig, Suite, TestCase, TestResult, TestStep } from '@playwright/test/reporter';
 import path from 'path';
 import fs from 'fs/promises';
-import { TestsManager } from '../server/master/testsManager.js';
-import { CreeveyApi } from '../server/master/api.js';
-import { ServerTest, TestMeta, TestStatus, TestResult as CreeveyTestResult } from '../types.js';
-import { copyStatics } from '../server/utils.js';
+import { TestsManager } from '../master/testsManager.js';
+import { CreeveyApi } from '../master/api.js';
+import { ServerTest, TestMeta, TestStatus, TestResult as CreeveyTestResult } from '../../types.js';
+import { copyStatics } from '../utils.js';
 
 /**
  * Simple async queue to handle operations in sequence without returning promises
@@ -77,7 +77,7 @@ export class CreeveyPlaywrightReporter implements Reporter {
     this.asyncQueue.enqueue(async () => {
       try {
         // Dynamically import the modules to avoid circular dependencies
-        const { start } = await import('../server/master/server.js');
+        const { start } = await import('../master/server.js');
         this.startServer = start;
 
         // Initialize report directory

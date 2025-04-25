@@ -12,6 +12,10 @@
       "types": "./dist/playwright.d.ts",
       "default": "./dist/playwright.js"
     },
+    "./playwright-reporter": {
+      "types": "./dist/playwright-reporter.d.ts",
+      "default": "./dist/playwright-reporter.js"
+    },
     "./selenium": {
       "types": "./dist/selenium.d.ts",
       "default": "./dist/selenium.js"

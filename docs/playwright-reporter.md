@@ -17,13 +17,12 @@ Add the Creevey reporter to your Playwright configuration file:
 ```typescript
 // playwright.config.ts
 import { defineConfig } from '@playwright/test';
-import { CreeveyPlaywrightReporter } from 'creevey/playwright-reporter';
 
 export default defineConfig({
   reporter: [
     ['list'], // Standard Playwright reporter for console output
     [
-      CreeveyPlaywrightReporter,
+      'creevey/playwright-reporter',
       {
         // Optional configuration options
         reportDir: './report', // Directory for report output
@@ -196,14 +195,13 @@ If you're already using Creevey for other tests, you can share configuration:
 
 ```typescript
 import { defineConfig } from '@playwright/test';
-import { CreeveyPlaywrightReporter } from 'creevey/playwright-reporter';
 import creeveyConfig from './creevey.config.js';
 
 export default defineConfig({
   reporter: [
     ['list'],
     [
-      CreeveyPlaywrightReporter,
+      'creevey/playwright-reporter',
       {
         reportDir: creeveyConfig.reportDir,
         screenDir: creeveyConfig.screenDir,

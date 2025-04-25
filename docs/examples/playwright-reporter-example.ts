@@ -11,7 +11,6 @@
 
 // playwright.config.ts
 import { defineConfig } from '@playwright/test';
-import { CreeveyPlaywrightReporter } from 'creevey/playwright';
 
 export default defineConfig({
   testDir: './tests',
@@ -26,7 +25,7 @@ export default defineConfig({
     ['html'], // Standard Playwright HTML reporter
     ['list'], // Console output
     // Creevey reporter with custom configuration
-    [CreeveyPlaywrightReporter, {
+    ['creevey/playwright-reporter', {
       reportDir: './visual-test-results',
       screenDir: './visual-reference-images',
       port: 3030,
