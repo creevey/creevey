@@ -1,29 +1,13 @@
 import path from 'path';
 import { existsSync } from 'fs';
-import { fileURLToPath, pathToFileURL } from 'url';
-import { copyFile, readdir, mkdir } from 'fs/promises';
 import master from './master.js';
 import { CreeveyApi } from './api.js';
 import { Config, Options, isDefined } from '../../types.js';
-import { shutdownWorkers, testsToImages, readDirRecursive } from '../utils.js';
+import { shutdownWorkers, testsToImages, readDirRecursive, copyStatics } from '../utils.js';
 import { subscribeOn } from '../messages.js';
 import Runner from './runner.js';
 import { logger } from '../logger.js';
 import { sendScreenshotsCount } from '../telemetry.js';
-
-const importMetaUrl = pathToFileURL(__filename).href;
-
-async function copyStatics(reportDir: string): Promise<void> {
-  const clientDir = path.join(path.dirname(fileURLToPath(importMetaUrl)), '../../../dist/client/web');
-  const assets = (await readdir(path.join(clientDir, 'assets'), { withFileTypes: true }))
-    .filter((dirent) => dirent.isFile())
-    .map((dirent) => dirent.name);
-  await mkdir(path.join(reportDir, 'assets'), { recursive: true });
-  await copyFile(path.join(clientDir, 'index.html'), path.join(reportDir, 'index.html'));
-  for (const asset of assets) {
-    await copyFile(path.join(clientDir, 'assets', asset), path.join(reportDir, 'assets', asset));
-  }
-}
 
 function outputUnnecessaryImages(imagesDir: string, images: Set<string>): void {
   if (!existsSync(imagesDir)) return;

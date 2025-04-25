@@ -11,6 +11,7 @@ import { emitShutdownMessage, sendShutdownMessage } from './messages.js';
 import { LOCALHOST_REGEXP } from './webdriver.js';
 import assert from 'assert';
 import pidtree from 'pidtree';
+import path from 'path';
 
 const importMetaUrl = pathToFileURL(__filename).href;
 
@@ -291,4 +292,20 @@ export function waitOnUrl(waitUrl: string, timeout: number, delay: number) {
         }),
     ),
   );
+}
+
+/**
+ * Copies static assets to the report directory
+ * @param reportDir Directory where the report will be generated
+ */
+export async function copyStatics(reportDir: string): Promise<void> {
+  const clientDir = dirname(fileURLToPath(importMetaUrl)) + '/../client/web';
+  const assets = (await fs.promises.readdir(path.join(clientDir, 'assets'), { withFileTypes: true }))
+    .filter((dirent) => dirent.isFile())
+    .map((dirent) => dirent.name);
+  await fs.promises.mkdir(path.join(reportDir, 'assets'), { recursive: true });
+  await fs.promises.copyFile(path.join(clientDir, 'index.html'), path.join(reportDir, 'index.html'));
+  for (const asset of assets) {
+    await fs.promises.copyFile(path.join(clientDir, 'assets', asset), path.join(reportDir, 'assets', asset));
+  }
 }

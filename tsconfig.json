@@ -22,6 +22,7 @@
   },
   "include": [
     "src/**/*",
+    "docs/examples/**/*",
     ".creevey/**/*",
     ".storybook/*",
     "stories/**/*",

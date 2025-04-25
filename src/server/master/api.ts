@@ -35,6 +35,11 @@ export class CreeveyApi {
       this.runner.on('update', (payload: CreeveyUpdate) => {
         this.broadcastUpdate(payload);
       });
+    } else {
+      // Subscribe to TestsManager updates
+      this.testsManager.on('update', (update: CreeveyUpdate) => {
+        this.broadcastUpdate(update);
+      });
     }
   }
 
@@ -74,15 +79,11 @@ export class CreeveyApi {
       // In update mode, only approve and approveAll commands are allowed
       switch (command.type) {
         case 'approve': {
-          void this.testsManager.approve(command.payload).then((update) => {
-            if (update) this.broadcastUpdate(update);
-          });
+          void this.testsManager.approve(command.payload);
           return;
         }
         case 'approveAll': {
-          void this.testsManager.approveAll().then((update) => {
-            this.broadcastUpdate(update);
-          });
+          void this.testsManager.approveAll();
           return;
         }
         case 'status': {

@@ -1,5 +1,6 @@
 import path from 'path';
 import { mkdirSync, writeFileSync } from 'fs';
+import EventEmitter from 'events';
 import {
   ServerTest,
   TestMeta,
@@ -17,8 +18,9 @@ import { copyFile, mkdir, writeFile } from 'fs/promises';
 /**
  * TestsManager is responsible for all operations related to test data management
  * including loading, saving, merging, and updating test data.
+ * It extends EventEmitter to emit update events that can be subscribed to.
  */
-export class TestsManager {
+export class TestsManager extends EventEmitter {
   private tests: Partial<Record<string, ServerTest>> = {};
   private screenDir: string;
   private reportDir: string;
@@ -29,6 +31,7 @@ export class TestsManager {
    * @param reportDir Directory for storing reports and screenshots
    */
   constructor(screenDir: string, reportDir: string) {
+    super();
     this.screenDir = screenDir;
     this.reportDir = reportDir;
   }
@@ -138,7 +141,9 @@ export class TestsManager {
 
     this.saveTestsToJson();
 
-    return { tests, removedTests };
+    const update = { tests, removedTests };
+    this.emit('update', update);
+    return update;
   }
 
   /**
@@ -157,7 +162,9 @@ export class TestsManager {
 
     if (!result) {
       // NOTE: Running status
-      return { tests: { [id]: { id, browser, testName, storyPath, status, storyId } } };
+      const update = { tests: { [id]: { id, browser, testName, storyPath, status, storyId } } };
+      this.emit('update', update);
+      return update;
     }
 
     test.results ??= [];
@@ -167,7 +174,7 @@ export class TestsManager {
       test.approved = null;
     }
 
-    return {
+    const update = {
       tests: {
         [id]: {
           id,
@@ -181,6 +188,9 @@ export class TestsManager {
         },
       },
     };
+
+    this.emit('update', update);
+    return update;
   }
 
   /**
@@ -251,7 +261,7 @@ export class TestsManager {
       test.status = 'approved';
     }
 
-    return {
+    const update = {
       tests: {
         [id]: {
           id,
@@ -260,10 +270,14 @@ export class TestsManager {
           storyPath,
           status: test.status,
           approved: test.approved,
+          results: test.results.slice(-1),
           storyId,
         },
       },
     };
+
+    this.emit('update', update);
+    return update;
   }
 
   /**
@@ -295,6 +309,8 @@ export class TestsManager {
       }
     }
 
-    return { tests: updatedTests };
+    const result = { tests: updatedTests };
+    this.emit('update', result);
+    return result;
   }
 }
