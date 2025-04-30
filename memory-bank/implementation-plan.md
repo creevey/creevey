@@ -328,7 +328,7 @@ Currently, the runner directly updates tests data and results inside its methods
 #### TestsManager Class Structure
 
 ```typescript
-// src/server/testsFiles/testsManager.ts
+// src/server/master/testsManager.ts
 import { EventEmitter } from 'events';
 import { ServerTest, TestData, TestMeta, TestResult, TestStatus, CreeveyUpdate, ApprovePayload } from '../../types.js';
 

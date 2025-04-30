@@ -1,4 +1,4 @@
-import type { Renderer, StoryContextForEnhancers } from '@storybook/types';
+import type { Renderer } from '@storybook/types';
 import type { PreviewWeb, StoryStore } from '@storybook/preview-api';
 import { Channel } from '@storybook/channels';
 import {
@@ -121,7 +121,6 @@ function initCreeveyState(): void {
 
   if (prevState.creeveyHost) window.__CREEVEY_SERVER_HOST__ = prevState.creeveyHost;
   if (prevState.creeveyPort) window.__CREEVEY_SERVER_PORT__ = prevState.creeveyPort;
-  if (prevState.setStoriesCounter) setStoriesCounter = prevState.setStoriesCounter;
   if (prevState.isTestBrowser) isTestBrowser = prevState.isTestBrowser;
 
   window.addEventListener('beforeunload', () => {
@@ -130,7 +129,6 @@ function initCreeveyState(): void {
       JSON.stringify({
         creeveyHost: window.__CREEVEY_SERVER_HOST__,
         creeveyPort: window.__CREEVEY_SERVER_PORT__,
-        setStoriesCounter,
         isTestBrowser,
       } as CreeveyTestsState),
     );
@@ -141,7 +139,6 @@ let isTestBrowser = false;
 let captureResolver: () => void;
 let waitForCreevey: Promise<void>;
 let creeveyReady: () => void;
-let setStoriesCounter = 0;
 let globals = {};
 
 export function withCreevey(): ReturnType<typeof makeDecorator> {
@@ -160,20 +157,9 @@ export function withCreevey(): ReturnType<typeof makeDecorator> {
     document.head.appendChild(style);
   }
 
+  // TODO Find a way to send stories updates to the server
   async function getStories(): Promise<StoriesRaw | undefined> {
     const stories = serializeRawStories(await window.__STORYBOOK_PREVIEW__.extract());
-    const storiesByFiles = new Map<string, StoryContextForEnhancers[]>();
-    Object.values(stories).forEach((story) => {
-      const fileName = story.parameters.fileName as string;
-      const storiesFromFile = storiesByFiles.get(fileName);
-      if (storiesFromFile) storiesFromFile.push(story);
-      else storiesByFiles.set(fileName, [story]);
-    });
-    void fetch(`http://${getConnectionUrl()}/stories`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ setStoriesCounter, stories: [...storiesByFiles.entries()] }),
-    });
     return stories;
   }
 

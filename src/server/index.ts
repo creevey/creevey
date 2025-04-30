@@ -87,6 +87,7 @@ async function startWebdriverServer(browser: string, config: Config, options: Op
   }
 }
 
+// TODO Why docker containers are not deleting after stop?
 export default async function (options: Options): Promise<void> {
   const config = await readConfig(options);
   const { browser = defaultBrowser, update, ui, port } = options;
@@ -144,6 +145,8 @@ export default async function (options: Options): Promise<void> {
       }
     }
   }
+
+  await import('./shutdown.js');
 
   switch (true) {
     case Boolean(update) && Boolean(ui): {

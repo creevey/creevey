@@ -1,17 +1,17 @@
 import fs from 'fs';
-import https from 'https';
+import path from 'path';
 import http from 'http';
+import https from 'https';
+import assert from 'assert';
 import cluster from 'cluster';
-import { dirname } from 'path';
+import pidtree from 'pidtree';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { register as esmRegister } from 'tsx/esm/api';
 import { register as cjsRegister } from 'tsx/cjs/api';
 import { SkipOptions, SkipOption, isDefined, TestData, noop, ServerTest, Worker } from '../types.js';
-import { emitShutdownMessage, sendShutdownMessage } from './messages.js';
+import { emitShutdownMessage, emitWorkerMessage, sendShutdownMessage } from './messages.js';
 import { LOCALHOST_REGEXP } from './webdriver.js';
-import assert from 'assert';
-import pidtree from 'pidtree';
-import path from 'path';
+import { logger } from './logger.js';
 
 const importMetaUrl = pathToFileURL(__filename).href;
 
@@ -90,6 +90,18 @@ export function shouldSkipByOption(
   return skipByBrowser && skipByKind && skipByStory && skipByTest && reason;
 }
 
+export function shutdownOnException(reason: unknown): void {
+  if (isShuttingDown.current) return;
+
+  const error = reason instanceof Error ? (reason.stack ?? reason.message) : (reason as string);
+
+  logger().error(error);
+
+  process.exitCode = -1;
+  if (cluster.isWorker) emitWorkerMessage({ type: 'error', payload: { subtype: 'unknown', error } });
+  if (cluster.isPrimary) void shutdownWorkers();
+}
+
 export async function shutdownWorkers(): Promise<void> {
   isShuttingDown.current = true;
   await Promise.all(
@@ -152,7 +164,7 @@ export function resolvePlaywrightBrowserType(browserName: string): (typeof brows
 
 export async function getCreeveyCache(): Promise<string | undefined> {
   const { default: findCacheDir } = await import('find-cache-dir');
-  return findCacheDir({ name: 'creevey', cwd: dirname(fileURLToPath(importMetaUrl)) });
+  return findCacheDir({ name: 'creevey', cwd: path.dirname(fileURLToPath(importMetaUrl)) });
 }
 
 export async function runSequence(seq: (() => unknown)[], predicate: () => boolean): Promise<boolean> {
@@ -299,7 +311,7 @@ export function waitOnUrl(waitUrl: string, timeout: number, delay: number) {
  * @param reportDir Directory where the report will be generated
  */
 export async function copyStatics(reportDir: string): Promise<void> {
-  const clientDir = dirname(fileURLToPath(importMetaUrl)) + '/../client/web';
+  const clientDir = path.join(path.dirname(fileURLToPath(importMetaUrl)), '../../dist/client/web');
   const assets = (await fs.promises.readdir(path.join(clientDir, 'assets'), { withFileTypes: true }))
     .filter((dirent) => dirent.isFile())
     .map((dirent) => dirent.name);

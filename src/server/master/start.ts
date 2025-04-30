@@ -8,6 +8,7 @@ import { subscribeOn } from '../messages.js';
 import Runner from './runner.js';
 import { logger } from '../logger.js';
 import { sendScreenshotsCount } from '../telemetry.js';
+import { start as startServer } from './server.js';
 
 function outputUnnecessaryImages(imagesDir: string, images: Set<string>): void {
   if (!existsSync(imagesDir)) return;
@@ -23,6 +24,8 @@ function outputUnnecessaryImages(imagesDir: string, images: Set<string>): void {
 }
 
 export async function start(gridUrl: string | undefined, config: Config, options: Options): Promise<void> {
+  const resolveApi = startServer(config.reportDir, options.port, options.ui);
+
   let runner: Runner | null = null;
   if (config.hooks.before) {
     await config.hooks.before();
@@ -51,8 +54,6 @@ export async function start(gridUrl: string | undefined, config: Config, options
   if (options.ui) {
     // Initialize TestsManager
     const testsManager = runner.testsManager;
-
-    const resolveApi = (await import('./server.js')).start(config.reportDir, options.port, options.ui);
 
     // Create the CreeveyApi instance using the existing runner
     const api = new CreeveyApi(testsManager, runner);

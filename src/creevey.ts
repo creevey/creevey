@@ -2,32 +2,9 @@ import cluster from 'cluster';
 import minimist from 'minimist';
 import creevey from './server/index.js';
 import { Options } from './types.js';
-import { emitWorkerMessage } from './server/messages.js';
-import { isShuttingDown, shutdownWorkers } from './server/utils.js';
 import Logger from 'loglevel';
 import { logger, setRootName } from './server/logger.js';
-
-function shutdownOnException(reason: unknown): void {
-  if (isShuttingDown.current) return;
-
-  const error = reason instanceof Error ? (reason.stack ?? reason.message) : (reason as string);
-
-  logger().error(error);
-
-  process.exitCode = -1;
-  if (cluster.isWorker) emitWorkerMessage({ type: 'error', payload: { subtype: 'unknown', error } });
-  if (cluster.isPrimary) void shutdownWorkers();
-}
-
-process.on('uncaughtException', shutdownOnException);
-process.on('unhandledRejection', shutdownOnException);
-// TODO SIGINT Stuck with selenium
-process.on('SIGINT', () => {
-  if (isShuttingDown.current) {
-    process.exit(-1);
-  }
-  isShuttingDown.current = true;
-});
+import './server/shutdown.js';
 
 const argv = minimist<Options>(process.argv.slice(2), {
   string: ['browser', 'config', 'reporter', 'reportDir', 'screenDir', 'gridUrl', 'storybookUrl', 'storybookPort'],
