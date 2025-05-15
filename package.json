@@ -204,7 +204,7 @@
     "displayName": "Creevey"
   },
   "volta": {
-    "node": "20.16.0",
-    "yarn": "4.4.0"
+    "node": "22.15.0",
+    "yarn": "4.9.1"
   }
 }

@@ -255,8 +255,8 @@ const [nodeVersion] = process.versions.node.split('.').map(Number);
 export async function loadThroughTSX<T>(
   callback: (load: (modulePath: string) => Promise<T>) => Promise<T>,
 ): Promise<T> {
-  // TODO Check if it work in node18 and type: 'module'
-  const unregister = nodeVersion > 18 ? esmRegister() : cjsRegister();
+  const unregisterESM = nodeVersion > 18 ? esmRegister() : noop;
+  const unregisterCJS = cjsRegister();
 
   const result = await callback((modulePath) =>
     nodeVersion > 18
@@ -267,7 +267,9 @@ export async function loadThroughTSX<T>(
 
   // NOTE: `unregister` type is `(() => Promise<void>) | (() => void)`
   // eslint-disable-next-line @typescript-eslint/await-thenable, @typescript-eslint/no-confusing-void-expression
-  await unregister();
+  await unregisterCJS();
+  // eslint-disable-next-line @typescript-eslint/await-thenable, @typescript-eslint/no-confusing-void-expression
+  await unregisterESM();
 
   return result;
 }
