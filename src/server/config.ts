@@ -83,6 +83,14 @@ export async function readConfig(options: Options): Promise<Config> {
       configData.webdriver = SeleniumWebdriver;
     }
 
+    for (const key in configData) {
+      const configKey = key as keyof typeof configData;
+      if (configData[configKey] === undefined) {
+        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+        delete configData[configKey];
+      }
+    }
+
     Object.assign(userConfig, configData);
   }
 

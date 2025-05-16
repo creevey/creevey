@@ -12,114 +12,116 @@ Hey everyone! We've got some updates for Creevey that we think you'll like. We'v
 
 Creevey now works smoothly with Playwright! This gives you another solid option for browser automation, besides Selenium WebDriver. We've tried to make it flexible for different ways you might want to use it.
 
-- **Using Playwright for Browser Automation:** You can set up Playwright right in your `creevey.config.js`.
+- **Using Playwright for Browser Automation:** You can set up Playwright right in your `creevey.config.ts`.
 
-  - **Playwright without Docker:**
-    Just turn off Docker and tell Creevey which Playwright browsers to use.
+  ```typescript
+  // creevey.config.ts
+  import { CreeveyConfig } from 'creevey';
+  import { PlaywrightWebdriver } from 'creevey/playwright';
 
-    ```javascript
-    // creevey.config.js
-    export default {
-      useDocker: false, // Turn off Docker
-      browsers: {
-        chrome: {
-          browserName: 'chromium', // For Playwright, usually 'chromium', 'firefox', or 'webkit'
-          playwrightOptions: {
-            headless: false, // Example: show the browser while debugging
-          },
-        },
-        firefox: {
-          browserName: 'firefox',
+  const config: CreeveyConfig = {
+    webdriver: PlaywrightWebdriver,
+    // Set `useDocker to false in CI environments to use standalone Playwright browsers
+    useDocker: !Boolean(process.env.CI),
+    browsers: {
+      chrome: {
+        browserName: 'chromium', // For Playwright, usually 'chromium', 'firefox', or 'webkit'
+        playwrightOptions: {
+          headless: false, // Example: show the browser while debugging
         },
       },
-    };
-    ```
+      firefox: {
+        browserName: 'firefox',
+      },
+    },
+  };
 
-  - **Playwright with Docker (Good for CI):**
-    If you have Docker enabled (it's on by default), Creevey will build the Docker images for Playwright automatically.
+  export default config;
+  ```
 
-    ```javascript
-    // creevey.config.js
-    export default {
-      // useDocker: true is the default if Docker is around
-      browsers: {
-        playwrightChrome: {
-          browserName: 'chromium', // Tells Playwright which browser to use in Docker
-        },
-        playwrightFirefox: {
-          browserName: 'firefox',
+- **Playwright with Selenium Grid (Heads-up: Chrome Only for now):**
+  You can connect Playwright to a Selenium Grid. Just a heads-up, this only works with the Chrome browser because of how Playwright talks to Selenium Grid.
+
+  ```typescript
+  // creevey.config.ts
+  import { CreeveyConfig } from 'creevey';
+  import { PlaywrightWebdriver } from 'creevey/playwright';
+
+  const config: CreeveyConfig = {
+    webdriver: PlaywrightWebdriver,
+    gridUrl: 'http://your-selenium-grid-url:4444/wd/hub', // Your Selenium Grid URL
+    browsers: {
+      chromeOnGrid: {
+        browserName: 'chrome', // Needs to be 'chrome' for Playwright with Selenium Grid
+        seleniumCapabilities: {
+          // Add any Selenium settings your Grid needs here
         },
       },
-    };
-    ```
+    },
+  };
 
-  - **Playwright with Selenium Grid (Heads-up: Chrome Only for now):**
-    You can connect Playwright to a Selenium Grid. Just a heads-up, this currently only works with the Chrome browser because of how Playwright talks to Selenium Grid.
+  export default config;
+  ```
 
-    ```javascript
-    // creevey.config.js
-    export default {
-      gridUrl: 'http://your-selenium-grid-url:4444/wd/hub', // Your Selenium Grid URL
-      browsers: {
-        chromeOnGrid: {
-          browserName: 'chrome', // Needs to be 'chrome' for Playwright with Selenium Grid
-          seleniumCapabilities: {
-            // Add any Selenium settings your Grid needs here
-          },
-        },
-      },
-    };
-    ```
+- **Recording Traces and Video for Easier Debugging:**
+  To help you figure out what's going on in your tests, Creevey can use Playwright's trace and video recording. Just run Creevey in debug mode.
 
-    **Quick Note:** When using Playwright with Selenium Grid, only Chrome is supported at the moment.
+  ```bash
+  creevey --debug
+  ```
 
-  - **Recording Traces and Video for Easier Debugging:**
-    To help you figure out what's going on in your tests, Creevey can use Playwright's trace and video recording. Just run Creevey in debug mode.
-    ```bash
-    creevey --debug
-    ```
-    You'll find the traces (`trace.zip`) and videos (`video.webm`) in the `traces` folder inside your report directory, sorted by process ID.
-
-- **Standalone Playwright:** Want to run Playwright tests without Docker? Just set `useDocker: false`. Creevey now uses `playwright-core` to make this work better.
+  You'll find the traces (`trace.zip`) and videos (`video.webm`) in the `traces` folder inside your report directory, sorted by process ID.
 
 #### 2. Browser Config Changes for Selenium & Playwright (Heads-up: This is a Breaking Change)
 
-We've changed how you set up browsers in `creevey.config.js`. This helps make it clearer which settings are for Selenium and which are for Playwright.
+We've changed how you set up browsers in `creevey.config.ts`. This helps make it clearer which settings are for Selenium and which are for Playwright.
 
 - **How to Update:**
 
   - Settings like `browserVersion` and `platformName` (and other custom Selenium settings) now need to go inside a `seleniumCapabilities` object.
   - Playwright-specific settings should go into a `playwrightOptions` object.
+  - The new `webdriver` field lets you choose your WebDriver implementation. While it defaults to Selenium for now, this may change. We recommend explicitly setting it by importing and using either `SeleniumWebdriver` or `PlaywrightWebdriver`.
 
   **Example:**
 
-  ```javascript
+  ```typescript
   // Before
-  browsers: {
-    chrome: {
-      browserName: 'chrome',
-      browserVersion: '90.0',
-      platformName: 'linux',
-      customSeleniumOption: 'value'
-    }
-  }
-
-  // After
-  browsers: {
-    chrome: { // This could be for Selenium or Playwright
-      browserName: 'chrome', // For Selenium
-      // or browserName: 'chromium', // For Playwright
-      seleniumCapabilities: { // Selenium-specific stuff
+  const config: CreeveyConfig = {
+    browsers: {
+      chrome: {
+        browserName: 'chrome',
         browserVersion: '90.0',
         platformName: 'linux',
-        customSeleniumOption: 'value'
+        customSeleniumOption: 'value',
       },
-      playwrightOptions: { // Playwright-specific stuff
-        headless: true,
-        // ... other Playwright launch options
-      }
-    }
-  }
+    },
+  };
+
+  // After
+  import { SeleniumWebdriver } from 'creevey/selenium';
+  // or
+  // import { PlaywrightWebdriver } from 'creevey/playwright';
+
+  const config: CreeveyConfig = {
+    webdriver: SeleniumWebdriver, // or PlaywrightWebdriver
+    browsers: {
+      chrome: {
+        browserName: 'chrome',
+        // browserName: 'chromium', // For Playwright
+        seleniumCapabilities: {
+          // Selenium-specific stuff
+          browserVersion: '90.0',
+          platformName: 'linux',
+          customSeleniumOption: 'value',
+        },
+        playwrightOptions: {
+          // Playwright-specific stuff
+          headless: true,
+          // ... other Playwright launch options
+        },
+      },
+    },
+  };
   ```
 
 #### 3. Mocha is Gone & There's a New Test Context API (Heads-up: This is a Big Breaking Change)
@@ -133,7 +135,7 @@ Creevey doesn't use the Mocha testing framework anymore. This makes things simpl
 
   **Example:**
 
-  ```javascript
+  ```typescript
   // Before (Mocha style)
   it('should match the image', async function () {
     this.expect(await this.takeScreenshot()).to.matchImage('example');
@@ -185,6 +187,7 @@ We've added an "Update Mode" so you can approve changes to test images directly 
 
 - **How it Works:** The UI will show you when it's in update mode. You won't be able to run tests from the UI in this mode; it's all about reviewing and approving visual changes. This mode usually turns on when you run Creevey with certain flags or connect to a dataset that's ready for updates.
 - **How to Turn it On:** To run Creevey in this UI Update mode, use both the `--ui` and `--update` (or `-u` for short) flags when you run Creevey:
+
   ```bash
   creevey --ui --update
   # or
@@ -194,13 +197,14 @@ We've added an "Update Mode" so you can approve changes to test images directly 
 #### 6. New JUnit Reporter & Better Reporter Options
 
 - **JUnit Reporter:** You can now get JUnit-compatible XML reports, which is handy for CI/CD setups.
-  - **How to Use It:** Set `reporter: 'junit'` in your `creevey.config.js`.
+  - **How to Use It:** Set `reporter: 'junit'` in your `creevey.config.ts`.
   - You can tell it where to save the file with `reporterOptions: { outputFile: 'path/to/report.xml' }`.
-- **Reporter Setup:** Setting up reporters has moved from command-line options to your `creevey.config.js` file.
-  ```javascript
-  // In creevey.config.js
-  export default {
-    reporter: 'creevey', // or 'teamcity', 'junit'
+- **Reporter Setup:** Setting up reporters has moved from command-line options to your `creevey.config.ts` file.
+
+  ```typescript
+  // In creevey.config.ts
+  const config: CreeveyConfig = {
+    reporter: 'junit', // or 'teamcity', 'creevey'
     reporterOptions: {
       // custom options for the reporter you chose
       // For JUnit: { outputFile: 'report.xml' }
