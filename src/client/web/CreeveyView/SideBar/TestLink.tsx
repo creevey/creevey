@@ -19,7 +19,7 @@ const TestContainer = styled(SuiteContainer)({
 });
 
 export function TestLink({ title, opened, test }: TestLinkProps): JSX.Element {
-  const { onSuiteToggle, sidebarFocusedItem, setSidebarFocusedItem } = useCreeveyContext();
+  const { onSuiteToggle, sidebarFocusedItem, setSidebarFocusedItem, isUpdateMode } = useCreeveyContext();
   const { onOpenTest } = useContext(SideBarContext);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
 
@@ -55,11 +55,13 @@ export function TestLink({ title, opened, test }: TestLinkProps): JSX.Element {
       {/* NOTE Little hack to allow click on checkbox and don't trigger Button click */}
       {/* We can use other approach, but checkbox has vertical-align: top */}
       <CheckboxContainer>
-        <Checkbox
-          checked={test.skip ? false : test.checked}
-          disabled={Boolean(test.skip)}
-          onValueChange={handleCheck}
-        />
+        {!isUpdateMode && (
+          <Checkbox
+            checked={test.skip ? false : test.checked}
+            disabled={Boolean(test.skip)}
+            onValueChange={handleCheck}
+          />
+        )}
       </CheckboxContainer>
       <Button onClick={handleOpen} disabled={emptyResults} ref={buttonRef}>
         <TestContainer padding={(testPath.length + 1) * 8}>

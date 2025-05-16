@@ -78,7 +78,7 @@ export const SuiteTitle = styled.span({
 });
 
 export function SuiteLink({ title, suite, 'data-testid': dataTid }: SuiteLinkProps): JSX.Element {
-  const { onSuiteOpen, onSuiteToggle, sidebarFocusedItem, setSidebarFocusedItem } = useCreeveyContext();
+  const { onSuiteOpen, onSuiteToggle, sidebarFocusedItem, setSidebarFocusedItem, isUpdateMode } = useCreeveyContext();
   const checkboxRef = useRef<Checkbox>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
 
@@ -117,12 +117,14 @@ export function SuiteLink({ title, suite, 'data-testid': dataTid }: SuiteLinkPro
   return (
     <Container focused={isSuiteFocused}>
       <CheckboxContainer>
-        <Checkbox
-          ref={checkboxRef}
-          checked={suite.skip ? false : suite.checked}
-          disabled={Boolean(suite.skip)}
-          onValueChange={handleCheck}
-        />
+        {!isUpdateMode && (
+          <Checkbox
+            ref={checkboxRef}
+            checked={suite.skip ? false : suite.checked}
+            disabled={Boolean(suite.skip)}
+            onValueChange={handleCheck}
+          />
+        )}
       </CheckboxContainer>
       <Button onClick={handleOpen} onFocus={handleFocus} data-testid={dataTid} ref={buttonRef}>
         <SuiteContainer padding={(suite.path.length - 1) * 8}>

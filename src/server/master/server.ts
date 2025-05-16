@@ -41,12 +41,12 @@ export function start(reportDir: string, port: number, ui: boolean): (api: Creev
   // Capture endpoint
   server.post('/capture', captureHandler);
 
+  // Serve report files
+  server.get('/report/*', createStaticFileHandler(reportDir, '/report/'));
+
   // Serve static files
   const webDir = path.join(path.dirname(fileURLToPath(importMetaUrl)), '../../client/web');
   server.get('/*', createStaticFileHandler(webDir));
-
-  // Serve report files
-  server.get('/report/*', createStaticFileHandler(reportDir, '/report/'));
 
   // If UI mode, wait for CreeveyApi to be resolved
   if (ui) {

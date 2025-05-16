@@ -36,6 +36,7 @@ const Container = styled.div({
 const Header = styled.h2({
   fontWeight: 'normal',
   margin: 0,
+  padding: '2px 6px',
 });
 
 const Button = withTheme(
@@ -58,24 +59,13 @@ const Button = withTheme(
   })),
 );
 
-const UpdateModeIndicator = withTheme(
-  styled.div(({ theme }) => ({
-    marginLeft: '8px',
-    display: 'inline-block',
-    fontSize: '0.8em',
-    fontWeight: 'bold',
-    color: theme.color.positive,
-    backgroundColor: `${theme.color.positive}20`,
-    padding: '2px 6px',
-    borderRadius: '4px',
-  })),
-);
-
 const UpdateModeDescription = withTheme(
   styled.div(({ theme }) => ({
     fontSize: '0.8em',
-    color: theme.color.mediumdark,
     marginTop: '4px',
+    padding: '2px 6px',
+    color: theme.color.positive,
+    backgroundColor: `${theme.color.positive}20`,
   })),
 );
 
@@ -85,6 +75,7 @@ const MarginContainer = styled.div<{ left?: string; right?: string; top?: string
     marginRight: right ?? 0,
     marginTop: top ?? 0,
     marginBottom: bottom ?? 0,
+    padding: '2px 6px',
   }),
 );
 
@@ -135,10 +126,7 @@ export function SideBarHeader({
     <Sticky>
       <Container>
         <div>
-          <Header>
-            colin.creevey
-            {isUpdateMode && <UpdateModeIndicator>Update Mode</UpdateModeIndicator>}
-          </Header>
+          <Header>colin.creevey</Header>
           {isUpdateMode && (
             <UpdateModeDescription>Review and approve screenshots from previous test runs</UpdateModeDescription>
           )}
@@ -158,7 +146,7 @@ export function SideBarHeader({
           </MarginContainer>
         )}
       </Container>
-      <MarginContainer top="24px" bottom="24px">
+      <MarginContainer top="12px" bottom="12px">
         <Search onChange={handleInputFilterChange} value={filterInput} />
       </MarginContainer>
     </Sticky>

@@ -21,14 +21,14 @@ interface PageHeaderProps {
 }
 
 const Container = styled.div({
-  margin: '24px 44px 0',
+  marginTop: '24px',
 });
 
 const ErrorContainer = withTheme(
   styled.div<{ theme: Theme }>(({ theme }) => ({
     marginTop: '8px',
     padding: '8px',
-    background: theme.background.negative,
+    background: `${theme.background.negative}20`,
     color: theme.color.negative,
     borderRadius: '2px',
     display: 'flex',
@@ -48,8 +48,19 @@ const ErrorContainer = withTheme(
   })),
 );
 
+const UpdateModeBanner = withTheme(
+  styled.div(({ theme }) => ({
+    padding: '8px 32px',
+    backgroundColor: `${theme.color.positive}20`,
+    color: theme.color.positive,
+    fontSize: '12px',
+    textAlign: 'center',
+    fontWeight: 'bold',
+  })),
+);
+
 const H1 = styled.h1({
-  margin: 0,
+  marginLeft: '44px',
   marginBottom: '8px',
 });
 
@@ -77,7 +88,7 @@ export function PageHeader({
   onImageChange,
   onViewModeChange,
 }: PageHeaderProps): JSX.Element | null {
-  const { isReport } = useContext(CreeveyContext);
+  const { isReport, isUpdateMode } = useContext(CreeveyContext);
   const imageEntires = Object.entries(images) as [string, Images][];
 
   const handleViewModeChange = (mode: string): void => {
@@ -120,6 +131,9 @@ export function PageHeader({
           ))}
         </ImagesEntriesContainer>
       ) : null}
+      {isUpdateMode && (
+        <UpdateModeBanner>Update Mode: Review and approve screenshots from previous test runs</UpdateModeBanner>
+      )}
       {showViewModes && (
         <Tabs selected={viewMode} actions={{ onSelect: handleViewModeChange }}>
           {viewModes.map((x) => (

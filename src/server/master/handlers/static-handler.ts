@@ -6,8 +6,14 @@ import { logger } from '../../logger.js';
 export function createStaticFileHandler(baseDir: string, pathPrefix?: string) {
   return (request: Request, response: Response): void => {
     try {
-      const relativePath = pathPrefix ? request.path.replace(pathPrefix, '') : request.path;
-      const filePath = path.join(baseDir, relativePath || 'index.html');
+      const decodedPath = decodeURIComponent(request.path);
+      const relativePath = pathPrefix ? decodedPath.replace(pathPrefix, '') : decodedPath;
+      let filePath = path.join(baseDir, relativePath || 'index.html');
+
+      // If the path points to a directory, append index.html
+      if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {
+        filePath = path.join(filePath, 'index.html');
+      }
 
       if (!fs.existsSync(filePath)) {
         response.status(404).send('File not found');

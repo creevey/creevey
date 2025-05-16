@@ -105,7 +105,7 @@ export default async function (options: Options): Promise<void> {
     gridUrl = await startWebdriverServer(browser, config, options);
   }
 
-  if (cluster.isPrimary) {
+  if (cluster.isPrimary && !update) {
     const [localUrl, remoteUrl] = getStorybookUrl(config, options);
 
     if (options.storybookStart) {

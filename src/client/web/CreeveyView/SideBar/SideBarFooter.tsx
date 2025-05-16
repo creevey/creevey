@@ -20,25 +20,8 @@ const Container = styled.div({
   justifyContent: 'space-between',
 });
 
-const UpdateModeBanner = withTheme(
-  styled.div(({ theme }) => ({
-    position: 'absolute',
-    bottom: '65px',
-    left: 0,
-    right: 0,
-    padding: '8px 32px',
-    backgroundColor: `${theme.color.positive}20`,
-    color: theme.color.positive,
-    fontSize: '12px',
-    textAlign: 'center',
-    fontWeight: 'bold',
-    borderTop: `1px solid ${theme.color.positive}50`,
-    borderBottom: `1px solid ${theme.color.positive}50`,
-  })),
-);
-
 export function SideBarFooter(): JSX.Element {
-  const { onApproveAll, onImageApprove, onImageNext, isUpdateMode } = useCreeveyContext();
+  const { onApproveAll, onImageApprove, onImageNext } = useCreeveyContext();
   const [isAlt, setIsAlt] = useState(false);
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
@@ -66,9 +49,6 @@ export function SideBarFooter(): JSX.Element {
 
   return (
     <>
-      {isUpdateMode && (
-        <UpdateModeBanner>Update Mode: Review and approve screenshots from previous test runs</UpdateModeBanner>
-      )}
       <Sticky>
         <Container>
           {isAlt ? (

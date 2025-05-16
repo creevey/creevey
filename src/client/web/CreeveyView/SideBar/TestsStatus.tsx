@@ -15,6 +15,7 @@ const Container = styled.div({
   alignItems: 'center',
   fontSize: '14px',
   lineHeight: '22px',
+  padding: '2px 6px',
 });
 
 const IconContainer = styled.div<{ color?: string }>(({ color }) => ({

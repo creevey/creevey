@@ -218,7 +218,7 @@ export async function start(browser: string, gridUrl: string, config: Config, op
           browserName: baseContext.browserName,
           workerId: process.pid,
           images: imagesContext.images,
-          error: serializeError(error),
+          error: error ? serializeError(error) : undefined,
           duration,
           attachments: imagesContext.attachments,
           retries: message.payload.retries,

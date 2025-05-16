@@ -270,7 +270,6 @@ export class TestsManager extends EventEmitter {
           storyPath,
           status: test.status,
           approved: test.approved,
-          results: test.results.slice(-1),
           storyId,
         },
       },
