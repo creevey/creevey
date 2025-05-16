@@ -68,6 +68,7 @@ Creevey no longer uses the Mocha testing framework. Tests now use a `CreeveyTest
 
 - Replace `this` with the `context` parameter in your tests.
 - Image matching methods (e.g., `matchImage`, `takeScreenshot`) are now called on the `context` object.
+- The `context.webdriver` property gives you direct access to the configured WebDriver instance (Selenium or Playwright) for advanced browser interactions.
 
 **Before (0.9 - Mocha style):**
 
@@ -82,6 +83,23 @@ it('should match the image', async function () {
 ```javascript
 it('should match the image', async (context) => {
   await context.matchImage(await context.takeScreenshot(), 'example');
+});
+
+// Example using context.webdriver with Selenium WebDriver API
+it('should interact with an element using Selenium', async (context) => {
+  const seleniumWebDriver = context.webdriver; // Assuming SeleniumWebdriver is configured
+  const element = await seleniumWebDriver.findElement({ css: '#myElement' });
+  await element.click();
+  // ... more Selenium interactions
+  await context.matchImage(await context.takeScreenshot(), 'selenium-interaction');
+});
+
+// Example using context.webdriver with Playwright API
+it('should interact with an element using Playwright', async (context) => {
+  const playwrightPage = context.webdriver; // Assuming PlaywrightWebdriver is configured
+  await playwrightPage.click('#myElement');
+  // ... more Playwright interactions
+  await context.matchImage(await context.takeScreenshot(), 'playwright-interaction');
 });
 ```
 
