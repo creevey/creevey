@@ -199,7 +199,7 @@ export interface Config {
   resolveStorybookUrl?: () => Promise<string>;
   /**
    * Command to automatically start Storybook if it is not running.
-   * For example, `npm run storybook`, `yarn run storybook` etc.
+   * For example, `npm run storybook` or `yarn storybook` etc.
    */
   storybookAutorunCmd?: string;
   /**
