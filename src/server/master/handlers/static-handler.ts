@@ -11,8 +11,6 @@ export function staticHandler(baseDir: string, pathPrefix?: string) {
       filePath = path.join(filePath, 'index.html');
     }
 
-    if (!fs.existsSync(filePath)) {
-      return undefined;
-    }
+    return fs.existsSync(filePath) ? filePath : undefined;
   };
 }

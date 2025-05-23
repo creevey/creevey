@@ -51,7 +51,7 @@ function json<T = unknown>(
 function file(handler: (requestedPath: string) => string | undefined) {
   return (request: IncomingMessage, response: ServerResponse) => {
     const parsedUrl = url.parse(request.url ?? '/', true);
-    const requestedPath = parsedUrl.pathname ?? '/';
+    const requestedPath = decodeURIComponent(parsedUrl.pathname ?? '/');
 
     try {
       const filePath = handler(requestedPath);

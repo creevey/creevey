@@ -47,6 +47,12 @@ const ScrollContainer = styled.div({
   left: '0',
 });
 
+const StyledScrollArea = styled(ScrollArea)({
+  '& > [data-state="visible"]': {
+    zIndex: 5,
+  },
+});
+
 const Shadow = withTheme(
   styled.div<{ theme: Theme; position: 'top' | 'bottom' }>(({ theme, position }) => ({
     [position]: '0px',
@@ -62,14 +68,13 @@ const SelectAllContainer = styled.div({
 });
 
 const TestsContainer = styled.div({
-  marginBottom: '8px',
   position: 'relative',
   height: '100%',
 });
 
 const Divider = withTheme(
   styled.div<{ theme: Theme; position: 'top' | 'bottom' }>(({ theme, position }) => ({
-    ...(position === 'top' ? { position: 'absolute' } : { position: 'relative', bottom: '8px', marginBottom: '-8px' }),
+    ...(position === 'top' ? { position: 'absolute' } : { position: 'relative', bottom: '8px' }),
     height: '8px',
     width: '100%',
     zIndex: 4,
@@ -102,7 +107,7 @@ export function SideBar({ rootSuite, testId, onOpenTest, filter, setFilter }: Si
           canStart={countCheckedTests !== 0}
         />
         <ScrollContainer>
-          <ScrollArea vertical>
+          <StyledScrollArea vertical>
             <Shadow position="top" />
             <TestsContainer>
               <Divider position="top" />
@@ -120,7 +125,7 @@ export function SideBar({ rootSuite, testId, onOpenTest, filter, setFilter }: Si
               )}
             </TestsContainer>
             <Divider position="bottom" />
-          </ScrollArea>
+          </StyledScrollArea>
           <Shadow position="bottom" />
         </ScrollContainer>
         <SideBarFooter />
