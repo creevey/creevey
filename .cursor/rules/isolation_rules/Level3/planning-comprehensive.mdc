@@ -3,7 +3,6 @@ description: planning comprehensive
 globs: planning-comprehensive.mdc
 alwaysApply: false
 ---
-
 # LEVEL 3 COMPREHENSIVE PLANNING
 
 > **TL;DR:** This document provides structured planning guidelines for Level 3 (Intermediate Feature) tasks, focusing on comprehensive planning with creative phases and clear implementation strategies.
@@ -31,6 +30,23 @@ graph TD
     style Impl fill:#4dbbbb,stroke:#368787,color:white
     style Test fill:#d971ff,stroke:#a33bc2,color:white
     style Doc fill:#ff71c2,stroke:#c23b8a,color:white
+```
+
+## 🔄 LEVEL TRANSITION HANDLING
+
+```mermaid
+graph TD
+    L3["Level 3 Task"] --> Assess["Continuous<br>Assessment"]
+    
+    Assess --> Down["Downgrade to<br>Level 1/2"]
+    Assess --> Up["Upgrade to<br>Level 4"]
+    
+    Down --> L12Trigger["Triggers:<br>- Simpler than expected<br>- Limited scope<br>- Few components"]
+    
+    Up --> L4Trigger["Triggers:<br>- System-wide impact<br>- Architectural changes<br>- High complexity"]
+    
+    L12Trigger --> L12Switch["Switch to<br>Level 1/2 Workflow"]
+    L4Trigger --> L4Switch["Switch to<br>Level 4 Workflow"]
 ```
 
 ## 📋 PLANNING TEMPLATE
@@ -146,14 +162,27 @@ graph LR
     style Doc fill:#4dbbbb,stroke:#368787,color:white
 ```
 
-## 📚 DOCUMENT MANAGEMENT
+## 🔄 INTEGRATION WITH MEMORY BANK
 
 ```mermaid
 graph TD
-    Current["Current Documents"] --> Active["Active:<br>- planning-comprehensive.md<br>- task-tracking-intermediate.md"]
-    Current --> Next["Next Document:<br>- creative-phase-enforcement.md"]
+    L3["Level 3<br>Task"] --> PB["Comprehensive<br>projectbrief.md"]
+    L3 --> AC["Detailed<br>activeContext.md"]
+    L3 --> TM["Structured<br>tasks.md"]
+    L3 --> PM["Detailed<br>progress.md"]
     
-    style Current fill:#4da6ff,stroke:#0066cc,color:white
-    style Active fill:#4dbb5f,stroke:#36873f,color:white
-    style Next fill:#ffa64d,stroke:#cc7a30,color:white
+    PB & AC & TM & PM --> MB["Memory Bank<br>Integration"]
+    MB --> NextPhase["Proceed to<br>Implementation"]
+```
+
+## 🚨 PLANNING EFFICIENCY PRINCIPLE
+
+Remember:
+
+```
+┌─────────────────────────────────────────────────────┐
+│ Level 3 planning requires COMPREHENSIVE DESIGN but   │
+│ should avoid OVER-ENGINEERING. Focus on delivering  │
+│ maintainable, well-documented features.            │
+└─────────────────────────────────────────────────────┘
 ``` 

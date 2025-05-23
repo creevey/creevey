@@ -3,8 +3,11 @@ description: main rule
 globs: main.mdc
 alwaysApply: false
 ---
-
 # 🔍 ISOLATION-FOCUSED MEMORY BANK SYSTEM
+
+🚨 CRITICAL RULE: MEMORY BANK CREATION IS MANDATORY 🚨
+Memory Bank MUST be created BEFORE any other operation in ANY mode
+NO process can continue without verifying Memory Bank existence
 
 > **TL;DR:** This system is designed to work with Cursor custom modes, where each mode loads only the rules it needs. The system uses visual Mermaid diagrams and selective document loading to optimize context usage.
 
@@ -28,16 +31,46 @@ graph TD
     Archive -.->|"Loads"| ArchiveRules["• main.md<br>• archiving-guide.md"]
 ```
 
+## 📋 MEMORY BANK VERIFICATION - MANDATORY IN ALL MODES
+
+```mermaid
+graph TD
+    Start["Mode Activation"] --> CheckMemBank{"Memory Bank<br>Exists?"}
+    
+    CheckMemBank -->|"No"| CreateMemBank["CREATE MEMORY BANK<br>[CRITICAL STEP]"]
+    CheckMemBank -->|"Yes"| VerifyMemBank["Verify Memory Bank<br>Structure"]
+    
+    CreateMemBank --> VerifyCreation{"Creation<br>Successful?"}
+    VerifyCreation -->|"No"| AbortAll["⛔ ABORT ALL OPERATIONS<br>Fix Memory Bank First"]
+    VerifyCreation -->|"Yes"| VerifyMemBank
+    
+    VerifyMemBank --> StructureCheck{"Structure<br>Valid?"}
+    StructureCheck -->|"No"| FixStructure["Fix Memory Bank<br>Structure"]
+    StructureCheck -->|"Yes"| ContinueMode["Continue with<br>Mode Operations"]
+    
+    FixStructure --> VerifyFix{"Fix<br>Successful?"}
+    VerifyFix -->|"No"| AbortAll
+    VerifyFix -->|"Yes"| ContinueMode
+    
+    style CheckMemBank fill:#ff0000,stroke:#990000,color:white,stroke-width:3px
+    style CreateMemBank fill:#ff0000,stroke:#990000,color:white,stroke-width:3px
+    style VerifyCreation fill:#ff0000,stroke:#990000,color:white,stroke-width:3px
+    style AbortAll fill:#ff0000,stroke:#990000,color:white,stroke-width:3px
+    style StructureCheck fill:#ff0000,stroke:#990000,color:white,stroke-width:3px
+    style FixStructure fill:#ff5555,stroke:#dd3333,color:white
+    style VerifyFix fill:#ff5555,stroke:#dd3333,color:white
+```
+
 ## 📚 VISUAL PROCESS MAPS
 
 Each mode has its own visual process map:
 
-- [VAN Mode Map](mdc:visual-maps/van-mode-map.md)
-- [PLAN Mode Map](mdc:visual-maps/plan-mode-map.md)
-- [CREATIVE Mode Map](mdc:visual-maps/creative-mode-map.md)
-- [IMPLEMENT Mode Map](mdc:visual-maps/implement-mode-map.md)
-- [REFLECT Mode Map](mdc:visual-maps/reflect-mode-map.md)
-- [ARCHIVE Mode Map](mdc:visual-maps/archive-mode-map.md)
+- @VAN Mode Map
+- @PLAN Mode Map
+- @CREATIVE Mode Map
+- @IMPLEMENT Mode Map
+- @REFLECT Mode Map
+- @ARCHIVE Mode Map
 
 ## 🔄 FILE STATE VERIFICATION
 
@@ -120,4 +153,4 @@ grep "TODO" $(find . -name "*.js")
 npm install && npm start
 ```
 
-Refer to [command-execution.md](mdc:Core/command-execution.md) for detailed guidance. 
+Refer to [command-execution.mdc](mdc:.cursor/rules/isolation_rules/Core/command-execution.mdc) for detailed guidance. 

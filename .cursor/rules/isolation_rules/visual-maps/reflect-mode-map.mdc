@@ -1,9 +1,4 @@
 ---
-description: 
-globs: 
-alwaysApply: false
----
----
 description: Visual process map for REFLECT mode (Task Reflection)
 globs: "**/reflect*/**", "**/review*/**", "**/retrospect*/**"
 alwaysApply: false

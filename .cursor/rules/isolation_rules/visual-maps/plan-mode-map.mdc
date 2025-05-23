@@ -1,3 +1,9 @@
+---
+description: Visual process map for PLAN mode (Code Implementation)
+globs: plan-mode-map.mdc
+alwaysApply: false
+---
+
 # PLAN MODE: TASK PLANNING PROCESS MAP
 
 > **TL;DR:** This visual map guides the PLAN mode process, focusing on creating detailed implementation plans based on the complexity level determined during initialization, with mandatory technology validation before implementation.

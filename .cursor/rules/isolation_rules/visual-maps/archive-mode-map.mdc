@@ -1,9 +1,4 @@
 ---
-description: 
-globs: 
-alwaysApply: false
----
----
 description: Visual process map for ARCHIVE mode (Task Documentation)
 globs: "**/archive*/**", "**/document*/**", "**/complete*/**"
 alwaysApply: false
