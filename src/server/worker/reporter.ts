@@ -105,14 +105,6 @@ export class TeamcityReporter extends reporters.Base {
         );
     });
 
-    runner.on('pending', (test) => {
-      console.log(
-        `##teamcity[testIgnored name='${this.escape(test.title)}' message='${this.escape(
-          typeof test.skipReason == 'boolean' ? test.title : test.skipReason,
-        )}' flowId='${process.pid}']`,
-      );
-    });
-
     runner.on('test end', (test) => {
       console.log(`##teamcity[testFinished name='${this.escape(test.title)}' flowId='${process.pid}']`);
     });
