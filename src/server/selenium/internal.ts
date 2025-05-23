@@ -591,7 +591,9 @@ export class InternalBrowser {
   }
 
   private async resolveCreeveyHost(): Promise<void> {
-    const addresses = getAddresses();
+    const storybookUrl = await this.#browser.getCurrentUrl();
+    const storybookHost = new URL(storybookUrl).hostname;
+    const addresses = [storybookHost, ...getAddresses()];
 
     this.#serverHost = await this.#browser.executeAsyncScript(
       function (hosts: string[], port: number, callback: (host?: string | null) => void) {

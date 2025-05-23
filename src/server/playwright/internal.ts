@@ -439,7 +439,9 @@ export class InternalBrowser {
   }
 
   private async resolveCreeveyHost(): Promise<void> {
-    const addresses = getAddresses();
+    const storybookUrl = this.#page.url();
+    const storybookHost = new URL(storybookUrl).hostname;
+    const addresses = [storybookHost, ...getAddresses()];
 
     this.#serverHost = await this.#page.evaluate(
       ([hosts, port]) => {
