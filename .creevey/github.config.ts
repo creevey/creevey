@@ -1,9 +1,9 @@
 import { Local as BrowserStack } from 'browserstack-local';
 import { CreeveyConfig, noop } from '../src/types.js';
-import baseConfig from './base.config.mjs';
-import chrome from './browsers/chrome.mjs';
-import firefox from './browsers/firefox.mjs';
-import ie11 from './browsers/ie11.mjs';
+import baseConfig from './base.config.js';
+import chrome from './browsers/chrome.js';
+import firefox from './browsers/firefox.js';
+import ie11 from './browsers/ie11.js';
 
 const bs = new BrowserStack();
 

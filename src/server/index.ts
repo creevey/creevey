@@ -1,6 +1,6 @@
 import cluster from 'cluster';
 import path from 'path';
-import { exec } from 'shelljs';
+import sh from 'shelljs';
 import { getUserAgent } from 'package-manager-detector/detect';
 import { resolveCommand } from 'package-manager-detector/commands';
 import { readConfig, defaultBrowser } from './config.js';
@@ -121,7 +121,7 @@ export default async function (options: Options): Promise<void> {
       if (remoteUrl && localUrl != remoteUrl) logger().info(`On your network - ${remoteUrl}`);
       logger().info('Waiting Storybook...');
 
-      const storybook = exec(storybookCommand, { async: true });
+      const storybook = sh.exec(storybookCommand, { async: true });
       subscribeOn('shutdown', () => {
         if (storybook.pid) void killTree(storybook.pid);
       });

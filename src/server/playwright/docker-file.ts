@@ -1,7 +1,7 @@
 import { readFile } from 'fs/promises';
 import { pathToFileURL } from 'url';
 import semver from 'semver';
-import { exec } from 'shelljs';
+import sh from 'shelljs';
 
 const importMetaUrl = pathToFileURL(__filename).href;
 
@@ -11,7 +11,7 @@ export async function playwrightDockerFile(browser: string, version: string): Pr
 
   let npmRegistry;
   try {
-    npmRegistry = exec('npm config get registry', { silent: true }).stdout.trim();
+    npmRegistry = sh.exec('npm config get registry', { silent: true }).stdout.trim();
   } catch {
     /* noop */
   }

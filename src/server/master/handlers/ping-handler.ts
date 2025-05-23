@@ -1,5 +1,6 @@
-import { Request, Response } from 'hyper-express';
+import { IncomingMessage, ServerResponse } from 'http';
 
-export function pingHandler(_request: Request, response: Response): void {
-  response.send('pong');
+export function pingHandler(_request: IncomingMessage, response: ServerResponse): void {
+  response.setHeader('Content-Type', 'text/plain');
+  response.end('pong');
 }

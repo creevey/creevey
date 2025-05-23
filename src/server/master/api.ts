@@ -1,25 +1,28 @@
-import Runner from './runner.js';
-import { Request, Response, CreeveyUpdate } from '../../types.js';
+import { Data, WebSocket, WebSocketServer } from 'ws';
+import type { Request, Response, CreeveyUpdate } from '../../types.js';
+import type { TestsManager } from './testsManager.js';
+import type Runner from './runner.js';
 import { logger } from '../logger.js';
-import { TestsManager } from './testsManager.js';
-import HyperExpress from 'hyper-express';
 
-interface CustomWSServer {
-  clients: Set<HyperExpress.Websocket>;
-  publish: (message: string) => void;
+function broadcast(wss: WebSocketServer, message: Response): void {
+  wss.clients.forEach((ws) => {
+    if (ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify(message));
+    }
+  });
 }
 
-// Helper function for HyperExpress WebSocket broadcasting
-function broadcastHyperExpress(wss: CustomWSServer, message: Response): void {
-  const serializedMessage = JSON.stringify(message);
-  wss.publish(serializedMessage);
+function send(ws: WebSocket, message: Response): void {
+  if (ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify(message));
+  }
 }
 
-// The class-based implementation of CreeveyApi
+// The class-based implementation of CreeveyApi for native WebSockets
 export class CreeveyApi {
   private runner: Runner | null = null;
   private testsManager: TestsManager;
-  private wss: CustomWSServer | null = null;
+  private wss: WebSocketServer | null = null;
 
   constructor(testsManager: TestsManager, runner?: Runner) {
     this.testsManager = testsManager;
@@ -30,7 +33,7 @@ export class CreeveyApi {
     }
   }
 
-  subscribe(wss: CustomWSServer): void {
+  subscribe(wss: WebSocketServer): void {
     this.wss = wss;
 
     // If we have a runner, subscribe to its updates
@@ -46,26 +49,20 @@ export class CreeveyApi {
     }
   }
 
-  handleMessage(ws: HyperExpress.Websocket, message: string | Buffer): void {
+  handleMessage(ws: WebSocket, message: Data): void {
     if (typeof message != 'string') {
-      if (Buffer.isBuffer(message)) {
-        message = message.toString('utf-8');
-      } else {
-        logger().info('unhandled message', message);
-        return;
-      }
+      logger().info('unhandled message', message);
+      return;
     }
 
     const command = JSON.parse(message) as Request;
-    const sendResponse = (response: Response) => {
-      ws.send(JSON.stringify(response));
-    };
 
     if (this.runner) {
       // Normal mode handling with runner
       switch (command.type) {
         case 'status': {
-          sendResponse({ type: 'status', payload: this.runner.status });
+          const status = this.runner.status;
+          send(ws, { type: 'status', payload: status });
           return;
         }
         case 'start': {
@@ -98,7 +95,7 @@ export class CreeveyApi {
         }
         case 'status': {
           // In update mode, respond with static status including tests data
-          sendResponse({
+          send(ws, {
             type: 'status',
             payload: {
               isRunning: false,
@@ -123,6 +120,6 @@ export class CreeveyApi {
 
     const message: Response = { type: 'update', payload };
 
-    broadcastHyperExpress(this.wss, message);
+    broadcast(this.wss, message);
   }
 }
