@@ -16,7 +16,7 @@ import Pool from './pool.js';
 import { WorkerQueue } from './queue.js';
 import { getTestPath } from '../utils.js';
 import { getReporter } from '../reporters/index.js';
-import { TestsManager } from './testsManager.js';
+import type { TestsManager } from './testsManager.js';
 
 // NOTE: This is workaround to fix parallel tests running with mocha-junit-reporter
 let isJUnit = false;

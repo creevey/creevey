@@ -161,9 +161,9 @@ export class InternalBrowser {
 
       logger().debug(`Capturing ${chalk.cyan(captureElement)} element`);
       return element.screenshot({
+        style: ':root { overflow: hidden !important; }',
         animations: 'disabled',
         mask,
-        style: ':root { overflow: hidden !important; }',
       });
     }
     logger().debug('Capturing viewport screenshot');
@@ -187,6 +187,7 @@ export class InternalBrowser {
       [id: string, shouldWaitForReady: boolean]
     >(
       ([id, shouldWaitForReady]) => {
+        // TODO: Don't use creevey related global variables, inline this function to simplify support
         if (typeof window.__CREEVEY_SELECT_STORY__ == 'undefined') {
           return [
             "Creevey can't switch story. This may happened if forget to add `creevey` addon to your storybook config, or storybook not loaded in browser due syntax error.",
@@ -237,7 +238,9 @@ export class InternalBrowser {
     const {
       storybookUrl: address = config.storybookUrl,
       viewport,
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
       _storybookGlobals,
+      storybookGlobals = _storybookGlobals,
       seleniumCapabilities,
       playwrightOptions,
     } = browserConfig;
@@ -304,7 +307,7 @@ export class InternalBrowser {
       tracesDir,
       options.port,
       options.debug,
-      _storybookGlobals,
+      storybookGlobals,
     );
 
     try {

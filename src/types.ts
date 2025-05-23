@@ -1,24 +1,11 @@
 import type { StoryContextForEnhancers, DecoratorFunction } from '@storybook/types';
 import type { Worker as ClusterWorker } from 'cluster';
-import type Pixelmatch from 'pixelmatch';
 import type { ODiffOptions } from 'odiff-bin';
 import type { expect } from 'chai';
 import type EventEmitter from 'events';
 import type { LaunchOptions } from 'playwright-core';
+import type { PixelmatchOptions } from 'pixelmatch';
 // import type { Browser } from 'playwright-core';
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export type DiffOptions = typeof Pixelmatch extends (
-  x1: any,
-  x2: any,
-  x3: any,
-  x4: any,
-  x5: any,
-  options?: infer T,
-) => void
-  ? T
-  : never;
-/* eslint-enable @typescript-eslint/no-explicit-any */
 
 export interface SetStoriesData {
   v?: number;
@@ -115,6 +102,10 @@ export interface BrowserConfigObject {
   /**
    * Storybook's globals to set in a specific browser
    * @see https://github.com/storybookjs/storybook/blob/v6.0.0/docs/essentials/toolbars-and-globals.md
+   */
+  storybookGlobals?: StorybookGlobals;
+  /**
+   * @deprecated Use `storybookGlobals` instead
    */
   _storybookGlobals?: StorybookGlobals;
   /**
@@ -244,13 +235,14 @@ export interface Config {
   testTimeout: number;
   /**
    * Define pixelmatch diff options
-   * @default { threshold: 0.05, includeAA: false }
+   * @default { threshold: 0.1, includeAA: false }
    */
-  diffOptions: DiffOptions;
+  diffOptions: PixelmatchOptions;
   /**
-   *
+   * Define odiff diff options
+   * @default { threshold: 0.1, antialiasing: true }
    */
-  odiffOptions: ODiffOptions; // TODO Update description
+  odiffOptions: ODiffOptions;
   /**
    * Browser capabilities
    * @default { chrome: true }

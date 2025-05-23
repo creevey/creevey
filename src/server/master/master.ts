@@ -1,7 +1,7 @@
 import { Config } from '../../types.js';
 import { loadTestsFromStories } from '../stories.js';
-import Runner from './runner.js';
 import { TestsManager } from './testsManager.js';
+import Runner from './runner.js';
 
 export default async function master(config: Config, gridUrl?: string): Promise<Runner> {
   // Create TestsManager instance

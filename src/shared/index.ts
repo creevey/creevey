@@ -1,4 +1,6 @@
-import _ from 'lodash';
+import mapValues from 'lodash/mapValues.js';
+import mergeWith from 'lodash/mergeWith.js';
+import cloneDeepWith from 'lodash/cloneDeepWith.js';
 import type { Parameters } from '@storybook/types';
 import { SetStoriesData, StoriesRaw, CreeveyStoryParams, StoryInput } from '../types.js';
 import { deserializeRegExp, isSerializedRegExp, isRegExp, serializeRegExp } from './serializeRegExp.js';
@@ -6,7 +8,7 @@ import { deserializeRegExp, isSerializedRegExp, isRegExp, serializeRegExp } from
 // NOTE: Copy-paste from storybook/api
 export const combineParameters = (...parameterSets: Parameters[]): Parameters =>
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  _.mergeWith({}, ...parameterSets, (_: unknown, srcValue: unknown) => {
+  mergeWith({}, ...parameterSets, (_: unknown, srcValue: unknown) => {
     // Treat arrays as scalars:
     if (Array.isArray(srcValue)) return srcValue as unknown[];
 
@@ -19,14 +21,14 @@ export const denormalizeStoryParameters = ({
   kindParameters,
   stories,
 }: SetStoriesData): StoriesRaw => {
-  return _.mapValues(stories, (storyData) => ({
+  return mapValues(stories, (storyData) => ({
     ...storyData,
     parameters: combineParameters(globalParameters, kindParameters[storyData.title] ?? {}, storyData.parameters),
   })) as StoriesRaw;
 };
 
 export const serializeRawStories = (stories: StoriesRaw): StoriesRaw => {
-  return _.mapValues(stories, (storyData) => {
+  return mapValues(stories, (storyData) => {
     const creevey = storyData.parameters.creevey as CreeveyStoryParams | undefined;
     if (creevey?.skip) {
       return {
@@ -35,7 +37,7 @@ export const serializeRawStories = (stories: StoriesRaw): StoriesRaw => {
           ...storyData.parameters,
           creevey: {
             ...creevey,
-            skip: _.cloneDeepWith(creevey.skip, (value) => {
+            skip: cloneDeepWith(creevey.skip, (value) => {
               if (isRegExp(value)) {
                 return serializeRegExp(value);
               }
@@ -50,7 +52,7 @@ export const serializeRawStories = (stories: StoriesRaw): StoriesRaw => {
 };
 
 export const deserializeRawStories = (stories: StoriesRaw): StoriesRaw => {
-  return _.mapValues(stories, deserializeStory);
+  return mapValues(stories, deserializeStory);
 };
 
 export const deserializeStory = (story: StoryInput): StoryInput => {
@@ -62,7 +64,7 @@ export const deserializeStory = (story: StoryInput): StoryInput => {
         ...story.parameters,
         creevey: {
           ...creevey,
-          skip: _.cloneDeepWith(creevey.skip, (value) => {
+          skip: cloneDeepWith(creevey.skip, (value) => {
             if (isSerializedRegExp(value)) {
               return deserializeRegExp(value);
             }

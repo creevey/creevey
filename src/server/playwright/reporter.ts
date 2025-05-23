@@ -1,10 +1,19 @@
-import type { Reporter, FullConfig, Suite, TestCase, TestResult, TestStep } from '@playwright/test/reporter';
 import path from 'path';
 import fs from 'fs/promises';
+import { createHash } from 'crypto';
+import type { Reporter, FullConfig, Suite, TestCase, TestResult, TestStep } from '@playwright/test/reporter';
+import {
+  type ServerTest,
+  type TestMeta,
+  type TestStatus,
+  type TestResult as CreeveyTestResult,
+  isDefined,
+  Images,
+} from '../../types.js';
 import { TestsManager } from '../master/testsManager.js';
 import { CreeveyApi } from '../master/api.js';
-import { ServerTest, TestMeta, TestStatus, TestResult as CreeveyTestResult } from '../../types.js';
 import { copyStatics } from '../utils.js';
+import { start } from '../master/server.js';
 
 /**
  * Simple async queue to handle operations in sequence without returning promises
@@ -46,8 +55,6 @@ export class CreeveyPlaywrightReporter implements Reporter {
   private screenDir: string;
   private port: number;
   private debug: boolean;
-  private startServer: ((reportDir: string, port: number, uiEnabled: boolean) => (api: CreeveyApi) => void) | null =
-    null;
   private testIdMap = new Map<string, string>(); // Maps Playwright test IDs to Creevey test IDs
   private asyncQueue = new AsyncQueue();
 
@@ -70,43 +77,53 @@ export class CreeveyPlaywrightReporter implements Reporter {
    * @param config Playwright configuration
    * @param suite Test suite information
    */
-  onBegin(_config: FullConfig, _suite: Suite): void {
+  onBegin(_config: FullConfig, suite: Suite): void {
     this.logDebug('CreeveyPlaywrightReporter started');
 
     // Use the async queue to handle initialization without returning a promise
     this.asyncQueue.enqueue(async () => {
       try {
-        // Dynamically import the modules to avoid circular dependencies
-        const { start } = await import('../master/server.js');
-        this.startServer = start;
-
-        // Initialize report directory
-        try {
-          await fs.mkdir(this.reportDir, { recursive: true });
-          await copyStatics(this.reportDir);
-        } catch (error) {
-          this.logError(
-            `Failed to initialize report directory: ${error instanceof Error ? error.message : String(error)}`,
-          );
-        }
-
-        // Start server API
-        try {
-          const resolveApi = this.startServer(this.reportDir, this.port, true);
-
-          // Create and connect the API
-          this.api = new CreeveyApi(this.testsManager);
-          resolveApi(this.api);
-
-          console.log(`Creevey report server started at http://localhost:${this.port}`);
-        } catch (error) {
-          this.logError(`Could not start Creevey server: ${error instanceof Error ? error.message : String(error)}`);
-          console.log('Screenshots will still be captured but UI will not be available');
-        }
+        await fs.mkdir(this.reportDir, { recursive: true });
+        await copyStatics(this.reportDir);
       } catch (error) {
         this.logError(
-          `Error in Creevey reporter initialization: ${error instanceof Error ? error.message : String(error)}`,
+          `Failed to initialize report directory: ${error instanceof Error ? error.message : String(error)}`,
         );
+      }
+
+      // TODO: Handle SIGINT
+
+      // Start server API
+      try {
+        const resolveApi = start(this.reportDir, this.port, true);
+
+        // Create and connect the API
+        this.api = new CreeveyApi(this.testsManager);
+        resolveApi(this.api);
+
+        const testsList = suite
+          .allTests()
+          .map((test) => {
+            const creeveyTest = this.mapToCreeveyTest(test);
+            if (!creeveyTest) return;
+
+            this.testIdMap.set(test.id, creeveyTest.id);
+
+            return creeveyTest;
+          })
+          .filter(isDefined);
+
+        const tests: Record<string, ServerTest> = {};
+        for (const test of testsList) {
+          tests[test.id] = test;
+        }
+
+        this.testsManager.updateTests(tests);
+
+        console.log(`Creevey report server started at http://localhost:${this.port}`);
+      } catch (error) {
+        this.logError(`Could not start Creevey server: ${error instanceof Error ? error.message : String(error)}`);
+        console.log('Screenshots will still be captured but UI will not be available');
       }
     });
   }
@@ -118,17 +135,14 @@ export class CreeveyPlaywrightReporter implements Reporter {
    */
   onTestBegin(test: TestCase, _result: TestResult): void {
     try {
-      // Map test to Creevey test format
-      const creeveyTest = this.mapToCreeveyTest(test);
-      if (!creeveyTest) return;
+      const creeveyTestId = this.testIdMap.get(test.id);
 
-      // Create a mapping from Playwright test ID to Creevey test ID
-      this.testIdMap.set(test.id, creeveyTest.id);
+      if (creeveyTestId) {
+        // Update test status to running
+        this.testsManager.updateTestStatus(creeveyTestId, 'running');
 
-      // Update test status to running
-      this.testsManager.updateTestStatus(creeveyTest.id, 'running');
-
-      this.logDebug(`Test started: ${test.title} (${creeveyTest.id})`);
+        this.logDebug(`Test started: ${test.title} (${creeveyTestId})`);
+      }
     } catch (error) {
       this.logError(`Error in onTestBegin: ${error instanceof Error ? error.message : String(error)}`);
     }
@@ -141,6 +155,11 @@ export class CreeveyPlaywrightReporter implements Reporter {
    * @param step Test step information
    */
   onStepBegin(test: TestCase, _result: TestResult, step: TestStep): void {
+    /*
+    [Creevey Reporter] Step started: browserType.launch in test: 100 X 100 Vs 2000 X 100
+    [Creevey Reporter] Step started: browserType.launch in test: Side By Side
+    [Creevey Reporter] Step started: browserType.launch in test: Full
+    */
     if (this.debug) {
       this.logDebug(`Step started: ${step.title} in test: ${test.title}`);
     }
@@ -219,44 +238,21 @@ export class CreeveyPlaywrightReporter implements Reporter {
    */
   private mapToCreeveyTest(test: TestCase): ServerTest | null {
     try {
-      // Try to extract Creevey metadata from annotations
-      let testName = test.title;
-      let browser = 'chromium'; // Default browser
-      let storyPath: string[] = [];
-
-      const creeveyAnnotation = test.annotations.find((a) => a.type === 'creevey');
-      if (creeveyAnnotation?.description) {
-        try {
-          const metadata = JSON.parse(creeveyAnnotation.description) as {
-            testName?: string;
-            browser?: string;
-            storyPath?: string[];
-          };
-          if (metadata.testName) testName = metadata.testName;
-          if (metadata.browser) browser = metadata.browser;
-          if (metadata.storyPath) storyPath = metadata.storyPath;
-        } catch (e) {
-          this.logError(`Failed to parse Creevey metadata: ${e instanceof Error ? e.message : String(e)}`);
-        }
-      }
-
-      // If no explicit storyPath, use the project and file path
-      if (storyPath.length === 0) {
-        const projectName = test.parent.project()?.name;
-        const titlePath = test.titlePath().slice(0, -1); // Exclude the test title itself
-        storyPath = projectName ? [projectName, ...titlePath] : titlePath;
-      }
+      const storyName = test.title;
+      const storyTitle = test.parent.title;
+      const projectName = test.parent.project()?.name ?? 'chromium';
+      const testPath = [storyTitle, storyName, projectName];
+      const { description: storyId } = test.annotations.find((annotation) => annotation.type === 'storyId') ?? {};
 
       // Generate a unique test ID
-      const testId = `${storyPath.join('/')}/${testName}/${browser}`;
+      const testId = createHash('sha1').update(testPath.join('/')).digest('hex');
 
       // Create the test metadata
       const testMeta: TestMeta = {
         id: testId,
-        storyPath,
-        browser,
-        testName,
-        storyId: storyPath.join('/'),
+        storyPath: [...storyTitle.split('/').map((x) => x.trim()), storyName],
+        browser: projectName,
+        storyId: storyId ?? '',
       };
 
       // Create a stub ServerTest object
@@ -270,12 +266,12 @@ export class CreeveyPlaywrightReporter implements Reporter {
           argTypes: {},
           component: '',
           componentId: '',
-          name: '',
+          name: storyName,
           tags: [],
-          title: '',
-          kind: '',
-          id: '',
-          story: '',
+          title: storyTitle,
+          kind: storyTitle,
+          id: storyId ?? '',
+          story: storyName,
         }, // Placeholder
         fn: async () => {
           /* Empty function as placeholder */
@@ -298,7 +294,7 @@ export class CreeveyPlaywrightReporter implements Reporter {
     const creeveyTestId = this.testIdMap.get(test.id);
     if (!creeveyTestId) {
       this.logError(`No Creevey test ID found for test: ${test.title}`);
-      return;
+      return Promise.resolve();
     }
 
     // Determine test status
@@ -316,38 +312,29 @@ export class CreeveyPlaywrightReporter implements Reporter {
     }
 
     // Process attachments
-    const images: Record<string, { actual: string }> = {};
+    const images: Record<string, Images> = {};
     const attachmentPaths: string[] = [];
+    const projectName = test.parent.project()?.name ?? 'chromium';
 
-    if (result.attachments.length > 0) {
-      await fs.mkdir(path.join(this.reportDir, creeveyTestId), { recursive: true });
+    for (const attachment of result.attachments) {
+      const { name, path: attachmentPath } = attachment;
 
-      for (const attachment of result.attachments) {
-        // Only process image attachments
-        if (!attachment.contentType.startsWith('image/')) continue;
+      if (!attachmentPath) continue;
 
-        try {
-          const imageName = attachment.name || `screenshot-${Date.now()}`;
-          const imagePath = path.join(creeveyTestId, `${imageName}.png`);
-          const fullImagePath = path.join(this.reportDir, imagePath);
+      attachmentPaths.push(attachmentPath);
 
-          // Ensure directory exists
-          await fs.mkdir(path.dirname(fullImagePath), { recursive: true });
-
-          // Handle either buffer or path-based attachments
-          if (attachment.body) {
-            await fs.writeFile(fullImagePath, attachment.body);
-          } else if (attachment.path) {
-            await fs.copyFile(attachment.path, fullImagePath);
-          }
-
-          // Add to images for the test result
-          images[imageName] = { actual: `${imageName}.png` };
-          attachmentPaths.push(imagePath);
-
-          this.logDebug(`Saved screenshot: ${imageName} for test: ${test.title}`);
-        } catch (error) {
-          this.logError(`Failed to process attachment: ${error instanceof Error ? error.message : String(error)}`);
+      switch (true) {
+        case name.includes('actual'): {
+          images[projectName] = { ...images[projectName], actual: name };
+          break;
+        }
+        case name.includes('expect'): {
+          images[projectName] = { ...images[projectName], expect: name };
+          break;
+        }
+        case name.includes('diff'): {
+          images[projectName] = { ...images[projectName], diff: name };
+          break;
         }
       }
     }
@@ -360,7 +347,7 @@ export class CreeveyPlaywrightReporter implements Reporter {
       error: result.error?.message ?? undefined,
       duration: result.duration,
       attachments: attachmentPaths,
-      browserName: test.parent.project()?.name ?? 'unknown',
+      browserName: projectName,
     };
 
     this.testsManager.updateTestStatus(creeveyTestId, status, testResult);

@@ -12,10 +12,11 @@ import {
 } from '../../types.js';
 import { subscribeOn, emitTestMessage, emitWorkerMessage } from '../messages.js';
 import chaiImage from './chai-image.js';
-import { getMatchers, getOdiffMatchers, ImageContext } from './match-image.js';
+import { getMatchers, getOdiffMatchers } from './match-image.js';
 import { loadTestsFromStories } from '../stories.js';
 import { logger } from '../logger.js';
 import { getTestPath } from '../utils.js';
+import { ImageContext } from '../compare.js';
 
 async function getTestsFromStories(
   config: Config,
@@ -126,7 +127,7 @@ export async function start(browser: string, gridUrl: string, config: Config, op
   if (!webdriver || !sessionId) return;
 
   const { matchImage, matchImages } = options.odiff
-    ? getOdiffMatchers(imagesContext, config)
+    ? await getOdiffMatchers(imagesContext, config)
     : await getMatchers(imagesContext, config);
   chai.use(chaiImage(matchImage, matchImages));
 

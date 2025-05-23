@@ -30,6 +30,7 @@
     "tests/**/*",
     "vite.config.mts",
     "vitest.config.mts",
+    "playwright.config.mts",
     "playwright.d.ts",
     "selenium.d.ts"
   ],
