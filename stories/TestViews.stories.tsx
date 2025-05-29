@@ -1,6 +1,6 @@
 import React, { FunctionComponent, PropsWithChildren } from 'react';
-import { styled } from '@storybook/theming';
-import { Meta, StoryObj } from '@storybook/react';
+import { styled } from 'storybook/theming';
+import { Meta, StoryObj } from '@storybook/react-vite';
 
 const CHUNK_SIZE = 250;
 const DIAG_LENGTH = (2 * CHUNK_SIZE ** 2) ** (1 / 2);
@@ -56,7 +56,6 @@ const ChunkTiles: FunctionComponent<{ size: number; offset: number }> = (props) 
 );
 
 const Kind: Meta<typeof ChunkTiles> = {
-  title: 'TestViews',
   component: ChunkTiles,
   parameters: { creevey: { captureElement: '[data-testid="CaptureElement"]' } },
 };

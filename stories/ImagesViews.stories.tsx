@@ -1,6 +1,6 @@
 import React, { JSX } from 'react';
-import { Meta, StoryObj } from '@storybook/react';
-import { fireEvent, within } from '@storybook/test';
+import { Meta, StoryObj } from '@storybook/react-vite';
+import { fireEvent, within } from 'storybook/test';
 
 import { capture } from '../src/client/addon/index.js';
 import { ImagesView as ImagesViewBase } from '../src/client/shared/components/ImagesView/index.js';
@@ -14,7 +14,7 @@ const ImagesView = ({ mode }: { mode: ImagesViewMode }): JSX.Element => (
   <ImagesViewBase image={{ expect: octocatExpect, diff: octocatDiff, actual: octocatActual }} canApprove mode={mode} />
 );
 
-const Kind: Meta<typeof ImagesView> = { title: 'ImagesViews', component: ImagesView };
+const Kind: Meta<typeof ImagesView> = { component: ImagesView };
 
 export default Kind;
 

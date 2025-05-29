@@ -1,5 +1,5 @@
 import React, { JSX } from 'react';
-import { Meta, StoryObj } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react-vite';
 import { ImagesView as ImagesViewBase } from '../src/client/shared/components/ImagesView/index.js';
 
 const SideBySideView = (image: { expect: string; diff: string; actual: string }): JSX.Element => (
@@ -7,7 +7,6 @@ const SideBySideView = (image: { expect: string; diff: string; actual: string })
 );
 
 const Kind: Meta<typeof SideBySideView> = {
-  title: 'SideBySideView',
   component: SideBySideView,
   parameters: {
     creevey: {

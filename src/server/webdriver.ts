@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import { networkInterfaces } from 'os';
 import { logger } from './logger.js';
-import type { Args } from '@storybook/types';
+import type { Args } from 'storybook/internal/types';
 import {
   isDefined,
   StoryInput,

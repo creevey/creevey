@@ -14,7 +14,7 @@ import chalk from 'chalk';
 import { v4 } from 'uuid';
 import Logger from 'loglevel';
 import prefix from 'loglevel-plugin-prefix';
-import type { Args } from '@storybook/types';
+import type { Args } from 'storybook/internal/types';
 import {
   BrowserConfigObject,
   Config,

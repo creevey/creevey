@@ -1,5 +1,5 @@
 import React, { JSX } from 'react';
-import { styled, withTheme, Theme, keyframes, ensure, ThemeProvider, themes, Keyframes } from '@storybook/theming';
+import { styled, withTheme, Theme, keyframes, ensure, ThemeProvider, themes, Keyframes } from 'storybook/theming';
 import { useTheme } from './themes.js';
 
 const Container = withTheme(

@@ -1,6 +1,6 @@
 import React, { JSX } from 'react';
-import { styled, withTheme, Theme } from '@storybook/theming';
-import { Loader } from '@storybook/components';
+import { styled, withTheme, Theme } from 'storybook/theming';
+import { Loader } from 'storybook/internal/components';
 import { CrossIcon, CheckIcon, CircleHollowIcon, ThumbsUpIcon, AlertIcon, TimeIcon } from '@storybook/icons';
 import { TestStatus } from '../../../../types.js';
 

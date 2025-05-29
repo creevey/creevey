@@ -1,6 +1,6 @@
 import React, { JSX, useCallback, useEffect, useRef, useState } from 'react';
-import { Loader } from '@storybook/components';
-import { styled, withTheme } from '@storybook/theming';
+import { Loader } from 'storybook/internal/components';
+import { styled, withTheme } from 'storybook/theming';
 import { ViewPropsWithTheme, getBorderColor, themeBorderColors } from './common.js';
 import { useApplyScale, useCalcScale, useLoadImages } from '../../helpers.js';
 import { readyForCapture } from '../../../addon/readyForCapture.js';

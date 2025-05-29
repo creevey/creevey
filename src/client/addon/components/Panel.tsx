@@ -1,6 +1,6 @@
 import React, { JSX } from 'react';
-import { Loader } from '@storybook/components';
-import { styled } from '@storybook/theming';
+import { Loader } from 'storybook/internal/components';
+import { styled } from 'storybook/theming';
 import { noop, TestData } from '../../../types.js';
 import { ResultsPage } from '../../shared/components/ResultsPage.js';
 import { getTestPath } from '../../shared/helpers.js';

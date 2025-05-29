@@ -1,6 +1,6 @@
 import React, { JSX, useCallback, useContext, useEffect, useState } from 'react';
-import { Placeholder, ScrollArea } from '@storybook/components';
-import { styled, withTheme, Theme } from '@storybook/theming';
+import { Placeholder, ScrollArea } from 'storybook/internal/components';
+import { styled, withTheme, Theme } from 'storybook/theming';
 import { ImagesView } from './ImagesView/ImagesView.js';
 import { PageHeader } from './PageHeader/PageHeader.js';
 import { PageFooter } from './PageFooter/PageFooter.js';

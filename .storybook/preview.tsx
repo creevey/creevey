@@ -1,8 +1,8 @@
 import React, { JSX } from 'react';
-import { ThemeProvider, themes, ensure } from '@storybook/theming';
+import { ThemeProvider, themes, ensure } from 'storybook/theming';
 import { CreeveyContext } from '../src/client/web/CreeveyContext.js';
 import { noop } from '../src/types.js';
-import type { DecoratorFunction } from '@storybook/types';
+import type { DecoratorFunction } from 'storybook/internal/types';
 
 export const decorators: DecoratorFunction[] = [
   (storyFn, context): JSX.Element => (

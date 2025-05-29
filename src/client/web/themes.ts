@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { themes, ThemeVars } from '@storybook/theming';
+import { themes, ThemeVars } from 'storybook/theming';
 import { isDefined } from '../../types.js';
 
 const CREEVEY_THEME = 'Creevey_theme';

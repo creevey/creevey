@@ -1,13 +1,12 @@
 import React from 'react';
-import { styled } from '@storybook/theming';
-import { Meta, StoryObj } from '@storybook/react';
+import { styled } from 'storybook/theming';
+import { Meta, StoryObj } from '@storybook/react-vite';
 import { SideBarHeader } from '../src/client/web/CreeveyView/SideBar/SideBarHeader.js';
 import { noop } from '../src/types.js';
 
 const HeaderContainer = styled.div({ width: 300 });
 
 const Kind: Meta<typeof SideBarHeader> = {
-  title: 'SideBarHeader',
   component: SideBarHeader,
   args: {
     filter: { status: null, subStrings: [] },

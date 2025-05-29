@@ -1,5 +1,5 @@
 import React, { JSX } from 'react';
-import { TabButton } from '@storybook/components';
+import { TabButton } from 'storybook/internal/components';
 
 export interface PagingProps {
   activePage: string;

@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react-vite';
 import React from 'react';
 
 import { CreeveyStoryParams } from '../src/types.js';
@@ -6,7 +6,6 @@ import { CreeveyStoryParams } from '../src/types.js';
 const TestComponent: React.FC = () => <span data-test-id="x">TEST</span>;
 
 const Kind: Meta<typeof TestComponent> = {
-  title: 'TestKind',
   component: TestComponent,
   parameters: {
     creevey: {

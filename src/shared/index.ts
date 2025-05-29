@@ -1,7 +1,7 @@
 import mapValues from 'lodash/mapValues.js';
 import mergeWith from 'lodash/mergeWith.js';
 import cloneDeepWith from 'lodash/cloneDeepWith.js';
-import type { Parameters } from '@storybook/types';
+import type { Parameters } from 'storybook/internal/types';
 import { SetStoriesData, StoriesRaw, CreeveyStoryParams, StoryInput } from '../types.js';
 import { deserializeRegExp, isSerializedRegExp, isRegExp, serializeRegExp } from './serializeRegExp.js';
 

@@ -1,5 +1,5 @@
 import React, { Component, JSX } from 'react';
-import { styled, Theme, withTheme } from '@storybook/theming';
+import { styled, Theme, withTheme } from 'storybook/theming';
 import { CircleIcon, CheckIcon } from '@storybook/icons';
 import { transparentize } from 'polished';
 

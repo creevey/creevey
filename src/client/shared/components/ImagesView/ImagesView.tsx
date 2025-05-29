@@ -1,5 +1,5 @@
 import React, { JSX, FunctionComponent } from 'react';
-import { styled, withTheme } from '@storybook/theming';
+import { styled, withTheme } from 'storybook/theming';
 import { SideBySideView } from './SideBySideView.js';
 import { SwapView } from './SwapView.js';
 import { SlideView } from './SlideView.js';

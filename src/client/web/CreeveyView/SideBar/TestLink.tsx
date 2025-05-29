@@ -6,7 +6,7 @@ import { SideBarContext } from './SideBar.js';
 import { Button, Container, SuiteContainer, SuiteTitle } from './SuiteLink.js';
 import { Checkbox, CheckboxContainer } from './Checkbox.js';
 import { getTestPath } from '../../../shared/helpers.js';
-import { styled } from '@storybook/theming';
+import { styled } from 'storybook/theming';
 
 export interface TestLinkProps {
   title: string;

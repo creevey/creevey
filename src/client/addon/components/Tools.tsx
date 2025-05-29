@@ -1,8 +1,8 @@
 import React, { JSX, Fragment, useState, useEffect } from 'react';
 import { stringify } from 'qs';
-import { IconButton, Separator } from '@storybook/components';
+import { IconButton, Separator } from 'storybook/internal/components';
 import { StopIcon, ShareAltIcon, PlayIcon } from '@storybook/icons';
-import { styled } from '@storybook/theming';
+import { styled } from 'storybook/theming';
 import { ForwardIcon, NextIcon } from './Icons.js';
 import { isDefined, TestData } from '../../../types.js';
 import { getTestPath, useForceUpdate } from '../../shared/helpers.js';

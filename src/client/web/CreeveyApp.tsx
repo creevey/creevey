@@ -1,6 +1,6 @@
 import React, { JSX, useCallback, useEffect, useMemo, useState } from 'react';
 import { useImmer } from 'use-immer';
-import { ensure, styled, ThemeProvider, themes, withTheme } from '@storybook/theming';
+import { ensure, styled, ThemeProvider, themes, withTheme } from 'storybook/theming';
 import { CreeveyUpdate, CreeveySuite, isDefined, CreeveyTest } from '../../types.js';
 import { CreeveyClientApi } from '../shared/creeveyClientApi.js';
 import {

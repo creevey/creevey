@@ -1,5 +1,5 @@
 import React, { JSX, useEffect, useRef } from 'react';
-import { styled, withTheme } from '@storybook/theming';
+import { styled, withTheme } from 'storybook/theming';
 import { ViewPropsWithTheme, getBorderColor, themeBorderColors } from './common.js';
 import { useApplyScale, useCalcScale, useLoadImages } from '../../helpers.js';
 import { readyForCapture } from '../../../addon/readyForCapture.js';

@@ -1,4 +1,4 @@
-import type { StoryContextForEnhancers, DecoratorFunction } from '@storybook/types';
+import type { StoryContextForEnhancers, DecoratorFunction } from 'storybook/internal/types';
 import type { Worker as ClusterWorker } from 'cluster';
 import type { ODiffOptions } from 'odiff-bin';
 import type { expect } from 'chai';

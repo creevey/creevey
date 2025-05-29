@@ -1,6 +1,6 @@
-import type { Renderer } from '@storybook/types';
-import type { PreviewWeb, StoryStore } from '@storybook/preview-api';
-import { Channel } from '@storybook/channels';
+import type { Renderer } from 'storybook/internal/types';
+import type { PreviewWeb, StoryStore } from 'storybook/preview-api';
+import { Channel } from 'storybook/internal/channels';
 import {
   CaptureOptions,
   CreeveyStoryParams,

@@ -1,9 +1,8 @@
-import { Meta, StoryObj } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react-vite';
 import { PageFooter } from '../src/client/shared/components/PageFooter/PageFooter.js';
 import { noop } from '../src/types.js';
 
 const Kind: Meta<typeof PageFooter> = {
-  title: 'PageFooter',
   component: PageFooter,
   args: {
     onRetryChange: noop,

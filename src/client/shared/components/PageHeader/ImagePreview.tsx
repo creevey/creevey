@@ -1,5 +1,5 @@
 import React, { JSX } from 'react';
-import { styled, withTheme, Theme } from '@storybook/theming';
+import { styled, withTheme, Theme } from 'storybook/theming';
 
 const IMG_SIZE = 64;
 const DIAG_LENGTH = (2 * (IMG_SIZE - 8) ** 2) ** (1 / 2);

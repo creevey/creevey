@@ -1,5 +1,5 @@
 import React, { JSX } from 'react';
-import { StoryObj, Meta } from '@storybook/react';
+import { StoryObj, Meta } from '@storybook/react-vite';
 import { ImagesView as ImagesViewBase } from '../src/client/shared/components/ImagesView/index.js';
 
 const BlendView = (image: { expect: string; diff: string; actual: string }): JSX.Element => (
@@ -7,7 +7,6 @@ const BlendView = (image: { expect: string; diff: string; actual: string }): JSX
 );
 
 const Kind: Meta<typeof BlendView> = {
-  title: 'BlendView',
   component: BlendView,
   parameters: {
     creevey: {

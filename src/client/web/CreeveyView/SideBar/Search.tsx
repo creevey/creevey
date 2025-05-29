@@ -1,6 +1,6 @@
 import React, { JSX, ChangeEvent, useRef, useState } from 'react';
 import { SearchIcon, CloseAltIcon } from '@storybook/icons';
-import { styled, Theme, withTheme } from '@storybook/theming';
+import { styled, Theme, withTheme } from 'storybook/theming';
 import { useCreeveyContext } from '../../CreeveyContext.js';
 
 interface SearchProps {

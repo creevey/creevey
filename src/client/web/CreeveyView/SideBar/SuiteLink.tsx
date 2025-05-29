@@ -1,6 +1,6 @@
 import React, { JSX, useRef, useEffect, useMemo } from 'react';
 import { ChevronDownIcon, ChevronRightIcon } from '@storybook/icons';
-import { styled, withTheme, Theme } from '@storybook/theming';
+import { styled, withTheme, Theme } from 'storybook/theming';
 import { Checkbox, CheckboxContainer } from './Checkbox.js';
 import { TestStatusIcon } from './TestStatusIcon.js';
 import { CreeveySuite, isTest } from '../../../../types.js';

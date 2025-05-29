@@ -1,6 +1,6 @@
 import React, { JSX, useCallback, useEffect, useState } from 'react';
-import { styled, withTheme } from '@storybook/theming';
-import { Button } from '@storybook/components';
+import { styled, withTheme } from 'storybook/theming';
+import { Button } from 'storybook/internal/components';
 import { ChevronRightIcon } from '@storybook/icons';
 import { useCreeveyContext } from '../../CreeveyContext.js';
 

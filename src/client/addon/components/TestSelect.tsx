@@ -1,7 +1,7 @@
 import React, { JSX } from 'react';
-import { Button, TooltipLinkList, WithTooltip } from '@storybook/components';
+import { Button, TooltipLinkList, WithTooltip } from 'storybook/internal/components';
 import { MenuIcon } from '@storybook/icons';
-import { styled } from '@storybook/theming';
+import { styled } from 'storybook/theming';
 import { TestData } from '../../../types.js';
 import { getEmojiByTestStatus } from '../utils.js';
 

@@ -1,5 +1,5 @@
 /// <reference types="../../../types/playwright-context" />
-import type { Args } from '@storybook/types';
+import type { Args } from 'storybook/internal/types';
 import { Config, Options, ServerTest, StoriesRaw, StoryInput } from '../../types';
 import { logger } from '../logger';
 import { subscribeOn } from '../messages';

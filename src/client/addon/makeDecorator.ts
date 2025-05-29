@@ -1,6 +1,6 @@
 // NOTE: This file is a modified version of the makeDecorator function from Storybook.
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { Addon_StoryContext, Addon_LegacyStoryFn, Addon_StoryWrapper } from '@storybook/types';
+import type { Addon_StoryContext, Addon_LegacyStoryFn, Addon_StoryWrapper } from 'storybook/internal/types';
 
 export interface MakeDecoratorOptions {
   name: string;

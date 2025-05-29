@@ -1,5 +1,5 @@
-import { Meta, StoryObj } from '@storybook/react';
-import { within } from '@storybook/test';
+import { Meta, StoryObj } from '@storybook/react-vite';
+import { within } from 'storybook/test';
 import { SideBar } from '../src/client/web/CreeveyView/SideBar/index.js';
 import { treeifyTests, checkSuite, getTestByPath } from '../src/client/shared/helpers.js';
 import { noop, CreeveySuite, CreeveyStatus, isDefined, isTest } from '../src/types.js';
@@ -58,7 +58,6 @@ const statusTests: () => CreeveyStatus['tests'] = () => ({
 });
 
 const Kind: Meta<typeof SideBar> = {
-  title: 'SideBar',
   component: SideBar,
   args: {
     filter: { status: null, subStrings: [] },

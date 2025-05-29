@@ -1,7 +1,7 @@
 import React, { JSX, createContext } from 'react';
 import { transparentize } from 'polished';
-import { ScrollArea } from '@storybook/components';
-import { styled, Theme, withTheme } from '@storybook/theming';
+import { ScrollArea } from 'storybook/internal/components';
+import { styled, Theme, withTheme } from 'storybook/theming';
 import { SideBarHeader } from './SideBarHeader.js';
 import { CreeveySuite, CreeveyTest, noop, isTest } from '../../../../types.js';
 import {

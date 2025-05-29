@@ -1,7 +1,7 @@
 import React, { JSX, useContext, useEffect } from 'react';
-import { Tabs } from '@storybook/components';
+import { Tabs } from 'storybook/internal/components';
 import { CloseAltIcon } from '@storybook/icons';
-import { styled, withTheme, Theme } from '@storybook/theming';
+import { styled, withTheme, Theme } from 'storybook/theming';
 import { ImagesViewMode, Images } from '../../../../types.js';
 import { getImageUrl } from '../../helpers.js';
 import { ImagePreview } from './ImagePreview.js';

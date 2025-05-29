@@ -1,7 +1,7 @@
 import React, { JSX } from 'react';
-import { IconButton } from '@storybook/components';
+import { IconButton } from 'storybook/internal/components';
 import { TimeIcon, CheckIcon, CrossIcon, ThumbsUpIcon } from '@storybook/icons';
-import { styled, withTheme, Theme } from '@storybook/theming';
+import { styled, withTheme, Theme } from 'storybook/theming';
 import { TestStatus } from '../../../../types.js';
 import { CreeveyTestsStatus } from '../../../shared/helpers.js';
 

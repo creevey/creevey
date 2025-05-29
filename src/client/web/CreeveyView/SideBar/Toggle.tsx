@@ -1,5 +1,5 @@
 import React, { JSX } from 'react';
-import { styled, withTheme } from '@storybook/theming';
+import { styled, withTheme } from 'storybook/theming';
 import { opacify } from 'polished';
 
 const Container = withTheme(

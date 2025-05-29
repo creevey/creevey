@@ -1,7 +1,7 @@
 import React, { JSX, useContext, useState } from 'react';
-import { Button as NativeButton } from '@storybook/components';
+import { Button as NativeButton } from 'storybook/internal/components';
 import { StopIcon, PlayIcon } from '@storybook/icons';
-import { styled, withTheme } from '@storybook/theming';
+import { styled, withTheme } from 'storybook/theming';
 import { CreeveyContext } from '../../CreeveyContext.js';
 import { TestsStatus, TestsStatusProps } from './TestsStatus.js';
 import { TestStatus } from '../../../../types.js';

@@ -1,4 +1,4 @@
-import { Addon_TypesEnum } from '@storybook/types';
+import { Addon_TypesEnum } from 'storybook/internal/types';
 import { denormalizeStoryParameters } from '../../shared/index.js';
 import {
   CreeveyStatus,
@@ -12,12 +12,12 @@ import {
 import { initCreeveyClientApi, CreeveyClientApi } from '../shared/creeveyClientApi.js';
 import { calcStatus } from '../shared/helpers.js';
 import { getEmojiByTestStatus } from './utils.js';
-import { API } from '@storybook/manager-api';
+import { API } from 'storybook/manager-api';
 
 export const ADDON_ID = 'creevey';
 
 // TODO Add `useController` hook
-// TODO use `import { useGlobals, useStorybookApi } from '@storybook/manager-api';`
+// TODO use `import { useGlobals, useStorybookApi } from 'storybook/manager-api';`
 export class CreeveyController {
   storyId = '';
   activeBrowser = '';

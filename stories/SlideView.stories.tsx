@@ -1,6 +1,6 @@
 import React, { JSX } from 'react';
-import { Meta, StoryObj } from '@storybook/react';
-import { fireEvent, within } from '@storybook/test';
+import { Meta, StoryObj } from '@storybook/react-vite';
+import { fireEvent, within } from 'storybook/test';
 import { ImagesView as ImagesViewBase } from '../src/client/shared/components/ImagesView/index.js';
 import { capture } from '../src/client/addon/index.js';
 
@@ -20,7 +20,6 @@ async function play({
 }
 
 const Kind: Meta<typeof SlideView> = {
-  title: 'SlideView',
   component: SlideView,
   parameters: {
     creevey: {
