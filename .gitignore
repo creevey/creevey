@@ -82,3 +82,5 @@ build
 .pnp.*
 
 tsconfig.prod.tsbuildinfo
+
+*storybook.log

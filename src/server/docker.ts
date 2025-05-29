@@ -105,8 +105,7 @@ export async function buildImage(imageName: string, version: string, dockerfile:
   }
   let isFailed = false;
   await new Promise<void>((resolve, reject) => {
-    void docker.buildImage(
-      // @ts-expect-error Type incompatibility AsyncIterator and AsyncIterableIterator
+    docker.buildImage(
       pack,
       // TODO Support buildkit decode grpc (version: '2')
       { t: imageName, labels: { creevey: imageName, version }, version: '1' },

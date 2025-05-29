@@ -1,9 +1,8 @@
 import fs from 'fs';
-import url from 'url';
 import path from 'path';
 import { IncomingMessage, ServerResponse, createServer } from 'http';
 import { WebSocketServer, WebSocket, RawData } from 'ws';
-import { fileURLToPath, pathToFileURL } from 'url';
+import { parse, fileURLToPath, pathToFileURL } from 'url';
 import { shutdownOnException } from '../utils.js';
 import { subscribeOn } from '../messages.js';
 import { noop } from '../../types.js';
@@ -50,7 +49,7 @@ function json<T = unknown>(
 
 function file(handler: (requestedPath: string) => string | undefined) {
   return (request: IncomingMessage, response: ServerResponse) => {
-    const parsedUrl = url.parse(request.url ?? '/', true);
+    const parsedUrl = parse(request.url ?? '/', true);
     const requestedPath = decodeURIComponent(parsedUrl.pathname ?? '/');
 
     try {
@@ -146,7 +145,7 @@ export function start(reportDir: string, port: number, ui: boolean): (api: Creev
   ];
 
   const router = (request: IncomingMessage, response: ServerResponse): void => {
-    const parsedUrl = url.parse(request.url ?? '/', true);
+    const parsedUrl = parse(request.url ?? '/', true);
     const path = parsedUrl.pathname ?? '/';
     const method = request.method ?? 'GET';
 

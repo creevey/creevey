@@ -244,7 +244,7 @@ export function readDirRecursive(dirPath: string): string[] {
 
 export function tryToLoadTestsData(filename: string): Partial<Record<string, ServerTest>> | undefined {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    // eslint-disable-next-line @typescript-eslint/no-require-imports, import-x/no-dynamic-require
     return require(filename) as Partial<Record<string, ServerTest>>;
   } catch {
     /* noop */
@@ -261,7 +261,7 @@ export async function loadThroughTSX<T>(
   const result = await callback((modulePath) =>
     nodeVersion > 18
       ? import(modulePath)
-      : // eslint-disable-next-line @typescript-eslint/no-require-imports
+      : // eslint-disable-next-line @typescript-eslint/no-require-imports, import-x/no-dynamic-require
         Promise.resolve(require(modulePath) as T),
   );
 

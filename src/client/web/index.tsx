@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, lazy } from 'react';
 import { createRoot } from 'react-dom/client';
 import { CreeveyApp } from './CreeveyApp.js';
 
@@ -24,7 +24,7 @@ function loadCreeveyData(): Promise<CreeveyStatus['tests']> {
   });
 }
 
-const CreeveyAppAsync = React.lazy(async () => {
+const CreeveyAppAsync = lazy(async () => {
   let isReport = false;
   let creeveyStatus: CreeveyStatus;
   let creeveyApi: CreeveyClientApi | undefined;

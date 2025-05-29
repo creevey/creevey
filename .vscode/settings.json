@@ -1,4 +1,12 @@
 {
+  "cSpell.words": [
+    "creevey"
+  ],
+  "search.exclude": {
+    "**/.yarn": true,
+    "**/.pnp.*": true
+  },
+  "eslint.useFlatConfig": true,
   "typescript.tsdk": "node_modules/typescript/lib",
-  "cSpell.words": ["creevey"]
+  "typescript.enablePromptUseWorkspaceTsdk": true
 }

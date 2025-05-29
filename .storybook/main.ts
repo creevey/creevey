@@ -1,24 +1,31 @@
-import { StorybookConfig } from '@storybook/react-vite';
-import { mergeConfig } from 'vite';
+import { join, dirname } from 'path';
+import type { StorybookConfig } from '@storybook/react-vite';
 
+function getAbsolutePath(value: string): string {
+  return dirname(require.resolve(join(value, 'package.json')));
+}
 const config: StorybookConfig = {
-  stories: ['../stories/**/*.stories.tsx', '../stories/**/*.mdx'],
+  stories: ['../stories/**/*.mdx', '../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
   addons: [
-    '@storybook/addon-essentials',
-    '@storybook/addon-interactions',
-    '@chromatic-com/storybook',
+    getAbsolutePath('@storybook/addon-essentials'),
+    getAbsolutePath('@storybook/addon-interactions'),
+    getAbsolutePath('@chromatic-com/storybook'),
     {
       name: './../src/client/addon/preset',
       options: { clientPort: 8000 },
     },
   ],
   framework: {
-    name: '@storybook/react-vite',
+    name: getAbsolutePath('@storybook/react-vite'),
     options: {},
   },
-  viteFinal: (config) => {
-    return mergeConfig(config, { server: { allowedHosts: ['host.docker.internal'] } });
+  async viteFinal(config) {
+    const { mergeConfig } = await import('vite');
+    return mergeConfig(config, {
+      server: {
+        allowedHosts: ['host.docker.internal'],
+      },
+    });
   },
 };
-
 export default config;

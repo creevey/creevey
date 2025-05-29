@@ -1,4 +1,5 @@
 import path from 'path';
+import assert from 'assert';
 import {
   Browser,
   BrowserContext,
@@ -23,17 +24,10 @@ import {
   StorybookEvents,
   StorybookGlobals,
 } from '../../types';
-import {
-  appendIframePath,
-  getAddresses,
-  LOCALHOST_REGEXP,
-  openBrowser,
-  resolveStorybookUrl,
-  storybookRootID,
-} from '../webdriver';
+import { appendIframePath, getAddresses, LOCALHOST_REGEXP, resolveStorybookUrl, storybookRootID } from '../webdriver';
 import { getCreeveyCache, isShuttingDown, resolvePlaywrightBrowserType, runSequence } from '../utils';
 import { colors, logger } from '../logger';
-import assert from 'assert';
+import { removeWorkerContainer } from '../worker/context';
 
 const browsers = {
   chromium,
@@ -106,7 +100,6 @@ export class InternalBrowser {
   #serverPort: number;
   #debug: boolean;
   #storybookGlobals?: StorybookGlobals;
-  #closeBrowser = openBrowser();
   constructor(
     browser: Browser,
     context: BrowserContext,
@@ -139,16 +132,21 @@ export class InternalBrowser {
 
     this.#isShuttingDown = true;
 
-    try {
-      if (this.#debug) await this.#context.tracing.stop({ path: path.join(this.#traceDir, 'trace.zip') });
-      await this.#page.close();
-      if (this.#debug) await this.#page.video()?.saveAs(path.join(this.#traceDir, 'video.webm'));
-      await this.#context.close();
-      await this.#browser.close();
-    } catch {
-      /* noop */
-    } finally {
-      this.#closeBrowser();
+    const teardown = [
+      this.#debug ? () => this.#context.tracing.stop({ path: path.join(this.#traceDir, 'trace.zip') }) : null,
+      () => this.#page.close(),
+      this.#debug ? () => this.#page.video()?.saveAs(path.join(this.#traceDir, 'video.webm')) : null,
+      () => this.#context.close(),
+      () => this.#browser.close(),
+      () => removeWorkerContainer(),
+    ];
+
+    for (const fn of teardown) {
+      try {
+        if (fn) await fn();
+      } catch {
+        /* noop */
+      }
     }
   }
 
@@ -399,6 +397,7 @@ export class InternalBrowser {
       (async () => {
         let wait = true;
         do {
+          if (this.#page.isClosed()) return false;
           try {
             // TODO Research a different way to ensure storybook is initiated
             wait = await this.#page.evaluate((SET_GLOBALS: string) => {

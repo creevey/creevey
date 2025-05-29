@@ -429,14 +429,21 @@ export class InternalBrowser {
     options: Options,
   ): Promise<InternalBrowser | null> {
     const browserConfig = config.browsers[browserName] as BrowserConfigObject;
-    const { storybookUrl: address = config.storybookUrl, limit, viewport, _storybookGlobals } = browserConfig;
+    const {
+      storybookUrl: address = config.storybookUrl,
+      limit,
+      viewport,
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
+      _storybookGlobals,
+      storybookGlobals = _storybookGlobals,
+    } = browserConfig;
     void limit;
 
     const browser = await buildWebdriver(browserName, gridUrl, config, options);
 
     if (!browser) return null;
 
-    const internalBrowser = new InternalBrowser(browser, options.port, _storybookGlobals);
+    const internalBrowser = new InternalBrowser(browser, options.port, storybookGlobals);
 
     try {
       if (isShuttingDown.current) return null;

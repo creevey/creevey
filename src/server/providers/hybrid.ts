@@ -1,5 +1,4 @@
-import chokidar from 'chokidar';
-
+import { watch } from 'chokidar';
 import { loadStories as browserProvider } from './browser.js';
 import type { Config, CreeveyStoryParams, CreeveyStory, StoriesProvider } from '../../types.js';
 import { logger } from '../logger.js';
@@ -53,7 +52,7 @@ async function parseParams(
   const testFiles = readDirRecursive(config.testsDir).filter((file) => config.testsRegex?.test(file));
 
   if (listener) {
-    chokidar.watch(testFiles).on('change', (filePath) => {
+    watch(testFiles).on('change', (filePath) => {
       logger().debug(`changed: ${filePath}`);
 
       // doesn't work, always returns {} due modules caching

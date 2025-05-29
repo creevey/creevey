@@ -1,51 +1,3 @@
-/**
- * Example of using Creevey's Playwright Reporter
- * 
- * This example demonstrates:
- * 1. Basic configuration in playwright.config.ts
- * 2. Taking and comparing screenshots in tests
- * 3. Using custom test names for better organization
- * 4. Advanced features like test steps and error handling
- * 5. Performance optimizations for large test suites
- */
-
-// playwright.config.ts
-import { defineConfig } from '@playwright/test';
-
-export default defineConfig({
-  testDir: './tests',
-  use: {
-    // Browser options
-    viewport: { width: 1280, height: 720 },
-    // Base URL to use in navigation
-    baseURL: 'https://example.com', 
-  },
-  // Configure reporters
-  reporter: [
-    ['html'], // Standard Playwright HTML reporter
-    ['list'], // Console output
-    // Creevey reporter with custom configuration
-    ['creevey/playwright-reporter', {
-      reportDir: './visual-test-results',
-      screenDir: './visual-reference-images',
-      port: 3030,
-      // Performance optimizations
-      batchProcessing: true,
-      maxConcurrency: 4,
-      lazyInit: true,
-      // Error handling
-      debug: true,
-      logFile: './creevey-debug.log',
-      // Custom comparison options
-      customComparisonOptions: {
-        threshold: 0.1, // More tolerant comparison
-        ignoreAntialiasing: true
-      }
-    }]
-  ],
-});
-
-// Example test file: tests/visual.spec.ts
 import { test, expect } from '@playwright/test';
 
 // Basic screenshot test
@@ -199,4 +151,4 @@ test('test with error handling', async ({ page }) => {
     // Re-throw to fail the test
     throw error;
   }
-}); 
+});

@@ -18,19 +18,6 @@ export const storybookRootID = 'storybook-root';
 export const LOCALHOST_REGEXP = /(localhost|127\.0\.0\.1)/i;
 const DOCKER_INTERNAL = 'host.docker.internal';
 
-let browserClosePromise: Promise<void> | null = null;
-
-export const openBrowser = () => {
-  let resolve: () => void;
-  browserClosePromise = new Promise((r) => (resolve = r));
-  return () => {
-    resolve();
-    browserClosePromise = null;
-  };
-};
-
-export const waitForBrowserClose = () => browserClosePromise;
-
 export async function resolveStorybookUrl(
   storybookUrl: string,
   checkUrl: (url: string) => Promise<boolean>,

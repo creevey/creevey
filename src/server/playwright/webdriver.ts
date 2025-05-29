@@ -5,7 +5,6 @@ import { logger } from '../logger';
 import { subscribeOn } from '../messages';
 import { CreeveyWebdriverBase } from '../webdriver';
 import type { InternalBrowser } from './internal';
-import { removeWorkerContainer } from '../worker/context.js'; // Import container context
 
 export class PlaywrightWebdriver extends CreeveyWebdriverBase {
   #browser: InternalBrowser | null = null;
@@ -22,9 +21,7 @@ export class PlaywrightWebdriver extends CreeveyWebdriverBase {
     this.#options = options;
 
     subscribeOn('shutdown', () => {
-      void this.#browser?.closeBrowser().finally(() => {
-        void removeWorkerContainer().finally(() => process.exit());
-      });
+      void this.#browser?.closeBrowser().finally(() => process.exit());
       this.#browser = null;
     });
   }

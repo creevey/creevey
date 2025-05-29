@@ -1,4 +1,4 @@
-import React, { JSX } from 'react';
+import React, { Component, JSX } from 'react';
 import { styled, Theme, withTheme } from '@storybook/theming';
 import { CircleIcon, CheckIcon } from '@storybook/icons';
 import { transparentize } from 'polished';
@@ -76,7 +76,7 @@ export const CheckboxContainer = styled.span({
   lineHeight: '18px',
 });
 
-export class Checkbox extends React.Component<CheckboxProps, CheckboxState> {
+export class Checkbox extends Component<CheckboxProps, CheckboxState> {
   state: CheckboxState = { indeterminate: false };
 
   handleIndeterminateChange = (value: boolean): void => {
