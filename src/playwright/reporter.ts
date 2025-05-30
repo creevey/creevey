@@ -52,7 +52,7 @@ class CreeveyPlaywrightReporter implements Reporter {
   private testsManager: TestsManager | null = null;
   private api: CreeveyApi | null = null;
   private port: number;
-  private debug: boolean;
+  private debug = !!process.env.PWDEBUG;
   private testIdMap = new Map<string, string>(); // Maps Playwright test IDs to Creevey test IDs
   private asyncQueue = new AsyncQueue();
 
@@ -60,9 +60,8 @@ class CreeveyPlaywrightReporter implements Reporter {
    * Creates a new instance of the CreeveyPlaywrightReporter
    * @param options Configuration options for the reporter
    */
-  constructor(options?: { port?: number; debug?: boolean }) {
+  constructor(options?: { port?: number }) {
     this.port = options?.port ?? 3000;
-    this.debug = options?.debug ?? false;
   }
 
   /**

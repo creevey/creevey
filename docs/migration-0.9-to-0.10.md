@@ -6,7 +6,45 @@ This guide outlines the key changes and steps required to update your Creevey se
 
 ## Breaking Changes
 
-### 1. Browser Configuration in `creevey.config.ts`
+### 1. CLI Commands Structure (Breaking Change)
+
+Creevey 0.10 introduces a command-based CLI structure. You can no longer run Creevey without specifying a command.
+
+**Before (0.9):**
+
+```bash
+# Running tests
+creevey --ui
+creevey -s --ui
+creevey --debug
+
+# Update mode (approving images all at once with no way to review them)
+creevey --update
+
+# Viewing reports
+# Doesn't have this feature
+```
+
+**After (0.10):**
+
+```bash
+# Running tests
+creevey test --ui
+creevey test -s --ui
+creevey test --debug
+
+# Viewing reports (approving images)
+creevey report
+creevey report ./custom-report-dir
+```
+
+**Key Changes:**
+
+- All test execution now requires the `test` command
+- Image approval/update mode uses the `report` command instead of `-u/--update` flags
+- Report viewing uses the `report` command
+
+### 2. Browser Configuration in `creevey.config.ts`
 
 The way browsers are configured has been updated to better distinguish between Selenium and Playwright settings.
 
@@ -62,7 +100,7 @@ const config: CreeveyConfig = {
 export default config;
 ```
 
-### 2. Mocha Removal and New `CreeveyTestContext` API
+### 3. Mocha Removal and New `CreeveyTestContext` API
 
 Creevey no longer uses the Mocha testing framework. Tests now use a `CreeveyTestContext` object passed as an argument to the test function.
 
@@ -103,7 +141,7 @@ it('should interact with an element using Playwright', async (context) => {
 });
 ```
 
-### 3. Reporter Configuration
+### 4. Reporter Configuration
 
 Reporter setup has moved from command-line options to the `creevey.config.ts` file.
 

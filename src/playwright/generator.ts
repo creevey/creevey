@@ -80,6 +80,8 @@ async function takeScreenshot(
   const mask = ignore.map((selector) => page.locator(selector));
 
   if (captureElement) {
+    // TODO Use page.locator(captureElement) instead of page.$(captureElement)
+    // TODO Test `#storybook-root > *` selector, probably we don't need `> *` and use `#storybook-root >*:first-child` instead
     const element = await page.$(captureElement);
     if (!element) throw new Error(`Capture element '${captureElement}' not found for story '${storyId}'`);
     return element.screenshot({

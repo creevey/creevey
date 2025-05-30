@@ -7,8 +7,7 @@ export default defineConfig({
   // Configure reporters
   reporter: [
     ['list'],
-    // Creevey reporter with debug enabled when playwright is run with `--debug` flag
-    ['creevey/playwright/reporter', { debug: !!process.env.PWDEBUG }],
+    ['creevey/playwright/reporter'],
   ],
   // Reference images and report will be saved in these directories
   snapshotDir: './images',

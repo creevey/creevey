@@ -14,7 +14,7 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   reporter: [
     !process.env.PWDEBUG ? [defaultReporter] : ['null'],
-    ['./src/playwright/reporter.ts', { debug: !!process.env.PWDEBUG }],
+    ['./src/playwright/reporter.ts'],
     // NOTE: use `playwright test --ui` to run tests with Creevey reporter
   ],
   use: {
