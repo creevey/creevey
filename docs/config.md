@@ -7,7 +7,7 @@ Creevey is highly configurable and can be tailored to your specific needs. Here 
 The simplest way to get started with Creevey, just run it without any configuration:
 
 ```bash
-yarn creevey -s
+yarn creevey test -s
 ```
 
 This will start Creevey with default settings, using Chrome as the browser and also start Storybook hosted at `http://localhost:6006`. Adding `--ui` flag will start the web server for the UI Runner.

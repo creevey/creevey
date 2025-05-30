@@ -18,11 +18,11 @@ import type { Args } from 'storybook/internal/types';
 import {
   BrowserConfigObject,
   Config,
-  Options,
   StoriesRaw,
   StoryInput,
   StorybookEvents,
   StorybookGlobals,
+  WorkerOptions,
 } from '../../types';
 import { appendIframePath, getAddresses, LOCALHOST_REGEXP, resolveStorybookUrl, storybookRootID } from '../webdriver';
 import { getCreeveyCache, isShuttingDown, resolvePlaywrightBrowserType, runSequence } from '../utils';
@@ -106,7 +106,7 @@ export class InternalBrowser {
     page: Page,
     traceDir: string,
     port: number,
-    debug: boolean,
+    debug = false,
     storybookGlobals?: StorybookGlobals,
   ) {
     this.#browser = browser;
@@ -230,7 +230,7 @@ export class InternalBrowser {
     browserName: string,
     gridUrl: string,
     config: Config,
-    options: Options,
+    options: WorkerOptions,
   ): Promise<InternalBrowser | null> {
     const browserConfig = config.browsers[browserName] as BrowserConfigObject;
     const {

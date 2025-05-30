@@ -108,7 +108,7 @@ function file(handler: (requestedPath: string) => string | undefined) {
 
 const importMetaUrl = pathToFileURL(__filename).href;
 
-export function start(reportDir: string, port: number, ui: boolean): (api: CreeveyApi) => void {
+export function start(reportDir: string, port: number, ui = false): (api: CreeveyApi) => void {
   let wss: WebSocketServer | null = null;
   let creeveyApi: CreeveyApi | null = null;
   let resolveApi: (api: CreeveyApi) => void = noop;
@@ -207,10 +207,12 @@ export function start(reportDir: string, port: number, ui: boolean): (api: Creev
       wss.clients.forEach((ws) => {
         ws.close();
       });
-      wss.close();
+      wss.close(() => {
+        server.close();
+      });
+    } else {
+      server.close();
     }
-
-    server.close();
   });
 
   server

@@ -84,3 +84,5 @@ build
 tsconfig.prod.tsbuildinfo
 
 *storybook.log
+
+/stories/pw-images

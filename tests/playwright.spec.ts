@@ -1,3 +1,3 @@
-import { definePlaywrightTests } from '../src/server/playwright/tests/generator';
+import { definePlaywrightTests } from '../src/playwright';
 
 definePlaywrightTests();

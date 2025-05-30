@@ -2,8 +2,17 @@ import fs from 'fs';
 import path from 'path';
 import cluster from 'cluster';
 import { pathToFileURL } from 'url';
+import * as v from 'valibot';
 import { loadStories as hybridStoriesProvider } from './providers/hybrid.js';
-import { Config, BrowserConfig, BrowserConfigObject, Options, isDefined } from '../types.js';
+import {
+  Config,
+  BrowserConfig,
+  BrowserConfigObject,
+  Options,
+  isDefined,
+  WorkerOptions,
+  OptionsSchema,
+} from '../types.js';
 import { configExt, loadThroughTSX } from './utils.js';
 import { CreeveyReporter } from './reporters/creevey.js';
 import { TeamcityReporter } from './reporters/teamcity.js';
@@ -60,7 +69,7 @@ function resolveConfigPath(configPath?: string): string | undefined {
   return configPath;
 }
 
-export async function readConfig(options: Options): Promise<Config> {
+export async function readConfig(options: Options | WorkerOptions): Promise<Config> {
   const configPath = resolveConfigPath(options.config);
   const userConfig: typeof defaultConfig & Partial<Pick<Config, 'gridUrl' | 'storiesProvider'>> = { ...defaultConfig };
 
@@ -98,24 +107,28 @@ export async function readConfig(options: Options): Promise<Config> {
     userConfig.storybookUrl = await userConfig.resolveStorybookUrl();
   }
 
-  if (options.noDocker) userConfig.useDocker = false;
-  if (options.failFast != undefined) userConfig.failFast = Boolean(options.failFast);
   if (options.reportDir) userConfig.reportDir = path.resolve(options.reportDir);
   if (options.screenDir) userConfig.screenDir = path.resolve(options.screenDir);
   if (options.storybookUrl) userConfig.storybookUrl = options.storybookUrl;
-  if (options.storybookPort && cluster.isPrimary) {
-    const url = new URL(userConfig.storybookUrl);
-    url.port = options.storybookPort;
-    userConfig.storybookUrl = url.toString();
-  }
-  if (typeof options.storybookStart === 'string') userConfig.storybookAutorunCmd = options.storybookStart;
 
-  if (options.storybookStart && cluster.isPrimary) {
-    const { default: getPort } = await import('get-port');
-    const url = new URL(userConfig.storybookUrl);
-    const port = await getPort({ port: Number(url.port) });
-    url.port = `${port}`;
-    userConfig.storybookUrl = url.toString();
+  if (v.is(OptionsSchema, options)) {
+    if (options.docker === false) userConfig.useDocker = false;
+    if (options.failFast != undefined) userConfig.failFast = Boolean(options.failFast);
+    if (cluster.isPrimary) {
+      if (options.storybookPort) {
+        const url = new URL(userConfig.storybookUrl);
+        url.port = `${options.storybookPort}`;
+        userConfig.storybookUrl = url.toString();
+      }
+      if (typeof options.storybookStart === 'string') userConfig.storybookAutorunCmd = options.storybookStart;
+      else if (options.storybookStart) {
+        const { default: getPort } = await import('get-port');
+        const url = new URL(userConfig.storybookUrl);
+        const port = await getPort({ port: Number(url.port) });
+        url.port = `${port}`;
+        userConfig.storybookUrl = url.toString();
+      }
+    }
   }
 
   // NOTE: Hack to pass typescript checking

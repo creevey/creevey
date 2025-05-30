@@ -128,7 +128,7 @@ export async function sendScreenshotsCount(
     repoUrl: repoUrl ?? 'unknown',
     creeveyVersion: creeveyVersion ?? 'unknown',
     storybookVersion: storybookVersion ?? 'unknown',
-    options: options._,
+    options,
     gridUrl,
     screenDir: config.screenDir ? path.relative(gitRootPath ?? process.cwd(), config.screenDir) : undefined,
     useDocker: config.useDocker,

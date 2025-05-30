@@ -2,9 +2,9 @@ import path from 'path';
 import assert from 'assert';
 import { mkdir, writeFile } from 'fs/promises';
 import { chromium, firefox, webkit, Page, FullConfig } from '@playwright/test';
-import { StoriesRaw } from '../../../types';
-import { getCreeveyCache } from '../../utils';
-import { appendIframePath } from '../../webdriver';
+import { StoriesRaw } from '../types';
+import { getCreeveyCache } from '../server/utils';
+import { appendIframePath } from '../server/webdriver';
 import { waitForStorybookReady } from './helpers';
 
 // This function will fetch stories and cache them or an error if fetching fails.
@@ -37,6 +37,7 @@ const browsers = {
   webkit,
 };
 
+// TODO: Setup should generate test files for each story file (component)
 // TODO: Add support for multiple storybook urls
 async function globalSetup(config: FullConfig) {
   const storybookUrl = config.webServer?.url;
@@ -55,19 +56,24 @@ async function globalSetup(config: FullConfig) {
   const context = await browser.newContext();
   const page = await context.newPage();
 
-  await context.tracing.start({ name: 'storybook-setup' });
+  if (process.env.PWDEBUG) {
+    await context.tracing.start({ name: 'storybook-setup' });
+  }
 
   try {
     const stories = await ensureStoriesFetched(page, storybookUrl);
 
     await writeFile(path.join(cacheDir, 'stories.json'), JSON.stringify(stories, null, 2));
   } catch (error) {
-    const tracePath = path.join(cacheDir, 'storybook-setup-trace.zip');
-
     console.error('Error in globalSetup:', error);
-    console.log('Trace is saved to:', tracePath);
 
-    await context.tracing.stop({ path: tracePath });
+    if (process.env.PWDEBUG) {
+      const tracePath = path.join(cacheDir, 'storybook-setup-trace.zip');
+
+      console.log('Trace is saved to:', tracePath);
+
+      await context.tracing.stop({ path: tracePath });
+    }
 
     throw error;
   } finally {

@@ -1,8 +1,10 @@
+import open from 'open';
 import { Config } from '../types.js';
 import { logger } from './logger.js';
 import { TestsManager } from './master/testsManager.js';
 import { start as startServer } from './master/server.js';
 import { CreeveyApi } from './master/api.js';
+import { shutdownWorkers } from './utils.js';
 
 /**
  * UI Update Mode implementation.
@@ -12,11 +14,15 @@ import { CreeveyApi } from './master/api.js';
  * @param config Creevey configuration
  * @param port Port to run the server on
  */
-export async function uiUpdate(config: Config, port: number): Promise<void> {
+export function report(config: Config, reportDir: string, port: number): void {
   logger().info('Starting UI Update Mode');
 
+  process.on('SIGINT', () => void shutdownWorkers());
+
+  const url = `http://localhost:${port}`;
+
   // Initialize TestsManager with the configured directories
-  const testsManager = new TestsManager(config.screenDir, config.reportDir);
+  const testsManager = new TestsManager(config.screenDir, reportDir);
 
   // Load tests from the report
   const testsFromReport = testsManager.loadTestsFromReport();
@@ -30,7 +36,7 @@ export async function uiUpdate(config: Config, port: number): Promise<void> {
   testsManager.updateTests(testsFromReport);
 
   // Start API server with UI enabled
-  const resolveApi = startServer(config.reportDir, port, true);
+  const resolveApi = startServer(reportDir, port, true);
 
   // Initialize API
   const api = new CreeveyApi(testsManager);
@@ -38,9 +44,8 @@ export async function uiUpdate(config: Config, port: number): Promise<void> {
   // Resolve the API for the server
   resolveApi(api);
 
-  // Save test data to make it available for the UI
-  await testsManager.saveTestData();
-
-  logger().info(`UI Update Mode started on http://localhost:${port}/`);
+  logger().info(`UI Update Mode started on ${url}`);
   logger().info('You can now review and approve screenshots from the browser.');
+
+  void open(url);
 }

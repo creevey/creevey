@@ -1,6 +1,6 @@
 /// <reference types="../../../types/selenium-context" />
 import type { Args } from 'storybook/internal/types';
-import { Config, StorybookGlobals, StoryInput, StoriesRaw, Options, ServerTest } from '../../types.js';
+import { Config, StorybookGlobals, StoryInput, StoriesRaw, ServerTest, WorkerOptions } from '../../types.js';
 import { subscribeOn } from '../messages.js';
 import { CreeveyWebdriverBase } from '../webdriver.js';
 import type { InternalBrowser } from './internal.js';
@@ -22,8 +22,8 @@ export class SeleniumWebdriver extends CreeveyWebdriverBase {
   #browserName: string;
   #gridUrl: string;
   #config: Config;
-  #options: Options;
-  constructor(browser: string, gridUrl: string, config: Config, options: Options) {
+  #options: WorkerOptions;
+  constructor(browser: string, gridUrl: string, config: Config, options: WorkerOptions) {
     super();
 
     this.#browserName = browser;

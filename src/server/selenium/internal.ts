@@ -19,7 +19,7 @@ import {
   StorybookGlobals,
   StoryInput,
   StoriesRaw,
-  Options,
+  WorkerOptions,
   ServerTest,
   StorybookEvents,
 } from '../../types.js';
@@ -97,7 +97,7 @@ async function buildWebdriver(
   browser: string,
   gridUrl: string,
   config: Config,
-  options: Options,
+  options: WorkerOptions,
 ): Promise<WebDriver | null> {
   const browserConfig = config.browsers[browser] as BrowserConfigObject;
   const { /*customizeBuilder,*/ seleniumCapabilities, browserName } = browserConfig;
@@ -426,7 +426,7 @@ export class InternalBrowser {
     browserName: string,
     gridUrl: string,
     config: Config,
-    options: Options,
+    options: WorkerOptions,
   ): Promise<InternalBrowser | null> {
     const browserConfig = config.browsers[browserName] as BrowserConfigObject;
     const {

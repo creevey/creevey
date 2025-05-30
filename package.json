@@ -12,9 +12,13 @@
       "types": "./dist/playwright.d.ts",
       "default": "./dist/playwright.js"
     },
-    "./playwright-reporter": {
-      "types": "./dist/playwright-reporter.d.ts",
-      "default": "./dist/playwright-reporter.js"
+    "./playwright/setup": {
+      "types": "./dist/playwright/setup.d.ts",
+      "default": "./dist/playwright/setup.js"
+    },
+    "./playwright/reporter": {
+      "types": "./dist/playwright/reporter.d.ts",
+      "default": "./dist/playwright/reporter.js"
     },
     "./selenium": {
       "types": "./dist/selenium.d.ts",
@@ -57,11 +61,11 @@
     "start": "concurrently \"yarn start:client\" \"yarn start:storybook\" \"yarn start:creevey\"",
     "start:client": "vite",
     "start:storybook": "storybook dev --ci -p 6006",
-    "start:creevey": "yarn creevey --ui",
+    "start:creevey": "yarn creevey test --ui",
     "creevey": "tsx ./src/cli",
-    "creevey:github": "yarn creevey --config .creevey/github.config.mts",
-    "creevey:gitlab": "yarn creevey --config .creevey/gitlab.config.mts",
-    "creevey:hybrid": "yarn creevey --config .creevey/hybrid.config.mts",
+    "creevey:github": "yarn creevey test --config .creevey/github.config.mts",
+    "creevey:gitlab": "yarn creevey test --config .creevey/gitlab.config.mts",
+    "creevey:hybrid": "yarn creevey test --config .creevey/hybrid.config.mts",
     "fix": "concurrently \"yarn fix:eslint\" \"yarn fix:prettier\"",
     "fix:eslint": "eslint --fix",
     "fix:prettier": "prettier --write .",
@@ -97,7 +101,6 @@
     "@types/dockerode": "^3.3.39",
     "@types/lodash": "^4.17.17",
     "@types/micromatch": "^4.0.9",
-    "@types/minimist": "^1.2.5",
     "@types/pixelmatch": "^5.2.6",
     "@types/pngjs": "^6.0.5",
     "@types/qs": "^6.14.0",
@@ -106,6 +109,7 @@
     "@types/selenium-webdriver": "^4.1.28",
     "@types/shelljs": "^0.8.16",
     "@types/ws": "^8.18.1",
+    "cac": "^6.7.14",
     "chai": "^4.5.0",
     "chalk": "^4.1.2",
     "chokidar": "^4.0.3",
@@ -116,8 +120,8 @@
     "loglevel": "^1.9.2",
     "loglevel-plugin-prefix": "^0.8.4",
     "micromatch": "^4.0.8",
-    "minimist": "^1.2.8",
     "odiff-bin": "^3.2.1",
+    "open": "^10.1.2",
     "package-manager-detector": "^0.2.11",
     "pidtree": "^0.6.0",
     "pixelmatch": "^6.0.0",
@@ -129,6 +133,7 @@
     "tar-stream": "^3.1.7",
     "tsx": "^4.19.4",
     "uuid": "^11.1.0",
+    "valibot": "^1.1.0",
     "ws": "^8.18.2",
     "yocto-spinner": "^0.2.3"
   },

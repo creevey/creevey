@@ -3,10 +3,10 @@ import {
   BaseCreeveyTestContext,
   Config,
   CreeveyWebdriver,
-  Options,
   ServerTest,
   TestMessage,
   TestResult,
+  WorkerOptions,
   isDefined,
   isImageError,
 } from '../../types.js';
@@ -115,7 +115,7 @@ function hasTimeout(str: string | null | undefined): boolean {
   return str?.toLowerCase().includes('timeout') ?? false;
 }
 
-export async function start(browser: string, gridUrl: string, config: Config, options: Options): Promise<void> {
+export async function start(browser: string, gridUrl: string, config: Config, options: WorkerOptions): Promise<void> {
   const imagesContext: ImageContext = {
     attachments: [],
     testFullPath: [],

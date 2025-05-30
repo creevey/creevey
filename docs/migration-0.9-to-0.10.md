@@ -129,15 +129,15 @@ export default config;
 ## Key New Features & Updates
 
 - **Creevey Playwright Reporter:** Integrate Creevey's visual testing into your existing Playwright test suites. See `docs/playwright-reporter.md` for details.
-- **Approve Tests from Report UI (Update Mode):** Approve visual changes directly in the Creevey report UI. Run with `creevey --ui --update` (or `creevey --ui -u`).
+- **Approve Tests from Report UI (Update Mode):** Approve visual changes directly in the Creevey report UI. Run with `creevey report` to use the web UI for reviewing and approving screenshots.
 - **ODiff Image Comparison:** Use `odiff` for image comparison with the `--odiff` flag and `odiffOptions` in config.
-- **Easier Storybook Autostart:** Use `creevey -s` or `creevey --startStorybook` to automatically start Storybook. Creevey will find a free port if necessary.
+- **Easier Storybook Autostart:** Use `creevey test -s` or `creevey test --storybook-start` to automatically start Storybook. Creevey will find a free port if necessary.
 
 ---
 
 ## Other Notable Changes
 
-- **`--noDocker` Option:** A command-line flag to disable Docker, overriding `useDocker: true` in your config.
+- **`--no-docker` Option:** A command-line flag to disable Docker, overriding `useDocker: true` in your config.
 
 ---
 

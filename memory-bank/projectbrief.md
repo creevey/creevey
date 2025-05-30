@@ -113,7 +113,7 @@ Enable developers to automatically detect visual regressions in their UI compone
 
 1. Install package: `yarn add -D creevey`
 2. Add addon to Storybook configuration
-3. Start UI Runner: `yarn creevey -s --ui`
+3. Start UI Runner: `yarn creevey test -s --ui`
 4. Open browser to [http://localhost:3000](http://localhost:3000)
 
 ### CONFIGURATION

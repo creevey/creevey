@@ -67,7 +67,7 @@ export default config;
 - Start Creevey UI Runner, which starts Storybook automatically. (To start tests from CLI, run Creevey without `--ui` flag)
 
 ```bash
-yarn creevey -s --ui
+yarn creevey test -s --ui
 ```
 
 - Open [http://localhost:3000](http://localhost:3000) in your browser. And that's it.

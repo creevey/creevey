@@ -1,14 +1,22 @@
 import { defineConfig, devices } from '@playwright/test';
 
+// NOTE: Default reporter for playwright
+const defaultReporter = process.env.CI ? 'dot' : 'list';
+
 export default defineConfig({
   testDir: './tests',
+  snapshotDir: './stories/pw-images',
+  outputDir: './report',
   testMatch: 'playwright.spec.ts',
-  globalSetup: './src/server/playwright/tests/setup.ts',
+  globalSetup: './src/playwright/setup.ts',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
-  reporter: [['list'], ['./src/playwright-reporter.ts', { debug: process.env.CI }]],
+  reporter: [
+    !process.env.PWDEBUG ? [defaultReporter] : ['null'],
+    ['./src/playwright/reporter.ts', { debug: !!process.env.PWDEBUG }],
+    // NOTE: use `playwright test --ui` to run tests with Creevey reporter
+  ],
   use: {
     baseURL: 'http://localhost:6006',
     trace: 'on-first-retry',

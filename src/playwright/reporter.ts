@@ -1,4 +1,3 @@
-import path from 'path';
 import fs from 'fs/promises';
 import { createHash } from 'crypto';
 import type { Reporter, FullConfig, Suite, TestCase, TestResult, TestStep } from '@playwright/test/reporter';
@@ -9,11 +8,12 @@ import {
   type TestResult as CreeveyTestResult,
   isDefined,
   Images,
-} from '../../types.js';
-import { TestsManager } from '../master/testsManager.js';
-import { CreeveyApi } from '../master/api.js';
-import { copyStatics } from '../utils.js';
-import { start } from '../master/server.js';
+} from '../types.js';
+import { TestsManager } from '../server/master/testsManager.js';
+import { CreeveyApi } from '../server/master/api.js';
+import { copyStatics } from '../server/utils.js';
+import { start } from '../server/master/server.js';
+import assert from 'assert';
 
 /**
  * Simple async queue to handle operations in sequence without returning promises
@@ -48,11 +48,9 @@ class AsyncQueue {
  * CreeveyPlaywrightReporter is a Playwright reporter that integrates with Creevey
  * to provide visual testing capabilities and use Creevey's UI for reviewing and approving screenshots.
  */
-export class CreeveyPlaywrightReporter implements Reporter {
-  private testsManager: TestsManager;
+class CreeveyPlaywrightReporter implements Reporter {
+  private testsManager: TestsManager | null = null;
   private api: CreeveyApi | null = null;
-  private reportDir: string;
-  private screenDir: string;
   private port: number;
   private debug: boolean;
   private testIdMap = new Map<string, string>(); // Maps Playwright test IDs to Creevey test IDs
@@ -62,14 +60,9 @@ export class CreeveyPlaywrightReporter implements Reporter {
    * Creates a new instance of the CreeveyPlaywrightReporter
    * @param options Configuration options for the reporter
    */
-  constructor(options?: { reportDir?: string; screenDir?: string; port?: number; debug?: boolean }) {
-    this.reportDir = options?.reportDir ?? path.join(process.cwd(), 'report');
-    this.screenDir = options?.screenDir ?? path.join(process.cwd(), 'images');
+  constructor(options?: { port?: number; debug?: boolean }) {
     this.port = options?.port ?? 3000;
     this.debug = options?.debug ?? false;
-
-    // Initialize TestsManager
-    this.testsManager = new TestsManager(this.screenDir, this.reportDir);
   }
 
   /**
@@ -77,25 +70,34 @@ export class CreeveyPlaywrightReporter implements Reporter {
    * @param config Playwright configuration
    * @param suite Test suite information
    */
-  onBegin(_config: FullConfig, suite: Suite): void {
+  onBegin(config: FullConfig, suite: Suite): void {
     this.logDebug('CreeveyPlaywrightReporter started');
+
+    const [snapshotDir, ...restSnapshotDirs] = [...new Set(config.projects.map((project) => project.snapshotDir))];
+    const [outputDir, ...restOutputDirs] = [...new Set(config.projects.map((project) => project.outputDir))];
+
+    assert(restSnapshotDirs.length === 0, 'Currently multiple snapshot directories are not supported');
+    assert(restOutputDirs.length === 0, 'Currently multiple output directories are not supported');
+
+    // Initialize TestsManager
+    this.testsManager = new TestsManager(snapshotDir, outputDir);
 
     // Use the async queue to handle initialization without returning a promise
     this.asyncQueue.enqueue(async () => {
+      assert(this.testsManager, 'TestsManager is not initialized');
+
       try {
-        await fs.mkdir(this.reportDir, { recursive: true });
-        await copyStatics(this.reportDir);
+        await fs.mkdir(outputDir, { recursive: true });
+        await copyStatics(outputDir);
       } catch (error) {
         this.logError(
           `Failed to initialize report directory: ${error instanceof Error ? error.message : String(error)}`,
         );
       }
 
-      // TODO: Handle SIGINT
-
       // Start server API
       try {
-        const resolveApi = start(this.reportDir, this.port, true);
+        const resolveApi = start(outputDir, this.port, true);
 
         // Create and connect the API
         this.api = new CreeveyApi(this.testsManager);
@@ -135,6 +137,8 @@ export class CreeveyPlaywrightReporter implements Reporter {
    */
   onTestBegin(test: TestCase, _result: TestResult): void {
     try {
+      assert(this.testsManager, 'TestsManager is not initialized');
+
       const creeveyTestId = this.testIdMap.get(test.id);
 
       if (creeveyTestId) {
@@ -211,24 +215,24 @@ export class CreeveyPlaywrightReporter implements Reporter {
    * Called when the test run ends
    * @param result The overall test run result
    */
-  onEnd(result: { status: 'passed' | 'failed' | 'timedout' | 'interrupted' }): void {
+  async onEnd(result: { status: 'passed' | 'failed' | 'timedout' | 'interrupted' }): Promise<void> {
     // Use the async queue to handle final operations without returning a promise
     this.asyncQueue.enqueue(async () => {
       try {
-        // Wait for all previous operations to complete
-        await this.asyncQueue.waitForCompletion();
+        assert(this.testsManager, 'TestsManager is not initialized');
 
         // Save test data
         await this.testsManager.saveTestData();
 
         this.logDebug(`Test run ended with status: ${result.status}`);
-        console.log(`Visual test results available at http://localhost:${this.port}`);
-
-        // No cleanup of server here as it needs to stay running for the user to view results
+        // TODO: Tell how to run reporter `yarn creevey update ./report --ui`
       } catch (error) {
         this.logError(`Error during reporter cleanup: ${error instanceof Error ? error.message : String(error)}`);
       }
     });
+
+    // Wait for all previous operations to complete
+    await this.asyncQueue.waitForCompletion();
   }
 
   /**
@@ -296,6 +300,8 @@ export class CreeveyPlaywrightReporter implements Reporter {
       this.logError(`No Creevey test ID found for test: ${test.title}`);
       return Promise.resolve();
     }
+
+    assert(this.testsManager, 'TestsManager is not initialized');
 
     // Determine test status
     let status: TestStatus;
@@ -371,3 +377,5 @@ export class CreeveyPlaywrightReporter implements Reporter {
     console.error(`[Creevey Reporter] ERROR: ${message}`);
   }
 }
+
+export default CreeveyPlaywrightReporter;

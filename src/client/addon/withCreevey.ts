@@ -15,6 +15,8 @@ import { getConnectionUrl } from '../shared/helpers.js';
 import isEqual from 'lodash/isEqual.js';
 import { makeDecorator } from './makeDecorator.js';
 
+// TODO: Get rid of __CREEVEY_ prefixed variables, use storybook api directly
+// TODO: Remove __CREEVEY_SET_READY_FOR_CAPTURE__ and `capture` function, because it seems not used, but we need to rethink how to write proper tests in play function
 declare global {
   interface Window {
     __CREEVEY_ENV__: boolean;

@@ -1,6 +1,6 @@
 /// <reference types="../../../types/playwright-context" />
 import type { Args } from 'storybook/internal/types';
-import { Config, Options, ServerTest, StoriesRaw, StoryInput } from '../../types';
+import { Config, ServerTest, StoriesRaw, StoryInput, WorkerOptions } from '../../types';
 import { logger } from '../logger';
 import { subscribeOn } from '../messages';
 import { CreeveyWebdriverBase } from '../webdriver';
@@ -11,8 +11,8 @@ export class PlaywrightWebdriver extends CreeveyWebdriverBase {
   #browserName: string;
   #gridUrl: string;
   #config: Config;
-  #options: Options;
-  constructor(browser: string, gridUrl: string, config: Config, options: Options) {
+  #options: WorkerOptions;
+  constructor(browser: string, gridUrl: string, config: Config, options: WorkerOptions) {
     super();
 
     this.#browserName = browser;

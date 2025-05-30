@@ -1,11 +1,11 @@
-import type { StoryContextForEnhancers, DecoratorFunction } from 'storybook/internal/types';
+import * as v from 'valibot';
 import type { Worker as ClusterWorker } from 'cluster';
-import type { ODiffOptions } from 'odiff-bin';
 import type { expect } from 'chai';
 import type EventEmitter from 'events';
+import type { ODiffOptions } from 'odiff-bin';
 import type { LaunchOptions } from 'playwright-core';
 import type { PixelmatchOptions } from 'pixelmatch';
-// import type { Browser } from 'playwright-core';
+import type { StoryContextForEnhancers, DecoratorFunction } from 'storybook/internal/types';
 
 export interface SetStoriesData {
   v?: number;
@@ -153,7 +153,7 @@ export type CreeveyWebdriverConstructor = new (
   browser: string,
   gridUrl: string,
   config: Config,
-  options: Options,
+  options: WorkerOptions,
 ) => CreeveyWebdriver;
 
 export interface CreeveyWebdriver {
@@ -338,38 +338,38 @@ export interface StoriesProvider {
 
 export type CreeveyConfig = Partial<Config>;
 
-export interface Options {
-  _: string[];
-  config?: string;
-  port: number;
-  /**
-   * Run in UI mode with web interface for reviewing test results
-   * When used with `update` flag, enables UI Update Mode for approving screenshots
-   */
-  ui: boolean;
-  /**
-   * Run in update mode to approve failed tests
-   * When used with `ui` flag, enables UI Update Mode for approving screenshots from browser
-   */
-  update: boolean | string;
-  debug: boolean;
-  trace: boolean;
-  browser?: string;
-  /**
-   * @deprecated use {@link Config.reporter} instead
-   */
-  reporter?: string;
-  screenDir?: string;
-  reportDir?: string;
-  gridUrl?: string;
-  storybookStart?: boolean | string;
-  storybookUrl?: string;
-  storybookPort?: string;
-  storybookAutorunCmd?: string;
-  failFast?: boolean;
-  odiff?: boolean;
-  noDocker?: boolean;
-}
+export const OptionsSchema = v.object({
+  ui: v.optional(v.boolean()),
+  storybookStart: v.optional(v.union([v.string(), v.boolean()])),
+  config: v.optional(v.string()),
+  debug: v.optional(v.boolean()),
+  port: v.number(),
+  failFast: v.optional(v.boolean()),
+  reportDir: v.optional(v.string()),
+  screenDir: v.optional(v.string()),
+  storybookUrl: v.optional(v.string()),
+  storybookPort: v.optional(v.number()),
+  reporter: v.optional(v.string()),
+  odiff: v.optional(v.boolean()),
+  trace: v.optional(v.boolean()),
+  docker: v.optional(v.boolean()),
+});
+
+export const WorkerOptionsSchema = v.object({
+  browser: v.string(),
+  storybookUrl: v.string(),
+  gridUrl: v.optional(v.string()),
+  config: v.optional(v.string()),
+  debug: v.optional(v.boolean()),
+  trace: v.optional(v.boolean()),
+  reportDir: v.optional(v.string()),
+  screenDir: v.optional(v.string()),
+  odiff: v.optional(v.boolean()),
+  port: v.number(),
+});
+
+export type Options = v.InferOutput<typeof OptionsSchema>;
+export type WorkerOptions = v.InferOutput<typeof WorkerOptionsSchema>;
 
 export type WorkerError = 'browser' | 'test' | 'unknown';
 

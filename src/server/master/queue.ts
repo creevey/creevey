@@ -43,10 +43,11 @@ export class WorkerQueue {
 
     cluster.setupPrimary({
       args: [
+        'worker',
         '--browser',
         browser,
         ...(gridUrl ? ['--gridUrl', gridUrl] : []),
-        ...process.argv.slice(2),
+        ...process.argv.slice(3),
         '--storybookUrl',
         storybookUrl,
       ],

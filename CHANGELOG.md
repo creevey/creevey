@@ -203,14 +203,13 @@ Now you can add Creevey's visual testing to your existing Playwright test suites
 
 We've added an "Update Mode" so you can approve changes to test images directly in the Creevey report UI. No need to run Storybook or open browsers.
 
-- **How it Works:** The UI will show you when it's in update mode. You won't be able to run tests from the UI in this mode; it's all about reviewing and approving visual changes. This mode usually turns on when you run Creevey with certain flags or connect to a dataset that's ready for updates.
-- **How to Turn it On:** To run Creevey in this UI Update mode, use both the `--ui` and `--update` (or `-u` for short) flags when you run Creevey:
+- The UI will show you when it's in update mode. You won't be able to run tests from the UI in this mode; it's all about reviewing and approving visual changes. To run Creevey in this UI Update mode, use the `report` command:
 
   ```bash
-  creevey --ui --update
-  # or
-  creevey --ui -u
+  creevey report
   ```
+
+- You can specify report directory to use for UI Update mode
 
 #### 6. New JUnit Reporter & Better Reporter Options
 
@@ -241,9 +240,9 @@ You can now use the `odiff` library to compare images, as an alternative to `pix
 
 Starting Storybook with Creevey is now a bit simpler.
 
-- **`--startStorybook` (`-s`) Flag:** This will automatically start your Storybook development server. Creevey will figure out if you're using npm, yarn, or pnpm.
-  - **How to Use It:** `creevey -s` or `creevey --startStorybook`
-  - If you want to use a different Storybook port, you can add `--storybookPort`.
+- **`--storybook-start` (`-s`) Flag:** This will automatically start your Storybook development server. Creevey will figure out if you're using npm, yarn, or pnpm.
+  - **How to Use It:** `creevey test -s` or `creevey test --storybook-start`
+  - If you want to use a different Storybook port, you can add `--storybook-port`.
 - **Finds Free Ports Automatically:** If the usual Storybook port (6006) is busy, and you're using `-s`, Creevey will automatically find and use a port that's free.
 
 ---

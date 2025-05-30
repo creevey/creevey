@@ -1,34 +1,37 @@
-import { defineConfig } from '@playwright/test';
+import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests',
-  use: {
-    // Browser options
-    viewport: { width: 1280, height: 720 },
-    // Base URL to use in navigation
-    baseURL: 'https://example.com', 
-  },
+  testMatch: 'visual.spec.ts',
+  globalSetup: 'creevey/playwright/setup',
   // Configure reporters
   reporter: [
-    ['html'], // Standard Playwright HTML reporter
-    ['list'], // Console output
-    // Creevey reporter with custom configuration
-    ['creevey/playwright-reporter', {
-      reportDir: './visual-test-results',
-      screenDir: './visual-reference-images',
-      port: 3030,
-      // Performance optimizations
-      batchProcessing: true,
-      maxConcurrency: 4,
-      lazyInit: true,
-      // Error handling
-      debug: true,
-      logFile: './creevey-debug.log',
-      // Custom comparison options
-      customComparisonOptions: {
-        threshold: 0.1, // More tolerant comparison
-        ignoreAntialiasing: true
-      }
-    }]
+    ['list'],
+    // Creevey reporter with debug enabled when playwright is run with `--debug` flag
+    ['creevey/playwright/reporter', { debug: !!process.env.PWDEBUG }],
   ],
+  // Reference images and report will be saved in these directories
+  snapshotDir: './images',
+  outputDir: './report',
+  use: {
+    viewport: { width: 1280, height: 720 },
+    baseURL: 'http://localhost:6006', 
+  },
+  projects: [
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
+      metadata: {
+        // Define storybook globals here
+        storybookGlobals: {
+          theme: 'dark',
+        },
+      },
+    }
+  ],
+  webServer: {
+    command: 'yarn storybook dev --ci -p 6006',
+    url: 'http://localhost:6006',
+    reuseExistingServer: !process.env.CI,
+  },
 });

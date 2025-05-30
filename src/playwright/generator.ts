@@ -1,26 +1,16 @@
 import path from 'path';
 import assert from 'assert';
-import { mkdirSync, readFileSync } from 'fs';
-import { test, Page } from '@playwright/test';
-import isEqual from 'lodash/isEqual.js';
+import { readFileSync } from 'fs';
 import type { PixelmatchOptions } from 'pixelmatch';
 import type { ODiffOptions } from 'odiff-bin';
-import { CreeveyStoryParams, isObject, StoriesRaw, StorybookEvents, StorybookGlobals } from '../../../types';
-import { getOdiffAssert, getPixelmatchAssert, ImageContext } from '../../compare';
-import { appendIframePath } from '../../webdriver';
+import { test, Page } from '@playwright/test';
+import isEqual from 'lodash/isEqual.js';
+import { CreeveyStoryParams, isObject, StoriesRaw, StorybookEvents, StorybookGlobals } from '../types';
+import { getOdiffAssert, getPixelmatchAssert, ImageContext } from '../server/compare';
+import { appendIframePath } from '../server/webdriver';
 import { waitForStorybookReady } from './helpers';
 
 export interface TestsConfig {
-  /**
-   * Absolute path to directory with reference images
-   * @default path.join(process.cwd(), './images')
-   */
-  screenDir: string;
-  /**
-   * Absolute path where test reports and diff images would be saved
-   * @default path.join(process.cwd(), './report')
-   */
-  reportDir: string;
   /**
    * Define pixelmatch diff options
    * @default { threshold: 0.1, includeAA: false }
@@ -43,20 +33,13 @@ export interface TestsConfig {
   reusePageContext: boolean;
 }
 
+const cacheDir = process.env.CREEVEY_CACHE_DIR;
 const defaultConfig: TestsConfig = {
-  screenDir: path.join(process.cwd(), './images'),
-  reportDir: path.join(process.cwd(), './report'),
   diffOptions: { threshold: 0.1, includeAA: false },
   odiffOptions: { threshold: 0.1, antialiasing: true },
   comparisonLibrary: 'pixelmatch',
   reusePageContext: true,
 };
-
-const cacheDir = process.env.CREEVEY_CACHE_DIR;
-
-assert(cacheDir, 'Cache directory not found');
-
-const storiesCache = JSON.parse(readFileSync(path.join(cacheDir, 'stories.json'), 'utf-8')) as StoriesRaw;
 
 // TODO: Use this Storybook function for building args for query params
 // export const buildArgsParam = (initialArgs: Args | undefined, args: Args): string => {
@@ -94,7 +77,6 @@ async function takeScreenshot(
   ignoreElements?: string | string[] | null,
 ): Promise<Buffer> {
   const ignore = ignoreElements ? (Array.isArray(ignoreElements) ? ignoreElements : [ignoreElements]) : [];
-  // For Playwright's screenshot `mask` option, we need an array of Locators.
   const mask = ignore.map((selector) => page.locator(selector));
 
   if (captureElement) {
@@ -113,14 +95,17 @@ async function takeScreenshot(
   }
 }
 
+// TODO: To support parallel tests, we need to define each test suite in separate file
 // TODO: How to support custom interactions for different tests
 // Main function to define tests using Playwright's API
 export function definePlaywrightTests(config?: Partial<TestsConfig>): void {
-  const stories = storiesCache;
+  assert(cacheDir, 'Cache directory not found');
+
+  const stories = JSON.parse(readFileSync(path.join(cacheDir, 'stories.json'), 'utf-8')) as StoriesRaw;
   let globals: StorybookGlobals = {};
   let reusedPage: Page;
 
-  const { screenDir, reportDir, diffOptions, odiffOptions, comparisonLibrary, reusePageContext } = {
+  const { diffOptions, odiffOptions, comparisonLibrary, reusePageContext } = {
     ...defaultConfig,
     ...config,
   };
@@ -134,8 +119,6 @@ export function definePlaywrightTests(config?: Partial<TestsConfig>): void {
     }
   }
 
-  mkdirSync(reportDir, { recursive: true });
-
   test.describe('Creevey Tests', () => {
     const imagesContext: ImageContext = {
       attachments: [],
@@ -145,6 +128,7 @@ export function definePlaywrightTests(config?: Partial<TestsConfig>): void {
     let assertImage: (actual: Buffer, imageName?: string) => Promise<void>;
 
     test.beforeAll('Setup images context', async ({ browser }, { project }) => {
+      const { snapshotDir, outputDir } = project;
       if (reusePageContext) {
         const storybookUrl = project.use.baseURL;
 
@@ -157,11 +141,13 @@ export function definePlaywrightTests(config?: Partial<TestsConfig>): void {
       if (comparisonLibrary === 'pixelmatch') {
         const { default: pixelmatch } = await import('pixelmatch');
         assertImage = assertWrapper(
-          getPixelmatchAssert(pixelmatch, imagesContext, { screenDir, reportDir, diffOptions }),
+          getPixelmatchAssert(pixelmatch, imagesContext, { screenDir: snapshotDir, reportDir: outputDir, diffOptions }),
         );
       } else {
         const { compare } = await import('odiff-bin');
-        assertImage = assertWrapper(getOdiffAssert(compare, imagesContext, { screenDir, reportDir, odiffOptions }));
+        assertImage = assertWrapper(
+          getOdiffAssert(compare, imagesContext, { screenDir: snapshotDir, reportDir: outputDir, odiffOptions }),
+        );
       }
     });
 
@@ -174,7 +160,8 @@ export function definePlaywrightTests(config?: Partial<TestsConfig>): void {
 
       assert(story, `Story '${storyId}' not found in stories cache`);
 
-      const { title, name } = story;
+      const { title, name, parameters } = story;
+      const { waitForReady: shouldWaitForReady } = (parameters.creevey ?? {}) as CreeveyStoryParams;
 
       const storybookGlobals: unknown = project.metadata.storybookGlobals;
 
@@ -205,14 +192,18 @@ export function definePlaywrightTests(config?: Partial<TestsConfig>): void {
       await reusedPage.mouse.move(0, 0);
 
       // 3. Select Story
-      const selectResult = await reusedPage.evaluate<
-        [error?: string | null, isCaptureCalled?: boolean] | null,
-        { storyId: string; StorybookEvents: typeof StorybookEvents }
+      const errorMessage = await reusedPage.evaluate<
+        string | null,
+        { storyId: string; StorybookEvents: typeof StorybookEvents; shouldWaitForReady?: boolean }
       >(
-        async ({ storyId, StorybookEvents }) => {
-          // TODO: Refactor this
+        async ({ storyId, StorybookEvents, shouldWaitForReady }) => {
+          // TODO: DRY with withCreevey.ts
           // NOTE: Copy-pasted from withCreevey.ts
           const channel = window.__STORYBOOK_ADDONS_CHANNEL__;
+
+          const waitForReady = shouldWaitForReady
+            ? new Promise<void>((resolve) => (window.__CREEVEY_SET_READY_FOR_CAPTURE__ = resolve))
+            : Promise.resolve();
 
           let rejectCallback: (reason?: unknown) => void;
           const renderErrorPromise = new Promise<void>((_resolve, reject) => (rejectCallback = reject));
@@ -250,8 +241,7 @@ export function definePlaywrightTests(config?: Partial<TestsConfig>): void {
           }, 0);
 
           try {
-            await Promise.race([renderErrorPromise, storyRenderedPromise]);
-            return [null, true];
+            await Promise.race([renderErrorPromise, Promise.all([storyRenderedPromise, waitForReady])]);
           } catch (reason) {
             // NOTE Event `STORY_THREW_EXCEPTION` triggered only in react and vue frameworks and return Error instance
             // NOTE Event `STORY_ERRORED` return error-like object without `name` field
@@ -261,16 +251,16 @@ export function definePlaywrightTests(config?: Partial<TestsConfig>): void {
                 : isObject(reason)
                   ? `${reason.message as string}\n    ${reason.stack as string}`
                   : (reason as string);
-            return [errorMessage];
+            return errorMessage;
           } finally {
             removeErrorHandlers();
             removeRenderHandlers();
           }
-        },
-        { storyId: story.id, StorybookEvents },
-      );
 
-      const [errorMessage] = selectResult ?? [];
+          return null;
+        },
+        { storyId: story.id, StorybookEvents, shouldWaitForReady },
+      );
 
       if (errorMessage) {
         throw new Error(`Failed to select story '${story.id}': ${errorMessage}`);
@@ -278,10 +268,11 @@ export function definePlaywrightTests(config?: Partial<TestsConfig>): void {
     });
 
     test.afterEach('Save screenshot', () => {
-      const projectName = test.info().project.name;
+      const { name: projectName } = test.info().project;
 
       // TODO: Use another way to handle attachments
 
+      // NOTE: Don't need to copy files for assertImage, because it's done internally
       const { actual, diff, expect } = imagesContext.images[projectName] ?? {};
       for (const image of imagesContext.attachments) {
         switch (true) {
@@ -318,6 +309,9 @@ export function definePlaywrightTests(config?: Partial<TestsConfig>): void {
             captureElement,
             ignoreElements,
           );
+          // TODO: Support this
+          // NOTE: Bear in mind that page.locator('#root > *') is not working
+          // await expect(page.locator(captureElement)).toHaveScreenshot(name);
 
           // 5. Assert Image
           await assertImage(screenshot);

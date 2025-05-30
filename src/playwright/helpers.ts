@@ -1,4 +1,4 @@
-import { StorybookEvents } from '../../../types';
+import { StorybookEvents } from '../types';
 import { Page } from '@playwright/test';
 
 export async function waitForStorybookReady(page: Page, timeout = 60000): Promise<void> {

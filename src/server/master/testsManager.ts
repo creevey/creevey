@@ -74,6 +74,7 @@ export class TestsManager extends EventEmitter {
    * Load tests from a report file
    */
   public loadTestsFromReport(): Partial<Record<string, ServerTest>> {
+    // TODO: Move to utils
     const reportDataPath = path.join(this.reportDir, 'data.js');
     const testsFromReport = tryToLoadTestsData(reportDataPath) ?? {};
     return testsFromReport;
