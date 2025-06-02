@@ -23,7 +23,7 @@ import { buildImage } from './docker.js';
 import { mkdir, writeFile } from 'fs/promises';
 import assert from 'assert';
 import * as v from 'valibot';
-import { PlaywrightWebdriver } from 'src/playwright.js';
+import { PlaywrightWebdriver } from '../playwright.js';
 
 async function getPlaywrightVersion(): Promise<string> {
   const {
