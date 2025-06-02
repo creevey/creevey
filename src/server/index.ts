@@ -147,14 +147,14 @@ async function waitForStorybook(config: Config, options: Options): Promise<void>
 export default async function (command: 'report' | 'test' | 'worker', options: Options | WorkerOptions): Promise<void> {
   const config = await readConfig(options);
 
-  // TODO Add package.json with `"type": "commonjs"` as workaround for esm packages to load `data.js`
-  await mkdir(config.reportDir, { recursive: true });
-  await writeFile(path.join(config.reportDir, 'package.json'), '{"type": "commonjs"}');
-
   await import('./shutdown.js');
 
   if (v.is(OptionsSchema, options)) {
     const { port, reportDir = config.reportDir } = options;
+
+    // TODO Add package.json with `"type": "commonjs"` as workaround for esm packages to load `data.js`
+    await mkdir(reportDir, { recursive: true });
+    await writeFile(path.join(reportDir, 'package.json'), '{"type": "commonjs"}');
 
     if (command == 'report') {
       const { report } = await import('./report.js');
