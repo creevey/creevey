@@ -1,4 +1,3 @@
-import open from 'open';
 import { Config } from '../types.js';
 import { logger } from './logger.js';
 import { TestsManager } from './master/testsManager.js';
@@ -47,5 +46,5 @@ export function report(config: Config, reportDir: string, port: number): void {
   logger().info(`UI Update Mode started on ${url}`);
   logger().info('You can now review and approve screenshots from the browser.');
 
-  void open(url);
+  void import('open').then(({ default: open }) => open(url));
 }
