@@ -192,17 +192,21 @@ export default async function (command: 'report' | 'test' | 'worker', options: O
   }
 
   if (v.is(WorkerOptionsSchema, options) && cluster.isWorker) {
-    if (config.webdriver !== PlaywrightWebdriver) return;
-
     let gridUrl = options.gridUrl;
     const { browser = defaultBrowser, debug } = options;
 
-    if (config.useDocker) {
-      const version = await getPlaywrightVersion();
-      gridUrl = await startPlaywright(config, browser, version, debug);
-    } else {
-      const { browserName } = config.browsers[browser] as BrowserConfigObject;
-      gridUrl = `creevey://${resolvePlaywrightBrowserType(browserName)}`;
+    if (!gridUrl) {
+      if (config.webdriver === PlaywrightWebdriver) {
+        if (config.useDocker) {
+          const version = await getPlaywrightVersion();
+          gridUrl = await startPlaywright(config, browser, version, debug);
+        } else {
+          const { browserName } = config.browsers[browser] as BrowserConfigObject;
+          gridUrl = `creevey://${resolvePlaywrightBrowserType(browserName)}`;
+        }
+      } else {
+        assert(gridUrl, 'Grid URL is required for Selenium');
+      }
     }
 
     logger().info(`Starting Worker for ${browser}`);

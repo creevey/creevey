@@ -3,7 +3,7 @@ import assert from 'assert';
 import { readFileSync } from 'fs';
 import type { PixelmatchOptions } from 'pixelmatch';
 import type { ODiffOptions } from 'odiff-bin';
-import { test, Page } from '@playwright/test';
+import { test, Page, BrowserContext } from '@playwright/test';
 import isEqual from 'lodash/isEqual.js';
 import { CreeveyStoryParams, isObject, StoriesRaw, StorybookEvents, StorybookGlobals } from '../types';
 import { getOdiffAssert, getPixelmatchAssert, ImageContext } from '../server/compare';
@@ -31,6 +31,11 @@ export interface TestsConfig {
    * @default true
    */
   reusePageContext: boolean;
+  /**
+   * Enables trace recording for each test.
+   * @default false
+   */
+  trace: boolean | { screenshots?: boolean; snapshots?: boolean; sources?: boolean };
 }
 
 const cacheDir = process.env.CREEVEY_CACHE_DIR;
@@ -39,6 +44,7 @@ const defaultConfig: TestsConfig = {
   odiffOptions: { threshold: 0.1, antialiasing: true },
   comparisonLibrary: 'pixelmatch',
   reusePageContext: true,
+  trace: false,
 };
 
 // TODO: Use this Storybook function for building args for query params
@@ -105,9 +111,10 @@ export function definePlaywrightTests(config?: Partial<TestsConfig>): void {
 
   const stories = JSON.parse(readFileSync(path.join(cacheDir, 'stories.json'), 'utf-8')) as StoriesRaw;
   let globals: StorybookGlobals = {};
+  let reusedContext: BrowserContext;
   let reusedPage: Page;
 
-  const { diffOptions, odiffOptions, comparisonLibrary, reusePageContext } = {
+  const { diffOptions, odiffOptions, comparisonLibrary, reusePageContext, trace } = {
     ...defaultConfig,
     ...config,
   };
@@ -130,14 +137,27 @@ export function definePlaywrightTests(config?: Partial<TestsConfig>): void {
     let assertImage: (actual: Buffer, imageName?: string) => Promise<void>;
 
     test.beforeAll('Setup images context', async ({ browser }, { project }) => {
-      const { snapshotDir, outputDir } = project;
+      const {
+        snapshotDir,
+        outputDir,
+        use: { viewport },
+      } = project;
+
       if (reusePageContext) {
         const storybookUrl = project.use.baseURL;
 
         assert(storybookUrl, 'Storybook URL not found');
 
-        reusedPage = await browser.newPage();
-        await reusedPage.goto(appendIframePath(storybookUrl), { waitUntil: 'networkidle', timeout: 60000 });
+        // TODO Record video
+        reusedContext = await browser.newContext({ viewport, screen: viewport ?? undefined });
+        if (trace) {
+          await reusedContext.tracing.start(
+            typeof trace === 'object' ? trace : { screenshots: true, snapshots: true, sources: true },
+          );
+        }
+        reusedPage = await reusedContext.newPage();
+        await reusedPage.goto(appendIframePath(storybookUrl), { timeout: 60000 });
+        await reusedPage.waitForLoadState('networkidle');
         await waitForStorybookReady(reusedPage);
       }
       if (comparisonLibrary === 'pixelmatch') {
@@ -176,10 +196,8 @@ export function definePlaywrightTests(config?: Partial<TestsConfig>): void {
 
         assert(storybookUrl, 'Storybook URL not found');
 
-        await page.goto(appendStoryQueryParams(appendIframePath(storybookUrl), storyId), {
-          waitUntil: 'networkidle',
-          timeout: 60000,
-        });
+        await page.goto(appendStoryQueryParams(appendIframePath(storybookUrl), storyId), { timeout: 60000 });
+        await page.waitForLoadState('networkidle');
         await waitForStorybookReady(page);
         // TODO: Pass globals to story
         await updateGlobals(page, storybookGlobals);
@@ -202,6 +220,12 @@ export function definePlaywrightTests(config?: Partial<TestsConfig>): void {
           // TODO: DRY with withCreevey.ts
           // NOTE: Copy-pasted from withCreevey.ts
           const channel = window.__STORYBOOK_ADDONS_CHANNEL__;
+
+          async function sequence(fns: (() => Promise<unknown>)[]): Promise<void> {
+            for (const fn of fns) {
+              await fn();
+            }
+          }
 
           const waitForReady = shouldWaitForReady
             ? new Promise<void>((resolve) => (window.__CREEVEY_SET_READY_FOR_CAPTURE__ = resolve))
@@ -243,7 +267,10 @@ export function definePlaywrightTests(config?: Partial<TestsConfig>): void {
           }, 0);
 
           try {
-            await Promise.race([renderErrorPromise, Promise.all([storyRenderedPromise, waitForReady])]);
+            await Promise.race([
+              renderErrorPromise,
+              sequence([() => storyRenderedPromise, () => document.fonts.ready, () => waitForReady]),
+            ]);
           } catch (reason) {
             // NOTE Event `STORY_THREW_EXCEPTION` triggered only in react and vue frameworks and return Error instance
             // NOTE Event `STORY_ERRORED` return error-like object without `name` field
@@ -296,6 +323,15 @@ export function definePlaywrightTests(config?: Partial<TestsConfig>): void {
         }
       }
     });
+
+    if (trace && reusePageContext) {
+      test.afterAll('Save trace', async (_, { project }) => {
+        const { outputDir, name: projectName } = project;
+        await reusedContext.tracing.stop({
+          path: `${outputDir}/traces/${projectName}-${process.pid}.zip`,
+        });
+      });
+    }
 
     for (const story of Object.values(stories)) {
       const { name, title, parameters } = story;

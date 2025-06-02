@@ -18,12 +18,15 @@ export class CreeveyReporter {
       this.getLogger(test.creevey).warn(chalk.cyan(test.fullTitle()));
     });
     runner.on(TEST_EVENTS.TEST_PASS, (test: FakeTest) => {
-      this.getLogger(test.creevey).info(chalk.cyan(test.fullTitle()), chalk.gray(`(${test.duration} ms)`));
+      this.getLogger(test.creevey).info(
+        chalk.cyan(test.fullTitle()),
+        test.duration ? chalk.gray(`(${test.duration} ms)`) : '',
+      );
     });
     runner.on(TEST_EVENTS.TEST_FAIL, (test: FakeTest, error) => {
       this.getLogger(test.creevey).error(
         chalk.cyan(test.fullTitle()),
-        chalk.gray(`(${test.duration} ms)`),
+        test.duration ? chalk.gray(`(${test.duration} ms)`) : '',
         '\n  ',
         this.getErrors(
           error,
