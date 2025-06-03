@@ -149,13 +149,18 @@ export function definePlaywrightTests(config?: Partial<TestsConfig>): void {
         assert(storybookUrl, 'Storybook URL not found');
 
         // TODO Record video
-        reusedContext = await browser.newContext({ viewport, screen: viewport ?? undefined });
+        reusedContext = await browser.newContext({
+          viewport,
+          screen: viewport ?? undefined,
+          // recordVideo: trace ? { dir: path.join(cacheDir, `${process.pid}`), size: viewport ?? undefined } : undefined,
+        });
+        reusedPage = await reusedContext.newPage();
         if (trace) {
+          // TODO: Add logger for tracing
           await reusedContext.tracing.start(
             typeof trace === 'object' ? trace : { screenshots: true, snapshots: true, sources: true },
           );
         }
-        reusedPage = await reusedContext.newPage();
         await reusedPage.goto(appendIframePath(storybookUrl), { timeout: 60000 });
         await reusedPage.waitForLoadState('networkidle');
         await waitForStorybookReady(reusedPage);
@@ -325,11 +330,12 @@ export function definePlaywrightTests(config?: Partial<TestsConfig>): void {
     });
 
     if (trace && reusePageContext) {
-      test.afterAll('Save trace', async (_, { project }) => {
+      test.afterAll('Save trace', async ({ browser: _ }, { project }) => {
         const { outputDir, name: projectName } = project;
         await reusedContext.tracing.stop({
           path: `${outputDir}/traces/${projectName}-${process.pid}.zip`,
         });
+        // await reusedPage.video()?.saveAs(`${outputDir}/traces/${projectName}-${process.pid}.webm`);
       });
     }
 

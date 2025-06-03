@@ -97,6 +97,7 @@ class CreeveyPlaywrightReporter implements Reporter {
 
       // Start server API
       try {
+        // TODO: Instead of starting server, try to use Creevey API
         const resolveApi = start(outputDir, this.port, true);
 
         // Create and connect the API
