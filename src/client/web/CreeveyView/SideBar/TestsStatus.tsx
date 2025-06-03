@@ -1,6 +1,7 @@
-import React from 'react';
-import { IconButton, Icons } from '@storybook/components';
-import { styled, withTheme, Theme } from '@storybook/theming';
+import React, { JSX } from 'react';
+import { IconButton } from 'storybook/internal/components';
+import { TimeIcon, CheckIcon, CrossIcon, ThumbsUpIcon } from '@storybook/icons';
+import { styled, withTheme, Theme } from 'storybook/theming';
 import { TestStatus } from '../../../../types.js';
 import { CreeveyTestsStatus } from '../../../shared/helpers.js';
 
@@ -14,6 +15,7 @@ const Container = styled.div({
   alignItems: 'center',
   fontSize: '14px',
   lineHeight: '22px',
+  padding: '2px 6px',
 });
 
 const IconContainer = styled.div<{ color?: string }>(({ color }) => ({
@@ -59,48 +61,44 @@ export const TestsStatus = withTheme(
   }: TestsStatusProps): JSX.Element => {
     return (
       <Container>
-        {/* @ts-expect-error Fixed in https://github.com/storybookjs/storybook/pull/26623 */}
         <Button
           onClick={() => {
             onClickByStatus('pending');
           }}
         >
           <IconContainer color={theme?.color.mediumdark}>
-            <Icons icon="time" />
+            <TimeIcon />
             {pendingCount}
           </IconContainer>
         </Button>
         <Divider />
-        {/* @ts-expect-error Fixed in https://github.com/storybookjs/storybook/pull/26623 */}
         <Button
           onClick={() => {
             onClickByStatus('success');
           }}
         >
           <IconContainer color={theme?.color.green}>
-            <Icons icon="check" /> {successCount}
+            <CheckIcon /> {successCount}
           </IconContainer>
         </Button>
         <Divider />
-        {/* @ts-expect-error Fixed in https://github.com/storybookjs/storybook/pull/26623 */}
         <Button
           onClick={() => {
             onClickByStatus('failed');
           }}
         >
           <IconContainer color={theme?.color.negative}>
-            <Icons icon="cross" /> {failedCount}
+            <CrossIcon /> {failedCount}
           </IconContainer>
         </Button>
         <Divider />
-        {/* @ts-expect-error Fixed in https://github.com/storybookjs/storybook/pull/26623 */}
         <Button
           onClick={() => {
             onClickByStatus('approved');
           }}
         >
           <IconContainer color={theme?.color.defaultText}>
-            <Icons icon="thumbsup" /> {approvedCount}
+            <ThumbsUpIcon /> {approvedCount}
           </IconContainer>
         </Button>
       </Container>

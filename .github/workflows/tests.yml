@@ -21,7 +21,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: creevey
-          path: creevey-*.tgz
+          path: package.tgz
   tests:
     name: Tests
     runs-on: ubuntu-latest
@@ -39,6 +39,8 @@ jobs:
         run: git lfs checkout
       - name: install
         run: yarn
+      - name: build
+        run: yarn build
       - name: unit tests
         run: yarn test
       - name: storybook
@@ -46,6 +48,7 @@ jobs:
       - name: creevey
         run: yarn creevey:github
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: report
           path: report/

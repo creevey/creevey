@@ -1,5 +1,5 @@
-import React, { Suspense } from 'react';
-import ReactDOM from 'react-dom';
+import React, { Suspense, lazy } from 'react';
+import { createRoot } from 'react-dom/client';
 import { CreeveyApp } from './CreeveyApp.js';
 
 import { initCreeveyClientApi, CreeveyClientApi } from '../shared/creeveyClientApi.js';
@@ -24,7 +24,7 @@ function loadCreeveyData(): Promise<CreeveyStatus['tests']> {
   });
 }
 
-const CreeveyAppAsync = React.lazy(async () => {
+const CreeveyAppAsync = lazy(async () => {
   let isReport = false;
   let creeveyStatus: CreeveyStatus;
   let creeveyApi: CreeveyClientApi | undefined;
@@ -36,11 +36,11 @@ const CreeveyAppAsync = React.lazy(async () => {
       // NOTE: Failed to get status from API
       // NOTE: It might happen on circle ci from artifact
       isReport = true;
-      creeveyStatus = { isRunning: false, tests: await loadCreeveyData(), browsers: [] };
+      creeveyStatus = { isRunning: false, tests: await loadCreeveyData(), browsers: [], isUpdateMode: false };
     }
   } else {
     isReport = true;
-    creeveyStatus = { isRunning: false, tests: await loadCreeveyData(), browsers: [] };
+    creeveyStatus = { isRunning: false, tests: await loadCreeveyData(), browsers: [], isUpdateMode: false };
   }
 
   return {
@@ -48,16 +48,22 @@ const CreeveyAppAsync = React.lazy(async () => {
       return (
         <CreeveyApp
           api={creeveyApi}
-          initialState={{ isReport, isRunning: creeveyStatus.isRunning, tests: treeifyTests(creeveyStatus.tests) }}
+          initialState={{
+            isReport,
+            isRunning: creeveyStatus.isRunning,
+            tests: treeifyTests(creeveyStatus.tests),
+            isUpdateMode: creeveyStatus.isUpdateMode,
+          }}
         />
       );
     },
   };
 });
 
-ReactDOM.render(
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const root = createRoot(document.getElementById('root')!);
+root.render(
   <Suspense fallback={<CreeveyLoader />}>
     <CreeveyAppAsync />
   </Suspense>,
-  document.getElementById('root'),
 );

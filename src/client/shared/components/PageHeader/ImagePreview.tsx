@@ -1,5 +1,5 @@
-import React from 'react';
-import { styled, withTheme, Theme } from '@storybook/theming';
+import React, { JSX } from 'react';
+import { styled, withTheme, Theme } from 'storybook/theming';
 
 const IMG_SIZE = 64;
 const DIAG_LENGTH = (2 * (IMG_SIZE - 8) ** 2) ** (1 / 2);
@@ -70,6 +70,7 @@ export const ImagePreview = withTheme(
       onClick(imageName);
     };
 
+    // TODO Add image name as a title
     return (
       <Button
         onClick={handleClick}

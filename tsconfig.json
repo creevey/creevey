@@ -17,16 +17,22 @@
     "paths": {
       "creevey": ["./"]
     },
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "resolveJsonModule": true
   },
   "include": [
     "src/**/*",
+    "docs/examples/**/*",
     ".creevey/**/*",
     ".storybook/*",
     "stories/**/*",
     "types/*",
     "tests/**/*",
-    "webpack.config.mjs"
+    "vite.config.mts",
+    "vitest.config.mts",
+    "playwright.config.mts",
+    "playwright.d.ts",
+    "selenium.d.ts"
   ],
   "exclude": ["report", "dist", "scripts"]
 }

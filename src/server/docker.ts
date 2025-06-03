@@ -1,16 +1,15 @@
-import cluster from 'cluster';
-import ora from 'ora';
+import tar from 'tar-stream';
+import Logger from 'loglevel';
 import { Writable } from 'stream';
 import Dockerode, { Container } from 'dockerode';
-import { Config, BrowserConfig, isDockerMessage, DockerAuth } from '../types.js';
-import { subscribeOn, sendDockerMessage, emitDockerMessage } from './messages.js';
-import { isInsideDocker, LOCALHOST_REGEXP } from './utils.js';
+import { DockerAuth } from '../types.js';
 import { logger } from './logger.js';
+import { setWorkerContainer } from './worker/context.js';
 
 const docker = new Dockerode();
 
 class DevNull extends Writable {
-  _write(_chunk: unknown, _encoding: BufferEncoding, callback: (error?: Error | null | undefined) => void): void {
+  _write(_chunk: unknown, _encoding: BufferEncoding, callback: (error?: Error | null) => void): void {
     setImmediate(callback);
   }
 }
@@ -24,13 +23,15 @@ export async function pullImages(
   if (platform) args.platform = platform;
 
   logger().info('Pull docker images');
+  // TODO Replace with `import from`
+  const { default: yoctoSpinner } = await import('yocto-spinner');
   for (const image of images) {
     await new Promise<void>((resolve, reject) => {
-      const spinner = ora(`${image}: Pull start`).start();
+      const spinner = yoctoSpinner({ text: `${image}: Pull start` }).start();
 
       docker.pull(image, args, (pullError: Error | null, stream?: NodeJS.ReadableStream) => {
         if (pullError || !stream) {
-          spinner.fail();
+          spinner.error(pullError?.message);
           reject(pullError ?? new Error('Unknown error'));
           return;
         }
@@ -39,22 +40,117 @@ export async function pullImages(
 
         function onFinished(error: Error | null): void {
           if (error) {
-            spinner.fail();
+            spinner.error(error.message);
             reject(error);
             return;
           }
-          spinner.succeed(`${image}: Pull complete`);
+          spinner.success(`${image}: Pull complete`);
           resolve();
         }
 
         function onProgress(event: { id: string; status: string; progress?: string }): void {
           if (!/^[a-z0-9]{12}$/i.test(event.id)) return;
 
-          spinner.text = `${image}: [${event.id}] ${event.status} ${event.progress ? event.progress : ''}`;
+          spinner.text = `${image}: [${event.id}] ${event.status} ${event.progress ?? ''}`;
         }
       });
     });
   }
+}
+
+export async function buildImage(imageName: string, version: string, dockerfile: string): Promise<void> {
+  const images = await docker.listImages({ filters: { label: [`creevey=${imageName}`] } });
+
+  const containers = await docker.listContainers({ all: true, filters: { label: [`creevey=${imageName}`] } });
+  if (containers.length > 0) {
+    await Promise.all(
+      containers.map(async (info) => {
+        const container = docker.getContainer(info.Id);
+        try {
+          await container.remove({ force: true });
+        } catch {
+          /* noop */
+        }
+      }),
+    );
+  }
+
+  const oldImages = images.filter((info) => info.Labels.version !== version);
+  if (oldImages.length > 0) {
+    await Promise.all(
+      oldImages.map(async (info) => {
+        const image = docker.getImage(info.Id);
+        try {
+          await image.remove({ force: true });
+        } catch {
+          /* noop */
+        }
+      }),
+    );
+  }
+
+  if (oldImages.length !== images.length) {
+    logger().info(`Image ${imageName} already exists`);
+    return;
+  }
+
+  const pack = tar.pack();
+  pack.entry({ name: 'Dockerfile' }, dockerfile);
+  pack.finalize();
+
+  const { default: yoctoSpinner } = await import('yocto-spinner');
+  const spinner = yoctoSpinner({ text: `${imageName}: Build start` });
+  if (logger().getLevel() > Logger.levels.DEBUG) {
+    spinner.start();
+  }
+  let isFailed = false;
+  await new Promise<void>((resolve, reject) => {
+    docker.buildImage(
+      pack,
+      // TODO Support buildkit decode grpc (version: '2')
+      { t: imageName, labels: { creevey: imageName, version }, version: '1' },
+      (buildError: Error | null, stream) => {
+        if (buildError || !stream) {
+          // spinner.error(buildError?.message);
+          reject(buildError ?? new Error('Unknown error'));
+          return;
+        }
+
+        docker.modem.followProgress(stream, onFinished, onProgress);
+
+        function onFinished(error: Error | null): void {
+          if (isFailed) return;
+
+          if (error) {
+            spinner.error(error.message);
+            reject(error);
+            return;
+          }
+          spinner.success(`${imageName}: Build complete`);
+          resolve();
+        }
+
+        function onProgress(
+          event:
+            | { stream: string }
+            | { errorDetail: { code: number; message: string }; error: string }
+            | { id: string; aux: string }, // NOTE: Only with `version: '2'`
+        ): void {
+          if ('stream' in event) {
+            if (logger().getLevel() <= Logger.levels.DEBUG) {
+              logger().debug(event.stream.trim());
+            } else {
+              spinner.text = `${imageName}: [Build] - ${event.stream}`;
+            }
+          } else if ('errorDetail' in event) {
+            isFailed = true;
+            spinner.error(event.error);
+            reject(new Error(event.error));
+          }
+        }
+      },
+    );
+  });
 }
 
 export async function runImage(
@@ -63,33 +159,13 @@ export async function runImage(
   options: Record<string, unknown>,
   debug: boolean,
 ): Promise<string> {
-  await Promise.all(
-    (await docker.listContainers({ all: true, filters: { ancestor: [image] } })).map(async (info) => {
-      const container = docker.getContainer(info.Id);
-      try {
-        await container.stop();
-      } catch {
-        /* noop */
-      }
-      await container.remove();
-    }),
-  );
-
   const hub = docker.run(image, args, debug ? process.stdout : new DevNull(), options, (error) => {
     if (error) throw error;
   });
 
   return new Promise((resolve) => {
     hub.once('container', (container: Container) => {
-      // eslint-disable-next-line @typescript-eslint/no-misused-promises
-      subscribeOn('shutdown', async () => {
-        try {
-          await container.stop();
-          await container.remove();
-        } catch {
-          /* noop */
-        }
-      });
+      setWorkerContainer(container);
     });
     hub.once(
       'start',
@@ -99,38 +175,4 @@ export async function runImage(
         }),
     );
   });
-}
-
-export async function initDocker(
-  config: Config,
-  browser: string | undefined,
-  startContainer: () => Promise<string>,
-): Promise<void> {
-  if (cluster.isPrimary) {
-    const host = await startContainer();
-    let gridUrl = 'http://localhost:4444/wd/hub';
-    gridUrl = isInsideDocker ? gridUrl.replace(LOCALHOST_REGEXP, host) : gridUrl;
-    cluster.on('message', (worker, message: unknown) => {
-      if (!isDockerMessage(message)) return;
-
-      const dockerMessage = message;
-      if (dockerMessage.type != 'start') return;
-
-      sendDockerMessage(worker, {
-        type: 'success',
-        payload: { gridUrl },
-      });
-    });
-  } else {
-    if (browser && (config.browsers[browser] as BrowserConfig).gridUrl) return Promise.resolve();
-    return new Promise((resolve) => {
-      subscribeOn('docker', (message) => {
-        if (message.type == 'success') {
-          config.gridUrl = message.payload.gridUrl;
-          resolve();
-        }
-      });
-      emitDockerMessage({ type: 'start' });
-    });
-  }
 }

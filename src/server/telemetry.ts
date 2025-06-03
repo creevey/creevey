@@ -6,7 +6,7 @@ import { set } from 'lodash';
 import { v4 } from 'uuid';
 import { pathToFileURL } from 'url';
 import { createRequire } from 'module';
-import { Config, CreeveyStatus, isDefined, Options } from '../types';
+import { Config, CreeveyStatus, isDefined, Options } from '../types.js';
 
 const konturGitHost = 'git.skbkontur.ru';
 
@@ -128,7 +128,7 @@ export async function sendScreenshotsCount(
     repoUrl: repoUrl ?? 'unknown',
     creeveyVersion: creeveyVersion ?? 'unknown',
     storybookVersion: storybookVersion ?? 'unknown',
-    options: options._,
+    options,
     gridUrl,
     screenDir: config.screenDir ? path.relative(gitRootPath ?? process.cwd(), config.screenDir) : undefined,
     useDocker: config.useDocker,
@@ -151,15 +151,19 @@ export async function sendScreenshotsCount(
         name,
         typeof browser === 'object'
           ? {
-              name: browser.name,
+              name: name,
               gridUrl: browser.gridUrl ? sanitizeGridUrl(browser.gridUrl) : undefined,
               browserName: browser.browserName,
-              browserVersion: browser.browserVersion,
-              platformName: browser.platformName,
+              // @ts-expect-error Support old config version
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+              browserVersion: browser.seleniumCapabilities?.browserVersion ?? browser.browserVersion,
+              // @ts-expect-error Support old config version
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+              platformName: browser.seleniumCapabilities?.platformName ?? browser.platformName,
               viewport: browser.viewport,
               limit: browser.limit,
               dockerImage: browser.dockerImage,
-              'se:teamname': browser['se:teamname'],
+              'se:teamname': browser.seleniumCapabilities?.['se:teamname'],
             }
           : browser,
       ]),
@@ -177,8 +181,8 @@ export async function sendScreenshotsCount(
   const testsMeta = { runId: uuid, tests };
 
   const fullPathname = buildPathname('tests', testsMeta);
-  // NOTE: Keep request path shorter than 32k symbols
-  const chunksCount = Math.ceil(fullPathname.length / 32_000);
+  // NOTE: Keep request path shorter than 24k symbols
+  const chunksCount = Math.ceil(fullPathname.length / 24_000);
   let chunks: string[] = [];
   if (chunksCount > 1) {
     const testsString = JSON.stringify(tests);

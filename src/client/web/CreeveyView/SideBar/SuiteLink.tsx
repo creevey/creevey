@@ -1,11 +1,10 @@
-import React, { useRef, useContext, useEffect, useMemo } from 'react';
-import { Icons } from '@storybook/components';
-import { styled, withTheme, Theme } from '@storybook/theming';
+import React, { JSX, useRef, useEffect, useMemo } from 'react';
+import { ChevronDownIcon, ChevronRightIcon } from '@storybook/icons';
+import { styled, withTheme, Theme } from 'storybook/theming';
 import { Checkbox, CheckboxContainer } from './Checkbox.js';
 import { TestStatusIcon } from './TestStatusIcon.js';
 import { CreeveySuite, isTest } from '../../../../types.js';
-import { CreeveyContext } from '../../CreeveyContext.js';
-import { KeyboardEventsContext } from '../../KeyboardEventsContext.js';
+import { useCreeveyContext } from '../../CreeveyContext.js';
 
 export interface SuiteLinkProps {
   title: string;
@@ -53,13 +52,16 @@ export const Button = withTheme(
   })),
 );
 
-const ArrowIcon = styled(Icons)({
+const iconStyles = {
   paddingRight: '4px',
   display: 'inline-block',
   width: '12px',
   height: '18px',
   verticalAlign: 'unset',
-});
+};
+
+const ChevronDownIconStyled = styled(ChevronDownIcon)(iconStyles);
+const ChevronRightIconStyled = styled(ChevronRightIcon)(iconStyles);
 
 export const SuiteContainer = styled.span<{ padding: number }>(({ padding }) => ({
   paddingLeft: padding,
@@ -76,8 +78,7 @@ export const SuiteTitle = styled.span({
 });
 
 export function SuiteLink({ title, suite, 'data-testid': dataTid }: SuiteLinkProps): JSX.Element {
-  const { onSuiteOpen, onSuiteToggle } = useContext(CreeveyContext);
-  const { sidebarFocusedItem, setSidebarFocusedItem } = useContext(KeyboardEventsContext);
+  const { onSuiteOpen, onSuiteToggle, sidebarFocusedItem, setSidebarFocusedItem, isUpdateMode } = useCreeveyContext();
   const checkboxRef = useRef<Checkbox>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
 
@@ -116,18 +117,19 @@ export function SuiteLink({ title, suite, 'data-testid': dataTid }: SuiteLinkPro
   return (
     <Container focused={isSuiteFocused}>
       <CheckboxContainer>
-        <Checkbox
-          ref={checkboxRef}
-          checked={suite.skip ? false : suite.checked}
-          disabled={Boolean(suite.skip)}
-          onValueChange={handleCheck}
-        />
+        {!isUpdateMode && (
+          <Checkbox
+            ref={checkboxRef}
+            checked={suite.skip ? false : suite.checked}
+            disabled={Boolean(suite.skip)}
+            onValueChange={handleCheck}
+          />
+        )}
       </CheckboxContainer>
       <Button onClick={handleOpen} onFocus={handleFocus} data-testid={dataTid} ref={buttonRef}>
         <SuiteContainer padding={(suite.path.length - 1) * 8}>
           {isTest(suite) ||
-            (Boolean(suite.path.length) &&
-              (suite.opened ? <ArrowIcon icon="arrowdown" /> : <ArrowIcon icon="arrowright" />))}
+            (Boolean(suite.path.length) && (suite.opened ? <ChevronDownIconStyled /> : <ChevronRightIconStyled />))}
           <TestStatusIcon status={suite.status} skip={suite.skip} />
           <SuiteTitle>{title}</SuiteTitle>
         </SuiteContainer>

@@ -1,4 +1,4 @@
-import { Color, Theme } from '@storybook/theming';
+import { Color, Theme } from 'storybook/theming';
 
 export const themeBorderColors = {
   actual: 'negative',

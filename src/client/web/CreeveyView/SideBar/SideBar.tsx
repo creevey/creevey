@@ -1,7 +1,7 @@
-import React, { createContext } from 'react';
+import React, { JSX, createContext } from 'react';
 import { transparentize } from 'polished';
-import { ScrollArea } from '@storybook/components';
-import { styled, Theme, withTheme } from '@storybook/theming';
+import { ScrollArea } from 'storybook/internal/components';
+import { styled, Theme, withTheme } from 'storybook/theming';
 import { SideBarHeader } from './SideBarHeader.js';
 import { CreeveySuite, CreeveyTest, noop, isTest } from '../../../../types.js';
 import {
@@ -48,8 +48,8 @@ const ScrollContainer = styled.div({
 });
 
 const StyledScrollArea = styled(ScrollArea)({
-  '& > div > div': {
-    height: 'calc(100% - 8px)',
+  '& > [data-state="visible"]': {
+    zIndex: 5,
   },
 });
 
@@ -69,13 +69,12 @@ const SelectAllContainer = styled.div({
 
 const TestsContainer = styled.div({
   position: 'relative',
-  paddingBottom: '8px',
   height: '100%',
 });
 
 const Divider = withTheme(
   styled.div<{ theme: Theme; position: 'top' | 'bottom' }>(({ theme, position }) => ({
-    ...(position === 'top' ? { position: 'absolute' } : { position: 'relative', bottom: '8px', marginBottom: '-8px' }),
+    ...(position === 'top' ? { position: 'absolute' } : { position: 'relative', bottom: '8px' }),
     height: '8px',
     width: '100%',
     zIndex: 4,

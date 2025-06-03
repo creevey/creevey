@@ -3,14 +3,10 @@ import {
   WorkerMessage,
   StoriesMessage,
   TestMessage,
-  WebpackMessage,
-  DockerMessage,
   ProcessMessage,
   WorkerHandler,
   StoriesHandler,
   TestHandler,
-  WebpackHandler,
-  DockerHandler,
   ShutdownHandler,
 } from '../types.js';
 
@@ -35,14 +31,6 @@ export function emitTestMessage(message: TestMessage): boolean {
   return emitMessage({ scope: 'test', ...message });
 }
 
-export function emitWebpackMessage(message: WebpackMessage): boolean {
-  return emitMessage({ scope: 'webpack', ...message });
-}
-
-export function emitDockerMessage(message: DockerMessage): boolean {
-  return emitMessage({ scope: 'docker', ...message });
-}
-
 export function emitShutdownMessage(): boolean {
   return emitMessage({ scope: 'shutdown' });
 }
@@ -51,8 +39,6 @@ interface Handlers {
   worker: Set<WorkerHandler>;
   stories: Set<StoriesHandler>;
   test: Set<TestHandler>;
-  webpack: Set<WebpackHandler>;
-  docker: Set<DockerHandler>;
   shutdown: Set<ShutdownHandler>;
 }
 
@@ -61,8 +47,6 @@ function createHandlers(): Handlers {
     worker: new Set<WorkerHandler>(),
     stories: new Set<StoriesHandler>(),
     test: new Set<TestHandler>(),
-    webpack: new Set<WebpackHandler>(),
-    docker: new Set<DockerHandler>(),
     shutdown: new Set<ShutdownHandler>(),
   });
 }
@@ -89,18 +73,6 @@ const handler = (message: ProcessMessage): void => {
       });
       return;
     }
-    case 'webpack': {
-      handlers.webpack.forEach((h) => {
-        h(message);
-      });
-      return;
-    }
-    case 'docker': {
-      handlers.docker.forEach((h) => {
-        h(message);
-      });
-      return;
-    }
     case 'shutdown': {
       handlers.shutdown.forEach((h) => {
         h(message);
@@ -117,27 +89,25 @@ export function sendStoriesMessage(target: NodeJS.Process | Worker, message: Sto
 export function sendTestMessage(target: NodeJS.Process | Worker, message: TestMessage): void {
   target.send?.({ scope: 'test', ...message });
 }
-export function sendDockerMessage(target: NodeJS.Process | Worker, message: DockerMessage): void {
-  target.send?.({ scope: 'docker', ...message });
-}
 export function sendShutdownMessage(target: NodeJS.Process | Worker): void {
   target.send?.({ scope: 'shutdown' });
+}
+export function sendWorkerMessage(target: NodeJS.Process | Worker, message: WorkerMessage): void {
+  target.send?.({ scope: 'worker', ...message });
 }
 
 export function subscribeOn(scope: 'worker', handler: WorkerHandler): () => void;
 export function subscribeOn(scope: 'stories', handler: StoriesHandler): () => void;
 export function subscribeOn(scope: 'test', handler: TestHandler): () => void;
-export function subscribeOn(scope: 'webpack', handler: WebpackHandler): () => void;
-export function subscribeOn(scope: 'docker', handler: DockerHandler): () => void;
 export function subscribeOn(scope: 'shutdown', handler: ShutdownHandler): () => void;
 export function subscribeOn(
-  scope: 'worker' | 'stories' | 'test' | 'webpack' | 'docker' | 'shutdown',
-  handler: WorkerHandler | StoriesHandler | TestHandler | WebpackHandler | DockerHandler | ShutdownHandler,
+  scope: 'worker' | 'stories' | 'test' | 'shutdown',
+  handler: WorkerHandler | StoriesHandler | TestHandler | ShutdownHandler,
 ): () => void;
 
 export function subscribeOn(
-  scope: 'worker' | 'stories' | 'test' | 'webpack' | 'docker' | 'shutdown',
-  handler: WorkerHandler | StoriesHandler | TestHandler | WebpackHandler | DockerHandler | ShutdownHandler,
+  scope: 'worker' | 'stories' | 'test' | 'shutdown',
+  handler: WorkerHandler | StoriesHandler | TestHandler | ShutdownHandler,
 ): () => void {
   switch (scope) {
     case 'worker': {
@@ -155,16 +125,6 @@ export function subscribeOn(
       handlers.test.add(testHandler);
       return () => handlers.test.delete(testHandler);
     }
-    case 'webpack': {
-      const webpackHandler = handler as WebpackHandler;
-      handlers.webpack.add(webpackHandler);
-      return () => handlers.webpack.delete(webpackHandler);
-    }
-    case 'docker': {
-      const dockerHandler = handler as DockerHandler;
-      handlers.docker.add(dockerHandler);
-      return () => handlers.docker.delete(dockerHandler);
-    }
     case 'shutdown': {
       const shutdownHandler = handler as ShutdownHandler;
       handlers.shutdown.add(shutdownHandler);
@@ -178,19 +138,17 @@ const workers = new Map<Worker, Handlers>();
 export function subscribeOnWorker(worker: Worker, scope: 'worker', handler: WorkerHandler): () => void;
 export function subscribeOnWorker(worker: Worker, scope: 'stories', handler: StoriesHandler): () => void;
 export function subscribeOnWorker(worker: Worker, scope: 'test', handler: TestHandler): () => void;
-export function subscribeOnWorker(worker: Worker, scope: 'webpack', handler: WebpackHandler): () => void;
-export function subscribeOnWorker(worker: Worker, scope: 'docker', handler: DockerHandler): () => void;
 export function subscribeOnWorker(worker: Worker, scope: 'shutdown', handler: ShutdownHandler): () => void;
 export function subscribeOnWorker(
   worker: Worker,
-  scope: 'worker' | 'stories' | 'test' | 'webpack' | 'docker' | 'shutdown',
-  handler: WorkerHandler | StoriesHandler | TestHandler | WebpackHandler | DockerHandler | ShutdownHandler,
+  scope: 'worker' | 'stories' | 'test' | 'shutdown',
+  handler: WorkerHandler | StoriesHandler | TestHandler | ShutdownHandler,
 ): () => void;
 
 export function subscribeOnWorker(
   worker: Worker,
-  scope: 'worker' | 'stories' | 'test' | 'webpack' | 'docker' | 'shutdown',
-  handler: WorkerHandler | StoriesHandler | TestHandler | WebpackHandler | DockerHandler | ShutdownHandler,
+  scope: 'worker' | 'stories' | 'test' | 'shutdown',
+  handler: WorkerHandler | StoriesHandler | TestHandler | ShutdownHandler,
 ): () => void {
   const workerHandlers = workers.get(worker) ?? createHandlers();
   if (!workers.has(worker)) {
@@ -212,18 +170,6 @@ export function subscribeOnWorker(
         }
         case 'test': {
           workerHandlers.test.forEach((h) => {
-            h(message);
-          });
-          return;
-        }
-        case 'webpack': {
-          workerHandlers.webpack.forEach((h) => {
-            h(message);
-          });
-          return;
-        }
-        case 'docker': {
-          workerHandlers.docker.forEach((h) => {
             h(message);
           });
           return;
@@ -253,16 +199,6 @@ export function subscribeOnWorker(
       const testHandler = handler as TestHandler;
       workerHandlers.test.add(testHandler);
       return () => workerHandlers.test.delete(testHandler);
-    }
-    case 'webpack': {
-      const webpackHandler = handler as WebpackHandler;
-      workerHandlers.webpack.add(webpackHandler);
-      return () => workerHandlers.webpack.delete(webpackHandler);
-    }
-    case 'docker': {
-      const dockerHandler = handler as DockerHandler;
-      workerHandlers.docker.add(dockerHandler);
-      return () => workerHandlers.docker.delete(dockerHandler);
     }
     case 'shutdown': {
       const shutdownHandler = handler as ShutdownHandler;

@@ -1,20 +1,30 @@
-// TODO Update config to 7.x
-export default {
-  stories: ['../stories/**/*.stories.@(md|ts)x'],
+import { join, dirname } from 'path';
+import type { StorybookConfig } from '@storybook/react-vite';
+
+function getAbsolutePath(value: string): string {
+  return dirname(require.resolve(join(value, 'package.json')));
+}
+const config: StorybookConfig = {
+  stories: ['../stories/**/*.mdx', '../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
   addons: [
-    '@storybook/addon-links',
-    '@storybook/addon-essentials',
-    '@storybook/addon-onboarding',
-    '@storybook/addon-interactions',
+    getAbsolutePath('@chromatic-com/storybook'),
+    getAbsolutePath('@storybook/addon-docs'),
     {
       name: './../src/client/addon/preset',
       options: { clientPort: 8000 },
     },
   ],
   framework: {
-    name: '@storybook/react-vite',
+    name: getAbsolutePath('@storybook/react-vite'),
+    options: {},
   },
-  docs: {
-    autodocs: 'tag',
+  async viteFinal(config) {
+    const { mergeConfig } = await import('vite');
+    return mergeConfig(config, {
+      server: {
+        allowedHosts: ['host.docker.internal'],
+      },
+    });
   },
 };
+export default config;

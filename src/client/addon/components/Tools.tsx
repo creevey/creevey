@@ -1,7 +1,8 @@
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { JSX, Fragment, useState, useEffect } from 'react';
 import { stringify } from 'qs';
-import { IconButton, Icons, Separator } from '@storybook/components';
-import { styled } from '@storybook/theming';
+import { IconButton, Separator } from 'storybook/internal/components';
+import { StopIcon, ShareAltIcon, PlayIcon } from '@storybook/icons';
+import { styled } from 'storybook/theming';
 import { ForwardIcon, NextIcon } from './Icons.js';
 import { isDefined, TestData } from '../../../types.js';
 import { getTestPath, useForceUpdate } from '../../shared/helpers.js';
@@ -53,7 +54,6 @@ export const Tools = ({ controller }: ToolsProps): JSX.Element | null => {
     };
     const disabled = isRunning && buttonClicked != null && buttonClicked !== type;
     return (
-      // @ts-expect-error Fixed in https://github.com/storybookjs/storybook/pull/26623
       <Button
         onClick={() => {
           if (isRunning) controller.onStop();
@@ -62,23 +62,23 @@ export const Tools = ({ controller }: ToolsProps): JSX.Element | null => {
         title={disabled ? '' : title}
         disabled={disabled}
       >
-        {buttonClicked === type && isRunning ? <Icons icon={'stop'} /> : icon}
+        {buttonClicked === type && isRunning ? <StopIcon /> : icon}
       </Button>
     );
   }
 
   return (
     <Fragment>
-      {/* @ts-expect-error Fixed in https://github.com/storybookjs/storybook/pull/26623 */}
-      <IconButton
+      <a
         href={`http://localhost:${__CREEVEY_CLIENT_PORT__ ?? __CREEVEY_SERVER_PORT__ ?? 3000}/?${stringify({
           testPath: getTestPath(test),
         })}`}
         target="_blank"
         title="Show in Creevey UI"
+        rel="noopener noreferrer"
       >
-        <Icons icon="sharealt" />
-      </IconButton>
+        <ShareAltIcon />
+      </a>
       <Separator />
       {renderButton('RunAll', 'Run all', controller.onStartAllTests, <ForwardIcon />)}
       {renderButton(
@@ -87,7 +87,7 @@ export const Tools = ({ controller }: ToolsProps): JSX.Element | null => {
         controller.onStartAllStoryTests,
         <NextIcon width={15} height={11} />,
       )}
-      {renderButton('RunTest', 'Run', controller.onStart, <Icons icon="play" />)}
+      {renderButton('RunTest', 'Run', controller.onStart, <PlayIcon />)}
     </Fragment>
   );
 };

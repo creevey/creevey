@@ -1,7 +1,6 @@
-import React from 'react';
-
-import { styled, Theme, withTheme } from '@storybook/theming';
-import { Icons } from '@storybook/components';
+import React, { Component, JSX } from 'react';
+import { styled, Theme, withTheme } from 'storybook/theming';
+import { CircleIcon, CheckIcon } from '@storybook/icons';
 import { transparentize } from 'polished';
 
 const Label = withTheme(
@@ -51,12 +50,12 @@ const Box = withTheme(
   })),
 );
 
-const CircleIcon = styled(Icons)({
+const CircleIconStyled = styled(CircleIcon)({
   margin: '4px',
   verticalAlign: 'baseline',
 });
 
-const CheckIcon = styled(Icons)({
+const CheckIconStyled = styled(CheckIcon)({
   margin: '2px',
   verticalAlign: 'baseline',
 });
@@ -77,7 +76,7 @@ export const CheckboxContainer = styled.span({
   lineHeight: '18px',
 });
 
-export class Checkbox extends React.Component<CheckboxProps, CheckboxState> {
+export class Checkbox extends Component<CheckboxProps, CheckboxState> {
   state: CheckboxState = { indeterminate: false };
 
   handleIndeterminateChange = (value: boolean): void => {
@@ -105,9 +104,9 @@ export class Checkbox extends React.Component<CheckboxProps, CheckboxState> {
         />
         <Box>
           {indeterminate ? (
-            <CircleIcon icon="circle" width="8" height="8" />
+            <CircleIconStyled width="8" height="8" />
           ) : checked ? (
-            <CheckIcon icon="check" width="12" height="12" />
+            <CheckIconStyled width="12" height="12" />
           ) : (
             ' '
           )}

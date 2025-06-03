@@ -1,8 +1,8 @@
-import React from 'react';
-import { ThemeProvider, themes, ensure } from '@storybook/theming';
+import React, { JSX } from 'react';
+import { ThemeProvider, themes, ensure } from 'storybook/theming';
 import { CreeveyContext } from '../src/client/web/CreeveyContext.js';
 import { noop } from '../src/types.js';
-import { DecoratorFunction } from '@storybook/csf';
+import type { DecoratorFunction } from 'storybook/internal/types';
 
 export const decorators: DecoratorFunction[] = [
   (storyFn, context): JSX.Element => (
@@ -11,15 +11,18 @@ export const decorators: DecoratorFunction[] = [
         value={{
           isReport: false,
           isRunning: false,
+          isUpdateMode: false,
           onImageApprove: noop,
           onApproveAll: noop,
           onStart: noop,
           onStop: noop,
           onSuiteOpen: noop,
           onSuiteToggle: noop,
+          sidebarFocusedItem: null,
+          setSidebarFocusedItem: noop,
         }}
       >
-        {storyFn(context)}
+        {storyFn(context) as React.ReactElement}
       </CreeveyContext.Provider>
     </ThemeProvider>
   ),

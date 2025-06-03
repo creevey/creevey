@@ -1,6 +1,6 @@
-import React from 'react';
-import { Meta, StoryObj } from '@storybook/react';
-import { fireEvent, within } from '@storybook/testing-library';
+import React, { JSX } from 'react';
+import { Meta, StoryObj } from '@storybook/react-vite';
+import { fireEvent, within } from 'storybook/test';
 import { ImagesView as ImagesViewBase } from '../src/client/shared/components/ImagesView/index.js';
 import { capture } from '../src/client/addon/index.js';
 
@@ -12,13 +12,12 @@ async function play({ canvasElement }: Parameters<NonNullable<StoryObj<typeof Sw
   await capture({ imageName: 'actual' });
 
   const diffImage = await within(canvasElement).findByAltText('diff');
-  fireEvent.click(diffImage);
+  await fireEvent.click(diffImage);
 
   await capture({ imageName: 'expect' });
 }
 
 const Kind: Meta<typeof SwapView> = {
-  title: 'SwapView',
   component: SwapView,
   parameters: {
     creevey: {

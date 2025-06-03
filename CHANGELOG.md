@@ -1,3 +1,284 @@
+# [0.10.0](https://github.com/wKich/creevey/compare/e60f1f4e48afbf174e8aaff0480ddd74e3b7b9f9...fff6e5825b2488b3fd197f1d71ecf5d339762490) (TBC)
+
+## Creevey Updates: Cool New Stuff, Features, and Fixes!
+
+Hey everyone! We've got some updates for Creevey that we think you'll like. We've been working on making the testing framework better, improving how you work with it, and adding some new ways to connect it with other tools. This includes some big changes to how things work under the hood, new features like Playwright support and better reports, plus a bunch of bug fixes.
+
+---
+
+### What's New & Important:
+
+#### 1. Playwright Integration is Here!
+
+Creevey now works smoothly with Playwright! This gives you another solid option for browser automation, besides Selenium WebDriver. We've tried to make it flexible for different ways you might want to use it.
+
+- **Using Playwright for Browser Automation:** You can set up Playwright right in your `creevey.config.ts`.
+
+  ```typescript
+  // creevey.config.ts
+  import { CreeveyConfig } from 'creevey';
+  import { PlaywrightWebdriver } from 'creevey/playwright';
+
+  const config: CreeveyConfig = {
+    webdriver: PlaywrightWebdriver,
+    // Set `useDocker to false in CI environments to use standalone Playwright browsers
+    useDocker: !Boolean(process.env.CI),
+    browsers: {
+      chrome: {
+        browserName: 'chromium', // For Playwright, usually 'chromium', 'firefox', or 'webkit'
+        playwrightOptions: {
+          headless: false, // Example: show the browser while debugging
+        },
+      },
+      firefox: {
+        browserName: 'firefox',
+      },
+    },
+  };
+
+  export default config;
+  ```
+
+- **Playwright with Selenium Grid (Heads-up: Chrome Only for now):**
+  You can connect Playwright to a Selenium Grid. Just a heads-up, this only works with the Chrome browser because of how Playwright talks to Selenium Grid.
+
+  ```typescript
+  // creevey.config.ts
+  import { CreeveyConfig } from 'creevey';
+  import { PlaywrightWebdriver } from 'creevey/playwright';
+
+  const config: CreeveyConfig = {
+    webdriver: PlaywrightWebdriver,
+    gridUrl: 'http://your-selenium-grid-url:4444/wd/hub', // Your Selenium Grid URL
+    browsers: {
+      chromeOnGrid: {
+        browserName: 'chrome', // Needs to be 'chrome' for Playwright with Selenium Grid
+        seleniumCapabilities: {
+          // Add any Selenium settings your Grid needs here
+        },
+      },
+    },
+  };
+
+  export default config;
+  ```
+
+- **Recording Traces and Video for Easier Debugging:**
+  To help you figure out what's going on in your tests, Creevey can use Playwright's trace and video recording. Just run Creevey in debug mode.
+
+  ```bash
+  creevey --debug
+  ```
+
+  You'll find the traces (`trace.zip`) and videos (`video.webm`) in the `traces` folder inside your report directory, sorted by process ID.
+
+#### 2. Browser Config Changes for Selenium & Playwright (Heads-up: This is a Breaking Change)
+
+We've changed how you set up browsers in `creevey.config.ts`. This helps make it clearer which settings are for Selenium and which are for Playwright.
+
+- **How to Update:**
+
+  - Settings like `browserVersion` and `platformName` (and other custom Selenium settings) now need to go inside a `seleniumCapabilities` object.
+  - Playwright-specific settings should go into a `playwrightOptions` object.
+  - The new `webdriver` field lets you choose your WebDriver implementation. While it defaults to Selenium for now, this may change. We recommend explicitly setting it by importing and using either `SeleniumWebdriver` or `PlaywrightWebdriver`.
+
+  **Example:**
+
+  ```typescript
+  // Before
+  const config: CreeveyConfig = {
+    browsers: {
+      chrome: {
+        browserName: 'chrome',
+        browserVersion: '90.0',
+        platformName: 'linux',
+        customSeleniumOption: 'value',
+      },
+    },
+  };
+
+  // After
+  import { SeleniumWebdriver } from 'creevey/selenium';
+  // or
+  // import { PlaywrightWebdriver } from 'creevey/playwright';
+
+  const config: CreeveyConfig = {
+    webdriver: SeleniumWebdriver, // or PlaywrightWebdriver
+    browsers: {
+      chrome: {
+        browserName: 'chrome',
+        // browserName: 'chromium', // For Playwright
+        seleniumCapabilities: {
+          // Selenium-specific stuff
+          browserVersion: '90.0',
+          platformName: 'linux',
+          customSeleniumOption: 'value',
+        },
+        playwrightOptions: {
+          // Playwright-specific stuff
+          headless: true,
+          // ... other Playwright launch options
+        },
+      },
+    },
+  };
+  ```
+
+#### 3. Mocha is Gone & There's a New Test Context API (Heads-up: This is a Big Breaking Change)
+
+Creevey doesn't use the Mocha testing framework anymore. This makes things simpler internally and means you'll write tests a bit differently using a new `CreeveyTestContext`.
+
+- **How to Update:**
+
+  - Change your tests to use the `context` parameter instead of `this`.
+  - Image matching methods are now called on the `context` object.
+  - The `context.webdriver` property gives you direct access to the configured WebDriver instance (Selenium or Playwright) for advanced browser interactions.
+
+  **Example:**
+
+  ```typescript
+  // Before (Mocha style)
+  it('should match the image', async function () {
+    this.expect(await this.takeScreenshot()).to.matchImage('example');
+  });
+
+  // After (New Creevey context style)
+  it('should match the image', async (context) => {
+    await context.matchImage(await context.takeScreenshot(), 'example');
+  });
+
+  // Example using context.webdriver with Selenium WebDriver API
+  it('should interact with an element using Selenium', async (context) => {
+    const seleniumWebDriver = context.webdriver; // Assuming SeleniumWebdriver is configured
+    const element = await seleniumWebDriver.findElement({ css: '#myElement' });
+    await element.click();
+    // ... more Selenium interactions
+    await context.matchImage(await context.takeScreenshot(), 'selenium-interaction');
+  });
+
+  // Example using context.webdriver with Playwright API
+  it('should interact with an element using Playwright', async (context) => {
+    const playwrightPage = context.webdriver; // Assuming PlaywrightWebdriver is configured
+    await playwrightPage.click('#myElement');
+    // ... more Playwright interactions
+    await context.matchImage(await context.takeScreenshot(), 'playwright-interaction');
+  });
+  ```
+
+#### 4. New: Creevey Playwright Reporter
+
+Now you can add Creevey's visual testing to your existing Playwright test suites with the new `CreeveyPlaywrightReporter`.
+
+- **How to Use It:** Set up the reporter in your `playwright.config.ts` (or `.js`).
+
+  ```typescript
+  // playwright.config.ts
+  import { defineConfig } from '@playwright/test';
+
+  export default defineConfig({
+    reporter: [
+      ['list'], // Or any other standard Playwright reporter
+      [
+        'creevey/playwright-reporter',
+        {
+          // Optional: Creevey reporter specific settings
+          reportDir: './creevey-report', // Where the Creevey HTML report goes
+          screenDir: './creevey-images', // Where your reference (golden) images are stored
+          // You can pass other Creevey config options here too,
+          // like diffOptions, port, etc.
+        },
+      ],
+    ],
+    // ... other Playwright settings like projects, testDir, etc.
+    use: {
+      // Make sure your tests take screenshots that the reporter can find
+      // For example, using Playwright's toHaveScreenshot() or your own way
+    },
+  });
+  ```
+
+  Your Playwright tests would then use familiar methods like `await expect(page).toHaveScreenshot('image-name.png');` or `await page.screenshot({ path: 'path/to/image.png' });`. The Creevey reporter will take care of the visual comparisons and create the report. Check out `docs/playwright-reporter.md` for more details.
+
+#### 5. Approve Tests Right from the Report UI (Update Mode)
+
+We've added an "Update Mode" so you can approve changes to test images directly in the Creevey report UI. No need to run Storybook or open browsers.
+
+- The UI will show you when it's in update mode. You won't be able to run tests from the UI in this mode; it's all about reviewing and approving visual changes. To run Creevey in this UI Update mode, use the `report` command:
+
+  ```bash
+  creevey report
+  ```
+
+- You can specify report directory to use for UI Update mode
+
+#### 6. New JUnit Reporter & Better Reporter Options
+
+- **JUnit Reporter:** You can now get JUnit-compatible XML reports, which is handy for CI/CD setups.
+  - **How to Use It:** Set `reporter: 'junit'` in your `creevey.config.ts`.
+  - You can tell it where to save the file with `reporterOptions: { outputFile: 'path/to/report.xml' }`.
+- **Reporter Setup:** Setting up reporters has moved from command-line options to your `creevey.config.ts` file.
+
+  ```typescript
+  // In creevey.config.ts
+  const config: CreeveyConfig = {
+    reporter: 'junit', // or 'teamcity', 'creevey'
+    reporterOptions: {
+      // custom options for the reporter you chose
+      // For JUnit: { outputFile: 'report.xml' }
+    },
+  };
+  ```
+
+#### 7. Try ODiff for Image Comparison
+
+You can now use the `odiff` library to compare images, as an alternative to `pixelmatch`.
+
+- **How to Use It:** Turn it on with the `--odiff` command-line flag.
+- You can change its settings with `odiffOptions` in your Creevey config (by default, it uses `threshold: 0` and `antialiasing: true`).
+
+#### 8. Easier Storybook Autostart
+
+Starting Storybook with Creevey is now a bit simpler.
+
+- **`--storybook-start` (`-s`) Flag:** This will automatically start your Storybook development server. Creevey will figure out if you're using npm, yarn, or pnpm.
+  - **How to Use It:** `creevey test -s` or `creevey test --storybook-start`
+  - If you want to use a different Storybook port, you can add `--storybook-port`.
+- **Finds Free Ports Automatically:** If the usual Storybook port (6006) is busy, and you're using `-s`, Creevey will automatically find and use a port that's free.
+
+---
+
+### Other Cool Stuff and Fixes:
+
+- **React 18 Update:** Creevey's UI parts and Storybook connection now use React 18. This is mostly an internal thing, but if you have custom React components that talk to Creevey, make sure they're compatible.
+- **Build System Switched from Webpack to Vite:** We've changed the internal build system for client stuff to Vite. This means faster build times and a better development setup (like HMR). This is an internal change and probably won't affect you unless you had custom Webpack settings for Creevey.
+- **Dependency Updates & Dynamic Imports:** We've updated several main dependencies (like `@koa/cors`, `@octokit/core`, `typescript`). Some parts of Creevey now load on demand to make things a bit faster. Functions like `getCreeveyCache()` and `getMatchers()` are now async.
+- **Storybook Upgrades:** Creevey now works well with Storybook 8.x versions (like 8.4.1, 8.6.12). This includes some API changes, like how icons are imported (`@storybook/components` is now `@storybook/icons`) and how manager APIs are imported (`@storybook/api` is now `@storybook/manager-api`).
+- **Under-the-Hood Improvements:**
+  - The internal HTTP server switched from Koa to Hyper-Express for better performance.
+  - How reporters are created and how they handle events is now managed centrally in the main Creevey runner.
+- **Global Environment Variable:** We added a `__CREEVEY_ENV__` global variable. It's `false` in Storybook dev mode and `true` when Creevey is running tests.
+- **`--noDocker` Option:** A command-line flag to turn off Docker, even if `useDocker: true` is in your config. The default way stories are provided has changed to `hybridStoriesProvider`.
+- **Test File Extensions:** Added support for `.mts` and `.cts` test files.
+- **Base64 Image Support:** Image matching functions can now handle base64 encoded image strings.
+- **Video Recording Fix:** Playwright won't fail anymore if `ffmpeg` isn't around for video recording; it will just give a warning and continue without video.
+- **UI/UX:**
+  - Added hotkeys for moving around the report more easily (e.g., Alt+Space to toggle images in SwapView).
+  - Images in report mode load better now.
+  - Screenshots of just the viewport are now the default, instead of full-page screenshots, to keep things consistent.
+- **Fixes:**
+  - Lots of fixes for Docker container stuff, including cleaning them up and registry support.
+  - Better error messages from Selenium and Playwright.
+  - Fixes for reporter problems (TeamCity artifacts, JUnit compatibility).
+  - Fixed how regular expressions were handled between the main process and workers.
+  - Made sure processes shut down properly to avoid orphaned ones.
+  - Fixed some issues with browsers not starting correctly on the first run.
+- **Dependency Management:** We regularly update dependencies, including big ones like ESLint and TypeScript. Moved several Storybook dependencies to `devDependencies`.
+- **Code Quality:** Cleaned up logging, how tests are managed (the `TestsManager` class), and how themes are handled.
+
+---
+
+We hope these updates make using Creevey a better experience for you. As always, check out the documentation for more details, and let us know if you run into any problems. Happy testing!
+
 # [0.9.0-beta.5](https://github.com/wKich/creevey/compare/v0.9.0-beta.4...v0.9.0-beta.5) (2023-04-14)
 
 # [0.9.0-beta.4](https://github.com/wKich/creevey/compare/v0.9.0-beta.3...v0.9.0-beta.4) (2023-03-24)

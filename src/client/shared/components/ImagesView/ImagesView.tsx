@@ -1,5 +1,5 @@
-import React, { FunctionComponent } from 'react';
-import { styled, withTheme } from '@storybook/theming';
+import React, { JSX, FunctionComponent } from 'react';
+import { styled, withTheme } from 'storybook/theming';
 import { SideBySideView } from './SideBySideView.js';
 import { SwapView } from './SwapView.js';
 import { SlideView } from './SlideView.js';
@@ -14,7 +14,7 @@ interface ImagesViewProps {
   mode: ImagesViewMode;
 }
 
-const views: { [mode in ImagesViewMode]: FunctionComponent<ViewProps> } = {
+const views: Record<ImagesViewMode, FunctionComponent<ViewProps>> = {
   'side-by-side': SideBySideView,
   swap: SwapView,
   slide: SlideView,

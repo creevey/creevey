@@ -1,12 +1,12 @@
-import React, { useEffect, useCallback, useContext, useMemo, useRef } from 'react';
+import React, { JSX, useEffect, useCallback, useContext, useMemo, useRef } from 'react';
 import { CreeveyTest } from '../../../../types.js';
 import { TestStatusIcon } from './TestStatusIcon.js';
-import { CreeveyContext } from '../../CreeveyContext.js';
+import { useCreeveyContext } from '../../CreeveyContext.js';
 import { SideBarContext } from './SideBar.js';
-import { KeyboardEventsContext } from '../../KeyboardEventsContext.js';
 import { Button, Container, SuiteContainer, SuiteTitle } from './SuiteLink.js';
 import { Checkbox, CheckboxContainer } from './Checkbox.js';
 import { getTestPath } from '../../../shared/helpers.js';
+import { styled } from 'storybook/theming';
 
 export interface TestLinkProps {
   title: string;
@@ -14,10 +14,13 @@ export interface TestLinkProps {
   test: CreeveyTest;
 }
 
+const TestContainer = styled(SuiteContainer)({
+  gridTemplateColumns: 'min-content auto',
+});
+
 export function TestLink({ title, opened, test }: TestLinkProps): JSX.Element {
-  const { onSuiteToggle } = useContext(CreeveyContext);
+  const { onSuiteToggle, sidebarFocusedItem, setSidebarFocusedItem, isUpdateMode } = useCreeveyContext();
   const { onOpenTest } = useContext(SideBarContext);
-  const { sidebarFocusedItem, setSidebarFocusedItem } = useContext(KeyboardEventsContext);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
 
   const emptyResults = (test.results?.length ?? 0) == 0;
@@ -52,17 +55,19 @@ export function TestLink({ title, opened, test }: TestLinkProps): JSX.Element {
       {/* NOTE Little hack to allow click on checkbox and don't trigger Button click */}
       {/* We can use other approach, but checkbox has vertical-align: top */}
       <CheckboxContainer>
-        <Checkbox
-          checked={test.skip ? false : test.checked}
-          disabled={Boolean(test.skip)}
-          onValueChange={handleCheck}
-        />
+        {!isUpdateMode && (
+          <Checkbox
+            checked={test.skip ? false : test.checked}
+            disabled={Boolean(test.skip)}
+            onValueChange={handleCheck}
+          />
+        )}
       </CheckboxContainer>
       <Button onClick={handleOpen} disabled={emptyResults} ref={buttonRef}>
-        <SuiteContainer padding={(testPath.length + 1) * 8}>
+        <TestContainer padding={(testPath.length + 1) * 8}>
           <TestStatusIcon inverted={opened} status={test.status} skip={test.skip} />
           <SuiteTitle>{title}</SuiteTitle>
-        </SuiteContainer>
+        </TestContainer>
       </Button>
     </Container>
   );

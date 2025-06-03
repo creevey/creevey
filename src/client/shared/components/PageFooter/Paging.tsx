@@ -1,16 +1,14 @@
-import React from 'react';
-import { TabButton } from '@storybook/components';
+import React, { JSX } from 'react';
+import { TabButton } from 'storybook/internal/components';
 
 export interface PagingProps {
-  activePage: number;
+  activePage: string;
   onPageChange: (pageNumber: number) => void;
   pagesCount: number;
 }
 
-export type ItemType = number | '.';
-
 export function Paging(props: PagingProps): JSX.Element {
-  const renderItem = (item: ItemType, index: number): JSX.Element => {
+  const renderItem = (item: string, index: number): JSX.Element => {
     switch (item) {
       case '.': {
         return (
@@ -49,17 +47,19 @@ export function Paging(props: PagingProps): JSX.Element {
     }
   };
 
-  const goToPage = (pageNumber: number): void => {
-    if (1 <= pageNumber && pageNumber !== props.activePage && pageNumber <= props.pagesCount) {
-      props.onPageChange(pageNumber);
+  const goToPage = (pageNumber: string): void => {
+    const newPage = Number(pageNumber);
+    if (1 <= newPage && pageNumber !== props.activePage && newPage <= props.pagesCount) {
+      props.onPageChange(newPage);
     }
   };
 
   return <div>{getItems(props.activePage, props.pagesCount).map(renderItem)}</div>;
 }
 
-function getItems(active: number, total: number): ItemType[] {
-  const result: ItemType[] = [];
+function getItems(activePage: string, total: number): string[] {
+  const active = Number(activePage);
+  const result: string[] = [];
 
   const left = Math.max(Math.min(active - 2, total - 4), 1);
   const right = Math.min(Math.max(5, active + 2), total);
@@ -71,11 +71,11 @@ function getItems(active: number, total: number): ItemType[] {
   const to = hasRightDots ? right : total;
 
   if (hasLeftDots) {
-    result.push(1, '.');
+    result.push('1', '.');
   }
 
   for (let i = from; i <= to; ++i) {
-    result.push(i);
+    result.push(`${i}`);
   }
 
   if (hasRightDots) {
@@ -83,7 +83,7 @@ function getItems(active: number, total: number): ItemType[] {
   }
 
   if (hasRightDots && isFinite(total)) {
-    result.push(total);
+    result.push(`${total}`);
   }
 
   return result;

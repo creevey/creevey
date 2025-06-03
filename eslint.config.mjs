@@ -1,18 +1,24 @@
 import globals from 'globals';
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
-// @ts-expect-error There is no types in this package
 import react from 'eslint-plugin-react';
+import storybook from 'eslint-plugin-storybook';
 import reactHooks from 'eslint-plugin-react-hooks';
 import prettierRecommended from 'eslint-plugin-prettier/recommended';
+import { importX, createNodeResolver } from 'eslint-plugin-import-x';
+import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
 
-// TODO Add import plugin after it migrated to eslint 9.x
 const config = tseslint.config(
-  { ignores: ['dist/*', 'report/*', 'scripts/*'] },
+  { ignores: ['.vscode/*', '.yarn/*', 'dist/*', 'report/*', 'scripts/*', '.pnp.*'] },
   js.configs.recommended,
   prettierRecommended,
-  /* eslint-disable-next-line */
+  importX.flatConfigs.recommended,
+  importX.flatConfigs.typescript,
   react.configs.flat.recommended,
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+  ...storybook.configs['flat/recommended'],
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+  ...storybook.configs['flat/csf-strict'],
   ...tseslint.configs.strictTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
   {
@@ -22,20 +28,20 @@ const config = tseslint.config(
         ...globals.node,
       },
 
-      ecmaVersion: 2021,
+      ecmaVersion: 'latest',
       sourceType: 'module',
 
       parserOptions: {
         projectService: {
-          allowDefaultProject: ['*.{m,}js'],
+          allowDefaultProject: ['*.{m,}js', 'src/server/playwright/index-source.mjs'],
           defaultProject: 'tsconfig.json',
         },
       },
     },
+    files: ['**/*.{ts,tsx,mts,cts,js,jsx,mjs,cjs}'],
     settings: {
-      react: {
-        version: 'detect',
-      },
+      react: { version: 'detect' },
+      'import-x/resolver-next': [createNodeResolver(), createTypeScriptImportResolver()],
     },
     plugins: {
       'react-hooks': reactHooks,
@@ -43,6 +49,7 @@ const config = tseslint.config(
     rules: {
       ...reactHooks.configs.recommended.rules,
       'react/prop-types': 'off',
+      'import-x/no-dynamic-require': 'warn',
       '@typescript-eslint/restrict-template-expressions': [
         'error',
         {

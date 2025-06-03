@@ -1,11 +1,11 @@
-import React from 'react';
-import { Loader } from '@storybook/components';
-import { styled } from '@storybook/theming';
-import { TestData } from '../../../types.js';
+import React, { JSX } from 'react';
+import { Loader } from 'storybook/internal/components';
+import { styled } from 'storybook/theming';
+import { noop, TestData } from '../../../types.js';
 import { ResultsPage } from '../../shared/components/ResultsPage.js';
 import { getTestPath } from '../../shared/helpers.js';
 import TestSelect from './TestSelect.js';
-import { noop } from 'lodash';
+
 interface PanelProps {
   tests: TestData[];
   selectedTestId: string;

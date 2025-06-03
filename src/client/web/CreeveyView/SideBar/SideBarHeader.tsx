@@ -1,6 +1,7 @@
-import React, { useContext, useState } from 'react';
-import { Button as NativeButton, Icons } from '@storybook/components';
-import { styled, withTheme } from '@storybook/theming';
+import React, { JSX, useContext, useState } from 'react';
+import { Button as NativeButton } from 'storybook/internal/components';
+import { StopIcon, PlayIcon } from '@storybook/icons';
+import { styled, withTheme } from 'storybook/theming';
 import { CreeveyContext } from '../../CreeveyContext.js';
 import { TestsStatus, TestsStatusProps } from './TestsStatus.js';
 import { TestStatus } from '../../../../types.js';
@@ -35,6 +36,7 @@ const Container = styled.div({
 const Header = styled.h2({
   fontWeight: 'normal',
   margin: 0,
+  padding: '2px 6px',
 });
 
 const Button = withTheme(
@@ -57,12 +59,23 @@ const Button = withTheme(
   })),
 );
 
+const UpdateModeDescription = withTheme(
+  styled.div(({ theme }) => ({
+    fontSize: '0.8em',
+    marginTop: '4px',
+    padding: '2px 6px',
+    color: theme.color.positive,
+    backgroundColor: `${theme.color.positive}20`,
+  })),
+);
+
 const MarginContainer = styled.div<{ left?: string; right?: string; top?: string; bottom?: string }>(
   ({ left, right, top, bottom }) => ({
     marginLeft: left ?? 0,
     marginRight: right ?? 0,
     marginTop: top ?? 0,
     marginBottom: bottom ?? 0,
+    padding: '2px 6px',
   }),
 );
 
@@ -91,7 +104,7 @@ export function SideBarHeader({
   onFilterChange,
   canStart,
 }: SideBarHeaderProps): JSX.Element {
-  const { isReport, isRunning } = useContext(CreeveyContext);
+  const { isReport, isRunning, isUpdateMode } = useContext(CreeveyContext);
   const [filterInput, setFilterInput] = useState('');
 
   const handleClickByStatus = (status: TestStatus): void => {
@@ -114,23 +127,26 @@ export function SideBarHeader({
       <Container>
         <div>
           <Header>colin.creevey</Header>
+          {isUpdateMode && (
+            <UpdateModeDescription>Review and approve screenshots from previous test runs</UpdateModeDescription>
+          )}
           <TestsStatus {...testsStatus} onClickByStatus={handleClickByStatus} />
         </div>
-        {isReport ? null : (
+        {isReport || isUpdateMode ? null : (
           <MarginContainer top="10px">
             {isRunning ? (
-              <Button outline secondary onClick={onStop}>
-                <Icons icon="stop" />
+              <Button variant="outline" onClick={onStop}>
+                <StopIcon />
               </Button>
             ) : (
-              <Button outline secondary onClick={onStart} disabled={!canStart}>
-                <Icons icon="play" />
+              <Button variant="outline" onClick={onStart} disabled={!canStart}>
+                <PlayIcon />
               </Button>
             )}
           </MarginContainer>
         )}
       </Container>
-      <MarginContainer top="24px" bottom="24px">
+      <MarginContainer top="12px" bottom="12px">
         <Search onChange={handleInputFilterChange} value={filterInput} />
       </MarginContainer>
     </Sticky>

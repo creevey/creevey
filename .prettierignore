@@ -1,3 +1,5 @@
+.yarn
+.vscode
 dist
 report
 examples

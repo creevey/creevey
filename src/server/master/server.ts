@@ -1,124 +1,238 @@
+import fs from 'fs';
 import path from 'path';
-import http from 'http';
-import cluster from 'cluster';
-import Koa from 'koa';
-import cors from '@koa/cors';
-import serve from 'koa-static';
-import mount from 'koa-mount';
-import body from 'koa-bodyparser';
-import WebSocket from 'ws';
-import { fileURLToPath, pathToFileURL } from 'url';
-import { CreeveyApi } from './api.js';
-import { emitStoriesMessage, sendStoriesMessage, subscribeOn, subscribeOnWorker } from '../messages.js';
-import { CaptureOptions, isDefined, noop, StoryInput } from '../../types.js';
+import { IncomingMessage, ServerResponse, createServer } from 'http';
+import { WebSocketServer, WebSocket, RawData } from 'ws';
+import { parse, fileURLToPath, pathToFileURL } from 'url';
+import { shutdownOnException } from '../utils.js';
+import { subscribeOn } from '../messages.js';
+import { noop } from '../../types.js';
 import { logger } from '../logger.js';
-import { deserializeStory } from '../../shared/index.js';
+import { CreeveyApi } from './api.js';
+import { pingHandler, captureHandler, storiesHandler, staticHandler } from './handlers/index.js';
+
+function json<T = unknown>(
+  handler: (data: T) => void,
+  defaultValue: T,
+): (request: IncomingMessage, response: ServerResponse) => void {
+  return (request: IncomingMessage, response: ServerResponse) => {
+    const chunks: Buffer[] = [];
+
+    request.on('data', (chunk: Buffer) => {
+      chunks.push(chunk);
+    });
+
+    request.on('end', () => {
+      try {
+        const body = Buffer.concat(chunks);
+        const value = body.length === 0 ? defaultValue : (JSON.parse(body.toString('utf-8')) as T);
+
+        handler(value);
+        response.end();
+      } catch (error) {
+        logger().error('Failed to parse JSON', error);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        response.statusCode = 500;
+        response.setHeader('Content-Type', 'text/plain');
+        response.end(`Failed to parse JSON: ${errorMessage}`);
+      }
+    });
+
+    request.on('error', (error) => {
+      logger().error('Failed to parse JSON', error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      response.statusCode = 500;
+      response.setHeader('Content-Type', 'text/plain');
+      response.end(`Failed to parse JSON: ${errorMessage}`);
+    });
+  };
+}
+
+function file(handler: (requestedPath: string) => string | undefined) {
+  return (request: IncomingMessage, response: ServerResponse) => {
+    const parsedUrl = parse(request.url ?? '/', true);
+    const requestedPath = decodeURIComponent(parsedUrl.pathname ?? '/');
+
+    try {
+      const filePath = handler(requestedPath);
+      if (filePath) {
+        const stat = fs.statSync(filePath);
+        // Set appropriate MIME type
+        const ext = path.extname(filePath).toLowerCase();
+        const mimeTypes: Record<string, string> = {
+          '.html': 'text/html',
+          '.js': 'application/javascript',
+          '.css': 'text/css',
+          '.json': 'application/json',
+          '.png': 'image/png',
+          '.jpg': 'image/jpeg',
+          '.jpeg': 'image/jpeg',
+          '.gif': 'image/gif',
+          '.svg': 'image/svg+xml',
+          '.ico': 'image/x-icon',
+        };
+
+        const contentType = mimeTypes[ext] || 'application/octet-stream';
+
+        response.statusCode = 200;
+        response.setHeader('Content-Type', contentType);
+        response.setHeader('Content-Length', stat.size);
+
+        // Stream the file
+        const stream = fs.createReadStream(filePath);
+        stream.pipe(response);
+
+        stream.on('error', (error) => {
+          logger().error('Error streaming file', error);
+          if (!response.headersSent) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            response.statusCode = 500;
+            response.setHeader('Content-Type', 'text/plain');
+            response.end(`Internal server error: ${errorMessage}`);
+          }
+        });
+      } else {
+        logger().error('File not found', requestedPath);
+        response.statusCode = 404;
+        response.setHeader('Content-Type', 'text/plain');
+        response.end('File not found');
+      }
+    } catch (error) {
+      logger().error('Failed to serve file', error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      response.statusCode = 500;
+      response.setHeader('Content-Type', 'text/plain');
+      response.end(`Failed to serve file: ${errorMessage}`);
+    }
+  };
+}
 
 const importMetaUrl = pathToFileURL(__filename).href;
 
-export function start(reportDir: string, port: number, ui: boolean, host?: string): (api: CreeveyApi) => void {
+export function start(reportDir: string, port: number, ui = false, host?: string): (api: CreeveyApi) => void {
+  let wss: WebSocketServer | null = null;
+  let creeveyApi: CreeveyApi | null = null;
   let resolveApi: (api: CreeveyApi) => void = noop;
-  let setStoriesCounter = 0;
-  const creeveyApi = new Promise<CreeveyApi>((resolve) => (resolveApi = resolve));
-  const app = new Koa();
-  const server = http.createServer(app.callback());
-  const wss = new WebSocket.Server({ server });
 
-  app.use(cors());
-  app.use(body());
+  const webDir = path.join(path.dirname(fileURLToPath(importMetaUrl)), '../../client/web');
+  const server = createServer();
 
-  app.use(async (ctx, next) => {
-    if (ctx.method == 'GET' && ctx.path == '/ping') {
-      ctx.body = 'pong';
+  const routes = [
+    {
+      path: '/ping',
+      method: 'GET',
+      handler: pingHandler,
+    },
+    {
+      path: '/stories',
+      method: 'POST',
+      handler: json(storiesHandler, { stories: [] }),
+    },
+    {
+      path: '/capture',
+      method: 'POST',
+      handler: json(captureHandler, { workerId: 0, options: undefined }),
+    },
+    {
+      path: '/report/',
+      method: 'GET',
+      handler: file(staticHandler(reportDir, '/report/')),
+    },
+    {
+      path: '/',
+      method: 'GET',
+      handler: file(staticHandler(webDir)),
+    },
+  ];
+
+  const router = (request: IncomingMessage, response: ServerResponse): void => {
+    const parsedUrl = parse(request.url ?? '/', true);
+    const path = parsedUrl.pathname ?? '/';
+    const method = request.method ?? 'GET';
+
+    try {
+      const route = routes.find((route) => path.startsWith(route.path) && route.method === method);
+      if (route) {
+        route.handler(request, response);
+      } else {
+        response.statusCode = 404;
+        response.setHeader('Content-Type', 'text/plain');
+        response.end('Not Found');
+      }
+    } catch (error) {
+      logger().error('Request handling error', error);
+      response.statusCode = 500;
+      response.setHeader('Content-Type', 'text/plain');
+      response.end('Internal Server Error');
+    }
+  };
+
+  server.on('request', (request: IncomingMessage, response: ServerResponse): void => {
+    response.setHeader('Access-Control-Allow-Origin', '*');
+    response.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    response.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+
+    if (request.method === 'OPTIONS') {
+      response.statusCode = 200;
+      response.end();
       return;
     }
-    await next();
+
+    router(request, response);
   });
 
   if (ui) {
-    app.use(async (_, next) => {
-      await creeveyApi;
-      await next();
+    wss = new WebSocketServer({ server });
+    wss.on('connection', (ws: WebSocket) => {
+      ws.on('message', (message: RawData, isBinary: boolean) => {
+        if (creeveyApi) {
+          // NOTE Text messages are passed as Buffer https://github.com/websockets/ws/releases/tag/8.0.0
+          // eslint-disable-next-line @typescript-eslint/no-base-to-string
+          creeveyApi.handleMessage(ws, isBinary ? message : message.toString('utf-8'));
+          return;
+        }
+      });
+
+      ws.on('error', (error) => {
+        logger().error('WebSocket error', error);
+      });
+    });
+
+    wss.on('error', (error) => {
+      logger().error('WebSocket error', error);
     });
   }
 
-  app.use(async (ctx, next) => {
-    if (ctx.method == 'POST' && ctx.path == '/stories') {
-      const { setStoriesCounter: counter, stories } = ctx.request.body as {
-        setStoriesCounter: number;
-        stories: [string, StoryInput[]][];
-      };
-      if (setStoriesCounter >= counter) return;
-
-      const deserializedStories = stories.map<[string, StoryInput[]]>(([file, stories]) => [
-        file,
-        stories.map(deserializeStory),
-      ]);
-
-      setStoriesCounter = counter;
-      emitStoriesMessage({ type: 'update', payload: deserializedStories });
-      Object.values(cluster.workers ?? {})
-        .filter(isDefined)
-        .filter((worker) => worker.isConnected())
-        .forEach((worker) => {
-          sendStoriesMessage(worker, { type: 'update', payload: deserializedStories });
-        });
-      return;
-    }
-    await next();
-  });
-
-  app.use(async (ctx, next) => {
-    if (ctx.method == 'POST' && ctx.path == '/capture') {
-      const { workerId, options } = ctx.request.body as { workerId: number; options?: CaptureOptions };
-      const worker = Object.values(cluster.workers ?? {})
-        .filter(isDefined)
-        .find((worker) => worker.process.pid == workerId);
-      // NOTE: Hypothetical case when someone send to us capture req and we don't have a worker with browser session for it
-      if (!worker) return;
-      await new Promise<void>((resolve) => {
-        const unsubscribe = subscribeOnWorker(worker, 'stories', (message) => {
-          if (message.type != 'capture') return;
-          unsubscribe();
-          resolve();
-        });
-        sendStoriesMessage(worker, { type: 'capture', payload: options });
-      });
-      // TODO Pass screenshot result to show it in inspector
-      ctx.body = 'Ok';
-      return;
-    }
-    await next();
-  });
-
-  app.use(serve(path.join(path.dirname(fileURLToPath(importMetaUrl)), '../../client/web')));
-  app.use(mount('/report', serve(reportDir)));
-
-  wss.on('error', (error) => {
-    logger().error(error);
-  });
-
-  server.listen(port, host);
-
   subscribeOn('shutdown', () => {
-    server.close();
-    wss.close();
-    wss.clients.forEach((ws) => {
-      ws.close();
-    });
-  });
-
-  void creeveyApi.then((api) => {
-    api.subscribe(wss);
-
-    wss.on('connection', (ws) => {
-      ws.on('message', (message: WebSocket.RawData, isBinary: boolean) => {
-        // NOTE Text messages are passed as Buffer https://github.com/websockets/ws/releases/tag/8.0.0
-        // eslint-disable-next-line @typescript-eslint/no-base-to-string
-        api.handleMessage(ws, isBinary ? message : message.toString('utf-8'));
+    if (wss) {
+      wss.clients.forEach((ws) => {
+        ws.close();
       });
-    });
+      wss.close(() => {
+        server.close();
+      });
+    } else {
+      server.close();
+    }
   });
 
+  server
+    .listen(port, host, () => {
+      logger().info(`Server starting on port ${port}`);
+    })
+    .on('error', (error: unknown) => {
+      logger().error('Failed to start server', error);
+      process.exit(1);
+    });
+
+  void new Promise<CreeveyApi>((resolve) => (resolveApi = resolve))
+    .then((api) => {
+      creeveyApi = api;
+      if (wss) {
+        creeveyApi.subscribe(wss);
+      }
+    })
+    .catch(shutdownOnException);
+
+  // Return the function to resolve the API
   return resolveApi;
 }

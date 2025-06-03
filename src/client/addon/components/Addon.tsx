@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Placeholder } from '@storybook/components';
+import React, { JSX, useEffect, useState } from 'react';
+import { Placeholder } from 'storybook/internal/components';
 import { TestData } from '../../../types.js';
 import { Panel } from './Panel.js';
 import { CreeveyController } from '../controller.js';

@@ -1,10 +1,12 @@
-import React, { useEffect } from 'react';
-import { Icons, Tabs } from '@storybook/components';
-import { styled, withTheme, Theme } from '@storybook/theming';
+import React, { JSX, useContext, useEffect } from 'react';
+import { Tabs } from 'storybook/internal/components';
+import { CloseAltIcon } from '@storybook/icons';
+import { styled, withTheme, Theme } from 'storybook/theming';
 import { ImagesViewMode, Images } from '../../../../types.js';
 import { getImageUrl } from '../../helpers.js';
 import { ImagePreview } from './ImagePreview.js';
 import { viewModes } from '../../viewMode.js';
+import { CreeveyContext } from '../../../web/CreeveyContext.js';
 
 interface PageHeaderProps {
   title: string[];
@@ -19,14 +21,14 @@ interface PageHeaderProps {
 }
 
 const Container = styled.div({
-  margin: '24px 44px 0',
+  marginTop: '24px',
 });
 
 const ErrorContainer = withTheme(
   styled.div<{ theme: Theme }>(({ theme }) => ({
     marginTop: '8px',
     padding: '8px',
-    background: theme.background.negative,
+    background: `${theme.background.negative}20`,
     color: theme.color.negative,
     borderRadius: '2px',
     display: 'flex',
@@ -46,8 +48,19 @@ const ErrorContainer = withTheme(
   })),
 );
 
+const UpdateModeBanner = withTheme(
+  styled.div(({ theme }) => ({
+    padding: '8px 32px',
+    backgroundColor: `${theme.color.positive}20`,
+    color: theme.color.positive,
+    fontSize: '12px',
+    textAlign: 'center',
+    fontWeight: 'bold',
+  })),
+);
+
 const H1 = styled.h1({
-  margin: 0,
+  marginLeft: '44px',
   marginBottom: '8px',
 });
 
@@ -75,6 +88,7 @@ export function PageHeader({
   onImageChange,
   onViewModeChange,
 }: PageHeaderProps): JSX.Element | null {
+  const { isReport, isUpdateMode } = useContext(CreeveyContext);
   const imageEntires = Object.entries(images) as [string, Images][];
 
   const handleViewModeChange = (mode: string): void => {
@@ -99,7 +113,7 @@ export function PageHeader({
       <H1>{title.flatMap((token) => [token, <HeaderDivider key={token}>/</HeaderDivider>]).slice(0, -1)}</H1>
       {error && (
         <ErrorContainer>
-          <Icons icon="closeAlt" />
+          <CloseAltIcon />
           <pre>{error}</pre>
         </ErrorContainer>
       )}
@@ -109,7 +123,7 @@ export function PageHeader({
             <ImagePreview
               key={name}
               imageName={name}
-              url={`${getImageUrl(title, name)}/${image.actual}`}
+              url={`${getImageUrl(title, name, isReport)}/${image.actual}`}
               isActive={name === imageName}
               onClick={onImageChange}
               error={imagesWithError.includes(name)}
@@ -117,6 +131,9 @@ export function PageHeader({
           ))}
         </ImagesEntriesContainer>
       ) : null}
+      {isUpdateMode && (
+        <UpdateModeBanner>Update Mode: Review and approve screenshots from previous test runs</UpdateModeBanner>
+      )}
       {showViewModes && (
         <Tabs selected={viewMode} actions={{ onSelect: handleViewModeChange }}>
           {viewModes.map((x) => (

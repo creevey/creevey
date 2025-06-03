@@ -1,23 +1,11 @@
-import type { StoryContextForEnhancers, DecoratorFunction } from '@storybook/csf';
-import type { IKey } from 'selenium-webdriver/lib/input.js';
+import * as v from 'valibot';
 import type { Worker as ClusterWorker } from 'cluster';
-import type { until, WebDriver, WebElementPromise } from 'selenium-webdriver';
-import type Pixelmatch from 'pixelmatch';
-import type { Context } from 'mocha';
 import type { expect } from 'chai';
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export type DiffOptions = typeof Pixelmatch extends (
-  x1: any,
-  x2: any,
-  x3: any,
-  x4: any,
-  x5: any,
-  options?: infer T,
-) => void
-  ? T
-  : never;
-/* eslint-enable @typescript-eslint/no-explicit-any */
+import type EventEmitter from 'events';
+import type { ODiffOptions } from 'odiff-bin';
+import type { LaunchOptions } from 'playwright-core';
+import type { PixelmatchOptions } from 'pixelmatch';
+import type { StoryContextForEnhancers, DecoratorFunction } from 'storybook/internal/types';
 
 export interface SetStoriesData {
   v?: number;
@@ -38,6 +26,18 @@ export interface StoryMeta {
     creevey?: CreeveyStoryParams;
     [name: string]: unknown;
   };
+}
+
+export enum StorybookEvents {
+  SET_STORIES = 'setStories',
+  SET_CURRENT_STORY = 'setCurrentStory',
+  FORCE_REMOUNT = 'forceRemount',
+  STORY_RENDERED = 'storyRendered',
+  STORY_ERRORED = 'storyErrored',
+  STORY_THREW_EXCEPTION = 'storyThrewException',
+  UPDATE_STORY_ARGS = 'updateStoryArgs',
+  SET_GLOBALS = 'setGlobals',
+  UPDATE_GLOBALS = 'updateGlobals',
 }
 
 export interface CreeveyMeta {
@@ -80,29 +80,37 @@ export interface CreeveyStory {
   };
 }
 
-export interface Capabilities {
-  browserName: string;
-  browserVersion?: string;
-  platformName?: string;
-  /**
-   * @deprecated use `browserVersion` instead
-   */
-  version?: string;
-  [prop: string]: unknown;
-}
+// TODO Rework browser config
+/*
+export class ChromeConfig {
+  browserName: 'chrome'
 
-export type BrowserConfig = Capabilities & {
+  constructor({ limit, version, ... })
+}
+*/
+export interface BrowserConfigObject {
+  // TODO Restrict browser names for playwright images
+  browserName: string;
+  // customizeBuilder?: (builder: Builder) => Builder;
   limit?: number;
+  /**
+   * Selenium grid url
+   * @default config.gridUrl
+   */
   gridUrl?: string;
   storybookUrl?: string;
   /**
    * Storybook's globals to set in a specific browser
    * @see https://github.com/storybookjs/storybook/blob/v6.0.0/docs/essentials/toolbars-and-globals.md
    */
+  storybookGlobals?: StorybookGlobals;
+  /**
+   * @deprecated Use `storybookGlobals` instead
+   */
   _storybookGlobals?: StorybookGlobals;
   /**
    * Specify custom docker image. Used only with `useDocker == true`
-   * @default `selenoid/${browserName}:${browserVersion ?? 'latest'}`
+   * @default `selenoid/${browserName}:${browserVersion ?? 'latest'}` or `mcr.microsoft.com/playwright:${playwrightVersion}`
    */
   dockerImage?: string;
   /**
@@ -110,12 +118,52 @@ export type BrowserConfig = Capabilities & {
    * Used only with `useDocker == false`
    */
   webdriverCommand?: string[];
+  // /**
+  //  * Use to start standalone playwright browser
+  //  */
+  // playwrightBrowser?: () => Promise<Browser>;
   viewport?: { width: number; height: number };
-};
+
+  seleniumCapabilities?: {
+    /**
+     * Browser version. Ignored with Playwright webdriver
+     */
+    browserVersion?: string;
+    /**
+     * Operation system name. Ignored with Playwright webdriver
+     */
+    platformName?: string;
+    [name: string]: unknown;
+  };
+
+  playwrightOptions?: Omit<LaunchOptions, 'logger'> & {
+    trace?: {
+      screenshots?: boolean;
+      snapshots?: boolean;
+      sources?: boolean;
+    };
+  };
+}
 
 export type StorybookGlobals = Record<string, unknown>;
 
-export type Browser = boolean | string | BrowserConfig;
+export type BrowserConfig = boolean | string | BrowserConfigObject;
+
+export type CreeveyWebdriverConstructor = new (
+  browser: string,
+  gridUrl: string,
+  config: Config,
+  options: WorkerOptions,
+) => CreeveyWebdriver;
+
+export interface CreeveyWebdriver {
+  getSessionId(): Promise<string>;
+  openBrowser(fresh?: boolean): Promise<CreeveyWebdriver | null>;
+  closeBrowser(): Promise<void>;
+  loadStoriesFromBrowser(): Promise<StoriesRaw>;
+  switchStory(story: StoryInput, context: BaseCreeveyTestContext): Promise<CreeveyTestContext>;
+  afterTest(test: ServerTest): Promise<void>;
+}
 
 export interface HookConfig {
   before?: () => unknown;
@@ -130,6 +178,9 @@ export interface DockerAuth {
   email?: string;
   serveraddress?: string;
 }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type BaseReporter = new (runner: EventEmitter, options: { reportDir: string; reporterOptions: any }) => void;
 
 export interface Config {
   /**
@@ -148,7 +199,7 @@ export interface Config {
   resolveStorybookUrl?: () => Promise<string>;
   /**
    * Command to automatically start Storybook if it is not running.
-   * For example, `npm run storybook`, `yarn run storybook` etc.
+   * For example, `npm run storybook` or `yarn storybook` etc.
    */
   storybookAutorunCmd?: string;
   /**
@@ -162,20 +213,41 @@ export interface Config {
    */
   reportDir: string;
   /**
+   * Specify a custom reporter for test results. Creevey accepts only mocha-like reporters
+   * @optional
+   * @default 'creevey'
+   */
+  reporter: BaseReporter | 'creevey' | 'teamcity' | 'junit';
+  /**
+   * Options which are used by reporter
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  reporterOptions?: Record<string, any>;
+  /**
    * How much test would be retried
    * @default 0
    */
   maxRetries: number;
   /**
-   * Define pixelmatch diff options
-   * @default { threshold: 0, includeAA: true }
+   * How much time should be spent on each test
+   * @default 30000
    */
-  diffOptions: DiffOptions;
+  testTimeout: number;
+  /**
+   * Define pixelmatch diff options
+   * @default { threshold: 0.1, includeAA: false }
+   */
+  diffOptions: PixelmatchOptions;
+  /**
+   * Define odiff diff options
+   * @default { threshold: 0.1, antialiasing: true }
+   */
+  odiffOptions: ODiffOptions;
   /**
    * Browser capabilities
    * @default { chrome: true }
    */
-  browsers: Record<string, Browser>;
+  browsers: Record<string, BrowserConfig>;
   /**
    * Hooks that allow run custom script before and after creevey start
    */
@@ -188,20 +260,17 @@ export interface Config {
   /**
    * Creevey has two built-in stories providers.
    *
-   * `nodejsStoriesProvider` - The first one is used by default except if CSFv3 is enabled in Storybook.
-   * This provider builds and runs storybook in nodejs env, that allows write interaction tests by using Selenium API.
-   * The downside is it depends from project build specific and slightly increases init time.
-   *
-   * `browserStoriesProvider` - The second one is used by default with CSFv3 storybook feature.
-   * It load stories from storybook which is running in browser, like storyshots or loki do it.
+   * `browserStoriesProvider` - Extracts stories directly from the Storybook UI. It loads stories from storybook which is running in browser, like storyshots or loki do it.
    * The downside of this, you can't use interaction tests in Creevey, unless you use CSFv3.
    * Where you can define `play` method for each story
    *
+   * `hybridStoriesProvider` - Combines stories from Storybook with tests from separate files. This is the default provider used in the configuration.
+   *
    * Usage
    * ``` typescript
-   * import { nodejsStoriesProvider as provider } from 'creevey'
-   * // or
    * import { browserStoriesProvider as provider } from 'creevey'
+   * // or
+   * import { hybridStoriesProvider as provider } from 'creevey'
    *
    * // Creevey config
    * module.exports = {
@@ -209,11 +278,11 @@ export interface Config {
    * }
    * ```
    */
-  storiesProvider: StoriesProvider;
+  storiesProvider: StoriesProvider; // TODO Update description
   /**
-   * Define custom babel options for load stories transformation
+   *
    */
-  babelOptions: (options: Record<string, unknown>) => Record<string, unknown>;
+  webdriver: CreeveyWebdriverConstructor; // TODO Update description
   /**
    * Allows you to start selenoid without docker
    * and use standalone browsers
@@ -250,7 +319,6 @@ export interface Config {
   dockerImagePlatform: string;
   testsRegex?: RegExp;
   testsDir?: string;
-  tsConfig?: string;
   /**
    * Telemetry contains information about Creevey and Storybook versions, used Creevey config, browsers and tests meta.
    * It's being sent only for projects from git.skbkontur.ru
@@ -266,34 +334,56 @@ export interface Config {
   host?: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export interface StoriesProvider<T = any> {
-  (config: Config, options: T, storiesListener: (stories: Map<string, StoryInput[]>) => void): Promise<StoriesRaw>;
+export interface StoriesProvider {
+  (
+    config: Config,
+    storiesListener: (stories: Map<string, StoryInput[]>) => void,
+    webdriver?: CreeveyWebdriver,
+  ): Promise<StoriesRaw>;
   providerName?: string;
 }
 
 export type CreeveyConfig = Partial<Config>;
 
-export interface Options {
-  _: string[];
-  config?: string;
-  port: number;
-  ui: boolean;
-  update: boolean | string;
-  debug: boolean;
-  trace: boolean;
-  tests: boolean;
-  browser?: string;
-  reporter?: string;
-  screenDir?: string;
-  reportDir?: string;
-  storybookUrl?: string;
-  storybookAutorunCmd?: string;
-  saveReport: boolean;
-  failFast?: boolean;
-}
+export const OptionsSchema = v.object({
+  ui: v.optional(v.boolean()),
+  storybookStart: v.optional(v.union([v.string(), v.boolean()])),
+  config: v.optional(v.string()),
+  debug: v.optional(v.boolean()),
+  port: v.number(),
+  failFast: v.optional(v.boolean()),
+  reportDir: v.optional(v.string()),
+  screenDir: v.optional(v.string()),
+  storybookUrl: v.optional(v.string()),
+  storybookPort: v.optional(v.number()),
+  reporter: v.optional(v.string()),
+  odiff: v.optional(v.boolean()),
+  trace: v.optional(v.boolean()),
+  docker: v.optional(v.boolean()),
+});
 
-export type WorkerMessage = { type: 'ready'; payload?: never } | { type: 'error'; payload: { error: string } };
+export const WorkerOptionsSchema = v.object({
+  browser: v.string(),
+  storybookUrl: v.string(),
+  gridUrl: v.optional(v.string()),
+  config: v.optional(v.string()),
+  debug: v.optional(v.boolean()),
+  trace: v.optional(v.boolean()),
+  reportDir: v.optional(v.string()),
+  screenDir: v.optional(v.string()),
+  odiff: v.optional(v.boolean()),
+  port: v.number(),
+});
+
+export type Options = v.InferOutput<typeof OptionsSchema>;
+export type WorkerOptions = v.InferOutput<typeof WorkerOptionsSchema>;
+
+export type WorkerError = 'browser' | 'test' | 'unknown';
+
+export type WorkerMessage =
+  | { type: 'ready'; payload?: never }
+  | { type: 'port'; payload: { port: number } }
+  | { type: 'error'; payload: { subtype: WorkerError; error: string } };
 
 export type StoriesMessage =
   | { type: 'get'; payload?: never }
@@ -305,29 +395,17 @@ export type TestMessage =
   | { type: 'start'; payload: { id: string; path: string[]; retries: number } }
   | { type: 'end'; payload: TestResult };
 
-export type WebpackMessage =
-  | { type: 'success'; payload?: never }
-  | { type: 'fail'; payload?: never }
-  | { type: 'rebuild succeeded'; payload?: never }
-  | { type: 'rebuild failed'; payload?: never };
-
-export type DockerMessage = { type: 'start'; payload?: never } | { type: 'success'; payload: { gridUrl: string } };
-
 export type ShutdownMessage = object;
 
 export type ProcessMessage =
   | (WorkerMessage & { scope: 'worker' })
   | (StoriesMessage & { scope: 'stories' })
   | (TestMessage & { scope: 'test' })
-  | (WebpackMessage & { scope: 'webpack' })
-  | (DockerMessage & { scope: 'docker' })
   | (ShutdownMessage & { scope: 'shutdown' });
 
 export type WorkerHandler = (message: WorkerMessage) => void;
 export type StoriesHandler = (message: StoriesMessage) => void;
 export type TestHandler = (message: TestMessage) => void;
-export type WebpackHandler = (message: WebpackMessage) => void;
-export type DockerHandler = (message: DockerMessage) => void;
 export type ShutdownHandler = (message: ShutdownMessage) => void;
 
 export interface Worker extends ClusterWorker {
@@ -346,14 +424,21 @@ export type TestStatus = 'unknown' | 'pending' | 'running' | 'failed' | 'approve
 
 export interface TestResult {
   status: 'failed' | 'success';
+  retries: number;
   // TODO Remove checks `name == browser` in TestResultsView
   // images?: Partial<{ [name: string]: Images }> | Images;
   images?: Partial<Record<string, Images>>;
   error?: string;
+  // Test metadata for reporting
+  duration?: number;
+  attachments?: string[];
+  sessionId?: string;
+  browserName?: string;
+  workerId?: number;
 }
 
-export interface ImagesError extends Error {
-  images: string | Partial<Record<string, string>>;
+export class ImagesError extends Error {
+  images?: string | Partial<Record<string, string>>;
 }
 
 export interface TestMeta {
@@ -372,15 +457,83 @@ export interface TestData extends TestMeta {
   approved?: Partial<Record<string, number>> | null;
 }
 
+export interface BaseCreeveyTestContext {
+  browserName: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  webdriver: any;
+  /**
+   * @deprecated Usually for screenshot testing you don't need other type of assertions except matching images, but if you really need it, please use external `expect` libs
+   */
+  expect: typeof expect;
+  /**
+   * @internal
+   */
+  screenshots: { imageName?: string; screenshot: Buffer }[];
+  matchImage: (image: Buffer | string, imageName?: string) => Promise<void>;
+  matchImages: (images: Record<string, Buffer | string>) => Promise<void>;
+}
+
+export interface CreeveyTestContext extends BaseCreeveyTestContext {
+  takeScreenshot: () => Promise<Buffer>;
+  updateStoryArgs: (updatedArgs: Record<string, unknown>) => Promise<void>;
+  captureElement: string | null;
+}
+
+export enum TEST_EVENTS {
+  RUN_BEGIN = 'start',
+  RUN_END = 'end',
+  SUITE_BEGIN = 'suite',
+  SUITE_END = 'suite end',
+  TEST_BEGIN = 'test',
+  TEST_END = 'test end',
+  TEST_FAIL = 'fail',
+  TEST_PASS = 'pass',
+}
+
 export interface ServerTest extends TestData {
   story: StoryInput;
-  fn: (this: Context) => Promise<void>;
+  fn: CreeveyTestFunction;
+}
+
+export interface FakeSuite {
+  title: string;
+  fullTitle: () => string;
+  titlePath: () => string[];
+  tests: FakeTest[];
+}
+
+// NOTE: Mocha-like test interface, used specifically for reporting
+export interface FakeTest {
+  parent: FakeSuite;
+  title: string;
+  fullTitle: () => string;
+  titlePath: () => string[];
+  currentRetry: () => number | undefined;
+  retires: () => number;
+  slow: () => number;
+  duration?: number;
+  state?: 'failed' | 'passed';
+  // NOTE > duration, > duration / 2, > 0
+  speed?: 'slow' | 'medium' | 'fast';
+  err?: string;
+  // NOTE: image files
+  attachments?: string[];
+
+  // NOTE: Creevey specific fields
+  creevey: {
+    sessionId: string;
+    browserName: string;
+    workerId: number;
+    willRetry: boolean;
+    images: Partial<Record<string, Partial<Images>>>;
+  };
 }
 
 export interface CreeveyStatus {
   isRunning: boolean;
   tests: Partial<Record<string, TestData>>;
   browsers: string[];
+  isUpdateMode: boolean;
 }
 
 export interface CreeveyUpdate {
@@ -399,17 +552,7 @@ export interface SkipOption {
 
 export type SkipOptions = boolean | string | Record<string, SkipOption | SkipOption[]>;
 
-export interface CreeveyTestController {
-  browser: WebDriver;
-  until: typeof until;
-  keys: IKey;
-  expect: typeof expect;
-  takeScreenshot: () => Promise<string>;
-  updateStoryArgs: (updatedArgs: Record<string, unknown>) => Promise<void>;
-  readonly captureElement?: WebElementPromise;
-}
-
-export type CreeveyTestFunction = (this: CreeveyTestController) => Promise<void>;
+export type CreeveyTestFunction = (context: CreeveyTestContext) => Promise<void>;
 
 export interface CaptureOptions {
   imageName?: string;
@@ -492,7 +635,7 @@ export function isFunction(x: unknown): x is (...args: any[]) => any {
 }
 
 export function isImageError(error: unknown): error is ImagesError {
-  return error instanceof Error && 'images' in error;
+  return error instanceof ImagesError && 'images' in error;
 }
 
 export function isProcessMessage(message: unknown): message is ProcessMessage {
@@ -509,12 +652,4 @@ export function isStoriesMessage(message: unknown): message is StoriesMessage {
 
 export function isTestMessage(message: unknown): message is TestMessage {
   return isProcessMessage(message) && message.scope == 'test';
-}
-
-export function isWebpackMessage(message: unknown): message is WebpackMessage {
-  return isProcessMessage(message) && message.scope == 'webpack';
-}
-
-export function isDockerMessage(message: unknown): message is DockerMessage {
-  return isProcessMessage(message) && message.scope == 'docker';
 }
