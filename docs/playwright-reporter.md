@@ -130,6 +130,7 @@ After running your tests, you can run `yarn creevey report` to start the Creevey
 1. The reporter will output the URL where you can view results
 2. Navigate to the provided URL in your browser
 3. Browse test results, view image comparisons, and approve changes
+4. You can re-run playwright tests without restarting Creevey UI. Playwright reporter automatically commit tests updates to Creevey UI
 
 ### Approving Screenshots
 
