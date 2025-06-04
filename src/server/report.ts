@@ -1,9 +1,10 @@
-import { Config } from '../types.js';
+import { Config, ServerTest, TestMessage } from '../types.js';
 import { logger } from './logger.js';
 import { TestsManager } from './master/testsManager.js';
 import { start as startServer } from './master/server.js';
 import { CreeveyApi } from './master/api.js';
 import { shutdownWorkers } from './utils.js';
+import { subscribeOn } from './messages.js';
 
 /**
  * UI Update Mode implementation.
@@ -28,11 +29,16 @@ export function report(config: Config, reportDir: string, port: number): void {
 
   if (Object.keys(testsFromReport).length === 0) {
     logger().warn('No tests found in report. Run tests first to generate report data.');
-    return;
   }
 
   // Set tests in the manager
   testsManager.updateTests(testsFromReport);
+
+  subscribeOn('test', (message: TestMessage) => {
+    if (message.type != 'update' || !message.payload) return;
+    // TODO: fix type for now
+    testsManager.updateTests(message.payload as Partial<Record<string, ServerTest>>);
+  });
 
   // Start API server with UI enabled
   const resolveApi = startServer(reportDir, port, true);

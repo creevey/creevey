@@ -21,7 +21,9 @@ export default async function master(config: Config, gridUrl?: string): Promise<
     },
   );
 
-  testsManager.updateTests(testsManager.loadAndMergeTests(tests));
+  const testsFromReport = testsManager.loadTestsFromReport();
+
+  testsManager.updateTests(testsManager.mergeTests(testsFromReport, tests));
 
   return runner;
 }

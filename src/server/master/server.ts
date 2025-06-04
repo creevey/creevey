@@ -9,6 +9,7 @@ import { noop } from '../../types.js';
 import { logger } from '../logger.js';
 import { CreeveyApi } from './api.js';
 import { pingHandler, captureHandler, storiesHandler, staticHandler } from './handlers/index.js';
+import { testsHandler } from './handlers/tests-handler.js';
 
 function json<T = unknown>(
   handler: (data: T) => void,
@@ -122,6 +123,15 @@ export function start(reportDir: string, port: number, ui = false, host?: string
       method: 'GET',
       handler: pingHandler,
     },
+    ...(ui
+      ? [
+          {
+            path: '/tests',
+            method: 'POST',
+            handler: json(testsHandler, { tests: {} }),
+          },
+        ]
+      : []),
     {
       path: '/stories',
       method: 'POST',

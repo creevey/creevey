@@ -83,7 +83,7 @@ export class TestsManager extends EventEmitter {
   /**
    * Merge tests from report with tests from stories
    */
-  private mergeTests(
+  public mergeTests(
     testsWithReports: CreeveyStatus['tests'],
     testsFromStories: Partial<Record<string, ServerTest>>,
   ): Partial<Record<string, ServerTest>> {
@@ -101,12 +101,6 @@ export class TestsManager extends EventEmitter {
       });
 
     return testsFromStories;
-  }
-
-  public loadAndMergeTests(testsFromStories: Partial<Record<string, ServerTest>>): Partial<Record<string, ServerTest>> {
-    const testsFromReport = this.loadTestsFromReport();
-
-    return this.mergeTests(testsFromReport, testsFromStories);
   }
 
   /**
@@ -131,7 +125,7 @@ export class TestsManager extends EventEmitter {
         }
 
         const { story: _, fn: __, ...restTest } = newTest;
-        tests[id] = { ...restTest, status: 'unknown' };
+        tests[id] = { status: 'unknown', ...restTest };
       } else if (this.tests[id]) {
         const { id: testId, browser, testName, storyPath, storyId } = this.tests[id];
         removedTests.push({ id: testId, browser, testName, storyPath, storyId });

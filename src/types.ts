@@ -393,6 +393,7 @@ export type StoriesMessage =
 
 export type TestMessage =
   | { type: 'start'; payload: { id: string; path: string[]; retries: number } }
+  | { type: 'update'; payload: CreeveyUpdate['tests'] }
   | { type: 'end'; payload: TestResult };
 
 export type ShutdownMessage = object;

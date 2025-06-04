@@ -8,11 +8,10 @@ import {
   type TestResult as CreeveyTestResult,
   isDefined,
   Images,
+  CreeveyUpdate,
 } from '../types.js';
 import { TestsManager } from '../server/master/testsManager.js';
-import { CreeveyApi } from '../server/master/api.js';
 import { copyStatics } from '../server/utils.js';
-import { start } from '../server/master/server.js';
 import assert from 'assert';
 
 /**
@@ -50,19 +49,23 @@ class AsyncQueue {
  */
 class CreeveyPlaywrightReporter implements Reporter {
   private testsManager: TestsManager | null = null;
-  private api: CreeveyApi | null = null;
+  private host: string;
   private port: number;
   private debug: boolean;
   private testIdMap = new Map<string, string>(); // Maps Playwright test IDs to Creevey test IDs
   private asyncQueue = new AsyncQueue();
+  private abortPoll: (() => void) | null = null;
+  private creeveyApiEndpoint: string | null = null;
 
   /**
    * Creates a new instance of the CreeveyPlaywrightReporter
    * @param options Configuration options for the reporter
    */
-  constructor(options?: { port?: number; debug?: boolean }) {
+  constructor(options?: { host?: string; port?: number; debug?: boolean }) {
+    this.host = options?.host ?? 'localhost';
     this.port = options?.port ?? 3000;
     this.debug = options?.debug ?? !!process.env.PWDEBUG;
+    this.pollCreeveyApi();
   }
 
   /**
@@ -82,6 +85,10 @@ class CreeveyPlaywrightReporter implements Reporter {
     // Initialize TestsManager
     this.testsManager = new TestsManager(snapshotDir, outputDir);
 
+    this.testsManager.on('update', (update: CreeveyUpdate) => {
+      this.commitTestResults(update);
+    });
+
     // Use the async queue to handle initialization without returning a promise
     this.asyncQueue.enqueue(async () => {
       assert(this.testsManager, 'TestsManager is not initialized');
@@ -95,15 +102,7 @@ class CreeveyPlaywrightReporter implements Reporter {
         );
       }
 
-      // Start server API
       try {
-        // TODO: Instead of starting server, try to use Creevey API
-        const resolveApi = start(outputDir, this.port, true);
-
-        // Create and connect the API
-        this.api = new CreeveyApi(this.testsManager);
-        resolveApi(this.api);
-
         const testsList = suite
           .allTests()
           .map((test) => {
@@ -122,8 +121,6 @@ class CreeveyPlaywrightReporter implements Reporter {
         }
 
         this.testsManager.updateTests(tests);
-
-        console.log(`Creevey report server started at http://localhost:${this.port}`);
       } catch (error) {
         this.logError(`Could not start Creevey server: ${error instanceof Error ? error.message : String(error)}`);
         console.log('Screenshots will still be captured but UI will not be available');
@@ -225,6 +222,8 @@ class CreeveyPlaywrightReporter implements Reporter {
         // Save test data
         await this.testsManager.saveTestData();
 
+        this.abortPoll?.();
+
         this.logDebug(`Test run ended with status: ${result.status}`);
         // TODO: Tell how to run reporter `yarn creevey update ./report --ui`
       } catch (error) {
@@ -234,6 +233,60 @@ class CreeveyPlaywrightReporter implements Reporter {
 
     // Wait for all previous operations to complete
     await this.asyncQueue.waitForCompletion();
+  }
+
+  private pollCreeveyApi(): void {
+    const { host, port } = this;
+
+    const setAbort = (fn: () => void) => {
+      this.abortPoll = fn;
+    };
+    const setApiEndpoint = (endpoint: string) => {
+      this.creeveyApiEndpoint = endpoint;
+    };
+    const manager = () => this.testsManager;
+    const commit = (update: CreeveyUpdate) => {
+      this.commitTestResults(update);
+    };
+
+    function poll() {
+      void Promise.race([
+        fetch(`http://${host}:${port}/ping`, {
+          method: 'GET',
+        }).then((response) => response.text()),
+        new Promise((_, reject) =>
+          setTimeout(() => {
+            reject(new Error('Creevey API is not available'));
+          }, 1000),
+        ),
+      ])
+        .then((text) => {
+          if (text !== 'pong') throw new Error('Creevey API is not available');
+
+          setApiEndpoint(`http://${host}:${port}`);
+          const testsManager = manager();
+          if (testsManager) {
+            commit({ tests: testsManager.getTestsData() });
+          }
+        })
+        .catch(() => {
+          const timeout = setTimeout(poll, 1000);
+          setAbort(() => {
+            clearTimeout(timeout);
+          });
+        });
+    }
+
+    poll();
+  }
+
+  private commitTestResults(update: CreeveyUpdate): void {
+    if (!this.creeveyApiEndpoint) return;
+
+    void fetch(`${this.creeveyApiEndpoint}/tests`, {
+      method: 'POST',
+      body: JSON.stringify(update),
+    });
   }
 
   /**
