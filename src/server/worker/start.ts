@@ -79,7 +79,7 @@ async function runHandler(browserName: string, result: Omit<TestResult, 'status'
       hasTimeout(errorMessage) ||
       hasDisconnected(errorMessage) ||
       (images != null && Object.values(images).some((image) => hasTimeout(image?.error)));
-    
+
     if (isUnexpectedError) {
       await masterRPC.onWorkerError({ subtype: 'unknown', error: errorMessage });
     } else {
@@ -97,14 +97,14 @@ async function runHandler(browserName: string, result: Omit<TestResult, 'status'
 }
 
 async function setupWebdriver(webdriver: CreeveyWebdriver): Promise<[string, CreeveyWebdriver] | undefined> {
-  if (!masterRPC) return;
-
   if ((await webdriver.openBrowser(true)) == null) {
     logger().error('Failed to start browser');
-    await masterRPC.onWorkerError({
-      subtype: 'browser',
-      error: 'Failed to start browser',
-    });
+    if (masterRPC) {
+      await masterRPC.onWorkerError({
+        subtype: 'browser',
+        error: 'Failed to start browser',
+      });
+    }
     return;
   }
 
@@ -132,10 +132,6 @@ const workerFunctions: WorkerRPC = {
   async startTest(test: { id: string; path: string[]; retries: number }): Promise<void> {
     if (!globalTests || !globalWebdriver || !globalConfig || !globalImagesContext || !masterRPC) {
       logger().error('Worker not properly initialized');
-      await masterRPC?.onWorkerError({
-        subtype: 'test',
-        error: 'Worker not properly initialized',
-      });
       return;
     }
 
@@ -183,14 +179,15 @@ const workerFunctions: WorkerRPC = {
       let timeout;
       let isRejected = false;
       const start = Date.now();
+      const testTimeout = globalConfig.testTimeout;
       try {
         await Promise.race([
           new Promise(
             (_, reject) =>
               (timeout = setTimeout(() => {
                 isRejected = true;
-                reject(new Error(`Timeout of ${globalConfig.testTimeout}ms exceeded`));
-              }, globalConfig.testTimeout)),
+                reject(new Error(`Timeout of ${testTimeout}ms exceeded`));
+              }, testTimeout)),
           ),
           (async () => {
             if (!globalWebdriver) throw new Error('Webdriver not initialized');
@@ -206,7 +203,6 @@ const workerFunctions: WorkerRPC = {
 
       await globalWebdriver.afterTest(serverTest);
 
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (isRejected) {
         await masterRPC.onWorkerError({
           subtype: 'unknown',
@@ -265,46 +261,44 @@ const workerFunctions: WorkerRPC = {
 export async function start(browser: string, gridUrl: string, config: Config, options: WorkerOptions): Promise<void> {
   globalBrowser = browser;
   globalConfig = config;
-  
+
   globalImagesContext = {
     attachments: [],
     testFullPath: [],
     images: {},
   };
-  
+
   const Webdriver = config.webdriver;
   const webdriverResult = await setupWebdriver(new Webdriver(browser, gridUrl, config, options));
-  
+
   if (!webdriverResult) return;
-  
-  const [sessionId, webdriver] = webdriverResult;
+
+  const [_sessionId, webdriver] = webdriverResult;
   globalWebdriver = webdriver;
 
   const { matchImage, matchImages } = options.odiff
     ? await getOdiffMatchers(globalImagesContext, config)
     : await getMatchers(globalImagesContext, config);
-  
+
   globalMatchImage = matchImage;
   globalMatchImages = matchImages;
   chai.use(chaiImage(matchImage, matchImages));
+
+  // Create RPC connection to master first
+  masterRPC = createMasterRPC(workerFunctions);
 
   try {
     globalTests = await getTestsFromStories(config, browser, webdriver);
   } catch (error) {
     logger().error('Failed to get tests from stories:', error);
-    if (masterRPC) {
-      await masterRPC.onWorkerError({
-        subtype: 'browser',
-        error: serializeError(error),
-      });
-    }
+    await masterRPC.onWorkerError({
+      subtype: 'browser',
+      error: serializeError(error),
+    });
     return;
   }
 
   if (!globalTests) return;
-
-  // Create RPC connection to master
-  masterRPC = createMasterRPC(workerFunctions);
 
   logger().info('Browser is ready');
 

@@ -13,6 +13,7 @@ interface WorkerTest {
 
 interface WorkerWithRPC extends Worker {
   rpc?: ReturnType<typeof createWorkerRPC>;
+  currentTest?: WorkerTest;
 }
 
 export default class Pool extends EventEmitter {
@@ -113,11 +114,8 @@ export default class Pool extends EventEmitter {
     return workerWithRPC;
   }
 
-  private getCurrentTestForWorker(_worker: WorkerWithRPC): WorkerTest | null {
-    // In the current implementation, we need to track which test each worker is running
-    // This is a simplified approach - in a more robust implementation, we'd maintain
-    // a map of worker -> current test
-    return null; // Placeholder - will be improved in the next iteration
+  private getCurrentTestForWorker(worker: WorkerWithRPC): WorkerTest | null {
+    return worker.currentTest ?? null;
   }
 
   start(tests: { id: string; path: string[] }[]): boolean {
@@ -152,6 +150,7 @@ export default class Pool extends EventEmitter {
     if (!worker || !test || !worker.rpc) return;
 
     worker.isRunning = true;
+    worker.currentTest = test; // Track which test this worker is running
 
     const { id } = test;
 
@@ -225,6 +224,7 @@ export default class Pool extends EventEmitter {
     this.sendStatus({ id: test.id, status: shouldRetry ? 'retrying' : result.status, result });
 
     worker.isRunning = false;
+    worker.currentTest = undefined; // Clear the current test when done
 
     setImmediate(() => {
       void this.process();

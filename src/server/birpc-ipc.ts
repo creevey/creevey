@@ -48,24 +48,30 @@ export interface MasterRPC {
  * Creates a birpc instance for master to communicate with worker processes
  */
 export function createWorkerRPC(worker: Worker, masterFunctions: Partial<MasterRPC>) {
-  return createBirpc<WorkerRPC>(masterFunctions, {
-    post: (data) => worker.send(data),
-    on: (fn) => worker.on('message', fn),
-    serialize: JSON.stringify,
-    deserialize: JSON.parse,
-  });
+  return createBirpc<WorkerRPC>(
+    masterFunctions as any, // Type assertion to bypass birpc type issues
+    {
+      post: (data) => worker.send(data),
+      on: (fn) => worker.on('message', fn),
+      serialize: JSON.stringify,
+      deserialize: JSON.parse,
+    }
+  );
 }
 
 /**
  * Creates a birpc instance for worker to communicate with master process
  */
 export function createMasterRPC(workerFunctions: Partial<WorkerRPC>) {
-  return createBirpc<MasterRPC>(workerFunctions, {
-    post: (data) => process.send?.(data),
-    on: (fn) => process.on('message', fn),
-    serialize: JSON.stringify,
-    deserialize: JSON.parse,
-  });
+  return createBirpc<MasterRPC>(
+    workerFunctions as any, // Type assertion to bypass birpc type issues
+    {
+      post: (data) => process.send?.(data),
+      on: (fn) => process.on('message', fn),
+      serialize: JSON.stringify,
+      deserialize: JSON.parse,
+    }
+  );
 }
 
 /**
