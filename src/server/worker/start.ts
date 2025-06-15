@@ -4,19 +4,30 @@ import {
   Config,
   CreeveyWebdriver,
   ServerTest,
-  TestMessage,
   TestResult,
   WorkerOptions,
+  StoryInput,
+  CaptureOptions,
   isDefined,
   isImageError,
 } from '../../types.js';
-import { subscribeOn, emitTestMessage, emitWorkerMessage } from '../messages.js';
+import { createMasterRPC, WorkerRPC } from '../birpc-ipc.js';
 import chaiImage from './chai-image.js';
 import { getMatchers, getOdiffMatchers } from './match-image.js';
 import { loadTestsFromStories } from '../stories.js';
 import { logger } from '../logger.js';
 import { getTestPath } from '../utils.js';
 import { ImageContext } from '../compare.js';
+
+// Global variables to maintain state across RPC calls
+let globalTests: Map<string, ServerTest> | null = null;
+let globalWebdriver: CreeveyWebdriver | null = null;
+let globalBrowser = '';
+let globalConfig: Config | null = null;
+let globalImagesContext: ImageContext | null = null;
+let globalMatchImage: ((image: string | Buffer, imageName?: string) => Promise<void>) | null = null;
+let globalMatchImages: ((images: Record<string, string | Buffer>) => Promise<void>) | null = null;
+let masterRPC: ReturnType<typeof createMasterRPC> | null = null;
 
 async function getTestsFromStories(
   config: Config,
@@ -42,7 +53,9 @@ async function getTestsFromStories(
   return testsById;
 }
 
-function runHandler(browserName: string, result: Omit<TestResult, 'status'>, error?: unknown): void {
+async function runHandler(browserName: string, result: Omit<TestResult, 'status'>, error?: unknown): Promise<void> {
+  if (!masterRPC) return;
+
   // TODO How handle browser corruption?
   const { images } = result;
   if (images != null && isImageError(error)) {
@@ -66,32 +79,31 @@ function runHandler(browserName: string, result: Omit<TestResult, 'status'>, err
       hasTimeout(errorMessage) ||
       hasDisconnected(errorMessage) ||
       (images != null && Object.values(images).some((image) => hasTimeout(image?.error)));
-    if (isUnexpectedError) emitWorkerMessage({ type: 'error', payload: { subtype: 'unknown', error: errorMessage } });
-    else
-      emitTestMessage({
-        type: 'end',
-        payload: {
-          status: 'failed',
-          ...result,
-        },
-      });
-  } else {
-    emitTestMessage({
-      type: 'end',
-      payload: {
-        status: 'success',
+    
+    if (isUnexpectedError) {
+      await masterRPC.onWorkerError({ subtype: 'unknown', error: errorMessage });
+    } else {
+      await masterRPC.onTestEnd({
+        status: 'failed',
         ...result,
-      },
+      });
+    }
+  } else {
+    await masterRPC.onTestEnd({
+      status: 'success',
+      ...result,
     });
   }
 }
 
 async function setupWebdriver(webdriver: CreeveyWebdriver): Promise<[string, CreeveyWebdriver] | undefined> {
+  if (!masterRPC) return;
+
   if ((await webdriver.openBrowser(true)) == null) {
     logger().error('Failed to start browser');
-    emitWorkerMessage({
-      type: 'error',
-      payload: { subtype: 'browser', error: 'Failed to start browser' },
+    await masterRPC.onWorkerError({
+      subtype: 'browser',
+      error: 'Failed to start browser',
     });
     return;
   }
@@ -115,73 +127,59 @@ function hasTimeout(str: string | null | undefined): boolean {
   return str?.toLowerCase().includes('timeout') ?? false;
 }
 
-export async function start(browser: string, gridUrl: string, config: Config, options: WorkerOptions): Promise<void> {
-  const imagesContext: ImageContext = {
-    attachments: [],
-    testFullPath: [],
-    images: {},
-  };
-  const Webdriver = config.webdriver;
-  const [sessionId, webdriver] = (await setupWebdriver(new Webdriver(browser, gridUrl, config, options))) ?? [];
-
-  if (!webdriver || !sessionId) return;
-
-  const { matchImage, matchImages } = options.odiff
-    ? await getOdiffMatchers(imagesContext, config)
-    : await getMatchers(imagesContext, config);
-  chai.use(chaiImage(matchImage, matchImages));
-
-  const tests = await (async () => {
-    try {
-      return await getTestsFromStories(config, browser, webdriver);
-    } catch (error) {
-      logger().error('Failed to get tests from stories:', error);
-      emitWorkerMessage({
-        type: 'error',
-        payload: { subtype: 'browser', error: serializeError(error) },
+// Implement WorkerRPC interface methods
+const workerFunctions: WorkerRPC = {
+  async startTest(test: { id: string; path: string[]; retries: number }): Promise<void> {
+    if (!globalTests || !globalWebdriver || !globalConfig || !globalImagesContext || !masterRPC) {
+      logger().error('Worker not properly initialized');
+      await masterRPC?.onWorkerError({
+        subtype: 'test',
+        error: 'Worker not properly initialized',
       });
-      return null;
+      return;
     }
-  })();
 
-  if (!tests) return;
+    const serverTest = globalTests.get(test.id);
 
-  subscribeOn('test', (message: TestMessage) => {
-    if (message.type != 'start') return;
-
-    const test = tests.get(message.payload.id);
-
-    if (!test) {
-      const error = `Test with id ${message.payload.id} not found`;
+    if (!serverTest) {
+      const error = `Test with id ${test.id} not found`;
       logger().error(error);
-      emitWorkerMessage({
-        type: 'error',
-        payload: { subtype: 'test', error },
+      await masterRPC.onWorkerError({
+        subtype: 'test',
+        error,
+      });
+      return;
+    }
+
+    if (!globalMatchImage || !globalMatchImages) {
+      await masterRPC.onWorkerError({
+        subtype: 'test',
+        error: 'Match functions not initialized',
       });
       return;
     }
 
     const baseContext: BaseCreeveyTestContext = {
-      browserName: browser,
+      browserName: globalBrowser,
       // @ts-expect-error We defined separate d.ts declarations for each webdriver
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      webdriver: webdriver.browser,
+      webdriver: globalWebdriver.browser,
       screenshots: [],
 
-      matchImage: matchImage,
-      matchImages: matchImages,
+      matchImage: globalMatchImage,
+      matchImages: globalMatchImages,
 
       // NOTE: Deprecated
       expect: chai.expect,
     };
 
-    imagesContext.attachments = [];
-    imagesContext.testFullPath = getTestPath(test);
-    imagesContext.images = {};
+    globalImagesContext.attachments = [];
+    globalImagesContext.testFullPath = getTestPath(serverTest);
+    globalImagesContext.images = {};
 
     let error = undefined;
 
-    void (async () => {
+    try {
       let timeout;
       let isRejected = false;
       const start = Date.now();
@@ -191,12 +189,13 @@ export async function start(browser: string, gridUrl: string, config: Config, op
             (_, reject) =>
               (timeout = setTimeout(() => {
                 isRejected = true;
-                reject(new Error(`Timeout of ${config.testTimeout}ms exceeded`));
-              }, config.testTimeout)),
+                reject(new Error(`Timeout of ${globalConfig.testTimeout}ms exceeded`));
+              }, globalConfig.testTimeout)),
           ),
           (async () => {
-            const context = await webdriver.switchStory(test.story, baseContext);
-            await test.fn(context);
+            if (!globalWebdriver) throw new Error('Webdriver not initialized');
+            const context = await globalWebdriver.switchStory(serverTest.story, baseContext);
+            await serverTest.fn(context);
           })(),
         ]);
       } catch (testError) {
@@ -205,37 +204,110 @@ export async function start(browser: string, gridUrl: string, config: Config, op
       const duration = Date.now() - start;
       clearTimeout(timeout);
 
-      await webdriver.afterTest(test);
+      await globalWebdriver.afterTest(serverTest);
 
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (isRejected) {
-        emitWorkerMessage({
-          type: 'error',
-          payload: { subtype: 'unknown', error: serializeError(error) },
+        await masterRPC.onWorkerError({
+          subtype: 'unknown',
+          error: serializeError(error),
         });
       } else {
+        const sessionId = await globalWebdriver.getSessionId();
         const result = {
           sessionId,
           browserName: baseContext.browserName,
           workerId: process.pid,
-          images: imagesContext.images,
+          images: globalImagesContext.images,
           error: error ? serializeError(error) : undefined,
           duration,
-          attachments: imagesContext.attachments,
-          retries: message.payload.retries,
+          attachments: globalImagesContext.attachments,
+          retries: test.retries,
         };
-        runHandler(baseContext.browserName, result, error);
+        await runHandler(baseContext.browserName, result, error);
       }
-    })().catch((error: unknown) => {
-      logger().error('Unexpected error:', error);
-      emitWorkerMessage({
-        type: 'error',
-        payload: { subtype: 'test', error: serializeError(error) },
+    } catch (unexpectedError) {
+      logger().error('Unexpected error:', unexpectedError);
+      await masterRPC.onWorkerError({
+        subtype: 'test',
+        error: serializeError(unexpectedError),
       });
-    });
-  });
+    }
+  },
+
+  updateStories(stories: [string, StoryInput[]][]): Promise<void> {
+    // Handle stories update if needed
+    logger().info('Stories updated:', stories.length);
+    return Promise.resolve();
+  },
+
+  async captureStory(options?: CaptureOptions): Promise<void> {
+    // Handle story capture if needed
+    logger().info('Capture story requested:', options);
+    if (masterRPC) {
+      await masterRPC.onStoriesCapture();
+    }
+  },
+
+  async shutdown(): Promise<void> {
+    logger().info('Worker shutdown requested');
+    if (globalWebdriver) {
+      try {
+        await globalWebdriver.closeBrowser();
+      } catch (error) {
+        logger().error('Error closing browser:', error);
+      }
+    }
+    process.exit(0);
+  },
+};
+
+export async function start(browser: string, gridUrl: string, config: Config, options: WorkerOptions): Promise<void> {
+  globalBrowser = browser;
+  globalConfig = config;
+  
+  globalImagesContext = {
+    attachments: [],
+    testFullPath: [],
+    images: {},
+  };
+  
+  const Webdriver = config.webdriver;
+  const webdriverResult = await setupWebdriver(new Webdriver(browser, gridUrl, config, options));
+  
+  if (!webdriverResult) return;
+  
+  const [sessionId, webdriver] = webdriverResult;
+  globalWebdriver = webdriver;
+
+  const { matchImage, matchImages } = options.odiff
+    ? await getOdiffMatchers(globalImagesContext, config)
+    : await getMatchers(globalImagesContext, config);
+  
+  globalMatchImage = matchImage;
+  globalMatchImages = matchImages;
+  chai.use(chaiImage(matchImage, matchImages));
+
+  try {
+    globalTests = await getTestsFromStories(config, browser, webdriver);
+  } catch (error) {
+    logger().error('Failed to get tests from stories:', error);
+    if (masterRPC) {
+      await masterRPC.onWorkerError({
+        subtype: 'browser',
+        error: serializeError(error),
+      });
+    }
+    return;
+  }
+
+  if (!globalTests) return;
+
+  // Create RPC connection to master
+  masterRPC = createMasterRPC(workerFunctions);
 
   logger().info('Browser is ready');
 
-  emitWorkerMessage({ type: 'ready' });
+  // Notify master that worker is ready
+  await masterRPC.onWorkerReady();
 }

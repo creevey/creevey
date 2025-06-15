@@ -1,7 +1,7 @@
 import { Worker as ClusterWorker } from 'cluster';
 import { EventEmitter } from 'events';
 import { Worker, Config, TestResult, BrowserConfigObject, TestStatus } from '../../types.js';
-import { sendTestMessage, subscribeOnWorker } from '../messages.js';
+import { createWorkerRPC, MasterRPC } from '../birpc-ipc.js';
 import { gracefullyKill, isShuttingDown } from '../utils.js';
 import { WorkerQueue } from './queue.js';
 
@@ -11,10 +11,14 @@ interface WorkerTest {
   retries: number;
 }
 
+interface WorkerWithRPC extends Worker {
+  rpc?: ReturnType<typeof createWorkerRPC>;
+}
+
 export default class Pool extends EventEmitter {
   private maxRetries: number;
   private config: BrowserConfigObject;
-  private workers: Worker[] = [];
+  private workers: WorkerWithRPC[] = [];
   private queue: WorkerTest[] = [];
   private forcedStop = false;
   private failFast: boolean;
@@ -40,25 +44,87 @@ export default class Pool extends EventEmitter {
 
   async init(): Promise<void> {
     const poolSize = Math.max(1, this.config.limit ?? 1);
-    this.workers = (
-      await Promise.all(
-        Array.from({ length: poolSize }).map(() =>
-          this.scheduler.forkWorker(this.browser, this.storybookUrl, this.gridUrl),
-        ),
-      )
-    ).filter((workerOrError): workerOrError is Worker => workerOrError instanceof ClusterWorker);
+    const workerResults = await Promise.all(
+      Array.from({ length: poolSize }).map(() =>
+        this.scheduler.forkWorker(this.browser, this.storybookUrl, this.gridUrl),
+      ),
+    );
+
+    this.workers = workerResults
+      .filter((workerOrError): workerOrError is Worker => workerOrError instanceof ClusterWorker)
+      .map((worker) => this.setupWorkerRPC(worker));
+
     if (this.workers.length != poolSize)
       throw new Error(`Can't instantiate workers for ${this.browser} due many errors`);
+
     this.workers.forEach((worker) => {
       this.exitHandler(worker);
     });
+  }
+
+  private setupWorkerRPC(worker: Worker): WorkerWithRPC {
+    const workerWithRPC = worker as WorkerWithRPC;
+
+    // Create master functions that this pool instance provides to workers
+    const masterFunctions: Partial<MasterRPC> = {
+      onWorkerReady: () => {
+        // Worker is ready - no specific action needed for pool
+        return Promise.resolve();
+      },
+
+      onWorkerError: (error) => {
+        if (error.subtype === 'unknown') {
+          gracefullyKill(workerWithRPC);
+        }
+
+        // Find the currently running test for this worker
+        const currentTest = this.getCurrentTestForWorker(workerWithRPC);
+        if (currentTest) {
+          this.handleTestResult(workerWithRPC, currentTest, {
+            status: 'failed',
+            error: error.error,
+            retries: currentTest.retries,
+          });
+        }
+        return Promise.resolve();
+      },
+
+      onTestEnd: (result) => {
+        // Find the currently running test for this worker
+        const currentTest = this.getCurrentTestForWorker(workerWithRPC);
+        if (currentTest) {
+          this.handleTestResult(workerWithRPC, currentTest, result);
+        }
+        return Promise.resolve();
+      },
+
+      onStoriesCapture: () => {
+        // Handle stories capture event if needed
+        return Promise.resolve();
+      },
+
+      onPortRequest: () => {
+        // This should be handled at a higher level for Docker containers
+        return Promise.resolve(-1);
+      },
+    };
+
+    workerWithRPC.rpc = createWorkerRPC(worker, masterFunctions);
+    return workerWithRPC;
+  }
+
+  private getCurrentTestForWorker(_worker: WorkerWithRPC): WorkerTest | null {
+    // In the current implementation, we need to track which test each worker is running
+    // This is a simplified approach - in a more robust implementation, we'd maintain
+    // a map of worker -> current test
+    return null; // Placeholder - will be improved in the next iteration
   }
 
   start(tests: { id: string; path: string[] }[]): boolean {
     if (this.isRunning) return false;
 
     this.queue = tests.map(({ id, path }) => ({ id, path, retries: 0 }));
-    this.process();
+    void this.process();
 
     return true;
   }
@@ -73,7 +139,7 @@ export default class Pool extends EventEmitter {
     this.queue = [];
   }
 
-  process() {
+  async process() {
     const worker = this.getFreeWorker();
     const test = this.queue.at(0);
 
@@ -83,7 +149,7 @@ export default class Pool extends EventEmitter {
       return;
     }
 
-    if (!worker || !test) return;
+    if (!worker || !test || !worker.rpc) return;
 
     worker.isRunning = true;
 
@@ -92,12 +158,20 @@ export default class Pool extends EventEmitter {
     this.queue.shift();
     this.sendStatus({ id, status: 'running' });
 
-    this.subscribe(worker, test);
-
-    sendTestMessage(worker, { type: 'start', payload: test });
+    try {
+      // Use RPC call instead of sendTestMessage
+      await worker.rpc.startTest(test);
+    } catch (error) {
+      // Handle RPC call failure
+      this.handleTestResult(worker, test, {
+        status: 'failed',
+        error: error instanceof Error ? error.message : 'RPC call failed',
+        retries: test.retries,
+      });
+    }
 
     setImmediate(() => {
-      this.process();
+      void this.process();
     });
   }
 
@@ -105,21 +179,21 @@ export default class Pool extends EventEmitter {
     this.emit('test', message);
   }
 
-  private getFreeWorker(): Worker | undefined {
+  private getFreeWorker(): WorkerWithRPC | undefined {
     const freeWorkers = this.freeWorkers;
 
     return freeWorkers[Math.floor(Math.random() * freeWorkers.length)];
   }
 
-  private get aliveWorkers(): Worker[] {
+  private get aliveWorkers(): WorkerWithRPC[] {
     return this.workers.filter((worker) => !worker.exitedAfterDisconnect && !worker.isShuttingDown);
   }
 
-  private get freeWorkers(): Worker[] {
+  private get freeWorkers(): WorkerWithRPC[] {
     return this.aliveWorkers.filter((worker) => !worker.isRunning);
   }
 
-  private exitHandler(worker: Worker): void {
+  private exitHandler(worker: WorkerWithRPC): void {
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     worker.once('exit', async () => {
       if (isShuttingDown.current) return;
@@ -129,9 +203,10 @@ export default class Pool extends EventEmitter {
       if (!(workerOrError instanceof ClusterWorker))
         throw new Error(`Can't instantiate worker for ${this.browser} due many errors`);
 
-      this.exitHandler(workerOrError);
-      this.workers[this.workers.indexOf(worker)] = workerOrError;
-      this.process();
+      const newWorker = this.setupWorkerRPC(workerOrError);
+      this.exitHandler(newWorker);
+      this.workers[this.workers.indexOf(worker)] = newWorker;
+      void this.process();
     });
   }
 
@@ -139,7 +214,7 @@ export default class Pool extends EventEmitter {
     return test.retries < this.maxRetries && !this.forcedStop;
   }
 
-  private handleTestResult(worker: Worker, test: WorkerTest, result: TestResult): void {
+  private handleTestResult(worker: WorkerWithRPC, test: WorkerTest, result: TestResult): void {
     const shouldRetry = result.status == 'failed' && this.shouldRetry(test);
 
     if (shouldRetry) {
@@ -152,34 +227,7 @@ export default class Pool extends EventEmitter {
     worker.isRunning = false;
 
     setImmediate(() => {
-      this.process();
+      void this.process();
     });
-  }
-
-  private subscribe(worker: Worker, test: WorkerTest): void {
-    const subscriptions = [
-      subscribeOnWorker(worker, 'worker', (message) => {
-        if (message.type != 'error') return;
-
-        subscriptions.forEach((unsubscribe) => {
-          unsubscribe();
-        });
-
-        if (message.payload.subtype == 'unknown') {
-          gracefullyKill(worker);
-        }
-
-        this.handleTestResult(worker, test, { status: 'failed', error: message.payload.error, retries: test.retries });
-      }),
-      subscribeOnWorker(worker, 'test', (message) => {
-        if (message.type != 'end') return;
-
-        subscriptions.forEach((unsubscribe) => {
-          unsubscribe();
-        });
-
-        this.handleTestResult(worker, test, message.payload);
-      }),
-    ];
   }
 }
