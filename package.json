@@ -12,6 +12,10 @@
       "types": "./dist/playwright.d.ts",
       "default": "./dist/playwright.js"
     },
+    "./playwright/test": {
+      "types": "./dist/playwright/generator.d.ts",
+      "default": "./dist/playwright/generator.js"
+    },
     "./playwright/setup": {
       "types": "./dist/playwright/setup.d.ts",
       "default": "./dist/playwright/setup.js"

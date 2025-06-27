@@ -111,7 +111,7 @@ async function waitForStorybook(config: Config, options: Options): Promise<void>
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const { command, args } = resolveCommand(pm, 'run', ['storybook', 'dev'])!;
     const storybookPort = new URL(localUrl).port;
-    const storybookCommand = `${config.storybookAutorunCmd ?? [command, ...args, '--ci'].join(' ')} -p ${storybookPort}`;
+    const storybookCommand = config.storybookAutorunCmd ?? [command, ...args, '--ci', '-p', storybookPort].join(' ');
 
     logger().info(`Start Storybook via \`${storybookCommand}\`, it should be accessible at:`);
     logger().info(`Local - ${localUrl}`);
