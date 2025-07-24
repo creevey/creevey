@@ -131,6 +131,16 @@ export async function readConfig(options: Options | WorkerOptions): Promise<Conf
     }
   }
 
+  if (!path.isAbsolute(userConfig.reportDir)) {
+    userConfig.reportDir = path.resolve(userConfig.reportDir);
+  }
+  if (!path.isAbsolute(userConfig.screenDir)) {
+    userConfig.screenDir = path.resolve(userConfig.screenDir);
+  }
+  if (userConfig.testsDir && !path.isAbsolute(userConfig.testsDir)) {
+    userConfig.testsDir = path.resolve(userConfig.testsDir);
+  }
+
   // NOTE: Hack to pass typescript checking
   const config = userConfig as Config;
 
