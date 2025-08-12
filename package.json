@@ -1,7 +1,7 @@
 {
   "name": "creevey",
   "description": "Cross-browser screenshot testing tool for Storybook with fancy UI Runner",
-  "version": "0.10.4",
+  "version": "0.10.5",
   "type": "commonjs",
   "bin": "dist/cli.js",
   "main": "./dist/index.js",
