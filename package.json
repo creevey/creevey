@@ -28,11 +28,7 @@
       "types": "./dist/selenium.d.ts",
       "default": "./dist/selenium.js"
     },
-    "./manager": "./dist/client/addon/manager.js",
-    "./preview": "./dist/client/addon/preview.js",
     "./preset": "./dist/client/addon/preset.js",
-    "./dist/client/addon/manager.js": "./dist/client/addon/manager.js",
-    "./dist/client/addon/preview.js": "./dist/client/addon/preview.js",
     "./package.json": "./package.json"
   },
   "author": "Dmitriy Lazarev <w@kich.dev>",
