@@ -2417,6 +2417,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"birpc@npm:^2.4.0":
+  version: 2.4.0
+  resolution: "birpc@npm:2.4.0"
+  checksum: 10c0/6ecda217b540189221913f215055baf4f10f264a1a8f0000ef6db3ecb0ccc5e4fde135b5f0719c389f1a593e64af3041404019711225ab31badf23c2a98d7778
+  languageName: node
+  linkType: hard
+
 "bl@npm:^4.0.3":
   version: 4.1.0
   resolution: "bl@npm:4.1.0"
@@ -3046,6 +3053,7 @@ __metadata:
     "@types/ws": "npm:^8.18.1"
     "@typescript-eslint/parser": "npm:^8.33.0"
     "@vitejs/plugin-react-swc": "npm:^3.10.0"
+    birpc: "npm:^2.4.0"
     browserstack-local: "npm:^1.5.6"
     cac: "npm:^6.7.14"
     chai: "npm:^4.5.0"
