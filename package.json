@@ -28,7 +28,14 @@
       "types": "./dist/selenium.d.ts",
       "default": "./dist/selenium.js"
     },
-    "./preset": "./dist/client/addon/preset.js",
+    "./preset": {
+      "import": "./dist/client/addon/preset.mjs",
+      "default": "./dist/client/addon/preset.js"
+    },
+    "./preview": {
+      "import": "./dist/client/addon/preview.mjs",
+      "default": "./dist/client/addon/preview.js"
+    },
     "./package.json": "./package.json"
   },
   "author": "Dmitriy Lazarev <w@kich.dev>",
@@ -73,7 +80,7 @@
     "build": "yarn prebuild && yarn build:client && yarn build:creevey && yarn postbuild",
     "build:client": "vite build",
     "build:creevey": "tsc --build tsconfig.prod.json",
-    "postbuild": "cp \"\"scripts/dist/*.d.ts\"\" dist/ && cp \"\"src/server/playwright/index-source.mjs\"\" dist/server/playwright/index-source.mjs",
+    "postbuild": "node scripts/copy-files.mjs",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
     "build-storybook": "storybook build",
     "chromatic": "chromatic --project-token=chpt_80df83ca94e6fb4",
