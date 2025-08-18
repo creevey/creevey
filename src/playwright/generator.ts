@@ -187,8 +187,7 @@ export function definePlaywrightTests(config?: Partial<TestsConfig>): void {
 
       assert(story, `Story '${storyId}' not found in stories cache`);
 
-      const { title, name, parameters } = story;
-      const { waitForReady: shouldWaitForReady } = (parameters.creevey ?? {}) as CreeveyStoryParams;
+      const { title, name } = story;
 
       const storybookGlobals: unknown = project.metadata.storybookGlobals;
 
@@ -219,9 +218,9 @@ export function definePlaywrightTests(config?: Partial<TestsConfig>): void {
       // 3. Select Story
       const errorMessage = await reusedPage.evaluate<
         string | null,
-        { storyId: string; StorybookEvents: typeof StorybookEvents; shouldWaitForReady?: boolean }
+        { storyId: string; StorybookEvents: typeof StorybookEvents }
       >(
-        async ({ storyId, StorybookEvents, shouldWaitForReady }) => {
+        async ({ storyId, StorybookEvents }) => {
           // TODO: DRY with withCreevey.ts
           // NOTE: Copy-pasted from withCreevey.ts
           const channel = window.__STORYBOOK_ADDONS_CHANNEL__;
@@ -231,10 +230,6 @@ export function definePlaywrightTests(config?: Partial<TestsConfig>): void {
               await fn();
             }
           }
-
-          const waitForReady = shouldWaitForReady
-            ? new Promise<void>((resolve) => (window.__CREEVEY_SET_READY_FOR_CAPTURE__ = resolve))
-            : Promise.resolve();
 
           let rejectCallback: (reason?: unknown) => void;
           const renderErrorPromise = new Promise<void>((_resolve, reject) => (rejectCallback = reject));
@@ -274,7 +269,7 @@ export function definePlaywrightTests(config?: Partial<TestsConfig>): void {
           try {
             await Promise.race([
               renderErrorPromise,
-              sequence([() => storyRenderedPromise, () => document.fonts.ready, () => waitForReady]),
+              sequence([() => storyRenderedPromise, () => document.fonts.ready]),
             ]);
           } catch (reason) {
             // NOTE Event `STORY_THREW_EXCEPTION` triggered only in react and vue frameworks and return Error instance
@@ -293,7 +288,7 @@ export function definePlaywrightTests(config?: Partial<TestsConfig>): void {
 
           return null;
         },
-        { storyId: story.id, StorybookEvents, shouldWaitForReady },
+        { storyId: story.id, StorybookEvents },
       );
 
       if (errorMessage) {

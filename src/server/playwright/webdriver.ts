@@ -99,20 +99,12 @@ export class PlaywrightWebdriver extends CreeveyWebdriverBase {
     return this.#browser.takeScreenshot(captureElement, ignoreElements);
   }
 
-  protected waitForComplete(callback: (isCompleted: boolean) => void): void {
+  protected async selectStory(id: string): Promise<void> {
     if (!this.#browser) {
       throw new Error('Browser is not initialized');
     }
 
-    this.#browser.waitForComplete(callback);
-  }
-
-  protected async selectStory(id: string, waitForReady?: boolean): Promise<boolean> {
-    if (!this.#browser) {
-      throw new Error('Browser is not initialized');
-    }
-
-    return this.#browser.selectStory(id, waitForReady);
+    return this.#browser.selectStory(id);
   }
 
   protected async updateStoryArgs(story: StoryInput, updatedArgs: Args): Promise<void> {

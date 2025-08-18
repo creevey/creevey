@@ -1,9 +1,8 @@
-import React, { JSX, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { JSX, useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { Loader } from 'storybook/internal/components';
 import { styled, withTheme } from 'storybook/theming';
 import { getBorderColor, themeBorderColors, ViewPropsWithTheme } from './common.js';
 import { useApplyScale, useCalcScale, useLoadImages } from '../../helpers.js';
-import { readyForCapture } from '../../../addon/readyForCapture.js';
 
 const Container = styled.div({
   position: 'relative',
@@ -109,10 +108,6 @@ export const SlideView = withTheme(({ actual, diff, expect, theme }: ViewPropsWi
       expectedImageContainerRef.current.style.right = '100%';
       expectedImageWrapperRef.current.style.left = '100%';
     }
-  }, [loaded]);
-
-  useEffect(() => {
-    if (loaded) readyForCapture();
   }, [loaded]);
 
   return loaded ? (

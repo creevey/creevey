@@ -28,6 +28,7 @@ It named after [Colin Creevey](https://harrypotter.fandom.com/wiki/Colin_Creevey
 - [Comparison with other tools](#comparison-with-other-tools)
 - [Config](docs/config.md)
 - [CLI commands](docs/cli.md)
+- [Playwright reporter](docs/playwright-reporter.md)
 - [Storybook parameters](docs/storybook.md)
 - [Write interactive tests](docs/tests.md)
 - [Use your Selenium Grid (LambdaTest/BrowserStack/SauceLabs/etc)](docs/grid.md)
@@ -49,22 +50,7 @@ It named after [Colin Creevey](https://harrypotter.fandom.com/wiki/Colin_Creevey
 yarn add -D creevey
 ```
 
-- Add addon `creevey` into your storybook config
-
-```js
-// .storybook/main.ts
-const config: StorybookConfig = {
-  stories: [ /* ... */ ],
-  addons: [
-    /* ... */
-    'creevey',
-  ],
-};
-
-export default config;
-```
-
-- Start Creevey UI Runner, which starts Storybook automatically. (To start tests from CLI, run Creevey without `--ui` flag)
+- Start Creevey Web UI Runner. With `-s` flag Creevey will start Storybook automatically. (To run headless from CLI, omit the `--ui` flag)
 
 ```bash
 yarn creevey test -s --ui
@@ -74,7 +60,7 @@ yarn creevey test -s --ui
 
 **NOTE:** In first run you may noticed, that all your tests are failing, it because you don't have source screenshot images yet. If you think, that all images are acceptable, you can approve them all from UI.
 
-**NOTE:** Creevey captures screenshot of the `#storybook-root` element and sometimes you need to capture a whole browser viewport. To achieve this you could define `captureElement` Creevey parameter for story or kind. Or you may pass any different css selector.
+**NOTE:** Creevey captures screenshot of the `#storybook-root` element and sometimes you need to capture a whole browser viewport. To achieve this you could define `captureElement` Creevey parameter for story or kind. Or you may pass any different css selector. No Storybook addon is required — Creevey reads parameters directly from your stories/config.
 
 ```tsx
 // stories/MyModal.stories.tsx
@@ -88,17 +74,17 @@ export const MyModalStory = { creevey: { captureElement: null } };
 
 ## Comparison with other tools
 
-| Features\Tools              | Creevey            | Loki               | Storyshots         | Hermione           | BackstopJS         | Percy/Happo        | Chromatic          |
-| --------------------------- | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ |
-| Easy-to-Setup               | :heavy_check_mark: | :heavy_check_mark: | :warning:          | :no_entry:         | :no_entry:         | :heavy_check_mark: | :heavy_check_mark: |
-| Storybook Support           | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :no_entry:         | :no_entry:         | :heavy_check_mark: | :heavy_check_mark: |
-| Run tests from Storybook UI | :heavy_check_mark: | :no_entry:         | :no_entry:         | :no_entry:         | :no_entry:         | :no_entry:         | :no_entry:         |
-| Cross-browser               | :heavy_check_mark: | :warning:          | :no_entry:         | :heavy_check_mark: | :no_entry:         | :heavy_check_mark: | :heavy_check_mark: |
-| Test Interaction            | :heavy_check_mark: | :no_entry:         | :warning:          | :heavy_check_mark: | :heavy_check_mark: | :no_entry:         | :no_entry:         |
-| UI Test Runner              | :heavy_check_mark: | :no_entry:         | :no_entry:         | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
-| Built-in Docker             | :heavy_check_mark: | :heavy_check_mark: | :no_entry:         | :no_entry:         | :heavy_check_mark: | :warning:          | :warning:          |
-| Tests hot-reload            | :heavy_check_mark: | :no_entry:         | :no_entry:         | :no_entry:         | :no_entry:         | :no_entry:         | :no_entry:         |
-| OSS/SaaS                    | OSS                | OSS                | OSS                | OSS                | OSS                | SaaS               | SaaS               |
+| Features\Tools        | Creevey            | Loki               | Storyshots         | Hermione           | BackstopJS         | Percy/Happo        | Chromatic          |
+| --------------------- | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ |
+| Easy-to-Setup         | :heavy_check_mark: | :heavy_check_mark: | :warning:          | :no_entry:         | :no_entry:         | :heavy_check_mark: | :heavy_check_mark: |
+| Storybook Support     | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :no_entry:         | :no_entry:         | :heavy_check_mark: | :heavy_check_mark: |
+| Run tests from Web UI | :heavy_check_mark: | :no_entry:         | :no_entry:         | :no_entry:         | :no_entry:         | :no_entry:         | :no_entry:         |
+| Cross-browser         | :heavy_check_mark: | :warning:          | :no_entry:         | :heavy_check_mark: | :no_entry:         | :heavy_check_mark: | :heavy_check_mark: |
+| Test Interaction      | :heavy_check_mark: | :no_entry:         | :warning:          | :heavy_check_mark: | :heavy_check_mark: | :no_entry:         | :no_entry:         |
+| UI Test Runner        | :heavy_check_mark: | :no_entry:         | :no_entry:         | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| Built-in Docker       | :heavy_check_mark: | :heavy_check_mark: | :no_entry:         | :no_entry:         | :heavy_check_mark: | :warning:          | :warning:          |
+| Tests hot-reload      | :heavy_check_mark: | :no_entry:         | :no_entry:         | :no_entry:         | :no_entry:         | :no_entry:         | :no_entry:         |
+| OSS/SaaS              | OSS                | OSS                | OSS                | OSS                | OSS                | SaaS               | SaaS               |
 
 ## Future plans
 

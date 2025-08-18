@@ -28,14 +28,6 @@
       "types": "./dist/selenium.d.ts",
       "default": "./dist/selenium.js"
     },
-    "./preset": {
-      "import": "./dist/client/addon/preset.mjs",
-      "default": "./dist/client/addon/preset.js"
-    },
-    "./preview": {
-      "import": "./dist/client/addon/preview.mjs",
-      "default": "./dist/client/addon/preview.js"
-    },
     "./package.json": "./package.json"
   },
   "author": "Dmitriy Lazarev <w@kich.dev>",

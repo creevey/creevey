@@ -2,7 +2,6 @@ import React, { JSX } from 'react';
 import { Meta, StoryObj } from '@storybook/react-vite';
 import { fireEvent, within } from 'storybook/test';
 import { ImagesView as ImagesViewBase } from '../src/client/shared/components/ImagesView/index.js';
-import { capture } from '../src/client/addon/index.js';
 
 const SlideView = (image: { expect: string; diff: string; actual: string }): JSX.Element => (
   <ImagesViewBase image={image} url="https://images.placeholders.dev" canApprove mode={'slide'} />
@@ -11,12 +10,8 @@ const SlideView = (image: { expect: string; diff: string; actual: string }): JSX
 async function play({
   canvasElement,
 }: Parameters<NonNullable<StoryObj<typeof SlideView>['play']>>['0']): Promise<void> {
-  await capture({ imageName: 'idle' });
-
   const slider = await within(canvasElement).findByTestId('slider');
   await fireEvent.change(slider, { target: { value: 50 } });
-
-  await capture({ imageName: 'click' });
 }
 
 const Kind: Meta<typeof SlideView> = {

@@ -33,6 +33,7 @@ import {
   resolveStorybookUrl,
   storybookRootID,
 } from '../webdriver.js';
+import { getStories, insertIgnoreStyles, removeIgnoreStyles, selectStory } from '../storybook-helpers.js';
 
 interface ElementRect {
   top: number;
@@ -309,45 +310,16 @@ export class InternalBrowser {
     return typeof screenshot === 'string' ? Buffer.from(screenshot, 'base64') : screenshot;
   }
 
-  waitForComplete(callback: (isCompleted: boolean) => void): void {
-    void this.#browser
-      .executeAsyncScript<boolean>(function (callback: (isCompleted: boolean) => void) {
-        void window.__CREEVEY_HAS_PLAY_COMPLETED_YET__().then(callback);
-      })
-      .then(callback);
-  }
-
-  async selectStory(id: string, waitForReady = false): Promise<boolean> {
+  async selectStory(id: string): Promise<void> {
     // NOTE: Global variables might be reset after hot reload. I think it's workaround, maybe we need better solution
     await this.updateStorybookGlobals();
-    await this.updateBrowserGlobalVariables();
     await this.resetMousePosition();
 
     logger().debug(`Triggering 'SetCurrentStory' event with storyId ${chalk.magenta(id)}`);
 
-    const result = await this.#browser.executeAsyncScript<[error?: string | null, isCaptureCalled?: boolean] | null>(
-      function (
-        storyId: string,
-        shouldWaitForReady: boolean,
-        callback: (response: [error?: string | null, isCaptureCalled?: boolean]) => void,
-      ) {
-        if (typeof window.__CREEVEY_SELECT_STORY__ == 'undefined') {
-          callback([
-            "Creevey can't switch story. This may happened if forget to add `creevey` addon to your storybook config, or storybook not loaded in browser due syntax error.",
-          ]);
-          return;
-        }
-        void window.__CREEVEY_SELECT_STORY__(storyId, shouldWaitForReady).then(callback);
-      },
-      id,
-      waitForReady,
-    );
-
-    const [errorMessage, isCaptureCalled = false] = result ?? [];
+    const errorMessage = await this.#browser.executeAsyncScript<string | null>(selectStory, id);
 
     if (errorMessage) throw new Error(errorMessage);
-
-    return isCaptureCalled;
   }
 
   async updateStoryArgs(story: StoryInput, updatedArgs: Args): Promise<void> {
@@ -373,35 +345,7 @@ export class InternalBrowser {
   }
 
   async loadStoriesFromBrowser(): Promise<StoriesRaw> {
-    const result = await this.#browser.executeAsyncScript<
-      [error?: { message: string; stack?: string } | null, stories?: StoriesRaw]
-    >(function (
-      callback: (response: [error?: { message: string; stack?: string } | null, stories?: StoriesRaw]) => void,
-    ) {
-      window
-        .__CREEVEY_GET_STORIES__()
-        .then((stories) => {
-          callback([null, stories]);
-        })
-        .catch((error: unknown) => {
-          const errorInfo = {
-            message: error instanceof Error ? error.message : String(error),
-            stack: error instanceof Error ? error.stack : undefined,
-          };
-          callback([errorInfo]);
-        });
-    });
-
-    const [error, stories] = result;
-
-    if (error) {
-      const errorObj = new Error(error.message);
-      if (error.stack) errorObj.stack = error.stack;
-      throw errorObj;
-    }
-    if (!stories) throw new Error("Can't get stories, it seems creevey or storybook API isn't available");
-
-    return stories;
+    return await this.#browser.executeAsyncScript(getStories);
   }
 
   async afterTest(test: ServerTest): Promise<void> {
@@ -510,7 +454,6 @@ export class InternalBrowser {
         () => this.waitForStorybook(),
         () => this.updateStorybookGlobals(),
         () => this.resolveCreeveyHost(creeveyHost),
-        () => this.updateBrowserGlobalVariables(),
         // NOTE: Selenium draws automation toolbar with some delay after webdriver initialization
         // NOTE: So if we resize window right after getting webdriver instance we might get situation
         // NOTE: When the toolbar appears after resize and final viewport size become smaller than we set
@@ -640,20 +583,6 @@ export class InternalBrowser {
     if (this.#serverHost == null) throw new Error("Can't reach creevey server from a browser");
   }
 
-  private async updateBrowserGlobalVariables() {
-    await this.#browser.executeScript(
-      function (workerId: number, creeveyHost: string, creeveyPort: number) {
-        window.__CREEVEY_ENV__ = true;
-        window.__CREEVEY_WORKER_ID__ = workerId;
-        window.__CREEVEY_SERVER_HOST__ = creeveyHost;
-        window.__CREEVEY_SERVER_PORT__ = creeveyPort;
-      },
-      process.pid,
-      this.#serverHost,
-      this.#serverPort,
-    );
-  }
-
   private async resizeViewport(viewport?: { width: number; height: number }): Promise<void> {
     if (!viewport) return;
 
@@ -725,9 +654,7 @@ export class InternalBrowser {
 
     logger().debug('Hiding ignored elements before capturing');
 
-    return await this.#browser.executeScript(function (ignoreSelectors: string[]) {
-      return window.__CREEVEY_INSERT_IGNORE_STYLES__(ignoreSelectors);
-    }, ignoreSelectors);
+    return await this.#browser.executeScript(insertIgnoreStyles, ignoreSelectors);
   }
 
   private async takeCompositeScreenshot(windowRect: ElementRect, elementRect: ElementRect): Promise<Buffer> {
@@ -805,9 +732,7 @@ export class InternalBrowser {
   private async removeIgnoreStyles(ignoreStyles: WebElement | null): Promise<void> {
     if (ignoreStyles) {
       logger().debug('Revert hiding ignored elements');
-      await this.#browser.executeScript(function (ignoreStyles: HTMLStyleElement) {
-        window.__CREEVEY_REMOVE_IGNORE_STYLES__(ignoreStyles);
-      }, ignoreStyles);
+      await this.#browser.executeScript(removeIgnoreStyles, ignoreStyles);
     }
   }
 

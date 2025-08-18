@@ -5,7 +5,6 @@ kind('TestKind', () => {
   story('Story', ({ setStoryParameters }) => {
     setStoryParameters({
       skip: false,
-      waitForReady: false,
       captureElement: 'span[data-test-id~="x"]',
       ignoreElements: [],
     });

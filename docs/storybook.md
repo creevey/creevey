@@ -1,5 +1,7 @@
 ## Creevey Storybook Parameters
 
+Note: Creevey no longer requires a Storybook addon. Define parameters in your Storybook stories/config as shown below; the Creevey runner reads them directly.
+
 Creevey allows you to customize how stories will be captured. You could define parameters on `global`, `kind` or `story` levels. All these parameters are deeply merged by Storybook for each story.
 
 ```ts

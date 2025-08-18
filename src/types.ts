@@ -562,7 +562,6 @@ export interface CaptureOptions {
 }
 
 export interface CreeveyStoryParams extends CaptureOptions {
-  waitForReady?: boolean;
   delay?: number | { for: string[]; ms: number };
   skip?: SkipOptions;
   tests?: Record<string, CreeveyTestFunction>;

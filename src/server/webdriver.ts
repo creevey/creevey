@@ -12,7 +12,6 @@ import {
   CreeveyWebdriver,
   ServerTest,
 } from '../types.js';
-import { emitStoriesMessage, subscribeOn } from './messages.js';
 
 export const storybookRootID = 'storybook-root';
 export const LOCALHOST_REGEXP = /(localhost|127\.0\.0\.1)/i;
@@ -57,9 +56,7 @@ export abstract class CreeveyWebdriverBase implements CreeveyWebdriver {
     ignoreElements?: string | string[] | null,
   ): Promise<Buffer>;
 
-  protected abstract waitForComplete(callback: (isCompleted: boolean) => void): void;
-
-  protected abstract selectStory(id: string, waitForReady?: boolean): Promise<boolean>;
+  protected abstract selectStory(id: string): Promise<void>;
 
   protected abstract updateStoryArgs(story: StoryInput, updatedArgs: Args): Promise<void>;
 
@@ -75,43 +72,11 @@ export abstract class CreeveyWebdriverBase implements CreeveyWebdriver {
 
   async switchStory(story: StoryInput, context: BaseCreeveyTestContext): Promise<CreeveyTestContext> {
     const { id, title, name, parameters } = story;
-    const {
-      captureElement = `#${storybookRootID}`,
-      waitForReady,
-      ignoreElements,
-    } = (parameters.creevey ?? {}) as CreeveyStoryParams;
+    const { captureElement = `#${storybookRootID}`, ignoreElements } = (parameters.creevey ?? {}) as CreeveyStoryParams;
 
     logger().debug(`Switching to story ${chalk.cyan(title)}/${chalk.cyan(name)} by id ${chalk.magenta(id)}`);
 
-    let storyPlayResolver: (isCompleted: boolean) => void;
-    let waitForComplete = new Promise<boolean>((resolve) => (storyPlayResolver = resolve));
-    const unsubscribe = subscribeOn('stories', (message) => {
-      if (message.type != 'capture') return;
-      const { payload = {}, payload: { imageName } = {} } = message;
-      void this.takeScreenshot(payload.captureElement ?? captureElement, payload.ignoreElements ?? ignoreElements).then(
-        (screenshot) => {
-          context.screenshots.push({ imageName, screenshot });
-
-          this.waitForComplete(storyPlayResolver);
-
-          emitStoriesMessage({ type: 'capture' });
-        },
-      );
-    });
-
-    const isCaptureCalled = await this.selectStory(id, waitForReady);
-
-    if (isCaptureCalled) {
-      logger().debug(`Capturing screenshots from ${chalk.magenta(id)} story's \`play()\` function`);
-      while (!(await waitForComplete)) {
-        waitForComplete = new Promise<boolean>((resolve) => (storyPlayResolver = resolve));
-      }
-    }
-
-    unsubscribe();
-
-    if (isCaptureCalled) logger().debug(`Story ${chalk.magenta(id)} completed capturing`);
-    else logger().debug(`Story ${chalk.magenta(id)} ready for capturing`);
+    await this.selectStory(id);
 
     return Object.assign(
       {

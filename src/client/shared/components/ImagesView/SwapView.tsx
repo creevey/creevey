@@ -3,7 +3,6 @@ import { Loader } from 'storybook/internal/components';
 import { styled, withTheme } from 'storybook/theming';
 import { ViewPropsWithTheme, getBorderColor, themeBorderColors } from './common.js';
 import { useApplyScale, useCalcScale, useLoadImages } from '../../helpers.js';
-import { readyForCapture } from '../../../addon/readyForCapture.js';
 
 type ImageState = keyof typeof themeBorderColors;
 
@@ -63,10 +62,6 @@ export const SwapView = withTheme(({ theme, expect, actual, diff }: ViewPropsWit
       document.removeEventListener('keydown', handleKeyDown, false);
     };
   }, [handleKeyDown]);
-
-  useEffect(() => {
-    if (loaded) readyForCapture();
-  }, [loaded]);
 
   return loaded ? (
     <Container>

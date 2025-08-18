@@ -1,9 +1,8 @@
-import React, { JSX, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { JSX, useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { Loader } from 'storybook/internal/components';
 import { styled, withTheme } from 'storybook/theming';
 import { ViewPropsWithTheme, getBorderColor, themeBorderColors } from './common.js';
 import { useApplyScale, useLoadImages, useResizeObserver, getBorderSize } from '../../helpers.js';
-import { readyForCapture } from '../../../addon/readyForCapture.js';
 
 type LayoutDirection = 'horizontal' | 'vertical';
 
@@ -97,10 +96,6 @@ export const SideBySideView = withTheme(({ actual, diff, expect, theme }: ViewPr
 
   useApplyScale(expectImageRef, scale);
   useApplyScale(actualImageRef, scale);
-
-  useEffect(() => {
-    if (loaded) readyForCapture();
-  }, [loaded]);
 
   return (
     <Container ref={containerRef}>

@@ -1,8 +1,7 @@
-import React, { JSX, useEffect, useRef } from 'react';
+import React, { JSX, useRef } from 'react';
 import { styled, withTheme } from 'storybook/theming';
 import { ViewPropsWithTheme, getBorderColor, themeBorderColors } from './common.js';
 import { useApplyScale, useCalcScale, useLoadImages } from '../../helpers.js';
-import { readyForCapture } from '../../../addon/readyForCapture.js';
 
 const Container = styled.div({
   position: 'relative',
@@ -42,10 +41,6 @@ export const BlendView = withTheme(({ actual, diff, expect, theme }: ViewPropsWi
 
   useApplyScale(expectImageRef, scale, loaded);
   useApplyScale(actualImageRef, scale, loaded);
-
-  useEffect(() => {
-    if (loaded) readyForCapture();
-  }, [loaded]);
 
   return (
     <Container>

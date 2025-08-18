@@ -1,3 +1,3 @@
-import { definePlaywrightTests } from 'creevey/playwright';
+import { definePlaywrightTests } from 'creevey/playwright/test';
 
 definePlaywrightTests();

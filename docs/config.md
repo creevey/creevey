@@ -64,7 +64,7 @@ export default config;
 
 ## Multiple Browsers Configuration
 
-It's possible to est your stories across different browsers:
+It's possible to test your stories across different browsers:
 
 ```ts
 // creevey.config.ts

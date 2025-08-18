@@ -2,19 +2,14 @@ import React, { JSX } from 'react';
 import { Meta, StoryObj } from '@storybook/react-vite';
 import { fireEvent, within } from 'storybook/test';
 import { ImagesView as ImagesViewBase } from '../src/client/shared/components/ImagesView/index.js';
-import { capture } from '../src/client/addon/index.js';
 
 const SwapView = (image: { expect: string; diff: string; actual: string }): JSX.Element => (
   <ImagesViewBase image={image} url="https://images.placeholders.dev" canApprove mode={'swap'} />
 );
 
 async function play({ canvasElement }: Parameters<NonNullable<StoryObj<typeof SwapView>['play']>>['0']): Promise<void> {
-  await capture({ imageName: 'actual' });
-
   const diffImage = await within(canvasElement).findByAltText('diff');
   await fireEvent.click(diffImage);
-
-  await capture({ imageName: 'expect' });
 }
 
 const Kind: Meta<typeof SwapView> = {

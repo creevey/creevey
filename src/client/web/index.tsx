@@ -3,15 +3,13 @@ import { createRoot } from 'react-dom/client';
 import { CreeveyApp } from './CreeveyApp.js';
 
 import { initCreeveyClientApi, CreeveyClientApi } from '../shared/creeveyClientApi.js';
-import { CreeveyStatus, noop } from '../../types.js';
+import { CreeveyStatus } from '../../types.js';
 import { treeifyTests } from '../shared/helpers.js';
 import { CreeveyLoader } from './CreeveyLoader.js';
 
 declare global {
   const __CREEVEY_DATA__: CreeveyStatus['tests'];
 }
-
-window.__CREEVEY_SET_READY_FOR_CAPTURE__ = noop;
 
 function loadCreeveyData(): Promise<CreeveyStatus['tests']> {
   return new Promise<CreeveyStatus['tests']>((resolve) => {

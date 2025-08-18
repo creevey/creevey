@@ -2,7 +2,6 @@ import React, { JSX } from 'react';
 import { Meta, StoryObj } from '@storybook/react-vite';
 import { fireEvent, within } from 'storybook/test';
 
-import { capture } from '../src/client/addon/index.js';
 import { ImagesView as ImagesViewBase } from '../src/client/shared/components/ImagesView/index.js';
 import { ImagesViewMode } from '../src/types.js';
 
@@ -33,12 +32,8 @@ export const Slide: StoryObj<typeof ImagesView> = {
   args: { mode: 'slide' },
   parameters: { creevey: { waitForReady: true } },
   async play({ canvasElement }) {
-    await capture({ imageName: 'idle' });
-
     const slider = await within(canvasElement).findByTestId('slider');
     await fireEvent.change(slider, { target: { value: 50 } });
-
-    await capture({ imageName: 'click' });
   },
 };
 

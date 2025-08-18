@@ -28,6 +28,7 @@ import { appendIframePath, getAddresses, LOCALHOST_REGEXP, resolveStorybookUrl, 
 import { getCreeveyCache, isShuttingDown, resolvePlaywrightBrowserType, runSequence } from '../utils';
 import { colors, logger } from '../logger';
 import { removeWorkerContainer } from '../worker/context';
+import { getStories, selectStory, updateGlobals } from '../storybook-helpers.js';
 
 const browsers = {
   chromium,
@@ -168,39 +169,16 @@ export class InternalBrowser {
     return this.#page.screenshot({ animations: 'disabled', mask });
   }
 
-  waitForComplete(callback: (isCompleted: boolean) => void): void {
-    void this.#page.evaluate<boolean>(() => window.__CREEVEY_HAS_PLAY_COMPLETED_YET__()).then(callback);
-  }
-
-  async selectStory(id: string, waitForReady = false): Promise<boolean> {
+  async selectStory(id: string): Promise<void> {
     // NOTE: Global variables might be reset after hot reload. I think it's workaround, maybe we need better solution
     await this.updateStorybookGlobals();
-    await this.updateBrowserGlobalVariables();
     await this.resetMousePosition();
 
     logger().debug(`Triggering 'SetCurrentStory' event with storyId ${chalk.magenta(id)}`);
 
-    const result = await this.#page.evaluate<
-      [error?: string | null, isCaptureCalled?: boolean] | null,
-      [id: string, shouldWaitForReady: boolean]
-    >(
-      ([id, shouldWaitForReady]) => {
-        // TODO: Don't use creevey related global variables, inline this function to simplify support
-        if (typeof window.__CREEVEY_SELECT_STORY__ == 'undefined') {
-          return [
-            "Creevey can't switch story. This may happened if forget to add `creevey` addon to your storybook config, or storybook not loaded in browser due syntax error.",
-          ];
-        }
-        return window.__CREEVEY_SELECT_STORY__(id, shouldWaitForReady);
-      },
-      [id, waitForReady],
-    );
+    const maybeError = await this.#page.evaluate<string | null, string>(selectStory, id);
 
-    const [errorMessage, isCaptureCalled = false] = result ?? [];
-
-    if (errorMessage) throw new Error(errorMessage);
-
-    return isCaptureCalled;
+    if (maybeError) throw new Error(maybeError);
   }
 
   async updateStoryArgs(story: StoryInput, updatedArgs: Args): Promise<void> {
@@ -219,11 +197,8 @@ export class InternalBrowser {
   }
 
   async loadStoriesFromBrowser(): Promise<StoriesRaw> {
-    const stories = await this.#page.evaluate<StoriesRaw | undefined>(() => window.__CREEVEY_GET_STORIES__());
-
-    if (!stories) throw new Error("Can't get stories, it seems creevey or storybook API isn't available");
-
-    return stories;
+    // @ts-expect-error TODO: Fix this
+    return await this.#page.evaluate(getStories);
   }
 
   static async getBrowser(
@@ -357,7 +332,6 @@ export class InternalBrowser {
         () => this.triggerViteReload(),
         () => this.updateStorybookGlobals(),
         () => this.resolveCreeveyHost(creeveyHost),
-        () => this.updateBrowserGlobalVariables(),
       ],
       () => !this.#isShuttingDown,
     );
@@ -444,9 +418,7 @@ export class InternalBrowser {
     if (!this.#storybookGlobals) return;
 
     logger().debug('Applying storybook globals');
-    await this.#page.evaluate((globals: StorybookGlobals) => {
-      window.__CREEVEY_UPDATE_GLOBALS__(globals);
-    }, this.#storybookGlobals);
+    await this.#page.evaluate(updateGlobals, this.#storybookGlobals);
   }
 
   private async resolveCreeveyHost(host?: string): Promise<void> {
@@ -474,19 +446,6 @@ export class InternalBrowser {
     );
 
     if (this.#serverHost == null) throw new Error("Can't reach creevey server from a browser");
-  }
-
-  private async updateBrowserGlobalVariables() {
-    logger().debug('Updating browser global variables');
-    await this.#page.evaluate(
-      ([workerId, creeveyHost, creeveyPort]) => {
-        window.__CREEVEY_ENV__ = true;
-        window.__CREEVEY_WORKER_ID__ = workerId;
-        window.__CREEVEY_SERVER_HOST__ = creeveyHost ?? 'localhost';
-        window.__CREEVEY_SERVER_PORT__ = creeveyPort;
-      },
-      [process.pid, this.#serverHost, this.#serverPort] as const,
-    );
   }
 
   private async resetMousePosition(): Promise<void> {

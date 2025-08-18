@@ -6,6 +6,22 @@ This guide outlines the key changes and steps required to update your Creevey se
 
 ## Breaking Changes
 
+### 0. Addon Removal (Breaking Change)
+
+The Creevey Storybook addon has been removed in 0.10. Creevey now runs as a standalone Web UI and reads Storybook parameters directly from your stories/config.
+
+What you need to do:
+
+- Remove `'creevey'` from your `.storybook/main.ts` `addons` list.
+- Remove any Creevey decorators/imports you previously added for the addon.
+- Keep your Creevey parameters in `preview.ts`/stories — they are still supported and picked up by the runner.
+- Use the Web UI to run tests: `yarn creevey test -s --ui` (adds Storybook autostart with `-s`).
+
+Implications:
+
+- Tests are no longer started/controlled from inside the Storybook panel. Open the Creevey Web UI at `http://localhost:3000` instead.
+- Approvals and diffs are handled in the Creevey UI (`creevey report` for reviewing past runs).
+
 ### 1. CLI Commands Structure (Breaking Change)
 
 Creevey 0.10 introduces a command-based CLI structure. You can no longer run Creevey without specifying a command.
