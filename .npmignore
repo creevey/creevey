@@ -12,6 +12,8 @@
 .prettier*
 .storybook
 .yarnrc.yml
+.devcontainer
+.node-version
 .gitlab-ci.yml
 .gitattributes
 TODO.md
