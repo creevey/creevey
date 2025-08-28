@@ -26,14 +26,14 @@ import {
 import { colors, logger } from '../logger.js';
 import { emitWorkerMessage, subscribeOn } from '../messages.js';
 import { getTestPath, isShuttingDown, runSequence } from '../utils.js';
+import { appendIframePath, LOCALHOST_REGEXP, resolveStorybookUrl, storybookRootID } from '../webdriver.js';
 import {
-  appendIframePath,
-  getAddresses,
-  LOCALHOST_REGEXP,
-  resolveStorybookUrl,
-  storybookRootID,
-} from '../webdriver.js';
-import { getStories, insertIgnoreStyles, removeIgnoreStyles, selectStory } from '../storybook-helpers.js';
+  getStories,
+  insertIgnoreStyles,
+  removeIgnoreStyles,
+  selectStory,
+  updateGlobals,
+} from '../storybook-helpers.js';
 
 interface ElementRect {
   top: number;
@@ -190,14 +190,11 @@ async function buildWebdriver(
 export class InternalBrowser {
   #isShuttingDown = false;
   #browser: WebDriver;
-  #serverHost: string | null = null;
-  #serverPort: number;
   #storybookGlobals?: StorybookGlobals;
   #unsubscribe: () => void = noop;
   #keepAliveInterval: NodeJS.Timeout | null = null;
-  constructor(browser: WebDriver, port: number, storybookGlobals?: StorybookGlobals) {
+  constructor(browser: WebDriver, storybookGlobals?: StorybookGlobals) {
     this.#browser = browser;
-    this.#serverPort = port;
     this.#storybookGlobals = storybookGlobals;
     this.#unsubscribe = subscribeOn('shutdown', () => {
       void this.closeBrowser();
@@ -217,7 +214,7 @@ export class InternalBrowser {
 
     try {
       await this.#browser.quit();
-    } catch (_) {
+    } catch {
       /* noop */
     }
   }
@@ -387,7 +384,7 @@ export class InternalBrowser {
 
     if (!browser) return null;
 
-    const internalBrowser = new InternalBrowser(browser, options.port, storybookGlobals);
+    const internalBrowser = new InternalBrowser(browser, storybookGlobals);
 
     try {
       if (isShuttingDown.current) return null;
@@ -397,7 +394,6 @@ export class InternalBrowser {
         gridUrl,
         viewport,
         storybookUrl: address,
-        creeveyHost: config.host,
       });
 
       return done ? internalBrowser : null;
@@ -420,13 +416,11 @@ export class InternalBrowser {
     gridUrl,
     viewport,
     storybookUrl,
-    creeveyHost,
   }: {
     browserName: string;
     gridUrl: string;
     viewport?: { width: number; height: number };
     storybookUrl: string;
-    creeveyHost?: string;
   }): Promise<boolean> {
     const sessionId = (await this.#browser.getSession()).getId();
     let browserHost = '';
@@ -453,7 +447,6 @@ export class InternalBrowser {
         () => this.openStorybookPage(storybookUrl),
         () => this.waitForStorybook(),
         () => this.updateStorybookGlobals(),
-        () => this.resolveCreeveyHost(creeveyHost),
         // NOTE: Selenium draws automation toolbar with some delay after webdriver initialization
         // NOTE: So if we resize window right after getting webdriver instance we might get situation
         // NOTE: When the toolbar appears after resize and final viewport size become smaller than we set
@@ -538,49 +531,7 @@ export class InternalBrowser {
     if (!this.#storybookGlobals) return;
 
     logger().debug('Applying storybook globals');
-    await this.#browser.executeScript(function (globals: StorybookGlobals) {
-      window.__CREEVEY_UPDATE_GLOBALS__(globals);
-    }, this.#storybookGlobals);
-  }
-
-  private async resolveCreeveyHost(host?: string): Promise<void> {
-    const storybookUrl = await this.#browser.getCurrentUrl();
-    const storybookHost = new URL(storybookUrl).hostname;
-    const addresses = host ? [host] : [storybookHost, ...getAddresses()];
-
-    this.#serverHost = await this.#browser.executeAsyncScript(
-      function (hosts: string[], port: number, callback: (host?: string | null) => void) {
-        void Promise.all(
-          hosts.map(function (host) {
-            return Promise.race([
-              // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-              fetch('http://' + host + ':' + port + '/ping').then(function (response) {
-                return response.text();
-              }),
-              new Promise((_resolve, reject) => {
-                setTimeout(reject, 5000);
-              }),
-            ])
-              .then(function (pong) {
-                return pong == 'pong' ? host : null;
-              })
-              .catch(function () {
-                return null;
-              });
-          }),
-        ).then(function (hosts) {
-          callback(
-            hosts.find(function (host) {
-              return host != null;
-            }),
-          );
-        });
-      },
-      addresses,
-      this.#serverPort,
-    );
-
-    if (this.#serverHost == null) throw new Error("Can't reach creevey server from a browser");
+    await this.#browser.executeScript(updateGlobals, this.#storybookGlobals);
   }
 
   private async resizeViewport(viewport?: { width: number; height: number }): Promise<void> {

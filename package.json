@@ -106,7 +106,7 @@
     "@types/react": "^18.3.23",
     "@types/react-dom": "^18.3.7",
     "@types/selenium-webdriver": "^4.1.28",
-    "@types/shelljs": "^0.8.16",
+    "@types/shelljs": "^0.8.15",
     "@types/ws": "^8.18.1",
     "cac": "^6.7.14",
     "chai": "^4.5.0",
@@ -199,9 +199,6 @@
   },
   "storybook": {
     "displayName": "Creevey"
-  },
-  "volta": {
-    "node": "22.15.0"
   },
   "packageManager": "yarn@4.9.1"
 }

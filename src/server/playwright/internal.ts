@@ -24,7 +24,7 @@ import {
   StorybookGlobals,
   WorkerOptions,
 } from '../../types';
-import { appendIframePath, getAddresses, LOCALHOST_REGEXP, resolveStorybookUrl, storybookRootID } from '../webdriver';
+import { appendIframePath, LOCALHOST_REGEXP, resolveStorybookUrl, storybookRootID } from '../webdriver';
 import { getCreeveyCache, isShuttingDown, resolvePlaywrightBrowserType, runSequence } from '../utils';
 import { colors, logger } from '../logger';
 import { removeWorkerContainer } from '../worker/context';
@@ -97,8 +97,6 @@ export class InternalBrowser {
   #page: Page;
   #traceDir: string;
   #sessionId: string = v4();
-  #serverHost: string | null = null;
-  #serverPort: number;
   #debug: boolean;
   #storybookGlobals?: StorybookGlobals;
   constructor(
@@ -106,7 +104,6 @@ export class InternalBrowser {
     context: BrowserContext,
     page: Page,
     traceDir: string,
-    port: number,
     debug = false,
     storybookGlobals?: StorybookGlobals,
   ) {
@@ -114,7 +111,6 @@ export class InternalBrowser {
     this.#context = context;
     this.#page = page;
     this.#traceDir = traceDir;
-    this.#serverPort = port;
     this.#debug = debug;
     this.#storybookGlobals = storybookGlobals;
   }
@@ -273,22 +269,13 @@ export class InternalBrowser {
       });
     }
 
-    const internalBrowser = new InternalBrowser(
-      browser,
-      context,
-      page,
-      tracesDir,
-      options.port,
-      options.debug,
-      storybookGlobals,
-    );
+    const internalBrowser = new InternalBrowser(browser, context, page, tracesDir, options.debug, storybookGlobals);
 
     try {
       if (isShuttingDown.current) return null;
       const done = await internalBrowser.init({
         browserName,
         storybookUrl: address,
-        creeveyHost: config.host,
       });
 
       return done ? internalBrowser : null;
@@ -305,15 +292,7 @@ export class InternalBrowser {
     }
   }
 
-  private async init({
-    browserName,
-    storybookUrl,
-    creeveyHost,
-  }: {
-    browserName: string;
-    storybookUrl: string;
-    creeveyHost?: string;
-  }) {
+  private async init({ browserName, storybookUrl }: { browserName: string; storybookUrl: string }) {
     const sessionId = this.#sessionId;
 
     prefix.apply(logger(), {
@@ -331,7 +310,6 @@ export class InternalBrowser {
         () => this.waitForStorybook(),
         () => this.triggerViteReload(),
         () => this.updateStorybookGlobals(),
-        () => this.resolveCreeveyHost(creeveyHost),
       ],
       () => !this.#isShuttingDown,
     );
@@ -419,33 +397,6 @@ export class InternalBrowser {
 
     logger().debug('Applying storybook globals');
     await this.#page.evaluate(updateGlobals, this.#storybookGlobals);
-  }
-
-  private async resolveCreeveyHost(host?: string): Promise<void> {
-    const storybookUrl = this.#page.url();
-    const storybookHost = new URL(storybookUrl).hostname;
-    const addresses = host ? [host] : [storybookHost, ...getAddresses()];
-
-    this.#serverHost = await this.#page.evaluate(
-      ([hosts, port]) => {
-        return Promise.all(
-          hosts.map((host) => {
-            return Promise.race([
-              // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-              fetch('http://' + host + ':' + port + '/ping').then((response) => response.text()),
-              new Promise((_resolve, reject) => {
-                setTimeout(reject, 5000);
-              }),
-            ])
-              .then((pong) => (pong == 'pong' ? host : null))
-              .catch(() => null);
-          }),
-        ).then((hosts) => hosts.find((host) => host != null) ?? null);
-      },
-      [addresses, this.#serverPort] as const,
-    );
-
-    if (this.#serverHost == null) throw new Error("Can't reach creevey server from a browser");
   }
 
   private async resetMousePosition(): Promise<void> {

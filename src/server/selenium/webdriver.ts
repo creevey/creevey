@@ -1,20 +1,11 @@
 /// <reference types="../../../types/selenium-context" />
 import type { Args } from 'storybook/internal/types';
-import { Config, StorybookGlobals, StoryInput, StoriesRaw, ServerTest, WorkerOptions } from '../../types.js';
+import { Config, StoryInput, StoriesRaw, ServerTest, WorkerOptions } from '../../types.js';
 import { subscribeOn } from '../messages.js';
 import { CreeveyWebdriverBase } from '../webdriver.js';
 import type { InternalBrowser } from './internal.js';
 import { logger } from '../logger.js';
 import { removeWorkerContainer } from '../worker/context.js';
-
-declare global {
-  interface Window {
-    __CREEVEY_RESTORE_SCROLL__?: () => void;
-    __CREEVEY_UPDATE_GLOBALS__: (globals: StorybookGlobals) => void;
-    __CREEVEY_INSERT_IGNORE_STYLES__: (ignoreElements: string[]) => HTMLStyleElement;
-    __CREEVEY_REMOVE_IGNORE_STYLES__: (ignoreStyles: HTMLStyleElement) => void;
-  }
-}
 
 // TODO Update context interface through references
 export class SeleniumWebdriver extends CreeveyWebdriverBase {
