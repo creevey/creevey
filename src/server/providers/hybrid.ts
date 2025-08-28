@@ -1,4 +1,5 @@
 import { watch } from 'chokidar';
+import { existsSync } from 'fs';
 import { loadStories as browserProvider } from './browser.js';
 import type { Config, CreeveyStoryParams, CreeveyStory, StoriesProvider } from '../../types.js';
 import { logger } from '../logger.js';
@@ -45,7 +46,7 @@ async function parseParams(
   config: Config,
   listener?: (data: CreeveyParamsByStoryId) => void,
 ): Promise<CreeveyParamsByStoryId> {
-  if (!config.testsDir) {
+  if (!config.testsDir || !existsSync(config.testsDir)) {
     return Promise.resolve({});
   }
 
