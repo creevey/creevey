@@ -3,6 +3,7 @@ import { dirname, resolve } from 'path';
 import { closeSync, existsSync, mkdirSync, openSync, writeFileSync } from 'fs';
 import { TEST_EVENTS, FakeTest } from '../../types.js';
 import { logger } from '../logger.js';
+import { CreeveyReporter } from './creevey.js';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 class IndentedLogger<T = any> {
@@ -28,6 +29,8 @@ export class JUnitReporter {
   private reportFile: string;
   private fileFd?: number;
   private logger: IndentedLogger<void>;
+  // @ts-expect-error Ignore unused
+  private creeveyReporter: CreeveyReporter;
   private suites: Record<string, FakeTest[]> = {};
   // TODO classnameTemplate
   // TODO Output console logs
@@ -42,6 +45,8 @@ export class JUnitReporter {
 
       writeFileSync(this.fileFd, `${text}\n`);
     });
+
+    this.creeveyReporter = new CreeveyReporter(runner);
 
     runner.on(TEST_EVENTS.RUN_BEGIN, () => {
       this.suites = {};

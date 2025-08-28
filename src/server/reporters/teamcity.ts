@@ -1,16 +1,20 @@
-import { FakeTest, Images, isDefined, TEST_EVENTS } from '../../types.js';
+import { FakeSuite, FakeTest, Images, isDefined, TEST_EVENTS } from '../../types.js';
 import EventEmitter from 'events';
 
 export class TeamcityReporter {
   constructor(runner: EventEmitter, options: { reportDir: string }) {
     const { reportDir } = options;
 
+    runner.on(TEST_EVENTS.SUITE_BEGIN, (suite: FakeSuite) => {
+      console.log(`##teamcity[testSuiteStarted name='${this.escape(suite.title)}' flowId='${process.pid}']`);
+    });
+
     runner.on(TEST_EVENTS.TEST_BEGIN, (test: FakeTest) => {
-      console.log(`##teamcity[testStarted name='${this.escape(test.fullTitle())}' flowId='${test.creevey.workerId}']`);
+      console.log(`##teamcity[testStarted name='${this.escape(test.title)}' flowId='${test.creevey.workerId}']`);
     });
 
     runner.on(TEST_EVENTS.TEST_PASS, (test: FakeTest) => {
-      console.log(`##teamcity[testFinished name='${this.escape(test.fullTitle())}' flowId='${test.creevey.workerId}']`);
+      console.log(`##teamcity[testFinished name='${this.escape(test.title)}' flowId='${test.creevey.workerId}']`);
     });
 
     runner.on(TEST_EVENTS.TEST_FAIL, (test: FakeTest, error: Error) => {
@@ -31,7 +35,7 @@ export class TeamcityReporter {
             console.log(`##teamcity[publishArtifacts '${reportDir}/${filePath}/${fileName} => report/${filePath}']`);
             console.log(
               `##teamcity[testMetadata testName='${this.escape(
-                test.fullTitle(),
+                test.title,
               )}' type='image' value='report/${filePath}/${fileName}' flowId='${test.creevey.workerId}']`,
             );
           });
@@ -41,15 +45,17 @@ export class TeamcityReporter {
       // https://teamcity-support.jetbrains.com/hc/en-us/community/posts/207216829-Count-test-as-successful-if-at-least-one-try-is-successful?page=1#community_comment_207394125
 
       if (test.creevey.willRetry)
-        console.log(
-          `##teamcity[testFinished name='${this.escape(test.fullTitle())}' flowId='${test.creevey.workerId}']`,
-        );
+        console.log(`##teamcity[testFinished name='${this.escape(test.title)}' flowId='${test.creevey.workerId}']`);
       else
         console.log(
-          `##teamcity[testFailed name='${this.escape(test.fullTitle())}' message='${this.escape(
+          `##teamcity[testFailed name='${this.escape(test.title)}' message='${this.escape(
             error.message,
           )}' details='${this.escape(error.stack ?? '')}' flowId='${test.creevey.workerId}']`,
         );
+    });
+
+    runner.on(TEST_EVENTS.SUITE_END, (suite: FakeSuite) => {
+      console.log(`##teamcity[testSuiteFinished name='${this.escape(suite.title)}' flowId='${process.pid}']`);
     });
   }
 
