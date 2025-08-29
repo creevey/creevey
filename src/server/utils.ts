@@ -288,16 +288,17 @@ export function waitOnUrl(waitUrl: string, timeout: number, delay: number) {
       (url) =>
         new Promise<void>((resolve, reject) => {
           const interval = setInterval(() => {
-            http
-              .get(url, (response) => {
-                if (response.statusCode === 200) {
-                  clearInterval(interval);
-                  resolve();
-                }
-              })
-              .on('error', () => {
-                // Ignore HTTP errors
-              });
+            const parsedUrl = new URL(url);
+
+            const get = parsedUrl.protocol === 'http:' ? http.get.bind(http) : https.get.bind(https);
+            get(url, (response) => {
+              if (response.statusCode === 200) {
+                clearInterval(interval);
+                resolve();
+              }
+            }).on('error', () => {
+              // Ignore HTTP errors
+            });
 
             if (Date.now() - startTime > timeout) {
               clearInterval(interval);

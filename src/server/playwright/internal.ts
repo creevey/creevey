@@ -167,6 +167,7 @@ export class InternalBrowser {
 
   async selectStory(id: string): Promise<void> {
     // NOTE: Global variables might be reset after hot reload. I think it's workaround, maybe we need better solution
+    await this.defineGlobalNameFunction();
     await this.updateStorybookGlobals();
     await this.resetMousePosition();
 
@@ -257,6 +258,7 @@ export class InternalBrowser {
       screen: viewport,
       viewport,
     });
+
     if (options.debug) {
       await context.tracing.start(
         Object.assign({ screenshots: true, snapshots: true, sources: true }, playwrightOptions?.trace),
@@ -310,6 +312,7 @@ export class InternalBrowser {
         () => this.waitForStorybook(),
         () => this.triggerViteReload(),
         () => this.updateStorybookGlobals(),
+        () => this.defineGlobalNameFunction(),
       ],
       () => !this.#isShuttingDown,
     );
@@ -402,5 +405,12 @@ export class InternalBrowser {
   private async resetMousePosition(): Promise<void> {
     logger().debug('Resetting mouse position to (0, 0)');
     await this.#page.mouse.move(0, 0);
+  }
+
+  private async defineGlobalNameFunction(): Promise<void> {
+    await this.#page.evaluate(() => {
+      // @ts-expect-error https://github.com/evanw/esbuild/issues/2605#issuecomment-2050808084
+      window.__name = (func: unknown) => func;
+    });
   }
 }
