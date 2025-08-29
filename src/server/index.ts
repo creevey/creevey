@@ -158,7 +158,10 @@ export default async function (command: 'report' | 'test' | 'worker', options: O
 
     if (command == 'report') {
       const { report } = await import('./report.js');
-      report(config, reportDir, port);
+      const { default: getPort } = await import('get-port');
+      const freePort = await getPort({ port });
+
+      report(config, reportDir, freePort);
       return;
     }
 
@@ -187,7 +190,10 @@ export default async function (command: 'report' | 'test' | 'worker', options: O
       }
       logger().info('Starting Master Process');
 
-      return (await import('./master/start.js')).start(gridUrl, config, options);
+      const { default: getPort } = await import('get-port');
+      const freePort = await getPort({ port });
+
+      return (await import('./master/start.js')).start(gridUrl, freePort, config, options);
     }
   }
 

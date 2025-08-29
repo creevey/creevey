@@ -23,9 +23,14 @@ function outputUnnecessaryImages(imagesDir: string, images: Set<string>): void {
   }
 }
 
-export async function start(gridUrl: string | undefined, config: Config, options: Options): Promise<void> {
+export async function start(
+  gridUrl: string | undefined,
+  port: number,
+  config: Config,
+  options: Options,
+): Promise<void> {
   const host = config.host;
-  const resolveApi = startServer(config.reportDir, options.port, options.ui, host);
+  const resolveApi = startServer(config.reportDir, port, options.ui, host);
 
   let runner: Runner | null = null;
   if (config.hooks.before) {
@@ -62,7 +67,7 @@ export async function start(gridUrl: string | undefined, config: Config, options
     // Resolve the API for the server
     resolveApi(api);
 
-    logger().info(`Started on http://localhost:${options.port}`);
+    logger().info(`Started on http://localhost:${port}`);
   } else {
     if (Object.values(runner.status.tests).filter((test) => test && !test.skip).length == 0) {
       logger().warn("Don't have any tests to run");
