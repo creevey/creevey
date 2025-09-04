@@ -10,6 +10,10 @@ const testLevels: Record<string, string> = {
   ERROR: chalk.red('FAIL'),
 };
 
+let browserName = '';
+let sessionId = '';
+let processId = process.pid;
+
 export class CreeveyReporter {
   private logger: Logger.Logger | null = null;
   // TODO Output in better way, like vitest, maybe
@@ -37,14 +41,16 @@ export class CreeveyReporter {
     });
   }
 
-  private getLogger(options: { sessionId: string; browserName: string }) {
+  private getLogger(options: { sessionId: string; browserName: string; workerId: number }) {
+    ({ sessionId, browserName, workerId: processId = process.pid } = options);
+
     if (this.logger) return this.logger;
-    const { sessionId, browserName } = options;
+
     const testLogger = Logger.getLogger(sessionId);
 
     this.logger = prefix.apply(testLogger, {
       format(level) {
-        return `[${browserName}:${chalk.gray(process.pid)}] ${testLevels[level]} => ${chalk.gray(sessionId)}`;
+        return `[${browserName}:${chalk.gray(processId)}] ${testLevels[level]} => ${chalk.gray(sessionId)}`;
       },
     });
 

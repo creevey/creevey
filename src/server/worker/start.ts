@@ -163,9 +163,12 @@ export async function start(browser: string, gridUrl: string, config: Config, op
 
     const baseContext: BaseCreeveyTestContext = {
       browserName: browser,
-      // @ts-expect-error We defined separate d.ts declarations for each webdriver
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      webdriver: webdriver.browser,
+      get webdriver() {
+        // @ts-expect-error We defined separate d.ts declarations for each webdriver
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        return webdriver.browser;
+      },
       screenshots: [],
 
       matchImage: matchImage,

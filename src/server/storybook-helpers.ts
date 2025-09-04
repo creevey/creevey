@@ -267,44 +267,44 @@ export function updateGlobals(newGlobals: StorybookGlobals): void {
     UPDATE_GLOBALS: 'updateGlobals',
   };
 
-  const isEqual = (a: unknown, b: unknown): boolean => {
-    if (Object.is(a, b)) return true;
-    if (typeof a !== 'object' || a === null || typeof b !== 'object' || b === null) return false;
+  // const isEqual = (a: unknown, b: unknown): boolean => {
+  //   if (Object.is(a, b)) return true;
+  //   if (typeof a !== 'object' || a === null || typeof b !== 'object' || b === null) return false;
 
-    // Dates
-    if (a instanceof Date && b instanceof Date) return a.getTime() === b.getTime();
-    // RegExp
-    if (a instanceof RegExp && b instanceof RegExp) return a.toString() === b.toString();
+  //   // Dates
+  //   if (a instanceof Date && b instanceof Date) return a.getTime() === b.getTime();
+  //   // RegExp
+  //   if (a instanceof RegExp && b instanceof RegExp) return a.toString() === b.toString();
 
-    // Arrays
-    const aIsArray = Array.isArray(a);
-    const bIsArray = Array.isArray(b);
-    if (aIsArray || bIsArray) {
-      if (!aIsArray || !bIsArray) return false;
-      const aArr = a as unknown[];
-      const bArr = b as unknown[];
-      if (aArr.length !== bArr.length) return false;
-      for (let i = 0; i < aArr.length; i += 1) {
-        if (!isEqual(aArr[i], bArr[i])) return false;
-      }
-      return true;
-    }
+  //   // Arrays
+  //   const aIsArray = Array.isArray(a);
+  //   const bIsArray = Array.isArray(b);
+  //   if (aIsArray || bIsArray) {
+  //     if (!aIsArray || !bIsArray) return false;
+  //     const aArr = a as unknown[];
+  //     const bArr = b as unknown[];
+  //     if (aArr.length !== bArr.length) return false;
+  //     for (let i = 0; i < aArr.length; i += 1) {
+  //       if (!isEqual(aArr[i], bArr[i])) return false;
+  //     }
+  //     return true;
+  //   }
 
-    // Objects
-    const aObj = a as Record<string, unknown>;
-    const bObj = b as Record<string, unknown>;
-    const aKeys = Object.keys(aObj);
-    const bKeys = Object.keys(bObj);
-    if (aKeys.length !== bKeys.length) return false;
-    for (const key of aKeys) {
-      if (!Object.prototype.hasOwnProperty.call(bObj, key)) return false;
-      if (!isEqual(aObj[key], bObj[key])) return false;
-    }
-    return true;
-  };
+  //   // Objects
+  //   const aObj = a as Record<string, unknown>;
+  //   const bObj = b as Record<string, unknown>;
+  //   const aKeys = Object.keys(aObj);
+  //   const bKeys = Object.keys(bObj);
+  //   if (aKeys.length !== bKeys.length) return false;
+  //   for (const key of aKeys) {
+  //     if (!Object.prototype.hasOwnProperty.call(bObj, key)) return false;
+  //     if (!isEqual(aObj[key], bObj[key])) return false;
+  //   }
+  //   return true;
+  // };
 
-  if (isEqual(window.__CREEVEY_GLOBALS__, newGlobals)) return;
+  // if (isEqual(window.__CREEVEY_GLOBALS__, newGlobals)) return;
 
-  window.__CREEVEY_GLOBALS__ = newGlobals;
+  // window.__CREEVEY_GLOBALS__ = newGlobals;
   addonsChannel().emit(STORYBOOK_EVENTS.UPDATE_GLOBALS, { globals: newGlobals });
 }
