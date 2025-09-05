@@ -28,7 +28,7 @@ import { appendIframePath, LOCALHOST_REGEXP, resolveStorybookUrl, storybookRootI
 import { getCreeveyCache, isShuttingDown, resolvePlaywrightBrowserType, runSequence } from '../utils';
 import { colors, logger } from '../logger';
 import { removeWorkerContainer } from '../worker/context';
-import { getStories, selectStory, updateGlobals } from '../storybook-helpers.js';
+import { getStories, selectStory } from '../storybook-helpers.js';
 
 const browsers = {
   chromium,
@@ -168,14 +168,22 @@ export class InternalBrowser {
   async selectStory(id: string): Promise<void> {
     // NOTE: Global variables might be reset after hot reload. I think it's workaround, maybe we need better solution
     await this.defineGlobalNameFunction();
-    await this.updateStorybookGlobals();
     await this.resetMousePosition();
 
     logger().debug(`Triggering 'SetCurrentStory' event with storyId ${chalk.magenta(id)}`);
 
-    const maybeError = await this.#page.evaluate<string | null, string>(selectStory, id);
+    const watcher = this.#page.waitForFunction(() => window.__CREEVEY_SELECT_STORY_RESULT__);
 
-    if (maybeError) throw new Error(maybeError);
+    void this.#page.evaluate<unknown, [string, StorybookGlobals | undefined]>(selectStory, [
+      id,
+      this.#storybookGlobals,
+    ]);
+
+    const jsHandler = await watcher;
+    const result = await jsHandler.jsonValue();
+    void jsHandler.dispose();
+
+    if (result?.status === 'error') throw new Error(result.message);
   }
 
   async updateStoryArgs(story: StoryInput, updatedArgs: Args): Promise<void> {
@@ -311,7 +319,6 @@ export class InternalBrowser {
         () => this.openStorybookPage(storybookUrl),
         () => this.waitForStorybook(),
         () => this.triggerViteReload(),
-        () => this.updateStorybookGlobals(),
         () => this.defineGlobalNameFunction(),
       ],
       () => !this.#isShuttingDown,
@@ -395,13 +402,6 @@ export class InternalBrowser {
     }
   }
 
-  private async updateStorybookGlobals(): Promise<void> {
-    if (!this.#storybookGlobals) return;
-
-    logger().debug('Applying storybook globals');
-    await this.#page.evaluate(updateGlobals, this.#storybookGlobals);
-  }
-
   private async resetMousePosition(): Promise<void> {
     logger().debug('Resetting mouse position to (0, 0)');
     await this.#page.mouse.move(0, 0);
@@ -409,6 +409,7 @@ export class InternalBrowser {
 
   private async defineGlobalNameFunction(): Promise<void> {
     await this.#page.evaluate(() => {
+      window.__CREEVEY_SELECT_STORY_RESULT__ = null;
       // @ts-expect-error https://github.com/evanw/esbuild/issues/2605#issuecomment-2050808084
       window.__name = (func: unknown) => func;
     });

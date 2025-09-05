@@ -27,13 +27,7 @@ import { colors, logger } from '../logger.js';
 import { emitWorkerMessage, subscribeOn } from '../messages.js';
 import { getTestPath, isShuttingDown, runSequence } from '../utils.js';
 import { appendIframePath, LOCALHOST_REGEXP, resolveStorybookUrl, storybookRootID } from '../webdriver.js';
-import {
-  getStories,
-  insertIgnoreStyles,
-  removeIgnoreStyles,
-  selectStory,
-  updateGlobals,
-} from '../storybook-helpers.js';
+import { getStories, insertIgnoreStyles, removeIgnoreStyles, selectStory } from '../storybook-helpers.js';
 
 interface ElementRect {
   top: number;
@@ -309,12 +303,15 @@ export class InternalBrowser {
 
   async selectStory(id: string): Promise<void> {
     // NOTE: Global variables might be reset after hot reload. I think it's workaround, maybe we need better solution
-    await this.updateStorybookGlobals();
+    await this.defineGlobalNameFunction();
     await this.resetMousePosition();
 
     logger().debug(`Triggering 'SetCurrentStory' event with storyId ${chalk.magenta(id)}`);
 
-    const errorMessage = await this.#browser.executeAsyncScript<string | null>(selectStory, id);
+    const errorMessage = await this.#browser.executeAsyncScript<string | null>(selectStory, [
+      id,
+      this.#storybookGlobals,
+    ]);
 
     if (errorMessage) throw new Error(errorMessage);
   }
@@ -446,7 +443,7 @@ export class InternalBrowser {
         () => this.#browser.manage().setTimeouts({ pageLoad: 60000, script: 60000 }),
         () => this.openStorybookPage(storybookUrl),
         () => this.waitForStorybook(),
-        () => this.updateStorybookGlobals(),
+        () => this.defineGlobalNameFunction(),
         // NOTE: Selenium draws automation toolbar with some delay after webdriver initialization
         // NOTE: So if we resize window right after getting webdriver instance we might get situation
         // NOTE: When the toolbar appears after resize and final viewport size become smaller than we set
@@ -527,11 +524,12 @@ export class InternalBrowser {
     if (isTimeout) throw new Error('Failed to wait Storybook init');
   }
 
-  private async updateStorybookGlobals(): Promise<void> {
-    if (!this.#storybookGlobals) return;
-
-    logger().debug('Applying storybook globals');
-    await this.#browser.executeScript(updateGlobals, this.#storybookGlobals);
+  private async defineGlobalNameFunction(): Promise<void> {
+    await this.#browser.executeScript(function () {
+      window.__CREEVEY_SELECT_STORY_RESULT__ = null;
+      // @ts-expect-error https://github.com/evanw/esbuild/issues/2605#issuecomment-2050808084
+      window.__name = (func: unknown) => func;
+    });
   }
 
   private async resizeViewport(viewport?: { width: number; height: number }): Promise<void> {

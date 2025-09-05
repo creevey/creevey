@@ -1,15 +1,13 @@
 import type { Renderer } from 'storybook/internal/types';
 import type { PreviewWeb, StoryStore } from 'storybook/preview-api';
-import type { Channel } from 'storybook/internal/channels';
+import { Channel } from 'storybook/internal/channels';
 import type { CreeveyStoryParams, StoriesRaw, StorybookGlobals } from '../types.js';
 import type { SerializedRegExp } from '../shared/serializeRegExp.js';
 
-// TODO: Get rid of __CREEVEY_ prefixed variables, use storybook api directly
-// TODO: Remove __CREEVEY_SET_READY_FOR_CAPTURE__ and `capture` function, because it seems not used, but we need to rethink how to write proper tests in play function
 declare global {
   interface Window {
     __CREEVEY_ANIMATION_DISABLED__: boolean;
-    __CREEVEY_GLOBALS__: StorybookGlobals;
+    __CREEVEY_SELECT_STORY_RESULT__: null | { status: 'success' } | { status: 'error'; message: string };
     __STORYBOOK_ADDONS_CHANNEL__: Channel;
     __STORYBOOK_STORY_STORE__: StoryStore<Renderer>;
     __STORYBOOK_PREVIEW__: PreviewWeb<Renderer>;
@@ -18,7 +16,14 @@ declare global {
 
 // TODO Use StorybookEvents.STORY_RENDER_PHASE_CHANGED: `loading/rendering/completed` with storyId
 // TODO Check other statuses and statuses with play function
-export async function selectStory(storyId: string, callback?: (error: string | null) => void): Promise<string | null> {
+// TODO: New events
+// PLAY_FUNCTION_THREW_EXCEPTION: 'playFunctionThrewException',
+// STORY_FINISHED: 'storyFinished',
+// STORY_MISSING: 'storyMissing',
+export function selectStory(
+  [storyId, globals]: [string, StorybookGlobals | undefined],
+  callback?: (error: string | null) => void,
+): void {
   const STORYBOOK_EVENTS = {
     SET_STORIES: 'setStories',
     SET_CURRENT_STORY: 'setCurrentStory',
@@ -29,6 +34,7 @@ export async function selectStory(storyId: string, callback?: (error: string | n
     UPDATE_STORY_ARGS: 'updateStoryArgs',
     SET_GLOBALS: 'setGlobals',
     UPDATE_GLOBALS: 'updateGlobals',
+    GLOBALS_UPDATED: 'globalsUpdated',
   };
 
   const addonsChannel = (): Channel => window.__STORYBOOK_ADDONS_CHANNEL__;
@@ -90,11 +96,13 @@ export async function selectStory(storyId: string, callback?: (error: string | n
     }
     function removeHandlers(): void {
       channel.off(STORYBOOK_EVENTS.STORY_ERRORED, errorHandler);
-      channel.off(STORYBOOK_EVENTS.STORY_THREW_EXCEPTION, errorHandler);
+      channel.off(STORYBOOK_EVENTS.STORY_THREW_EXCEPTION, exceptionHandler);
+      // channel.off(STORYBOOK_EVENTS.PLAY_FUNCTION_THREW_EXCEPTION, exceptionHandler);
     }
 
     channel.once(STORYBOOK_EVENTS.STORY_ERRORED, errorHandler);
     channel.once(STORYBOOK_EVENTS.STORY_THREW_EXCEPTION, exceptionHandler);
+    // channel.once(STORYBOOK_EVENTS.PLAY_FUNCTION_THREW_EXCEPTION, exceptionHandler);
 
     return Object.assign(promise, { cancel: removeHandlers });
   }
@@ -132,34 +140,37 @@ export async function selectStory(storyId: string, callback?: (error: string | n
   setTimeout(() => {
     if (storyId == currentStory) channel.emit(STORYBOOK_EVENTS.FORCE_REMOUNT, { storyId });
     else channel.emit(STORYBOOK_EVENTS.SET_CURRENT_STORY, { storyId });
+    channel.emit(STORYBOOK_EVENTS.UPDATE_GLOBALS, { globals });
   }, 0);
 
-  try {
-    await Promise.race([
-      (async () => {
-        await renderPromise;
-        await waitForFontsLoaded();
-      })(),
-      errorPromise,
-    ]);
-    if (callback) callback(null);
-    return null;
-  } catch (reason) {
-    // NOTE Event `STORY_THREW_EXCEPTION` triggered only in react and vue frameworks and return Error instance
-    // NOTE Event `STORY_ERRORED` return error-like object without `name` field
-    const errorMessage =
-      reason instanceof Error
-        ? // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-          reason.stack || reason.message
-        : isObject(reason)
-          ? `${reason.message as string}\n    ${reason.stack as string}`
-          : (reason as string);
-    if (callback) callback(errorMessage);
-    return errorMessage;
-  } finally {
-    renderPromise.cancel();
-    errorPromise.cancel();
-  }
+  void (async () => {
+    try {
+      await Promise.race([
+        (async () => {
+          await renderPromise;
+          await waitForFontsLoaded();
+        })(),
+        errorPromise,
+      ]);
+      if (callback) callback(null);
+      window.__CREEVEY_SELECT_STORY_RESULT__ = { status: 'success' };
+    } catch (reason) {
+      // NOTE Event `STORY_THREW_EXCEPTION` triggered only in react and vue frameworks and return Error instance
+      // NOTE Event `STORY_ERRORED` return error-like object without `name` field
+      const errorMessage =
+        reason instanceof Error
+          ? // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+            reason.stack || reason.message
+          : isObject(reason)
+            ? `${reason.message as string}\n    ${reason.stack as string}`
+            : (reason as string);
+      if (callback) callback(errorMessage);
+      window.__CREEVEY_SELECT_STORY_RESULT__ = { status: 'error', message: errorMessage };
+    } finally {
+      renderPromise.cancel();
+      errorPromise.cancel();
+    }
+  })();
 }
 
 export function insertIgnoreStyles(ignoreSelectors: string[]): HTMLStyleElement {
@@ -258,53 +269,4 @@ export async function getStories(callback?: (stories: StoriesRaw) => void): Prom
   const serializedStories = serializeRawStories(stories);
   if (callback) callback(serializedStories);
   return serializedStories;
-}
-
-export function updateGlobals(newGlobals: StorybookGlobals): void {
-  const addonsChannel = (): Channel => window.__STORYBOOK_ADDONS_CHANNEL__;
-
-  const STORYBOOK_EVENTS = {
-    UPDATE_GLOBALS: 'updateGlobals',
-  };
-
-  // const isEqual = (a: unknown, b: unknown): boolean => {
-  //   if (Object.is(a, b)) return true;
-  //   if (typeof a !== 'object' || a === null || typeof b !== 'object' || b === null) return false;
-
-  //   // Dates
-  //   if (a instanceof Date && b instanceof Date) return a.getTime() === b.getTime();
-  //   // RegExp
-  //   if (a instanceof RegExp && b instanceof RegExp) return a.toString() === b.toString();
-
-  //   // Arrays
-  //   const aIsArray = Array.isArray(a);
-  //   const bIsArray = Array.isArray(b);
-  //   if (aIsArray || bIsArray) {
-  //     if (!aIsArray || !bIsArray) return false;
-  //     const aArr = a as unknown[];
-  //     const bArr = b as unknown[];
-  //     if (aArr.length !== bArr.length) return false;
-  //     for (let i = 0; i < aArr.length; i += 1) {
-  //       if (!isEqual(aArr[i], bArr[i])) return false;
-  //     }
-  //     return true;
-  //   }
-
-  //   // Objects
-  //   const aObj = a as Record<string, unknown>;
-  //   const bObj = b as Record<string, unknown>;
-  //   const aKeys = Object.keys(aObj);
-  //   const bKeys = Object.keys(bObj);
-  //   if (aKeys.length !== bKeys.length) return false;
-  //   for (const key of aKeys) {
-  //     if (!Object.prototype.hasOwnProperty.call(bObj, key)) return false;
-  //     if (!isEqual(aObj[key], bObj[key])) return false;
-  //   }
-  //   return true;
-  // };
-
-  // if (isEqual(window.__CREEVEY_GLOBALS__, newGlobals)) return;
-
-  // window.__CREEVEY_GLOBALS__ = newGlobals;
-  addonsChannel().emit(STORYBOOK_EVENTS.UPDATE_GLOBALS, { globals: newGlobals });
 }
