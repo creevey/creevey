@@ -1,6 +1,6 @@
 /// <reference types="../../../types/selenium-context" />
 import type { Args } from 'storybook/internal/types';
-import { Config, StoryInput, StoriesRaw, ServerTest, WorkerOptions } from '../../types.js';
+import { Config, StoryInput, StoriesRaw, WorkerOptions } from '../../types.js';
 import { subscribeOn } from '../messages.js';
 import { CreeveyWebdriverBase } from '../webdriver.js';
 import type { InternalBrowser } from './internal.js';
@@ -88,12 +88,12 @@ export class SeleniumWebdriver extends CreeveyWebdriverBase {
     return this.#browser.loadStoriesFromBrowser();
   }
 
-  afterTest(test: ServerTest): Promise<void> {
+  async afterTest(): Promise<void> {
     if (!this.#browser) {
       throw new Error('Browser is not initialized');
     }
 
-    return this.#browser.afterTest(test);
+    return this.#browser.afterTest();
   }
 
   protected async takeScreenshot(

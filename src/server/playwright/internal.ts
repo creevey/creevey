@@ -99,6 +99,7 @@ export class InternalBrowser {
   #sessionId: string = v4();
   #debug: boolean;
   #storybookGlobals?: StorybookGlobals;
+  #shouldReinit = false;
   constructor(
     browser: Browser,
     context: BrowserContext,
@@ -166,30 +167,41 @@ export class InternalBrowser {
   }
 
   async selectStory(id: string): Promise<void> {
-    // NOTE: Global variables might be reset after hot reload. I think it's workaround, maybe we need better solution
-    await this.defineGlobalNameFunction();
+    if (this.#shouldReinit) {
+      this.#shouldReinit = false;
+      const done = await this.initStorybook();
+      if (!done) return;
+    }
+
     await this.resetMousePosition();
 
     logger().debug(`Triggering 'SetCurrentStory' event with storyId ${chalk.magenta(id)}`);
 
-    const watcher = this.#page.waitForFunction(() => window.__CREEVEY_SELECT_STORY_RESULT__);
+    const reloadWatcher = this.#page.waitForFunction((id) => id !== window.__CREEVEY_SESSION_ID__, this.#sessionId);
+    const resultWatcher = this.#page.waitForFunction(() => window.__CREEVEY_SELECT_STORY_RESULT__);
 
-    void this.#page.evaluate<unknown, [string, StorybookGlobals | undefined]>(selectStory, [
-      id,
-      this.#storybookGlobals,
-    ]);
+    void this.#page.evaluate<unknown, string>(selectStory, id);
 
-    const jsHandler = await watcher;
-    const result = await jsHandler.jsonValue();
-    void jsHandler.dispose();
+    await Promise.race([reloadWatcher, resultWatcher]);
 
-    if (result?.status === 'error') throw new Error(result.message);
+    const result = await this.#page.evaluate(() => window.__CREEVEY_SELECT_STORY_RESULT__);
+
+    if (!result) {
+      logger().debug('Storybook page has been reloaded during story selection');
+      const done = await this.initStorybook();
+      if (!done) return;
+    }
+
+    if (result?.status === 'error') {
+      throw new Error(`Failed to select story: ${result.message}`);
+    }
   }
 
   async updateStoryArgs(story: StoryInput, updatedArgs: Args): Promise<void> {
     await this.#page.evaluate(
       ([storyId, updatedArgs, UPDATE_STORY_ARGS, STORY_RENDERED]) => {
         return new Promise((resolve) => {
+          // TODO Check if it's right way to wait for story to be rendered
           window.__STORYBOOK_ADDONS_CHANNEL__.once(STORY_RENDERED, resolve);
           window.__STORYBOOK_ADDONS_CHANNEL__.emit(UPDATE_STORY_ARGS, {
             storyId,
@@ -314,13 +326,38 @@ export class InternalBrowser {
 
     this.#page.setDefaultTimeout(60000);
 
+    await this.#page.addInitScript(() => {
+      function check() {
+        if (
+          typeof window.__STORYBOOK_PREVIEW__ === 'undefined' ||
+          typeof window.__STORYBOOK_ADDONS_CHANNEL__ === 'undefined' ||
+          window.__STORYBOOK_ADDONS_CHANNEL__.last('setGlobals') === undefined
+        ) {
+          requestAnimationFrame(check);
+          return;
+        }
+
+        if ('ready' in window.__STORYBOOK_PREVIEW__) {
+          // NOTE: Storybook <= 7.x doesn't have ready() method
+          void window.__STORYBOOK_PREVIEW__.ready().then(() => (window.__CREEVYE_STORYBOOK_READY__ = true));
+        } else {
+          window.__CREEVYE_STORYBOOK_READY__ = true;
+        }
+      }
+      window.addEventListener('load', check);
+    });
+
     return await runSequence(
-      [
-        () => this.openStorybookPage(storybookUrl),
-        () => this.waitForStorybook(),
-        () => this.triggerViteReload(),
-        () => this.defineGlobalNameFunction(),
-      ],
+      [() => this.openStorybookPage(storybookUrl), () => this.initStorybook()],
+      () => !this.#isShuttingDown,
+    );
+  }
+
+  private async initStorybook() {
+    await this.#page.evaluate((id) => (window.__CREEVEY_SESSION_ID__ = id), this.#sessionId);
+
+    return await runSequence(
+      [() => this.waitForStorybook(), () => this.loadStorybookStories(), () => this.defineGlobals()],
       () => !this.#isShuttingDown,
     );
   }
@@ -359,45 +396,25 @@ export class InternalBrowser {
   private async waitForStorybook(): Promise<void> {
     logger().debug('Waiting for Storybook to initiate');
 
-    const isTimeout = await Promise.race([
-      new Promise<boolean>((resolve) => {
-        setTimeout(() => {
-          resolve(true);
-        }, 60000);
-      }),
-      (async () => {
-        let wait = true;
-        do {
-          if (this.#page.isClosed()) return false;
-          try {
-            // TODO Research a different way to ensure storybook is initiated
-            wait = await this.#page.evaluate((SET_GLOBALS: string) => {
-              if (typeof window.__STORYBOOK_ADDONS_CHANNEL__ == 'undefined') return true;
-              if (window.__STORYBOOK_ADDONS_CHANNEL__.last(SET_GLOBALS) == undefined) return true;
-              return false;
-            }, StorybookEvents.SET_GLOBALS);
-          } catch (e: unknown) {
-            logger().debug('An error has been caught during the script:', e);
-            if (this.#page.isClosed()) throw e;
-          }
-          if (wait) await new Promise((resolve) => setTimeout(resolve, 1000));
-        } while (wait);
-        return false;
-      })(),
-    ]);
-
-    if (isTimeout) throw new Error('Failed to wait Storybook init');
+    await this.#page.waitForFunction(() => window.__CREEVYE_STORYBOOK_READY__);
   }
 
-  // TODO Doesn't work for some reason, maybe because of race-condition
-  private async triggerViteReload(): Promise<void> {
-    // NOTE: On the first load, Vite might try to optimize some dependencies and reload the page
-    // We need to trigger reload earlier to avoid unnecessary reloads further
-    try {
-      await this.#page.evaluate(async () => {
-        await window.__STORYBOOK_PREVIEW__.extract();
+  private async loadStorybookStories(): Promise<void> {
+    logger().debug('Loading Storybook stories');
+
+    const storiesWatcher = this.#page.waitForFunction(() => window.__CREEVEY_STORYBOOK_STORIES__);
+    const reloadWatcher = this.#page.waitForFunction((id) => id !== window.__CREEVEY_SESSION_ID__, this.#sessionId);
+
+    void this.#page.evaluate(() => {
+      void window.__STORYBOOK_PREVIEW__.extract().then((stories) => {
+        window.__CREEVEY_STORYBOOK_STORIES__ = stories;
       });
-    } catch {
+    });
+
+    const type = await Promise.race([storiesWatcher.then(() => 'stories'), reloadWatcher.then(() => 'reload')]);
+
+    if (type === 'reload') {
+      logger().debug('Storybook page reloaded');
       await this.waitForStorybook();
     }
   }
@@ -407,11 +424,23 @@ export class InternalBrowser {
     await this.#page.mouse.move(0, 0);
   }
 
-  private async defineGlobalNameFunction(): Promise<void> {
-    await this.#page.evaluate(() => {
-      window.__CREEVEY_SELECT_STORY_RESULT__ = null;
+  private async defineGlobals(): Promise<void> {
+    logger().debug('Defining Storybook globals');
+    const globalsWatcher = this.#page.waitForFunction(() => window.__CREEVEY_STORYBOOK_GLOBALS__);
+
+    void this.#page.evaluate((userGlobals) => {
       // @ts-expect-error https://github.com/evanw/esbuild/issues/2605#issuecomment-2050808084
       window.__name = (func: unknown) => func;
-    });
+      if (userGlobals) {
+        window.__STORYBOOK_ADDONS_CHANNEL__.once('globalsUpdated', ({ globals }: { globals: StorybookGlobals }) => {
+          window.__CREEVEY_STORYBOOK_GLOBALS__ = globals;
+        });
+        window.__STORYBOOK_ADDONS_CHANNEL__.emit('updateGlobals', { globals: userGlobals });
+      } else {
+        window.__CREEVEY_STORYBOOK_GLOBALS__ = {};
+      }
+    }, this.#storybookGlobals);
+
+    await globalsWatcher;
   }
 }

@@ -7,8 +7,13 @@ import type { SerializedRegExp } from '../shared/serializeRegExp.js';
 declare global {
   interface Window {
     __CREEVEY_ANIMATION_DISABLED__: boolean;
+    __CREEVEY_SESSION_ID__: string;
+    __CREEVYE_STORYBOOK_READY__: boolean;
+    __CREEVEY_STORYBOOK_STORIES__: undefined | StoriesRaw;
+    __CREEVEY_STORYBOOK_GLOBALS__: undefined | StorybookGlobals;
     __CREEVEY_SELECT_STORY_RESULT__: null | { status: 'success' } | { status: 'error'; message: string };
     __STORYBOOK_ADDONS_CHANNEL__: Channel;
+    __STORYBOOK_MODULE_CORE_EVENTS__: Record<string, string>;
     __STORYBOOK_STORY_STORE__: StoryStore<Renderer>;
     __STORYBOOK_PREVIEW__: PreviewWeb<Renderer>;
   }
@@ -16,21 +21,17 @@ declare global {
 
 // TODO Use StorybookEvents.STORY_RENDER_PHASE_CHANGED: `loading/rendering/completed` with storyId
 // TODO Check other statuses and statuses with play function
-// TODO: New events
-// PLAY_FUNCTION_THREW_EXCEPTION: 'playFunctionThrewException',
-// STORY_FINISHED: 'storyFinished',
-// STORY_MISSING: 'storyMissing',
-export function selectStory(
-  [storyId, globals]: [string, StorybookGlobals | undefined],
-  callback?: (error: string | null) => void,
-): void {
+export function selectStory(storyId: string, callback?: (error: string | null) => void): void {
   const STORYBOOK_EVENTS = {
     SET_STORIES: 'setStories',
     SET_CURRENT_STORY: 'setCurrentStory',
     FORCE_REMOUNT: 'forceRemount',
     STORY_RENDERED: 'storyRendered',
+    STORY_FINISHED: 'storyFinished',
     STORY_ERRORED: 'storyErrored',
+    // STORY_MISSING: 'storyMissing',
     STORY_THREW_EXCEPTION: 'storyThrewException',
+    PLAY_FUNCTION_THREW_EXCEPTION: 'playFunctionThrewException',
     UPDATE_STORY_ARGS: 'updateStoryArgs',
     SET_GLOBALS: 'setGlobals',
     UPDATE_GLOBALS: 'updateGlobals',
@@ -97,12 +98,14 @@ export function selectStory(
     function removeHandlers(): void {
       channel.off(STORYBOOK_EVENTS.STORY_ERRORED, errorHandler);
       channel.off(STORYBOOK_EVENTS.STORY_THREW_EXCEPTION, exceptionHandler);
-      // channel.off(STORYBOOK_EVENTS.PLAY_FUNCTION_THREW_EXCEPTION, exceptionHandler);
+      channel.off(STORYBOOK_EVENTS.PLAY_FUNCTION_THREW_EXCEPTION, exceptionHandler);
     }
 
     channel.once(STORYBOOK_EVENTS.STORY_ERRORED, errorHandler);
     channel.once(STORYBOOK_EVENTS.STORY_THREW_EXCEPTION, exceptionHandler);
-    // channel.once(STORYBOOK_EVENTS.PLAY_FUNCTION_THREW_EXCEPTION, exceptionHandler);
+    if (window.__STORYBOOK_MODULE_CORE_EVENTS__.PLAY_FUNCTION_THREW_EXCEPTION) {
+      channel.once(STORYBOOK_EVENTS.PLAY_FUNCTION_THREW_EXCEPTION, exceptionHandler);
+    }
 
     return Object.assign(promise, { cancel: removeHandlers });
   }
@@ -114,10 +117,16 @@ export function selectStory(
       resolveCallback();
     }
     function removeHandlers(): void {
+      channel.off(STORYBOOK_EVENTS.STORY_FINISHED, renderHandler);
       channel.off(STORYBOOK_EVENTS.STORY_RENDERED, renderHandler);
     }
 
-    channel.once(STORYBOOK_EVENTS.STORY_RENDERED, renderHandler);
+    if (window.__STORYBOOK_MODULE_CORE_EVENTS__.STORY_FINISHED) {
+      channel.once(STORYBOOK_EVENTS.STORY_FINISHED, renderHandler);
+    } else {
+      // NOTE: Earlier versions of Storybook don't have STORY_FINISHED event
+      channel.once(STORYBOOK_EVENTS.STORY_RENDERED, renderHandler);
+    }
 
     return Object.assign(promise, { cancel: removeHandlers });
   }
@@ -140,7 +149,6 @@ export function selectStory(
   setTimeout(() => {
     if (storyId == currentStory) channel.emit(STORYBOOK_EVENTS.FORCE_REMOUNT, { storyId });
     else channel.emit(STORYBOOK_EVENTS.SET_CURRENT_STORY, { storyId });
-    channel.emit(STORYBOOK_EVENTS.UPDATE_GLOBALS, { globals });
   }, 0);
 
   void (async () => {
@@ -211,16 +219,6 @@ export async function getStories(callback?: (stories: StoriesRaw) => void): Prom
       flags,
     };
   }
-  function mapValues<T extends Record<string, unknown>, R>(
-    obj: T,
-    iteratee: (value: T[keyof T], key: keyof T) => R,
-  ): { [K in keyof T]: R } {
-    const result = {} as { [K in keyof T]: R };
-    (Object.keys(obj) as (keyof T)[]).forEach((key) => {
-      result[key] = iteratee(obj[key], key);
-    });
-    return result;
-  }
 
   function cloneDeepWith<T>(value: T, customizer: (value: unknown) => unknown): T {
     const customized = customizer(value);
@@ -241,32 +239,24 @@ export async function getStories(callback?: (stories: StoriesRaw) => void): Prom
     return value;
   }
 
-  function serializeRawStories(stories: StoriesRaw): StoriesRaw {
-    return mapValues(stories, (storyData) => {
-      const creevey = storyData.parameters.creevey as CreeveyStoryParams | undefined;
-      const skip = creevey ? creevey.skip : undefined;
-      if (skip) {
-        return {
-          ...storyData,
-          parameters: {
-            ...storyData.parameters,
-            creevey: {
-              ...creevey,
-              skip: cloneDeepWith(skip, (value) => {
-                if (isRegExp(value)) {
-                  return serializeRegExp(value);
-                }
-                return undefined;
-              }) as CreeveyStoryParams['skip'],
-            },
-          },
-        };
+  function serializeRawStories(stories: StoriesRaw) {
+    for (const storyId in stories) {
+      const story = stories[storyId];
+      const creevey = story.parameters.creevey as CreeveyStoryParams | undefined;
+      if (creevey && 'skip' in creevey && creevey.skip) {
+        creevey.skip = cloneDeepWith(creevey.skip, (value) => {
+          if (isRegExp(value)) {
+            return serializeRegExp(value);
+          }
+          return undefined;
+        }) as CreeveyStoryParams['skip'];
       }
-      return storyData;
-    });
+    }
   }
+
   const stories = await window.__STORYBOOK_PREVIEW__.extract();
-  const serializedStories = serializeRawStories(stories);
-  if (callback) callback(serializedStories);
-  return serializedStories;
+  serializeRawStories(stories);
+  window.__CREEVEY_STORYBOOK_STORIES__ = stories;
+  if (callback) callback(stories);
+  return stories;
 }

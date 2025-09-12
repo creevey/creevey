@@ -20,12 +20,11 @@ import {
   StoryInput,
   StoriesRaw,
   WorkerOptions,
-  ServerTest,
   StorybookEvents,
 } from '../../types.js';
 import { colors, logger } from '../logger.js';
 import { emitWorkerMessage, subscribeOn } from '../messages.js';
-import { getTestPath, isShuttingDown, runSequence } from '../utils.js';
+import { isShuttingDown, runSequence } from '../utils.js';
 import { appendIframePath, LOCALHOST_REGEXP, resolveStorybookUrl, storybookRootID } from '../webdriver.js';
 import { getStories, insertIgnoreStyles, removeIgnoreStyles, selectStory } from '../storybook-helpers.js';
 
@@ -110,7 +109,7 @@ async function buildWebdriver(
   });
   const prefs = new logging.Preferences();
 
-  if (options.trace) {
+  if (options.debug) {
     for (const type of Object.values(logging.Type)) {
       prefs.setLevel(type as string, logging.Level.ALL);
     }
@@ -187,6 +186,7 @@ export class InternalBrowser {
   #storybookGlobals?: StorybookGlobals;
   #unsubscribe: () => void = noop;
   #keepAliveInterval: NodeJS.Timeout | null = null;
+  #sessionId = '';
   constructor(browser: WebDriver, storybookGlobals?: StorybookGlobals) {
     this.#browser = browser;
     this.#storybookGlobals = storybookGlobals;
@@ -302,18 +302,51 @@ export class InternalBrowser {
   }
 
   async selectStory(id: string): Promise<void> {
-    // NOTE: Global variables might be reset after hot reload. I think it's workaround, maybe we need better solution
-    await this.defineGlobalNameFunction();
+    const sessionId = await this.#browser.executeScript(() => window.__CREEVEY_SESSION_ID__);
+    if (sessionId !== this.#sessionId) {
+      const done = await this.initStorybook();
+      if (!done) return;
+    }
+
     await this.resetMousePosition();
 
     logger().debug(`Triggering 'SetCurrentStory' event with storyId ${chalk.magenta(id)}`);
 
-    const errorMessage = await this.#browser.executeAsyncScript<string | null>(selectStory, [
-      id,
-      this.#storybookGlobals,
+    void this.#browser.executeScript<string | null>(selectStory, id);
+
+    const result = await Promise.race([
+      new Promise<{ type: 'timeout' }>((resolve) => {
+        setTimeout(() => {
+          resolve({ type: 'timeout' });
+        }, 60000);
+      }),
+      (async () => {
+        for (;;) {
+          const selectResult = await this.#browser.executeScript<typeof window.__CREEVEY_SELECT_STORY_RESULT__>(
+            () => window.__CREEVEY_SELECT_STORY_RESULT__,
+          );
+          if (selectResult) return { type: 'select', ...selectResult } as const;
+          await new Promise((resolve) => setTimeout(resolve, 100));
+        }
+      })(),
+      (async () => {
+        for (;;) {
+          const id = await this.#browser.executeScript(() => window.__CREEVEY_SESSION_ID__);
+          if (id !== this.#sessionId) return { type: 'reload' } as const;
+          await new Promise((resolve) => setTimeout(resolve, 100));
+        }
+      })(),
     ]);
 
-    if (errorMessage) throw new Error(errorMessage);
+    if (result.type === 'timeout') throw new Error('Story selection timed out');
+    if (result.type === 'reload') {
+      logger().debug('Storybook page has been reloaded during story selection');
+      const done = await this.initStorybook();
+      if (!done) return;
+    }
+    if (result.type === 'select' && result.status === 'error') {
+      throw new Error(`Failed to select story: ${result.message}`);
+    }
   }
 
   async updateStoryArgs(story: StoryInput, updatedArgs: Args): Promise<void> {
@@ -342,21 +375,13 @@ export class InternalBrowser {
     return await this.#browser.executeAsyncScript(getStories);
   }
 
-  async afterTest(test: ServerTest): Promise<void> {
-    if (logger().getLevel() === Logger.levels.TRACE) {
-      const output: string[] = [];
-      const types = await this.#browser.manage().logs().getAvailableLogTypes();
-      for (const type of types) {
-        const logs = await this.#browser.manage().logs().get(type);
-        output.push(logs.map((log) => JSON.stringify(log.toJSON(), null, 2)).join('\n'));
+  async afterTest(): Promise<void> {
+    if (logger().getLevel() <= Logger.levels.DEBUG) {
+      const logs = await this.#browser.manage().logs().get('browser');
+
+      for (const log of logs) {
+        logger().debug(`Console message: ${new Date(log.timestamp).toISOString()} - ${log.message}`);
       }
-      logger().debug(
-        '----------',
-        getTestPath(test).join('/'),
-        '----------\n',
-        output.join('\n'),
-        '\n----------------------------------------------------------------------------------------------------',
-      );
     }
   }
 
@@ -438,12 +463,13 @@ export class InternalBrowser {
 
     logger().debug(`Connected successful with ${chalk.green(browserHost)}`);
 
+    this.#sessionId = sessionId;
+
     return await runSequence(
       [
         () => this.#browser.manage().setTimeouts({ pageLoad: 60000, script: 60000 }),
         () => this.openStorybookPage(storybookUrl),
-        () => this.waitForStorybook(),
-        () => this.defineGlobalNameFunction(),
+        () => this.initStorybook(),
         // NOTE: Selenium draws automation toolbar with some delay after webdriver initialization
         // NOTE: So if we resize window right after getting webdriver instance we might get situation
         // NOTE: When the toolbar appears after resize and final viewport size become smaller than we set
@@ -452,6 +478,15 @@ export class InternalBrowser {
           this.keepAlive();
         },
       ],
+      () => !this.#isShuttingDown,
+    );
+  }
+
+  private async initStorybook() {
+    await this.#browser.executeScript((id: string) => (window.__CREEVEY_SESSION_ID__ = id), this.#sessionId);
+
+    return await runSequence(
+      [() => this.waitForStorybook(), () => this.loadStorybookStories(), () => this.defineGlobals()],
       () => !this.#isShuttingDown,
     );
   }
@@ -501,6 +536,29 @@ export class InternalBrowser {
   private async waitForStorybook(): Promise<void> {
     logger().debug('Waiting for Storybook to initiate');
 
+    void this.#browser.executeScript(function () {
+      function check() {
+        if (
+          typeof window.__STORYBOOK_PREVIEW__ === 'undefined' ||
+          typeof window.__STORYBOOK_ADDONS_CHANNEL__ === 'undefined' ||
+          window.__STORYBOOK_ADDONS_CHANNEL__.last('setGlobals') === undefined
+        ) {
+          requestAnimationFrame(check);
+          return;
+        }
+
+        if ('ready' in window.__STORYBOOK_PREVIEW__) {
+          // NOTE: Storybook <= 7.x doesn't have ready() method
+          void window.__STORYBOOK_PREVIEW__.ready().then(() => (window.__CREEVYE_STORYBOOK_READY__ = true));
+        } else {
+          window.__CREEVYE_STORYBOOK_READY__ = true;
+        }
+      }
+
+      if (document.readyState === 'complete') requestAnimationFrame(check);
+      else document.addEventListener('load', check);
+    });
+
     const isTimeout = await Promise.race([
       new Promise<boolean>((resolve) => {
         setTimeout(() => {
@@ -508,28 +566,65 @@ export class InternalBrowser {
         }, 60000);
       }),
       (async () => {
-        let wait = true;
-        do {
-          // TODO Research a different way to ensure storybook is initiated
-          wait = await this.#browser.executeScript<boolean>(function (SET_GLOBALS: string): boolean {
-            if (typeof window.__STORYBOOK_ADDONS_CHANNEL__ == 'undefined') return true;
-            if (window.__STORYBOOK_ADDONS_CHANNEL__.last(SET_GLOBALS) == undefined) return true;
-            return false;
-          }, StorybookEvents.SET_GLOBALS);
-        } while (wait);
-        return false;
+        for (;;) {
+          if (await this.#browser.executeScript(() => window.__CREEVYE_STORYBOOK_READY__)) return false;
+          else await new Promise((resolve) => setTimeout(resolve, 100));
+        }
       })(),
     ]);
 
     if (isTimeout) throw new Error('Failed to wait Storybook init');
   }
 
-  private async defineGlobalNameFunction(): Promise<void> {
-    await this.#browser.executeScript(function () {
-      window.__CREEVEY_SELECT_STORY_RESULT__ = null;
+  private async loadStorybookStories() {
+    logger().debug('Loading Storybook stories');
+
+    void this.#browser.executeScript(() => {
+      void window.__STORYBOOK_PREVIEW__.extract().then((stories) => {
+        window.__CREEVEY_STORYBOOK_STORIES__ = stories;
+      });
+    });
+
+    const result = await Promise.race([
+      new Promise<{ type: 'timeout' }>((resolve) => {
+        setTimeout(() => {
+          resolve({ type: 'timeout' });
+        }, 60000);
+      }),
+      (async () => {
+        for (;;) {
+          const hasStories = await this.#browser.executeScript(() => Boolean(window.__CREEVEY_STORYBOOK_STORIES__));
+          if (hasStories) return { type: 'stories' };
+          await new Promise((resolve) => setTimeout(resolve, 100));
+        }
+      })(),
+      (async () => {
+        for (;;) {
+          const id = await this.#browser.executeScript(() => window.__CREEVEY_SESSION_ID__);
+          if (id !== this.#sessionId) return { type: 'reload' };
+          await new Promise((resolve) => setTimeout(resolve, 100));
+        }
+      })(),
+    ]);
+
+    if (result.type === 'timeout') throw new Error('Failed to load Storybook stories');
+    if (result.type === 'reload') await this.waitForStorybook();
+  }
+
+  private async defineGlobals(): Promise<void> {
+    logger().debug('Defining Storybook globals');
+    await this.#browser.executeAsyncScript(function (userGlobals: StorybookGlobals | undefined, callback: () => void) {
       // @ts-expect-error https://github.com/evanw/esbuild/issues/2605#issuecomment-2050808084
       window.__name = (func: unknown) => func;
-    });
+      if (userGlobals) {
+        window.__STORYBOOK_ADDONS_CHANNEL__.once('globalsUpdated', () => {
+          callback();
+        });
+        window.__STORYBOOK_ADDONS_CHANNEL__.emit('updateGlobals', { globals: userGlobals });
+      } else {
+        callback();
+      }
+    }, this.#storybookGlobals);
   }
 
   private async resizeViewport(viewport?: { width: number; height: number }): Promise<void> {
