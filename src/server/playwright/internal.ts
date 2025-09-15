@@ -178,13 +178,25 @@ export class InternalBrowser {
     logger().debug(`Triggering 'SetCurrentStory' event with storyId ${chalk.magenta(id)}`);
 
     const reloadWatcher = this.#page.waitForFunction((id) => id !== window.__CREEVEY_SESSION_ID__, this.#sessionId);
-    const resultWatcher = this.#page.waitForFunction(() => window.__CREEVEY_SELECT_STORY_RESULT__);
+    const selectWatcher = this.#page.waitForFunction(() => window.__CREEVEY_SELECT_STORY_RESULT__);
 
     void this.#page.evaluate<unknown, string>(selectStory, id);
 
-    await Promise.race([reloadWatcher, resultWatcher]);
+    await Promise.race([reloadWatcher, selectWatcher]);
 
-    const result = await this.#page.evaluate(() => window.__CREEVEY_SELECT_STORY_RESULT__);
+    let result = null;
+
+    try {
+      result = await this.#page.evaluate(() => window.__CREEVEY_SELECT_STORY_RESULT__);
+    } catch (error) {
+      // TODO: Debug why select watcher resolved, but we still fail with execution context destroyed
+      // Maybe we need to wait for page to be fully loaded???
+      if (error instanceof Error && error.message.includes('Execution context was destroyed')) {
+        // Ignore error
+      } else {
+        throw error;
+      }
+    }
 
     if (!result) {
       logger().debug('Storybook page has been reloaded during story selection');
