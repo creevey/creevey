@@ -161,7 +161,9 @@ async function buildWebdriver(
           // context = await BrowsingContext(driver, { browsingContextId: id });
 
           if (retry != retries) {
-            void driver.quit();
+            void driver.quit().catch(() => {
+              /* noop */
+            });
             return null;
           }
 
@@ -312,29 +314,29 @@ export class InternalBrowser {
 
     logger().debug(`Triggering 'SetCurrentStory' event with storyId ${chalk.magenta(id)}`);
 
-    void this.#browser.executeScript<string | null>(selectStory, id);
+    void this.#browser.executeScript<string | null>(selectStory, id).catch(() => {
+      /* noop */
+    });
 
+    let isWaitingForStory = true;
     const result = await Promise.race([
       new Promise<{ type: 'timeout' }>((resolve) => {
         setTimeout(() => {
+          isWaitingForStory = false;
           resolve({ type: 'timeout' });
         }, 60000);
       }),
       (async () => {
-        for (;;) {
-          const selectResult = await this.#browser.executeScript<typeof window.__CREEVEY_SELECT_STORY_RESULT__>(
-            () => window.__CREEVEY_SELECT_STORY_RESULT__,
-          );
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        while (isWaitingForStory) {
+          const [selectResult, sessionId] = await this.#browser.executeScript<
+            [typeof window.__CREEVEY_SELECT_STORY_RESULT__, typeof window.__CREEVEY_SESSION_ID__]
+          >(() => [window.__CREEVEY_SELECT_STORY_RESULT__, window.__CREEVEY_SESSION_ID__]);
           if (selectResult) return { type: 'select', ...selectResult } as const;
+          if (sessionId !== this.#sessionId) return { type: 'reload' } as const;
           await new Promise((resolve) => setTimeout(resolve, 100));
         }
-      })(),
-      (async () => {
-        for (;;) {
-          const id = await this.#browser.executeScript(() => window.__CREEVEY_SESSION_ID__);
-          if (id !== this.#sessionId) return { type: 'reload' } as const;
-          await new Promise((resolve) => setTimeout(resolve, 100));
-        }
+        return { type: 'timeout' } as const;
       })(),
     ]);
 
@@ -536,40 +538,48 @@ export class InternalBrowser {
   private async waitForStorybook(): Promise<void> {
     logger().debug('Waiting for Storybook to initiate');
 
-    void this.#browser.executeScript(function () {
-      function check() {
-        if (
-          typeof window.__STORYBOOK_PREVIEW__ === 'undefined' ||
-          typeof window.__STORYBOOK_ADDONS_CHANNEL__ === 'undefined' ||
-          window.__STORYBOOK_ADDONS_CHANNEL__.last('setGlobals') === undefined
-        ) {
-          requestAnimationFrame(check);
-          return;
+    void this.#browser
+      .executeScript(function () {
+        requestAnimationFrame(check);
+
+        function check() {
+          if (
+            document.readyState !== 'complete' ||
+            typeof window.__STORYBOOK_PREVIEW__ === 'undefined' ||
+            typeof window.__STORYBOOK_ADDONS_CHANNEL__ === 'undefined' ||
+            window.__STORYBOOK_ADDONS_CHANNEL__.last('setGlobals') === undefined
+          ) {
+            requestAnimationFrame(check);
+            return;
+          }
+
+          if ('ready' in window.__STORYBOOK_PREVIEW__) {
+            // NOTE: Storybook <= 7.x doesn't have ready() method
+            void window.__STORYBOOK_PREVIEW__.ready().then(() => (window.__CREEVYE_STORYBOOK_READY__ = true));
+          } else {
+            window.__CREEVYE_STORYBOOK_READY__ = true;
+          }
         }
+      })
+      .catch(() => {
+        /* noop */
+      });
 
-        if ('ready' in window.__STORYBOOK_PREVIEW__) {
-          // NOTE: Storybook <= 7.x doesn't have ready() method
-          void window.__STORYBOOK_PREVIEW__.ready().then(() => (window.__CREEVYE_STORYBOOK_READY__ = true));
-        } else {
-          window.__CREEVYE_STORYBOOK_READY__ = true;
-        }
-      }
-
-      if (document.readyState === 'complete') requestAnimationFrame(check);
-      else document.addEventListener('load', check);
-    });
-
+    let isWaitingForStorybook = true;
     const isTimeout = await Promise.race([
       new Promise<boolean>((resolve) => {
         setTimeout(() => {
+          isWaitingForStorybook = false;
           resolve(true);
         }, 60000);
       }),
       (async () => {
-        for (;;) {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        while (isWaitingForStorybook) {
           if (await this.#browser.executeScript(() => window.__CREEVYE_STORYBOOK_READY__)) return false;
           else await new Promise((resolve) => setTimeout(resolve, 100));
         }
+        return true;
       })(),
     ]);
 
@@ -579,31 +589,36 @@ export class InternalBrowser {
   private async loadStorybookStories() {
     logger().debug('Loading Storybook stories');
 
-    void this.#browser.executeScript(() => {
-      void window.__STORYBOOK_PREVIEW__.extract().then((stories) => {
-        window.__CREEVEY_STORYBOOK_STORIES__ = stories;
+    void this.#browser
+      .executeScript(() => {
+        void window.__STORYBOOK_PREVIEW__.extract().then((stories) => {
+          window.__CREEVEY_STORYBOOK_STORIES__ = stories;
+        });
+      })
+      .catch(() => {
+        /* noop */
       });
-    });
 
+    let isWaitingForStories = true;
     const result = await Promise.race([
       new Promise<{ type: 'timeout' }>((resolve) => {
         setTimeout(() => {
+          isWaitingForStories = false;
           resolve({ type: 'timeout' });
         }, 60000);
       }),
       (async () => {
-        for (;;) {
-          const hasStories = await this.#browser.executeScript(() => Boolean(window.__CREEVEY_STORYBOOK_STORIES__));
-          if (hasStories) return { type: 'stories' };
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        while (isWaitingForStories) {
+          const [hasStories, sessionId] = await this.#browser.executeScript<[boolean, string]>(() => [
+            Boolean(window.__CREEVEY_STORYBOOK_STORIES__),
+            window.__CREEVEY_SESSION_ID__,
+          ]);
+          if (hasStories) return { type: 'stories' } as const;
+          if (sessionId !== this.#sessionId) return { type: 'reload' } as const;
           await new Promise((resolve) => setTimeout(resolve, 100));
         }
-      })(),
-      (async () => {
-        for (;;) {
-          const id = await this.#browser.executeScript(() => window.__CREEVEY_SESSION_ID__);
-          if (id !== this.#sessionId) return { type: 'reload' };
-          await new Promise((resolve) => setTimeout(resolve, 100));
-        }
+        return { type: 'timeout' } as const;
       })(),
     ]);
 
