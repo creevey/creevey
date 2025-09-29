@@ -66,8 +66,13 @@ export default class Runner extends EventEmitter {
       .map((pool) => pool.on('test', this.handlePoolMessage));
   }
 
-  private handlePoolMessage = (message: { id: string; status: TestStatus; result?: TestResult }): void => {
-    const { id, status, result } = message;
+  private handlePoolMessage = (message: {
+    id: string;
+    workerId: number;
+    status: TestStatus;
+    result?: TestResult;
+  }): void => {
+    const { id, workerId, status, result } = message;
     const test = this.testsManager.getTest(id);
 
     if (!test) return;
@@ -92,7 +97,7 @@ export default class Runner extends EventEmitter {
       creevey: {
         sessionId: result?.sessionId ?? id,
         browserName: result?.browserName ?? browser,
-        workerId: result?.workerId ?? process.pid,
+        workerId,
         willRetry: (result?.retries ?? 0) < this.config.maxRetries,
         images: result?.images ?? {},
       },

@@ -90,7 +90,7 @@ export default class Pool extends EventEmitter {
     const { id } = test;
 
     this.queue.shift();
-    this.sendStatus({ id, status: 'running' });
+    this.sendStatus({ id, workerId: worker.id, status: 'running' });
 
     this.subscribe(worker, test);
 
@@ -101,7 +101,7 @@ export default class Pool extends EventEmitter {
     });
   }
 
-  private sendStatus(message: { id: string; status: TestStatus; result?: TestResult }): void {
+  private sendStatus(message: { id: string; workerId: number; status: TestStatus; result?: TestResult }): void {
     this.emit('test', message);
   }
 
@@ -147,7 +147,7 @@ export default class Pool extends EventEmitter {
       this.queue[this.failFast ? 'unshift' : 'push'](test);
     }
 
-    this.sendStatus({ id: test.id, status: shouldRetry ? 'retrying' : result.status, result });
+    this.sendStatus({ id: test.id, workerId: worker.id, status: shouldRetry ? 'retrying' : result.status, result });
 
     worker.isRunning = false;
 

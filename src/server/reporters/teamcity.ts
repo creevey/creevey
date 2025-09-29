@@ -8,29 +8,44 @@ export class TeamcityReporter {
     console.log("##teamcity[testRetrySupport enabled='true']");
 
     runner.on(TEST_EVENTS.RUN_BEGIN, () => {
-      console.log(`##teamcity[flowStarted flowId='${process.pid}']`);
       console.log(`##teamcity[testSuiteStarted name='${this.escape(topLevelSuite)}' flowId='${process.pid}']`);
     });
 
     runner.on(TEST_EVENTS.TEST_BEGIN, (test: FakeTest) => {
       const flowId = test.creevey.workerId;
-      const testName = this.escape(test.fullTitle());
+      const [testName, ...testPath] = test
+        .titlePath()
+        .map((title: string) => this.escape(title))
+        .reverse();
       console.log(`##teamcity[flowStarted flowId='${flowId}' parent='${process.pid}']`);
+
+      for (const title of testPath.reverse()) {
+        console.log(`##teamcity[testSuiteStarted name='${title}' flowId='${flowId}']`);
+      }
       console.log(`##teamcity[testStarted name='${testName}' flowId='${flowId}']`);
     });
 
     runner.on(TEST_EVENTS.TEST_PASS, (test: FakeTest) => {
       const flowId = test.creevey.workerId;
-      const testName = this.escape(test.fullTitle());
+      const [testName, ...testPath] = test
+        .titlePath()
+        .map((title: string) => this.escape(title))
+        .reverse();
       const duration = test.duration ?? 0;
       console.log(`##teamcity[testFinished name='${testName}' flowId='${flowId}' duration='${duration}']`);
+      for (const title of testPath.reverse()) {
+        console.log(`##teamcity[testSuiteFinished name='${title}' flowId='${flowId}']`);
+      }
       console.log(`##teamcity[flowFinished flowId='${flowId}']`);
     });
 
     runner.on(TEST_EVENTS.TEST_FAIL, (test: FakeTest, error: Error) => {
       const flowId = test.creevey.workerId;
       const duration = test.duration ?? 0;
-      const testName = this.escape(test.fullTitle());
+      const [testName, ...testPath] = test
+        .titlePath()
+        .map((title: string) => this.escape(title))
+        .reverse();
       const browserName = this.escape(test.creevey.browserName);
       const messageStr = error instanceof Error ? error.message : String(error);
       const detailsStr = error instanceof Error ? (error.stack ?? '') : '';
@@ -60,12 +75,14 @@ export class TeamcityReporter {
         )}' details='${this.escape(detailsStr)}' flowId='${flowId}' duration='${duration}']`,
       );
       console.log(`##teamcity[testFinished name='${testName}' flowId='${flowId}' duration='${duration}']`);
+      for (const title of testPath.reverse()) {
+        console.log(`##teamcity[testSuiteFinished name='${title}' flowId='${flowId}']`);
+      }
       console.log(`##teamcity[flowFinished flowId='${flowId}']`);
     });
 
     runner.on(TEST_EVENTS.RUN_END, () => {
       console.log(`##teamcity[testSuiteFinished name='${this.escape(topLevelSuite)}' flowId='${process.pid}']`);
-      console.log(`##teamcity[flowFinished flowId='${process.pid}']`);
     });
   }
 
