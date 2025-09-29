@@ -33,7 +33,11 @@ export async function startPlaywrightContainer(
       HostConfig: {
         PortBindings: { ['4444/tcp']: [{ HostPort: `${port}` }] },
         Binds: [`${cacheDir}/${process.pid}:/creevey/traces`],
+        // Mount current working directory with creevey and playwright-core
+        // VolumesFrom: [`${process.cwd()}`],
       },
+      // TODO Run creevey through package manager which starts pw server from index-source.mjs
+      // Entrypoint: ['pkgManager', 'creevey', 'launchPWServer', JSON.stringify(options)],
     },
     debug,
   );

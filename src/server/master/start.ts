@@ -1,5 +1,6 @@
 import path from 'path';
 import { existsSync } from 'fs';
+import { writeFile } from 'fs/promises';
 import master from './master.js';
 import { CreeveyApi } from './api.js';
 import { Config, Options, isDefined } from '../../types.js';
@@ -9,18 +10,67 @@ import Runner from './runner.js';
 import { logger } from '../logger.js';
 import { sendScreenshotsCount } from '../telemetry.js';
 import { start as startServer } from './server.js';
+import chalk from 'chalk';
 
-function outputUnnecessaryImages(imagesDir: string, images: Set<string>): void {
+async function outputUnnecessaryImages(imagesDir: string, reportDir: string, images: Set<string>): Promise<void> {
   if (!existsSync(imagesDir)) return;
   const unnecessaryImages = readDirRecursive(imagesDir)
     .map((imagePath) => path.posix.relative(imagesDir, imagePath))
     .filter((imagePath) => !images.has(imagePath));
   if (unnecessaryImages.length > 0) {
-    logger().warn(
-      'We found unnecessary screenshot images, those can be safely removed:\n',
-      unnecessaryImages.join('\n'),
-    );
+    const filePath = path.join(reportDir, 'unnecessary-images.txt');
+    const content = unnecessaryImages.join('\\n');
+    await writeFile(filePath, content);
   }
+}
+
+async function outputSummary(runner: Runner, config: Config, options: Options) {
+  const tests = Object.values(runner.status.tests);
+  const isSuccess = tests
+    .filter(isDefined)
+    .filter(({ skip }) => !skip)
+    .every(({ status }) => status == 'success');
+
+  const total = tests.filter(isDefined).length;
+  const skipped = tests.filter(isDefined).filter((t) => t.skip).length;
+  const passed = tests.filter(isDefined).filter((t) => !t.skip && t.status === 'success').length;
+  const failed = tests.filter(isDefined).filter((t) => !t.skip && t.status === 'failed').length;
+
+  console.log('');
+
+  if (failed > 0) {
+    logger().error(chalk.bold('failed tests:'));
+    tests
+      .filter(isDefined)
+      .filter((t) => !t.skip && t.status === 'failed')
+      .forEach((t) => {
+        const err = t.results?.[t.results.length - 1]?.error?.split('\n')[0] ?? '';
+        logger().error(
+          chalk.red.bold(`${t.storyPath.join('/')}/${[t.testName, t.browser].filter(Boolean).join('/')}:`),
+          err.replace(/^Error: /, ''),
+        );
+      });
+  }
+
+  console.log('');
+
+  logger().info(chalk.blue.bold('test run summary:'));
+  logger().info(`  ${chalk.green('total')}: ${total}`);
+  logger().info(`  ${chalk.yellow('skipped')}: ${skipped}`);
+  logger().info(`  ${chalk.green('passed')}: ${passed}`);
+  logger().info(`  ${chalk.red('failed')}: ${failed}`);
+
+  process.exitCode = isSuccess ? 0 : -1;
+  if (!config.failFast) await outputUnnecessaryImages(config.screenDir, config.reportDir, testsToImages(tests));
+  await sendScreenshotsCount(config, options, runner.status)
+    .catch((reason: unknown) => {
+      const error = reason instanceof Error ? (reason.stack ?? reason.message) : (reason as string);
+      logger().warn(`Can't send telemetry: ${error}`);
+    })
+    .finally(() => {
+      // NOTE: Take some time to kill processes
+      void shutdownWorkers().then(() => setTimeout(() => process.exit(), 500));
+    });
 }
 
 export async function start(
@@ -76,23 +126,7 @@ export async function start(
       return;
     }
     runner.once('stop', () => {
-      const tests = Object.values(runner.status.tests);
-      const isSuccess = tests
-        .filter(isDefined)
-        .filter(({ skip }) => !skip)
-        .every(({ status }) => status == 'success');
-      // TODO output summary
-      process.exitCode = isSuccess ? 0 : -1;
-      if (!config.failFast) outputUnnecessaryImages(config.screenDir, testsToImages(tests));
-      void sendScreenshotsCount(config, options, runner.status)
-        .catch((reason: unknown) => {
-          const error = reason instanceof Error ? (reason.stack ?? reason.message) : (reason as string);
-          logger().warn(`Can't send telemetry: ${error}`);
-        })
-        .finally(() => {
-          // NOTE: Take some time to kill processes
-          void shutdownWorkers().then(() => setTimeout(() => process.exit(), 500));
-        });
+      void outputSummary(runner, config, options);
     });
     // TODO grep
     runner.start(Object.keys(runner.status.tests));

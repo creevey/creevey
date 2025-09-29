@@ -24,6 +24,8 @@ workerCli
 workerCli.parse();
 
 const cli = cac('creevey');
+// TODO Expose command to start PW server
+//launchPWServer -> index-source.mjs
 
 cli
   .command('report [reportDir]', 'Launch web UI to review and approve test results')

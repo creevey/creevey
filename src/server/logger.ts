@@ -16,7 +16,7 @@ prefix.reg(Logger);
 prefix.apply(Logger, {
   format(level, name = rootName) {
     const levelColor = colors[level.toUpperCase() as keyof typeof colors];
-    return `[${name}:${chalk.gray(process.pid)}] ${levelColor(level)} =>`;
+    return `[${name}:${chalk.gray(process.pid)}] ${levelColor(level.padEnd(5))} =>`;
   },
 });
 

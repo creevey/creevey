@@ -339,8 +339,11 @@ export class InternalBrowser {
     this.#page.setDefaultTimeout(60000);
 
     await this.#page.addInitScript(() => {
+      requestAnimationFrame(check);
+
       function check() {
         if (
+          document.readyState !== 'complete' ||
           typeof window.__STORYBOOK_PREVIEW__ === 'undefined' ||
           typeof window.__STORYBOOK_ADDONS_CHANNEL__ === 'undefined' ||
           window.__STORYBOOK_ADDONS_CHANNEL__.last('setGlobals') === undefined
@@ -356,7 +359,6 @@ export class InternalBrowser {
           window.__CREEVYE_STORYBOOK_READY__ = true;
         }
       }
-      window.addEventListener('load', check);
     });
 
     return await runSequence(

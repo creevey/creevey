@@ -5,9 +5,9 @@ import { FakeTest, isImageError, TEST_EVENTS } from '../../types.js';
 import EventEmitter from 'events';
 
 const testLevels: Record<string, string> = {
-  INFO: chalk.green('PASS'),
+  INFO: chalk.green('PASS '),
   WARN: chalk.yellow('START'),
-  ERROR: chalk.red('FAIL'),
+  ERROR: chalk.red('FAIL '),
 };
 
 let browserName = '';

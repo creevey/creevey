@@ -1,24 +1,38 @@
-import { FakeSuite, FakeTest, Images, isDefined, TEST_EVENTS } from '../../types.js';
+import { FakeTest, Images, isDefined, TEST_EVENTS } from '../../types.js';
 import EventEmitter from 'events';
 
 export class TeamcityReporter {
-  constructor(runner: EventEmitter, options: { reportDir: string }) {
-    const { reportDir } = options;
+  constructor(runner: EventEmitter, options: { reportDir: string; topLevelSuite?: string }) {
+    const { reportDir, topLevelSuite = 'Creevey Tests' } = options;
 
-    runner.on(TEST_EVENTS.SUITE_BEGIN, (suite: FakeSuite) => {
-      console.log(`##teamcity[testSuiteStarted name='${this.escape(suite.title)}' flowId='${process.pid}']`);
+    console.log("##teamcity[testRetrySupport enabled='true']");
+
+    runner.on(TEST_EVENTS.RUN_BEGIN, () => {
+      console.log(`##teamcity[flowStarted flowId='${process.pid}']`);
+      console.log(`##teamcity[testSuiteStarted name='${this.escape(topLevelSuite)}' flowId='${process.pid}']`);
     });
 
     runner.on(TEST_EVENTS.TEST_BEGIN, (test: FakeTest) => {
-      console.log(`##teamcity[testStarted name='${this.escape(test.fullTitle())}' flowId='${test.creevey.workerId}']`);
+      const flowId = test.creevey.workerId;
+      const testName = this.escape(test.fullTitle());
+      console.log(`##teamcity[flowStarted flowId='${flowId}' parent='${process.pid}']`);
+      console.log(`##teamcity[testStarted name='${testName}' flowId='${flowId}']`);
     });
 
     runner.on(TEST_EVENTS.TEST_PASS, (test: FakeTest) => {
-      console.log(`##teamcity[testFinished name='${this.escape(test.fullTitle())}' flowId='${test.creevey.workerId}']`);
+      const flowId = test.creevey.workerId;
+      const testName = this.escape(test.fullTitle());
+      const duration = test.duration ?? 0;
+      console.log(`##teamcity[testFinished name='${testName}' flowId='${flowId}' duration='${duration}']`);
+      console.log(`##teamcity[flowFinished flowId='${flowId}']`);
     });
 
     runner.on(TEST_EVENTS.TEST_FAIL, (test: FakeTest, error: Error) => {
+      const flowId = test.creevey.workerId;
+      const duration = test.duration ?? 0;
       const browserName = this.escape(test.creevey.browserName);
+      const messageStr = error instanceof Error ? error.message : String(error);
+      const detailsStr = error instanceof Error ? (error.stack ?? '') : '';
       Object.entries(test.creevey.images).forEach(([name, image]) => {
         if (!image) return;
         const filePath = test
@@ -36,28 +50,22 @@ export class TeamcityReporter {
             console.log(
               `##teamcity[testMetadata testName='${this.escape(
                 test.fullTitle(),
-              )}' type='image' value='report/${filePath}/${fileName}' flowId='${test.creevey.workerId}']`,
+              )}' type='image' value='report/${filePath}/${fileName}' flowId='${flowId}']`,
             );
           });
       });
 
-      // Output failed test as passed due TC don't support retry mechanic
-      // https://teamcity-support.jetbrains.com/hc/en-us/community/posts/207216829-Count-test-as-successful-if-at-least-one-try-is-successful?page=1#community_comment_207394125
-
-      if (test.creevey.willRetry)
-        console.log(
-          `##teamcity[testFinished name='${this.escape(test.fullTitle())}' flowId='${test.creevey.workerId}']`,
-        );
-      else
-        console.log(
-          `##teamcity[testFailed name='${this.escape(test.fullTitle())}' message='${this.escape(
-            error.message,
-          )}' details='${this.escape(error.stack ?? '')}' flowId='${test.creevey.workerId}']`,
-        );
+      console.log(
+        `##teamcity[testFailed name='${this.escape(test.fullTitle())}' message='${this.escape(
+          messageStr,
+        )}' details='${this.escape(detailsStr)}' flowId='${flowId}' duration='${duration}']`,
+      );
+      console.log(`##teamcity[flowFinished flowId='${flowId}']`);
     });
 
-    runner.on(TEST_EVENTS.SUITE_END, (suite: FakeSuite) => {
-      console.log(`##teamcity[testSuiteFinished name='${this.escape(suite.title)}' flowId='${process.pid}']`);
+    runner.on(TEST_EVENTS.RUN_END, () => {
+      console.log(`##teamcity[testSuiteFinished name='${this.escape(topLevelSuite)}' flowId='${process.pid}']`);
+      console.log(`##teamcity[flowFinished flowId='${process.pid}']`);
     });
   }
 
@@ -66,8 +74,9 @@ export class TeamcityReporter {
     return (
       str
         .toString()
-        // eslint-disable-next-line no-control-regex
-        .replace(/\x1B.*?m/g, '')
+        // Remove ANSI SGR color sequences
+        .replace(new RegExp(String.fromCharCode(27) + '\\[[0-9;]*m', 'g'), '')
+        // TeamCity escapes
         .replace(/\|/g, '||')
         .replace(/\n/g, '|n')
         .replace(/\r/g, '|r')
