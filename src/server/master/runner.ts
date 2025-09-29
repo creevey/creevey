@@ -95,9 +95,10 @@ export default class Runner extends EventEmitter {
       slow: () => 1000,
       err: result?.error,
       creevey: {
+        testId: id,
+        workerId,
         sessionId: result?.sessionId ?? id,
         browserName: result?.browserName ?? browser,
-        workerId,
         willRetry: (result?.retries ?? 0) < this.config.maxRetries,
         images: result?.images ?? {},
       },

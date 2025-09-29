@@ -522,6 +522,7 @@ export interface FakeTest {
 
   // NOTE: Creevey specific fields
   creevey: {
+    testId: string;
     sessionId: string;
     browserName: string;
     workerId: number;

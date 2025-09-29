@@ -2,14 +2,10 @@ import { FakeTest, Images, isDefined, TEST_EVENTS } from '../../types.js';
 import EventEmitter from 'events';
 
 export class TeamcityReporter {
-  constructor(runner: EventEmitter, options: { reportDir: string; topLevelSuite?: string }) {
-    const { reportDir, topLevelSuite = 'Creevey Tests' } = options;
+  constructor(runner: EventEmitter, options: { reportDir: string }) {
+    const { reportDir } = options;
 
     console.log("##teamcity[testRetrySupport enabled='true']");
-
-    runner.on(TEST_EVENTS.RUN_BEGIN, () => {
-      console.log(`##teamcity[testSuiteStarted name='${this.escape(topLevelSuite)}' flowId='${process.pid}']`);
-    });
 
     runner.on(TEST_EVENTS.TEST_BEGIN, (test: FakeTest) => {
       const flowId = test.creevey.workerId;
@@ -17,7 +13,6 @@ export class TeamcityReporter {
         .titlePath()
         .map((title: string) => this.escape(title))
         .reverse();
-      console.log(`##teamcity[flowStarted flowId='${flowId}' parent='${process.pid}']`);
 
       for (const title of testPath.reverse()) {
         console.log(`##teamcity[testSuiteStarted name='${title}' flowId='${flowId}']`);
@@ -36,7 +31,6 @@ export class TeamcityReporter {
       for (const title of testPath.reverse()) {
         console.log(`##teamcity[testSuiteFinished name='${title}' flowId='${flowId}']`);
       }
-      console.log(`##teamcity[flowFinished flowId='${flowId}']`);
     });
 
     runner.on(TEST_EVENTS.TEST_FAIL, (test: FakeTest, error: Error) => {
@@ -78,11 +72,6 @@ export class TeamcityReporter {
       for (const title of testPath.reverse()) {
         console.log(`##teamcity[testSuiteFinished name='${title}' flowId='${flowId}']`);
       }
-      console.log(`##teamcity[flowFinished flowId='${flowId}']`);
-    });
-
-    runner.on(TEST_EVENTS.RUN_END, () => {
-      console.log(`##teamcity[testSuiteFinished name='${this.escape(topLevelSuite)}' flowId='${process.pid}']`);
     });
   }
 
