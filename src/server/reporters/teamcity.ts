@@ -30,6 +30,7 @@ export class TeamcityReporter {
     runner.on(TEST_EVENTS.TEST_FAIL, (test: FakeTest, error: Error) => {
       const flowId = test.creevey.workerId;
       const duration = test.duration ?? 0;
+      const testName = this.escape(test.fullTitle());
       const browserName = this.escape(test.creevey.browserName);
       const messageStr = error instanceof Error ? error.message : String(error);
       const detailsStr = error instanceof Error ? (error.stack ?? '') : '';
@@ -48,18 +49,17 @@ export class TeamcityReporter {
           .forEach((fileName) => {
             console.log(`##teamcity[publishArtifacts '${reportDir}/${filePath}/${fileName} => report/${filePath}']`);
             console.log(
-              `##teamcity[testMetadata testName='${this.escape(
-                test.fullTitle(),
-              )}' type='image' value='report/${filePath}/${fileName}' flowId='${flowId}']`,
+              `##teamcity[testMetadata type='image' value='report/${filePath}/${fileName}' flowId='${flowId}']`,
             );
           });
       });
 
       console.log(
-        `##teamcity[testFailed name='${this.escape(test.fullTitle())}' message='${this.escape(
+        `##teamcity[testFailed name='${testName}' message='${this.escape(
           messageStr,
         )}' details='${this.escape(detailsStr)}' flowId='${flowId}' duration='${duration}']`,
       );
+      console.log(`##teamcity[testFinished name='${testName}' flowId='${flowId}' duration='${duration}']`);
       console.log(`##teamcity[flowFinished flowId='${flowId}']`);
     });
 
