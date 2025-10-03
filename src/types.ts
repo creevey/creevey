@@ -332,6 +332,17 @@ export interface Config {
    */
 
   host?: string;
+
+  /**
+   * Experimental features use with caution
+   */
+  experimental?: {
+    /**
+     * Doesn't work with odiff comparison library
+     * @default false
+     */
+    reportOnlyFailedTests: boolean;
+  };
 }
 
 export interface StoriesProvider {

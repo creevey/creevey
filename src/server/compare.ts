@@ -44,7 +44,7 @@ async function getLastImageNumber(imageDir: string, imageName: string): Promise<
         .filter((x) => !isNaN(x))
         .sort((a, b) => b - a)[0] ?? 0
     );
-  } catch (_error) {
+  } catch {
     return 0;
   }
 }
@@ -206,7 +206,7 @@ function compareImages(
 export function getPixelmatchAssert(
   pixelmatch: typeof import('pixelmatch'),
   ctx: ImageContext,
-  config: { screenDir: string; reportDir: string; diffOptions: PixelmatchOptions },
+  config: { screenDir: string; reportDir: string; diffOptions: PixelmatchOptions; reportOnlyFailedTests?: boolean },
 ) {
   return async function assertImagePixelmatch(actual: Buffer, imageName?: string): Promise<string | undefined> {
     const { expected, onCompare } = await getExpected(ctx, await getImagePaths(config, ctx.testFullPath, imageName));
@@ -217,14 +217,18 @@ export function getPixelmatchAssert(
     }
 
     if (actual.equals(expected)) {
-      await onCompare(actual);
+      if (!config.reportOnlyFailedTests) {
+        await onCompare(actual);
+      }
       return;
     }
 
     const { isEqual, diff } = compareImages(expected, actual, pixelmatch, config.diffOptions);
 
     if (isEqual) {
-      await onCompare(actual);
+      if (!config.reportOnlyFailedTests) {
+        await onCompare(actual);
+      }
       return;
     }
 

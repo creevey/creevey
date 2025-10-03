@@ -8,8 +8,14 @@ function toBuffer(bufferOrBase64: Buffer | string) {
 export async function getMatchers(ctx: ImageContext, config: Config) {
   // TODO Replace with `import from`
   const { default: pixelmatch } = await import('pixelmatch');
+  const pixelmatchConfig = {
+    screenDir: config.screenDir,
+    reportDir: config.reportDir,
+    diffOptions: config.diffOptions,
+    reportOnlyFailedTests: config.experimental?.reportOnlyFailedTests,
+  };
 
-  const assertImage = getPixelmatchAssert(pixelmatch, ctx, config);
+  const assertImage = getPixelmatchAssert(pixelmatch, ctx, pixelmatchConfig);
 
   return {
     matchImage: async (image: Buffer | string, imageName?: string) => {
