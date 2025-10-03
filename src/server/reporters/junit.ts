@@ -31,7 +31,7 @@ export class JUnitReporter {
   private logger: IndentedLogger<void>;
   // @ts-expect-error Ignore unused
   private creeveyReporter: CreeveyReporter;
-  private suites: Record<string, FakeTest[]> = {};
+  private suites: Record<string, Map<string, FakeTest>> = {};
   // TODO classnameTemplate
   // TODO Output console logs
   // TODO Output attachments
@@ -59,12 +59,12 @@ export class JUnitReporter {
       this.fileFd = openSync(this.reportFile, 'w+');
     });
     runner.on(TEST_EVENTS.TEST_PASS, (test: FakeTest) => {
-      const suite = (this.suites[test.parent.title] ??= []);
-      suite.push(test);
+      const suite = (this.suites[test.parent.title] ??= new Map());
+      suite.set(test.creevey.testId, test);
     });
     runner.on(TEST_EVENTS.TEST_FAIL, (test: FakeTest) => {
-      const suite = (this.suites[test.parent.title] ??= []);
-      suite.push(test);
+      const suite = (this.suites[test.parent.title] ??= new Map());
+      suite.set(test.creevey.testId, test);
     });
     runner.on(TEST_EVENTS.RUN_END, () => {
       this.onFinished();
@@ -90,8 +90,8 @@ export class JUnitReporter {
     this.logger.log(`</${name}>`);
   }
 
-  private writeTasks(tests: FakeTest[]): void {
-    for (const test of tests) {
+  private writeTasks(tests: Map<string, FakeTest>): void {
+    for (const [, test] of tests) {
       const classname = test.parent.title;
 
       this.writeElement(
@@ -115,16 +115,24 @@ export class JUnitReporter {
     this.logger.log('<?xml version="1.0" encoding="UTF-8" ?>');
 
     const suites = Object.entries(this.suites).map(([name, tests]) => {
+      let failures = 0;
+      let time = 0;
+      for (const [_, test] of tests) {
+        if (test.state === 'failed') {
+          failures++;
+        }
+        time += test.duration ?? 0;
+      }
       return {
         name,
         tests,
-        failures: tests.filter((test) => test.state === 'failed').length,
-        time: tests.reduce((acc, test) => acc + (test.duration ?? 0), 0),
+        failures,
+        time,
       };
     });
     const stats = suites.reduce(
       (s, { tests, failures, time }) => {
-        s.tests += tests.length;
+        s.tests += tests.size;
         s.failures += failures;
         s.time += time;
         return s;
@@ -138,7 +146,7 @@ export class JUnitReporter {
           'testsuite',
           {
             name,
-            tests: tests.length,
+            tests: tests.size,
             failures,
             time: executionTime(time),
           },
