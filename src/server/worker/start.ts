@@ -26,6 +26,7 @@ async function getTestsFromStories(
   const testsById = new Map<string, ServerTest>();
   const tests = await loadTestsFromStories(
     [browserName],
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     (listener) => config.storiesProvider(config, listener, webdriver),
     (testsDiff) => {
       Object.entries(testsDiff).forEach(([id, newTest]) => {

@@ -15,6 +15,7 @@ export default async function master(config: Config, gridUrl?: string): Promise<
   // Load tests from stories and update TestsManager
   const tests = await loadTestsFromStories(
     Object.keys(config.browsers),
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     (listener) => config.storiesProvider(config, listener),
     (testsDiff) => {
       runner.updateTests(testsDiff);

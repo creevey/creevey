@@ -41,6 +41,8 @@
 
 ## Related Documentation
 
+Before starting work on a new feature or fixing a bug, it's important to review the existing documentation to ensure you're not duplicating effort or missing important information.
+
 - `memories/memory.md` - Primary AI knowledge base
 - `memories/architecture.md` - Technical architecture details
 - `memories/workflow.md` - Development workflows and processes

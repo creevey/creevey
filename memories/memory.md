@@ -51,8 +51,10 @@ src/
 
 ### Stories Providers
 
-- **browserStoriesProvider**: Extracts stories directly from Storybook UI
-- **hybridStoriesProvider**: Combines Storybook stories with separate test files (default)
+- **browserStoriesProvider**: Extracts stories directly from Storybook UI (deprecated)
+- **hybridStoriesProvider**: Combines Storybook stories with separate test files (default, will be only option in future)
+
+> **Note**: The `storiesProvider` config property is deprecated. Creevey will use only `hybridStoriesProvider` in future versions. Users can safely remove this property from their config.
 
 ### Webdrivers
 

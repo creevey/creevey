@@ -195,4 +195,72 @@ export default config;
 
 ---
 
+## Stories Provider Deprecation (Future Breaking Change)
+
+> **Note**: This change is planned for a future version but is being announced now for early migration.
+
+The `storiesProvider` config property is deprecated and will be removed in a future version. Creevey will use only the `hybrid` stories provider going forward.
+
+**Current State:**
+
+- `browserStoriesProvider` - Extracts stories directly from Storybook UI (deprecated)
+- `hybridStoriesProvider` - Combines stories from Storybook with tests from separate files (default)
+
+**Migration Steps:**
+
+1. **If you're using `browserStoriesProvider`:**
+
+   **Before:**
+
+   ```typescript
+   import { browserStoriesProvider } from 'creevey';
+
+   const config: CreeveyConfig = {
+     storiesProvider: browserStoriesProvider,
+     // ... other config
+   };
+   ```
+
+   **After:**
+
+   ```typescript
+   // Simply remove the storiesProvider property
+   const config: CreeveyConfig = {
+     // hybridStoriesProvider is used by default
+     // ... other config
+   };
+   ```
+
+2. **If you're explicitly using `hybridStoriesProvider`:**
+
+   **Before:**
+
+   ```typescript
+   import { hybridStoriesProvider } from 'creevey';
+
+   const config: CreeveyConfig = {
+     storiesProvider: hybridStoriesProvider,
+     // ... other config
+   };
+   ```
+
+   **After:**
+
+   ```typescript
+   // Simply remove the storiesProvider property
+   const config: CreeveyConfig = {
+     // hybridStoriesProvider is used by default
+     // ... other config
+   };
+   ```
+
+**Benefits of `hybridStoriesProvider`:**
+
+- Supports interactive tests with separate `.creevey.ts` files
+- Better test organization and maintainability
+- Full compatibility with modern Storybook features
+- Will be the only supported option in future versions
+
+---
+
 We recommend reviewing the full announcement for details on all new features and improvements. After updating, test your suite thoroughly to ensure a smooth transition.

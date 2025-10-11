@@ -72,6 +72,7 @@ function resolveConfigPath(configPath?: string): string | undefined {
 export async function readConfig(options: Options | WorkerOptions): Promise<Config> {
   const configPath = resolveConfigPath(options.config);
   const userConfig: typeof defaultConfig & Partial<Pick<Config, 'gridUrl' | 'storiesProvider'>> = { ...defaultConfig };
+  let hasExplicitStoriesProvider = false;
 
   if (isDefined(configPath)) {
     const configModule = await loadThroughTSX<
@@ -100,6 +101,9 @@ export async function readConfig(options: Options | WorkerOptions): Promise<Conf
       }
     }
 
+    if ('storiesProvider' in configData) {
+      hasExplicitStoriesProvider = true;
+    }
     Object.assign(userConfig, configData);
   }
 
@@ -147,6 +151,16 @@ export async function readConfig(options: Options | WorkerOptions): Promise<Conf
   Object.entries(config.browsers).forEach(
     ([browser, browserConfig]) => (config.browsers[browser] = normalizeBrowserConfig(browser, browserConfig)),
   );
+
+  // Check if browserStoriesProvider is explicitly set and add deprecation warning
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
+  if (hasExplicitStoriesProvider && config.storiesProvider.providerName === 'browser') {
+    logger().warn(
+      'The `browserStoriesProvider` is deprecated and will be removed in a future version. ' +
+        'Creevey will use only the `hybrid` stories provider going forward. ' +
+        'Please remove the `storiesProvider` property from your config as `hybridStoriesProvider` is already the default.',
+    );
+  }
 
   return config;
 }

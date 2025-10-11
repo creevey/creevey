@@ -178,6 +178,17 @@ const config: CreeveyConfig = {
 export default config;
 ```
 
+## Stories Provider Configuration
+
+> **Note**: The `browserStoriesProvider` is deprecated and will be removed in a future version. Creevey will use only the `hybrid` stories provider going forward.
+
+Creevey supports two stories providers:
+
+- `browserStoriesProvider` - Extracts stories directly from Storybook UI (deprecated, shows warning when used)
+- `hybridStoriesProvider` - Combines stories from Storybook with tests from separate files (default, will be the only option)
+
+If you're currently using `browserStoriesProvider`, you'll see a deprecation warning. Please remove the `storiesProvider` property from your config as `hybridStoriesProvider` is already the default.
+
 ## Advanced Configuration
 
 Comprehensive example combining multiple features and additional options:

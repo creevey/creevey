@@ -258,13 +258,14 @@ export interface Config {
    */
   selenoidPath?: string;
   /**
-   * Creevey has two built-in stories providers.
+   * @deprecated The `storiesProvider` config property is deprecated and will be removed in a future version.
+   * Creevey will use only the `hybrid` stories provider going forward.
    *
-   * `browserStoriesProvider` - Extracts stories directly from the Storybook UI. It loads stories from storybook which is running in browser, like storyshots or loki do it.
-   * The downside of this, you can't use interaction tests in Creevey, unless you use CSFv3.
-   * Where you can define `play` method for each story
+   * Currently allows you to specify how Creevey will extract stories from Storybook:
    *
-   * `hybridStoriesProvider` - Combines stories from Storybook with tests from separate files. This is the default provider used in the configuration.
+   * `browserStoriesProvider` - Extracts stories directly from Storybook UI. Note that this provider doesn't support interaction tests unless you use CSFv3 with `play` method.
+   *
+   * `hybridStoriesProvider` - Combines stories from Storybook with tests from separate files. This is the default provider and will be the only option in future versions.
    *
    * Usage
    * ``` typescript
@@ -278,7 +279,7 @@ export interface Config {
    * }
    * ```
    */
-  storiesProvider: StoriesProvider; // TODO Update description
+  storiesProvider: StoriesProvider;
   /**
    *
    */

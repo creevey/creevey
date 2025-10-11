@@ -135,6 +135,7 @@ export async function sendScreenshotsCount(
     dockerImage: config.dockerImage,
     maxRetries: config.maxRetries,
     diffOptions: config.diffOptions,
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     storiesProvider: config.storiesProvider?.providerName ?? 'unknown',
     errors: [creeveyVersionError, storybookVersionError].some(Boolean)
       ? [
