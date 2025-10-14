@@ -83,9 +83,6 @@ export async function start(
   const resolveApi = startServer(config.reportDir, port, options.ui, host);
 
   let runner: Runner | null = null;
-  if (config.hooks.before) {
-    await config.hooks.before();
-  }
   subscribeOn('shutdown', () => config.hooks.after?.());
   process.on('SIGINT', () => {
     runner?.removeAllListeners('stop');

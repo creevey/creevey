@@ -168,6 +168,10 @@ export default async function (command: 'report' | 'test' | 'worker', options: O
     if (cluster.isPrimary) {
       let gridUrl: string | undefined = config.gridUrl;
 
+      if (config.hooks.before) {
+        await config.hooks.before();
+      }
+
       if (!(gridUrl || (Object.values(config.browsers) as BrowserConfigObject[]).every(({ gridUrl }) => gridUrl))) {
         gridUrl = await startWebdriverServer(config, options);
       }
