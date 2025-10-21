@@ -63,7 +63,7 @@ async function buildPlaywright(config: Config, version: string): Promise<void> {
   await Promise.all(
     browsers.map(async (browserName) => {
       const imageName = `creevey/${browserName}:v${version}`;
-      const dockerfile = await playwrightDockerFile(browserName, version);
+      const dockerfile = await playwrightDockerFile(browserName, version, config.experimental?.npmRegistry);
 
       await buildImage(imageName, creeveyVersion, dockerfile);
     }),

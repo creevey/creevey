@@ -13,19 +13,20 @@ const getRegistryCommand: Record<string, string> = {
 };
 
 // TODO Support custom docker images
-export async function playwrightDockerFile(browser: string, version: string): Promise<string> {
+export async function playwrightDockerFile(browser: string, version: string, npmRegistry?: string): Promise<string> {
   const sv = semver.coerce(version);
 
-  let npmRegistry;
-  const { agent } = (await detect()) ?? {};
-  const command = agent ? getRegistryCommand[agent] : getRegistryCommand.npm;
-  try {
-    npmRegistry = sh
-      // NOTE: https://github.com/npm/cli/issues/6099#issuecomment-2062122615
-      .exec(command, { silent: true })
-      .stdout.trim();
-  } catch {
-    /* noop */
+  if (!npmRegistry) {
+    const { agent } = (await detect()) ?? {};
+    const command = agent ? getRegistryCommand[agent] : getRegistryCommand.npm;
+    try {
+      npmRegistry = sh
+        // NOTE: https://github.com/npm/cli/issues/6099#issuecomment-2062122615
+        .exec(command, { silent: true })
+        .stdout.trim();
+    } catch {
+      /* noop */
+    }
   }
 
   const indexJs = await readFile(new URL('./index-source.mjs', importMetaUrl), 'utf-8');

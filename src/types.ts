@@ -343,6 +343,10 @@ export interface Config {
      * @default false
      */
     reportOnlyFailedTests: boolean;
+    /**
+     * Use npm registry for installing playwright-core inside docker container
+     */
+    npmRegistry?: string;
   };
 }
 
