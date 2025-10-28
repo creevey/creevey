@@ -15,15 +15,7 @@ import { v4 } from 'uuid';
 import Logger from 'loglevel';
 import prefix from 'loglevel-plugin-prefix';
 import type { Args } from 'storybook/internal/types';
-import {
-  BrowserConfigObject,
-  Config,
-  StoriesRaw,
-  StoryInput,
-  StorybookEvents,
-  StorybookGlobals,
-  WorkerOptions,
-} from '../../types';
+import { BrowserConfigObject, Config, StoriesRaw, StoryInput, StorybookEvents, StorybookGlobals } from '../../types';
 import { appendIframePath, LOCALHOST_REGEXP, resolveStorybookUrl, storybookRootID } from '../webdriver';
 import { getCreeveyCache, isShuttingDown, resolvePlaywrightBrowserType, runSequence } from '../utils';
 import { colors, logger } from '../logger';
@@ -234,7 +226,7 @@ export class InternalBrowser {
     browserName: string,
     gridUrl: string,
     config: Config,
-    options: WorkerOptions,
+    debug: boolean,
   ): Promise<InternalBrowser | null> {
     const browserConfig = config.browsers[browserName] as BrowserConfigObject;
     const {
@@ -281,7 +273,7 @@ export class InternalBrowser {
     }
 
     const { context, page } = await tryCreateBrowserContext(browser, {
-      recordVideo: options.debug
+      recordVideo: debug
         ? {
             dir: path.join(cacheDir, `${process.pid}`),
             size: viewport,
@@ -291,7 +283,7 @@ export class InternalBrowser {
       viewport,
     });
 
-    if (options.debug) {
+    if (debug) {
       await context.tracing.start(
         Object.assign({ screenshots: true, snapshots: true, sources: true }, playwrightOptions?.trace),
       );
@@ -303,7 +295,7 @@ export class InternalBrowser {
       });
     }
 
-    const internalBrowser = new InternalBrowser(browser, context, page, tracesDir, options.debug, storybookGlobals);
+    const internalBrowser = new InternalBrowser(browser, context, page, tracesDir, debug, storybookGlobals);
 
     try {
       if (isShuttingDown.current) return null;

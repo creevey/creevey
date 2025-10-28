@@ -6,10 +6,10 @@ import {
   ServerTest,
   TestMessage,
   TestResult,
-  WorkerOptions,
   isDefined,
   isImageError,
 } from '../../types.js';
+import { WorkerOptions } from '../../schema.js';
 import { subscribeOn, emitTestMessage, emitWorkerMessage } from '../messages.js';
 import chaiImage from './chai-image.js';
 import { getMatchers, getOdiffMatchers } from './match-image.js';
@@ -123,7 +123,8 @@ export async function start(browser: string, gridUrl: string, config: Config, op
     images: {},
   };
   const Webdriver = config.webdriver;
-  const [sessionId, webdriver] = (await setupWebdriver(new Webdriver(browser, gridUrl, config, options))) ?? [];
+  const [sessionId, webdriver] =
+    (await setupWebdriver(new Webdriver(browser, gridUrl, config, options.debug ?? false))) ?? [];
 
   if (!webdriver || !sessionId) return;
 

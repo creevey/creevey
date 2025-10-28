@@ -4,15 +4,8 @@ import cluster from 'cluster';
 import { pathToFileURL } from 'url';
 import * as v from 'valibot';
 import { loadStories as hybridStoriesProvider } from './providers/hybrid.js';
-import {
-  Config,
-  BrowserConfig,
-  BrowserConfigObject,
-  Options,
-  isDefined,
-  WorkerOptions,
-  OptionsSchema,
-} from '../types.js';
+import { Config, BrowserConfig, BrowserConfigObject, isDefined } from '../types.js';
+import { OptionsSchema, Options, WorkerOptions } from '../schema.js';
 import { configExt, loadThroughTSX } from './utils.js';
 import { CreeveyReporter } from './reporters/creevey.js';
 import { TeamcityReporter } from './reporters/teamcity.js';

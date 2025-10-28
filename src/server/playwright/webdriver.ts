@@ -1,6 +1,6 @@
 /// <reference types="../../../types/playwright-context" />
 import type { Args } from 'storybook/internal/types';
-import { Config, StoriesRaw, StoryInput, WorkerOptions } from '../../types';
+import type { Config, StoriesRaw, StoryInput } from '../../types';
 import { logger } from '../logger';
 import { subscribeOn } from '../messages';
 import { CreeveyWebdriverBase } from '../webdriver';
@@ -11,14 +11,14 @@ export class PlaywrightWebdriver extends CreeveyWebdriverBase {
   #browserName: string;
   #gridUrl: string;
   #config: Config;
-  #options: WorkerOptions;
-  constructor(browser: string, gridUrl: string, config: Config, options: WorkerOptions) {
+  #debug: boolean;
+  constructor(browser: string, gridUrl: string, config: Config, debug: boolean) {
     super();
 
     this.#browserName = browser;
     this.#gridUrl = gridUrl;
     this.#config = config;
-    this.#options = options;
+    this.#debug = debug;
 
     subscribeOn('shutdown', () => {
       void this.#browser?.closeBrowser().finally(() => process.exit());
@@ -60,7 +60,7 @@ export class PlaywrightWebdriver extends CreeveyWebdriverBase {
     if (!internalModule) return null;
 
     const { InternalBrowser } = internalModule;
-    const browser = await InternalBrowser.getBrowser(this.#browserName, this.#gridUrl, this.#config, this.#options);
+    const browser = await InternalBrowser.getBrowser(this.#browserName, this.#gridUrl, this.#config, this.#debug);
 
     if (!browser) return null;
 

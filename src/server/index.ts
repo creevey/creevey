@@ -4,15 +4,8 @@ import sh from 'shelljs';
 import { getUserAgent } from 'package-manager-detector/detect';
 import { resolveCommand } from 'package-manager-detector/commands';
 import { readConfig, defaultBrowser } from './config.js';
-import {
-  Options,
-  Config,
-  BrowserConfigObject,
-  isWorkerMessage,
-  WorkerOptions,
-  OptionsSchema,
-  WorkerOptionsSchema,
-} from '../types.js';
+import { Config, BrowserConfigObject, isWorkerMessage } from '../types.js';
+import { WorkerOptions, OptionsSchema, WorkerOptionsSchema, Options } from '../schema.js';
 import { logger } from './logger.js';
 import { getStorybookUrl, checkIsStorybookConnected } from './connection.js';
 import { SeleniumWebdriver } from './selenium/webdriver.js';

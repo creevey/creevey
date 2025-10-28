@@ -1,6 +1,6 @@
 /// <reference types="../../../types/selenium-context" />
 import type { Args } from 'storybook/internal/types';
-import { Config, StoryInput, StoriesRaw, WorkerOptions } from '../../types.js';
+import { Config, StoryInput, StoriesRaw } from '../../types.js';
 import { subscribeOn } from '../messages.js';
 import { CreeveyWebdriverBase } from '../webdriver.js';
 import type { InternalBrowser } from './internal.js';
@@ -13,14 +13,15 @@ export class SeleniumWebdriver extends CreeveyWebdriverBase {
   #browserName: string;
   #gridUrl: string;
   #config: Config;
-  #options: WorkerOptions;
-  constructor(browser: string, gridUrl: string, config: Config, options: WorkerOptions) {
+  #debug: boolean;
+
+  constructor(browser: string, gridUrl: string, config: Config, debug: boolean) {
     super();
 
     this.#browserName = browser;
     this.#gridUrl = gridUrl;
     this.#config = config;
-    this.#options = options;
+    this.#debug = debug;
 
     subscribeOn('shutdown', () => {
       void this.#browser?.closeBrowser().finally(() => {
@@ -64,7 +65,7 @@ export class SeleniumWebdriver extends CreeveyWebdriverBase {
     if (!internalModule) return null;
 
     const { InternalBrowser } = internalModule;
-    const browser = await InternalBrowser.getBrowser(this.#browserName, this.#gridUrl, this.#config, this.#options);
+    const browser = await InternalBrowser.getBrowser(this.#browserName, this.#gridUrl, this.#config, this.#debug);
 
     if (!browser) return null;
 

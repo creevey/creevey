@@ -1,4 +1,3 @@
-import * as v from 'valibot';
 import type { Worker as ClusterWorker } from 'cluster';
 import type { expect } from 'chai';
 import type EventEmitter from 'events';
@@ -153,7 +152,7 @@ export type CreeveyWebdriverConstructor = new (
   browser: string,
   gridUrl: string,
   config: Config,
-  options: WorkerOptions,
+  debug: boolean,
 ) => CreeveyWebdriver;
 
 export interface CreeveyWebdriver {
@@ -360,39 +359,6 @@ export interface StoriesProvider {
 }
 
 export type CreeveyConfig = Partial<Config>;
-
-export const OptionsSchema = v.object({
-  ui: v.optional(v.boolean()),
-  storybookStart: v.optional(v.union([v.string(), v.boolean()])),
-  config: v.optional(v.string()),
-  debug: v.optional(v.boolean()),
-  port: v.number(),
-  failFast: v.optional(v.boolean()),
-  reportDir: v.optional(v.string()),
-  screenDir: v.optional(v.string()),
-  storybookUrl: v.optional(v.string()),
-  storybookPort: v.optional(v.number()),
-  reporter: v.optional(v.string()),
-  odiff: v.optional(v.boolean()),
-  trace: v.optional(v.boolean()),
-  docker: v.optional(v.boolean()),
-});
-
-export const WorkerOptionsSchema = v.object({
-  browser: v.string(),
-  storybookUrl: v.string(),
-  gridUrl: v.optional(v.string()),
-  config: v.optional(v.string()),
-  debug: v.optional(v.boolean()),
-  trace: v.optional(v.boolean()),
-  reportDir: v.optional(v.string()),
-  screenDir: v.optional(v.string()),
-  odiff: v.optional(v.boolean()),
-  port: v.number(),
-});
-
-export type Options = v.InferOutput<typeof OptionsSchema>;
-export type WorkerOptions = v.InferOutput<typeof WorkerOptionsSchema>;
 
 export type WorkerError = 'browser' | 'test' | 'unknown';
 

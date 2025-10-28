@@ -19,7 +19,6 @@ import {
   StorybookGlobals,
   StoryInput,
   StoriesRaw,
-  WorkerOptions,
   StorybookEvents,
 } from '../../types.js';
 import { colors, logger } from '../logger.js';
@@ -91,7 +90,7 @@ async function buildWebdriver(
   browser: string,
   gridUrl: string,
   config: Config,
-  options: WorkerOptions,
+  debug: boolean,
 ): Promise<WebDriver | null> {
   const browserConfig = config.browsers[browser] as BrowserConfigObject;
   const { /*customizeBuilder,*/ seleniumCapabilities, browserName } = browserConfig;
@@ -109,7 +108,7 @@ async function buildWebdriver(
   });
   const prefs = new logging.Preferences();
 
-  if (options.debug) {
+  if (debug) {
     for (const type of Object.values(logging.Type)) {
       prefs.setLevel(type as string, logging.Level.ALL);
     }
@@ -391,7 +390,7 @@ export class InternalBrowser {
     browserName: string,
     gridUrl: string,
     config: Config,
-    options: WorkerOptions,
+    debug: boolean,
   ): Promise<InternalBrowser | null> {
     const browserConfig = config.browsers[browserName] as BrowserConfigObject;
     const {
@@ -404,7 +403,7 @@ export class InternalBrowser {
     } = browserConfig;
     void limit;
 
-    const browser = await buildWebdriver(browserName, gridUrl, config, options);
+    const browser = await buildWebdriver(browserName, gridUrl, config, debug);
 
     if (!browser) return null;
 

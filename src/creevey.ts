@@ -2,7 +2,7 @@ import cluster from 'cluster';
 import * as v from 'valibot';
 import Logger from 'loglevel';
 import { cac } from 'cac';
-import { Options, OptionsSchema, WorkerOptions, WorkerOptionsSchema } from './types.js';
+import { Options, OptionsSchema, WorkerOptions, WorkerOptionsSchema } from './schema.js';
 import { version } from '../package.json';
 import { logger, setRootName } from './server/logger.js';
 import creevey from './server/index.js';
