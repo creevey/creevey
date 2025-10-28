@@ -54,6 +54,8 @@ export abstract class CreeveyWebdriverBase implements CreeveyWebdriver {
   protected abstract takeScreenshot(
     captureElement: string | null,
     ignoreElements?: string | string[] | null,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    options?: any,
   ): Promise<Buffer>;
 
   protected abstract selectStory(id: string): Promise<void>;
@@ -80,7 +82,8 @@ export abstract class CreeveyWebdriverBase implements CreeveyWebdriver {
 
     return Object.assign(
       {
-        takeScreenshot: () => this.takeScreenshot(captureElement, ignoreElements),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        takeScreenshot: (options?: any) => this.takeScreenshot(captureElement, ignoreElements, options),
         updateStoryArgs: (updatedArgs: Args) => this.updateStoryArgs(story, updatedArgs),
         captureElement,
       },

@@ -6,6 +6,7 @@ import {
   BrowserContextOptions,
   BrowserType,
   Page,
+  PageScreenshotOptions,
   chromium,
   firefox,
   webkit,
@@ -140,7 +141,11 @@ export class InternalBrowser {
     }
   }
 
-  async takeScreenshot(captureElement?: string | null, ignoreElements?: string | string[] | null): Promise<Buffer> {
+  async takeScreenshot(
+    captureElement?: string | null,
+    ignoreElements?: string | string[] | null,
+    options?: PageScreenshotOptions,
+  ): Promise<Buffer> {
     const ignore = Array.isArray(ignoreElements) ? ignoreElements : ignoreElements ? [ignoreElements] : [];
     const mask = ignore.map((el) => this.#page.locator(el));
     if (captureElement) {
@@ -152,10 +157,11 @@ export class InternalBrowser {
         style: ':root { overflow: hidden !important; }',
         animations: 'disabled',
         mask,
+        ...options,
       });
     }
     logger().debug('Capturing viewport screenshot');
-    return this.#page.screenshot({ animations: 'disabled', mask });
+    return this.#page.screenshot({ animations: 'disabled', mask, ...options });
   }
 
   async selectStory(id: string): Promise<void> {

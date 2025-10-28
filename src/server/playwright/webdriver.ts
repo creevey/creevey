@@ -5,6 +5,7 @@ import { logger } from '../logger';
 import { subscribeOn } from '../messages';
 import { CreeveyWebdriverBase } from '../webdriver';
 import type { InternalBrowser } from './internal';
+import { PageScreenshotOptions } from 'playwright-core';
 
 export class PlaywrightWebdriver extends CreeveyWebdriverBase {
   #browser: InternalBrowser | null = null;
@@ -91,12 +92,13 @@ export class PlaywrightWebdriver extends CreeveyWebdriverBase {
   protected async takeScreenshot(
     captureElement: string | null,
     ignoreElements?: string | string[] | null,
+    options?: PageScreenshotOptions,
   ): Promise<Buffer> {
     if (!this.#browser) {
       throw new Error('Browser is not initialized');
     }
 
-    return this.#browser.takeScreenshot(captureElement, ignoreElements);
+    return this.#browser.takeScreenshot(captureElement, ignoreElements, options);
   }
 
   protected async selectStory(id: string): Promise<void> {

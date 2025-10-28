@@ -76,7 +76,13 @@ export const ImagePreview = withTheme(
         onClick={handleClick}
         borderColor={isActive ? theme.barSelectedColor : error ? theme.color.negative : undefined}
       >
-        <Image hasBorder={isActive || error} src={url} alt={imageName} backgroundColor={theme.background.content} />
+        <Image
+          hasBorder={isActive || error}
+          src={url}
+          alt={imageName}
+          title={imageName}
+          backgroundColor={theme.background.content}
+        />
       </Button>
     );
   },

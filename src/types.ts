@@ -457,7 +457,8 @@ export interface BaseCreeveyTestContext {
 }
 
 export interface CreeveyTestContext extends BaseCreeveyTestContext {
-  takeScreenshot: () => Promise<Buffer>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  takeScreenshot: (options?: any) => Promise<Buffer>;
   updateStoryArgs: (updatedArgs: Record<string, unknown>) => Promise<void>;
   captureElement: string | null;
 }
