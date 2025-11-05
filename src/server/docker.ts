@@ -2,11 +2,50 @@ import tar from 'tar-stream';
 import Logger from 'loglevel';
 import { Writable } from 'stream';
 import Dockerode, { Container } from 'dockerode';
+import { existsSync } from 'fs';
+import { homedir } from 'os';
+import { join } from 'path';
 import { DockerAuth } from '../types.js';
 import { logger } from './logger.js';
 import { setWorkerContainer } from './worker/context.js';
 
-const docker = new Dockerode();
+function findDockerSocket(): string {
+  // List of possible docker.sock locations in order of preference
+  const possiblePaths = [
+    // Standard Linux location
+    '/var/run/docker.sock',
+    // Docker Desktop for Mac
+    join(homedir(), '.docker', 'run', 'docker.sock'),
+    // Colima
+    join(homedir(), '.colima', 'default', 'docker.sock'),
+    join(homedir(), '.colima', 'docker.sock'),
+    // Podman
+    '/run/podman/podman.sock',
+    ...(process.env.XDG_RUNTIME_DIR ? [join(process.env.XDG_RUNTIME_DIR, 'podman', 'podman.sock')] : []),
+    // Rancher Desktop
+    join(homedir(), '.rd', 'docker.sock'),
+    // Orbstack
+    join(homedir(), '.orbstack', 'run', 'docker.sock'),
+  ];
+
+  for (const socketPath of possiblePaths) {
+    if (existsSync(socketPath)) {
+      logger().debug(`Found Docker socket at: ${socketPath}`);
+      return socketPath;
+    }
+  }
+
+  // Fall back to default if no socket found
+  logger().warn('No Docker socket found at known locations, using default /var/run/docker.sock');
+  return '/var/run/docker.sock';
+}
+
+const dockerSocketPath = findDockerSocket();
+const docker = new Dockerode({ socketPath: dockerSocketPath });
+
+export function getDockerSocketPath(): string {
+  return dockerSocketPath;
+}
 
 class DevNull extends Writable {
   _write(_chunk: unknown, _encoding: BufferEncoding, callback: (error?: Error | null) => void): void {

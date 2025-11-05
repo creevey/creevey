@@ -5,7 +5,7 @@ import { mkdir, writeFile, copyFile } from 'fs/promises';
 import { exec, chmod } from 'shelljs';
 import { Config, BrowserConfigObject } from '../../types.js';
 import { downloadBinary, getCreeveyCache, killTree } from '../utils.js';
-import { pullImages, runImage } from '../docker.js';
+import { pullImages, runImage, getDockerSocketPath } from '../docker.js';
 import { subscribeOn } from '../messages.js';
 import { removeWorkerContainer } from '../worker/context.js';
 
@@ -137,12 +137,13 @@ export async function startSelenoidContainer(config: Config, debug: boolean): Pr
   }
 
   // TODO Allow pass custom options
+  const dockerSocketPath = getDockerSocketPath();
   const selenoidOptions = {
     ExposedPorts: { '4444/tcp': {} },
     HostConfig: {
       PortBindings: { '4444/tcp': [{ HostPort: '4444' }] },
       Binds: [
-        '/var/run/docker.sock:/var/run/docker.sock',
+        `${dockerSocketPath}:/var/run/docker.sock`,
         `${await createSelenoidConfig(browsers, { useDocker: true })}:/etc/selenoid/:ro`,
       ],
     },
