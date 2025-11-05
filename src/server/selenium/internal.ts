@@ -25,7 +25,7 @@ import { colors, logger } from '../logger.js';
 import { emitWorkerMessage, subscribeOn } from '../messages.js';
 import { isShuttingDown, runSequence } from '../utils.js';
 import { appendIframePath, LOCALHOST_REGEXP, resolveStorybookUrl, storybookRootID } from '../webdriver.js';
-import { getStories, insertIgnoreStyles, removeIgnoreStyles, selectStory } from '../storybook-helpers.js';
+import { getStories, insertIgnoreStyles, removeIgnoreStyles, selectStory, watchStories } from '../storybook-helpers.js';
 
 interface ElementRect {
   top: number;
@@ -376,6 +376,10 @@ export class InternalBrowser {
     return await this.#browser.executeAsyncScript(getStories);
   }
 
+  async watchStoriesForChanges(port: number): Promise<void> {
+    await this.#browser.executeScript(watchStories, port);
+  }
+
   async afterTest(): Promise<void> {
     if (logger().getLevel() <= Logger.levels.DEBUG) {
       const logs = await this.#browser.manage().logs().get('browser');
@@ -545,7 +549,10 @@ export class InternalBrowser {
           if (
             document.readyState !== 'complete' ||
             typeof window.__STORYBOOK_PREVIEW__ === 'undefined' ||
+            // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
             typeof window.__STORYBOOK_ADDONS_CHANNEL__ === 'undefined' ||
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+            window.__STORYBOOK_ADDONS_CHANNEL__.last === undefined ||
             window.__STORYBOOK_ADDONS_CHANNEL__.last('setGlobals') === undefined
           ) {
             requestAnimationFrame(check);

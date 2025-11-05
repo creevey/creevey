@@ -160,6 +160,7 @@ export interface CreeveyWebdriver {
   openBrowser(fresh?: boolean): Promise<CreeveyWebdriver | null>;
   closeBrowser(): Promise<void>;
   loadStoriesFromBrowser(): Promise<StoriesRaw>;
+  watchStoriesForChanges(port: number): Promise<void>;
   switchStory(story: StoryInput, context: BaseCreeveyTestContext): Promise<CreeveyTestContext>;
   afterTest(test: ServerTest): Promise<void>;
 }

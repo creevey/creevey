@@ -1,7 +1,7 @@
 import type { Renderer } from 'storybook/internal/types';
 import type { PreviewWeb, StoryStore } from 'storybook/preview-api';
 import { Channel } from 'storybook/internal/channels';
-import type { CreeveyStoryParams, StoriesRaw, StorybookGlobals } from '../types.js';
+import type { CreeveyStoryParams, StoriesRaw, StorybookGlobals, StoryInput } from '../types.js';
 import type { SerializedRegExp } from '../shared/serializeRegExp.js';
 
 declare global {
@@ -206,7 +206,6 @@ export function removeIgnoreStyles(ignoreStyles: HTMLStyleElement): void {
   ignoreStyles.remove();
 }
 
-// TODO Find a way to send stories updates to the server
 export async function getStories(callback?: (stories: StoriesRaw) => void): Promise<StoriesRaw> {
   function isRegExp(exp: unknown): exp is RegExp {
     return exp instanceof RegExp;
@@ -259,4 +258,110 @@ export async function getStories(callback?: (stories: StoriesRaw) => void): Prom
   window.__CREEVEY_STORYBOOK_STORIES__ = stories;
   if (callback) callback(stories);
   return stories;
+}
+
+/**
+ * Watches for Storybook story changes and sends updates to Creevey server
+ * @param serverPort The port where Creevey server is running
+ */
+export function watchStories(serverPort: number): void {
+  const STORYBOOK_EVENTS = {
+    SET_STORIES: 'setStories',
+  };
+
+  function isRegExp(exp: unknown): exp is RegExp {
+    return exp instanceof RegExp;
+  }
+  function serializeRegExp(exp: RegExp): SerializedRegExp {
+    const { source, flags } = exp;
+    return {
+      __regexp: true,
+      source,
+      flags,
+    };
+  }
+
+  function cloneDeepWith<T>(value: T, customizer: (value: unknown) => unknown): T {
+    const customized = customizer(value);
+    if (customized !== undefined) return customized as T;
+
+    if (Array.isArray(value)) {
+      return value.map((item) => cloneDeepWith(item as T, customizer)) as T;
+    }
+
+    if (value && typeof value === 'object') {
+      const out: Record<string, unknown> = {};
+      for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+        out[k] = cloneDeepWith(v, customizer);
+      }
+      return out as unknown as T;
+    }
+
+    return value;
+  }
+
+  function serializeRawStories(stories: StoriesRaw) {
+    for (const storyId in stories) {
+      const story = stories[storyId];
+      const creevey = story.parameters.creevey as CreeveyStoryParams | undefined;
+      if (creevey && 'skip' in creevey && creevey.skip) {
+        creevey.skip = cloneDeepWith(creevey.skip, (value) => {
+          if (isRegExp(value)) {
+            return serializeRegExp(value);
+          }
+          return undefined;
+        }) as CreeveyStoryParams['skip'];
+      }
+    }
+  }
+
+  const channel = window.__STORYBOOK_ADDONS_CHANNEL__;
+
+  // Listen for story updates from Storybook HMR
+  channel.on(STORYBOOK_EVENTS.SET_STORIES, () => {
+    // Extract updated stories
+    void (async () => {
+      try {
+        const stories = await window.__STORYBOOK_PREVIEW__.extract();
+        serializeRawStories(stories);
+        window.__CREEVEY_STORYBOOK_STORIES__ = stories;
+
+        // Convert stories object to array format expected by the server
+        const storiesArray: [string, StoryInput[]][] = [];
+        const storiesByFile = new Map<string, StoryInput[]>();
+
+        // Group stories by file
+        for (const storyId in stories) {
+          const story = stories[storyId];
+          const fileName: string =
+            (typeof story.parameters.fileName === 'string' ? story.parameters.fileName : null) ?? 'unknown';
+          if (!storiesByFile.has(fileName)) {
+            storiesByFile.set(fileName, []);
+          }
+          const fileStories = storiesByFile.get(fileName);
+          if (fileStories) {
+            fileStories.push(story);
+          }
+        }
+
+        // Convert to array format
+        storiesByFile.forEach((stories, fileName) => {
+          storiesArray.push([fileName, stories]);
+        });
+
+        // Send update to Creevey server
+        const serverUrl = `http://localhost:${serverPort}/stories`;
+        await fetch(serverUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ stories: storiesArray }),
+        });
+      } catch (error) {
+        // Silently fail - don't break Storybook if Creevey server is down
+        console.warn('Failed to send story updates to Creevey:', error);
+      }
+    })();
+  });
 }

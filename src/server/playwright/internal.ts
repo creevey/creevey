@@ -21,7 +21,7 @@ import { appendIframePath, LOCALHOST_REGEXP, resolveStorybookUrl, storybookRootI
 import { getCreeveyCache, isShuttingDown, resolvePlaywrightBrowserType, runSequence } from '../utils';
 import { colors, logger } from '../logger';
 import { removeWorkerContainer } from '../worker/context';
-import { getStories, selectStory } from '../storybook-helpers.js';
+import { getStories, selectStory, watchStories } from '../storybook-helpers.js';
 
 const browsers = {
   chromium,
@@ -228,6 +228,10 @@ export class InternalBrowser {
     return await this.#page.evaluate(getStories);
   }
 
+  async watchStoriesForChanges(port: number): Promise<void> {
+    await this.#page.evaluate(watchStories, port);
+  }
+
   static async getBrowser(
     browserName: string,
     gridUrl: string,
@@ -343,7 +347,10 @@ export class InternalBrowser {
         if (
           document.readyState !== 'complete' ||
           typeof window.__STORYBOOK_PREVIEW__ === 'undefined' ||
+          // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
           typeof window.__STORYBOOK_ADDONS_CHANNEL__ === 'undefined' ||
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+          window.__STORYBOOK_ADDONS_CHANNEL__.last === undefined ||
           window.__STORYBOOK_ADDONS_CHANNEL__.last('setGlobals') === undefined
         ) {
           requestAnimationFrame(check);
