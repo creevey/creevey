@@ -55,14 +55,42 @@ const storyNameFromExport = (key: string) => toStartCaseStr(key);
 
 export type CreeveyParamsByStoryId = Record<string, CreeveyStoryParams>;
 
-export default async function parse(files: string[]): Promise<CreeveyParamsByStoryId> {
+/**
+ * Clear module cache for the given files to enable hot reloading
+ */
+function clearModuleCache(files: string[]): void {
+  const fileUrls = files.map((file) => pathToFileURL(file).toString());
+
+  // Clear require.cache for Node < 18
+  fileUrls.forEach((fileUrl) => {
+    // Convert file URL to path for require.cache
+    const modulePath = fileUrl.startsWith('file://') ? fileUrl.slice(7) : fileUrl;
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+    delete require.cache[modulePath];
+    // Try with resolved path as well
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      delete require.cache[require.resolve(modulePath)];
+    } catch {
+      // Ignore if module not found
+    }
+  });
+}
+
+export default async function parse(files: string[], clearCache = false): Promise<CreeveyParamsByStoryId> {
   result = {};
+
+  if (clearCache) {
+    clearModuleCache(files);
+  }
 
   await loadThroughTSX(async (load) =>
     Promise.all(
       files.map(async (file) => {
+        // Add cache-busting timestamp for ES modules to force reload
         const fileUrl = pathToFileURL(file).toString();
-        await load(fileUrl);
+        const urlWithCacheBust = clearCache ? `${fileUrl}?t=${Date.now()}` : fileUrl;
+        await load(urlWithCacheBust);
       }),
     ),
   );
