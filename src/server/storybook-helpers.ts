@@ -1,8 +1,8 @@
+import type { Channel } from 'storybook/internal/channels';
 import type { Renderer } from 'storybook/internal/types';
 import type { PreviewWeb, StoryStore } from 'storybook/preview-api';
-import { Channel } from 'storybook/internal/channels';
-import type { CreeveyStoryParams, StoriesRaw, StorybookGlobals, StoryInput } from '../types.js';
 import type { SerializedRegExp } from '../shared/serializeRegExp.js';
+import type { CreeveyStoryParams, StoriesRaw, StorybookGlobals, StoryInput } from '../types.js';
 
 declare global {
   interface Window {
