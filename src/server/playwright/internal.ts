@@ -21,7 +21,8 @@ import { appendIframePath, LOCALHOST_REGEXP, resolveStorybookUrl, storybookRootI
 import { getCreeveyCache, isShuttingDown, resolvePlaywrightBrowserType, runSequence } from '../utils';
 import { colors, logger } from '../logger';
 import { removeWorkerContainer } from '../worker/context';
-import { getStories, selectStory, watchStories } from '../storybook-helpers.js';
+import { emitStoriesMessage } from '../messages.js';
+import { getStories, selectStory, watchStories, monitorStoryChanges } from '../storybook-helpers.js';
 
 const browsers = {
   chromium,
@@ -228,8 +229,33 @@ export class InternalBrowser {
     return await this.#page.evaluate(getStories);
   }
 
-  async watchStoriesForChanges(port: number): Promise<void> {
-    await this.#page.evaluate(watchStories, port);
+  async watchStoriesForChanges(): Promise<void> {
+    // Set up the emit function in the browser context
+    await this.#page.evaluate(() => {
+      window.__CREEVEY_EMIT_STORIES_UPDATE__ = (stories) => {
+        // This will be called from monitorStoryChanges
+        // We'll emit the message via the page context
+        console.debug('Creevey: Emitting stories update', stories.length);
+      };
+    });
+
+    // Start watching for Storybook changes
+    await this.#page.evaluate(watchStories);
+
+    // Start monitoring for changes and emitting updates
+    await this.#page.evaluate(monitorStoryChanges);
+
+    // Set up a handler to catch the emit calls and send messages to server
+    await this.#page.exposeFunction('__creeveyOnStoriesUpdate', (stories: [string, StoryInput[]][]) => {
+      emitStoriesMessage({ type: 'update', payload: stories });
+    });
+
+    // Update the emit function to use the exposed function
+    await this.#page.evaluate(() => {
+      window.__CREEVEY_EMIT_STORIES_UPDATE__ = (stories) => {
+        window.__CREEVEY_ON_STORIES_UPDATE__(stories);
+      };
+    });
   }
 
   static async getBrowser(

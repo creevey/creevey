@@ -22,10 +22,17 @@ import {
   StorybookEvents,
 } from '../../types.js';
 import { colors, logger } from '../logger.js';
-import { emitWorkerMessage, subscribeOn } from '../messages.js';
+import { emitWorkerMessage, subscribeOn, emitStoriesMessage } from '../messages.js';
 import { isShuttingDown, runSequence } from '../utils.js';
 import { appendIframePath, LOCALHOST_REGEXP, resolveStorybookUrl, storybookRootID } from '../webdriver.js';
-import { getStories, insertIgnoreStyles, removeIgnoreStyles, selectStory, watchStories } from '../storybook-helpers.js';
+import {
+  getStories,
+  insertIgnoreStyles,
+  removeIgnoreStyles,
+  selectStory,
+  watchStories,
+  monitorStoryChanges,
+} from '../storybook-helpers.js';
 
 interface ElementRect {
   top: number;
@@ -187,6 +194,7 @@ export class InternalBrowser {
   #storybookGlobals?: StorybookGlobals;
   #unsubscribe: () => void = noop;
   #keepAliveInterval: NodeJS.Timeout | null = null;
+  #updateInterval: NodeJS.Timeout | null = null;
   #sessionId = '';
   constructor(browser: WebDriver, storybookGlobals?: StorybookGlobals) {
     this.#browser = browser;
@@ -206,6 +214,7 @@ export class InternalBrowser {
     this.#isShuttingDown = true;
     this.#unsubscribe();
     if (this.#keepAliveInterval !== null) clearInterval(this.#keepAliveInterval);
+    if (this.#updateInterval !== null) clearInterval(this.#updateInterval);
 
     try {
       await this.#browser.quit();
@@ -376,8 +385,52 @@ export class InternalBrowser {
     return await this.#browser.executeAsyncScript(getStories);
   }
 
-  async watchStoriesForChanges(port: number): Promise<void> {
-    await this.#browser.executeScript(watchStories, port);
+  async watchStoriesForChanges(): Promise<void> {
+    // Set up the emit function in the browser context
+    await this.#browser.executeScript(`
+      window.__CREEVEY_EMIT_STORIES_UPDATE__ = (stories) => {
+        // This will be called from monitorStoryChanges
+        console.debug('Creevey: Emitting stories update', stories.length);
+      };
+    `);
+
+    // Start watching for Storybook changes
+    await this.#browser.executeScript(watchStories);
+
+    // Start monitoring for changes and emitting updates
+    await this.#browser.executeScript(monitorStoryChanges);
+
+    // For Selenium, we need to use a different approach since we can't expose functions
+    // We'll poll the browser for pending updates
+    const checkForUpdates = async (): Promise<void> => {
+      try {
+        const hasPendingUpdate = await this.#browser.executeScript(() => {
+          return window.__CREEVEY_PENDING_STORIES_UPDATE__ ?? false;
+        });
+
+        if (hasPendingUpdate) {
+          const stories = await this.#browser.executeScript(() => {
+            const update = window.__CREEVEY_PENDING_STORIES_UPDATE__;
+            window.__CREEVEY_PENDING_STORIES_UPDATE__ = null;
+            return update;
+          });
+
+          if (stories && Array.isArray(stories)) {
+            emitStoriesMessage({ type: 'update', payload: stories as [string, StoryInput[]][] });
+          }
+        }
+      } catch (_error) {
+        // Ignore errors during polling
+      }
+    };
+
+    // Check for updates every 500ms
+    const updateInterval = setInterval(() => {
+      void checkForUpdates();
+    }, 500);
+
+    // Clean up interval when browser is closed
+    this.#updateInterval = updateInterval;
   }
 
   async afterTest(): Promise<void> {

@@ -8,7 +8,7 @@ import { subscribeOn } from '../messages.js';
 import { noop } from '../../types.js';
 import { logger } from '../logger.js';
 import { CreeveyApi } from './api.js';
-import { pingHandler, captureHandler, storiesHandler, staticHandler } from './handlers/index.js';
+import { pingHandler, captureHandler, staticHandler } from './handlers/index.js';
 import { testsHandler } from './handlers/tests-handler.js';
 
 function json<T = unknown>(
@@ -132,11 +132,6 @@ export function start(reportDir: string, port: number, ui = false, host?: string
           },
         ]
       : []),
-    {
-      path: '/stories',
-      method: 'POST',
-      handler: json(storiesHandler, { stories: [] }),
-    },
     {
       path: '/capture',
       method: 'POST',

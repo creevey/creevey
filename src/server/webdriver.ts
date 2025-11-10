@@ -70,7 +70,7 @@ export abstract class CreeveyWebdriverBase implements CreeveyWebdriver {
 
   abstract loadStoriesFromBrowser(): Promise<StoriesRaw>;
 
-  abstract watchStoriesForChanges(port: number): Promise<void>;
+  abstract watchStoriesForChanges(): Promise<void>;
 
   abstract afterTest(test: ServerTest): Promise<void>;
 

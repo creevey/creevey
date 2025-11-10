@@ -150,8 +150,8 @@ export async function start(browser: string, gridUrl: string, config: Config, op
 
   // Set up story change watcher for development mode
   try {
-    await webdriver.watchStoriesForChanges(options.port);
-    logger().debug(`Story watcher initialized on port ${options.port}`);
+    await webdriver.watchStoriesForChanges();
+    logger().debug('Story watcher initialized');
   } catch (error) {
     logger().warn('Failed to initialize story watcher:', error);
     // Don't fail the worker if watcher setup fails

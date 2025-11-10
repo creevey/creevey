@@ -12,10 +12,13 @@ declare global {
     __CREEVEY_STORYBOOK_STORIES__: undefined | StoriesRaw;
     __CREEVEY_STORYBOOK_GLOBALS__: undefined | StorybookGlobals;
     __CREEVEY_SELECT_STORY_RESULT__: null | { status: 'success' } | { status: 'error'; message: string };
+    __CREEVEY_EMIT_STORIES_UPDATE__: (stories: [string, StoryInput[]][]) => void;
+    __CREEVEY_PENDING_STORIES_UPDATE__: [string, StoryInput[]][] | null;
+    __CREEVEY_ON_STORIES_UPDATE__: (stories: [string, StoryInput[]][]) => void;
     __STORYBOOK_ADDONS_CHANNEL__: Channel;
     __STORYBOOK_MODULE_CORE_EVENTS__: Record<string, string>;
-    __STORYBOOK_STORY_STORE__: StoryStore<Renderer>;
     __STORYBOOK_PREVIEW__: PreviewWeb<Renderer>;
+    __STORYBOOK_STORE__: StoryStore<Renderer>;
   }
 }
 
@@ -261,10 +264,9 @@ export async function getStories(callback?: (stories: StoriesRaw) => void): Prom
 }
 
 /**
- * Watches for Storybook story changes and sends updates to Creevey server
- * @param serverPort The port where Creevey server is running
+ * Watches for Storybook story changes and updates the global stories variable
  */
-export function watchStories(serverPort: number): void {
+export function watchStories(): void {
   const STORYBOOK_EVENTS = {
     SET_STORIES: 'setStories',
   };
@@ -316,52 +318,85 @@ export function watchStories(serverPort: number): void {
   }
 
   const channel = window.__STORYBOOK_ADDONS_CHANNEL__;
+  let storiesChanged = false;
 
   // Listen for story updates from Storybook HMR
   channel.on(STORYBOOK_EVENTS.SET_STORIES, () => {
-    // Extract updated stories
-    void (async () => {
+    storiesChanged = true;
+  });
+
+  // Poll for story changes every 1 second
+  setInterval(() => {
+    if (storiesChanged) {
+      storiesChanged = false;
+      void (async () => {
+        try {
+          const stories = await window.__STORYBOOK_PREVIEW__.extract();
+          serializeRawStories(stories);
+          window.__CREEVEY_STORYBOOK_STORIES__ = stories;
+          console.debug('Creevey: Stories updated via polling');
+        } catch (error) {
+          console.warn('Failed to update stories:', error);
+        }
+      })();
+    }
+  }, 1000);
+}
+
+/**
+ * Monitors story changes and emits update messages to the server
+ */
+export function monitorStoryChanges(): void {
+  let lastStoriesHash: string | null = null;
+
+  // Check for story changes every 500ms
+  setInterval(() => {
+    (() => {
       try {
-        const stories = await window.__STORYBOOK_PREVIEW__.extract();
-        serializeRawStories(stories);
-        window.__CREEVEY_STORYBOOK_STORIES__ = stories;
+        const currentStories = window.__CREEVEY_STORYBOOK_STORIES__;
+        if (!currentStories) return;
 
-        // Convert stories object to array format expected by the server
-        const storiesArray: [string, StoryInput[]][] = [];
-        const storiesByFile = new Map<string, StoryInput[]>();
+        // Create a simple hash to detect changes
+        const storiesJson = JSON.stringify(Object.keys(currentStories).sort());
+        const currentHash = storiesJson;
 
-        // Group stories by file
-        for (const storyId in stories) {
-          const story = stories[storyId];
-          const fileName: string =
-            (typeof story.parameters.fileName === 'string' ? story.parameters.fileName : null) ?? 'unknown';
-          if (!storiesByFile.has(fileName)) {
-            storiesByFile.set(fileName, []);
+        if (lastStoriesHash !== currentHash) {
+          lastStoriesHash = currentHash;
+
+          // Convert stories to array format expected by server
+          const storiesArray: [string, StoryInput[]][] = [];
+          const storiesByFile = new Map<string, StoryInput[]>();
+
+          // Group stories by file
+          for (const storyId in currentStories) {
+            const story = currentStories[storyId];
+            const fileName: string =
+              (typeof story.parameters.fileName === 'string' ? story.parameters.fileName : null) ?? 'unknown';
+            if (!storiesByFile.has(fileName)) {
+              storiesByFile.set(fileName, []);
+            }
+            const fileStories = storiesByFile.get(fileName);
+            if (fileStories) {
+              fileStories.push(story);
+            }
           }
-          const fileStories = storiesByFile.get(fileName);
-          if (fileStories) {
-            fileStories.push(story);
+
+          // Convert to array format
+          storiesByFile.forEach((stories, fileName) => {
+            storiesArray.push([fileName, stories]);
+          });
+
+          // Emit update message to server
+          if (typeof window.__CREEVEY_EMIT_STORIES_UPDATE__ === 'function') {
+            window.__CREEVEY_EMIT_STORIES_UPDATE__(storiesArray);
+          } else {
+            // For Selenium, store the update for polling
+            window.__CREEVEY_PENDING_STORIES_UPDATE__ = storiesArray;
           }
         }
-
-        // Convert to array format
-        storiesByFile.forEach((stories, fileName) => {
-          storiesArray.push([fileName, stories]);
-        });
-
-        // Send update to Creevey server
-        const serverUrl = `http://localhost:${serverPort}/stories`;
-        await fetch(serverUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ stories: storiesArray }),
-        });
       } catch (error) {
-        // Silently fail - don't break Storybook if Creevey server is down
-        console.warn('Failed to send story updates to Creevey:', error);
+        console.warn('Failed to monitor story changes:', error);
       }
     })();
-  });
+  }, 500);
 }

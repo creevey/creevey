@@ -85,12 +85,12 @@ export class PlaywrightWebdriver extends CreeveyWebdriverBase {
     return this.#browser.loadStoriesFromBrowser();
   }
 
-  async watchStoriesForChanges(port: number): Promise<void> {
+  async watchStoriesForChanges(): Promise<void> {
     if (!this.#browser) {
       throw new Error('Browser is not initialized');
     }
 
-    return this.#browser.watchStoriesForChanges(port);
+    return this.#browser.watchStoriesForChanges();
   }
 
   afterTest(): Promise<void> {
