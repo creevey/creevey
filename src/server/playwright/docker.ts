@@ -1,4 +1,5 @@
 import assert from 'assert';
+import { mkdir } from 'fs/promises';
 import { runImage } from '../docker';
 import { emitWorkerMessage, subscribeOn } from '../messages';
 import { getCreeveyCache, isInsideDocker, resolvePlaywrightBrowserType } from '../utils';
@@ -24,6 +25,10 @@ export async function startPlaywrightContainer(
   const cacheDir = await getCreeveyCache();
 
   assert(cacheDir, "Couldn't get cache directory");
+
+  // NOTE: Docker creates root directory if it doesn't exist, but Podman doesn't create it
+  // https://github.com/containers/podman/issues/6234
+  await mkdir(`${cacheDir}/${process.pid}`, { recursive: true });
 
   const host = await runImage(
     imageName,

@@ -209,7 +209,12 @@ export async function runImage(
       'start',
       (container: Container) =>
         void container.inspect().then((info) => {
-          resolve(info.NetworkSettings.Networks.bridge.IPAddress);
+          if ('podman' in info.NetworkSettings.Networks) {
+            // NOTE: Podman uses different default network
+            resolve(info.NetworkSettings.Networks.podman.IPAddress);
+          } else {
+            resolve(info.NetworkSettings.Networks.bridge.IPAddress);
+          }
         }),
     );
   });
