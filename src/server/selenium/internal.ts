@@ -546,7 +546,8 @@ export class InternalBrowser {
             document.readyState !== 'complete' ||
             typeof window.__STORYBOOK_PREVIEW__ === 'undefined' ||
             typeof window.__STORYBOOK_ADDONS_CHANNEL__ === 'undefined' ||
-            window.__STORYBOOK_ADDONS_CHANNEL__.last('setGlobals') === undefined
+            (!('ready' in window.__STORYBOOK_PREVIEW__) &&
+              window.__STORYBOOK_ADDONS_CHANNEL__.last('setGlobals') === undefined)
           ) {
             requestAnimationFrame(check);
             return;
