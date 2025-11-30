@@ -370,7 +370,7 @@ export class InternalBrowser {
     await this.#page.evaluate((id) => (window.__CREEVEY_SESSION_ID__ = id), this.#sessionId);
 
     return await runSequence(
-      [() => this.waitForStorybook(), () => this.loadStorybookStories(), () => this.defineGlobals()],
+      [() => this.waitForStorybook(), () => this.defineGlobals(), () => this.loadStorybookStories()],
       () => !this.#isShuttingDown,
     );
   }
