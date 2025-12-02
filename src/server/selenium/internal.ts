@@ -309,6 +309,7 @@ export class InternalBrowser {
       if (!done) return;
     }
 
+    await this.#browser.executeScript(() => delete window.__CREEVEY_SELECT_STORY_RESULT__);
     await this.resetMousePosition();
 
     logger().debug(`Triggering 'SetCurrentStory' event with storyId ${chalk.magenta(id)}`);

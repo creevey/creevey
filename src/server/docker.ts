@@ -9,7 +9,7 @@ import { DockerAuth } from '../types.js';
 import { logger } from './logger.js';
 import { setWorkerContainer } from './worker/context.js';
 
-function findDockerSocket(): string | undefined {
+export function findDockerSocket(): string | undefined {
   // List of possible docker.sock locations in order of preference
   const possiblePaths = [
     // Standard Linux location
@@ -34,16 +34,16 @@ function findDockerSocket(): string | undefined {
       return socketPath;
     }
   }
-
-  // Fall back to default if no socket found
-  logger().warn('No Docker socket found at known locations, using default');
 }
 
-const dockerSocketPath = findDockerSocket();
-const docker = new Dockerode(dockerSocketPath ? { socketPath: dockerSocketPath } : undefined);
+let docker: Dockerode | null = null;
 
-export function getDockerSocketPath(): string | undefined {
-  return dockerSocketPath ?? '/var/run/docker.sock';
+function getDocker(): Dockerode {
+  if (!docker) {
+    const dockerSocketPath = findDockerSocket();
+    docker = new Dockerode(dockerSocketPath ? { socketPath: dockerSocketPath } : undefined);
+  }
+  return docker;
 }
 
 class DevNull extends Writable {
@@ -59,6 +59,8 @@ export async function pullImages(
   const args: Record<string, unknown> = {};
   if (auth) args.authconfig = auth;
   if (platform) args.platform = platform;
+
+  const docker = getDocker();
 
   logger().info('Pull docker images');
   // TODO Replace with `import from`
@@ -97,6 +99,7 @@ export async function pullImages(
 }
 
 export async function buildImage(imageName: string, version: string, dockerfile: string): Promise<void> {
+  const docker = getDocker();
   const images = await docker.listImages({ filters: { label: [`creevey=${imageName}`] } });
 
   const containers = await docker.listContainers({ all: true, filters: { label: [`creevey=${imageName}`] } });
@@ -197,6 +200,7 @@ export async function runImage(
   options: Record<string, unknown>,
   debug: boolean,
 ): Promise<string> {
+  const docker = getDocker();
   const hub = docker.run(image, args, debug ? process.stdout : new DevNull(), options, (error) => {
     if (error) throw error;
   });

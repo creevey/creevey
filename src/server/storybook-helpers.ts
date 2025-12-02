@@ -11,7 +11,7 @@ declare global {
     __CREEVYE_STORYBOOK_READY__: boolean;
     __CREEVEY_STORYBOOK_STORIES__: undefined | StoriesRaw;
     __CREEVEY_STORYBOOK_GLOBALS__: undefined | StorybookGlobals;
-    __CREEVEY_SELECT_STORY_RESULT__: null | { status: 'success' } | { status: 'error'; message: string };
+    __CREEVEY_SELECT_STORY_RESULT__?: null | { status: 'success' } | { status: 'error'; message: string };
     __STORYBOOK_ADDONS_CHANNEL__: Channel;
     __STORYBOOK_MODULE_CORE_EVENTS__: Record<string, string>;
     __STORYBOOK_STORY_STORE__: StoryStore<Renderer>;
