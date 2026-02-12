@@ -185,10 +185,13 @@ interface BrowserConfigObject {
   limit?: number; // Parallel instances
   gridUrl?: string; // Custom grid URL
   viewport?: { width; height }; // Browser viewport
+  connectionTimeout?: number; // Connection timeout in ms (default: 60000)
   seleniumCapabilities?: {}; // Selenium-specific options
   playwrightOptions?: {}; // Playwright-specific options
 }
 ```
+
+**Connection Timeout**: Controls how long Creevey waits when establishing connections to Selenium Grid or Playwright browsers. Useful for remote grids with higher latency. Can be set globally in root config or per-browser (browser-level takes precedence).
 
 ## Message Passing System
 

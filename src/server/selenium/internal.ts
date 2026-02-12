@@ -93,7 +93,9 @@ async function buildWebdriver(
   debug: boolean,
 ): Promise<WebDriver | null> {
   const browserConfig = config.browsers[browser] as BrowserConfigObject;
-  const { /*customizeBuilder,*/ seleniumCapabilities, browserName } = browserConfig;
+  const { /*customizeBuilder,*/ seleniumCapabilities, browserName, connectionTimeout } = browserConfig;
+  // Use browser-specific or global or default timeout (60 seconds)
+  const timeout = connectionTimeout ?? config.connectionTimeout ?? 60_000;
 
   const url = new URL(gridUrl);
   url.username = url.username ? '********' : '';
@@ -129,7 +131,7 @@ async function buildWebdriver(
           setTimeout(() => {
             retries += 1;
             resolve(null);
-          }, 120_000);
+          }, timeout);
         }),
         (async () => {
           if (retries > 0) {

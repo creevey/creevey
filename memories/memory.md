@@ -150,6 +150,8 @@ const config: CreeveyConfig = {
     chrome: {
       browserName: 'chromium',
       viewport: { width: 1024, height: 768 },
+      // Optional: increase timeout for remote grid connections
+      connectionTimeout: 120000,
     },
   },
 };

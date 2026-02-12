@@ -29,7 +29,7 @@ const browsers = {
   webkit,
 };
 
-async function tryConnect(type: BrowserType, gridUrl: string): Promise<Browser | null> {
+async function tryConnect(type: BrowserType, gridUrl: string, timeoutMs: number): Promise<Browser | null> {
   let timeout: NodeJS.Timeout | null = null;
   let isTimeout = false;
   let error: unknown = null;
@@ -40,7 +40,7 @@ async function tryConnect(type: BrowserType, gridUrl: string): Promise<Browser |
           isTimeout = true;
           logger().error(`Can't connect to ${type.name()} playwright browser`, error);
           resolve(null);
-        }, 10000)),
+        }, timeoutMs)),
     ),
     (async () => {
       let browser: Browser | null = null;
@@ -244,7 +244,10 @@ export class InternalBrowser {
       storybookGlobals = _storybookGlobals,
       seleniumCapabilities,
       playwrightOptions,
+      connectionTimeout,
     } = browserConfig;
+    // Use browser-specific timeout, or global config timeout, or default to 60000ms
+    const connectionTimeoutMs = connectionTimeout ?? config.connectionTimeout ?? 60_000;
     const parsedUrl = new URL(gridUrl);
     const tracesDir = path.join(
       playwrightOptions?.tracesDir ?? path.join(config.reportDir, 'traces'),
@@ -257,7 +260,11 @@ export class InternalBrowser {
     let browser: Browser | null = null;
 
     if (parsedUrl.protocol === 'ws:') {
-      browser = await tryConnect(browsers[resolvePlaywrightBrowserType(browserConfig.browserName)], gridUrl);
+      browser = await tryConnect(
+        browsers[resolvePlaywrightBrowserType(browserConfig.browserName)],
+        gridUrl,
+        connectionTimeoutMs,
+      );
     } else if (parsedUrl.protocol === 'creevey:') {
       browser = await browsers[resolvePlaywrightBrowserType(browserConfig.browserName)].launch({
         ...playwrightOptions,

@@ -122,6 +122,11 @@ export interface BrowserConfigObject {
   //  */
   // playwrightBrowser?: () => Promise<Browser>;
   viewport?: { width: number; height: number };
+  /**
+   * Connection timeout for this specific browser in milliseconds.
+   * Overrides global connectionTimeout
+   */
+  connectionTimeout?: number;
 
   seleniumCapabilities?: {
     /**
@@ -232,6 +237,11 @@ export interface Config {
    * @default 30000
    */
   testTimeout: number;
+  /**
+   * Connection timeout for Selenium/Playwright Grid in milliseconds
+   * @default 60000
+   */
+  connectionTimeout?: number;
   /**
    * Define pixelmatch diff options
    * @default { threshold: 0.1, includeAA: false }

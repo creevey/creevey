@@ -29,6 +29,7 @@ export const defaultConfig: Omit<Config, 'gridUrl' | 'tsConfig' | 'webdriver'> =
   storiesProvider: hybridStoriesProvider,
   maxRetries: 0,
   testTimeout: 30000,
+  connectionTimeout: 60000,
   diffOptions: { threshold: 0.1, includeAA: false },
   odiffOptions: { threshold: 0.1, antialiasing: true },
   browsers: { [defaultBrowser]: true },

@@ -62,6 +62,41 @@ const config: CreeveyConfig = {
 export default config;
 ```
 
+## Connection Timeout Configuration
+
+Configure the connection timeout for Selenium Grid or Playwright browser connections. This is useful when connecting to remote grids that may have higher latency.
+
+```ts
+// creevey.config.ts
+import { CreeveyConfig } from 'creevey';
+import { SeleniumWebdriver } from 'creevey/selenium';
+
+const config: CreeveyConfig = {
+  webdriver: SeleniumWebdriver,
+  // Global connection timeout (default: 60000ms)
+  connectionTimeout: 120000,
+  browsers: {
+    chrome: {
+      browserName: 'chrome',
+      // Per-browser override (uses global if not specified)
+      connectionTimeout: 180000,
+    },
+    firefox: {
+      browserName: 'firefox',
+      // Uses global connectionTimeout
+    },
+  },
+};
+
+export default config;
+```
+
+The `connectionTimeout` option accepts a number in milliseconds:
+
+- **Default**: `60000` (60 seconds)
+- **Global level**: Set in root config to apply to all browsers
+- **Browser level**: Set per-browser to override the global value
+
 ## Multiple Browsers Configuration
 
 It's possible to test your stories across different browsers:
