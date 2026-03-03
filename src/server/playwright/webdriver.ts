@@ -1,10 +1,9 @@
-/// <reference types="../../../types/playwright-context" />
 import type { Args } from 'storybook/internal/types';
-import type { Config, StoriesRaw, StoryInput } from '../../types';
-import { logger } from '../logger';
-import { subscribeOn } from '../messages';
-import { CreeveyWebdriverBase } from '../webdriver';
-import type { InternalBrowser } from './internal';
+import type { Config, StoriesRaw, StoryInput } from '../../types.js';
+import { logger } from '../logger.js';
+import { subscribeOn } from '../messages.js';
+import { CreeveyWebdriverBase } from '../webdriver.js';
+import type { InternalBrowser } from './internal.js';
 import { PageScreenshotOptions } from 'playwright-core';
 
 export class PlaywrightWebdriver extends CreeveyWebdriverBase {

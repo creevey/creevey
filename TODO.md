@@ -389,11 +389,11 @@
     - If image width/height greater than viewport width/height then scroll bar is captured
   - [x] ~~Stop stdout from workers after shutdown event~~ (Issue with yarn: https://github.com/yarnpkg/yarn/issues/4667)
 - [ ] Test with yarn2
-- [ ] Think about how to test with ESM (try to use import() from esm directory)
+- [x] ~~Think about how to test with ESM (try to use import() from esm directory)~~ (Project migrated to ESM-only output)
 - [ ] Try https://docs.gitlab.com/runner/executors/docker.html#the-privileged-mode
 - [ ] Move docker config options to separate prop `docker`
 - [ ] Move from yarn to npm@7
-- [ ] Drop support nodejs 10
+- [x] ~~Drop support nodejs 10~~ (Minimum is now Node.js >=20.11.0)
 - [ ] Download webdriver binary automatically (see bigtest as example)
 - [ ] Rename `screenDir` config option
 - [ ] Drop storiesOf and Storybook v5.x support

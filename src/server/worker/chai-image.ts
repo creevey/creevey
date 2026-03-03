@@ -1,4 +1,4 @@
-import { logger } from '../logger';
+import { logger } from '../logger.js';
 
 export default function (
   matchImage: (image: Buffer, imageName?: string) => Promise<void>,

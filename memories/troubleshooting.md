@@ -20,7 +20,7 @@
 yarn install --force
 
 # Check Node.js version
-node --version  # Should be >=18
+node --version  # Should be >=20.11.0
 
 # Verify installation
 yarn creevey --version

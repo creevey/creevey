@@ -16,11 +16,11 @@ import { v4 } from 'uuid';
 import Logger from 'loglevel';
 import prefix from 'loglevel-plugin-prefix';
 import type { Args } from 'storybook/internal/types';
-import { BrowserConfigObject, Config, StoriesRaw, StoryInput, StorybookEvents, StorybookGlobals } from '../../types';
-import { appendIframePath, LOCALHOST_REGEXP, resolveStorybookUrl, storybookRootID } from '../webdriver';
-import { getCreeveyCache, isShuttingDown, resolvePlaywrightBrowserType, runSequence } from '../utils';
-import { colors, logger } from '../logger';
-import { removeWorkerContainer } from '../worker/context';
+import { BrowserConfigObject, Config, StoriesRaw, StoryInput, StorybookEvents, StorybookGlobals } from '../../types.js';
+import { appendIframePath, LOCALHOST_REGEXP, resolveStorybookUrl, storybookRootID } from '../webdriver.js';
+import { getCreeveyCache, isShuttingDown, resolvePlaywrightBrowserType, runSequence } from '../utils.js';
+import { colors, logger } from '../logger.js';
+import { removeWorkerContainer } from '../worker/context.js';
 import { getStories, selectStory } from '../storybook-helpers.js';
 
 const browsers = {

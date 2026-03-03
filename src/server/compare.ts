@@ -5,7 +5,7 @@ import { PNG } from 'pngjs';
 import type { ODiffOptions } from 'odiff-bin';
 import type { PixelmatchOptions } from 'pixelmatch';
 import { mkdir, readdir, readFile, stat, writeFile } from 'fs/promises';
-import { Images } from '../types';
+import { Images } from '../types.js';
 
 export interface ImageContext {
   attachments: string[];

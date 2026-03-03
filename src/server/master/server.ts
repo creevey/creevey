@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { IncomingMessage, ServerResponse, createServer } from 'http';
 import { WebSocketServer, WebSocket, RawData } from 'ws';
-import { parse, fileURLToPath, pathToFileURL } from 'url';
+import { parse } from 'url';
 import { shutdownOnException } from '../utils.js';
 import { subscribeOn } from '../messages.js';
 import { noop } from '../../types.js';
@@ -107,14 +107,12 @@ function file(handler: (requestedPath: string) => string | undefined) {
   };
 }
 
-const importMetaUrl = pathToFileURL(__filename).href;
-
 export function start(reportDir: string, port: number, ui = false, host?: string): (api: CreeveyApi) => void {
   let wss: WebSocketServer | null = null;
   let creeveyApi: CreeveyApi | null = null;
   let resolveApi: (api: CreeveyApi) => void = noop;
 
-  const webDir = path.join(path.dirname(fileURLToPath(importMetaUrl)), '../../client/web');
+  const webDir = path.join(import.meta.dirname, '../../client/web');
   const server = createServer();
 
   const routes = [

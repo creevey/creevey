@@ -12,7 +12,7 @@ const config: CreeveyConfig = {
     firefox,
   },
   storiesProvider: hybridProvider,
-  testsDir: path.join(__dirname, '../stories/tests'),
+  testsDir: path.join(import.meta.dirname, '../stories/tests'),
 };
 
 export default config;

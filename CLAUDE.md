@@ -79,7 +79,7 @@ Mocha-compatible reporter interface. Built-in: `creevey` (default), `teamcity` (
 ## Code Style
 
 - TypeScript strict mode with `noUnusedLocals` and `noUnusedParameters`
-- Module system: `"type": "commonjs"` in package.json, but `"module": "NodeNext"` in tsconfig
+- Module system: `"type": "module"` in package.json with `"module": "NodeNext"` in tsconfig (ESM output)
 - All internal imports use `.js` extension (TypeScript ESM-style resolution)
 - oxfmt (Prettier-compatible): single quotes, 120 char width, trailing commas
 - oxlint with plugins: eslint, typescript, unicorn, oxc, react, react-hooks, import

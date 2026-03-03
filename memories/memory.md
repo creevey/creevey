@@ -13,8 +13,8 @@ Creevey is a cross-browser screenshot testing tool for Storybook with a fancy UI
 
 ### Technology Stack
 
-- **Language**: TypeScript (strict mode)
-- **Runtime**: Node.js >=18
+- **Language**: TypeScript (strict mode, ESM output)
+- **Runtime**: Node.js >=20.11.0
 - **Package Manager**: Yarn 4.9.1
 - **Testing**: Vitest
 - **Build**: Vite + TypeScript compiler

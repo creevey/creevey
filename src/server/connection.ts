@@ -1,4 +1,4 @@
-import type { Config } from '../types';
+import type { Config } from '../types.js';
 import type { Options } from '../schema.js';
 import { waitOnUrl } from './utils.js';
 import { logger } from './logger.js';

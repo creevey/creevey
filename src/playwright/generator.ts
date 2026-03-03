@@ -5,10 +5,10 @@ import type { PixelmatchOptions } from 'pixelmatch';
 import type { ODiffOptions } from 'odiff-bin';
 import { test, Page, BrowserContext } from '@playwright/test';
 import isEqual from 'lodash/isEqual.js';
-import { CreeveyStoryParams, isObject, StoriesRaw, StorybookEvents, StorybookGlobals } from '../types';
-import { getOdiffAssert, getPixelmatchAssert, ImageContext } from '../server/compare';
-import { appendIframePath } from '../server/webdriver';
-import { waitForStorybookReady } from './helpers';
+import { CreeveyStoryParams, isObject, StoriesRaw, StorybookEvents, StorybookGlobals } from '../types.js';
+import { getOdiffAssert, getPixelmatchAssert, ImageContext } from '../server/compare.js';
+import { appendIframePath } from '../server/webdriver.js';
+import { waitForStorybookReady } from './helpers.js';
 
 export interface TestsConfig {
   /**

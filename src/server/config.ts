@@ -69,15 +69,11 @@ export async function readConfig(options: Options | WorkerOptions): Promise<Conf
   let hasExplicitStoriesProvider = false;
 
   if (isDefined(configPath)) {
-    const configModule = await loadThroughTSX<
-      { default: { default: Partial<Config> } | Partial<Config> } | Partial<Config>
-    >((load) => {
+    const configModule = await loadThroughTSX<{ default: Partial<Config> } | Partial<Config>>((load) => {
       const configFileUrl = pathToFileURL(configPath).toString();
       return load(configFileUrl);
     });
-    let configData = 'default' in configModule ? configModule.default : configModule;
-    // NOTE In node > 18 with commonjs project and esm config with tsconfig moduleResolution nodeNext there is additional 'default'
-    configData = 'default' in configData ? configData.default : configData;
+    const configData = 'default' in configModule ? configModule.default : configModule;
 
     if (!configData.webdriver) {
       const { SeleniumWebdriver } = await import('./selenium/webdriver.js');

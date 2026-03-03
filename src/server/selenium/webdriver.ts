@@ -1,4 +1,3 @@
-/// <reference types="../../../types/selenium-context" />
 import type { Args } from 'storybook/internal/types';
 import { Config, StoryInput, StoriesRaw } from '../../types.js';
 import { subscribeOn } from '../messages.js';

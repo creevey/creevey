@@ -1,10 +1,7 @@
 import { readFile } from 'fs/promises';
-import { pathToFileURL } from 'url';
 import semver from 'semver';
 import sh from 'shelljs';
 import { detect } from 'package-manager-detector/detect';
-
-const importMetaUrl = pathToFileURL(__filename).href;
 
 const getRegistryCommand: Record<string, string> = {
   npm: 'npm config get registry --workspaces=false --include-workspace-root',
@@ -29,7 +26,7 @@ export async function playwrightDockerFile(browser: string, version: string, npm
     }
   }
 
-  const indexJs = await readFile(new URL('./index-source.mjs', importMetaUrl), 'utf-8');
+  const indexJs = await readFile(new URL('./index-source.js', import.meta.url), 'utf-8');
 
   const dockerfile = `
 FROM node:lts

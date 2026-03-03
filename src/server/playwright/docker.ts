@@ -1,10 +1,10 @@
 import assert from 'assert';
 import { mkdir } from 'fs/promises';
-import { runImage } from '../docker';
-import { emitWorkerMessage, subscribeOn } from '../messages';
-import { getCreeveyCache, isInsideDocker, resolvePlaywrightBrowserType } from '../utils';
-import { LOCALHOST_REGEXP } from '../webdriver';
-import type { BrowserConfigObject, Config } from '../../types';
+import { runImage } from '../docker.js';
+import { emitWorkerMessage, subscribeOn } from '../messages.js';
+import { getCreeveyCache, isInsideDocker, resolvePlaywrightBrowserType } from '../utils.js';
+import { LOCALHOST_REGEXP } from '../webdriver.js';
+import type { BrowserConfigObject, Config } from '../../types.js';
 
 export async function startPlaywrightContainer(
   imageName: string,

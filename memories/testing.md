@@ -220,7 +220,7 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 
 export const loadTestImage = (filename: string): Buffer => {
-  return readFileSync(join(__dirname, '../fixtures', filename));
+  return readFileSync(join(import.meta.dirname, '../fixtures', filename));
 };
 
 export const mockScreenshot = loadTestImage('mock-screenshot.png');

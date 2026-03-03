@@ -145,7 +145,7 @@ export default async function (command: 'report' | 'test' | 'worker', options: O
   if (v.is(OptionsSchema, options)) {
     const { port, reportDir = config.reportDir } = options;
 
-    // TODO Add package.json with `"type": "commonjs"` as workaround for esm packages to load `data.js`
+    // NOTE: Ensures data.js (UMD format) can be loaded as CJS in any context
     await mkdir(reportDir, { recursive: true });
     await writeFile(path.join(reportDir, 'package.json'), '{"type": "commonjs"}');
 

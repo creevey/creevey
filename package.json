@@ -2,7 +2,7 @@
   "name": "creevey",
   "description": "Cross-browser screenshot testing tool for Storybook with fancy UI Runner",
   "version": "0.10.35",
-  "type": "commonjs",
+  "type": "module",
   "bin": "dist/cli.js",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -72,14 +72,14 @@
     "build": "yarn prebuild && yarn build:client && yarn build:creevey && yarn postbuild",
     "build:client": "vite build",
     "build:creevey": "tsc --build tsconfig.prod.json",
-    "postbuild": "node scripts/copy-files.mjs",
+    "postbuild": "node scripts/copy-files.js",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
     "build-storybook": "storybook build",
     "chromatic": "chromatic --project-token=chpt_80df83ca94e6fb4",
     "prepare": "husky"
   },
   "engines": {
-    "node": ">=18.0"
+    "node": ">=20.11.0"
   },
   "peerDependencies": {
     "playwright-core": "*",
@@ -141,7 +141,7 @@
     "@playwright/test": "^1.52.0",
     "@storybook/addon-docs": "^9.0.0",
     "@storybook/react-vite": "^9.0.0",
-    "@types/node": "^18.19.105",
+    "@types/node": "^20.11.0",
     "@types/resize-observer-browser": "^0.1.11",
     "@types/semver": "^7.7.0",
     "@types/tar-stream": "^3.1.3",

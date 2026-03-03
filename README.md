@@ -40,7 +40,7 @@ It named after [Colin Creevey](https://harrypotter.fandom.com/wiki/Colin_Creevey
 
 - Make sure you have installed [Docker](https://www.docker.com/products/docker-desktop). If you are going to use Selenium Grid or run screenshot tests exclusively in CI you don't need Docker in that case.
 - Supported Storybook versions: >= 7.x.x
-- Supported Node.js versions: >= 18.x.x
+- Supported Node.js versions: >= 20.11.0
 
 ## How to start
 

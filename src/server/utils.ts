@@ -5,15 +5,12 @@ import https from 'https';
 import assert from 'assert';
 import cluster from 'cluster';
 import pidtree from 'pidtree';
-import { fileURLToPath, pathToFileURL } from 'url';
+import { createRequire } from 'module';
 import { register as esmRegister } from 'tsx/esm/api';
-import { register as cjsRegister } from 'tsx/cjs/api';
 import { SkipOptions, SkipOption, isDefined, TestData, noop, ServerTest, Worker } from '../types.js';
 import { emitShutdownMessage, emitWorkerMessage, sendShutdownMessage } from './messages.js';
 import { LOCALHOST_REGEXP } from './webdriver.js';
 import { logger } from './logger.js';
-
-const importMetaUrl = pathToFileURL(__filename).href;
 
 export const isShuttingDown = { current: false };
 
@@ -165,7 +162,7 @@ export function resolvePlaywrightBrowserType(browserName: string): (typeof brows
 
 export async function getCreeveyCache(): Promise<string | undefined> {
   const { default: findCacheDir } = await import('find-cache-dir');
-  return findCacheDir({ name: 'creevey', cwd: path.dirname(fileURLToPath(importMetaUrl)) });
+  return findCacheDir({ name: 'creevey', cwd: import.meta.dirname });
 }
 
 export async function runSequence(seq: (() => unknown)[], predicate: () => boolean): Promise<boolean> {
@@ -245,33 +242,20 @@ export function readDirRecursive(dirPath: string): string[] {
 
 export function tryToLoadTestsData(filename: string): Partial<Record<string, ServerTest>> | undefined {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports, import-x/no-dynamic-require
+    // eslint-disable-next-line import-x/no-dynamic-require
+    const require = createRequire(import.meta.url);
     return require(filename) as Partial<Record<string, ServerTest>>;
   } catch {
     /* noop */
   }
 }
 
-const [nodeVersion] = process.versions.node.split('.').map(Number);
 export async function loadThroughTSX<T>(
   callback: (load: (modulePath: string) => Promise<T>) => Promise<T>,
 ): Promise<T> {
-  const unregisterESM = nodeVersion > 18 ? esmRegister() : noop;
-  const unregisterCJS = cjsRegister();
-
-  const result = await callback((modulePath) =>
-    nodeVersion > 18
-      ? import(modulePath)
-      : // eslint-disable-next-line @typescript-eslint/no-require-imports, import-x/no-dynamic-require
-        Promise.resolve(require(modulePath) as T),
-  );
-
-  // NOTE: `unregister` type is `(() => Promise<void>) | (() => void)`
-  // eslint-disable-next-line @typescript-eslint/await-thenable, @typescript-eslint/no-confusing-void-expression
-  await unregisterCJS();
-  // eslint-disable-next-line @typescript-eslint/await-thenable, @typescript-eslint/no-confusing-void-expression
+  const unregisterESM = esmRegister();
+  const result = await callback((modulePath) => import(modulePath));
   await unregisterESM();
-
   return result;
 }
 
@@ -315,7 +299,7 @@ export function waitOnUrl(waitUrl: string, timeout: number, delay: number) {
  * @param reportDir Directory where the report will be generated
  */
 export async function copyStatics(reportDir: string): Promise<void> {
-  const clientDir = path.join(path.dirname(fileURLToPath(importMetaUrl)), '../../dist/client/web');
+  const clientDir = path.join(import.meta.dirname, '../../dist/client/web');
   const assets = (await fs.promises.readdir(path.join(clientDir, 'assets'), { withFileTypes: true }))
     .filter((dirent) => dirent.isFile())
     .map((dirent) => dirent.name);

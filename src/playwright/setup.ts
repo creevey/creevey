@@ -2,10 +2,10 @@ import path from 'path';
 import assert from 'assert';
 import { mkdir, writeFile } from 'fs/promises';
 import { chromium, firefox, webkit, Page, FullConfig } from '@playwright/test';
-import { StoriesRaw } from '../types';
-import { getCreeveyCache } from '../server/utils';
-import { appendIframePath } from '../server/webdriver';
-import { waitForStorybookReady } from './helpers';
+import { StoriesRaw } from '../types.js';
+import { getCreeveyCache } from '../server/utils.js';
+import { appendIframePath } from '../server/webdriver.js';
+import { waitForStorybookReady } from './helpers.js';
 
 // This function will fetch stories and cache them or an error if fetching fails.
 // It's intended to be called once before tests that depend on stories are defined.

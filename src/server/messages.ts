@@ -83,17 +83,21 @@ const handler = (message: ProcessMessage): void => {
 };
 process.on('message', handler);
 
+function ipcSend(target: NodeJS.Process | Worker, message: ProcessMessage): void {
+  (target as Worker).send?.(message);
+}
+
 export function sendStoriesMessage(target: NodeJS.Process | Worker, message: StoriesMessage): void {
-  target.send?.({ scope: 'stories', ...message });
+  ipcSend(target, { scope: 'stories', ...message });
 }
 export function sendTestMessage(target: NodeJS.Process | Worker, message: TestMessage): void {
-  target.send?.({ scope: 'test', ...message });
+  ipcSend(target, { scope: 'test', ...message });
 }
 export function sendShutdownMessage(target: NodeJS.Process | Worker): void {
-  target.send?.({ scope: 'shutdown' });
+  ipcSend(target, { scope: 'shutdown' });
 }
 export function sendWorkerMessage(target: NodeJS.Process | Worker, message: WorkerMessage): void {
-  target.send?.({ scope: 'worker', ...message });
+  ipcSend(target, { scope: 'worker', ...message });
 }
 
 export function subscribeOn(scope: 'worker', handler: WorkerHandler): () => void;

@@ -4,7 +4,7 @@
 
 ### Prerequisites
 
-- Node.js >=18
+- Node.js >=20.11.0
 - Yarn 4.9.1
 - Docker (optional, for containerized testing)
 - Git
