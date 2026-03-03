@@ -1,7 +1,0 @@
-.yarn
-.vscode
-dist
-report
-examples
-tests/**/approvals
-tests/**/*.fixtures

@@ -124,8 +124,8 @@ yarn test:watch     # Watch mode for development
 ### Code Quality
 
 ```bash
-yarn lint           # Type check + ESLint + Prettier check
-yarn fix            # Auto-fix ESLint and Prettier issues
+yarn lint           # Type check + oxlint + oxfmt check
+yarn fix            # Auto-fix oxlint and oxfmt issues
 ```
 
 ### Development Server

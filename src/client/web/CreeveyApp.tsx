@@ -67,8 +67,8 @@ export function CreeveyApp({ api, initialState }: CreeveyAppProps): JSX.Element 
     () =>
       Boolean(
         openedTest?.results?.[retry - 1]?.images &&
-          openedTest.approved?.[imageName] != retry - 1 &&
-          openedTest.results[retry - 1].status != 'success',
+        openedTest.approved?.[imageName] != retry - 1 &&
+        openedTest.results[retry - 1].status != 'success',
       ),
     [imageName, openedTest, retry],
   );

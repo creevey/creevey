@@ -77,7 +77,6 @@ Creevey now works smoothly with Playwright! This gives you another solid option 
 We've changed how you set up browsers in `creevey.config.ts`. This helps make it clearer which settings are for Selenium and which are for Playwright.
 
 - **How to Update:**
-
   - Settings like `browserVersion` and `platformName` (and other custom Selenium settings) now need to go inside a `seleniumCapabilities` object.
   - Playwright-specific settings should go into a `playwrightOptions` object.
   - The new `webdriver` field lets you choose your WebDriver implementation. While it defaults to Selenium for now, this may change. We recommend explicitly setting it by importing and using either `SeleniumWebdriver` or `PlaywrightWebdriver`.
@@ -129,7 +128,6 @@ We've changed how you set up browsers in `creevey.config.ts`. This helps make it
 Creevey doesn't use the Mocha testing framework anymore. This makes things simpler internally and means you'll write tests a bit differently using a new `CreeveyTestContext`.
 
 - **How to Update:**
-
   - Change your tests to use the `context` parameter instead of `this`.
   - Image matching methods are now called on the `context` object.
   - The `context.webdriver` property gives you direct access to the configured WebDriver instance (Selenium or Playwright) for advanced browser interactions.
