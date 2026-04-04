@@ -88,7 +88,7 @@ yarn creevey test --debug  # Shows config validation
 #### Issue: "Cannot connect to Storybook"
 
 **Symptoms**: Connection refused, timeout errors
-**Causes**: Storybook not running, wrong URL, network issues
+**Causes**: Storybook not running, wrong URL, network issues, unsupported Node.js version for the installed Storybook
 
 **Solutions**:
 
@@ -102,6 +102,27 @@ yarn creevey test -s --ui
 # Use correct URL
 yarn creevey test --storybook-url http://localhost:9000
 ```
+
+For this repo specifically, `storybook@9.0.0` requires Node.js 20+ to start local Storybook. Running it under older Node versions can look like a Creevey browser startup timeout because the iframe page never finishes initializing.
+
+If Playwright fails during browser startup with `page.waitForFunction: Timeout 60000ms exceeded`, Creevey now logs a `Storybook readiness diagnostics` object from the iframe page. Check it for:
+
+- `readyState` not reaching `complete`
+- missing `hasPreview` or `hasChannel`
+- `setGlobalsReceived: false` on partially initialized Storybook pages
+- `pageErrors` showing Storybook runtime failures before stories load
+
+If `pageErrors` contains `ReferenceError: __name is not defined`, the Storybook preview crashed during module evaluation before Creevey reached its previous globals setup step. Creevey now injects a `__name` shim with Playwright `addInitScript()` so it exists before Storybook modules execute.
+
+When adding Playwright diagnostics with `page.evaluate()`, do not reference imported module variables directly inside the evaluated callback. Firefox can fail with errors like `import_webdriver is not defined`; pass such values as explicit evaluate arguments instead.
+
+If diagnostics show `Failed to load the Storybook preview file 'vite-app.js'` together with a message about visiting Storybook on `host.docker.internal`, the Vite server is still bound as localhost-only. In this repo, `.storybook/main.ts` needs both `server.allowedHosts` and `server.host: true` so remote browsers can load the preview runtime through `host.docker.internal`.
+
+If Storybook fails with `SB_CORE-SERVER_0002 (CriticalPresetLoadError)` and `ReferenceError: require is not defined in ES module scope` for `.storybook/main.ts`, the config is being evaluated as ESM. In this repo, `.storybook/package.json` sets `"type": "module"`, so preset/package resolution in `.storybook/main.ts` must use `createRequire(import.meta.url)` instead of bare `require.resolve`.
+
+If the browser reports `Failed to load module script` for `index.tsx` with MIME type `application/octet-stream`, Creevey is serving raw source files instead of the built UI bundle. The UI server now targets `dist/client/web` and auto-builds the Vite client bundle when those files are missing in a source checkout.
+
+If screenshot comparisons fail with `unrecognised content at end of stream` from `pngjs`, check whether files under `stories/images/` are still Git LFS pointer files instead of real PNGs. In that state Creevey cannot read the expected images; run `git lfs pull` to hydrate the fixtures.
 
 #### Issue: "No stories found"
 
