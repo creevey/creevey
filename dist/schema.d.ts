@@ -1,0 +1,31 @@
+import * as v from 'valibot';
+export declare const OptionsSchema: v.ObjectSchema<{
+    readonly ui: v.OptionalSchema<v.BooleanSchema<undefined>, undefined>;
+    readonly storybookStart: v.OptionalSchema<v.UnionSchema<[v.StringSchema<undefined>, v.BooleanSchema<undefined>], undefined>, undefined>;
+    readonly config: v.OptionalSchema<v.StringSchema<undefined>, undefined>;
+    readonly debug: v.OptionalSchema<v.BooleanSchema<undefined>, undefined>;
+    readonly port: v.NumberSchema<undefined>;
+    readonly failFast: v.OptionalSchema<v.BooleanSchema<undefined>, undefined>;
+    readonly reportDir: v.OptionalSchema<v.StringSchema<undefined>, undefined>;
+    readonly screenDir: v.OptionalSchema<v.StringSchema<undefined>, undefined>;
+    readonly storybookUrl: v.OptionalSchema<v.StringSchema<undefined>, undefined>;
+    readonly storybookPort: v.OptionalSchema<v.NumberSchema<undefined>, undefined>;
+    readonly reporter: v.OptionalSchema<v.StringSchema<undefined>, undefined>;
+    readonly odiff: v.OptionalSchema<v.BooleanSchema<undefined>, undefined>;
+    readonly trace: v.OptionalSchema<v.BooleanSchema<undefined>, undefined>;
+    readonly docker: v.OptionalSchema<v.BooleanSchema<undefined>, undefined>;
+}, undefined>;
+export declare const WorkerOptionsSchema: v.ObjectSchema<{
+    readonly browser: v.StringSchema<undefined>;
+    readonly storybookUrl: v.StringSchema<undefined>;
+    readonly gridUrl: v.OptionalSchema<v.StringSchema<undefined>, undefined>;
+    readonly config: v.OptionalSchema<v.StringSchema<undefined>, undefined>;
+    readonly debug: v.OptionalSchema<v.BooleanSchema<undefined>, undefined>;
+    readonly trace: v.OptionalSchema<v.BooleanSchema<undefined>, undefined>;
+    readonly reportDir: v.OptionalSchema<v.StringSchema<undefined>, undefined>;
+    readonly screenDir: v.OptionalSchema<v.StringSchema<undefined>, undefined>;
+    readonly odiff: v.OptionalSchema<v.BooleanSchema<undefined>, undefined>;
+    readonly port: v.NumberSchema<undefined>;
+}, undefined>;
+export type Options = v.InferOutput<typeof OptionsSchema>;
+export type WorkerOptions = v.InferOutput<typeof WorkerOptionsSchema>;

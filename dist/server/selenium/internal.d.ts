@@ -1,0 +1,30 @@
+import type { Args } from 'storybook/internal/types';
+import { WebDriver } from 'selenium-webdriver';
+import { Config, StorybookGlobals, StoryInput, StoriesRaw } from '../../types.js';
+export declare class InternalBrowser {
+    #private;
+    constructor(browser: WebDriver, storybookGlobals?: StorybookGlobals);
+    get browser(): WebDriver;
+    closeBrowser(): Promise<void>;
+    takeScreenshot(captureElement?: string | null, ignoreElements?: string | string[] | null): Promise<Buffer>;
+    selectStory(id: string): Promise<void>;
+    updateStoryArgs(story: StoryInput, updatedArgs: Args): Promise<void>;
+    loadStoriesFromBrowser(): Promise<StoriesRaw>;
+    afterTest(): Promise<void>;
+    static getBrowser(browserName: string, gridUrl: string, config: Config, debug: boolean): Promise<InternalBrowser | null>;
+    private init;
+    private initStorybook;
+    private openStorybookPage;
+    private checkUrl;
+    private waitForStorybook;
+    private loadStorybookStories;
+    private defineGlobals;
+    private resizeViewport;
+    private resetMousePosition;
+    private insertIgnoreStyles;
+    private takeCompositeScreenshot;
+    private removeIgnoreStyles;
+    private hasScrollBar;
+    private getScrollBarWidth;
+    private keepAlive;
+}

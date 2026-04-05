@@ -1,0 +1,1 @@
+{"version":3,"file":"ping-handler.js","sourceRoot":"","sources":["../../../../src/server/master/handlers/ping-handler.ts"],"names":[],"mappings":";;AAEA,kCAGC;AAHD,SAAgB,WAAW,CAAC,QAAyB,EAAE,QAAwB;IAC7E,QAAQ,CAAC,SAAS,CAAC,cAAc,EAAE,YAAY,CAAC,CAAC;IACjD,QAAQ,CAAC,GAAG,CAAC,MAAM,CAAC,CAAC;AACvB,CAAC"}

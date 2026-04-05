@@ -1,0 +1,269 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.definePlaywrightTests = definePlaywrightTests;
+const path_1 = __importDefault(require("path"));
+const assert_1 = __importDefault(require("assert"));
+const fs_1 = require("fs");
+const test_1 = require("@playwright/test");
+const isEqual_js_1 = __importDefault(require("lodash/isEqual.js"));
+const types_1 = require("../types");
+const compare_1 = require("../server/compare");
+const webdriver_1 = require("../server/webdriver");
+const helpers_1 = require("./helpers");
+const cacheDir = process.env.CREEVEY_CACHE_DIR;
+const defaultConfig = {
+    diffOptions: { threshold: 0.1, includeAA: false },
+    odiffOptions: { threshold: 0.1, antialiasing: true },
+    comparisonLibrary: 'pixelmatch',
+    reusePageContext: true,
+    trace: false,
+};
+// TODO: Use this Storybook function for building args for query params
+// export const buildArgsParam = (initialArgs: Args | undefined, args: Args): string => {
+// TODO: Pass globals to story
+function appendStoryQueryParams(url, storyId) {
+    return `${url}?args=&globals=&id=${storyId}`;
+}
+function assertWrapper(assert) {
+    return async function assertImage(actual, imageName) {
+        try {
+            const errorMessage = await assert(actual, imageName);
+            if (errorMessage) {
+                throw new Error(errorMessage);
+            }
+        }
+        catch (error) {
+            if (error instanceof Error) {
+                error.stack = error.stack
+                    ?.split('\n')
+                    .filter((line) => !line.includes('at assertImage'))
+                    .join('\n');
+            }
+            throw error;
+        }
+    };
+}
+async function takeScreenshot(page, storyId, captureElement, ignoreElements) {
+    const ignore = ignoreElements ? (Array.isArray(ignoreElements) ? ignoreElements : [ignoreElements]) : [];
+    const mask = ignore.map((selector) => page.locator(selector));
+    if (captureElement) {
+        // TODO Use page.locator(captureElement) instead of page.$(captureElement)
+        // TODO Test `#storybook-root > *` selector, probably we don't need `> *` and use `#storybook-root >*:first-child` instead
+        const element = await page.$(captureElement);
+        if (!element)
+            throw new Error(`Capture element '${captureElement}' not found for story '${storyId}'`);
+        return element.screenshot({
+            style: ':root { overflow: hidden !important; }',
+            animations: 'disabled',
+            mask,
+        });
+    }
+    else {
+        return page.screenshot({
+            animations: 'disabled',
+            mask,
+        });
+    }
+}
+// TODO: To support parallel tests, we need to define each test suite in separate file
+// TODO: How to support custom interactions for different tests
+// Main function to define tests using Playwright's API
+function definePlaywrightTests(config) {
+    (0, assert_1.default)(cacheDir, 'Cache directory not found');
+    const stories = JSON.parse((0, fs_1.readFileSync)(path_1.default.join(cacheDir, 'stories.json'), 'utf-8'));
+    let globals = {};
+    let reusedContext;
+    let reusedPage;
+    const { diffOptions, odiffOptions, comparisonLibrary, reusePageContext, trace } = {
+        ...defaultConfig,
+        ...config,
+    };
+    async function updateGlobals(page, storybookGlobals) {
+        if (storybookGlobals && typeof storybookGlobals === 'object' && !(0, isEqual_js_1.default)(globals, storybookGlobals)) {
+            globals = storybookGlobals;
+            await page.evaluate((globals) => {
+                window.__STORYBOOK_ADDONS_CHANNEL__.emit(types_1.StorybookEvents.UPDATE_GLOBALS, { globals });
+            }, globals);
+        }
+    }
+    test_1.test.describe('Creevey Tests', () => {
+        const imagesContext = {
+            attachments: [],
+            testFullPath: [],
+            images: {},
+        };
+        let assertImage;
+        test_1.test.beforeAll('Setup images context', async ({ browser }, { project }) => {
+            const { snapshotDir, outputDir, use: { viewport }, } = project;
+            if (reusePageContext) {
+                const storybookUrl = project.use.baseURL;
+                (0, assert_1.default)(storybookUrl, 'Storybook URL not found');
+                // TODO Record video
+                reusedContext = await browser.newContext({
+                    viewport,
+                    screen: viewport ?? undefined,
+                    // recordVideo: trace ? { dir: path.join(cacheDir, `${process.pid}`), size: viewport ?? undefined } : undefined,
+                });
+                reusedPage = await reusedContext.newPage();
+                if (trace) {
+                    // TODO: Add logger for tracing
+                    await reusedContext.tracing.start(typeof trace === 'object' ? trace : { screenshots: true, snapshots: true, sources: true });
+                }
+                await reusedPage.goto((0, webdriver_1.appendIframePath)(storybookUrl), { timeout: 60000 });
+                await reusedPage.waitForLoadState('networkidle');
+                await (0, helpers_1.waitForStorybookReady)(reusedPage);
+            }
+            if (comparisonLibrary === 'pixelmatch') {
+                const { default: pixelmatch } = await import('pixelmatch');
+                assertImage = assertWrapper((0, compare_1.getPixelmatchAssert)(pixelmatch, imagesContext, { screenDir: snapshotDir, reportDir: outputDir, diffOptions }));
+            }
+            else {
+                const { compare } = await import('odiff-bin');
+                assertImage = assertWrapper((0, compare_1.getOdiffAssert)(compare, imagesContext, { screenDir: snapshotDir, reportDir: outputDir, odiffOptions }));
+            }
+        });
+        test_1.test.beforeEach('Switch story', async ({ page }, { annotations, project }) => {
+            const { description: storyId } = annotations.find((annotation) => annotation.type === 'storyId') ?? {};
+            (0, assert_1.default)(storyId, 'Cannot get storyId. It seems like inner test annotation is missing');
+            const story = stories[storyId];
+            (0, assert_1.default)(story, `Story '${storyId}' not found in stories cache`);
+            const { title, name } = story;
+            const storybookGlobals = project.metadata.storybookGlobals;
+            imagesContext.attachments = [];
+            imagesContext.testFullPath = [...title.split('/').map((x) => x.trim()), name, project.name];
+            imagesContext.images = {};
+            if (!reusePageContext) {
+                const storybookUrl = project.use.baseURL;
+                (0, assert_1.default)(storybookUrl, 'Storybook URL not found');
+                await page.goto(appendStoryQueryParams((0, webdriver_1.appendIframePath)(storybookUrl), storyId), { timeout: 60000 });
+                await page.waitForLoadState('networkidle');
+                await (0, helpers_1.waitForStorybookReady)(page);
+                // TODO: Pass globals to story
+                await updateGlobals(page, storybookGlobals);
+                return;
+            }
+            // 1. Update Storybook Globals
+            await updateGlobals(reusedPage, storybookGlobals);
+            // 2. Reset Mouse Position
+            await reusedPage.mouse.move(0, 0);
+            // 3. Select Story
+            const errorMessage = await reusedPage.evaluate(async ({ storyId, StorybookEvents }) => {
+                // TODO: DRY with withCreevey.ts
+                // NOTE: Copy-pasted from withCreevey.ts
+                const channel = window.__STORYBOOK_ADDONS_CHANNEL__;
+                async function sequence(fns) {
+                    for (const fn of fns) {
+                        await fn();
+                    }
+                }
+                let rejectCallback;
+                const renderErrorPromise = new Promise((_resolve, reject) => (rejectCallback = reject));
+                function errorHandler({ title, description }) {
+                    rejectCallback({
+                        message: title,
+                        stack: description,
+                    });
+                }
+                function exceptionHandler(exception) {
+                    rejectCallback(exception);
+                }
+                function removeErrorHandlers() {
+                    channel.off(StorybookEvents.STORY_ERRORED, errorHandler);
+                    channel.off(StorybookEvents.STORY_THREW_EXCEPTION, errorHandler);
+                }
+                channel.once(StorybookEvents.STORY_ERRORED, errorHandler);
+                channel.once(StorybookEvents.STORY_THREW_EXCEPTION, exceptionHandler);
+                let resolveCallback;
+                const storyRenderedPromise = new Promise((resolve) => (resolveCallback = resolve));
+                function renderHandler() {
+                    resolveCallback();
+                }
+                function removeRenderHandlers() {
+                    channel.off(StorybookEvents.STORY_RENDERED, renderHandler);
+                }
+                channel.once(StorybookEvents.STORY_RENDERED, renderHandler);
+                setTimeout(() => {
+                    channel.emit(StorybookEvents.SET_CURRENT_STORY, { storyId });
+                }, 0);
+                try {
+                    await Promise.race([
+                        renderErrorPromise,
+                        sequence([() => storyRenderedPromise, () => document.fonts.ready]),
+                    ]);
+                }
+                catch (reason) {
+                    // NOTE Event `STORY_THREW_EXCEPTION` triggered only in react and vue frameworks and return Error instance
+                    // NOTE Event `STORY_ERRORED` return error-like object without `name` field
+                    const errorMessage = reason instanceof Error
+                        ? (reason.stack ?? reason.message)
+                        : (0, types_1.isObject)(reason)
+                            ? `${reason.message}\n    ${reason.stack}`
+                            : reason;
+                    return errorMessage;
+                }
+                finally {
+                    removeErrorHandlers();
+                    removeRenderHandlers();
+                }
+                return null;
+            }, { storyId: story.id, StorybookEvents: types_1.StorybookEvents });
+            if (errorMessage) {
+                throw new Error(`Failed to select story '${story.id}': ${errorMessage}`);
+            }
+        });
+        test_1.test.afterEach('Save screenshot', () => {
+            const { name: projectName } = test_1.test.info().project;
+            // TODO: Use another way to handle attachments
+            // NOTE: Don't need to copy files for assertImage, because it's done internally
+            const { actual, diff, expect } = imagesContext.images[projectName] ?? {};
+            for (const image of imagesContext.attachments) {
+                switch (true) {
+                    case image.includes('actual') && !!actual: {
+                        test_1.test.info().attachments.push({ name: actual, path: image, contentType: 'image/png' });
+                        // await test.info().attach(actual, { path: image });
+                        break;
+                    }
+                    case image.includes('expect') && !!expect: {
+                        test_1.test.info().attachments.push({ name: expect, path: image, contentType: 'image/png' });
+                        // await test.info().attach(expect, { path: image });
+                        break;
+                    }
+                    case image.includes('diff') && !!diff: {
+                        test_1.test.info().attachments.push({ name: diff, path: image, contentType: 'image/png' });
+                        // await test.info().attach(diff, { path: image });
+                        break;
+                    }
+                }
+            }
+        });
+        if (trace && reusePageContext) {
+            test_1.test.afterAll('Save trace', async ({ browser: _ }, { project }) => {
+                const { outputDir, name: projectName } = project;
+                await reusedContext.tracing.stop({
+                    path: `${outputDir}/traces/${projectName}-${process.pid}.zip`,
+                });
+                // await reusedPage.video()?.saveAs(`${outputDir}/traces/${projectName}-${process.pid}.webm`);
+            });
+        }
+        for (const story of Object.values(stories)) {
+            const { name, title, parameters } = story;
+            const { captureElement, ignoreElements } = (parameters.creevey ?? {});
+            test_1.test.describe(title, () => {
+                // TODO: Support creevey.skip
+                (0, test_1.test)(name, { annotation: [{ type: 'storyId', description: story.id }] }, async ({ page }) => {
+                    // 4. Take Screenshot
+                    const screenshot = await takeScreenshot(reusePageContext ? reusedPage : page, story.id, captureElement, ignoreElements);
+                    // TODO: Support this
+                    // NOTE: Bear in mind that page.locator('#root > *') is not working
+                    // await expect(page.locator(captureElement)).toHaveScreenshot(name);
+                    // 5. Assert Image
+                    await assertImage(screenshot);
+                });
+            });
+        }
+    });
+}
+//# sourceMappingURL=generator.js.map

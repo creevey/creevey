@@ -1,0 +1,1 @@
+export default function (matchImage: (image: Buffer, imageName?: string) => Promise<void>, matchImages: (images: Record<string, Buffer>) => Promise<void>): ({ Assertion }: Chai.ChaiStatic, utils: Chai.ChaiUtils) => void;

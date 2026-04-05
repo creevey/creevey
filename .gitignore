@@ -64,7 +64,6 @@ typings/
 .next
 
 # Build sources
-/dist
 build
 
 # Screenshot tests report

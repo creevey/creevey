@@ -1,0 +1,62 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ImagePreview = void 0;
+const react_1 = __importDefault(require("react"));
+const theming_1 = require("storybook/theming");
+const IMG_SIZE = 64;
+const DIAG_LENGTH = (2 * (IMG_SIZE - 8) ** 2) ** (1 / 2);
+const Button = theming_1.styled.button(({ borderColor }) => ({
+    appearance: 'none',
+    background: 'none',
+    color: 'inherit',
+    font: 'inherit',
+    cursor: 'pointer',
+    outline: 'none',
+    zIndex: 1,
+    margin: '0 10px',
+    border: '2px solid transparent',
+    borderColor: borderColor ?? 'transparent',
+    '&:first-of-type': {
+        marginLeft: 0,
+    },
+}));
+const Image = (0, theming_1.withTheme)(theming_1.styled.img(({ hasBorder, backgroundColor, theme }) => ({
+    maxHeight: `${IMG_SIZE}px`,
+    width: `${IMG_SIZE}px`,
+    overflow: 'hidden',
+    transform: hasBorder ? 'translateY(2px)' : undefined,
+    '&::before': {
+        content: "' '",
+        display: 'block',
+        height: `${IMG_SIZE - 8}px`,
+        width: `${IMG_SIZE - 8}px`,
+        margin: '4px',
+        backgroundColor: backgroundColor,
+        backgroundImage: `linear-gradient(
+      45deg,
+      rgba(0, 0, 0, 0) ${DIAG_LENGTH / 2 - 0.5}px,
+      ${theme.color.medium} ${DIAG_LENGTH / 2 - 0.5}px,
+      ${theme.color.medium} ${DIAG_LENGTH / 2 + 0.5}px,
+      rgba(0, 0, 0, 0) ${DIAG_LENGTH / 2 + 0.5}px
+    ),
+    linear-gradient(
+      315deg,
+      rgba(0, 0, 0, 0) ${DIAG_LENGTH / 2 + 0.2}px,
+      ${theme.color.medium} ${DIAG_LENGTH / 2 + 0.2}px,
+      ${theme.color.medium} ${DIAG_LENGTH / 2 + 1.2}px,
+      rgba(0, 0, 0, 0) ${DIAG_LENGTH / 2 + 1.2}px
+    )`,
+    },
+})));
+exports.ImagePreview = (0, theming_1.withTheme)(({ isActive, onClick, imageName, url, theme, error }) => {
+    const handleClick = () => {
+        onClick(imageName);
+    };
+    // TODO Add image name as a title
+    return (react_1.default.createElement(Button, { onClick: handleClick, borderColor: isActive ? theme.barSelectedColor : error ? theme.color.negative : undefined },
+        react_1.default.createElement(Image, { hasBorder: isActive || error, src: url, alt: imageName, title: imageName, backgroundColor: theme.background.content })));
+});
+//# sourceMappingURL=ImagePreview.js.map
