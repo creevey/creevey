@@ -1,106 +1,20 @@
 name: Release
 
 on:
-  workflow_dispatch:
-    inputs:
-      bump_type:
-        description: 'Version bump type'
-        required: true
-        default: 'patch'
-        type: choice
-        options:
-          - patch
-          - minor
-          - major
+  push:
+    branches:
+      - master
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
-  release:
+  release-please:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: googleapis/release-please-action@v4
+        id: release
         with:
-          fetch-depth: 0
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install git-cliff
-        run: npm install -g git-cliff@latest
-
-      - name: Configure Git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Calculate next version
-        id: version
-        env:
-          BUMP_TYPE: ${{ github.event.inputs.bump_type }}
-        run: |
-          CURRENT=$(node -p "require('./package.json').version")
-          case "$BUMP_TYPE" in
-            major)
-              NEXT=$(echo $CURRENT | awk -F. '{print $1+1".0.0"}')
-              ;;
-            minor)
-              NEXT=$(echo $CURRENT | awk -F. '{print $1"."$2+1".0"}')
-              ;;
-            patch)
-              NEXT=$(echo $CURRENT | awk -F. '{print $1"."$2"."$3+1}')
-              ;;
-          esac
-          echo "next=v$NEXT" >> "$GITHUB_OUTPUT"
-          echo "Calculated next version: v$NEXT"
-
-      - name: Update package.json version
-        run: |
-          VERSION_NUM=$(echo "${{ steps.version.outputs.next }}" | sed 's/^v//')
-          node -e "
-            const fs = require('fs');
-            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-            pkg.version = '$VERSION_NUM';
-            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
-          "
-
-      - name: Generate CHANGELOG.md
-        run: git-cliff --unreleased --tag "${{ steps.version.outputs.next }}" --prepend CHANGELOG.md
-
-      - name: Commit and tag
-        run: |
-          git add package.json CHANGELOG.md
-          if git diff --cached --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "chore(release): bump to ${{ steps.version.outputs.next }}"
-            git push
-            git tag ${{ steps.version.outputs.next }}
-            git push origin ${{ steps.version.outputs.next }}
-          fi
-
-      - name: Extract release notes
-        run: |
-          VERSION="${{ steps.version.outputs.next }}"
-          VERSION_NUM=$(echo "$VERSION" | sed 's/^v//')
-
-          awk -v ver="## [$VERSION_NUM]" '
-            index($0, ver) {found=1; next}
-            found && /^## \[/ {exit}
-            found {print}
-          ' CHANGELOG.md > RELEASE_NOTES.md
-
-          echo "Release notes:"
-          cat RELEASE_NOTES.md
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ steps.version.outputs.next }}
-          name: Release ${{ steps.version.outputs.next }}
-          body_path: RELEASE_NOTES.md
-          generate_release_notes: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+          release-type: node
