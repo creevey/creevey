@@ -1,5 +1,5 @@
 import EventEmitter from 'events';
-import { dirname, resolve } from 'path';
+import { dirname, relative, resolve } from 'path';
 import { closeSync, existsSync, mkdirSync, openSync, writeFileSync } from 'fs';
 import { TEST_EVENTS, FakeTest } from '../../types.js';
 import { logger } from '../logger.js';
@@ -131,6 +131,7 @@ export class JUnitReporter {
   private writeTasks(tests: Map<string, FakeTest>): void {
     for (const [, test] of tests) {
       const classname = test.parent.title;
+      const attachments = test.attachments ?? [];
       this.writeElement(
         'testcase',
         {
@@ -141,6 +142,16 @@ export class JUnitReporter {
         () => {
           if (test.state === 'failed') {
             this.writeFailureOrError(test);
+          }
+          if (attachments.length > 0) {
+            this.writeElement('properties', {}, () => {
+              for (const absPath of attachments) {
+                this.writeElement('property', {
+                  name: 'attachment',
+                  value: relative(dirname(this.reportFile), absPath),
+                });
+              }
+            });
           }
         },
       );

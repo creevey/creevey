@@ -202,4 +202,38 @@ describe('JUnitReporter', () => {
       expect(xml).toContain('<property name="browser" value="chrome"');
     });
   });
+
+  describe('screenshot attachments', () => {
+    test('writes attachment properties relative to the report file', () => {
+      const out = tempXmlPath();
+      const absPath = join(dirname(out), 'Button', 'primary', 'chrome', 'button-actual-1.png');
+      const t = makeFakeTest({
+        state: 'failed',
+        images: { header: {} },
+        attachments: [absPath],
+      });
+      const xml = runReporter([t], out);
+
+      expect(xml).toContain('<properties>');
+      expect(xml).toContain('name="attachment"');
+      expect(xml).toContain('Button/primary/chrome/button-actual-1.png');
+      expect(xml).toContain('</properties>');
+    });
+
+    test('no attachment properties block when attachments is empty', () => {
+      const out = tempXmlPath();
+      const t = makeFakeTest({ state: 'passed', attachments: [] });
+      const xml = runReporter([t], out);
+      // The only <properties> block that may appear is in <testsuite> (browser prop) — not in testcase
+      // We verify there's no attachment property
+      expect(xml).not.toContain('name="attachment"');
+    });
+
+    test('no attachment properties block when attachments is undefined', () => {
+      const out = tempXmlPath();
+      const t = makeFakeTest({ state: 'passed' }); // attachments not set
+      const xml = runReporter([t], out);
+      expect(xml).not.toContain('name="attachment"');
+    });
+  });
 });
