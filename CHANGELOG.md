@@ -1,1607 +1,2363 @@
-# [0.10.0](https://github.com/wKich/creevey/compare/e60f1f4e48afbf174e8aaff0480ddd74e3b7b9f9...fff6e5825b2488b3fd197f1d71ecf5d339762490) (TBC)
-
-## Creevey Updates: Cool New Stuff, Features, and Fixes!
-
-Hey everyone! We've got some updates for Creevey that we think you'll like. We've been working on making the testing framework better, improving how you work with it, and adding some new ways to connect it with other tools. This includes some big changes to how things work under the hood, new features like Playwright support and better reports, plus a bunch of bug fixes.
-
----
-
-### What's New & Important:
-
-#### 1. Playwright Integration is Here!
-
-Creevey now works smoothly with Playwright! This gives you another solid option for browser automation, besides Selenium WebDriver. We've tried to make it flexible for different ways you might want to use it.
-
-- **Using Playwright for Browser Automation:** You can set up Playwright right in your `creevey.config.ts`.
-
-  ```typescript
-  // creevey.config.ts
-  import { CreeveyConfig } from 'creevey';
-  import { PlaywrightWebdriver } from 'creevey/playwright';
-
-  const config: CreeveyConfig = {
-    webdriver: PlaywrightWebdriver,
-    // Set `useDocker to false in CI environments to use standalone Playwright browsers
-    useDocker: !Boolean(process.env.CI),
-    browsers: {
-      chrome: {
-        browserName: 'chromium', // For Playwright, usually 'chromium', 'firefox', or 'webkit'
-        playwrightOptions: {
-          headless: false, // Example: show the browser while debugging
-        },
-      },
-      firefox: {
-        browserName: 'firefox',
-      },
-    },
-  };
-
-  export default config;
-  ```
-
-- **Playwright with Selenium Grid (Heads-up: Chrome Only for now):**
-  You can connect Playwright to a Selenium Grid. Just a heads-up, this only works with the Chrome browser because of how Playwright talks to Selenium Grid.
-
-  ```typescript
-  // creevey.config.ts
-  import { CreeveyConfig } from 'creevey';
-  import { PlaywrightWebdriver } from 'creevey/playwright';
-
-  const config: CreeveyConfig = {
-    webdriver: PlaywrightWebdriver,
-    gridUrl: 'http://your-selenium-grid-url:4444/wd/hub', // Your Selenium Grid URL
-    browsers: {
-      chromeOnGrid: {
-        browserName: 'chrome', // Needs to be 'chrome' for Playwright with Selenium Grid
-        seleniumCapabilities: {
-          // Add any Selenium settings your Grid needs here
-        },
-      },
-    },
-  };
-
-  export default config;
-  ```
-
-- **Recording Traces and Video for Easier Debugging:**
-  To help you figure out what's going on in your tests, Creevey can use Playwright's trace and video recording. Just run Creevey in debug mode.
-
-  ```bash
-  creevey --debug
-  ```
-
-  You'll find the traces (`trace.zip`) and videos (`video.webm`) in the `traces` folder inside your report directory, sorted by process ID.
-
-#### 2. Browser Config Changes for Selenium & Playwright (Heads-up: This is a Breaking Change)
-
-We've changed how you set up browsers in `creevey.config.ts`. This helps make it clearer which settings are for Selenium and which are for Playwright.
-
-- **How to Update:**
-
-  - Settings like `browserVersion` and `platformName` (and other custom Selenium settings) now need to go inside a `seleniumCapabilities` object.
-  - Playwright-specific settings should go into a `playwrightOptions` object.
-  - The new `webdriver` field lets you choose your WebDriver implementation. While it defaults to Selenium for now, this may change. We recommend explicitly setting it by importing and using either `SeleniumWebdriver` or `PlaywrightWebdriver`.
-
-  **Example:**
-
-  ```typescript
-  // Before
-  const config: CreeveyConfig = {
-    browsers: {
-      chrome: {
-        browserName: 'chrome',
-        browserVersion: '90.0',
-        platformName: 'linux',
-        customSeleniumOption: 'value',
-      },
-    },
-  };
-
-  // After
-  import { SeleniumWebdriver } from 'creevey/selenium';
-  // or
-  // import { PlaywrightWebdriver } from 'creevey/playwright';
-
-  const config: CreeveyConfig = {
-    webdriver: SeleniumWebdriver, // or PlaywrightWebdriver
-    browsers: {
-      chrome: {
-        browserName: 'chrome',
-        // browserName: 'chromium', // For Playwright
-        seleniumCapabilities: {
-          // Selenium-specific stuff
-          browserVersion: '90.0',
-          platformName: 'linux',
-          customSeleniumOption: 'value',
-        },
-        playwrightOptions: {
-          // Playwright-specific stuff
-          headless: true,
-          // ... other Playwright launch options
-        },
-      },
-    },
-  };
-  ```
-
-#### 3. Mocha is Gone & There's a New Test Context API (Heads-up: This is a Big Breaking Change)
-
-Creevey doesn't use the Mocha testing framework anymore. This makes things simpler internally and means you'll write tests a bit differently using a new `CreeveyTestContext`.
-
-- **How to Update:**
-
-  - Change your tests to use the `context` parameter instead of `this`.
-  - Image matching methods are now called on the `context` object.
-  - The `context.webdriver` property gives you direct access to the configured WebDriver instance (Selenium or Playwright) for advanced browser interactions.
-
-  **Example:**
-
-  ```typescript
-  // Before (Mocha style)
-  it('should match the image', async function () {
-    this.expect(await this.takeScreenshot()).to.matchImage('example');
-  });
-
-  // After (New Creevey context style)
-  it('should match the image', async (context) => {
-    await context.matchImage(await context.takeScreenshot(), 'example');
-  });
-
-  // Example using context.webdriver with Selenium WebDriver API
-  it('should interact with an element using Selenium', async (context) => {
-    const seleniumWebDriver = context.webdriver; // Assuming SeleniumWebdriver is configured
-    const element = await seleniumWebDriver.findElement({ css: '#myElement' });
-    await element.click();
-    // ... more Selenium interactions
-    await context.matchImage(await context.takeScreenshot(), 'selenium-interaction');
-  });
-
-  // Example using context.webdriver with Playwright API
-  it('should interact with an element using Playwright', async (context) => {
-    const playwrightPage = context.webdriver; // Assuming PlaywrightWebdriver is configured
-    await playwrightPage.click('#myElement');
-    // ... more Playwright interactions
-    await context.matchImage(await context.takeScreenshot(), 'playwright-interaction');
-  });
-  ```
-
-#### 4. New: Creevey Playwright Reporter
-
-Now you can add Creevey's visual testing to your existing Playwright test suites with the new `CreeveyPlaywrightReporter`.
-
-- **How to Use It:** Set up the reporter in your `playwright.config.ts` (or `.js`).
-
-  ```typescript
-  // playwright.config.ts
-  import { defineConfig } from '@playwright/test';
-
-  export default defineConfig({
-    reporter: [
-      ['list'], // Or any other standard Playwright reporter
-      [
-        'creevey/playwright-reporter',
-        {
-          // Optional: Creevey reporter specific settings
-          reportDir: './creevey-report', // Where the Creevey HTML report goes
-          screenDir: './creevey-images', // Where your reference (golden) images are stored
-          // You can pass other Creevey config options here too,
-          // like diffOptions, port, etc.
-        },
-      ],
-    ],
-    // ... other Playwright settings like projects, testDir, etc.
-    use: {
-      // Make sure your tests take screenshots that the reporter can find
-      // For example, using Playwright's toHaveScreenshot() or your own way
-    },
-  });
-  ```
-
-  Your Playwright tests would then use familiar methods like `await expect(page).toHaveScreenshot('image-name.png');` or `await page.screenshot({ path: 'path/to/image.png' });`. The Creevey reporter will take care of the visual comparisons and create the report. Check out `docs/playwright-reporter.md` for more details.
-
-#### 5. Approve Tests Right from the Report UI (Update Mode)
-
-We've added an "Update Mode" so you can approve changes to test images directly in the Creevey report UI. No need to run Storybook or open browsers.
-
-- The UI will show you when it's in update mode. You won't be able to run tests from the UI in this mode; it's all about reviewing and approving visual changes. To run Creevey in this UI Update mode, use the `report` command:
-
-  ```bash
-  creevey report
-  ```
-
-- You can specify report directory to use for UI Update mode
-
-#### 6. New JUnit Reporter & Better Reporter Options
-
-- **JUnit Reporter:** You can now get JUnit-compatible XML reports, which is handy for CI/CD setups.
-  - **How to Use It:** Set `reporter: 'junit'` in your `creevey.config.ts`.
-  - You can tell it where to save the file with `reporterOptions: { outputFile: 'path/to/report.xml' }`.
-- **Reporter Setup:** Setting up reporters has moved from command-line options to your `creevey.config.ts` file.
-
-  ```typescript
-  // In creevey.config.ts
-  const config: CreeveyConfig = {
-    reporter: 'junit', // or 'teamcity', 'creevey'
-    reporterOptions: {
-      // custom options for the reporter you chose
-      // For JUnit: { outputFile: 'report.xml' }
-    },
-  };
-  ```
-
-#### 7. Try ODiff for Image Comparison
-
-You can now use the `odiff` library to compare images, as an alternative to `pixelmatch`.
-
-- **How to Use It:** Turn it on with the `--odiff` command-line flag.
-- You can change its settings with `odiffOptions` in your Creevey config (by default, it uses `threshold: 0` and `antialiasing: true`).
-
-#### 8. Easier Storybook Autostart
-
-Starting Storybook with Creevey is now a bit simpler.
-
-- **`--storybook-start` (`-s`) Flag:** This will automatically start your Storybook development server. Creevey will figure out if you're using npm, yarn, or pnpm.
-  - **How to Use It:** `creevey test -s` or `creevey test --storybook-start`
-  - If you want to use a different Storybook port, you can add `--storybook-port`.
-- **Finds Free Ports Automatically:** If the usual Storybook port (6006) is busy, and you're using `-s`, Creevey will automatically find and use a port that's free.
-
----
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Added
+
+- 🎸 add support `play()` story method
+- Hybrid stories provider
+- Drop support for storybook < 6.4
+- Host option for creevey-server
+- Add host param to config
+- Devcontainer support
+- Remove Creevey Storybook addon; unify webdriver plumbing; update web UI
+- **junit:** Extend writeElement with textContent parameter
+- **junit:** Fix suite keying for multi-browser runs
+- **junit:** Add failure/error body text and separate errors count
+- **junit:** Add screenshot attachment properties to testcase elements
+- **junit:** Add hostname and sequential id attributes to testsuite
+
+### Changed
+
+- **junit:** Extract suiteKey/getOrCreateSuite helpers, fix test assertions
+
+### Documentation
+
+- ✏️ add maintaining note in readme
+- Doc supported storybook versions
+- Update skip examples
+- Extend multiple skip example
+- Add creevey logo
+- Add junit reporter improvements design spec
+- Mark junit reporter improvements plan and design as completed
+
+### Fixed
+
+- **selenium-webdriver:** Bump @types package version
+- **addon:** Restore and move ie11 support to separate addon
+- Correct call of the test fn
+- Prevent importing browser-specific code to node
+- Ie11 support
+- Allow setting timeouts via capabilities
+- Browser-node regexp parameters transfering
+- Handle null from selectStory
+- Move addon to the separate entry point
+- Infinite UI loading
+- **addon:** Restore IE11 support
+- Drop support of SkipOption on root skip level
+- **addon:** Make bundlers to load esm version of addon
+- **providers:** Set creevey port for all providers
+- 🐛 icons layout
+- Default yarn verison to stable
+- **junit:** Address code quality issues in test infrastructure
+- **junit:** Align failure/error counting with XML elements
+- **junit:** Tighten attachment assertions and add multi-attachment test
+- **junit:** Hoist hostname call and tighten spec-attr test assertions
+- **junit:** Fix multi-line textContent indentation and isImageMismatch guard
+
+### Miscellaneous
+
+- 🤖 fix lint issues
+- 🤖 disable storybook e2e test
+- Move readDirRecursive to utils
+- Merge params from tests correctly
+- Use storybook's Id constructor
+- Export new entities from index
+- Add typescript support
+- Move to testsFiles dir and renamve config options
+- 🤖 update deps
+- 🤖 update deps
+- 🤖 change babel config to support unit tests
+- Dont wait testFn call result
+- Ignore testFn return value
+- Move presets to common dir
+- Add entry points for presets
+- Prevent polyfills duplication
+- Restore babel transformation of client code
+- Fix exports field
+- Complete ie11 preset
+- Trying to remove webpack usage
+- Export test parser types
+- Temp fix for IgnoredException
+- 0.8.1-sb7.1
+- 0.8.1-sb7.4
+- Support storybook 7
+- Fix types
+- 0.9.0-beta.6
+- Wip
+- 0.9.0-beta.8
+- Clear preset
+- 0.9.0-beta.9
+- 0.9.0-beta.10
+- 0.9.0-beta.11
+- Try suppress the "document unloaded" error
+
+### Testing
+
+- 💍 update e2e tests
+- 💍 remove e2e tests use jest instead for unit tests
+- Stories serialization
+- Update screenshots due browsers update
+- Remove old screenshots
 
-### Other Cool Stuff and Fixes:
+### Build
 
-- **React 18 Update:** Creevey's UI parts and Storybook connection now use React 18. This is mostly an internal thing, but if you have custom React components that talk to Creevey, make sure they're compatible.
-- **Build System Switched from Webpack to Vite:** We've changed the internal build system for client stuff to Vite. This means faster build times and a better development setup (like HMR). This is an internal change and probably won't affect you unless you had custom Webpack settings for Creevey.
-- **Dependency Updates & Dynamic Imports:** We've updated several main dependencies (like `@koa/cors`, `@octokit/core`, `typescript`). Some parts of Creevey now load on demand to make things a bit faster. Functions like `getCreeveyCache()` and `getMatchers()` are now async.
-- **Storybook Upgrades:** Creevey now works well with Storybook 8.x versions (like 8.4.1, 8.6.12). This includes some API changes, like how icons are imported (`@storybook/components` is now `@storybook/icons`) and how manager APIs are imported (`@storybook/api` is now `@storybook/manager-api`).
-- **Under-the-Hood Improvements:**
-  - The internal HTTP server switched from Koa to Hyper-Express for better performance.
-  - How reporters are created and how they handle events is now managed centrally in the main Creevey runner.
-- **Global Environment Variable:** We added a `__CREEVEY_ENV__` global variable. It's `false` in Storybook dev mode and `true` when Creevey is running tests.
-- **`--noDocker` Option:** A command-line flag to turn off Docker, even if `useDocker: true` is in your config. The default way stories are provided has changed to `hybridStoriesProvider`.
-- **Test File Extensions:** Added support for `.mts` and `.cts` test files.
-- **Base64 Image Support:** Image matching functions can now handle base64 encoded image strings.
-- **Video Recording Fix:** Playwright won't fail anymore if `ffmpeg` isn't around for video recording; it will just give a warning and continue without video.
-- **UI/UX:**
-  - Added hotkeys for moving around the report more easily (e.g., Alt+Space to toggle images in SwapView).
-  - Images in report mode load better now.
-  - Screenshots of just the viewport are now the default, instead of full-page screenshots, to keep things consistent.
-- **Fixes:**
-  - Lots of fixes for Docker container stuff, including cleaning them up and registry support.
-  - Better error messages from Selenium and Playwright.
-  - Fixes for reporter problems (TeamCity artifacts, JUnit compatibility).
-  - Fixed how regular expressions were handled between the main process and workers.
-  - Made sure processes shut down properly to avoid orphaned ones.
-  - Fixed some issues with browsers not starting correctly on the first run.
-- **Dependency Management:** We regularly update dependencies, including big ones like ESLint and TypeScript. Moved several Storybook dependencies to `devDependencies`.
-- **Code Quality:** Cleaned up logging, how tests are managed (the `TestsManager` class), and how themes are handled.
+- Commit yarn.lock changes
+- Setup package.json's exports field
+- Use @storybook/core-client instead of @storybook/core
 
----
+### Ci
 
-We hope these updates make using Creevey a better experience for you. As always, check out the documentation for more details, and let us know if you run into any problems. Happy testing!
+- 🎡 updated circle ci images versions
+- 🎡 update github actions script
+- Run lint before build in CI workflow
+- Downgrade node version from 22 to 20 in CI workflow
 
-# [0.9.0-beta.5](https://github.com/wKich/creevey/compare/v0.9.0-beta.4...v0.9.0-beta.5) (2023-04-14)
+### Wip
 
-# [0.9.0-beta.4](https://github.com/wKich/creevey/compare/v0.9.0-beta.3...v0.9.0-beta.4) (2023-03-24)
+- Test hybrid provider
+## [0.8.0-beta.0] - 2022-03-17
 
-# [0.9.0-beta.3](https://github.com/wKich/creevey/compare/v0.8.0...v0.9.0-beta.3) (2023-03-24)
+### Added
 
-### Features
+- Support storybook 6.4
+- New creevey params: "global" and "kind"
+- 🎸 change format for `skip` parameter
+- 🎸 Improve skip options
 
-- hybrid stories provider ([89d9c73](https://github.com/wKich/creevey/commit/89d9c7357369dffb320ea06fe158b4113f57034c))
+### Documentation
 
-## [0.8.1](https://github.com/wKich/creevey/compare/v0.8.1-beta.1...v0.8.1) (2023-05-29)
+- Doc global and kind parameters
 
-## [0.8.1-beta.1](https://github.com/wKich/creevey/compare/v0.8.1-beta.0...v0.8.1-beta.1) (2023-05-05)
+### Fixed
 
-### Bug Fixes
+- 🐛 revert cross-env scripts, as they not work in unix
 
-- **providers:** set creevey port for all providers ([79e8aae](https://github.com/wKich/creevey/commit/79e8aae629d79260f93a93057486bab659801a46))
+### Miscellaneous
 
-## [0.8.1-beta.0](https://github.com/wKich/creevey/compare/v0.8.0...v0.8.1-beta.0) (2023-04-11)
+- Update stories params
 
-### Bug Fixes
+### Testing
 
-- **addon:** make bundlers to load esm version of addon ([f2937ca](https://github.com/wKich/creevey/commit/f2937caccca158e68c8be45d0882ec9b62eb05b2))
+- 💍 Update screenshot images
+- Add e2e test for 6.4
+- Approve latest e2e changes
+- Approve minor changes
+- Wip
+- 💍 update approval e2e tests
+- 💍 fix utils tests names
+- 💍 add one more test for skip options
 
-# [0.8.0](https://github.com/wKich/creevey/compare/v0.8.0-beta.1...v0.8.0) (2023-03-07)
+### Build
 
-### Bug Fixes
+- Update storybook
+## [0.7.39] - 2021-11-04
 
-- drop support of SkipOption on root skip level ([31be1bf](https://github.com/wKich/creevey/commit/31be1bf4d67f464ea6790e6e218ca75674366711))
+### Added
 
-# [0.8.0-beta.1](https://github.com/wKich/creevey/compare/v0.8.0-beta.0...v0.8.0-beta.1) (2023-01-18)
+- 🎸 add ability to update story arguments from test cases
 
-### Bug Fixes
+### Changed
 
-- **addon:** restore IE11 support ([94f452f](https://github.com/wKich/creevey/commit/94f452fff4225e974c9efdff21f982d5155de4f8))
-- allow setting timeouts via capabilities ([72de9e5](https://github.com/wKich/creevey/commit/72de9e50b818587309f665c782637ae43c3e4864))
-- infinite UI loading ([4f7b47d](https://github.com/wKich/creevey/commit/4f7b47db3ff1274217b044ce608e34d22148fe32))
-- **addon:** restore and move ie11 support to separate addon ([3ba2cc7](https://github.com/wKich/creevey/commit/3ba2cc7fde281037406f1705c0abc616c576e641))
-- browser-node regexp parameters transfering ([737670e](https://github.com/wKich/creevey/commit/737670e18aa5d0ce416fe12b765406116b453e31))
-- correct call of the test fn ([98c03ad](https://github.com/wKich/creevey/commit/98c03ad1700486bfd75170f4517970717250f6d8))
-- handle null from selectStory ([1895602](https://github.com/wKich/creevey/commit/1895602143b3236ab195e11fcfa162df2a01af03))
-- ie11 support ([523e35b](https://github.com/wKich/creevey/commit/523e35b6950d978ca3aaa77dd4f072a835053687))
-- move addon to the separate entry point ([f3fc59f](https://github.com/wKich/creevey/commit/f3fc59f980a56f87f882507c3a0367ed6a356d33))
-- prevent importing browser-specific code to node ([37706ef](https://github.com/wKich/creevey/commit/37706efbb49dd5bd1d6ec06821fac52480a0e132))
-- **selenium-webdriver:** bump [@types](https://github.com/types) package version ([ca4b369](https://github.com/wKich/creevey/commit/ca4b369046e2c56e0548f5cbb6f98c17b0125228))
+- 💡 cleanup some stuff
 
-### Features
+### Miscellaneous
 
-- 🎸 add support `play()` story method ([318ac62](https://github.com/wKich/creevey/commit/318ac628cb14fb0de7a89c088ae241df520df1e7))
-- drop support for storybook < 6.4 ([fb8c0f5](https://github.com/wKich/creevey/commit/fb8c0f5158ab7c0495949eaa61ba52049c3d66cf))
+- 🤖 replace `jsdom-global` to `global-jsdom` to avoid errors in output
 
-# [0.8.0-beta.0](https://github.com/wKich/creevey/compare/v0.7.39...v0.8.0-beta.0) (2022-03-17)
+### Testing
 
-### Bug Fixes
+- 💍 approve tests
+- 💍 fix some e2e cases
+## [0.7.38] - 2021-09-28
 
-- 🐛 revert cross-env scripts, as they not work in unix ([92b04a5](https://github.com/wKich/creevey/commit/92b04a5bed56191b7ee6bd169f5327e30a1c2232))
+### Added
 
-### Features
+- 🎸 add storiesProvider config option
 
-- 🎸 change format for `skip` parameter ([f244b7c](https://github.com/wKich/creevey/commit/f244b7cd344b276762408a1df841e5afc3853fad))
-- 🎸 Improve skip options ([2fcc624](https://github.com/wKich/creevey/commit/2fcc624a9b2ab1dcdce3927779c8f58bb0a0d02c))
-- new creevey params: "global" and "kind" ([7d7c885](https://github.com/wKich/creevey/commit/7d7c88521a28c91586bfdd663500bea576845292))
-- support storybook 6.4 ([74010e5](https://github.com/wKich/creevey/commit/74010e53d93ff1815427cd7ee818481ce6e21288))
+### Miscellaneous
 
-## [0.7.39](https://github.com/wKich/creevey/compare/v0.7.38...v0.7.39) (2021-11-04)
+- 🤖 update deps
+- **deps:** Bump tar from 6.1.2 to 6.1.11
+- **deps-dev:** Bump immer from 9.0.5 to 9.0.6
+- **deps:** Bump nth-check from 2.0.0 to 2.0.1
+- **deps:** Bump tmpl from 1.0.4 to 1.0.5
+- 🤖 update deps
 
-### Features
+### Testing
 
-- 🎸 add ability to update story arguments from test cases ([18d8ecb](https://github.com/wKich/creevey/commit/18d8ecb909097b585282a04bfb0b0c721ad45e22))
+- 💍 fix loader test for windows
+- 💍 fix line endings for windows
+## [0.7.37] - 2021-08-27
 
-## [0.7.38](https://github.com/wKich/creevey/compare/v0.7.37...v0.7.38) (2021-09-28)
+### Added
 
-### Features
+- 🎸 improve delay option to allow specify browsers
+- 🎸 failFast doesn't disable maxRetries option
 
-- 🎸 add storiesProvider config option ([7cf7454](https://github.com/wKich/creevey/commit/7cf74542d527bcfd5b41b17026464a4f9298e1f5))
+### Fixed
 
-## [0.7.37](https://github.com/wKich/creevey/compare/v0.7.36...v0.7.37) (2021-08-27)
+- 🐛 save report data after each tests run
+- 🐛 selenium url path to '/' for webkit browsers
+## [0.7.36] - 2021-07-30
 
-### Bug Fixes
+### Documentation
 
-- 🐛 save report data after each tests run ([86c6c2e](https://github.com/wKich/creevey/commit/86c6c2ee1261bdc38fc3b7c6ebb1753348339a0a))
-- 🐛 selenium url path to '/' for webkit browsers ([748d896](https://github.com/wKich/creevey/commit/748d8968c645ee684cec5dcd899d2de749d5e2c6)), closes [#176](https://github.com/wKich/creevey/issues/176)
+- ✏️ update todos
 
-### Features
+### Fixed
 
-- 🎸 failFast doesn't disable maxRetries option ([c81c637](https://github.com/wKich/creevey/commit/c81c63784aecea890596647225ce8278d7383df5)), closes [#175](https://github.com/wKich/creevey/issues/175)
-- 🎸 improve delay option to allow specify browsers ([4bec3b5](https://github.com/wKich/creevey/commit/4bec3b5a4ddca2e2610db4ecf79f0e859202da65)), closes [#174](https://github.com/wKich/creevey/issues/174)
+- 🐛 report test as a failed for teamcity reporter
 
-## [0.7.36](https://github.com/wKich/creevey/compare/v0.7.35...v0.7.36) (2021-07-30)
+### Miscellaneous
 
-### Bug Fixes
+- 🤖 update deps
 
-- 🐛 report test as a failed for teamcity reporter ([0e58915](https://github.com/wKich/creevey/commit/0e58915b6d14441e14851c7c3bc888fe0759ddce))
+### Ci
 
-## [0.7.35](https://github.com/wKich/creevey/compare/v0.7.34...v0.7.35) (2021-07-28)
+- 🎡 update teamcity config version to 2021.1
+## [0.7.35] - 2021-07-28
 
-### Bug Fixes
+### Added
 
-- 🐛 update didn't use report data to approve failed tests ([107d0fa](https://github.com/wKich/creevey/commit/107d0faf4c717bbb7a547422e9baf7105389d0bd))
+- 🎸 add `dockerImagePlatform` config option
 
-### Features
+### Fixed
 
-- 🎸 add `dockerImagePlatform` config option ([f52de6c](https://github.com/wKich/creevey/commit/f52de6c31ab41012ce127702d0967c8f40fb7c20))
+- 🐛 update didn't use report data to approve failed tests
 
-## [0.7.34](https://github.com/wKich/creevey/compare/v0.7.33...v0.7.34) (2021-07-12)
+### Ci
 
-### Features
+- 🎡 fix artifacts source path for client bundle
+## [0.7.34] - 2021-07-12
 
-- 🎸 add `failFat` parameter to the config ([c4fe538](https://github.com/wKich/creevey/commit/c4fe538569311cc7ca3c0c9e8e93916cf4a3cb8b))
+### Added
 
-## [0.7.33](https://github.com/wKich/creevey/compare/v0.7.32...v0.7.33) (2021-07-12)
+- 🎸 add `failFat` parameter to the config
+## [0.7.33] - 2021-07-12
 
-### Bug Fixes
+### Added
 
-- 🐛 improve `waitForStorybook` wait for `setStories` event ([8431918](https://github.com/wKich/creevey/commit/8431918656378b6760a60da8570fb18952de210c))
-- 🐛 make creevey work with vite ([0d576c6](https://github.com/wKich/creevey/commit/0d576c6e2660fd4f29ba4efd440d4af9ee590ac2))
-- 🐛 some issues for storybook 5.3 and create-react-preset ([c1e20b3](https://github.com/wKich/creevey/commit/c1e20b31234875d3ef961ce3804e3384d858f94d))
+- 🎸 add `failFast` CLI option. Terminates on first fail
 
-### Features
+### Changed
 
-- 🎸 add `failFast` CLI option. Terminates on first fail ([0023bbb](https://github.com/wKich/creevey/commit/0023bbb022e71b7b3cb60fd7cea9bdb89a7e87bc))
+- 💡 prepare to support svelte CSF stories
 
-## [0.7.32](https://github.com/wKich/creevey/compare/v0.7.31...v0.7.32) (2021-07-07)
+### Fixed
 
-### Features
+- 🐛 improve `waitForStorybook` wait for `setStories` event
+- 🐛 some issues for storybook 5.3 and create-react-preset
+- 🐛 make creevey work with vite
+## [0.7.32] - 2021-07-07
 
-- 🎸 add webdriver debug logging ([6124a43](https://github.com/wKich/creevey/commit/6124a43b79d2761c3f04f6f3f118599ecb517c27))
-- 🎸 run extract stories.json on storybook-build ([803a1d1](https://github.com/wKich/creevey/commit/803a1d1b9b774121e1a611dfbbe1a3ad041339af))
+### Added
 
-## [0.7.31](https://github.com/wKich/creevey/compare/v0.7.30...v0.7.31) (2021-06-26)
+- 🎸 run extract stories.json on storybook-build
+- 🎸 add webdriver debug logging
+## [0.7.31] - 2021-06-26
 
-### Bug Fixes
+### Added
 
-- 🐛 ignore docsOnly stories for now ([2fda22b](https://github.com/wKich/creevey/commit/2fda22b333929306c2ad31243f1a0fd1900bbd7f))
-- 🐛 improve listen story render error with `waitForReady` ([dda7948](https://github.com/wKich/creevey/commit/dda7948c3496a7ef7a8e9fc4ce50d774b470bd94))
-- 🐛 improve update to approve only failed images ([f0e5719](https://github.com/wKich/creevey/commit/f0e5719f1b8d1b0fb105bacb5619cd903eadced6))
-- 🐛 resolve storybook preview config after babel/register ([cb3f46c](https://github.com/wKich/creevey/commit/cb3f46c0502264cdd5aefc2dc397da1892938eb5))
-- 🐛 resolving storybook modules for version less than 6.2 ([bd84c5f](https://github.com/wKich/creevey/commit/bd84c5f87a3c271665c3fd283ae09cabc2851120))
+- 🎸 add `until` selenium helpers to test context
 
-### Features
+### Fixed
 
-- 🎸 add `until` selenium helpers to test context ([4f29eca](https://github.com/wKich/creevey/commit/4f29eca9e829c68d765da88fbb3ab327278fefe3))
+- 🐛 ignore docsOnly stories for now
+- 🐛 improve listen story render error with `waitForReady`
+- 🐛 resolving storybook modules for version less than 6.2
+- 🐛 resolve storybook preview config after babel/register
+- 🐛 improve update to approve only failed images
 
-## [0.7.30](https://github.com/wKich/creevey/compare/v0.7.29...v0.7.30) (2021-06-10)
+### Miscellaneous
 
-### Bug Fixes
+- 🤖 update todos
+- **deps:** Bump postcss from 7.0.35 to 7.0.36
+- 🤖 update deps
 
-- 🐛 import the same webpack as used for storybook manager ([ae3c6b7](https://github.com/wKich/creevey/commit/ae3c6b712a8e41a7d3f4396b269d471c578d9408))
-- 🐛 resolving storybook modules ([d30274d](https://github.com/wKich/creevey/commit/d30274d3dc12e77cea21ea170a9e03fc35892671))
-- package.json & yarn.lock to reduce vulnerabilities ([b1f8697](https://github.com/wKich/creevey/commit/b1f869758bb6b41165748de15f897a4bee22545b))
+### Testing
 
-## [0.7.29](https://github.com/wKich/creevey/compare/v0.7.28...v0.7.29) (2021-05-30)
+- 💍 add more e2e tests for storybook building and extract
+## [0.7.30] - 2021-06-10
 
-### Bug Fixes
+### Fixed
 
-- 🐛 allow pass boolean value to skip parameter ([9e36eec](https://github.com/wKich/creevey/commit/9e36eecce9d7df352ced159c1ec5b0de86fa7257)), closes [#147](https://github.com/wKich/creevey/issues/147)
+- Package.json & yarn.lock to reduce vulnerabilities
+- 🐛 resolving storybook modules
+- 🐛 import the same webpack as used for storybook manager
 
-### Features
+### Miscellaneous
 
-- 🎸 improve `update` command allow to pass match pattern ([4cf79f4](https://github.com/wKich/creevey/commit/4cf79f4d7693686be86c4bec5ae7e5736f900615))
+- **deps:** Bump dns-packet from 1.3.1 to 1.3.4
+- 🤖 update deps
+- 🤖 downgrade ts for issue storybook#15067
+- 🤖 update deps
 
-## [0.7.28](https://github.com/wKich/creevey/compare/v0.7.27...v0.7.28) (2021-05-20)
+### Testing
 
-### Bug Fixes
+- 💍 update some images
+## [0.7.29] - 2021-05-30
 
-- 🐛 creevey loader transforms csf funcs with props ([11bbc96](https://github.com/wKich/creevey/commit/11bbc96133edbce3c578a240a0a69c45d2b7a508))
-- 🐛 csf template.bind extract correctly ([ba27817](https://github.com/wKich/creevey/commit/ba27817e9fd91a0515edb3896414c7ac04bfa65d))
-- 🐛 improve babel-plugin to handle storiesOf in loops ([ec6ad03](https://github.com/wKich/creevey/commit/ec6ad03a796c6d25647f30aff75c41c1ec630704))
-- 🐛 improve process exiting with hooks, add ie11 tests ([effa16f](https://github.com/wKich/creevey/commit/effa16f434ac82bbc740be4f2b4ecc67557cba7b))
-- 🐛 remove some non-story and custom expressions ([9fd55dc](https://github.com/wKich/creevey/commit/9fd55dcee25c7cd5ca965629861bd324bdc95612))
-- 🐛 types after update to Storybook 6.2 ([dcf433e](https://github.com/wKich/creevey/commit/dcf433e52ca9a4e595968365061f73708fcc9ab4))
+### Added
 
-### Features
+- 🎸 improve `update` command allow to pass match pattern
 
-- 🎸 improve extract stories by using only babel ([6e43452](https://github.com/wKich/creevey/commit/6e43452e8607ce62f8e73387245557812e051160))
-- 🎸 support for extract cjs and object.assign ([1978669](https://github.com/wKich/creevey/commit/1978669c1fcf9f5a9866d9399793d7388bab1680))
+### Fixed
 
-## [0.7.27](https://github.com/wKich/creevey/compare/v0.7.26...v0.7.27) (2021-03-31)
+- 🐛 allow pass boolean value to skip parameter
 
-### Bug Fixes
+### Miscellaneous
 
-- 🐛 capturing screenshots in ie11 ([2e47b2f](https://github.com/wKich/creevey/commit/2e47b2fe77a5af88673c369f297b5a373d3a2eba))
-- 🐛 compose browsers with external grid and builtin selenoid ([c429bec](https://github.com/wKich/creevey/commit/c429becc3827764c8349ed428bae5a7f4288bd5a))
+- 🤖 update deps
+## [0.7.28] - 2021-05-20
 
-## [0.7.26](https://github.com/wKich/creevey/compare/v0.7.25...v0.7.26) (2021-03-28)
+### Added
 
-### Bug Fixes
+- 🎸 improve extract stories by using only babel
+- 🎸 support for extract cjs and object.assign
 
-- 🐛 don't show run button in a report ([958c8ad](https://github.com/wKich/creevey/commit/958c8ad742121dd57adb841939fb5f27134132c5))
+### Changed
 
-### Features
+- 💡 simplify babel transformation helpers
 
-- 🎸 add `--extract` as faster alternative to `sb extract` ([5f5de2d](https://github.com/wKich/creevey/commit/5f5de2d44ba49c0f9868cb843a522745308fa055))
-- 🎸 add `waitForReady` story parameter ([8517883](https://github.com/wKich/creevey/commit/8517883019dc371141a0b7308b37bde8b17577b6))
-- 🎸 allow define custom selenoid images and skip pull step ([e508eec](https://github.com/wKich/creevey/commit/e508eec9918cb63194a74c2ebd44aa1f62c9930d))
+### Fixed
 
-## [0.7.25](https://github.com/wKich/creevey/compare/v0.7.24...v0.7.25) (2021-03-18)
+- 🐛 improve process exiting with hooks, add ie11 tests
+- 🐛 types after update to Storybook 6.2
+- 🐛 improve babel-plugin to handle storiesOf in loops
+- 🐛 creevey loader transforms csf funcs with props
+- 🐛 csf template.bind extract correctly
+- 🐛 remove some non-story and custom expressions
 
-### Bug Fixes
+### Miscellaneous
 
-- 🐛 exclude all addons from nodejs storybook bundle ([1194400](https://github.com/wKich/creevey/commit/1194400d441fe22a0b60718c67e083c76bf7e2c2))
-- 🐛 hover shouldn't override focus styles ([6762af9](https://github.com/wKich/creevey/commit/6762af942600dbb9f5d100539dcbe1fdee016a4c))
-- 🐛 test status icons align ([c3e5c7e](https://github.com/wKich/creevey/commit/c3e5c7ea14eb46e218a0d1dcbcec9374989b364d))
+- 🤖 update deps
+- 🤖 update deps
+- **deps:** Bump url-parse from 1.4.7 to 1.5.1
+- **deps:** Bump handlebars from 4.7.6 to 4.7.7
 
-### Features
+### Testing
 
-- 🎸 add sidebar keyboard handlers ([bf160b6](https://github.com/wKich/creevey/commit/bf160b61ecdd49417135f0b7b9c316efddb6e898))
-- 🎸 add support storybook 6.2 ([e4cc662](https://github.com/wKich/creevey/commit/e4cc66245b0f2aea8cfba0e849f1e9e4f80d1442))
-- 🎸 support capture mdx stories ([6fc9185](https://github.com/wKich/creevey/commit/6fc918505718393ccbc424a794159eecf66a456d))
+- 💍 fix absolute path in e2e tests
+- 💍 update storybook official approvals
+- 💍 update some firefox screenshots
 
-## [0.7.24](https://github.com/wKich/creevey/compare/v0.7.23...v0.7.24) (2021-03-10)
+### Ci
 
-### Bug Fixes
+- 🎡 ignore ie for now
+- 🎡 fix report view resources
+## [0.7.27] - 2021-03-31
 
-- 🐛 some security issues ([d3eed3c](https://github.com/wKich/creevey/commit/d3eed3c8970f097309e9ec2e3926a2e6a881fd9c))
-- 🐛 websocket invalid frame error ([aafda92](https://github.com/wKich/creevey/commit/aafda92ff3d45cf20005872ea344831b53c2f5af))
-- upgrade tslib from 2.0.3 to 2.1.0 ([f047cae](https://github.com/wKich/creevey/commit/f047cae1c0a6b072b30b91be9f7bceef1a776917))
-- upgrade zone.js from 0.11.3 to 0.11.4 ([f1a911a](https://github.com/wKich/creevey/commit/f1a911a070658f8b2488f1d596a53e3cd2d3e001))
+### Fixed
 
-### Features
+- 🐛 capturing screenshots in ie11
+- 🐛 compose browsers with external grid and builtin selenoid
 
-- 🎸 new panels in addon ([02232eb](https://github.com/wKich/creevey/commit/02232ebbeb3fe0eb0878743ccc9ad1a83277de64))
-- allow to ignore elements in screenshot ([19a38e0](https://github.com/wKich/creevey/commit/19a38e0379ad0b1cbbe6254f197888d2ebfb1a22))
+### Miscellaneous
 
-## [0.7.23](https://github.com/wKich/creevey/compare/v0.7.22...v0.7.23) (2021-01-25)
+- 🤖 update deps
 
-### Bug Fixes
+### Testing
 
-- 🐛 use shelljs to run selenoid binary ([3306071](https://github.com/wKich/creevey/commit/3306071d2840b6f8fde442880457085f6992915a))
+- 💍 ignore readdir error for tests
+- 💍 fix absolute paths for storybook e2e tests
+- 💍 another fix for absolute storybook path
+- 💍 approve storybook official e2e test
 
-## [0.7.22](https://github.com/wKich/creevey/compare/v0.7.21...v0.7.22) (2021-01-25)
+### Ci
 
-### Bug Fixes
+- 🎡 fix e2e test job steps
+- 🎡 fix repository paramter for checkout action
+## [0.7.26] - 2021-03-28
 
-- run standalone browsers and selenoid ([ba85fdc](https://github.com/wKich/creevey/commit/ba85fdcd7f5e2ad0e6139cb3fe84e969dacb2b4c))
-- selenium url path for standalone run ([da45662](https://github.com/wKich/creevey/commit/da45662aff604bacb02bd949ece5e406888cbd4d))
+### Added
 
-## [0.7.21](https://github.com/wKich/creevey/compare/v0.7.20...v0.7.21) (2021-01-22)
+- 🎸 allow define custom selenoid images and skip pull step
+- 🎸 add `waitForReady` story parameter
+- 🎸 add `--extract` as faster alternative to `sb extract`
 
-### Bug Fixes
+### Changed
 
-- 🐛 create protocol relative image url ([5c574dc](https://github.com/wKich/creevey/commit/5c574dc3025eacf1c9d4402880a9893193c0180f))
-- 🐛 encode only path tokens for url ([28751c9](https://github.com/wKich/creevey/commit/28751c968cb4a3a8afcb606096a0a0bc2fc3bccf))
-- 🐛 get image url with empty port number ([43a8226](https://github.com/wKich/creevey/commit/43a822653001ecbb31534c40f688814e14bb52db))
-- 🐛 make report from static files works from creevey repo ([4b49df7](https://github.com/wKich/creevey/commit/4b49df72f21cee725848187c267f6b87b9e988e3))
-- 🐛 protocol relative resolving ([fc2559e](https://github.com/wKich/creevey/commit/fc2559e60091ef96af48fbbac92e7f06b7f57dbc))
-- 🐛 store stats.json into report dir ([9b0586d](https://github.com/wKich/creevey/commit/9b0586db49681b654045ad54dece4c195e490605))
+- 💡 simplify configs
+- 💡 move e2e test approvals to separate directory
 
-### Features
+### Fixed
 
-- 🎸 improve creevey-loader, cut-off side-effects ([a302708](https://github.com/wKich/creevey/commit/a30270808275fa5dbe83ddb33d0e5490995e9b37))
-- 🎸 save webpack stats.json on debug ([248e271](https://github.com/wKich/creevey/commit/248e2713bc97a601877eaa20f3c6e16ecc1e2aa5))
+- 🐛 don't show run button in a report
 
-## [0.7.20](https://github.com/wKich/creevey/compare/v0.7.19...v0.7.20) (2021-01-15)
+### Miscellaneous
 
-### Bug Fixes
+- 🤖 update deps
 
-- 🐛 apply iframe after custom resolver ([e77bf33](https://github.com/wKich/creevey/commit/e77bf33048673e733ad2acd4799277b336e27fe5))
+### Testing
 
-## [0.7.19](https://github.com/wKich/creevey/compare/v0.7.18...v0.7.19) (2021-01-14)
+- 💍 fix e2e tests, make `npm i` before install creevey
 
-### Bug Fixes
+### Ci
 
-- 🐛 document unloaded error, again ([171b8bb](https://github.com/wKich/creevey/commit/171b8bb633f55616d58bc46655981e986cf9db95))
-- 🐛 document unloaded while waiting for result ([dd31445](https://github.com/wKich/creevey/commit/dd3144558de74349f41108e29aed97814a48eeb7))
-- 🐛 properly output unnecessary images ([40e791e](https://github.com/wKich/creevey/commit/40e791edd5eddce838ccc62902430ca00422bb8b))
+- 🎡 remove e2e tests from any CI except github
+## [0.7.25] - 2021-03-18
 
-### Features
+### Added
 
-- allow to set storybook's globals ([7500245](https://github.com/wKich/creevey/commit/75002458b38d5f7ac3d47cc32516ec9b55091db2))
+- 🎸 add sidebar keyboard handlers
+- 🎸 add support storybook 6.2
+- 🎸 support capture mdx stories
 
-## [0.7.18](https://github.com/wKich/creevey/compare/v0.7.17...v0.7.18) (2021-01-08)
+### Changed
 
-### Bug Fixes
+- 💡 move all webpack-relative code to separate dir
 
-- 🐛 copy-paste missing function from storybook ([29144a4](https://github.com/wKich/creevey/commit/29144a41afe013874b082ca29eecc74b5b56a017))
+### Documentation
 
-## [0.7.17](https://github.com/wKich/creevey/compare/v0.7.16...v0.7.17) (2021-01-07)
+- ✏️ move examples to separate repo
 
-### Bug Fixes
+### Fixed
 
-- 🐛 addon erases global parameters in storybook ([2ed4700](https://github.com/wKich/creevey/commit/2ed47000f00e30890656872d1daae420e47db2d9))
+- 🐛 hover shouldn't override focus styles
+- 🐛 test status icons align
+- 🐛 exclude all addons from nodejs storybook bundle
 
-## [0.7.16](https://github.com/wKich/creevey/compare/v0.7.15...v0.7.16) (2021-01-06)
+### Miscellaneous
 
-### Bug Fixes
+- 🤖 fix eslint errors and warnings
+- **deps:** Bump react-dev-utils from 11.0.3 to 11.0.4
+- 🤖 update deps
+- 🤖 update deps
 
-- 🐛 resolve url for ie11 ([562a982](https://github.com/wKich/creevey/commit/562a9821135f42e428da7f64fe29f2473565eb6d))
-- 🐛 spinner position in sidebar ([5d2d34a](https://github.com/wKich/creevey/commit/5d2d34a7229d7fef8fd4f6731df6b807dce00d7f))
+### Testing
 
-## [0.7.15](https://github.com/wKich/creevey/compare/v0.7.14...v0.7.15) (2021-01-06)
+- 💍 fix e2e test after small refactor
 
-### Bug Fixes
+### Ci
 
-- 🐛 addon show test name in tabs panel ([3393474](https://github.com/wKich/creevey/commit/339347498e87d5e43d1a5e89b611aeaf896e81f3))
-- 🐛 trim story kinds ([6ff25b0](https://github.com/wKich/creevey/commit/6ff25b0b87558d2ce0c11ecd5130480003f41988))
+- 🎡 fix reports for gitlab
+- 🎡 fix gitlab yaml config
+- 🎡 gitlab fix report view bundle
+- 🎡 fix gitlab report view
+- 🎡 fix report view port and circle ci reports
+- 🎡 fix circle ci attach workspace after checkout
+- 🎡 make tests requires build
+- 🎡 fix gitlab requirements for jobs
+- 🎡 fix circle ci report view
+## [0.7.24] - 2021-03-10
 
-### Features
+### Added
 
-- 🎸 add run all buttons in addon ([94ac2d3](https://github.com/wKich/creevey/commit/94ac2d3c6c72ec9a537b974294235f4bfdbf5a69))
+- 🎸 new panels in addon
+- Allow to ignore elements in screenshot
 
-## [0.7.14](https://github.com/wKich/creevey/compare/v0.7.13...v0.7.14) (2021-01-01)
+### Changed
 
-### Bug Fixes
+- 💡 delete unused code from old addon
+- 💡 replace addon components, use ADDON_ID
+- 💡 simplify addon manager method
+- Use mocha beforeEach hook for cleaning
+- Keep ignored elements interactable between screenshots
+- Move dom manimulations to the decorator
+- 💡 api: get browsers without status
 
-- 🐛 disable debug logger for storybook 5.x ([a758bab](https://github.com/wKich/creevey/commit/a758bab23ebff4d357f46087ad21a9a8005dd130))
-- 🐛 resolve storybook properly and wait for page load ([6888178](https://github.com/wKich/creevey/commit/6888178a3ca2ee2c22ef69fc633564154a256e55))
+### Documentation
 
-### Performance Improvements
+- Add example for ignoreElements option
+- Update TODO
+- ✏️ update todos
 
-- ⚡️ exclude fork ts checker plugin for webpack ([cebc0be](https://github.com/wKich/creevey/commit/cebc0be6d42148fe9be859ef49364f0abe8f883f))
+### Fixed
 
-## [0.7.13](https://github.com/wKich/creevey/compare/v0.7.12...v0.7.13) (2020-12-30)
+- 🐛 websocket invalid frame error
+- 🐛 some security issues
+- Upgrade tslib from 2.0.3 to 2.1.0
+- Upgrade zone.js from 0.11.3 to 0.11.4
 
-### Bug Fixes
+### Miscellaneous
 
-- 🐛 images preview urls ([d2a7853](https://github.com/wKich/creevey/commit/d2a7853b2761a3c52a05aee2401b0f54b0e97832))
+- 🤖 update deps
+- 🤖 delete space if test status is unknown
+- 🤖 review fixes
+- 🤖 update deps
+- 🤖 update creevey in examples
+- 🤖 update deps
+- Change method of ignoring elements
+- Improve ignore styles
+- Ensure ignore styles removal
+- 🤖 update deps
+- 🤖 update deps for examples
+- **deps:** Bump ini from 1.3.5 to 1.3.8 in /examples/angular
+- 🤖 update deps
+- 🤖 update husky configs
+- **deps:** Bump pug-code-gen from 3.0.1 to 3.0.2 in /examples/vue
+- **deps:** Bump pug from 3.0.0 to 3.0.2 in /examples/vue
+- 🤖 update deps
+- **deps:** Bump elliptic from 6.5.3 to 6.5.4
+- **deps:** Bump elliptic from 6.5.3 to 6.5.4 in /examples/vue
+- **deps:** Bump elliptic from 6.5.3 to 6.5.4 in /examples/svelte
+- **deps:** Bump elliptic from 6.5.3 to 6.5.4 in /examples/react
+- **deps:** Bump elliptic from 6.5.3 to 6.5.4 in /examples/angular
 
-### Features
+### Styling
 
-- 🎸 start creevey server early and wait for build ([e325d59](https://github.com/wKich/creevey/commit/e325d59b651ef3a52a2284aeb6b9de4eca4a3366))
+- Fix formatting
 
-### Performance Improvements
+### Testing
 
-- ⚡️ speedup resolving storybook url ([4c24c88](https://github.com/wKich/creevey/commit/4c24c88646d1f4711fe24e9e8445ead06238756f))
+- 💍 make e2e tests more presistent
+- 💍 setup gitlab ui tests
+- 💍 improve gitlab ui test config
+- 💍 fix gitlab gridurls config
+- 💍 update screenshots
+- Add screenshots with ignored elements
+- Update screenshots with ignored elements
+- 💍 fix a couple of screenshot tests
+- 💍 make e2e be less depended on env
+## [0.7.23] - 2021-01-25
 
-## [0.7.12](https://github.com/wKich/creevey/compare/v0.7.11...v0.7.12) (2020-12-24)
+### Fixed
 
-### Bug Fixes
+- 🐛 use shelljs to run selenoid binary
+## [0.7.22] - 2021-01-25
 
-- 🐛 set timeout after open for ie11 ([6fda74d](https://github.com/wKich/creevey/commit/6fda74d9fcf7cc1e6f27f0d5814798bef7f5503d))
+### Fixed
 
-## [0.7.11](https://github.com/wKich/creevey/compare/v0.7.10...v0.7.11) (2020-12-21)
+- Run standalone browsers and selenoid
+- Selenium url path for standalone run
+## [0.7.21] - 2021-01-22
 
-### Bug Fixes
+### Added
 
-- 🐛 addon result page scroll height ([cc12cd6](https://github.com/wKich/creevey/commit/cc12cd66c69b4571015ede6492cd4b5f978f9c34))
-- 🐛 exclude docgen plugin for webpack bundle ([f11210a](https://github.com/wKich/creevey/commit/f11210aec9352c695eccc72202daff640a4617cb))
-- 🐛 webpack mdx regexp, again ([0cadad1](https://github.com/wKich/creevey/commit/0cadad15f4217312fdb3db6a3bf7ee4f2cad5bed))
-- 🐛 webpack mdx rule ([4e1b002](https://github.com/wKich/creevey/commit/4e1b002c378d5de7134e392495953c53537cfa5e))
+- 🎸 improve creevey-loader, cut-off side-effects
+- 🎸 save webpack stats.json on debug
 
-### Features
+### Fixed
 
-- 🎸 store tests view in browser history ([868a6b0](https://github.com/wKich/creevey/commit/868a6b0e1fcd906e6441fe54d6ffeccf4ed75019))
+- 🐛 store stats.json into report dir
+- 🐛 make report from static files works from creevey repo
+- 🐛 create protocol relative image url
+- 🐛 protocol relative resolving
+- 🐛 encode only path tokens for url
+- 🐛 get image url with empty port number
 
-## [0.7.10](https://github.com/wKich/creevey/compare/v0.7.9...v0.7.10) (2020-12-15)
+### Miscellaneous
 
-### Bug Fixes
+- **deps-dev:** Bump immer from 8.0.0 to 8.0.1
+- **deps:** Bump socket.io from 2.3.0 to 2.4.1 in /examples/angular
+- 🤖 update deps
 
-- 🐛 switch stories error ([c39ef7e](https://github.com/wKich/creevey/commit/c39ef7edf565f8c983641d89d30b5c552d0b08c7))
+### Testing
 
-## [0.7.9](https://github.com/wKich/creevey/compare/v0.7.8...v0.7.9) (2020-12-14)
+- 💍 add e2e bundle compare
+## [0.7.20] - 2021-01-15
 
-### Features
+### Fixed
 
-- 🎸 add support docker auth config for private registry ([e157c39](https://github.com/wKich/creevey/commit/e157c39de3f13ae4026a26579590ab181665fcb7))
+- 🐛 apply iframe after custom resolver
+## [0.7.19] - 2021-01-14
 
-## [0.7.8](https://github.com/wKich/creevey/compare/v0.7.7...v0.7.8) (2020-12-14)
+### Added
 
-### Bug Fixes
+- Allow to set storybook's globals
 
-- 🐛 resolve url with docker ([ee5b2f7](https://github.com/wKich/creevey/commit/ee5b2f73c6c7bdbbad7574e927306b432295f241))
+### Changed
 
-## [0.7.7](https://github.com/wKich/creevey/compare/v0.7.6...v0.7.7) (2020-12-14)
+- Mark the feature as experimental
 
-### Bug Fixes
+### Fixed
 
-- 🐛 handle getaddrinfo error ([b3567fe](https://github.com/wKich/creevey/commit/b3567fe71aca2b9342fe51561cdf60a2936bed0d))
+- 🐛 document unloaded while waiting for result
+- 🐛 document unloaded error, again
+- 🐛 properly output unnecessary images
 
-## [0.7.6](https://github.com/wKich/creevey/compare/v0.7.5...v0.7.6) (2020-12-14)
+### Miscellaneous
 
-### Bug Fixes
+- Check storybook's version
+## [0.7.18] - 2021-01-08
 
-- 🐛 don't check `isInDocker` for docker internal host ([5a81138](https://github.com/wKich/creevey/commit/5a8113891940fb0b7d700e0aaa8ebdcca76d886c))
+### Fixed
 
-## [0.7.5](https://github.com/wKich/creevey/compare/v0.7.4...v0.7.5) (2020-12-14)
+- 🐛 copy-paste missing function from storybook
 
-### Bug Fixes
+### Miscellaneous
 
-- 🐛 creevey-loader support private class members ([223e3e3](https://github.com/wKich/creevey/commit/223e3e37d2aae7a96a28846abf840d5321b0f96d))
-- 🐛 download selenoid binary ([5e72957](https://github.com/wKich/creevey/commit/5e729571391e7082a0a0fe02dcae6d12e41622f2))
-- 🐛 webpack and update options ([712c911](https://github.com/wKich/creevey/commit/712c91184da6c82989d923b1d90e9d70b13d347c))
+- Add funding.yml
+## [0.7.17] - 2021-01-07
 
-### Features
+### Fixed
 
-- 🎸 add mvp to allow run selenoid without docker ([c161e0a](https://github.com/wKich/creevey/commit/c161e0a807c26e7643bd7c4969bae8b954bcffd8))
-- 🎸 link to current story ([8a3c043](https://github.com/wKich/creevey/commit/8a3c043be5f05e77044b1ff1ce5707c43fc43a36))
+- 🐛 addon erases global parameters in storybook
+## [0.7.16] - 2021-01-06
 
-## [0.7.4](https://github.com/wKich/creevey/compare/v0.7.3...v0.7.4) (2020-12-11)
+### Fixed
 
-### Bug Fixes
+- 🐛 spinner position in sidebar
+- 🐛 resolve url for ie11
+## [0.7.15] - 2021-01-06
 
-- 🐛 change cache dir, some issues on windows ([c2e4f34](https://github.com/wKich/creevey/commit/c2e4f34e3ea70c85c60d1e37b20b6f6ff324dda7))
-- 🐛 merge skip options properly ([24427af](https://github.com/wKich/creevey/commit/24427af40e812478b9832ae82d2dd64e3e146805))
-- 🐛 resolve grid url without docker ([97e06fe](https://github.com/wKich/creevey/commit/97e06fe8c92496a99e659e8f221428bb4bb4062d))
+### Added
 
-## [0.7.3](https://github.com/wKich/creevey/compare/v0.7.2...v0.7.3) (2020-12-02)
+- 🎸 add run all buttons in addon
 
-### Features
+### Changed
 
-- 🎸 apply disable animation styles in storybook decorator ([6dac967](https://github.com/wKich/creevey/commit/6dac96768f6b7953c56e22239a2adcf686f9aabb))
-- 🎸 remove skbkontur ip address resolver ([91e17f4](https://github.com/wKich/creevey/commit/91e17f4f0e87b553bad367eda10ed30a1246be9e))
+- 💡 tune a little addon tabs
+- Remove unused export
+- 💡 addon
 
-## [0.7.2](https://github.com/wKich/creevey/compare/v0.7.1...v0.7.2) (2020-11-28)
+### Documentation
 
-### Bug Fixes
+- ✏️ update authors
 
-- 🐛 invalid websocket frame ([6796625](https://github.com/wKich/creevey/commit/679662569e985b600eb4eb6779551a4bf929f54f))
+### Fixed
 
-### Features
+- 🐛 trim story kinds
+- 🐛 addon show test name in tabs panel
 
-- 🎸 improve scale handling for image views ([454ee85](https://github.com/wKich/creevey/commit/454ee85ad4b6a608bb999b815fb4192c2a661329))
+### Miscellaneous
 
-## [0.7.1](https://github.com/wKich/creevey/compare/v0.7.0...v0.7.1) (2020-11-24)
+- 🤖 fixes after review
+- 🤖 add disabled state to run buttons in addon
+- 🤖 update deps
 
-### Bug Fixes
+### Styling
 
-- 🐛 don't cutoff named exports ([cd09dd4](https://github.com/wKich/creevey/commit/cd09dd47070e4584429905f78baee82c65a82a47))
+- 💄 change a little some comments
+## [0.7.14] - 2021-01-01
 
-### Features
+### Changed
 
-- 🎸 improve side-by-side view for wide images ([3d6a147](https://github.com/wKich/creevey/commit/3d6a1477804bb900d806cbac26d884d26bb28e55))
-- 🎸 side-by-side view supports layout resizing ([123e7c7](https://github.com/wKich/creevey/commit/123e7c78708bf2e85b1649c85d2a264a9e4594d8))
+- ⚡️ exclude fork ts checker plugin for webpack
 
-# [0.7.0](https://github.com/wKich/creevey/compare/v0.7.0-beta.21...v0.7.0) (2020-11-09)
+### Fixed
 
-### Bug Fixes
+- 🐛 disable debug logger for storybook 5.x
+- 🐛 resolve storybook properly and wait for page load
+## [0.7.13] - 2020-12-30
 
-- 🐛 get channel before it created ([b3e89ae](https://github.com/wKich/creevey/commit/b3e89aef18baca926d1684e6734265a03cbf00ab))
-- 🐛 toggle theme sticky z-index ([dcdbb77](https://github.com/wKich/creevey/commit/dcdbb77e63b1f67025c897610c2df74b8d98abbd))
+### Added
 
-### Features
+- 🎸 start creevey server early and wait for build
 
-- 🎸 Dark theme in client ([c36aa4b](https://github.com/wKich/creevey/commit/c36aa4b59ce1661fa7cfbef72a7db1354e8ee0eb))
+### Changed
 
-# [0.7.0-beta.21](https://github.com/wKich/creevey/compare/v0.7.0-beta.20...v0.7.0-beta.21) (2020-11-02)
+- ⚡️ speedup resolving storybook url
 
-### Bug Fixes
+### Fixed
 
-- 🐛 wait for fonts loaded ([78c2a74](https://github.com/wKich/creevey/commit/78c2a74782ac9bdb10d7c9c2039a332218a217cd))
+- 🐛 images preview urls
+## [0.7.12] - 2020-12-24
 
-# [0.7.0-beta.20](https://github.com/wKich/creevey/compare/v0.7.0-beta.19...v0.7.0-beta.20) (2020-10-30)
+### Fixed
 
-### Bug Fixes
+- 🐛 set timeout after open for ie11
 
-- 🐛 don't cutoff `name` prop from stories params ([ca1a19f](https://github.com/wKich/creevey/commit/ca1a19f75f5a31974a7fb930d871c53ce0d77567))
+### Miscellaneous
 
-# [0.7.0-beta.19](https://github.com/wKich/creevey/compare/v0.7.0-beta.18...v0.7.0-beta.19) (2020-10-30)
+- **deps:** Bump node-notifier from 8.0.0 to 8.0.1 in /examples/react
+## [0.7.11] - 2020-12-21
 
-### Bug Fixes
+### Added
 
-- 🐛 macos docker netwrok internal host address ([90bf76d](https://github.com/wKich/creevey/commit/90bf76d8986d07626890e03b2097c0ef3ebd3f27))
+- 🎸 store tests view in browser history
 
-# [0.7.0-beta.18](https://github.com/wKich/creevey/compare/v0.7.0-beta.17...v0.7.0-beta.18) (2020-10-29)
+### Fixed
 
-### Bug Fixes
+- 🐛 webpack mdx rule
+- 🐛 webpack mdx regexp, again
+- 🐛 exclude docgen plugin for webpack bundle
+- 🐛 addon result page scroll height
 
-- 🐛 cutoff parameters in new declarative preview config ([a86c51a](https://github.com/wKich/creevey/commit/a86c51ae80caa1f3e7534a044e1427dcb43e9792))
-- 🐛 improve creevey loader cutoff stories meta data ([7b651d5](https://github.com/wKich/creevey/commit/7b651d5fe2945cffa10929ce038d01885c1db6ab))
-- 🐛 reset body margin for client ui ([54fee7f](https://github.com/wKich/creevey/commit/54fee7f061a7b5eef7179faec09e79fd1652e305))
-- 🐛 storybook framework detection ([25e1651](https://github.com/wKich/creevey/commit/25e1651608765698629e8f2ac1b9e43f98234288))
+### Miscellaneous
 
-### Features
+- 🤖 update deps
+## [0.7.10] - 2020-12-15
 
-- 🎸 change default capture element to `#root` ([8d2c7b8](https://github.com/wKich/creevey/commit/8d2c7b8a5ddf9e3f64102c19aba1f1a7f933d8ad))
+### Fixed
 
-# [0.7.0-beta.17](https://github.com/wKich/creevey/compare/v0.7.0-beta.16...v0.7.0-beta.17) (2020-10-16)
+- 🐛 switch stories error
+## [0.7.9] - 2020-12-14
 
-### Bug Fixes
+### Added
 
-- 🐛 filter tests without statuses ([4c1d25d](https://github.com/wKich/creevey/commit/4c1d25de232816b4d99853fbaa2661a46996effc))
+- 🎸 add support docker auth config for private registry
 
-# [0.7.0-beta.16](https://github.com/wKich/creevey/compare/v0.7.0-beta.15...v0.7.0-beta.16) (2020-10-16)
+### Ci
 
-### Bug Fixes
+- 🎡 add chromatic for testing purpose
+- 🎡 fix chromatic
+- 🎡 fix chromatic lfs
+- 🎡 fix chromatic checkout action
+## [0.7.8] - 2020-12-14
 
-- 🐛 make sidebar a little narrower ([65c9bf7](https://github.com/wKich/creevey/commit/65c9bf7947cad71c07df5e7d5668a1b73ecfe395))
-- 🐛 small ui issues in SideBar ([6df7a0a](https://github.com/wKich/creevey/commit/6df7a0a13dcea12614bc4fc4e34389c52f9b03a8))
-- 🐛 watch stories in windows ([e8458dd](https://github.com/wKich/creevey/commit/e8458ddde503011aaa6a7479694edd2aa42b1941))
+### Fixed
 
-### Features
+- 🐛 resolve url with docker
+## [0.7.7] - 2020-12-14
 
-- 🎸 sideBar on storybook components ([2866c8e](https://github.com/wKich/creevey/commit/2866c8ebf7e57d460bf5254a93573c048351e1fe))
+### Fixed
 
-# [0.7.0-beta.15](https://github.com/wKich/creevey/compare/v0.7.0-beta.14...v0.7.0-beta.15) (2020-10-13)
+- 🐛 handle getaddrinfo error
+## [0.7.6] - 2020-12-14
 
-### Bug Fixes
+### Documentation
 
-- 🐛 don't output message about unnecessary image ([83c1463](https://github.com/wKich/creevey/commit/83c14635e667d39181cbc1ddc494bac026641a2d))
-- 🐛 improve `getImageUrl` for circle ci at least ([7537ce9](https://github.com/wKich/creevey/commit/7537ce9efa7a0ac3bcf2597a79126d8cd5312d59))
+- ✏️ update todos
 
-# [0.7.0-beta.14](https://github.com/wKich/creevey/compare/v0.7.0-beta.13...v0.7.0-beta.14) (2020-10-13)
+### Fixed
 
-### Bug Fixes
+- 🐛 don't check `isInDocker` for docker internal host
+## [0.7.5] - 2020-12-14
 
-- 🐛 fallback report if api don't available ([618682f](https://github.com/wKich/creevey/commit/618682f289cb316dbd3b8b78d9d96ddd9e2c8681))
+### Added
 
-### Features
+- 🎸 link to current story
 
-- 🎸 output unnecessary images on full run ([b6dbb02](https://github.com/wKich/creevey/commit/b6dbb02d5f6ef5766f1f11c0d50d7f5b4ad17b79))
-- 🎸 remove `useDocker`. Creevey run docker by default ([ccbbb43](https://github.com/wKich/creevey/commit/ccbbb43f6fadd88bfcb21b266f08c45d39389c79))
+### Changed
 
-# [0.7.0-beta.13](https://github.com/wKich/creevey/compare/v0.7.0-beta.12...v0.7.0-beta.13) (2020-10-09)
+- 💡 fix warn
 
-### Bug Fixes
+### Documentation
 
-- 🐛 add stories in addon ([50d7279](https://github.com/wKich/creevey/commit/50d7279f3daa706da204682edfa69e4bc5dad43b))
-- 🐛 don't crash on storybook reload error ([b393926](https://github.com/wKich/creevey/commit/b393926eda582094973e18b037f95af4530f5b21))
-- 🐛 don't fail on mdx stories, just ignore it for now ([527f962](https://github.com/wKich/creevey/commit/527f96222a73eac0711882b7541d5d318a9aa4fa))
-- 🐛 re-disable animation ([ecbf380](https://github.com/wKich/creevey/commit/ecbf380316ce3479a70d7ce269a93088930a9880))
+- ✏️ install storybook and creevey into svelte example
+- ✏️ split docs in a few files
 
-# [0.7.0-beta.12](https://github.com/wKich/creevey/compare/v0.7.0-beta.11...v0.7.0-beta.12) (2020-10-05)
+### Fixed
 
-### Bug Fixes
+- 🐛 download selenoid binary
+- 🐛 webpack and update options
+- 🐛 creevey-loader support private class members
 
-- 🐛 hmr tests on windows ([7496a72](https://github.com/wKich/creevey/commit/7496a7244648531c79dff5b9b54f01bb375607fe))
-- 🐛 report static bundle, add polyfiils ([dfb5f51](https://github.com/wKich/creevey/commit/dfb5f515344ae9b91f5070f002a914cbed835fd6))
+### Miscellaneous
 
-# [0.7.0-beta.11](https://github.com/wKich/creevey/compare/v0.7.0-beta.10...v0.7.0-beta.11) (2020-10-05)
+- **deps:** Bump ini from 1.3.5 to 1.3.7 in /examples/vue
+- **deps:** Bump ini from 1.3.5 to 1.3.7 in /examples/react
+- 🤖 update deps
+- 🤖 update react to 17.0
+- 🤖 update deps for angular example
+- 🤖 update storybook in angular example
+- 🤖 update deps for vue example
 
-### Bug Fixes
+### Testing
 
-- 🐛 build addon to support ie11 ([4327d6d](https://github.com/wKich/creevey/commit/4327d6dfe9471adecaf6cba7ae6b36312d9fcf5e))
-- 🐛 output readable error message on switch story ([aa369cb](https://github.com/wKich/creevey/commit/aa369cba3f6acb472d11f403f1081ea6c400f367))
-- 🐛 run tests on circle ci ([a8afef5](https://github.com/wKich/creevey/commit/a8afef582235c37722a60f9596f0e1cbb61a1da0))
+- 💍 add more image views tests
+## [0.7.4] - 2020-12-11
 
-# [0.7.0-beta.10](https://github.com/wKich/creevey/compare/v0.7.0-beta.9...v0.7.0-beta.10) (2020-10-02)
+### Added
 
-### Bug Fixes
+- 🎸 add mvp to allow run selenoid without docker
 
-- 🐛 some generated modules are excluded as external ([9d8d04b](https://github.com/wKich/creevey/commit/9d8d04ba6b49a6fc216f661790931bb010284fef))
+### Changed
 
-# [0.7.0-beta.9](https://github.com/wKich/creevey/compare/v0.7.0-beta.8...v0.7.0-beta.9) (2020-10-02)
+- 💡 fix promise types
 
-### Bug Fixes
+### Documentation
 
-- 🐛 some ui markup, change placeholder message ([b3a6bd6](https://github.com/wKich/creevey/commit/b3a6bd61c1a1d1d52a92a3513545a00962aa0159))
+- ✏️ added svelte example app
 
-# [0.7.0-beta.8](https://github.com/wKich/creevey/compare/v0.7.0-beta.7...v0.7.0-beta.8) (2020-10-02)
+### Fixed
 
-### Bug Fixes
+- 🐛 merge skip options properly
+- 🐛 change cache dir, some issues on windows
+- 🐛 resolve grid url without docker
 
-- 🐛 storybook override creevey story parameters ([bd17edf](https://github.com/wKich/creevey/commit/bd17edfcbc5a7dc879c6bf08dca41fec4f207f15))
+### Miscellaneous
 
-# [0.7.0-beta.7](https://github.com/wKich/creevey/compare/v0.7.0-beta.6...v0.7.0-beta.7) (2020-10-01)
+- **deps:** Bump highlight.js from 10.4.0 to 10.4.1 in /examples/react
+- **deps:** Bump highlight.js in /examples/angular
+- 🤖 bump selfsigned to 1.10.8
+- 🤖 bump node-forge to 0.10.0
+- **deps:** Bump highlight.js from 10.4.0 to 10.4.1
+- **deps:** Bump ini from 1.3.5 to 1.3.7
 
-### Features
+### Ci
 
-- 🎸 support declarative decorators format ([3e22854](https://github.com/wKich/creevey/commit/3e22854e3bbefc2bef9c4f7fde270620e9919859))
+- 🎡 update circleci and gitlab configs
+## [0.7.3] - 2020-12-02
 
-# [0.7.0-beta.6](https://github.com/wKich/creevey/compare/v0.7.0-beta.5...v0.7.0-beta.6) (2020-09-29)
+### Added
 
-### Bug Fixes
+- 🎸 remove skbkontur ip address resolver
+- 🎸 apply disable animation styles in storybook decorator
 
-- 🐛 loader handle `export default {} as Meta` ([2dcca94](https://github.com/wKich/creevey/commit/2dcca946d9f94f2e1158974c6e9a22028b49492c))
+### Documentation
 
-# [0.7.0-beta.5](https://github.com/wKich/creevey/compare/v0.7.0-beta.4...v0.7.0-beta.5) (2020-09-28)
+- ✏️ rewrite readme a little
+- ✏️ update readme
+- ✏️ update readme
+- ✏️ add emoji
 
-### Bug Fixes
+### Miscellaneous
 
-- 🐛 eslint errors ([ffdc73d](https://github.com/wKich/creevey/commit/ffdc73d90f29b8452e63f0817300de7e925d0785))
-- 🐛 remove old selenoid container on start ([715f04a](https://github.com/wKich/creevey/commit/715f04a228198e5369653199f983c21eca88c194))
-- 🐛 small addon ui issues ([f055c1c](https://github.com/wKich/creevey/commit/f055c1c16394250f4aaf6db56d444a1c218ab66b))
-- 🐛 small layout fixes in addon ([0f29b12](https://github.com/wKich/creevey/commit/0f29b121bb09e9840d3251eb9fe6d25a986aa46d))
+- Update creevey demo video
+## [0.7.2] - 2020-11-28
 
-### Features
+### Added
 
-- 🎸 Add run button in addon ([8b3596c](https://github.com/wKich/creevey/commit/8b3596cc05ff8dcfa987f816db0b02d5097517f6))
-- 🎸 show status in sidebar ([c28c2da](https://github.com/wKich/creevey/commit/c28c2daab6726735f05ab3d30d4c4662bfb8245f))
-- 🎸 Storybook addon ([7c47c4b](https://github.com/wKich/creevey/commit/7c47c4bc4432ef55364824cee2c1b42430e02a33))
+- 🎸 improve scale handling for image views
 
-# [0.7.0-beta.4](https://github.com/wKich/creevey/compare/v0.7.0-beta.3...v0.7.0-beta.4) (2020-09-26)
+### Fixed
 
-### Bug Fixes
+- 🐛 invalid websocket frame
 
-- 🐛 correctly load report from previous run ([e680e24](https://github.com/wKich/creevey/commit/e680e244728fa7347eac194c88145dec2d0b87a0))
+### Miscellaneous
 
-# [0.7.0-beta.3](https://github.com/wKich/creevey/compare/v0.7.0-beta.2...v0.7.0-beta.3) (2020-09-25)
+- 🤖 update deps
 
-### Bug Fixes
+### Testing
 
-- 🐛 resolve storybook url on windows with multiple networks ([eb1dcf3](https://github.com/wKich/creevey/commit/eb1dcf3df3ef1c084165ad51e41cade2190c3935))
-- 🐛 use `find-dir-cache` to store cache in right place ([c10a951](https://github.com/wKich/creevey/commit/c10a951e6cb05c29222348922d3639de98c04544))
-- 🐛 use selenoid instead of browser images ([b187e62](https://github.com/wKich/creevey/commit/b187e62cb3ef3fe8d4e0128f293ebf693054c5d3))
-- docker network for windows/wsl ([da8b491](https://github.com/wKich/creevey/commit/da8b49172f01a6131bea505021c6ea6ff2e77561))
+- 💍 add BlendView tests
+- 💍 improve e2e tests
+## [0.7.1] - 2020-11-24
 
-### Features
+### Added
 
-- 🎸 add support docker ([c5f7976](https://github.com/wKich/creevey/commit/c5f7976f741e3a7cf1d06615c8013475e4677809))
+- 🎸 improve side-by-side view for wide images
+- 🎸 side-by-side view supports layout resizing
 
-# [0.7.0-beta.2](https://github.com/wKich/creevey/compare/v0.7.0-beta.1...v0.7.0-beta.2) (2020-09-10)
+### Documentation
 
-### Bug Fixes
+- ✏️ update readme
+- ✏️ add abbyy logo
+- ✏️ fix logo images
 
-- 🐛 exit master process with after hook ([e90adfb](https://github.com/wKich/creevey/commit/e90adfb603a5b48a0e085843df03b074923201d5))
+### Fixed
 
-# [0.7.0-beta.1](https://github.com/wKich/creevey/compare/v0.7.0-beta.0...v0.7.0-beta.1) (2020-09-08)
+- 🐛 don't cutoff named exports
 
-### Bug Fixes
+### Miscellaneous
 
-- 🐛 collect all errors ([66146d7](https://github.com/wKich/creevey/commit/66146d7372f46b71055ad7e64f945463b1a21184))
-- 🐛 don't show error if image has been approved ([6b74e1d](https://github.com/wKich/creevey/commit/6b74e1d42d8d2297e5187670f9e05be337e20348))
-- 🐛 image preview height ([afe125d](https://github.com/wKich/creevey/commit/afe125d535be85bc899eaa03683924c3c0c5a856))
+- 🤖 update deps
+- 🤖 update deps and storybook to 6.1
+- 🤖 fix types
 
-### Features
+### Styling
 
-- 🎸 add before/after hooks ([32bc397](https://github.com/wKich/creevey/commit/32bc397e2c0e37d947df9d34a62aa356aa88ad41))
-- 🎸 show error images in imagePreview ([5d2037a](https://github.com/wKich/creevey/commit/5d2037aa86a8a700a6a82e88f980eed5fba873a9))
+- 💄 hotfix prettier write glob pattern
 
-# [0.7.0-beta.0](https://github.com/wKich/creevey/compare/v0.6.4...v0.7.0-beta.0) (2020-08-04)
+### Testing
 
-### Bug Fixes
+- 💍 start adding creevey-storybook e2e tests
+- 💍 add tests for 6.1, 5.3 and 5.2 versions of storybook
+- 💍 add tests for 5.1 and 5.0 versions of storybook
+- 💍 improve performance for e2e tests
 
-- 🐛 gracefully end worker processes ([e2d2548](https://github.com/wKich/creevey/commit/e2d254882ca8fa993d20725dd3132c6069f185f5))
-- 🐛 remove scroll when change image in swap mode ([7ccc42c](https://github.com/wKich/creevey/commit/7ccc42cc36b3d1fef5964fcc60e40899b6d995fc))
-- 🐛 tests hot reloading ([b96bfa9](https://github.com/wKich/creevey/commit/b96bfa9e9509d67dd685ee30c26b37b96eb20289))
+### Ci
 
-### Features
+- 🎡 improve github actions
+- 🎡 improve github actions
+## [0.7.0] - 2020-11-09
 
-- 🎸 support storybook v6.x ([9bb7397](https://github.com/wKich/creevey/commit/9bb7397b3e0dbc88f7f212aab4ee807ae25e8d64))
+### Added
 
-## [0.6.4](https://github.com/wKich/creevey/compare/v0.6.3...v0.6.4) (2020-07-27)
+- 🎸 Dark theme in client
 
-### Bug Fixes
+### Changed
 
-- 🐛 hot-reloading issue, add readme notes ([5497b71](https://github.com/wKich/creevey/commit/5497b710053285a4f0b4cad075427b2ee7287be2))
-- 🐛 react example loadash vulnerability ([e188d1d](https://github.com/wKich/creevey/commit/e188d1d4e43ddd4df0a00de54f37d61f3e2aecc0))
-- 🐛 storybook bundle depends on core-js, regenerator-runtime ([ce596b9](https://github.com/wKich/creevey/commit/ce596b91665d74f68b0442d767d8e81a48e034c0))
-- 🐛 watch stories on windows ([ce599cc](https://github.com/wKich/creevey/commit/ce599ccc0e9eaa31e01987297e1f5c6a899a56ac))
+- Remove comments
+- 💡 fix linter
 
-### Features
+### Documentation
 
-- 🎸 add disabled state to start button ([260193a](https://github.com/wKich/creevey/commit/260193a49f67e500db771688aae95e2fc1e4694b))
-- 🎸 Save view mode ([ea461cc](https://github.com/wKich/creevey/commit/ea461ccb26c5888a1dff54077cac264f2ae4ab27))
+- ✏️ update readme
+- ✏️ fix whisk logo
 
-## [0.6.3](https://github.com/wKich/creevey/compare/v0.6.2...v0.6.3) (2020-06-16)
+### Fixed
 
-### Bug Fixes
+- 🐛 get channel before it created
+- 🐛 toggle theme sticky z-index
 
-- 🐛 test reloading dont work well ([3049dfd](https://github.com/wKich/creevey/commit/3049dfdcda6bc7ae2c85fb6afbfa89cb0f8a1aeb))
+### Miscellaneous
 
-## [0.6.2](https://github.com/wKich/creevey/compare/v0.6.1...v0.6.2) (2020-06-10)
+- 🤖 add global decorator with theme
+- 🤖 main loader in dark theme
+- 🤖 use custom storybook scroll
+- 🤖 allow change theme from client
+- Fix scroll
+- Theme switcher with icons
+- Fix scroll with big image
 
-### Bug Fixes
+### Styling
 
-- 🐛 disable hot-reloading without `--ui` option ([3ea0792](https://github.com/wKich/creevey/commit/3ea0792a6612a01cb62a4650414b6aa26c138665))
+- 💄 fix prettier
 
-## [0.6.1](https://github.com/wKich/creevey/compare/v0.6.0...v0.6.1) (2020-06-10)
+### Testing
 
-### Bug Fixes
+- Approve images with storybook colors
+## [0.7.0-beta.21] - 2020-11-02
 
-- 🐛 ERR_IPC_CHANNEL_CLOSED finally ([965e6de](https://github.com/wKich/creevey/commit/965e6de21acd4d77a9971f072d40f7c42d900bab))
-- 🐛 mocha 7.2 multiple runs, remove old hacks ([0ca08be](https://github.com/wKich/creevey/commit/0ca08bebe436ebc91c0fbc501850339dea5fe0e2))
+### Fixed
 
-# [0.6.0](https://github.com/wKich/creevey/compare/v0.6.0-beta.8...v0.6.0) (2020-06-09)
+- 🐛 wait for fonts loaded
+## [0.7.0-beta.20] - 2020-10-30
 
-### Bug Fixes
+### Fixed
 
-- 🐛 kind-of@6.0.2 vulnerability ([489783e](https://github.com/wKich/creevey/commit/489783ee489c5d4f9d0ca5de87dedb6be6e78e1e))
-- 🐛 loader: remove vars in desctructuring ([8567fd6](https://github.com/wKich/creevey/commit/8567fd60e3ba67572e45f22629f639f6f17647b3))
+- 🐛 don't cutoff `name` prop from stories params
+## [0.7.0-beta.19] - 2020-10-30
 
-# [0.6.0-beta.8](https://github.com/wKich/creevey/compare/v0.6.0-beta.7...v0.6.0-beta.8) (2020-06-04)
+### Fixed
 
-### Bug Fixes
+- 🐛 macos docker netwrok internal host address
+## [0.7.0-beta.18] - 2020-10-29
 
-- 🐛 output warning `Did you call 'load' twice` on reload ([1b2bbeb](https://github.com/wKich/creevey/commit/1b2bbeb8c7f8052514feab767b599b66fec3adf7))
+### Added
 
-# [0.6.0-beta.7](https://github.com/wKich/creevey/compare/v0.6.0-beta.6...v0.6.0-beta.7) (2020-06-02)
+- 🎸 change default capture element to `#root`
 
-### Bug Fixes
+### Documentation
 
-- 🐛 webpack recursion IPC, again ([5083454](https://github.com/wKich/creevey/commit/5083454c1d330ad0abf2ac24ddeb73f1f5367f3a))
+- ✏️ update todos
+- ✏️ update angular example
+- ✏️ update react example
+- ✏️ update vue example
 
-# [0.6.0-beta.6](https://github.com/wKich/creevey/compare/v0.6.0-beta.5...v0.6.0-beta.6) (2020-06-02)
+### Fixed
 
-### Bug Fixes
+- 🐛 improve creevey loader cutoff stories meta data
+- 🐛 cutoff parameters in new declarative preview config
+- 🐛 storybook framework detection
+- 🐛 reset body margin for client ui
 
-- 🐛 IPC messages recursion, again ([4500e92](https://github.com/wKich/creevey/commit/4500e92525307b1966be9fbce39c7bb50b18c25b))
+### Miscellaneous
 
-# [0.6.0-beta.5](https://github.com/wKich/creevey/compare/v0.6.0-beta.4...v0.6.0-beta.5) (2020-06-02)
+- 🤖 update deps
+## [0.7.0-beta.17] - 2020-10-16
 
-### Bug Fixes
+### Fixed
 
-- 🐛 webpack compiler process send messages recursion ([4fd2afe](https://github.com/wKich/creevey/commit/4fd2afeb7e2a2254eb1638f5ca2fc836550c59dd))
+- 🐛 filter tests without statuses
+## [0.7.0-beta.16] - 2020-10-16
 
-# [0.6.0-beta.4](https://github.com/wKich/creevey/compare/v0.6.0-beta.3...v0.6.0-beta.4) (2020-06-02)
+### Changed
 
-### Bug Fixes
+- 💡 remove unused @skbkontur libraries
+- 💡 remove unused @emotion libraries
+- 💡 remove unused @skbkontur libraries
+- 💡 use data-tid, simplify story
+- 💡 move CreeveyContext from shared to web
 
-- 🐛 another fix to gracefully exit ([e433afd](https://github.com/wKich/creevey/commit/e433afd30b6a001c9cfcbc1d267557dd7d7f3ed3))
-- 🐛 check element before capturing screenshot ([53df80b](https://github.com/wKich/creevey/commit/53df80bb2a7c234e5f0109d0f1c8beca88ddb1e9))
-- 🐛 some small init/exit issues ([6c4d666](https://github.com/wKich/creevey/commit/6c4d666040eafdf721d17a0f40714af9a85ae109))
+### Fixed
 
-### Features
+- 🐛 watch stories in windows
+- 🐛 make sidebar a little narrower
 
-- 🎸 allow use `delay` with custom tests ([7a1ab33](https://github.com/wKich/creevey/commit/7a1ab337e52577f3fc934b5edca12638a1ea8e07))
+### Miscellaneous
 
-# [0.6.0-beta.3](https://github.com/wKich/creevey/compare/v0.6.0-beta.2...v0.6.0-beta.3) (2020-05-27)
+- 🤖 update todos
+- 🤖 main loader from storybook components
+- Remove client ResultPage
+- Remove @emotion/core using
+- 🤖 main loader from storybook components
+- Remove comments
+- 🤖 remove unused loaders
+- 🤖 fix deps of storybook/core
 
-### Bug Fixes
+### Testing
 
-- 🐛 EPIPE message on exit again ([a5bb06d](https://github.com/wKich/creevey/commit/a5bb06def9bb4598ee5619ab4942936845dea44c))
-- 🐛 make loader be more aggressive ([78c3d53](https://github.com/wKich/creevey/commit/78c3d53d8439338e634349e9c7999f017ea1f10f))
-- 🐛 soft-freeze mocha version on 7.1 ([5aa3f57](https://github.com/wKich/creevey/commit/5aa3f57ea0fcf3512646a7c346b89ba4f6057767))
+- 💍 add sideBar active and hover test
 
-# [0.6.0-beta.2](https://github.com/wKich/creevey/compare/v0.6.0-beta.1...v0.6.0-beta.2) (2020-05-18)
+### Ci
 
-### Bug Fixes
+- 🎡 disable tests for gitlab
+## [0.7.0-beta.15] - 2020-10-13
 
-- 🐛 correct shutdown workers ([30e7066](https://github.com/wKich/creevey/commit/30e70661b2e1c6b8aab9efbdd3af541c56e719f4))
-- 🐛 correctly close browser session on SIGINT ([079b832](https://github.com/wKich/creevey/commit/079b8326f45d8b7a0de539c3ed2f105679a04534))
-- 🐛 ignore removing bundle cache directory ([6be2bd7](https://github.com/wKich/creevey/commit/6be2bd789c5b259e3351169a47f1bb932ef5de44))
+### Added
 
-# [0.6.0-beta.1](https://github.com/wKich/creevey/compare/v0.6.0-beta.0...v0.6.0-beta.1) (2020-05-15)
+- 🎸 sideBar on storybook components
 
-### Bug Fixes
+### Fixed
 
-- 🐛 storybook framework detection on windows ([fb68cf1](https://github.com/wKich/creevey/commit/fb68cf168a1ad5704e2be00b456015dd2780bf0e))
+- 🐛 small ui issues in SideBar
+- 🐛 don't output message about unnecessary image
+- 🐛 improve `getImageUrl` for circle ci at least
 
-# [0.6.0-beta.0](https://github.com/wKich/creevey/compare/v0.5.6...v0.6.0-beta.0) (2020-05-14)
+### Miscellaneous
 
-### Bug Fixes
+- 🤖 sideBar header on storybook components
+- 🤖 pageFooter on storybook components
 
-- 🐛 support latest selenium browser drivers ([0921aed](https://github.com/wKich/creevey/commit/0921aed898c19ddb38bd6949a6e85699dddaffd7))
+### Styling
 
-### Features
+- 💄 flatten checkbox and bold icons
+## [0.7.0-beta.14] - 2020-10-13
 
-- 🎸 add creevey-loader for webpack ([c15b32d](https://github.com/wKich/creevey/commit/c15b32ddcfbdc7fc906a6a03d27539f87e620a85))
-- 🎸 rework load stories process ([e47f806](https://github.com/wKich/creevey/commit/e47f8067b6a18d066f60196605666ed8db6fadf1))
+### Added
 
-## [0.5.6](https://github.com/wKich/creevey/compare/v0.5.5...v0.5.6) (2020-05-04)
+- 🎸 remove `useDocker`. Creevey run docker by default
+- 🎸 output unnecessary images on full run
 
-### Bug Fixes
+### Fixed
 
-- 🐛 handle worker initiating error ([dc8a4f6](https://github.com/wKich/creevey/commit/dc8a4f616a19d70adcd288de7b5bce89e6e46315))
+- 🐛 fallback report if api don't available
 
-## [0.5.5](https://github.com/wKich/creevey/compare/v0.5.4...v0.5.5) (2020-04-21)
+### Ci
 
-### Features
+- 🎡 add gitlab integration
+## [0.7.0-beta.13] - 2020-10-09
 
-- 🎸 add `saveReport` cli option, enabled by default ([88aa930](https://github.com/wKich/creevey/commit/88aa930dd61ce7902095a9a86cab36529b355014))
-- 🎸 support .creevey config dir ([ba1c560](https://github.com/wKich/creevey/commit/ba1c5600295e5cc655370c004cf33dee4b364615))
+### Fixed
 
-## [0.5.4](https://github.com/wKich/creevey/compare/v0.5.3...v0.5.4) (2020-04-04)
+- 🐛 add stories in addon
+- 🐛 don't fail on mdx stories, just ignore it for now
+- 🐛 re-disable animation
+- 🐛 don't crash on storybook reload error
 
-### Bug Fixes
+### Miscellaneous
 
-- 🐛 remove new code that added by mistake ([f4cbf8c](https://github.com/wKich/creevey/commit/f4cbf8cbc5d327f321da3f3dbf6b11da0e14583e))
+- 🤖 move addon/PageHeader to shared and use it
+- 🤖 update deps
 
-## [0.5.3](https://github.com/wKich/creevey/compare/v0.5.2...v0.5.3) (2020-04-04)
+### Testing
 
-### Bug Fixes
+- 💍 add page header tests
+- 💍 approve pageHeader screenshots
 
-- 🐛 precompile decorator file for ie11 target ([f4b8742](https://github.com/wKich/creevey/commit/f4b8742a8848fd2656c6cd639ef8678e0e4f35c0))
+### Ci
 
-## [0.5.2](https://github.com/wKich/creevey/compare/v0.5.1...v0.5.2) (2020-03-30)
+- Add codeql action
+## [0.7.0-beta.12] - 2020-10-05
 
-### Bug Fixes
+### Fixed
 
-- 🐛 use selenium as deps, rename storybook peerDeps package ([3e0faa3](https://github.com/wKich/creevey/commit/3e0faa39976cf30e3cd95a38bd6326c81f1078c5))
-- ignore \*.scss modules while loading stories ([075068a](https://github.com/wKich/creevey/commit/075068a9192db6c0ed18c4802144b32930433e60))
+- 🐛 hmr tests on windows
+- 🐛 report static bundle, add polyfiils
 
-## [0.5.1](https://github.com/wKich/creevey/compare/v0.5.0...v0.5.1) (2020-03-26)
+### Miscellaneous
 
-### Features
+- 🤖 update deps
+## [0.7.0-beta.11] - 2020-10-05
 
-- 🎸 output story render error ([18e7d9d](https://github.com/wKich/creevey/commit/18e7d9dea772cc10e1f75173c4faa47155e9c934))
+### Fixed
 
-# [0.5.0](https://github.com/wKich/creevey/compare/v0.4.11...v0.5.0) (2020-03-25)
+- 🐛 build addon to support ie11
+- 🐛 output readable error message on switch story
+- 🐛 run tests on circle ci
 
-### Bug Fixes
+### Miscellaneous
 
-- 🐛 gracefully close selenium session ([cd8b630](https://github.com/wKich/creevey/commit/cd8b630b10008db21bc57feb4ffac671fc40ad08))
-- 🐛 improve blend view css filters ([6ba0687](https://github.com/wKich/creevey/commit/6ba0687f7f6e6839fe30843871daad5c04a58857))
-- 🐛 jsdom localStorage warning ([d1099ff](https://github.com/wKich/creevey/commit/d1099ffbce27c8e6851c55970f3875680df6fabb))
-- 🐛 take composite images without hiding scrollbar ([4b3d95a](https://github.com/wKich/creevey/commit/4b3d95a82d339070497b97cb4bd50435851b75de))
+- 🤖 remove unused define plugin variable
+- 🤖 update deps
 
-### Features
+### Ci
 
-- 🎸 rewrite storybook decorator to be framework agnostic ([f2d7904](https://github.com/wKich/creevey/commit/f2d7904a70c981fa64891f40845b1bb2abed7559))
-- 🎸 support safari for composite images ([d078448](https://github.com/wKich/creevey/commit/d07844883071607bd6424e82f239b36b401722cb))
+- 🎡 setup screenshot tests for circle
+- 🎡 fix build artifacts
+- 🎡 add build job for github actions
+## [0.7.0-beta.10] - 2020-10-02
 
-## [0.4.11](https://github.com/wKich/creevey/compare/v0.4.10...v0.4.11) (2020-03-13)
+### Fixed
 
-### Bug Fixes
+- 🐛 some generated modules are excluded as external
+## [0.7.0-beta.9] - 2020-10-02
 
-- 🐛 hide scroll only for composite screenshots ([d9753d2](https://github.com/wKich/creevey/commit/d9753d2405e0aefb90663070d30465b0c8528f50))
+### Fixed
 
-## [0.4.10](https://github.com/wKich/creevey/compare/v0.4.9...v0.4.10) (2020-03-13)
+- 🐛 some ui markup, change placeholder message
 
-### Bug Fixes
+### Miscellaneous
 
-- 🐛 skip by test name with multiple skip options ([3d0ef36](https://github.com/wKich/creevey/commit/3d0ef36c8e2a994c171133f3e0c479f92016a9a2))
+- 🤖 show placeholder when server is not running
+- 🤖 addon in panel instead of tab
+- 🤖 update todos
+## [0.7.0-beta.8] - 2020-10-02
 
-## [0.4.9](https://github.com/wKich/creevey/compare/v0.4.8...v0.4.9) (2020-03-13)
+### Fixed
 
-### Bug Fixes
+- 🐛 storybook override creevey story parameters
 
-- 🐛 exclude `@babel/*` modules from skiping while fastload ([a785fcf](https://github.com/wKich/creevey/commit/a785fcf9cf5e8e591fcf11280eb040658319ace8))
+### Miscellaneous
 
-## [0.4.8](https://github.com/wKich/creevey/compare/v0.4.7...v0.4.8) (2020-03-13)
+- 🤖 add storybook essential addon
+## [0.7.0-beta.7] - 2020-10-01
 
-### Bug Fixes
+### Added
 
-- 🐛 broken skip by test names ([e33c3d9](https://github.com/wKich/creevey/commit/e33c3d90b48df22540fc6cccaae71c47163b6599))
+- 🎸 support declarative decorators format
 
-## [0.4.7](https://github.com/wKich/creevey/compare/v0.4.6...v0.4.7) (2020-03-13)
+### Changed
 
-### Bug Fixes
+- 💡 rename src/utils => src/shared
+- 💡 move addon/ImagesView to shared
+- 💡 in client use imagesView from shared
 
-- 🐛 register require.context before all other modules ([5474f87](https://github.com/wKich/creevey/commit/5474f87afe258022ad219db53c300305a143e6bb))
+### Miscellaneous
 
-## [0.4.6](https://github.com/wKich/creevey/compare/v0.4.5...v0.4.6) (2020-03-13)
+- 🤖 update todos
+- 🤖 update deps
+- 🤖 update todos
+- 🤖 Uppdate todo
+- Remove todos
 
-### Features
+### Testing
 
-- 🎸 allow take composite screenshots in custom tests ([5dd1e7d](https://github.com/wKich/creevey/commit/5dd1e7d89b04b2629d9766f254a1b5f69bb5d17f))
+- 💍 use components from addon in tests
+## [0.7.0-beta.6] - 2020-09-29
 
-## [0.4.5](https://github.com/wKich/creevey/compare/v0.4.4...v0.4.5) (2020-03-12)
+### Fixed
 
-### Features
+- 🐛 loader handle `export default {} as Meta`
 
-- 🎸 add `delay` creevey story parameter ([49ecf00](https://github.com/wKich/creevey/commit/49ecf00ea90d2485833965794c1300ca7da4d17b))
+### Ci
 
-## [0.4.4](https://github.com/wKich/creevey/compare/v0.4.3...v0.4.4) (2020-03-12)
+- 🎡 publish artifacts
+## [0.7.0-beta.5] - 2020-09-28
 
-### Features
+### Changed
 
-- 🎸 add `debug` cli option ([cff35ea](https://github.com/wKich/creevey/commit/cff35eaad4bce400fb18b0f5daa520060cef5870))
-- 🎸 improve creevey story params typings, simplify tests ([f78d372](https://github.com/wKich/creevey/commit/f78d372bff2837915ef7b0d0f22089fbe3607a18))
+- 💡 rename creevey port variable
 
-## [0.4.3](https://github.com/wKich/creevey/compare/v0.4.2...v0.4.3) (2020-03-11)
+### Fixed
 
-### Features
+- 🐛 remove old selenoid container on start
+## [0.7.0-beta.4] - 2020-09-26
 
-- 🎸 improve fastloading, to allow use side effects ([15ca5cc](https://github.com/wKich/creevey/commit/15ca5cc4ed73dff38707e8a713a03778663a7482))
+### Fixed
 
-## [0.4.2](https://github.com/wKich/creevey/compare/v0.4.1...v0.4.2) (2020-03-11)
+- 🐛 small addon ui issues
+- 🐛 small layout fixes in addon
+- 🐛 correctly load report from previous run
 
-### Bug Fixes
+### Miscellaneous
 
-- 🐛 patch babel-register hook to support all extensions ([918ae27](https://github.com/wKich/creevey/commit/918ae2709a1f0fd7773cc44575d5ab3e9d2f4b29))
+- **deps:** Bump bl from 4.0.2 to 4.0.3
 
-## [0.4.1](https://github.com/wKich/creevey/compare/v0.4.0...v0.4.1) (2020-03-10)
+### Ci
 
-### Bug Fixes
+- 🎡 add screenshot tests
+## [0.7.0-beta.3] - 2020-09-25
 
-- 🐛 some minor issues ([e309d56](https://github.com/wKich/creevey/commit/e309d56937a50fb544d7cd8b6366991b693ba111))
+### Added
 
-# [0.4.0](https://github.com/wKich/creevey/compare/v0.3.8...v0.4.0) (2020-03-04)
+- 🎸 Storybook addon
+- 🎸 Add run button in addon
+- 🎸 show status in sidebar
+- 🎸 add support docker
 
-### Features
+### Changed
 
-- 🎸 add test hot reloading, support new storybook configs ([7e282cb](https://github.com/wKich/creevey/commit/7e282cb2541d1a4f105a45474decd0dcf7e05759))
+- 💡 extract code that used in client and addon
+- 💡 simplify docker initialization code
 
-## [0.3.8](https://github.com/wKich/creevey/compare/v0.3.7...v0.3.8) (2020-03-03)
+### Fixed
 
-### Bug Fixes
+- 🐛 eslint errors
+- 🐛 use `find-dir-cache` to store cache in right place
+- 🐛 use selenoid instead of browser images
+- Docker network for windows/wsl
+- 🐛 resolve storybook url on windows with multiple networks
 
-- 🐛 ie11 don't work due async fn in types.ts file ([c1e8bbc](https://github.com/wKich/creevey/commit/c1e8bbc8747e68e26656f21f2d6247f654324cf2))
-- 🐛 register pirates hook before any compiler ([7acde29](https://github.com/wKich/creevey/commit/7acde290f162ea651746f4d230073055a4bed956))
+### Miscellaneous
 
-## [0.3.7](https://github.com/wKich/creevey/compare/v0.3.6...v0.3.7) (2020-02-20)
+- **deps:** Bump http-proxy from 1.17.0 to 1.18.1
+- **deps:** Bump http-proxy from 1.18.0 to 1.18.1 in /examples/react
+- **deps:** Bump http-proxy from 1.18.0 to 1.18.1 in /examples/angular
+- **deps:** Bump node-fetch from 2.6.0 to 2.6.1
+- **deps:** Bump node-fetch from 2.6.0 to 2.6.1 in /examples/angular
+- **deps:** Bump node-fetch from 2.6.0 to 2.6.1 in /examples/react
+- **deps:** Bump node-fetch from 2.6.0 to 2.6.1 in /examples/vue
+- **deps:** Add @storybook/theming and @storybook/components
+- 🤖 add storyId in Test
+- 🤖 update todos
+## [0.7.0-beta.2] - 2020-09-10
 
-### Bug Fixes
+### Fixed
 
-- 🐛 fix bug with sync call onCompare ([e5c9e2c](https://github.com/wKich/creevey/commit/e5c9e2c4b8c19238608d4bba5bc3d2bd9f6871f6))
+- 🐛 exit master process with after hook
+## [0.7.0-beta.1] - 2020-09-08
 
-### Features
+### Added
 
-- 🎸 add onClick on teststatus for filter ([c28261c](https://github.com/wKich/creevey/commit/c28261c829e683dcfbee480d682f4cda61958dfc))
+- 🎸 add before/after hooks
+- 🎸 show error images in imagePreview
 
-## [0.3.6](https://github.com/wKich/creevey/compare/v0.3.5...v0.3.6) (2020-02-17)
+### Changed
 
-### Bug Fixes
+- 💡 output only error message for image assert
+- 💡 move some server files into directory
+- 💡 add IPC message handlers
 
-- 🐛 output error message while init for master process ([2f48e37](https://github.com/wKich/creevey/commit/2f48e37d90422d4574b3c9186c68daf5a7339f50))
-- ignore various non-js extensions on story load ([55f0ed0](https://github.com/wKich/creevey/commit/55f0ed01b1c235ba8e03f0c2defab8023087d46e))
+### Fixed
 
-## [0.3.5](https://github.com/wKich/creevey/compare/v0.3.4...v0.3.5) (2020-02-11)
+- 🐛 collect all errors
+- 🐛 don't show error if image has been approved
 
-### Bug Fixes
+### Miscellaneous
 
-- 🐛 don't mutate test scope on image assertion ([939c1fe](https://github.com/wKich/creevey/commit/939c1fed02eee5af441a99e9451d40adaf379ffc))
-- 🐛 don't show tests without status by status filter ([9d79781](https://github.com/wKich/creevey/commit/9d797817f306165b42d0e6f79ef95841d4fe24cd))
-- 🐛 improve configs load process ([611af95](https://github.com/wKich/creevey/commit/611af959d9b91e1826e0d357620f56ee6b394d93))
-- 🐛 remove mkdirp dependency ([e5cabef](https://github.com/wKich/creevey/commit/e5cabef02ae096318b3281cfe099fb6e275106fc))
-- 🐛 support renamed stories ([003ff10](https://github.com/wKich/creevey/commit/003ff109a25475d7c849d06ba408e29090709a9b))
-- 🐛 support windows paths to load storybook, disable debug ([7250b6a](https://github.com/wKich/creevey/commit/7250b6ad85862985e2e30a874bd508d79bf1b175))
-- correct handle process errors for worker ([1d7f035](https://github.com/wKich/creevey/commit/1d7f035b66bb2d5638679d4cb4f50958da629773))
+- **deps:** Bump markdown-to-jsx in /examples/react
+- **deps:** Bump markdown-to-jsx in /examples/angular
+- 🤖 update storybook to stable version
+## [0.7.0-beta.0] - 2020-08-04
 
-## [0.3.4](https://github.com/wKich/creevey/compare/v0.3.3...v0.3.4) (2020-01-17)
+### Added
 
-### Bug Fixes
+- 🎸 support storybook v6.x
 
-- 🐛 improve fast-loading, throw non-syntax errors on require ([4f288b7](https://github.com/wKich/creevey/commit/4f288b76e932090622f295f00dca12a179403a4f))
+### Fixed
 
-### Features
+- 🐛 remove scroll when change image in swap mode
+- 🐛 tests hot reloading
+- 🐛 image preview height
+- 🐛 gracefully end worker processes
 
-- 🎸 allow pass diff options to pixelmatch ([32d6bb1](https://github.com/wKich/creevey/commit/32d6bb1868f11aa416a0872e927b97768b8eb2aa))
-- 🎸 improve stories initialization speed ([1009728](https://github.com/wKich/creevey/commit/10097280d24a24fb4033e4516458b2e62a0dbe63))
+### Miscellaneous
 
-### BREAKING CHANGES
+- 🤖 update deps
+- 🤖 update deps
+- 🤖 update deps
+- **deps:** Bump elliptic from 6.4.1 to 6.5.3
+- 🤖 fix `dot-prop` vulnerability
+- **deps:** Bump elliptic from 6.5.2 to 6.5.3 in /examples/angular
+- **deps:** Bump elliptic from 6.5.2 to 6.5.3 in /examples/vue
+- **deps:** Bump elliptic from 6.5.2 to 6.5.3 in /examples/react
 
-- `threshold` config option are replaced to `diffOptions`
+### Testing
 
-## [0.3.3](https://github.com/wKich/creevey/compare/v0.3.2...v0.3.3) (2020-01-16)
+- 💍 update test images
+## [0.6.4] - 2020-07-27
 
-### Bug Fixes
+### Added
 
-- 🐛 add hint for images preview ([ddf3615](https://github.com/wKich/creevey/commit/ddf3615ca36e1f36ff02a348ad2cec0bc819a304))
-- 🐛 move mocha typing to devDeps ([50f4a92](https://github.com/wKich/creevey/commit/50f4a9284e081054688114d0fd1054c8bbb3c16b))
+- 🎸 add disabled state to start button
+- 🎸 Save view mode
 
-## [0.3.2](https://github.com/wKich/creevey/compare/v0.3.1...v0.3.2) (2020-01-15)
+### Fixed
 
-### Bug Fixes
+- 🐛 storybook bundle depends on core-js, regenerator-runtime
+- 🐛 react example loadash vulnerability
+- 🐛 watch stories on windows
+- 🐛 hot-reloading issue, add readme notes
 
-- 🐛 initiate browser after all stories has been loaded ([f95d8dc](https://github.com/wKich/creevey/commit/f95d8dcad1dd1feb1bcd5ae548131edd8c0ceec9))
+### Miscellaneous
 
-## [0.3.1](https://github.com/wKich/creevey/compare/v0.3.0...v0.3.1) (2020-01-13)
+- **deps:** Bump npm-registry-fetch in /examples/angular
+- **deps:** Bump lodash from 4.17.15 to 4.17.19
+- **deps:** Bump lodash from 4.17.15 to 4.17.19 in /examples/angular
+- **deps:** Bump lodash from 4.17.15 to 4.17.19 in /examples/vue
+## [0.6.3] - 2020-06-16
 
-### Bug Fixes
+### Fixed
 
-- 🐛 capture screenshot of element with non-integer size ([28fc1cc](https://github.com/wKich/creevey/commit/28fc1cc9162db6bb9085321883bd04abdb4ae880))
-- 🐛 require config when path don't have extension ([93fb11b](https://github.com/wKich/creevey/commit/93fb11b0d4740b6da598a9e923dafb9c75394c70))
+- 🐛 test reloading dont work well
+## [0.6.2] - 2020-06-10
 
-# [0.3.0](https://github.com/wKich/creevey/compare/v0.2.6...v0.3.0) (2020-01-10)
+### Fixed
 
-### Features
+- 🐛 disable hot-reloading without `--ui` option
+## [0.6.1] - 2020-06-10
 
-- 🎸 remove support explicit test cases ([4b56ddf](https://github.com/wKich/creevey/commit/4b56ddf7617785ce93cd17fe9e82e928c56011bb))
+### Fixed
 
-## [0.2.6](https://github.com/wKich/creevey/compare/v0.2.5...v0.2.6) (2020-01-10)
+- 🐛 ERR_IPC_CHANNEL_CLOSED finally
+- 🐛 mocha 7.2 multiple runs, remove old hacks
 
-### Features
+### Miscellaneous
 
-- 🎸 add `tests` story parameter for public usage ([c4d7dc0](https://github.com/wKich/creevey/commit/c4d7dc0191b1aafba2aa9f6d18d6d99d4093fcb3))
-- 🎸 add `toMatchImages` assertion for chai ([1fef184](https://github.com/wKich/creevey/commit/1fef1847248405fc32e76d4d3b4387e200290d8c))
+- 🤖 update minor/patch deps versions
+- 🤖 update eslint to 7.x, update eslint-plugins
+## [0.6.0] - 2020-06-09
 
-## [0.2.5](https://github.com/wKich/creevey/compare/v0.2.4...v0.2.5) (2020-01-10)
+### Changed
 
-### Bug Fixes
+- 💡 disable perfomance hints for webpack build
 
-- 🐛 correct work update with new report structure ([5bf17c1](https://github.com/wKich/creevey/commit/5bf17c10799f136d73639d9075866c6f308e30ed))
+### Documentation
 
-### Features
+- ✏️ update readme
+- ✏️ fix links in readme
+- ✏️ update framework examples
+- ✏️ update authors and todos
 
-- 🎸 add `reportDir/screenDir` cli options ([3b059a6](https://github.com/wKich/creevey/commit/3b059a6e36a33d5963be216368391ed940b17b65))
-- 🎸 load stories in nodejs and generate tests in runtime ([3f276a4](https://github.com/wKich/creevey/commit/3f276a4d06e006878cd4733797c2a262abf73ea6))
+### Fixed
 
-## [0.2.4](https://github.com/wKich/creevey/compare/v0.2.3...v0.2.4) (2019-12-23)
+- 🐛 kind-of@6.0.2 vulnerability
+- 🐛 loader: remove vars in desctructuring
 
-### Bug Fixes
+### Miscellaneous
 
-- 🐛 convert export story names to storybook format ([43b227e](https://github.com/wKich/creevey/commit/43b227ed69c67bbedfac555f31c845fdb2b04840))
-- 🐛 don't use webdriver object serialization ([c4545f0](https://github.com/wKich/creevey/commit/c4545f071269426caa24599d6e1b72d933d60152))
+- **deps:** Bump websocket-extensions from 0.1.3 to 0.1.4
 
-## [0.2.3](https://github.com/wKich/creevey/compare/v0.2.2...v0.2.3) (2019-12-19)
+### Vue
 
-### Bug Fixes
+- Add readme
+- Create app && add 'eslint-plugin-vue' 4 pre-commit
+- Add storybook
+- Add creevey
+## [0.6.0-beta.8] - 2020-06-04
 
-- 🐛 allow skip tests by kinds ([ddc8a27](https://github.com/wKich/creevey/commit/ddc8a272e2a24cec2c25479788791a46ef1a8943)), closes [#12](https://github.com/wKich/creevey/issues/12)
-- 🐛 wrap long suite/test titles ([c7f7920](https://github.com/wKich/creevey/commit/c7f79203b3ecbb3526312084897513c827bcf598))
+### Fixed
 
-## [0.2.2](https://github.com/wKich/creevey/compare/v0.2.1...v0.2.2) (2019-12-11)
+- 🐛 output warning `Did you call 'load' twice` on reload
+## [0.6.0-beta.7] - 2020-06-02
 
-### Bug Fixes
+### Fixed
 
-- 🐛 correct publish artifacts for TeamCity reporter ([5949bc3](https://github.com/wKich/creevey/commit/5949bc3a21a393ec0b15d0b104f59e4eae0f668a))
+- 🐛 webpack recursion IPC, again
+## [0.6.0-beta.6] - 2020-06-02
 
-## [0.2.1](https://github.com/wKich/creevey/compare/v0.2.0...v0.2.1) (2019-12-11)
+### Fixed
 
-### Bug Fixes
+- 🐛 IPC messages recursion, again
+## [0.6.0-beta.5] - 2020-06-02
 
-- 🐛 allow click on checkbox in sidebar ([a750d46](https://github.com/wKich/creevey/commit/a750d46734290773298a07efef25d4eb2f992842))
-- 🐛 correct report teamcity artifacts ([dfc7251](https://github.com/wKich/creevey/commit/dfc72514c1fa2f692a80e6bf1092255cbe7d47a9))
-- 🐛 firefox SlideView ([91ef075](https://github.com/wKich/creevey/commit/91ef0750f1579b27a478725152f3fde95abcdb24))
+### Fixed
 
-# [0.2.0](https://github.com/wKich/creevey/compare/v0.1.7...v0.2.0) (2019-12-05)
+- 🐛 webpack compiler process send messages recursion
+## [0.6.0-beta.4] - 2020-06-02
 
-### Bug Fixes
+### Added
 
-- 🐛 a lot of bugs with views, approve and more ([45c86d3](https://github.com/wKich/creevey/commit/45c86d30468c80508aedb5c52a4e8c9e96a34daf))
-- 🐛 ImagesView correctly resize image in most cases ([258506a](https://github.com/wKich/creevey/commit/258506a3877bb32d4b38d6ce20d15372095edadf))
-- 🐛 improve SideBar tests view ([a495fc1](https://github.com/wKich/creevey/commit/a495fc1b0321763092105ef641fc48b23548440b))
-- 🐛 switch between tests ([ae25d59](https://github.com/wKich/creevey/commit/ae25d59d3d6e8433b522d13994d7e096e0958651))
-- tests status move down, when scroll is shown ([9df0523](https://github.com/wKich/creevey/commit/9df0523e9a4b8bc54488e45eb106e8077303f146))
+- 🎸 allow use `delay` with custom tests
 
-### Features
+### Fixed
 
-- 🎸 improve markup for ResultPage by prototypes ([09cd297](https://github.com/wKich/creevey/commit/09cd297010b1677fb8900d4e8db5be9629be10e7))
-- 🎸 output penging tests count ([793d60f](https://github.com/wKich/creevey/commit/793d60fd771f267d7711b8853d1381405b4ee01f))
-- 🎸 sticky SideBar with sitcky header ([06cc16c](https://github.com/wKich/creevey/commit/06cc16cc79be0756ff117f40447a9eaa28bf5f2a))
-- 🎸 update SideBar markup by prototype ([7ba22fd](https://github.com/wKich/creevey/commit/7ba22fd766ca86de92da89b4a2260bc3495e16ab))
-- swap images buttons by prototype ([5ce4214](https://github.com/wKich/creevey/commit/5ce4214c9a18f48b654534fbd77e297dce9cb7b7))
-- view tests results count in sidebar ([9300f07](https://github.com/wKich/creevey/commit/9300f07abeb7cb4271cf85478493a9090cdc8127))
+- 🐛 another fix to gracefully exit
+- 🐛 check element before capturing screenshot
+- 🐛 some small init/exit issues
+## [0.6.0-beta.3] - 2020-05-27
 
-## [0.1.7](https://github.com/wKich/creevey/compare/v0.1.6...v0.1.7) (2019-11-22)
+### Fixed
 
-### Features
+- 🐛 make loader be more aggressive
+- 🐛 EPIPE message on exit again
+- 🐛 soft-freeze mocha version on 7.1
+## [0.6.0-beta.2] - 2020-05-18
 
-- 🎸 allow skip test stories by kinds ([1cb4968](https://github.com/wKich/creevey/commit/1cb49688616ac3060012e800428f1f67d066c2ab))
+### Fixed
 
-## [0.1.6](https://github.com/wKich/creevey/compare/v0.1.5...v0.1.6) (2019-11-22)
+- 🐛 correctly close browser session on SIGINT
+- 🐛 correct shutdown workers
+- 🐛 ignore removing bundle cache directory
+## [0.6.0-beta.1] - 2020-05-15
 
-### Bug Fixes
+### Fixed
 
-- 🐛 handle regexp skip options ([d07689e](https://github.com/wKich/creevey/commit/d07689e428420084826391ae3438dc81d2b02922))
-- 🐛 output correct reported screenshot path for teamcity ([fb7d230](https://github.com/wKich/creevey/commit/fb7d230258644c18649939dfb9dd92b5421d6ca1))
-- 🐛 significantly improve perfomance ([422f023](https://github.com/wKich/creevey/commit/422f023cbb1b290ddd8e1b103856a6d2db293b52))
+- 🐛 storybook framework detection on windows
+## [0.6.0-beta.0] - 2020-05-14
 
-## [0.1.5](https://github.com/wKich/creevey/compare/v0.1.4...v0.1.5) (2019-11-20)
+### Added
 
-### Bug Fixes
+- 🎸 rework load stories process
+- 🎸 add creevey-loader for webpack
 
-- 🐛 require stories in nodejs env ([0e00fa6](https://github.com/wKich/creevey/commit/0e00fa629610960e0fab7fcea02596c4aa7ce107))
+### Changed
 
-### Features
+- 💡 remove unused `require.context` and `pirates` hooks
+- 💡 fix worker message issue after rebase
 
-- 🎸 support write tests inside stories ([ce9ed7d](https://github.com/wKich/creevey/commit/ce9ed7d09c0312a073e0897ece8e082d17b0cb30))
+### Fixed
 
-## [0.1.4](https://github.com/wKich/creevey/compare/v0.1.3...v0.1.4) (2019-11-18)
+- 🐛 support latest selenium browser drivers
 
-### Bug Fixes
+### Miscellaneous
 
-- **master:** dont output skipped tests ([1e23321](https://github.com/wKich/creevey/commit/1e233218054719f72d2d0bbf040d83b68955dca2))
-- **utils:** improve error message when storybook page not available ([4c44763](https://github.com/wKich/creevey/commit/4c4476347e8aa5c90d6a84d680ee6d091d1897be))
-- **utils:** try resolve ip only if address is localhost ([4aa6c69](https://github.com/wKich/creevey/commit/4aa6c693f537543ad86cebfc3e071583422a555a))
-- **worker:** exit master process if worker couldn't start ([e682a47](https://github.com/wKich/creevey/commit/e682a47a9900c12941e0bb6ab72d9ef7628faa7c))
+- 🤖 update deps
+- 🤖 update deps
 
-### Reverts
+### Testing
 
-- Revert "fix(utils): replace ip resolver back" ([4e48706](https://github.com/wKich/creevey/commit/4e48706164abdbc1bc8765e022a99b41f60b29d5))
+- 💍 update screenshot images
+## [0.5.6] - 2020-05-04
 
-## [0.1.3](https://github.com/wKich/creevey/compare/v0.1.2...v0.1.3) (2019-11-07)
+### Fixed
 
-### Bug Fixes
+- 🐛 handle worker initiating error
+## [0.5.5] - 2020-04-21
 
-- **storybook:** correct fill params for old storybook ([35ae070](https://github.com/wKich/creevey/commit/35ae07064f388da6b7fd841f05ad1e40865b79b2))
+### Added
 
-## [0.1.2](https://github.com/wKich/creevey/compare/v0.1.1...v0.1.2) (2019-11-07)
+- 🎸 support .creevey config dir
+- 🎸 add `saveReport` cli option, enabled by default
 
-### Bug Fixes
+### Documentation
 
-- **storybook:** read prop of undefined ([b96bb48](https://github.com/wKich/creevey/commit/b96bb48ba1938b74d9c06ebb497c6be481d02f81))
+- ✏️ add example and guide for angular project
+- ✏️ small update for angular and chore fixes
+- ✏️ add example and guide for react project
 
-## [0.1.1](https://github.com/wKich/creevey/compare/v0.1.0...v0.1.1) (2019-11-07)
+### Miscellaneous
 
-### Bug Fixes
+- 🤖 clean-up npm scripts
 
-- **utils:** replace ip resolver back ([e87bcdd](https://github.com/wKich/creevey/commit/e87bcddc0dad156c27e4200a61fe30b2bc24ef2b))
+### Ci
 
-# [0.1.0](https://github.com/wKich/creevey/compare/v0.0.30...v0.1.0) (2019-11-07)
+- 🎡 skip examples from type-checking process
+## [0.5.4] - 2020-04-04
 
-### Features
+### Fixed
 
-- simplify images directory ([0d15f73](https://github.com/wKich/creevey/commit/0d15f73e411ec6d93681d78573592c907b479e09))
+- 🐛 remove new code that added by mistake
+## [0.5.3] - 2020-04-04
 
-## [0.0.30](https://github.com/wKich/creevey/compare/v0.0.29...v0.0.30) (2019-11-05)
+### Changed
 
-### Features
+- 💡 move selenium helpers in separate module
 
-- **storybook:** disable animations for webdriver ([acfc34c](https://github.com/wKich/creevey/commit/acfc34ce50372699c0ffdb5dfe83b02a002aea44))
+### Fixed
 
-## [0.0.29](https://github.com/wKich/creevey/compare/v0.0.28...v0.0.29) (2019-10-11)
+- 🐛 precompile decorator file for ie11 target
 
-### Bug Fixes
+### Miscellaneous
 
-- **storybook:** ie11 hot-reload ([e8e45c4](https://github.com/wKich/creevey/commit/e8e45c4859d4b89053a4bc2884cc7cb64c76e130))
+- 🤖 update AUTHORS
+- 🤖 update deps
+## [0.5.2] - 2020-03-30
 
-## [0.0.28](https://github.com/wKich/creevey/compare/v0.0.27...v0.0.28) (2019-10-09)
+### Documentation
 
-### Bug Fixes
+- ✏️ add authors and changelog files
 
-- **storybook:** dont consider scroll while capture element ([6fb9ecb](https://github.com/wKich/creevey/commit/6fb9ecb19561a245d132acbf7ac3989e74b513cc))
+### Fixed
 
-## [0.0.27](https://github.com/wKich/creevey/compare/v0.0.26...v0.0.27) (2019-10-07)
+- 🐛 use selenium as deps, rename storybook peerDeps package
+- Ignore *.scss modules while loading stories
 
-### Bug Fixes
+### Miscellaneous
 
-- **storybook:** chrome serialization stories error ([b994e9e](https://github.com/wKich/creevey/commit/b994e9e835be0e342ffa1b5d6545a326e7eb82c2))
+- 🤖 small changes in todos
 
-## [0.0.26](https://github.com/wKich/creevey/compare/v0.0.25...v0.0.26) (2019-10-07)
+### Styling
 
-### Bug Fixes
+- 💄 reformat, fix lint issues
+## [0.5.1] - 2020-03-26
 
-- **storybook:** chrome serialization stories error ([23d51ed](https://github.com/wKich/creevey/commit/23d51ede18ea329a50e05cffd8a4c46751f3647a))
+### Added
 
-## [0.0.25](https://github.com/wKich/creevey/compare/v0.0.24...v0.0.25) (2019-10-04)
+- 🎸 output story render error
 
-### Bug Fixes
+### Miscellaneous
 
-- **runner:** mark removed tests as skiped ([822d92a](https://github.com/wKich/creevey/commit/822d92a607899c23e0cd38396839f1e0674dcb46))
-- **runner:** support skip story option ([f094548](https://github.com/wKich/creevey/commit/f094548016fa57ae26ca6b91c61dc8547eac3285))
-- **storybook:** hide scroll while screenshot, few issues ([313cfa4](https://github.com/wKich/creevey/commit/313cfa498f19c8fa7407b365ee998795c9488877))
-- correct convert kind/story into storyId ([12d3c3a](https://github.com/wKich/creevey/commit/12d3c3af184cca6634246ad70010e32c515ecc8a))
-- **storybook:** make parameters optional ([6c674bd](https://github.com/wKich/creevey/commit/6c674bd615a0fbea5a42ff930eb7da54ed63bd45))
-- few types issues ([1ee82f8](https://github.com/wKich/creevey/commit/1ee82f8e3e28e1e37e1bc50fc5f5d081a468e0dd))
+- 🤖 update react-ui to pre-2.0 unstable version
+- 🤖 update react-ui to next major version
+- 🤖 update deps
+## [0.5.0] - 2020-03-25
 
-### Features
+### Added
 
-- support composite images ([594f6cb](https://github.com/wKich/creevey/commit/594f6cbee1245e92353c223053af151e6d887434))
-- **worker:** support creevey skip story option ([2e36464](https://github.com/wKich/creevey/commit/2e36464654c1adccc3d8203a69fec71408925f24))
-- make testDir optional ([714f76f](https://github.com/wKich/creevey/commit/714f76f1addc2b1fafcd95f0b96ac34a1100bbea))
-- **storybook:** pass creevey story parameters ([df259fe](https://github.com/wKich/creevey/commit/df259feb630f03914e5153e37bfe76d5ce587738))
-- generate tests from stories in runtime ([2625f93](https://github.com/wKich/creevey/commit/2625f93c83c52c8f2408a00022462cf2ae950e87))
-- output removed tests status ([442f4da](https://github.com/wKich/creevey/commit/442f4daee06f831350eae16fe2c7acc372abda25))
+- 🎸 support safari for composite images
+- 🎸 rewrite storybook decorator to be framework agnostic
 
-## [0.0.24](https://github.com/wKich/creevey/compare/v0.0.23...v0.0.24) (2019-09-16)
+### Fixed
 
-### Features
+- 🐛 take composite images without hiding scrollbar
+- 🐛 improve blend view css filters
+- 🐛 gracefully close selenium session
+- 🐛 jsdom localStorage warning
 
-- more improvments ([39c601d](https://github.com/wKich/creevey/commit/39c601d65c43ef276ee398d30c872702902d433f))
-- support storybook kind depth levels ([7d2523d](https://github.com/wKich/creevey/commit/7d2523dae79050bd662b223463bd15cdb1470798))
+### Miscellaneous
 
-## [0.0.23](https://github.com/wKich/creevey/compare/v0.0.22...v0.0.23) (2019-09-12)
+- **deps:** Bump acorn from 6.3.0 to 6.4.1
+- 🤖 update deps
+## [0.4.11] - 2020-03-13
 
-### Bug Fixes
+### Fixed
 
-- export mocha/chai typings ([1340c4d](https://github.com/wKich/creevey/commit/1340c4db4603bd897053c42507398d6b5ab7eb88))
+- 🐛 hide scroll only for composite screenshots
+## [0.4.10] - 2020-03-13
 
-## [0.0.22](https://github.com/wKich/creevey/compare/v0.0.21...v0.0.22) (2019-09-11)
+### Fixed
 
-### Bug Fixes
+- 🐛 skip by test name with multiple skip options
+## [0.4.9] - 2020-03-13
 
-- set-value vulnerability CVE-2019-10747 ([2db0463](https://github.com/wKich/creevey/commit/2db0463538b10f2d09674c8ed7a4e8078fabec37))
-- **server:** pass args to parser, skip folders while copy static ([1343c28](https://github.com/wKich/creevey/commit/1343c28b5694a43d99f52086ffffed5c51cace9c))
-- **storybook:** improve export and types ([11a8dc2](https://github.com/wKich/creevey/commit/11a8dc2b7ff28a2d5ab46845a5885a9d467419e1))
-- **storybook:** support storybook@3.x ([8c952cc](https://github.com/wKich/creevey/commit/8c952cc43abb9d490c2436ad6433d322feb58d62))
-- optional hooks, fix default testRegex ([8da03d2](https://github.com/wKich/creevey/commit/8da03d211adb6a8902f48e884dd414f03296e53e))
+### Changed
 
-### Features
+- 💡 simplify `storyTestFabric`, use test context
 
-- add storybook decorator ([4f97fd6](https://github.com/wKich/creevey/commit/4f97fd6a5e12e1a06836337299aece8ef0890dcd))
-- remove mocha-ui ([1abf335](https://github.com/wKich/creevey/commit/1abf3352e15bd1fb777ff7ac35a8d00b87969c4a))
-- **cli:** add `update` option for batch approve ([ed2a1f6](https://github.com/wKich/creevey/commit/ed2a1f61430a8befdddb148b426601e39b90540a))
+### Fixed
 
-## [0.0.21](https://github.com/wKich/creevey/compare/v0.0.20...v0.0.21) (2019-08-30)
+- 🐛 exclude `@babel/*` modules from skiping while fastload
+## [0.4.8] - 2020-03-13
 
-### Bug Fixes
+### Fixed
 
-- **ImagesView:** improve view for side-by-side view component ([831a34e](https://github.com/wKich/creevey/commit/831a34ec024c991f96d45c831b082d765a3d6dc0))
-- **pool:** improve restart workers process ([82fb1ea](https://github.com/wKich/creevey/commit/82fb1eaf30f2d7a729559595a07e047a87265dba))
+- 🐛 broken skip by test names
+## [0.4.7] - 2020-03-13
 
-## [0.0.20](https://github.com/wKich/creevey/compare/v0.0.19...v0.0.20) (2019-08-27)
+### Fixed
 
-### Bug Fixes
+- 🐛 register require.context before all other modules
+## [0.4.6] - 2020-03-13
 
-- **client:** better output error message ([16eaa06](https://github.com/wKich/creevey/commit/16eaa06fdb1f1deb76d1dfa60fc55cc756eb85a3))
-- **pool:** correct retry tests by timeout ([1c11e52](https://github.com/wKich/creevey/commit/1c11e528d379b4f05330cb438e5ff58d5762f917))
+### Added
 
-### Features
+- 🎸 allow take composite screenshots in custom tests
+## [0.4.5] - 2020-03-12
 
-- **client:** fit large images into sidepage ([c4adbca](https://github.com/wKich/creevey/commit/c4adbca0a636b49b239255e91d4fd15799386c90))
+### Added
 
-## [0.0.19](https://github.com/wKich/creevey/compare/v0.0.18...v0.0.19) (2019-08-21)
+- 🎸 add `delay` creevey story parameter
 
-### Bug Fixes
+### Miscellaneous
 
-- **reporter:** try to fix parallel output on teamcity ([0ff4faf](https://github.com/wKich/creevey/commit/0ff4faf9bd4dc504a190e76ef673ed9203152203))
+- 🤖 add to npmignore some stuff
+## [0.4.4] - 2020-03-12
 
-## [0.0.18](https://github.com/wKich/creevey/compare/v0.0.17...v0.0.18) (2019-08-21)
+### Added
 
-### Bug Fixes
+- 🎸 add `debug` cli option
+- 🎸 improve creevey story params typings, simplify tests
+## [0.4.3] - 2020-03-11
 
-- **reporter:** try to fix parallel output on teamcity ([8371fce](https://github.com/wKich/creevey/commit/8371fcefe08e56d60bc4ff123731e1819b77b5c3))
+### Added
 
-## [0.0.17](https://github.com/wKich/creevey/compare/v0.0.16...v0.0.17) (2019-08-21)
+- 🎸 improve fastloading, to allow use side effects
+## [0.4.2] - 2020-03-11
 
-### Bug Fixes
+### Fixed
 
-- **reporter:** try to fix parallel output on teamcity ([5de07d9](https://github.com/wKich/creevey/commit/5de07d9a72939ef62b4fb99bff624a2d79089c91))
+- 🐛 patch babel-register hook to support all extensions
 
-## [0.0.16](https://github.com/wKich/creevey/compare/v0.0.15...v0.0.16) (2019-08-21)
+### Miscellaneous
 
-### Bug Fixes
+- 🤖 add end gap in sidebar
+## [0.4.1] - 2020-03-10
 
-- **reporter:** output full filepath in metadata ([142c3a6](https://github.com/wKich/creevey/commit/142c3a6d359a95ba226d6fce35719bf0f134e19d))
+### Fixed
 
-## [0.0.15](https://github.com/wKich/creevey/compare/v0.0.14...v0.0.15) (2019-08-21)
+- 🐛 some minor issues
+## [0.4.0] - 2020-03-04
 
-### Bug Fixes
+### Added
 
-- **reporter:** output correct test name in teamcity ([e753e71](https://github.com/wKich/creevey/commit/e753e71b4484b8d82ed725e8ca1d023bfdd4993d))
+- 🎸 add test hot reloading, support new storybook configs
 
-### Features
+### Changed
 
-- **reporter:** output image as test metadata ([eb6a03a](https://github.com/wKich/creevey/commit/eb6a03a0f819992f40c37a739561a28a00c30a6d))
-- **runner:** allow setup browser resolution ([a6b1b92](https://github.com/wKich/creevey/commit/a6b1b92621ef8db5754e25bbe8cafe3153805134))
+- 💡 make `retries` optional property in Test
+- 💡 update screenshots, fix some minor issues
+## [0.3.8] - 2020-03-03
 
-## [0.0.14](https://github.com/wKich/creevey/compare/v0.0.13...v0.0.14) (2019-08-21)
+### Documentation
 
-## [0.0.13](https://github.com/wKich/creevey/compare/v0.0.12...v0.0.13) (2019-07-01)
+- ✏️ add type descriptions and update readme
 
-### Bug Fixes
+### Fixed
 
-- **worker:** correct `retries` prop name ([747ba56](https://github.com/wKich/creevey/commit/747ba56d101783e8767e246ae8d929aacfb1f637))
+- 🐛 ie11 don't work due async fn in types.ts file
+- 🐛 register pirates hook before any compiler
 
-## [0.0.12](https://github.com/wKich/creevey/compare/v0.0.11...v0.0.12) (2019-07-01)
+### Miscellaneous
 
-### Bug Fixes
+- 🤖 update deps, fix typos
 
-- **server:** pass TC version to envs worker ([78585ae](https://github.com/wKich/creevey/commit/78585ae4b7788a4c2a00cf63d33c3ead469ab703))
+### Ci
 
-## [0.0.11](https://github.com/wKich/creevey/compare/v0.0.10...v0.0.11) (2019-07-01)
+- 🎡 add github actions lint workflow
+## [0.3.7] - 2020-02-20
 
-### Bug Fixes
+### Added
 
-- **reporter:** output retry test as passed for tc ([847db55](https://github.com/wKich/creevey/commit/847db5578bb34312cff2d5a409be5950b8a491f3))
+- 🎸 add onClick on teststatus for filter
 
-## [0.0.10](https://github.com/wKich/creevey/compare/v0.0.9...v0.0.10) (2019-06-26)
+### Changed
 
-### Bug Fixes
+- 💡 mv parcing in sidebarheader, add functionfor click
+- 💡 simplify status filter handling
 
-- **runner:** send stop event ([ade8f22](https://github.com/wKich/creevey/commit/ade8f224b0688072c526f2f1b2a2fcfcc68a09c1))
+### Fixed
 
-## [0.0.9](https://github.com/wKich/creevey/compare/v0.0.8...v0.0.9) (2019-06-26)
+- 🐛 fix bug with sync call onCompare
 
-### Features
+### Miscellaneous
 
-- **chai-image:** allow pass `threshold` option ([81394c8](https://github.com/wKich/creevey/commit/81394c804bceedc6a1b579d149a902cd36176035))
-- **reporter:** add `chalk` to color output ([87e4d9a](https://github.com/wKich/creevey/commit/87e4d9aaac0457c7a17b6b5849ebce817e1ef64f))
+- 🤖 remove underline of test status button
+- 🤖 update deps
 
-## [0.0.8](https://github.com/wKich/creevey/compare/v0.0.7...v0.0.8) (2019-06-25)
+### Testing
 
-### Bug Fixes
+- 💍 fix screenshot tests, and approve chrome diff color
+## [0.3.6] - 2020-02-17
 
-- **worker:** send error message on fail, restart on timeout ([8ddb265](https://github.com/wKich/creevey/commit/8ddb2654afe56d41035afaa511f6c04e677015fd))
+### Fixed
 
-## [0.0.7](https://github.com/wKich/creevey/compare/v0.0.6...v0.0.7) (2019-06-24)
+- 🐛 output error message while init for master process
+- Ignore various non-js extensions on story load
 
-### Bug Fixes
+### Miscellaneous
 
-- **chai-image:** enable anti-aliasing for pixelmatch ([ef50047](https://github.com/wKich/creevey/commit/ef50047ef4550448d5291fba6138526fbd3b5495))
-- **parser:** don't include ignored tests ([985c758](https://github.com/wKich/creevey/commit/985c7586909edeb457ab9df35fc896774cba3bfb))
-- **server:** set `skip` flag require ([db235d3](https://github.com/wKich/creevey/commit/db235d3fecac99f65f56220b176d4a7284e09c92))
-- **worker:** patch mocha to support skip tests for browser ([1de1ea0](https://github.com/wKich/creevey/commit/1de1ea071ada8724e0240430a4cd21299c757abb))
+- 🤖 update todos
+## [0.3.5] - 2020-02-11
 
-### Features
+### Changed
 
-- **client:** output disabled skiped tests ([8d7f596](https://github.com/wKich/creevey/commit/8d7f596ecadc5235c74bdb36e0ccaa6235914725))
+- 💡 chai-images to be more reusable
 
-## [0.0.6](https://github.com/wKich/creevey/compare/v0.0.5...v0.0.6) (2019-06-20)
+### Fixed
 
-### Bug Fixes
+- 🐛 remove mkdirp dependency
+- 🐛 don't mutate test scope on image assertion
+- 🐛 don't show tests without status by status filter
+- 🐛 improve configs load process
+- 🐛 support windows paths to load storybook, disable debug
+- 🐛 support renamed stories
+- Correct handle process errors for worker
 
-- **client:** don't output skipped tests ([da51ce6](https://github.com/wKich/creevey/commit/da51ce6f0c64a0f72f98b27ed2362135d3330665))
-- **worker:** escape test path string ([694cd32](https://github.com/wKich/creevey/commit/694cd32bc737b7445f683e69e5cc044f23b0a666))
+### Miscellaneous
 
-### Features
+- 🤖 update deps
+- 🤖 update deps
+- 🤖 update deps
+## [0.3.4] - 2020-01-17
 
-- **client:** improve switcher, move start button ([50259d5](https://github.com/wKich/creevey/commit/50259d5df878edeb3fbff5d511c635276acef207))
-- **server:** allow define uniq options for each browser ([4280a32](https://github.com/wKich/creevey/commit/4280a326859ece52701fc5802cab7b3b9a65ec8f))
+### Added
 
-## [0.0.5](https://github.com/wKich/creevey/compare/v0.0.4...v0.0.5) (2019-06-17)
+- 🎸 improve stories initialization speed
+- 🎸 allow pass diff options to pixelmatch
 
-### Bug Fixes
+### Fixed
 
-- **client:** output new images ([cb082a8](https://github.com/wKich/creevey/commit/cb082a81a6b1964c0c641b47aa868f4dbe5c5025))
-- **utils:** better handle reset mouse position ([c85854d](https://github.com/wKich/creevey/commit/c85854df805ee974ef53c90d17bdcc9025076408))
-- better handle reset mouse position ([f777a7b](https://github.com/wKich/creevey/commit/f777a7bec8951b60a0f4df4b5aa44221aae5f617))
+- 🐛 improve fast-loading, throw non-syntax errors on require
+## [0.3.3] - 2020-01-16
 
-## [0.0.4](https://github.com/wKich/creevey/compare/v0.0.3...v0.0.4) (2019-06-14)
+### Fixed
 
-### Bug Fixes
+- 🐛 add hint for images preview
+- 🐛 move mocha typing to devDeps
 
-- **client:** encode image url path ([aef999c](https://github.com/wKich/creevey/commit/aef999c9d1d824b2fbc4ace485ff16d307cddc30))
-- **utils:** reset mouse position ([1f79e61](https://github.com/wKich/creevey/commit/1f79e6166d65631b7c076171926e6f3e542e0481))
+### Miscellaneous
 
-### Features
+- 🤖 update immer to 5.3.2
+## [0.3.2] - 2020-01-15
 
-- **client:** update suites statues ([ace43df](https://github.com/wKich/creevey/commit/ace43dffb9d2f1207679f6c724d9fb434a225d82))
+### Fixed
 
-## [0.0.3](https://github.com/wKich/creevey/compare/v0.0.2...v0.0.3) (2019-06-03)
+- 🐛 initiate browser after all stories has been loaded
 
-### Bug Fixes
+### Miscellaneous
 
-- **runner:** parallel test running ([4931127](https://github.com/wKich/creevey/commit/4931127c3c4086c79a833dafc782eff9d369996b))
-- **server:** browser config merge ([3d3dc2a](https://github.com/wKich/creevey/commit/3d3dc2aa7853886fcecdfd8863b4a3d9e2f94f78))
-- **server:** restart worker on error ([73abcf7](https://github.com/wKich/creevey/commit/73abcf7d6535555bcf13e1d571c00fafcd91e848))
-- **worker:** improve test reporter ([e18878c](https://github.com/wKich/creevey/commit/e18878c68c56c66838d085a2e93788c6c7ab9ac8))
+- 🤖 update some deps
+## [0.3.1] - 2020-01-13
 
-### Features
+### Fixed
 
-- **client:** add `BlendView` component ([5da4a8d](https://github.com/wKich/creevey/commit/5da4a8d5e8ea36ce8e1f45cd1eeed2cdfb33935d))
-- **client:** add `SlideView` component ([dda0aa9](https://github.com/wKich/creevey/commit/dda0aa9f8253d9a446e4b2f5129334a941638dd3))
-- **client:** add different image views ([9f08bcc](https://github.com/wKich/creevey/commit/9f08bcced07ef619f951c8489c5774202868bef6))
-- **client:** output test error message ([e277298](https://github.com/wKich/creevey/commit/e27729869a8e383a3ae6b2ef1ff73784e8880d9e))
-- **client:** use `emotion` for styles ([35ba95a](https://github.com/wKich/creevey/commit/35ba95a286aa355162fccfd39b4a93a054a58f50))
-- render approved images ([af80081](https://github.com/wKich/creevey/commit/af8008112bc98dc3d7d0bfa5baaef91783210abe))
-- **server:** better handle ws messages ([64cb126](https://github.com/wKich/creevey/commit/64cb126e5c4b671d99b4df4f308e1ec6f3251447))
+- 🐛 require config when path don't have extension
+- 🐛 capture screenshot of element with non-integer size
+## [0.3.0] - 2020-01-10
 
-## [0.0.2](https://github.com/wKich/creevey/compare/v0.0.1...v0.0.2) (2019-05-29)
+### Added
 
-### Features
+- 🎸 remove support explicit test cases
 
-- **worker:** add reporter mvp ([ead4e91](https://github.com/wKich/creevey/commit/ead4e911de04cfd857f83e5e77b921b425b25513))
+### Documentation
 
-## [0.0.1](https://github.com/wKich/creevey/compare/8e42cec432747648018c1c06447b3530c971a7e4...v0.0.1) (2019-05-21)
+- ✏️ update TODO.md
+## [0.2.6] - 2020-01-10
 
-### Bug Fixes
+### Added
 
-- **client:** handle start/stop messages ([6aac604](https://github.com/wKich/creevey/commit/6aac6048d3130c5f85026ee9051f6090dff6164b))
-- **runner:** retries condition ([e8a2e2f](https://github.com/wKich/creevey/commit/e8a2e2f05d4e60ad0cee380d39adc6f791d94d26))
-- **server:** served static path ([8893555](https://github.com/wKich/creevey/commit/8893555f8c94c986e4869f12f55be23fbfcaacc3))
-- **TestRestultView:** always open last image ([b7f9cd6](https://github.com/wKich/creevey/commit/b7f9cd6a33c0b9f97cec10a5d5b89526eab92689))
-- **TestRestultView:** improve images output ([60849d2](https://github.com/wKich/creevey/commit/60849d2199699a5cf46caa21ab7a9b31595cc4d9))
-- **utils:** change test scope path. Move browser to the last ([4cd00ed](https://github.com/wKich/creevey/commit/4cd00ed5a3ac9a9371e6aedfc4cbff7d47d3e2bf))
-- **worker:** clean images, strong regexp for grep ([c55da42](https://github.com/wKich/creevey/commit/c55da4291e7a813e39b6aca13ea8ca1d2764c17a))
-- **worker:** increase mocha timeout ([e841f5c](https://github.com/wKich/creevey/commit/e841f5c72bb55069db3827424a102153c1c3141e))
-- export types ([87e502e](https://github.com/wKich/creevey/commit/87e502e93418f7d38a6e6762c50a118bfa94e58d))
+- 🎸 add `tests` story parameter for public usage
+- 🎸 add `toMatchImages` assertion for chai
+## [0.2.5] - 2020-01-10
 
-### Features
+### Added
 
-- **chai-image:** save images in multiple runs ([96d1229](https://github.com/wKich/creevey/commit/96d12299238834d9731e65def930ed2c0a65c6e4))
-- **client:** add results view component ([a1a0d34](https://github.com/wKich/creevey/commit/a1a0d34f8db5dd89fa69863c62a7d04b795b1958))
-- **server:** add `ui` flag, wait workers ready event ([3608974](https://github.com/wKich/creevey/commit/3608974468daa1958beb5d156269da280b38f586))
-- **server:** allow to use custom reporter ([f778dee](https://github.com/wKich/creevey/commit/f778dee187f1255169e97d7eb1f490c978d7feae))
-- **server:** offline mode mvp, copy static ([fb609e6](https://github.com/wKich/creevey/commit/fb609e6e1bf1a864e412b42f70bf1dbd0cba89e1))
-- **server:** save/load test report ([08a5fd9](https://github.com/wKich/creevey/commit/08a5fd9ec4dd8be6833bcd42d8685c9af94514c1))
-- **server:** use cluster fork instead preprocessors ([6a1136b](https://github.com/wKich/creevey/commit/6a1136be5b9dcac285af1c500d344c079ba70325))
-- allow approve images from ui ([86335f1](https://github.com/wKich/creevey/commit/86335f119c5fef35e783242c0670b4293243cb45))
-- **server:** send status with images ([da92d7c](https://github.com/wKich/creevey/commit/da92d7c86e05558dc17cabc59c555a7062677460))
-- **server:** serve static images from report dir ([f0817fd](https://github.com/wKich/creevey/commit/f0817fd8cd20822227438545497624df02797a93))
-- **TestResultView:** render result images ([991148e](https://github.com/wKich/creevey/commit/991148e0cbf060fbd3bb0ec60fbf02dd7bc3e2a9))
-- initial version ([8e42cec](https://github.com/wKich/creevey/commit/8e42cec432747648018c1c06447b3530c971a7e4))
+- 🎸 add `reportDir/screenDir` cli options
+- 🎸 load stories in nodejs and generate tests in runtime
+
+### Fixed
+
+- 🐛 correct work update with new report structure
+
+### Miscellaneous
+
+- 🤖 update deps
+- 🤖 downgrade @types/node
+## [0.2.4] - 2019-12-23
+
+### Fixed
+
+- 🐛 don't use webdriver object serialization
+- 🐛 convert export story names to storybook format
+## [0.2.3] - 2019-12-19
+
+### Fixed
+
+- 🐛 wrap long suite/test titles
+- 🐛 allow skip tests by kinds
+
+### Miscellaneous
+
+- 🤖 update deps
+## [0.2.2] - 2019-12-11
+
+### Fixed
+
+- 🐛 correct publish artifacts for TeamCity reporter
+## [0.2.1] - 2019-12-11
+
+### Documentation
+
+- ✏️ update todos
+
+### Fixed
+
+- 🐛 correct report teamcity artifacts
+- 🐛 allow click on checkbox in sidebar
+- 🐛 firefox SlideView
+
+### Miscellaneous
+
+- 🤖 update deps
+
+### Testing
+
+- 💍 add SideBar screenshot tests
+## [0.2.0] - 2019-12-05
+
+### Added
+
+- 🎸 update SideBar markup by prototype
+- 🎸 improve markup for ResultPage by prototypes
+- View tests results count in sidebar
+- 🎸 sticky SideBar with sitcky header
+- 🎸 output penging tests count
+- Swap images buttons by prototype
+
+### Changed
+
+- 💡 split views, rename some types, update typescript
+- 💡 creevey app on hooks
+- 💡 eslint fix all errors
+- 💡 improve ImagePreview, simplify ResultsPage
+
+### Fixed
+
+- 🐛 improve SideBar tests view
+- 🐛 switch between tests
+- 🐛 a lot of bugs with views, approve and more
+- Tests status move down, when scroll is shown
+- 🐛 ImagesView correctly resize image in most cases
+
+### Miscellaneous
+
+- 🤖 add prettier and lint-staged
+- 🤖 add eslint config
+- 🤖 update deps
+- 🤖 update eslint config
+- 🤖 add md/json files to lint-staged
+- 🤖 update deps
+- 🤖 update todos, use immer as devDeps
+
+### Styling
+
+- 💄 apply prettier formatting
+- 💄 reformat root files
+## [0.1.7] - 2019-11-22
+
+### Added
+
+- 🎸 allow skip test stories by kinds
+## [0.1.6] - 2019-11-22
+
+### Fixed
+
+- 🐛 significantly improve perfomance
+- 🐛 output correct reported screenshot path for teamcity
+- 🐛 handle regexp skip options
+## [0.1.5] - 2019-11-20
+
+### Added
+
+- 🎸 support write tests inside stories
+
+### Fixed
+
+- 🐛 require stories in nodejs env
+
+### Miscellaneous
+
+- 🤖 rename .babelrc
+## [0.1.4] - 2019-11-18
+
+### Fixed
+
+- **utils:** Try resolve ip only if address is localhost
+- **utils:** Improve error message when storybook page not available
+- **worker:** Exit master process if worker couldn't start
+- **master:** Dont output skipped tests
+
+### Miscellaneous
+
+- 🤖 add commitizen cli, setup git pre-commit hook
+
+### Build
+
+- Update deps
+## [0.1.3] - 2019-11-07
+
+### Fixed
+
+- **storybook:** Correct fill params for old storybook
+## [0.1.2] - 2019-11-07
+
+### Fixed
+
+- **storybook:** Read prop of undefined
+## [0.1.1] - 2019-11-07
+
+### Fixed
+
+- **utils:** Replace ip resolver back
+## [0.1.0] - 2019-11-07
+
+### Added
+
+- Simplify images directory
+
+### Build
+
+- Update deps
+## [0.0.30] - 2019-11-05
+
+### Added
+
+- **storybook:** Disable animations for webdriver
+
+### Changed
+
+- **storybook:** Prepare story params for serialization
+
+### Build
+
+- Update deps
+- Update deps
+- Update .npmignore
+## [0.0.29] - 2019-10-11
+
+### Documentation
+
+- Rewrite TODO.md
+
+### Fixed
+
+- **storybook:** Ie11 hot-reload
+## [0.0.28] - 2019-10-09
+
+### Fixed
+
+- **storybook:** Dont consider scroll while capture element
+
+### Build
+
+- Update deps
+## [0.0.27] - 2019-10-07
+
+### Fixed
+
+- **storybook:** Chrome serialization stories error
+## [0.0.26] - 2019-10-07
+
+### Fixed
+
+- **storybook:** Chrome serialization stories error
+## [0.0.25] - 2019-10-04
+
+### Added
+
+- Output removed tests status
+- Generate tests from stories in runtime
+- **storybook:** Pass creevey story parameters
+- Make testDir optional
+- **worker:** Support creevey skip story option
+- Support composite images
+
+### Changed
+
+- Rename address to storybookUrl
+- Rename global storybook hooks
+
+### Documentation
+
+- Update README.md
+- Simplify readme
+- Update TODO.md
+
+### Fixed
+
+- Few types issues
+- **storybook:** Make parameters optional
+- Correct convert kind/story into storyId
+- **runner:** Mark removed tests as skiped
+- **runner:** Support skip story option
+- **storybook:** Hide scroll while screenshot, few issues
+
+### Miscellaneous
+
+- Up peer deps selenium-webdriver version
+
+### Testing
+
+- Update stories format
+- Approve images
+- Fix broken unit tests
+
+### Build
+
+- Update package.json
+- Update deps
+- Update deps
+## [0.0.24] - 2019-09-16
+
+### Added
+
+- More improvments
+- Support storybook kind depth levels
+
+### Changed
+
+- Fix few types issues
+- Remove some unnecessary code
+
+### Build
+
+- Update deps
+## [0.0.23] - 2019-09-12
+
+### Documentation
+
+- Update README.md
+
+### Fixed
+
+- Export mocha/chai typings
+
+### Build
+
+- SkipLibCheck for storybook<=5.1.x
+## [0.0.22] - 2019-09-11
+
+### Added
+
+- **cli:** Add `update` option for batch approve
+- Add storybook decorator
+- Remove mocha-ui
+
+### Changed
+
+- **ImagesView:** Reexport, build url on parent component
+- Move unit tests into separate dir
+- Rename stories
+- Optimize building
+
+### Documentation
+
+- Update TODO.md
+
+### Fixed
+
+- Optional hooks, fix default testRegex
+- **server:** Pass args to parser, skip folders while copy static
+- **storybook:** Improve export and types
+- **storybook:** Support storybook@3.x
+- Set-value vulnerability CVE-2019-10747
+
+### Testing
+
+- Fix broken typings
+- Use creevey to test by youself
+
+### Build
+
+- Add storybook
+- Update git/npm ignore files
+- Update deps
+## [0.0.21] - 2019-08-30
+
+### Fixed
+
+- **ImagesView:** Improve view for side-by-side view component
+- **pool:** Improve restart workers process
+
+### Build
+
+- **deps:** Bump mixin-deep from 1.3.1 to 1.3.2
+## [0.0.20] - 2019-08-27
+
+### Added
+
+- **client:** Fit large images into sidepage
+
+### Fixed
+
+- **client:** Better output error message
+- **pool:** Correct retry tests by timeout
+
+### Miscellaneous
+
+- Update TODO.md
+## [0.0.19] - 2019-08-21
+
+### Fixed
+
+- **reporter:** Try to fix parallel output on teamcity
+## [0.0.18] - 2019-08-21
+
+### Fixed
+
+- **reporter:** Try to fix parallel output on teamcity
+## [0.0.17] - 2019-08-21
+
+### Fixed
+
+- **reporter:** Try to fix parallel output on teamcity
+## [0.0.16] - 2019-08-21
+
+### Fixed
+
+- **reporter:** Output full filepath in metadata
+## [0.0.15] - 2019-08-21
+
+### Added
+
+- **runner:** Allow setup browser resolution
+- **reporter:** Output image as test metadata
+
+### Fixed
+
+- **reporter:** Output correct test name in teamcity
+## [0.0.14] - 2019-08-21
+
+### Changed
+
+- **chai-image:** Update types for chai
+
+### Build
+
+- **deps:** Bump lodash from 4.17.11 to 4.17.14
+- Update deps
+## [0.0.13] - 2019-07-01
+
+### Fixed
+
+- **worker:** Correct `retries` prop name
+## [0.0.12] - 2019-07-01
+
+### Fixed
+
+- **server:** Pass TC version to envs worker
+## [0.0.11] - 2019-07-01
+
+### Fixed
+
+- **reporter:** Output retry test as passed for tc
+## [0.0.10] - 2019-06-26
+
+### Fixed
+
+- **runner:** Send stop event
+## [0.0.9] - 2019-06-26
+
+### Added
+
+- **chai-image:** Allow pass `threshold` option
+- **reporter:** Add `chalk` to color output
+## [0.0.8] - 2019-06-25
+
+### Changed
+
+- **client:** Update pending icon
+
+### Fixed
+
+- **worker:** Send error message on fail, restart on timeout
+## [0.0.7] - 2019-06-24
+
+### Added
+
+- **client:** Output disabled skiped tests
+
+### Fixed
+
+- **server:** Set `skip` flag require
+- **parser:** Don't include ignored tests
+- **chai-image:** Enable anti-aliasing for pixelmatch
+- **worker:** Patch mocha to support skip tests for browser
+## [0.0.6] - 2019-06-20
+
+### Added
+
+- **client:** Improve switcher, move start button
+- **server:** Allow define uniq options for each browser
+
+### Changed
+
+- **TestTree:** Open root suite by default
+
+### Fixed
+
+- **worker:** Escape test path string
+- **client:** Don't output skipped tests
+
+### Miscellaneous
+
+- **client:** Add open sans font
+
+### Build
+
+- Update to unstable react-ui
+## [0.0.5] - 2019-06-17
+
+### Fixed
+
+- Better handle reset mouse position
+- **client:** Output new images
+- **utils:** Better handle reset mouse position
+## [0.0.4] - 2019-06-14
+
+### Added
+
+- **client:** Update suites statues
+
+### Fixed
+
+- **utils:** Reset mouse position
+- **client:** Encode image url path
+
+### Testing
+
+- Fix broken typings
+
+### Build
+
+- Update deps
+## [0.0.3] - 2019-06-03
+
+### Added
+
+- **client:** Output test error message
+- **server:** Better handle ws messages
+- Render approved images
+- **client:** Use `emotion` for styles
+- **client:** Add different image views
+- **client:** Add `SlideView` component
+- **client:** Add `BlendView` component
+
+### Changed
+
+- **client:** Rename `TogetherView` -> `SideBySideView`
+
+### Fixed
+
+- **server:** Browser config merge
+- **runner:** Parallel test running
+- **worker:** Improve test reporter
+- **server:** Restart worker on error
+
+### Miscellaneous
+
+- Update TODO.md
+
+### Build
+
+- Fix deps and npmignore
+- Update deps
+## [0.0.2] - 2019-05-29
+
+### Added
+
+- **worker:** Add reporter mvp
+## [0.0.1] - 2019-05-21
+
+### Added
+
+- Initial version
+- **chai-image:** Save images in multiple runs
+- **server:** Send status with images
+- **client:** Add results view component
+- **TestResultView:** Render result images
+- **server:** Serve static images from report dir
+- Allow approve images from ui
+- **server:** Save/load test report
+- **server:** Use cluster fork instead preprocessors
+- **server:** Offline mode mvp, copy static
+- **server:** Add `ui` flag, wait workers ready event
+- **server:** Allow to use custom reporter
+
+### Changed
+
+- Send on client flat tests structure
+- Rename test results field
+- Use Partial generic
+- Simplify something
+
+### Documentation
+
+- Updare README.md
+
+### Fixed
+
+- Export types
+- **runner:** Retries condition
+- **client:** Handle start/stop messages
+- **worker:** Clean images, strong regexp for grep
+- **utils:** Change test scope path. Move browser to the last
+- **worker:** Increase mocha timeout
+- **TestRestultView:** Improve images output
+- **TestRestultView:** Always open last image
+- **server:** Served static path
+
+### Miscellaneous
+
+- Move react-ui to devDeps
+- Update TODO.md
+- Update TODO.md and npmignore
+
+### Build
+
+- Fix babel-preset-env options
+- Prepare for publish
+
+[unreleased]: https://github.com/wKich/creevey/compare/v0.8.0-beta.0...HEAD
+[0.8.0-beta.0]: https://github.com/wKich/creevey/compare/v0.7.39...v0.8.0-beta.0
+[0.7.39]: https://github.com/wKich/creevey/compare/v0.7.38...v0.7.39
+[0.7.38]: https://github.com/wKich/creevey/compare/v0.7.37...v0.7.38
+[0.7.37]: https://github.com/wKich/creevey/compare/v0.7.36...v0.7.37
+[0.7.36]: https://github.com/wKich/creevey/compare/v0.7.35...v0.7.36
+[0.7.35]: https://github.com/wKich/creevey/compare/v0.7.34...v0.7.35
+[0.7.34]: https://github.com/wKich/creevey/compare/v0.7.33...v0.7.34
+[0.7.33]: https://github.com/wKich/creevey/compare/v0.7.32...v0.7.33
+[0.7.32]: https://github.com/wKich/creevey/compare/v0.7.31...v0.7.32
+[0.7.31]: https://github.com/wKich/creevey/compare/v0.7.30...v0.7.31
+[0.7.30]: https://github.com/wKich/creevey/compare/v0.7.29...v0.7.30
+[0.7.29]: https://github.com/wKich/creevey/compare/v0.7.28...v0.7.29
+[0.7.28]: https://github.com/wKich/creevey/compare/v0.7.27...v0.7.28
+[0.7.27]: https://github.com/wKich/creevey/compare/v0.7.26...v0.7.27
+[0.7.26]: https://github.com/wKich/creevey/compare/v0.7.25...v0.7.26
+[0.7.25]: https://github.com/wKich/creevey/compare/v0.7.24...v0.7.25
+[0.7.24]: https://github.com/wKich/creevey/compare/v0.7.23...v0.7.24
+[0.7.23]: https://github.com/wKich/creevey/compare/v0.7.22...v0.7.23
+[0.7.22]: https://github.com/wKich/creevey/compare/v0.7.21...v0.7.22
+[0.7.21]: https://github.com/wKich/creevey/compare/v0.7.20...v0.7.21
+[0.7.20]: https://github.com/wKich/creevey/compare/v0.7.19...v0.7.20
+[0.7.19]: https://github.com/wKich/creevey/compare/v0.7.18...v0.7.19
+[0.7.18]: https://github.com/wKich/creevey/compare/v0.7.17...v0.7.18
+[0.7.17]: https://github.com/wKich/creevey/compare/v0.7.16...v0.7.17
+[0.7.16]: https://github.com/wKich/creevey/compare/v0.7.15...v0.7.16
+[0.7.15]: https://github.com/wKich/creevey/compare/v0.7.14...v0.7.15
+[0.7.14]: https://github.com/wKich/creevey/compare/v0.7.13...v0.7.14
+[0.7.13]: https://github.com/wKich/creevey/compare/v0.7.12...v0.7.13
+[0.7.12]: https://github.com/wKich/creevey/compare/v0.7.11...v0.7.12
+[0.7.11]: https://github.com/wKich/creevey/compare/v0.7.10...v0.7.11
+[0.7.10]: https://github.com/wKich/creevey/compare/v0.7.9...v0.7.10
+[0.7.9]: https://github.com/wKich/creevey/compare/v0.7.8...v0.7.9
+[0.7.8]: https://github.com/wKich/creevey/compare/v0.7.7...v0.7.8
+[0.7.7]: https://github.com/wKich/creevey/compare/v0.7.6...v0.7.7
+[0.7.6]: https://github.com/wKich/creevey/compare/v0.7.5...v0.7.6
+[0.7.5]: https://github.com/wKich/creevey/compare/v0.7.4...v0.7.5
+[0.7.4]: https://github.com/wKich/creevey/compare/v0.7.3...v0.7.4
+[0.7.3]: https://github.com/wKich/creevey/compare/v0.7.2...v0.7.3
+[0.7.2]: https://github.com/wKich/creevey/compare/v0.7.1...v0.7.2
+[0.7.1]: https://github.com/wKich/creevey/compare/v0.7.0...v0.7.1
+[0.7.0]: https://github.com/wKich/creevey/compare/v0.7.0-beta.21...v0.7.0
+[0.7.0-beta.21]: https://github.com/wKich/creevey/compare/v0.7.0-beta.20...v0.7.0-beta.21
+[0.7.0-beta.20]: https://github.com/wKich/creevey/compare/v0.7.0-beta.19...v0.7.0-beta.20
+[0.7.0-beta.19]: https://github.com/wKich/creevey/compare/v0.7.0-beta.18...v0.7.0-beta.19
+[0.7.0-beta.18]: https://github.com/wKich/creevey/compare/v0.7.0-beta.17...v0.7.0-beta.18
+[0.7.0-beta.17]: https://github.com/wKich/creevey/compare/v0.7.0-beta.16...v0.7.0-beta.17
+[0.7.0-beta.16]: https://github.com/wKich/creevey/compare/v0.7.0-beta.15...v0.7.0-beta.16
+[0.7.0-beta.15]: https://github.com/wKich/creevey/compare/v0.7.0-beta.14...v0.7.0-beta.15
+[0.7.0-beta.14]: https://github.com/wKich/creevey/compare/v0.7.0-beta.13...v0.7.0-beta.14
+[0.7.0-beta.13]: https://github.com/wKich/creevey/compare/v0.7.0-beta.12...v0.7.0-beta.13
+[0.7.0-beta.12]: https://github.com/wKich/creevey/compare/v0.7.0-beta.11...v0.7.0-beta.12
+[0.7.0-beta.11]: https://github.com/wKich/creevey/compare/v0.7.0-beta.10...v0.7.0-beta.11
+[0.7.0-beta.10]: https://github.com/wKich/creevey/compare/v0.7.0-beta.9...v0.7.0-beta.10
+[0.7.0-beta.9]: https://github.com/wKich/creevey/compare/v0.7.0-beta.8...v0.7.0-beta.9
+[0.7.0-beta.8]: https://github.com/wKich/creevey/compare/v0.7.0-beta.7...v0.7.0-beta.8
+[0.7.0-beta.7]: https://github.com/wKich/creevey/compare/v0.7.0-beta.6...v0.7.0-beta.7
+[0.7.0-beta.6]: https://github.com/wKich/creevey/compare/v0.7.0-beta.5...v0.7.0-beta.6
+[0.7.0-beta.5]: https://github.com/wKich/creevey/compare/v0.7.0-beta.4...v0.7.0-beta.5
+[0.7.0-beta.4]: https://github.com/wKich/creevey/compare/v0.7.0-beta.3...v0.7.0-beta.4
+[0.7.0-beta.3]: https://github.com/wKich/creevey/compare/v0.7.0-beta.2...v0.7.0-beta.3
+[0.7.0-beta.2]: https://github.com/wKich/creevey/compare/v0.7.0-beta.1...v0.7.0-beta.2
+[0.7.0-beta.1]: https://github.com/wKich/creevey/compare/v0.7.0-beta.0...v0.7.0-beta.1
+[0.7.0-beta.0]: https://github.com/wKich/creevey/compare/v0.6.4...v0.7.0-beta.0
+[0.6.4]: https://github.com/wKich/creevey/compare/v0.6.3...v0.6.4
+[0.6.3]: https://github.com/wKich/creevey/compare/v0.6.2...v0.6.3
+[0.6.2]: https://github.com/wKich/creevey/compare/v0.6.1...v0.6.2
+[0.6.1]: https://github.com/wKich/creevey/compare/v0.6.0...v0.6.1
+[0.6.0]: https://github.com/wKich/creevey/compare/v0.6.0-beta.8...v0.6.0
+[0.6.0-beta.8]: https://github.com/wKich/creevey/compare/v0.6.0-beta.7...v0.6.0-beta.8
+[0.6.0-beta.7]: https://github.com/wKich/creevey/compare/v0.6.0-beta.6...v0.6.0-beta.7
+[0.6.0-beta.6]: https://github.com/wKich/creevey/compare/v0.6.0-beta.5...v0.6.0-beta.6
+[0.6.0-beta.5]: https://github.com/wKich/creevey/compare/v0.6.0-beta.4...v0.6.0-beta.5
+[0.6.0-beta.4]: https://github.com/wKich/creevey/compare/v0.6.0-beta.3...v0.6.0-beta.4
+[0.6.0-beta.3]: https://github.com/wKich/creevey/compare/v0.6.0-beta.2...v0.6.0-beta.3
+[0.6.0-beta.2]: https://github.com/wKich/creevey/compare/v0.6.0-beta.1...v0.6.0-beta.2
+[0.6.0-beta.1]: https://github.com/wKich/creevey/compare/v0.6.0-beta.0...v0.6.0-beta.1
+[0.6.0-beta.0]: https://github.com/wKich/creevey/compare/v0.5.6...v0.6.0-beta.0
+[0.5.6]: https://github.com/wKich/creevey/compare/v0.5.5...v0.5.6
+[0.5.5]: https://github.com/wKich/creevey/compare/v0.5.4...v0.5.5
+[0.5.4]: https://github.com/wKich/creevey/compare/v0.5.3...v0.5.4
+[0.5.3]: https://github.com/wKich/creevey/compare/v0.5.2...v0.5.3
+[0.5.2]: https://github.com/wKich/creevey/compare/v0.5.1...v0.5.2
+[0.5.1]: https://github.com/wKich/creevey/compare/v0.5.0...v0.5.1
+[0.5.0]: https://github.com/wKich/creevey/compare/v0.4.11...v0.5.0
+[0.4.11]: https://github.com/wKich/creevey/compare/v0.4.10...v0.4.11
+[0.4.10]: https://github.com/wKich/creevey/compare/v0.4.9...v0.4.10
+[0.4.9]: https://github.com/wKich/creevey/compare/v0.4.8...v0.4.9
+[0.4.8]: https://github.com/wKich/creevey/compare/v0.4.7...v0.4.8
+[0.4.7]: https://github.com/wKich/creevey/compare/v0.4.6...v0.4.7
+[0.4.6]: https://github.com/wKich/creevey/compare/v0.4.5...v0.4.6
+[0.4.5]: https://github.com/wKich/creevey/compare/v0.4.4...v0.4.5
+[0.4.4]: https://github.com/wKich/creevey/compare/v0.4.3...v0.4.4
+[0.4.3]: https://github.com/wKich/creevey/compare/v0.4.2...v0.4.3
+[0.4.2]: https://github.com/wKich/creevey/compare/v0.4.1...v0.4.2
+[0.4.1]: https://github.com/wKich/creevey/compare/v0.4.0...v0.4.1
+[0.4.0]: https://github.com/wKich/creevey/compare/v0.3.8...v0.4.0
+[0.3.8]: https://github.com/wKich/creevey/compare/v0.3.7...v0.3.8
+[0.3.7]: https://github.com/wKich/creevey/compare/v0.3.6...v0.3.7
+[0.3.6]: https://github.com/wKich/creevey/compare/v0.3.5...v0.3.6
+[0.3.5]: https://github.com/wKich/creevey/compare/v0.3.4...v0.3.5
+[0.3.4]: https://github.com/wKich/creevey/compare/v0.3.3...v0.3.4
+[0.3.3]: https://github.com/wKich/creevey/compare/v0.3.2...v0.3.3
+[0.3.2]: https://github.com/wKich/creevey/compare/v0.3.1...v0.3.2
+[0.3.1]: https://github.com/wKich/creevey/compare/v0.3.0...v0.3.1
+[0.3.0]: https://github.com/wKich/creevey/compare/v0.2.6...v0.3.0
+[0.2.6]: https://github.com/wKich/creevey/compare/v0.2.5...v0.2.6
+[0.2.5]: https://github.com/wKich/creevey/compare/v0.2.4...v0.2.5
+[0.2.4]: https://github.com/wKich/creevey/compare/v0.2.3...v0.2.4
+[0.2.3]: https://github.com/wKich/creevey/compare/v0.2.2...v0.2.3
+[0.2.2]: https://github.com/wKich/creevey/compare/v0.2.1...v0.2.2
+[0.2.1]: https://github.com/wKich/creevey/compare/v0.2.0...v0.2.1
+[0.2.0]: https://github.com/wKich/creevey/compare/v0.1.7...v0.2.0
+[0.1.7]: https://github.com/wKich/creevey/compare/v0.1.6...v0.1.7
+[0.1.6]: https://github.com/wKich/creevey/compare/v0.1.5...v0.1.6
+[0.1.5]: https://github.com/wKich/creevey/compare/v0.1.4...v0.1.5
+[0.1.4]: https://github.com/wKich/creevey/compare/v0.1.3...v0.1.4
+[0.1.3]: https://github.com/wKich/creevey/compare/v0.1.2...v0.1.3
+[0.1.2]: https://github.com/wKich/creevey/compare/v0.1.1...v0.1.2
+[0.1.1]: https://github.com/wKich/creevey/compare/v0.1.0...v0.1.1
+[0.1.0]: https://github.com/wKich/creevey/compare/v0.0.30...v0.1.0
+[0.0.30]: https://github.com/wKich/creevey/compare/v0.0.29...v0.0.30
+[0.0.29]: https://github.com/wKich/creevey/compare/v0.0.28...v0.0.29
+[0.0.28]: https://github.com/wKich/creevey/compare/v0.0.27...v0.0.28
+[0.0.27]: https://github.com/wKich/creevey/compare/v0.0.26...v0.0.27
+[0.0.26]: https://github.com/wKich/creevey/compare/v0.0.25...v0.0.26
+[0.0.25]: https://github.com/wKich/creevey/compare/v0.0.24...v0.0.25
+[0.0.24]: https://github.com/wKich/creevey/compare/v0.0.23...v0.0.24
+[0.0.23]: https://github.com/wKich/creevey/compare/v0.0.22...v0.0.23
+[0.0.22]: https://github.com/wKich/creevey/compare/v0.0.21...v0.0.22
+[0.0.21]: https://github.com/wKich/creevey/compare/v0.0.20...v0.0.21
+[0.0.20]: https://github.com/wKich/creevey/compare/v0.0.19...v0.0.20
+[0.0.19]: https://github.com/wKich/creevey/compare/v0.0.18...v0.0.19
+[0.0.18]: https://github.com/wKich/creevey/compare/v0.0.17...v0.0.18
+[0.0.17]: https://github.com/wKich/creevey/compare/v0.0.16...v0.0.17
+[0.0.16]: https://github.com/wKich/creevey/compare/v0.0.15...v0.0.16
+[0.0.15]: https://github.com/wKich/creevey/compare/v0.0.14...v0.0.15
+[0.0.14]: https://github.com/wKich/creevey/compare/v0.0.13...v0.0.14
+[0.0.13]: https://github.com/wKich/creevey/compare/v0.0.12...v0.0.13
+[0.0.12]: https://github.com/wKich/creevey/compare/v0.0.11...v0.0.12
+[0.0.11]: https://github.com/wKich/creevey/compare/v0.0.10...v0.0.11
+[0.0.10]: https://github.com/wKich/creevey/compare/v0.0.9...v0.0.10
+[0.0.9]: https://github.com/wKich/creevey/compare/v0.0.8...v0.0.9
+[0.0.8]: https://github.com/wKich/creevey/compare/v0.0.7...v0.0.8
+[0.0.7]: https://github.com/wKich/creevey/compare/v0.0.6...v0.0.7
+[0.0.6]: https://github.com/wKich/creevey/compare/v0.0.5...v0.0.6
+[0.0.5]: https://github.com/wKich/creevey/compare/v0.0.4...v0.0.5
+[0.0.4]: https://github.com/wKich/creevey/compare/v0.0.3...v0.0.4
+[0.0.3]: https://github.com/wKich/creevey/compare/v0.0.2...v0.0.3
+[0.0.2]: https://github.com/wKich/creevey/compare/v0.0.1...v0.0.2
+

@@ -108,14 +108,55 @@ graph LR
 
 ### Release Process
 
-```bash
-# Update version
-yarn version  # Updates CHANGELOG.md
+Releases are automated via GitHub Actions using `git-cliff` for changelog generation.
 
+#### Manual Release (Local Preview)
+
+```bash
+# Preview unreleased changes
+yarn changelog:preview
+
+# Generate full changelog
+yarn changelog:generate
+```
+
+#### Automated Release (GitHub Actions)
+
+1. Go to **Actions** → **Release** → **Run workflow**
+2. Select bump type: `patch`, `minor`, or `major`
+3. The workflow will:
+   - Calculate the next version from `package.json`
+   - Update `package.json` version
+   - Generate and prepend to `CHANGELOG.md`
+   - Commit, tag, and push
+   - Create a GitHub Release with extracted release notes
+
+#### Automated Release (GitHub Actions)
+
+1. Go to **Actions** → **Release** → **Run workflow**
+2. Select bump type: `patch`, `minor`, or `major`
+3. The Release workflow will:
+   - Calculate the next version from `package.json`
+   - Update `package.json` version
+   - Generate and prepend to `CHANGELOG.md`
+   - Commit, tag, and push
+   - Create a GitHub Release with extracted release notes
+4. The Publish workflow triggers automatically on the new tag and:
+   - Installs dependencies and builds the package
+   - Verifies `package.json` version matches the tag
+   - Publishes to npm registry
+
+#### Required Secrets
+
+- `NPM_TOKEN` — npm access token for publishing. Configure in **Settings** → **Secrets and variables** → **Actions**.
+
+#### Local Publish (Manual Fallback)
+
+```bash
 # Build for release
 yarn build
 
-# Publish to npm
+# Publish to npm manually
 npm publish
 ```
 
