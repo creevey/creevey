@@ -42,26 +42,31 @@ Each `<testsuite>` additionally writes a `<properties>` block with `<property na
 ### 2. Failure Body & Error/Failure Distinction
 
 **Detection logic:**
+
 - `test.creevey.images` has entries → image diff mismatch → write `<failure>`
 - `test.err` is set but no images → unexpected crash → write `<error>`
 
 **`<failure>` element:**
+
 ```xml
 <failure message="Images do not match">
 header: expected and actual images differ
 body: expected and actual images differ
 </failure>
 ```
+
 - `message` attribute: `"Images do not match"`
 - Text body: one line per entry in `test.creevey.images`, formatted as `"${imageName}: ${image.error}"` (image names are screenshot step names, e.g. `"header"`, `"body"` for multi-step tests)
 
 **`<error>` element:**
+
 ```xml
 <error message="TypeError: Cannot read properties of null" type="Error">
 TypeError: Cannot read properties of null
     at Object.&lt;anonymous&gt; (test.ts:12:5)
 </error>
 ```
+
 - `message` attribute: first line of `test.err`
 - `type` attribute: `"Error"`
 - Text body: full `test.err` string (XML-escaped)
@@ -97,17 +102,21 @@ For every `<testcase>` with `test.attachments` entries, write a `<properties>` b
 ### 4. Spec Attribute Additions
 
 **`hostname` on `<testsuite>`**
+
 ```xml
 <testsuite name="Button/primary" hostname="build-agent-01" ...>
 ```
+
 - Value: `os.hostname()` from Node's built-in `os` module
 - Required by Jenkins JUnit plugin schema; useful for distributed CI runs
 
 **Sequential `id` on `<testsuite>`**
+
 ```xml
 <testsuite name="Button/primary" id="0" ...>
 <testsuite name="Button/hover" id="1" ...>
 ```
+
 - Zero-indexed, derived from suite order in `onFinished()`
 
 ---
@@ -156,8 +165,8 @@ runner.ts emits TEST_FAIL/TEST_PASS with FakeTest
 
 ## Files Changed
 
-| File | Change |
-|------|--------|
+| File                            | Change            |
+| ------------------------------- | ----------------- |
 | `src/server/reporters/junit.ts` | All changes above |
 
 No changes to public API, config schema, or other reporters.

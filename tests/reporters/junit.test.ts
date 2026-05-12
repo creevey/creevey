@@ -216,7 +216,7 @@ describe('JUnitReporter', () => {
 
       expect(xml).toContain('<properties>');
       expect(xml).toContain('name="attachment"');
-      expect(xml).toContain('Button/primary/chrome/button-actual-1.png');
+      expect(xml).toContain('value="Button/primary/chrome/button-actual-1.png"');
       expect(xml).toContain('</properties>');
     });
 
@@ -234,6 +234,22 @@ describe('JUnitReporter', () => {
       const t = makeFakeTest({ state: 'passed' }); // attachments not set
       const xml = runReporter([t], out);
       expect(xml).not.toContain('name="attachment"');
+    });
+
+    test('writes one property element per attachment', () => {
+      const out = tempXmlPath();
+      const base = dirname(out);
+      const t = makeFakeTest({
+        state: 'failed',
+        images: { header: {} },
+        attachments: [join(base, 'screen-actual.png'), join(base, 'screen-diff.png')],
+      });
+      const xml = runReporter([t], out);
+
+      const matches = xml.match(/name="attachment"/g) ?? [];
+      expect(matches).toHaveLength(2);
+      expect(xml).toContain('value="screen-actual.png"');
+      expect(xml).toContain('value="screen-diff.png"');
     });
   });
 });

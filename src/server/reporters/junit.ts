@@ -42,7 +42,6 @@ export class JUnitReporter {
   private suiteStartTimes: Record<string, Date> = {};
   // TODO classnameTemplate
   // TODO Output console logs
-  // TODO Output attachments
   constructor(runner: EventEmitter, options: { reportDir: string; reporterOptions: { outputFile?: string } }) {
     const { reportDir, reporterOptions } = options;
 
