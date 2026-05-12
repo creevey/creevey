@@ -32,6 +32,8 @@ export class JUnitReporter {
   // @ts-expect-error Ignore unused
   private creeveyReporter: CreeveyReporter;
   private suites: Record<string, Map<string, FakeTest>> = {};
+  private runStartTime: Date = new Date();
+  private suiteStartTimes: Record<string, Date> = {};
   // TODO classnameTemplate
   // TODO Output console logs
   // TODO Output attachments
@@ -50,6 +52,8 @@ export class JUnitReporter {
 
     runner.on(TEST_EVENTS.RUN_BEGIN, () => {
       this.suites = {};
+      this.runStartTime = new Date();
+      this.suiteStartTimes = {};
 
       const outputDirectory = dirname(this.reportFile);
       if (!existsSync(outputDirectory)) {
@@ -57,6 +61,10 @@ export class JUnitReporter {
       }
 
       this.fileFd = openSync(this.reportFile, 'w+');
+    });
+    runner.on(TEST_EVENTS.TEST_BEGIN, (test: FakeTest) => {
+      const suiteName = test.parent.title;
+      this.suiteStartTimes[suiteName] ??= new Date();
     });
     runner.on(TEST_EVENTS.TEST_PASS, (test: FakeTest) => {
       const suite = (this.suites[test.parent.title] ??= new Map());
@@ -128,6 +136,7 @@ export class JUnitReporter {
         tests,
         failures,
         time,
+        timestamp: toISO8601(this.suiteStartTimes[name] ?? this.runStartTime),
       };
     });
     const stats = suites.reduce(
@@ -140,8 +149,8 @@ export class JUnitReporter {
       { name: 'creevey tests', tests: 0, failures: 0, time: 0 },
     );
 
-    this.writeElement('testsuites', { ...stats, time: executionTime(stats.time) }, () => {
-      suites.forEach(({ name, tests, failures, time }) => {
+    this.writeElement('testsuites', { ...stats, time: executionTime(stats.time), timestamp: toISO8601(this.runStartTime) }, () => {
+      suites.forEach(({ name, tests, failures, time, timestamp }) => {
         this.writeElement(
           'testsuite',
           {
@@ -149,6 +158,7 @@ export class JUnitReporter {
             tests: tests.size,
             failures,
             time: executionTime(time),
+            timestamp,
           },
           () => {
             this.writeTasks(tests);
@@ -217,4 +227,9 @@ function executionTime(durationMS: number) {
 function getDuration(task: FakeTest): string | undefined {
   const duration = task.duration ?? 0;
   return executionTime(duration);
+}
+
+// ISO 8601 without timezone per Jenkins JUnit plugin convention: "2021-04-02T15:48:23"
+function toISO8601(date: Date): string {
+  return date.toISOString().replace(/\.\d{3}Z$/, '');
 }
