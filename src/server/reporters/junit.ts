@@ -93,7 +93,7 @@ export class JUnitReporter {
   }
 
   private isImageMismatch(test: FakeTest): boolean {
-    return Object.keys(test.creevey.images).length > 0;
+    return Object.values(test.creevey.images).some((img) => img !== undefined);
   }
 
   private writeElement(
@@ -119,7 +119,9 @@ export class JUnitReporter {
     this.logger.log(`<${name}${pairs.length ? ` ${pairs.join(' ')}` : ''}>`);
     this.logger.indent();
     if (textContent !== undefined) {
-      this.logger.log(escapeXML(textContent));
+      for (const line of escapeXML(textContent).split('\n')) {
+        this.logger.log(line);
+      }
     } else {
       children?.call(this);
     }
