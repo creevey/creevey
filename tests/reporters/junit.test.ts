@@ -104,8 +104,67 @@ describe('JUnitReporter', () => {
     expect(xml).toContain('name="my test"');
   });
 
-  describe('failure body', () => {
-    test.fails('writes failure element with text body when images are present', () => {
+  describe('failure and error elements', () => {
+    test('writes failure with per-step body for image mismatches', () => {
+      const out = tempXmlPath();
+      const t = makeFakeTest({
+        state: 'failed',
+        images: {
+          header: { error: 'header differs by 3%' },
+          body: { actual: '/tmp/body.png' }, // no error string
+        },
+      });
+      const xml = runReporter([t], out);
+      expect(xml).toContain('<failure');
+      expect(xml).toContain('message="Images do not match"');
+      expect(xml).toContain('header: header differs by 3%');
+      expect(xml).toContain('body: expected and actual images differ');
+      expect(xml).toContain('</failure>');
+    });
+
+    test('writes error element for crash with no images', () => {
+      const out = tempXmlPath();
+      const t = makeFakeTest({
+        state: 'failed',
+        err: 'TypeError: Cannot read properties of null',
+      });
+      const xml = runReporter([t], out);
+      expect(xml).toContain('<error');
+      expect(xml).toContain('message="TypeError: Cannot read properties of null"');
+      expect(xml).toContain('TypeError: Cannot read properties of null');
+      expect(xml).toContain('</error>');
+      expect(xml).not.toContain('<failure');
+    });
+
+    test('counts errors and failures separately on testsuite', () => {
+      const out = tempXmlPath();
+      const imageFail = makeFakeTest({
+        storyTitle: 'Story',
+        testTitle: 'img fail',
+        state: 'failed',
+        images: { header: {} },
+      });
+      const crash = makeFakeTest({
+        storyTitle: 'Story',
+        testTitle: 'crash',
+        state: 'failed',
+        err: 'boom',
+      });
+      const xml = runReporter([imageFail, crash], out);
+      // 1 failure (image) + 1 error (crash)
+      expect(xml).toMatch(/failures="1"/);
+      expect(xml).toMatch(/errors="1"/);
+    });
+
+    test('writes fallback failure when state is failed but no images and no err', () => {
+      const out = tempXmlPath();
+      const t = makeFakeTest({ state: 'failed' });
+      const xml = runReporter([t], out);
+      expect(xml).toContain('<failure');
+      expect(xml).toContain('message="Test failed"');
+    });
+
+    test('writes failure element with text body when images are present', () => {
       const out = tempXmlPath();
       const test = makeFakeTest({
         state: 'failed',

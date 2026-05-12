@@ -127,7 +127,6 @@ export class JUnitReporter {
   private writeTasks(tests: Map<string, FakeTest>): void {
     for (const [, test] of tests) {
       const classname = test.parent.title;
-
       this.writeElement(
         'testcase',
         {
@@ -137,11 +136,26 @@ export class JUnitReporter {
         },
         () => {
           if (test.state === 'failed') {
-            const error = test.err;
-            this.writeElement('failure', { message: error });
+            this.writeFailureOrError(test);
           }
         },
       );
+    }
+  }
+
+  private writeFailureOrError(test: FakeTest): void {
+    const images = test.creevey.images;
+    const imageEntries = Object.entries(images);
+
+    if (imageEntries.length > 0) {
+      const bodyLines = imageEntries.map(
+        ([step, img]) => `${step}: ${img?.error ?? 'expected and actual images differ'}`,
+      );
+      this.writeElement('failure', { message: 'Images do not match' }, undefined, bodyLines.join('\n'));
+    } else if (test.err) {
+      this.writeElement('error', { message: test.err, type: 'Error' }, undefined, test.err);
+    } else {
+      this.writeElement('failure', { message: 'Test failed' });
     }
   }
 
@@ -150,10 +164,13 @@ export class JUnitReporter {
 
     const suites = Object.entries(this.suites).map(([key, { suiteName, browserName, tests }]) => {
       let failures = 0;
+      let errors = 0;
       let time = 0;
       for (const [, test] of tests) {
         if (test.state === 'failed') {
-          failures++;
+          const hasImages = Object.keys(test.creevey.images).length > 0;
+          if (hasImages) failures++;
+          else errors++;
         }
         time += test.duration ?? 0;
       }
@@ -162,40 +179,47 @@ export class JUnitReporter {
         browserName,
         tests,
         failures,
+        errors,
         time,
         timestamp: toISO8601(this.suiteStartTimes[key] ?? this.runStartTime),
       };
     });
     const stats = suites.reduce(
-      (s, { tests, failures, time }) => {
+      (s, { tests, failures, errors, time }) => {
         s.tests += tests.size;
         s.failures += failures;
+        s.errors += errors;
         s.time += time;
         return s;
       },
-      { name: 'creevey tests', tests: 0, failures: 0, time: 0 },
+      { name: 'creevey tests', tests: 0, failures: 0, errors: 0, time: 0 },
     );
 
-    this.writeElement('testsuites', { ...stats, time: executionTime(stats.time), timestamp: toISO8601(this.runStartTime) }, () => {
-      suites.forEach(({ suiteName, browserName, tests, failures, time, timestamp }) => {
-        this.writeElement(
-          'testsuite',
-          {
-            name: suiteName,
-            tests: tests.size,
-            failures,
-            time: executionTime(time),
-            timestamp,
-          },
-          () => {
-            this.writeElement('properties', {}, () => {
-              this.writeElement('property', { name: 'browser', value: browserName });
-            });
-            this.writeTasks(tests);
-          },
-        );
-      });
-    });
+    this.writeElement(
+      'testsuites',
+      { ...stats, time: executionTime(stats.time), timestamp: toISO8601(this.runStartTime) },
+      () => {
+        suites.forEach(({ suiteName, browserName, tests, failures, errors, time, timestamp }) => {
+          this.writeElement(
+            'testsuite',
+            {
+              name: suiteName,
+              tests: tests.size,
+              failures,
+              errors,
+              time: executionTime(time),
+              timestamp,
+            },
+            () => {
+              this.writeElement('properties', {}, () => {
+                this.writeElement('property', { name: 'browser', value: browserName });
+              });
+              this.writeTasks(tests);
+            },
+          );
+        });
+      },
+    );
 
     if (this.reportFile) {
       logger().info(`JUNIT report written to ${this.reportFile}`);
