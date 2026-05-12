@@ -103,7 +103,7 @@ yarn creevey test -s --ui
 yarn creevey test --storybook-url http://localhost:9000
 ```
 
-For this repo specifically, `storybook@9.0.0` requires Node.js 20+ to start local Storybook. Running it under older Node versions can look like a Creevey browser startup timeout because the iframe page never finishes initializing.
+For this repo specifically, the local Storybook 10.3.6 package set requires Node.js 20.19.6+ to start reliably. Running it under older Node versions can look like a Creevey browser startup timeout because the iframe page never finishes initializing.
 
 If Playwright fails during browser startup with `page.waitForFunction: Timeout 60000ms exceeded`, Creevey now logs a `Storybook readiness diagnostics` object from the iframe page. Check it for:
 

@@ -220,7 +220,7 @@ story('ComponentStory', () => {
 
 - Always specify webdriver explicitly (SeleniumWebdriver or PlaywrightWebdriver)
 - Use hybridStoriesProvider for interactive tests
-- Local Storybook commands currently use `storybook@9.0.0`, which requires Node.js 20+ even though the top-level `engines.node` field still says `>=18`
+- Local Storybook commands currently use Storybook 10.3.6 packages and require Node.js 20.19.6+
 - Configure appropriate timeouts for complex interactions
 - Consider Docker for consistent test environments
 - Use fail-fast mode for quick CI feedback

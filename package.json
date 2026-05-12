@@ -83,7 +83,7 @@
     "prepare": "husky"
   },
   "engines": {
-    "node": ">=18.0"
+    "node": ">=20.19.6"
   },
   "peerDependencies": {
     "playwright-core": "*",
@@ -141,11 +141,11 @@
     "yocto-spinner": "^0.2.3"
   },
   "devDependencies": {
-    "@chromatic-com/storybook": "^4.0.0",
+    "@chromatic-com/storybook": "^5.1.2",
     "@eslint/js": "^9.27.0",
     "@playwright/test": "^1.52.0",
-    "@storybook/addon-docs": "^9.0.0",
-    "@storybook/react-vite": "^9.0.0",
+    "@storybook/addon-docs": "^10.3.6",
+    "@storybook/react-vite": "^10.3.6",
     "@types/eslint": "^9.6.1",
     "@types/node": "^18.19.105",
     "@types/resize-observer-browser": "^0.1.11",
@@ -165,7 +165,7 @@
     "eslint-plugin-prettier": "^5.4.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-storybook": "^9.0.0",
+    "eslint-plugin-storybook": "^10.3.6",
     "git-cliff": "^2.12.0",
     "git-cz": "^4.9.0",
     "globals": "^16.2.0",
@@ -179,7 +179,7 @@
     "react-dom": "^18.3.1",
     "react-is": "^18.3.1",
     "selenium-webdriver": "^4.33.0",
-    "storybook": "^10.3.4",
+    "storybook": "^10.3.6",
     "tmp": "^0.2.3",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.33.0",
