@@ -1,7 +1,7 @@
 import { describe, test, expect, afterEach } from 'vitest';
 import EventEmitter from 'events';
 import { join, dirname } from 'path';
-import { tmpdir } from 'os';
+import os, { tmpdir } from 'os';
 import { readFileSync, unlinkSync, existsSync } from 'fs';
 import { randomUUID } from 'crypto';
 import { TEST_EVENTS } from '../../src/types.js';
@@ -257,7 +257,7 @@ describe('JUnitReporter', () => {
     test('includes hostname attribute on testsuite', () => {
       const out = tempXmlPath();
       const xml = runReporter([makeFakeTest()], out);
-      expect(xml).toMatch(/hostname="[^"]+"/);
+      expect(xml).toContain(`hostname="${os.hostname()}"`);
     });
 
     test('includes sequential id starting at 0 on each testsuite', () => {
@@ -265,8 +265,10 @@ describe('JUnitReporter', () => {
       const a = makeFakeTest({ storyTitle: 'Alpha', browserName: 'chrome' });
       const b = makeFakeTest({ storyTitle: 'Beta', browserName: 'chrome' });
       const xml = runReporter([a, b], out);
-      expect(xml).toContain('id="0"');
-      expect(xml).toContain('id="1"');
+      expect(xml).toMatch(/<testsuite [^>]*id="0"/);
+      expect(xml).toMatch(/<testsuite [^>]*id="1"/);
+      const suiteMatches = [...xml.matchAll(/<testsuite [^>]*id="(\d+)"/g)].map((m) => m[1]);
+      expect(suiteMatches).toEqual(['0', '1']);
     });
   });
 });

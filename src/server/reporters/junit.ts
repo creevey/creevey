@@ -213,6 +213,7 @@ export class JUnitReporter {
       'testsuites',
       { ...stats, time: executionTime(stats.time), timestamp: toISO8601(this.runStartTime) },
       () => {
+        const hostname = os.hostname();
         suites.forEach(({ suiteName, browserName, tests, failures, errors, time, timestamp }, index) => {
           this.writeElement(
             'testsuite',
@@ -222,7 +223,7 @@ export class JUnitReporter {
               failures,
               errors,
               time: executionTime(time),
-              hostname: os.hostname(),
+              hostname,
               id: index,
               timestamp,
             },
