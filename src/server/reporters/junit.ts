@@ -69,26 +69,27 @@ export class JUnitReporter {
       this.fileFd = openSync(this.reportFile, 'w+');
     });
     runner.on(TEST_EVENTS.TEST_BEGIN, (test: FakeTest) => {
-      const key = `${test.parent.title}/${test.creevey.browserName}`;
-      this.suiteStartTimes[key] ??= new Date();
+      this.suiteStartTimes[this.suiteKey(test)] ??= new Date();
     });
     runner.on(TEST_EVENTS.TEST_PASS, (test: FakeTest) => {
-      const key = `${test.parent.title}/${test.creevey.browserName}`;
-      if (!this.suites[key]) {
-        this.suites[key] = { suiteName: test.parent.title, browserName: test.creevey.browserName, tests: new Map() };
-      }
-      this.suites[key].tests.set(test.creevey.testId, test);
+      this.getOrCreateSuite(test).tests.set(test.creevey.testId, test);
     });
     runner.on(TEST_EVENTS.TEST_FAIL, (test: FakeTest) => {
-      const key = `${test.parent.title}/${test.creevey.browserName}`;
-      if (!this.suites[key]) {
-        this.suites[key] = { suiteName: test.parent.title, browserName: test.creevey.browserName, tests: new Map() };
-      }
-      this.suites[key].tests.set(test.creevey.testId, test);
+      this.getOrCreateSuite(test).tests.set(test.creevey.testId, test);
     });
     runner.on(TEST_EVENTS.RUN_END, () => {
       this.onFinished();
     });
+  }
+
+  private suiteKey(test: FakeTest): string {
+    return `${test.parent.title}\0${test.creevey.browserName}`;
+  }
+
+  private getOrCreateSuite(test: FakeTest): SuiteEntry {
+    const key = this.suiteKey(test);
+    this.suites[key] ??= { suiteName: test.parent.title, browserName: test.creevey.browserName, tests: new Map() };
+    return this.suites[key];
   }
 
   private writeElement(
@@ -157,7 +158,6 @@ export class JUnitReporter {
         time += test.duration ?? 0;
       }
       return {
-        key,
         suiteName,
         browserName,
         tests,

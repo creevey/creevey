@@ -128,6 +128,8 @@ describe('JUnitReporter', () => {
       // Should have TWO <testsuite> elements, one per browser
       const suiteMatches = xml.match(/<testsuite /g) ?? [];
       expect(suiteMatches.length).toBe(2);
+      expect(xml).toContain('value="chrome"');
+      expect(xml).toContain('value="firefox"');
     });
 
     test('adds browser property to each testsuite', () => {
