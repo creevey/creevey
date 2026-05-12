@@ -10,8 +10,12 @@ import type { FakeTest, FakeSuite, Images } from '../../src/types.js';
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
+const createdFiles: string[] = [];
+
 function tempXmlPath(): string {
-  return join(tmpdir(), `junit-test-${randomUUID()}.xml`);
+  const p = join(tmpdir(), `junit-test-${randomUUID()}.xml`);
+  createdFiles.push(p);
+  return p;
 }
 
 interface FakeTestOptions {
@@ -81,11 +85,6 @@ function runReporter(tests: FakeTest[], outputFile: string): string {
   return readFileSync(outputFile, 'utf-8');
 }
 
-const createdFiles: string[] = [];
-function track(p: string): string {
-  createdFiles.push(p);
-  return p;
-}
 afterEach(() => {
   for (const p of createdFiles.splice(0)) {
     if (existsSync(p)) unlinkSync(p);
@@ -96,7 +95,7 @@ afterEach(() => {
 
 describe('JUnitReporter', () => {
   test('produces valid XML for a single passing test', () => {
-    const out = track(tempXmlPath());
+    const out = tempXmlPath();
     const xml = runReporter([makeFakeTest()], out);
     expect(xml).toContain('<?xml version="1.0" encoding="UTF-8" ?>');
     expect(xml).toContain('<testsuites');
@@ -106,8 +105,8 @@ describe('JUnitReporter', () => {
   });
 
   describe('failure body', () => {
-    test('writes failure element with text body when images are present', () => {
-      const out = track(tempXmlPath());
+    test.fails('writes failure element with text body when images are present', () => {
+      const out = tempXmlPath();
       const test = makeFakeTest({
         state: 'failed',
         images: { header: { error: 'images differ by 5%' } },

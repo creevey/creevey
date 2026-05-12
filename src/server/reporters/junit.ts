@@ -85,6 +85,10 @@ export class JUnitReporter {
     children?: () => void,
     textContent?: string,
   ): void {
+    if (children !== undefined && textContent !== undefined) {
+      throw new Error('writeElement: pass either children or textContent, not both');
+    }
+
     const pairs: string[] = [];
     for (const key in attrs) {
       const attr = attrs[key];
