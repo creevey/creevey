@@ -12,10 +12,10 @@ jobs:
           node-version: 22
       - name: install
         run: yarn
-      - name: lint
-        run: yarn lint
       - name: build
         run: yarn build
+      - name: lint
+        run: yarn lint
       - name: pack
         run: yarn pack
       - uses: actions/upload-artifact@v4
