@@ -79,7 +79,12 @@ export class JUnitReporter {
     });
   }
 
-  private writeElement(name: string, attrs: Record<string, string | number | undefined>, children?: () => void): void {
+  private writeElement(
+    name: string,
+    attrs: Record<string, string | number | undefined>,
+    children?: () => void,
+    textContent?: string,
+  ): void {
     const pairs: string[] = [];
     for (const key in attrs) {
       const attr = attrs[key];
@@ -92,7 +97,11 @@ export class JUnitReporter {
 
     this.logger.log(`<${name}${pairs.length ? ` ${pairs.join(' ')}` : ''}>`);
     this.logger.indent();
-    children?.call(this);
+    if (textContent !== undefined) {
+      this.logger.log(escapeXML(textContent));
+    } else {
+      children?.call(this);
+    }
     this.logger.unindent();
 
     this.logger.log(`</${name}>`);
