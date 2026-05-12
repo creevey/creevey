@@ -106,59 +106,27 @@ graph LR
 4. **Copy Files**: Move necessary files to dist/
 5. **Type Definitions**: Generate .d.ts files
 
-### Release Process
+## Release Process
 
-Releases are automated via GitHub Actions using `git-cliff` for changelog generation.
+The project uses [release-please-action](https://github.com/googleapis/release-please-action) for automated releases.
+This replaces the previous manual workflow to support protected branches (no direct push to `master` required).
 
-#### Manual Release (Local Preview)
+### How it works
 
-```bash
-# Preview unreleased changes
-yarn changelog:preview
+1. When releasable commits (`feat:`, `fix:`, etc.) are pushed to `master`, the release-please workflow (`.github/workflows/release.yml`) automatically creates or updates a Release PR.
+2. The Release PR bumps `package.json` version, updates `CHANGELOG.md`, and tracks the version in `.release-please-manifest.json` (configuration is in `release-please-config.json`).
+3. A maintainer reviews and merges the Release PR through the normal PR review process.
+4. On merge, release-please creates a git tag and GitHub Release via GitHub API.
+5. The tag push triggers `.github/workflows/publish.yml` to build and publish to npm.
 
-# Generate full changelog
-yarn changelog:generate
-```
+### Setup
 
-#### Automated Release (GitHub Actions)
+- Requires a `RELEASE_PLEASE_TOKEN` repository secret (PAT with `repo` scope, or GitHub App token).
+- Enable: `Settings → Actions → General → Allow GitHub Actions to create and approve pull requests`.
 
-1. Go to **Actions** → **Release** → **Run workflow**
-2. Select bump type: `patch`, `minor`, or `major`
-3. The workflow will:
-   - Calculate the next version from `package.json`
-   - Update `package.json` version
-   - Generate and prepend to `CHANGELOG.md`
-   - Commit, tag, and push
-   - Create a GitHub Release with extracted release notes
+### Legacy release workflow
 
-#### Automated Release (GitHub Actions)
-
-1. Go to **Actions** → **Release** → **Run workflow**
-2. Select bump type: `patch`, `minor`, or `major`
-3. The Release workflow will:
-   - Calculate the next version from `package.json`
-   - Update `package.json` version
-   - Generate and prepend to `CHANGELOG.md`
-   - Commit, tag, and push
-   - Create a GitHub Release with extracted release notes
-4. The Publish workflow triggers automatically on the new tag and:
-   - Installs dependencies and builds the package
-   - Verifies `package.json` version matches the tag
-   - Publishes to npm registry
-
-#### Required Secrets
-
-- `NPM_TOKEN` — npm access token for publishing. Configure in **Settings** → **Secrets and variables** → **Actions**.
-
-#### Local Publish (Manual Fallback)
-
-```bash
-# Build for release
-yarn build
-
-# Publish to npm manually
-npm publish
-```
+The previous manual release workflow (using `git-cliff` and `workflow_dispatch`) has been replaced. The `git-cliff` configuration (`cliff.toml`) and related scripts may be removed in a future cleanup if no longer needed.
 
 ## Testing Workflows
 
