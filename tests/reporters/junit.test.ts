@@ -162,6 +162,9 @@ describe('JUnitReporter', () => {
       const xml = runReporter([t], out);
       expect(xml).toContain('<failure');
       expect(xml).toContain('message="Test failed"');
+      // Fallback should count as failure, not error
+      expect(xml).toMatch(/failures="1"/);
+      expect(xml).not.toMatch(/errors="[^0]/);
     });
 
     test('writes failure element with text body when images are present', () => {

@@ -92,6 +92,10 @@ export class JUnitReporter {
     return this.suites[key];
   }
 
+  private isImageMismatch(test: FakeTest): boolean {
+    return Object.keys(test.creevey.images).length > 0;
+  }
+
   private writeElement(
     name: string,
     attrs: Record<string, string | number | undefined>,
@@ -144,16 +148,15 @@ export class JUnitReporter {
   }
 
   private writeFailureOrError(test: FakeTest): void {
-    const images = test.creevey.images;
-    const imageEntries = Object.entries(images);
-
-    if (imageEntries.length > 0) {
-      const bodyLines = imageEntries.map(
+    if (this.isImageMismatch(test)) {
+      const bodyLines = Object.entries(test.creevey.images).map(
         ([step, img]) => `${step}: ${img?.error ?? 'expected and actual images differ'}`,
       );
       this.writeElement('failure', { message: 'Images do not match' }, undefined, bodyLines.join('\n'));
     } else if (test.err) {
-      this.writeElement('error', { message: test.err, type: 'Error' }, undefined, test.err);
+      const firstLine = test.err.split('\n')[0];
+      const type = /^(\w+Error):/.exec(test.err)?.[1] ?? 'Error';
+      this.writeElement('error', { message: firstLine, type }, undefined, test.err);
     } else {
       this.writeElement('failure', { message: 'Test failed' });
     }
@@ -168,9 +171,9 @@ export class JUnitReporter {
       let time = 0;
       for (const [, test] of tests) {
         if (test.state === 'failed') {
-          const hasImages = Object.keys(test.creevey.images).length > 0;
-          if (hasImages) failures++;
-          else errors++;
+          if (this.isImageMismatch(test)) failures++;
+          else if (test.err) errors++;
+          else failures++;
         }
         time += test.duration ?? 0;
       }
