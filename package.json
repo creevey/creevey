@@ -48,6 +48,9 @@
     "test"
   ],
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "commit": "git-cz",
     "clean": "rm -rf dist",
@@ -55,6 +58,8 @@
     "lint:tsc": "tsc --noEmit",
     "lint:eslint": "eslint",
     "lint:prettier": "prettier --check .",
+    "changelog:preview": "git-cliff --unreleased",
+    "changelog:generate": "git-cliff --prepend CHANGELOG.md",
     "test": "vitest run",
     "test:watch": "vitest",
     "start": "concurrently \"yarn start:client\" \"yarn start:storybook\" \"yarn start:creevey\"",
@@ -73,7 +78,6 @@
     "build:client": "vite build",
     "build:creevey": "tsc --build tsconfig.prod.json",
     "postbuild": "node scripts/copy-files.mjs",
-    "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
     "build-storybook": "storybook build",
     "chromatic": "chromatic --project-token=chpt_80df83ca94e6fb4",
     "prepare": "husky"
@@ -153,7 +157,6 @@
     "browserstack-local": "^1.5.6",
     "chromatic": "^12.0.0",
     "concurrently": "^9.1.2",
-    "conventional-changelog-cli": "^5.0.0",
     "dotenv": "^16.5.0",
     "eslint": "^9.27.0",
     "eslint-config-prettier": "^10.1.5",
@@ -163,6 +166,7 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-storybook": "^9.0.0",
+    "git-cliff": "^2.12.0",
     "git-cz": "^4.9.0",
     "globals": "^16.2.0",
     "husky": "^9.1.7",

@@ -3,5 +3,6 @@
 dist
 report
 examples
+CHANGELOG*
 tests/**/approvals
 tests/**/*.fixtures
