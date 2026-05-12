@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { IncomingMessage, ServerResponse, createServer } from 'http';
 import { WebSocketServer, WebSocket, RawData } from 'ws';
-import { parse, fileURLToPath, pathToFileURL } from 'url';
+import { parse, fileURLToPath } from 'url';
 import { shutdownOnException } from '../utils.js';
 import { subscribeOn } from '../messages.js';
 import { noop } from '../../types.js';
@@ -107,7 +107,8 @@ function file(handler: (requestedPath: string) => string | undefined) {
   };
 }
 
-const importMetaUrl = pathToFileURL(__filename).href;
+// @ts-expect-error - source files run as ESM via tsx; import.meta.url is available at runtime
+const importMetaUrl: string = import.meta.url;
 
 export function start(reportDir: string, port: number, ui = false, host?: string): (api: CreeveyApi) => void {
   let wss: WebSocketServer | null = null;

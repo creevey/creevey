@@ -1,10 +1,10 @@
 import { readFile } from 'fs/promises';
-import { pathToFileURL } from 'url';
 import semver from 'semver';
 import sh from 'shelljs';
 import { detect } from 'package-manager-detector/detect';
 
-const importMetaUrl = pathToFileURL(__filename).href;
+// @ts-expect-error - source files run as ESM via tsx; import.meta.url is available at runtime
+const importMetaUrl: string = import.meta.url;
 
 const getRegistryCommand: Record<string, string> = {
   npm: 'npm config get registry --workspaces=false --include-workspace-root',

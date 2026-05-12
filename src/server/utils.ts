@@ -5,7 +5,7 @@ import https from 'https';
 import assert from 'assert';
 import cluster from 'cluster';
 import pidtree from 'pidtree';
-import { fileURLToPath, pathToFileURL } from 'url';
+import { fileURLToPath } from 'url';
 import { register as esmRegister } from 'tsx/esm/api';
 import { register as cjsRegister } from 'tsx/cjs/api';
 import { SkipOptions, SkipOption, isDefined, TestData, noop, ServerTest, Worker } from '../types.js';
@@ -13,7 +13,8 @@ import { emitShutdownMessage, emitWorkerMessage, sendShutdownMessage } from './m
 import { LOCALHOST_REGEXP } from './webdriver.js';
 import { logger } from './logger.js';
 
-const importMetaUrl = pathToFileURL(__filename).href;
+// @ts-expect-error - source files run as ESM via tsx; import.meta.url is available at runtime
+const importMetaUrl: string = import.meta.url;
 
 export const isShuttingDown = { current: false };
 

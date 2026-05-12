@@ -4,7 +4,6 @@ import { exec } from 'shelljs';
 import { stringify } from 'qs';
 import { set } from 'lodash';
 import { v4 } from 'uuid';
-import { pathToFileURL } from 'url';
 import { createRequire } from 'module';
 import { type Config, type CreeveyStatus, isDefined } from '../types.js';
 import type { Options } from '../schema.js';
@@ -70,7 +69,8 @@ function tryGetStorybookVersion(): [string | undefined, Error | null] {
 
 function tryGetCreeveyVersion(): [string | undefined, Error | null] {
   try {
-    const importMetaUrl = pathToFileURL(__filename).href;
+    // @ts-expect-error - source files run as ESM via tsx; import.meta.url is available at runtime
+    const importMetaUrl: string = import.meta.url;
     const _require = createRequire(importMetaUrl);
     const creeveyPackage = _require('creevey/package.json') as { version: string };
     return [creeveyPackage.version, null];
