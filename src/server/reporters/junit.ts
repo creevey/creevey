@@ -5,6 +5,12 @@ import { TEST_EVENTS, FakeTest } from '../../types.js';
 import { logger } from '../logger.js';
 import { CreeveyReporter } from './creevey.js';
 
+interface SuiteEntry {
+  suiteName: string;
+  browserName: string;
+  tests: Map<string, FakeTest>;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 class IndentedLogger<T = any> {
   private currentIndent = '';
@@ -31,7 +37,7 @@ export class JUnitReporter {
   private logger: IndentedLogger<void>;
   // @ts-expect-error Ignore unused
   private creeveyReporter: CreeveyReporter;
-  private suites: Record<string, Map<string, FakeTest>> = {};
+  private suites: Record<string, SuiteEntry> = {};
   private runStartTime: Date = new Date();
   private suiteStartTimes: Record<string, Date> = {};
   // TODO classnameTemplate
@@ -63,16 +69,22 @@ export class JUnitReporter {
       this.fileFd = openSync(this.reportFile, 'w+');
     });
     runner.on(TEST_EVENTS.TEST_BEGIN, (test: FakeTest) => {
-      const suiteName = test.parent.title;
-      this.suiteStartTimes[suiteName] ??= new Date();
+      const key = `${test.parent.title}/${test.creevey.browserName}`;
+      this.suiteStartTimes[key] ??= new Date();
     });
     runner.on(TEST_EVENTS.TEST_PASS, (test: FakeTest) => {
-      const suite = (this.suites[test.parent.title] ??= new Map());
-      suite.set(test.creevey.testId, test);
+      const key = `${test.parent.title}/${test.creevey.browserName}`;
+      if (!this.suites[key]) {
+        this.suites[key] = { suiteName: test.parent.title, browserName: test.creevey.browserName, tests: new Map() };
+      }
+      this.suites[key].tests.set(test.creevey.testId, test);
     });
     runner.on(TEST_EVENTS.TEST_FAIL, (test: FakeTest) => {
-      const suite = (this.suites[test.parent.title] ??= new Map());
-      suite.set(test.creevey.testId, test);
+      const key = `${test.parent.title}/${test.creevey.browserName}`;
+      if (!this.suites[key]) {
+        this.suites[key] = { suiteName: test.parent.title, browserName: test.creevey.browserName, tests: new Map() };
+      }
+      this.suites[key].tests.set(test.creevey.testId, test);
     });
     runner.on(TEST_EVENTS.RUN_END, () => {
       this.onFinished();
@@ -135,21 +147,23 @@ export class JUnitReporter {
   private onFinished(): void {
     this.logger.log('<?xml version="1.0" encoding="UTF-8" ?>');
 
-    const suites = Object.entries(this.suites).map(([name, tests]) => {
+    const suites = Object.entries(this.suites).map(([key, { suiteName, browserName, tests }]) => {
       let failures = 0;
       let time = 0;
-      for (const [_, test] of tests) {
+      for (const [, test] of tests) {
         if (test.state === 'failed') {
           failures++;
         }
         time += test.duration ?? 0;
       }
       return {
-        name,
+        key,
+        suiteName,
+        browserName,
         tests,
         failures,
         time,
-        timestamp: toISO8601(this.suiteStartTimes[name] ?? this.runStartTime),
+        timestamp: toISO8601(this.suiteStartTimes[key] ?? this.runStartTime),
       };
     });
     const stats = suites.reduce(
@@ -163,17 +177,20 @@ export class JUnitReporter {
     );
 
     this.writeElement('testsuites', { ...stats, time: executionTime(stats.time), timestamp: toISO8601(this.runStartTime) }, () => {
-      suites.forEach(({ name, tests, failures, time, timestamp }) => {
+      suites.forEach(({ suiteName, browserName, tests, failures, time, timestamp }) => {
         this.writeElement(
           'testsuite',
           {
-            name,
+            name: suiteName,
             tests: tests.size,
             failures,
             time: executionTime(time),
             timestamp,
           },
           () => {
+            this.writeElement('properties', {}, () => {
+              this.writeElement('property', { name: 'browser', value: browserName });
+            });
             this.writeTasks(tests);
           },
         );

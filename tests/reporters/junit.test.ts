@@ -117,4 +117,25 @@ describe('JUnitReporter', () => {
       expect(xml).toContain('</failure>');
     });
   });
+
+  describe('multi-browser suites', () => {
+    test('creates separate testsuite elements for each browser', () => {
+      const out = tempXmlPath();
+      const chromeTest = makeFakeTest({ storyTitle: 'Button', browserName: 'chrome' });
+      const firefoxTest = makeFakeTest({ storyTitle: 'Button', browserName: 'firefox' });
+      const xml = runReporter([chromeTest, firefoxTest], out);
+
+      // Should have TWO <testsuite> elements, one per browser
+      const suiteMatches = xml.match(/<testsuite /g) ?? [];
+      expect(suiteMatches.length).toBe(2);
+    });
+
+    test('adds browser property to each testsuite', () => {
+      const out = tempXmlPath();
+      const test = makeFakeTest({ storyTitle: 'Button', browserName: 'chrome' });
+      const xml = runReporter([test], out);
+
+      expect(xml).toContain('<property name="browser" value="chrome"');
+    });
+  });
 });
