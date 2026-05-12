@@ -7,6 +7,9 @@ import type { PixelmatchOptions } from 'pixelmatch';
 import { mkdir, readdir, readFile, stat, writeFile } from 'fs/promises';
 import { Images } from '../types';
 
+const PNG_SIGNATURE = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+const GIT_LFS_POINTER_PREFIX = 'version https://git-lfs.github.com/spec/v1';
+
 export interface ImageContext {
   attachments: string[];
   testFullPath: string[];
@@ -50,7 +53,9 @@ async function getLastImageNumber(imageDir: string, imageName: string): Promise<
 }
 
 async function readExpected(expectImageDir: string, imageName: string): Promise<Buffer> {
-  const expected = await readFile(path.join(expectImageDir, `${imageName}.png`));
+  const filePath = path.join(expectImageDir, `${imageName}.png`);
+  const expected = await readFile(filePath);
+  assertValidPng(expected, `Expected image '${filePath}'`);
 
   return expected;
 }
@@ -171,12 +176,26 @@ function hasDiffPixels(diff: Buffer): boolean {
   return false;
 }
 
+function assertValidPng(image: Buffer, label: string): void {
+  if (image.subarray(0, PNG_SIGNATURE.length).equals(PNG_SIGNATURE)) return;
+
+  const textPreview = image.subarray(0, 128).toString('utf-8');
+
+  if (textPreview.startsWith(GIT_LFS_POINTER_PREFIX)) {
+    throw new Error(`${label} is a Git LFS pointer, not a PNG. Run 'git lfs pull' to download screenshot fixtures.`);
+  }
+
+  throw new Error(`${label} is not a valid PNG file.`);
+}
+
 function compareImages(
   expect: Buffer,
   actual: Buffer,
   pixelmatch: typeof import('pixelmatch'),
   diffOptions: PixelmatchOptions,
 ): { isEqual: boolean; diff: Buffer } {
+  assertValidPng(expect, 'Expected image buffer');
+  assertValidPng(actual, 'Actual image buffer');
   const expectImage = PNG.sync.read(expect);
   const actualImage = PNG.sync.read(actual);
 

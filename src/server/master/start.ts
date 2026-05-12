@@ -5,7 +5,7 @@ import master from './master.js';
 import { CreeveyApi } from './api.js';
 import { Config, isDefined } from '../../types.js';
 import { Options } from '../../schema.js';
-import { shutdownWorkers, testsToImages, readDirRecursive, copyStatics } from '../utils.js';
+import { shutdownWorkers, testsToImages, readDirRecursive, copyStatics, ensureClientStatics } from '../utils.js';
 import { subscribeOn } from '../messages.js';
 import Runner from './runner.js';
 import { logger } from '../logger.js';
@@ -81,6 +81,7 @@ export async function start(
   options: Options,
 ): Promise<void> {
   const host = config.host;
+  if (options.ui) await ensureClientStatics();
   const resolveApi = startServer(config.reportDir, port, options.ui, host);
 
   let runner: Runner | null = null;

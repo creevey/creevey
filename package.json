@@ -179,7 +179,7 @@
     "react-dom": "^18.3.1",
     "react-is": "^18.3.1",
     "selenium-webdriver": "^4.33.0",
-    "storybook": "^9.0.0",
+    "storybook": "^10.3.4",
     "tmp": "^0.2.3",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.33.0",

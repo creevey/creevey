@@ -154,7 +154,7 @@ export default async function (command: 'report' | 'test' | 'worker', options: O
       const { default: getPort } = await import('get-port');
       const freePort = await getPort({ port });
 
-      report(config, reportDir, freePort);
+      await report(config, reportDir, freePort);
       return;
     }
 

@@ -73,6 +73,8 @@ src/
 - Supports TypeScript with full type safety
 - Browser-specific configurations
 - Docker and CI integration options
+- `.storybook/package.json` declares `"type": "module"`, so `.storybook/main.ts` must avoid CommonJS globals such as bare `require` and use `createRequire(import.meta.url)` for package resolution
+- The Creevey UI server serves the built Vite bundle from `dist/client/web`; when those assets are missing in a source checkout, server startup now builds the client bundle before serving or copying report statics
 
 ## Entry Points
 
@@ -218,6 +220,7 @@ story('ComponentStory', () => {
 
 - Always specify webdriver explicitly (SeleniumWebdriver or PlaywrightWebdriver)
 - Use hybridStoriesProvider for interactive tests
+- Local Storybook commands currently use `storybook@9.0.0`, which requires Node.js 20+ even though the top-level `engines.node` field still says `>=18`
 - Configure appropriate timeouts for complex interactions
 - Consider Docker for consistent test environments
 - Use fail-fast mode for quick CI feedback
