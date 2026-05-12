@@ -83,7 +83,7 @@
     "prepare": "husky"
   },
   "engines": {
-    "node": ">=20.19.6"
+    "node": ">=18"
   },
   "peerDependencies": {
     "playwright-core": "*",
