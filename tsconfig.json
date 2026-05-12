@@ -15,7 +15,12 @@
     "noUnusedParameters": true,
     "typeRoots": ["./types", "./node_modules/@types"],
     "paths": {
-      "creevey": ["./"]
+      "creevey": ["./"],
+      "creevey/playwright": ["./src/playwright"],
+      "creevey/playwright/test": ["./src/playwright/generator"],
+      "creevey/playwright/setup": ["./src/playwright/setup"],
+      "creevey/playwright/reporter": ["./src/playwright/reporter"],
+      "creevey/selenium": ["./src/selenium"]
     },
     "skipLibCheck": true,
     "resolveJsonModule": true
