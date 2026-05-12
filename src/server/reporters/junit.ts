@@ -1,6 +1,7 @@
 import EventEmitter from 'events';
 import { dirname, relative, resolve } from 'path';
 import { closeSync, existsSync, mkdirSync, openSync, writeFileSync } from 'fs';
+import os from 'os';
 import { TEST_EVENTS, FakeTest } from '../../types.js';
 import { logger } from '../logger.js';
 import { CreeveyReporter } from './creevey.js';
@@ -212,7 +213,7 @@ export class JUnitReporter {
       'testsuites',
       { ...stats, time: executionTime(stats.time), timestamp: toISO8601(this.runStartTime) },
       () => {
-        suites.forEach(({ suiteName, browserName, tests, failures, errors, time, timestamp }) => {
+        suites.forEach(({ suiteName, browserName, tests, failures, errors, time, timestamp }, index) => {
           this.writeElement(
             'testsuite',
             {
@@ -221,6 +222,8 @@ export class JUnitReporter {
               failures,
               errors,
               time: executionTime(time),
+              hostname: os.hostname(),
+              id: index,
               timestamp,
             },
             () => {

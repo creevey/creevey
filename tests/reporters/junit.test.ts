@@ -252,4 +252,21 @@ describe('JUnitReporter', () => {
       expect(xml).toContain('value="screen-diff.png"');
     });
   });
+
+  describe('testsuite spec attributes', () => {
+    test('includes hostname attribute on testsuite', () => {
+      const out = tempXmlPath();
+      const xml = runReporter([makeFakeTest()], out);
+      expect(xml).toMatch(/hostname="[^"]+"/);
+    });
+
+    test('includes sequential id starting at 0 on each testsuite', () => {
+      const out = tempXmlPath();
+      const a = makeFakeTest({ storyTitle: 'Alpha', browserName: 'chrome' });
+      const b = makeFakeTest({ storyTitle: 'Beta', browserName: 'chrome' });
+      const xml = runReporter([a, b], out);
+      expect(xml).toContain('id="0"');
+      expect(xml).toContain('id="1"');
+    });
+  });
 });
