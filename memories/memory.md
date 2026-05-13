@@ -74,7 +74,7 @@ src/
 - Browser-specific configurations
 - Docker and CI integration options
 - `.storybook/package.json` declares `"type": "module"`, so `.storybook/main.ts` must avoid CommonJS globals such as bare `require` and use `createRequire(import.meta.url)` for package resolution
-- The Creevey UI server serves the built Vite bundle from `dist/client/web`; when those assets are missing in a source checkout, server startup now builds the client bundle before serving or copying report statics
+- The Creevey UI server serves the built Vite bundle from `dist/client/web`; published and other runtime server flows require those built assets to already exist and fail clearly if they are missing, while repo-local CLI execution keeps a dev-only bootstrap that builds the client bundle on demand before `creevey report` and local `creevey test` flows that need report statics
 - Selenium Storybook startup now installs the `__name` shim before navigation, preferring WebDriver BiDi preload scripts when `webSocketUrl` is enabled for supported browsers and falling back to Chromium CDP when BiDi is unavailable
 
 ## Entry Points
