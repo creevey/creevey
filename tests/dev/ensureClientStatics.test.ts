@@ -97,21 +97,17 @@ describe('isLocalSourceCheckout', () => {
     vi.restoreAllMocks();
   });
 
-  test('returns true when runtime layout includes source-only client files', () => {
+  test('returns true when vite config exists next to the source checkout', () => {
     const runtimeDir = '/repo/src';
-    const sourceClientEntry = path.join(runtimeDir, 'client/web/index.tsx');
-    const sourceServerEntry = path.join(runtimeDir, 'server/index.ts');
-    vi.spyOn(fs, 'existsSync').mockImplementation(
-      (filePath) => filePath === sourceClientEntry || filePath === sourceServerEntry,
-    );
+    const viteConfig = path.join(runtimeDir, '../vite.config.mts');
+    vi.spyOn(fs, 'existsSync').mockImplementation((filePath) => filePath === viteConfig);
 
     expect(isLocalSourceCheckout(runtimeDir)).toBe(true);
   });
 
   test('returns false for packaged layouts even when parent paths contain src', () => {
     const runtimeDir = '/tmp/src-containing-parent/node_modules/creevey/dist';
-    const builtIndexHtml = path.join(runtimeDir, 'client/web/index.html');
-    vi.spyOn(fs, 'existsSync').mockImplementation((filePath) => filePath === builtIndexHtml);
+    vi.spyOn(fs, 'existsSync').mockReturnValue(false);
 
     expect(isLocalSourceCheckout(runtimeDir)).toBe(false);
   });
