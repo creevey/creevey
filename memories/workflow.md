@@ -128,7 +128,7 @@ This replaces the previous manual workflow to support protected branches (no dir
 
 ### Legacy release workflow
 
-The previous manual release workflow (using `git-cliff` and `workflow_dispatch`) has been replaced. The `git-cliff` configuration (`cliff.toml`) and related scripts may be removed in a future cleanup if no longer needed.
+The previous manual release workflow (using `git-cliff` and `workflow_dispatch`) has been removed. Releases now use `release-please` exclusively.
 
 ## Testing Workflows
 
