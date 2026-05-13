@@ -149,7 +149,7 @@ python3 -c "import yaml; yaml.safe_load(open('.github/workflows/release.yml')); 
 
 Expected output: `Valid YAML`
 
-- [ ] **Step 3: Verify old git-cliff steps are removed**
+- [x] **Step 3: Verify old git-cliff steps are removed**
 
 Run:
 
@@ -209,7 +209,7 @@ The project uses [release-please](https://github.com/googleapis/release-please) 
 
 ### Legacy release workflow
 
-The previous manual release workflow (using `git-cliff` and `workflow_dispatch`) has been replaced. The `git-cliff` configuration (`cliff.toml`) and related scripts may be removed in a future cleanup if no longer needed.
+The previous manual release workflow (using `git-cliff` and `workflow_dispatch`) has been replaced. The `git-cliff` configuration (`cliff.toml`) and related scripts were removed during the cleanup.
 ```
 
 - [ ] **Step 3: Commit**

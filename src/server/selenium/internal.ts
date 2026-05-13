@@ -37,6 +37,37 @@ interface ElementRect {
 // type UnPromise<P> = P extends Promise<infer T> ? T : never;
 // let context: UnPromise<ReturnType<typeof BrowsingContext>> | null = null;
 
+const seleniumBidiBrowserNames = new Set(['chrome', 'firefox', 'msedge', 'MicrosoftEdge']);
+
+export const SELENIUM_STORYBOOK_EVALUATE_SHIM_SCRIPT = String.raw`
+  (() => {
+    const defineName = (func) => func;
+    window.__name = defineName;
+    globalThis.__name = defineName;
+  })()
+`;
+
+function supportsSeleniumBidi(browserName: string): boolean {
+  return seleniumBidiBrowserNames.has(browserName);
+}
+
+export function buildSeleniumCapabilities(
+  browserName: string,
+  seleniumCapabilities: BrowserConfigObject['seleniumCapabilities'],
+): Capabilities {
+  const capabilities = new Capabilities({
+    browserName,
+    ...seleniumCapabilities,
+    pageLoadStrategy: PageLoadStrategy.EAGER,
+  });
+
+  if (supportsSeleniumBidi(browserName)) {
+    capabilities.set('webSocketUrl', true);
+  }
+
+  return capabilities;
+}
+
 function getSessionData(grid: string, sessionId = ''): Promise<Record<string, unknown>> {
   const gridUrl = new URL(grid);
   gridUrl.pathname = `/host/${sessionId}`;
@@ -103,11 +134,7 @@ async function buildWebdriver(
   logger().debug(`Connecting to Selenium ${chalk.magenta(url.toString())}`);
 
   // TODO Define some capabilities explicitly and define typings
-  const capabilities = new Capabilities({
-    browserName,
-    ...seleniumCapabilities,
-    pageLoadStrategy: PageLoadStrategy.EAGER,
-  });
+  const capabilities = buildSeleniumCapabilities(browserName, seleniumCapabilities);
   const prefs = new logging.Preferences();
 
   if (debug) {
@@ -376,6 +403,7 @@ export class InternalBrowser {
   }
 
   async loadStoriesFromBrowser(): Promise<StoriesRaw> {
+    await this.#browser.executeScript(SELENIUM_STORYBOOK_EVALUATE_SHIM_SCRIPT);
     return await this.#browser.executeAsyncScript(getStories);
   }
 
@@ -632,8 +660,6 @@ export class InternalBrowser {
   private async defineGlobals(): Promise<void> {
     logger().debug('Defining Storybook globals');
     await this.#browser.executeAsyncScript(function (userGlobals: StorybookGlobals | undefined, callback: () => void) {
-      // @ts-expect-error https://github.com/evanw/esbuild/issues/2605#issuecomment-2050808084
-      window.__name = (func: unknown) => func;
       if (userGlobals) {
         window.__STORYBOOK_ADDONS_CHANNEL__.once('globalsUpdated', () => {
           callback();

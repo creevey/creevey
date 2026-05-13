@@ -73,6 +73,10 @@ src/
 - Supports TypeScript with full type safety
 - Browser-specific configurations
 - Docker and CI integration options
+- `.storybook/package.json` declares `"type": "module"`, so `.storybook/main.ts` must avoid CommonJS globals such as bare `require` and use `createRequire(import.meta.url)` for package resolution
+- The Creevey UI server serves the built Vite bundle from `dist/client/web`; published and other runtime server flows require those built assets to already exist and fail clearly if they are missing, while repo-local CLI execution keeps a dev-only bootstrap that builds the client bundle on demand before `creevey report` and local `creevey test` flows that need report statics
+- Selenium and Playwright no longer inject the `__name` shim during page startup; instead they apply narrow shims immediately before evaluating serialized Storybook helper functions such as `getStories`, which avoids crashing iframe initialization while still covering the `tsx`/esbuild stringification path
+- Selenium's `__name` workaround now lives only on the serialized helper execution path
 
 ## Entry Points
 
@@ -205,6 +209,10 @@ story('ComponentStory', () => {
 2. Configure browser installation
 3. Use appropriate reporter (junit, teamcity)
 4. Handle screenshot storage in artifacts
+5. GitHub Actions and GitLab CI build Storybook with `yarn build-storybook --test`, serve the generated `storybook-static` output locally on port `6006` via the repo's pinned `http-server` dev dependency, and run Creevey against that static build instead of `storybook dev`
+6. GitLab CI installs local Playwright browsers for `chrome` and `firefox` instead of using Selenoid services
+7. The GitLab-specific Creevey config uses the built-in `junit` reporter, writing `report/junit.xml` so GitLab can ingest screenshot test results as unit test reports
+8. Creevey's JUnit reporter keeps `property name="attachment"` entries relative to the JUnit XML file and also emits a single GitLab-compatible testcase `system-out` attachment marker relative to `CI_PROJECT_DIR` when set, otherwise `process.cwd()`; in this repo's current CI layout that marker resolves under `report/...` and prefers the diff image so screenshot artifacts are visible in GitLab test details
 
 ## File Locations
 
@@ -218,10 +226,12 @@ story('ComponentStory', () => {
 
 - Always specify webdriver explicitly (SeleniumWebdriver or PlaywrightWebdriver)
 - Use hybridStoriesProvider for interactive tests
+- Local Storybook commands currently use Storybook 10.3.6 packages and require Node.js 20.19.6+
 - Configure appropriate timeouts for complex interactions
 - Consider Docker for consistent test environments
 - Use fail-fast mode for quick CI feedback
 - Enable debug mode for troubleshooting
+- Keep the `AUTHORS` file synchronized with contributor attribution changes and co-authored commit backfills.
 
 ## Related Documentation
 

@@ -134,11 +134,11 @@ jobs:
 
 ## Files Potentially Removed Later
 
-| File                                                              | Action                  | Reason                                              |
-| ----------------------------------------------------------------- | ----------------------- | --------------------------------------------------- |
-| `cliff.toml`                                                      | Can remove              | git-cliff becomes unused in release-please workflow |
-| `package.json` devDependency `git-cliff`                          | Can remove (eventually) | Only used in old release workflow                   |
-| `package.json` scripts `changelog:preview` / `changelog:generate` | Can remove (eventually) | Only used with git-cliff                            |
+| File                                                              | Action  | Reason                                              |
+| ----------------------------------------------------------------- | ------- | --------------------------------------------------- |
+| `cliff.toml`                                                      | Removed | git-cliff is no longer used in the release workflow |
+| `package.json` devDependency `git-cliff`                          | Removed | Only used in the old release workflow               |
+| `package.json` scripts `changelog:preview` / `changelog:generate` | Removed | Only used with git-cliff                            |
 
 ## Dependencies
 

@@ -4,6 +4,11 @@ import Logger from 'loglevel';
 import { cac } from 'cac';
 import { Options, OptionsSchema, WorkerOptions, WorkerOptionsSchema } from './schema.js';
 import { version } from '../package.json';
+import {
+  ensureClientStaticsForLocalDev,
+  isLocalSourceCheckout,
+  shouldEnsureClientStaticsForCommand,
+} from './dev/ensure-client-statics.js';
 import { logger, setRootName } from './server/logger.js';
 import creevey from './server/index.js';
 import './server/shutdown.js';
@@ -73,6 +78,8 @@ if (!command || (command !== 'report' && command !== 'test' && command !== 'work
   process.exit(1);
 }
 
+const runtimeDir = __dirname;
+
 try {
   options = cluster.isWorker ? v.parse(WorkerOptionsSchema, workerCli.options) : v.parse(OptionsSchema, cli.options);
 } catch (error: unknown) {
@@ -124,4 +131,10 @@ if (options.trace) {
   Logger.setDefaultLevel(Logger.levels.INFO);
 }
 
-void creevey(command, options);
+void (async (): Promise<void> => {
+  if (!cluster.isWorker && isLocalSourceCheckout(runtimeDir) && shouldEnsureClientStaticsForCommand(command)) {
+    await ensureClientStaticsForLocalDev();
+  }
+
+  await creevey(command, options);
+})();

@@ -2,6 +2,7 @@
 .vscode
 dist
 report
+storybook-static
 examples
 CHANGELOG*
 tests/**/approvals

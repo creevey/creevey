@@ -1,5 +1,11 @@
-import { expect, describe, test } from 'vitest';
-import { shouldSkip } from '../src/server/utils.js';
+import fs from 'fs';
+import path from 'path';
+import { afterEach, expect, describe, test, vi } from 'vitest';
+import { getClientDir, getRequiredClientDir, shouldSkip } from '../src/server/utils.js';
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 describe('shouldSkip', () => {
   describe('browsers', () => {
@@ -184,5 +190,26 @@ describe('shouldSkip', () => {
 
       expect(result).to.equal('Skip click tests');
     });
+  });
+});
+
+describe('getRequiredClientDir', () => {
+  test('returns client dir when built statics exist', () => {
+    const clientDir = getClientDir();
+    const indexHtml = path.join(clientDir, 'index.html');
+    const existsSync = vi.spyOn(fs, 'existsSync').mockImplementation((filePath) => filePath === indexHtml);
+
+    expect(getRequiredClientDir()).toBe(clientDir);
+    expect(existsSync).toHaveBeenCalledWith(indexHtml);
+  });
+
+  test('throws a clear error when built statics are missing', () => {
+    const indexHtml = path.join(getClientDir(), 'index.html');
+    const existsSync = vi.spyOn(fs, 'existsSync').mockReturnValue(false);
+
+    expect(() => getRequiredClientDir()).toThrow(
+      /^Creevey web UI assets are missing\. Run `yarn build` or `yarn build:client` before starting UI mode\.$/,
+    );
+    expect(existsSync).toHaveBeenCalledWith(indexHtml);
   });
 });

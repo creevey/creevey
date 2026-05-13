@@ -2,23 +2,21 @@ import globals from 'globals';
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import react from 'eslint-plugin-react';
-import storybook from 'eslint-plugin-storybook';
+import { configs as storybookConfigs } from 'eslint-plugin-storybook';
 import reactHooks from 'eslint-plugin-react-hooks';
 import prettierRecommended from 'eslint-plugin-prettier/recommended';
 import { importX, createNodeResolver } from 'eslint-plugin-import-x';
 import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
 
 const config = tseslint.config(
-  { ignores: ['.vscode/*', '.yarn/*', 'dist/*', 'report/*', 'scripts/*', '.pnp.*'] },
+  { ignores: ['.vscode/*', '.yarn/*', 'dist/*', 'report/*', 'scripts/*', 'storybook-static/*', '.pnp.*'] },
   js.configs.recommended,
   prettierRecommended,
   importX.flatConfigs.recommended,
   importX.flatConfigs.typescript,
   react.configs.flat.recommended,
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
-  ...storybook.configs['flat/recommended'],
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
-  ...storybook.configs['flat/csf-strict'],
+  ...storybookConfigs['flat/recommended'],
+  ...storybookConfigs['flat/csf-strict'],
   ...tseslint.configs.strictTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
   {

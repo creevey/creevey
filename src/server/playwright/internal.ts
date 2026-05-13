@@ -29,6 +29,38 @@ const browsers = {
   webkit,
 };
 
+export const PLAYWRIGHT_STORYBOOK_INIT_SCRIPT = String.raw`
+  requestAnimationFrame(check);
+
+  function check() {
+    if (
+      document.readyState !== 'complete' ||
+      typeof window.__STORYBOOK_PREVIEW__ === 'undefined' ||
+      typeof window.__STORYBOOK_ADDONS_CHANNEL__ === 'undefined' ||
+      (!('ready' in window.__STORYBOOK_PREVIEW__) &&
+        window.__STORYBOOK_ADDONS_CHANNEL__.last('setGlobals') === undefined)
+    ) {
+      requestAnimationFrame(check);
+      return;
+    }
+
+    if ('ready' in window.__STORYBOOK_PREVIEW__) {
+      // NOTE: Storybook <= 7.x doesn't have ready() method
+      void window.__STORYBOOK_PREVIEW__.ready().then(() => (window.__CREEVYE_STORYBOOK_READY__ = true));
+    } else {
+      window.__CREEVYE_STORYBOOK_READY__ = true;
+    }
+  }
+`;
+
+export const PLAYWRIGHT_STORYBOOK_EVALUATE_SHIM_SCRIPT = String.raw`
+  (() => {
+    const defineName = (func) => func;
+    window.__name = defineName;
+    globalThis.__name = defineName;
+  })()
+`;
+
 async function tryConnect(type: BrowserType, gridUrl: string, timeoutMs: number): Promise<Browser | null> {
   let timeout: NodeJS.Timeout | null = null;
   let isTimeout = false;
@@ -88,6 +120,7 @@ export class InternalBrowser {
   #browser: Browser;
   #context: BrowserContext;
   #page: Page;
+  #pageErrors: string[] = [];
   #traceDir: string;
   #sessionId: string = v4();
   #debug: boolean;
@@ -116,6 +149,12 @@ export class InternalBrowser {
 
   get sessionId() {
     return this.#sessionId;
+  }
+
+  recordPageError(error: Error): void {
+    const message = error.stack ?? error.message;
+    this.#pageErrors = [...this.#pageErrors.slice(-9), message];
+    logger().error(`Storybook page error: ${message}`);
   }
 
   async closeBrowser(): Promise<void> {
@@ -225,6 +264,7 @@ export class InternalBrowser {
   }
 
   async loadStoriesFromBrowser(): Promise<StoriesRaw> {
+    await this.#page.evaluate(PLAYWRIGHT_STORYBOOK_EVALUATE_SHIM_SCRIPT);
     // @ts-expect-error TODO: Fix this
     return await this.#page.evaluate(getStories);
   }
@@ -303,13 +343,17 @@ export class InternalBrowser {
       );
     }
 
+    const internalBrowser = new InternalBrowser(browser, context, page, tracesDir, debug, storybookGlobals);
+
+    page.on('pageerror', (error) => {
+      internalBrowser.recordPageError(error);
+    });
+
     if (logger().getLevel() <= Logger.levels.DEBUG) {
       page.on('console', (msg) => {
         logger().debug(`Console message: ${msg.text()}`);
       });
     }
-
-    const internalBrowser = new InternalBrowser(browser, context, page, tracesDir, debug, storybookGlobals);
 
     try {
       if (isShuttingDown.current) return null;
@@ -344,29 +388,7 @@ export class InternalBrowser {
 
     this.#page.setDefaultTimeout(60000);
 
-    await this.#page.addInitScript(() => {
-      requestAnimationFrame(check);
-
-      function check() {
-        if (
-          document.readyState !== 'complete' ||
-          typeof window.__STORYBOOK_PREVIEW__ === 'undefined' ||
-          typeof window.__STORYBOOK_ADDONS_CHANNEL__ === 'undefined' ||
-          (!('ready' in window.__STORYBOOK_PREVIEW__) &&
-            window.__STORYBOOK_ADDONS_CHANNEL__.last('setGlobals') === undefined)
-        ) {
-          requestAnimationFrame(check);
-          return;
-        }
-
-        if ('ready' in window.__STORYBOOK_PREVIEW__) {
-          // NOTE: Storybook <= 7.x doesn't have ready() method
-          void window.__STORYBOOK_PREVIEW__.ready().then(() => (window.__CREEVYE_STORYBOOK_READY__ = true));
-        } else {
-          window.__CREEVYE_STORYBOOK_READY__ = true;
-        }
-      }
-    });
+    await this.#page.addInitScript(PLAYWRIGHT_STORYBOOK_INIT_SCRIPT);
 
     return await runSequence(
       [() => this.openStorybookPage(storybookUrl), () => this.initStorybook()],
@@ -417,7 +439,50 @@ export class InternalBrowser {
   private async waitForStorybook(): Promise<void> {
     logger().debug('Waiting for Storybook to initiate');
 
-    await this.#page.waitForFunction(() => window.__CREEVYE_STORYBOOK_READY__);
+    try {
+      await this.#page.waitForFunction(() => window.__CREEVYE_STORYBOOK_READY__);
+    } catch (error) {
+      const diagnostics = await this.collectStorybookDiagnostics();
+      logger().error(`Storybook readiness diagnostics: ${JSON.stringify(diagnostics)}`);
+      throw error;
+    }
+  }
+
+  private async collectStorybookDiagnostics(): Promise<Record<string, unknown>> {
+    try {
+      return await this.#page.evaluate(
+        ({ pageErrors, rootId }) => {
+          const hasPreview = typeof window.__STORYBOOK_PREVIEW__ !== 'undefined';
+          const hasChannel = typeof window.__STORYBOOK_ADDONS_CHANNEL__ !== 'undefined';
+
+          return {
+            url: window.location.href,
+            readyState: document.readyState,
+            title: document.title,
+            storybookReady: window.__CREEVYE_STORYBOOK_READY__,
+            hasPreview,
+            hasChannel,
+            previewHasReady: hasPreview && 'ready' in window.__STORYBOOK_PREVIEW__,
+            setGlobalsReceived: hasChannel
+              ? window.__STORYBOOK_ADDONS_CHANNEL__.last('setGlobals') !== undefined
+              : false,
+            globalsUpdatedReceived: hasChannel
+              ? window.__STORYBOOK_ADDONS_CHANNEL__.last('globalsUpdated') !== undefined
+              : false,
+            bodyTextSample: document.body.innerText.slice(0, 500),
+            rootExists: document.getElementById(rootId) !== null,
+            pageErrors,
+          };
+        },
+        { pageErrors: this.#pageErrors, rootId: storybookRootID },
+      );
+    } catch (diagnosticsError) {
+      return {
+        url: this.#page.url(),
+        pageErrors: this.#pageErrors,
+        diagnosticsError: diagnosticsError instanceof Error ? diagnosticsError.message : diagnosticsError,
+      };
+    }
   }
 
   private async loadStorybookStories(): Promise<void> {
@@ -450,8 +515,6 @@ export class InternalBrowser {
     const globalsWatcher = this.#page.waitForFunction(() => window.__CREEVEY_STORYBOOK_GLOBALS__);
 
     void this.#page.evaluate((userGlobals) => {
-      // @ts-expect-error https://github.com/evanw/esbuild/issues/2605#issuecomment-2050808084
-      window.__name = (func: unknown) => func;
       if (userGlobals) {
         window.__STORYBOOK_ADDONS_CHANNEL__.once('globalsUpdated', ({ globals }: { globals: StorybookGlobals }) => {
           window.__CREEVEY_STORYBOOK_GLOBALS__ = globals;

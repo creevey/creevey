@@ -34,6 +34,21 @@ const browserTypes = {
 
 export const skipOptionKeys = ['in', 'kinds', 'stories', 'tests', 'reason'];
 
+export function getClientDir(): string {
+  return path.join(path.dirname(fileURLToPath(importMetaUrl)), '../../dist/client/web');
+}
+
+export function getRequiredClientDir(): string {
+  const clientDir = getClientDir();
+  const indexHtml = path.join(clientDir, 'index.html');
+
+  if (fs.existsSync(indexHtml)) return clientDir;
+
+  throw new Error(
+    'Creevey web UI assets are missing. Run `yarn build` or `yarn build:client` before starting UI mode.',
+  );
+}
+
 function matchBy(pattern: string | string[] | RegExp | undefined, value: string): boolean {
   return (
     (typeof pattern == 'string' && pattern == value) ||
@@ -315,7 +330,7 @@ export function waitOnUrl(waitUrl: string, timeout: number, delay: number) {
  * @param reportDir Directory where the report will be generated
  */
 export async function copyStatics(reportDir: string): Promise<void> {
-  const clientDir = path.join(path.dirname(fileURLToPath(importMetaUrl)), '../../dist/client/web');
+  const clientDir = getRequiredClientDir();
   const assets = (await fs.promises.readdir(path.join(clientDir, 'assets'), { withFileTypes: true }))
     .filter((dirent) => dirent.isFile())
     .map((dirent) => dirent.name);

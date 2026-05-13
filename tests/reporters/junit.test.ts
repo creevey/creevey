@@ -1,8 +1,8 @@
 import { describe, test, expect, afterEach } from 'vitest';
 import EventEmitter from 'events';
-import { join, dirname } from 'path';
+import { join, dirname, relative } from 'path';
 import os, { tmpdir } from 'os';
-import { readFileSync, unlinkSync, existsSync } from 'fs';
+import { readFileSync, unlinkSync, existsSync, rmSync } from 'fs';
 import { randomUUID } from 'crypto';
 import { TEST_EVENTS } from '../../src/types.js';
 import { JUnitReporter } from '../../src/server/reporters/junit.js';
@@ -11,11 +11,20 @@ import type { FakeTest, FakeSuite, Images } from '../../src/types.js';
 // ── helpers ──────────────────────────────────────────────────────────────────
 
 const createdFiles: string[] = [];
+const createdDirectories: string[] = [];
 
 function tempXmlPath(): string {
   const p = join(tmpdir(), `junit-test-${randomUUID()}.xml`);
   createdFiles.push(p);
   return p;
+}
+
+function tempRepoReportXmlPath(): string {
+  const outputDir = join(process.cwd(), 'report', `junit-test-${randomUUID()}`);
+  const outputFile = join(outputDir, 'junit.xml');
+  createdDirectories.push(outputDir);
+  createdFiles.push(outputFile);
+  return outputFile;
 }
 
 interface FakeTestOptions {
@@ -89,11 +98,39 @@ afterEach(() => {
   for (const p of createdFiles.splice(0)) {
     if (existsSync(p)) unlinkSync(p);
   }
+
+  for (const dir of createdDirectories.splice(0)) {
+    if (existsSync(dir)) rmSync(dir, { recursive: true, force: true });
+  }
 });
 
 // ── smoke test ────────────────────────────────────────────────────────────────
 
 describe('JUnitReporter', () => {
+  test('falls back to reportDir when reporterOptions is undefined', () => {
+    const outputDir = join(tmpdir(), `junit-dir-${randomUUID()}`);
+    const outputFile = join(outputDir, 'junit.xml');
+    createdDirectories.push(outputDir);
+    createdFiles.push(outputFile);
+
+    const runner = new EventEmitter();
+    const test = makeFakeTest();
+
+    expect(() => {
+      new JUnitReporter(runner, {
+        reportDir: outputDir,
+        reporterOptions: undefined as never,
+      });
+    }).not.toThrow();
+
+    runner.emit(TEST_EVENTS.RUN_BEGIN);
+    runner.emit(TEST_EVENTS.TEST_BEGIN, test);
+    runner.emit(TEST_EVENTS.TEST_PASS, test);
+    runner.emit(TEST_EVENTS.RUN_END);
+
+    expect(readFileSync(outputFile, 'utf-8')).toContain('<testsuites');
+  });
+
   test('produces valid XML for a single passing test', () => {
     const out = tempXmlPath();
     const xml = runReporter([makeFakeTest()], out);
@@ -204,8 +241,8 @@ describe('JUnitReporter', () => {
   });
 
   describe('screenshot attachments', () => {
-    test('writes attachment properties relative to the report file', () => {
-      const out = tempXmlPath();
+    test('writes attachment properties and GitLab system-out tags relative to the report file', () => {
+      const out = tempRepoReportXmlPath();
       const absPath = join(dirname(out), 'Button', 'primary', 'chrome', 'button-actual-1.png');
       const t = makeFakeTest({
         state: 'failed',
@@ -213,11 +250,16 @@ describe('JUnitReporter', () => {
         attachments: [absPath],
       });
       const xml = runReporter([t], out);
+      const normalizedXml = xml.replaceAll('\\', '/');
 
-      expect(xml).toContain('<properties>');
-      expect(xml).toContain('name="attachment"');
-      expect(xml).toContain('value="Button/primary/chrome/button-actual-1.png"');
-      expect(xml).toContain('</properties>');
+      expect(normalizedXml).toContain('<properties>');
+      expect(normalizedXml).toContain('name="attachment"');
+      expect(normalizedXml).toContain('value="Button/primary/chrome/button-actual-1.png"');
+      expect(normalizedXml).toContain('</properties>');
+      expect(normalizedXml).toContain('<system-out>');
+      expect(normalizedXml).toContain('[[ATTACHMENT|report/');
+      expect(normalizedXml).toContain('Button/primary/chrome/button-actual-1.png]]');
+      expect(normalizedXml).toContain('</system-out>');
     });
 
     test('no attachment properties block when attachments is empty', () => {
@@ -227,6 +269,8 @@ describe('JUnitReporter', () => {
       // The only <properties> block that may appear is in <testsuite> (browser prop) — not in testcase
       // We verify there's no attachment property
       expect(xml).not.toContain('name="attachment"');
+      expect(xml).not.toContain('[[ATTACHMENT|');
+      expect(xml).not.toContain('<system-out>');
     });
 
     test('no attachment properties block when attachments is undefined', () => {
@@ -234,22 +278,58 @@ describe('JUnitReporter', () => {
       const t = makeFakeTest({ state: 'passed' }); // attachments not set
       const xml = runReporter([t], out);
       expect(xml).not.toContain('name="attachment"');
+      expect(xml).not.toContain('[[ATTACHMENT|');
+      expect(xml).not.toContain('<system-out>');
     });
 
-    test('writes one property element per attachment', () => {
+    test('writes one property element per attachment and prefers diff for the GitLab marker', () => {
       const out = tempXmlPath();
       const base = dirname(out);
       const t = makeFakeTest({
         state: 'failed',
         images: { header: {} },
-        attachments: [join(base, 'screen-actual.png'), join(base, 'screen-diff.png')],
+        attachments: [join(base, 'screen-actual.png'), join(base, 'screen-expect.png'), join(base, 'screen-diff.png')],
       });
       const xml = runReporter([t], out);
+      const normalizedXml = xml.replaceAll('\\', '/');
 
-      const matches = xml.match(/name="attachment"/g) ?? [];
-      expect(matches).toHaveLength(2);
-      expect(xml).toContain('value="screen-actual.png"');
-      expect(xml).toContain('value="screen-diff.png"');
+      const matches = normalizedXml.match(/name="attachment"/g) ?? [];
+      const attachmentMarkers = normalizedXml.match(/\[\[ATTACHMENT\|/g) ?? [];
+      expect(matches).toHaveLength(3);
+      expect(attachmentMarkers).toHaveLength(1);
+      expect(normalizedXml).toContain('value="screen-actual.png"');
+      expect(normalizedXml).toContain('value="screen-expect.png"');
+      expect(normalizedXml).toContain('value="screen-diff.png"');
+      expect(normalizedXml).toContain('screen-diff.png]]');
+      expect(normalizedXml).not.toContain('screen-actual.png]]');
+      expect(normalizedXml).not.toContain('screen-expect.png]]');
+    });
+
+    test('uses CI_PROJECT_DIR for GitLab system-out attachment markers when set', () => {
+      const out = tempRepoReportXmlPath();
+      const absPath = join(dirname(out), 'Button', 'primary', 'chrome', 'button-actual-1.png');
+      const t = makeFakeTest({
+        state: 'failed',
+        images: { header: {} },
+        attachments: [absPath],
+      });
+      const originalCiProjectDir = process.env.CI_PROJECT_DIR;
+      const ciProjectDir = dirname(process.cwd());
+
+      try {
+        process.env.CI_PROJECT_DIR = ciProjectDir;
+
+        const xml = runReporter([t], out);
+        const expectedPath = relative(ciProjectDir, absPath).replaceAll('\\', '/');
+
+        expect(xml).toContain(`[[ATTACHMENT|${expectedPath}]]`);
+      } finally {
+        if (originalCiProjectDir === undefined) {
+          delete process.env.CI_PROJECT_DIR;
+        } else {
+          process.env.CI_PROJECT_DIR = originalCiProjectDir;
+        }
+      }
     });
   });
 

@@ -3,7 +3,7 @@ import { logger } from './logger.js';
 import { TestsManager } from './master/testsManager.js';
 import { start as startServer } from './master/server.js';
 import { CreeveyApi } from './master/api.js';
-import { shutdownWorkers } from './utils.js';
+import { getRequiredClientDir, shutdownWorkers } from './utils.js';
 import { subscribeOn } from './messages.js';
 
 /**
@@ -16,6 +16,7 @@ import { subscribeOn } from './messages.js';
  */
 export function report(config: Config, reportDir: string, port: number): void {
   logger().info('Starting UI Update Mode');
+  getRequiredClientDir();
 
   process.on('SIGINT', () => void shutdownWorkers());
 
