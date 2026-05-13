@@ -34,6 +34,8 @@ tests/
 
 ## Unit Testing Patterns
 
+- `tests/reporters/junit.test.ts` covers both legacy JUnit attachment properties and GitLab testcase `system-out` `[[ATTACHMENT|...]]` markers, including a direct one-marker-per-attachment assertion for multi-attachment cases.
+
 ### Utility Function Testing
 
 ```typescript

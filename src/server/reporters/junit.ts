@@ -1,5 +1,5 @@
 import EventEmitter from 'events';
-import { dirname, relative, resolve } from 'path';
+import { dirname, relative, resolve, sep } from 'path';
 import { closeSync, existsSync, mkdirSync, openSync, writeFileSync } from 'fs';
 import os from 'os';
 import { TEST_EVENTS, FakeTest } from '../../types.js';
@@ -145,19 +145,44 @@ export class JUnitReporter {
           if (test.state === 'failed') {
             this.writeFailureOrError(test);
           }
-          if (attachments.length > 0) {
-            this.writeElement('properties', {}, () => {
-              for (const absPath of attachments) {
-                this.writeElement('property', {
-                  name: 'attachment',
-                  value: relative(dirname(this.reportFile), absPath),
-                });
-              }
-            });
-          }
+          this.writeAttachments(attachments);
         },
       );
     }
+  }
+
+  private normalizePath(filePath: string): string {
+    return filePath.split(sep).join('/');
+  }
+
+  private relativeAttachmentPath(absPath: string): string {
+    return relative(dirname(this.reportFile), absPath);
+  }
+
+  private gitlabAttachmentPath(absPath: string): string {
+    return this.normalizePath(relative(process.env.CI_PROJECT_DIR ?? process.cwd(), absPath));
+  }
+
+  private writeAttachments(attachments: string[]): void {
+    if (attachments.length === 0) {
+      return;
+    }
+
+    this.writeElement('properties', {}, () => {
+      for (const absPath of attachments) {
+        this.writeElement('property', {
+          name: 'attachment',
+          value: this.relativeAttachmentPath(absPath),
+        });
+      }
+    });
+
+    this.writeElement(
+      'system-out',
+      {},
+      undefined,
+      attachments.map((absPath) => `[[ATTACHMENT|${this.gitlabAttachmentPath(absPath)}]]`).join('\n'),
+    );
   }
 
   private writeFailureOrError(test: FakeTest): void {
