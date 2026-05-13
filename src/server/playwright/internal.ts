@@ -29,6 +29,38 @@ const browsers = {
   webkit,
 };
 
+export const PLAYWRIGHT_STORYBOOK_INIT_SCRIPT = String.raw`
+  requestAnimationFrame(check);
+
+  function check() {
+    if (
+      document.readyState !== 'complete' ||
+      typeof window.__STORYBOOK_PREVIEW__ === 'undefined' ||
+      typeof window.__STORYBOOK_ADDONS_CHANNEL__ === 'undefined' ||
+      (!('ready' in window.__STORYBOOK_PREVIEW__) &&
+        window.__STORYBOOK_ADDONS_CHANNEL__.last('setGlobals') === undefined)
+    ) {
+      requestAnimationFrame(check);
+      return;
+    }
+
+    if ('ready' in window.__STORYBOOK_PREVIEW__) {
+      // NOTE: Storybook <= 7.x doesn't have ready() method
+      void window.__STORYBOOK_PREVIEW__.ready().then(() => (window.__CREEVYE_STORYBOOK_READY__ = true));
+    } else {
+      window.__CREEVYE_STORYBOOK_READY__ = true;
+    }
+  }
+`;
+
+export const PLAYWRIGHT_STORYBOOK_EVALUATE_SHIM_SCRIPT = String.raw`
+  (() => {
+    const defineName = (func) => func;
+    window.__name = defineName;
+    globalThis.__name = defineName;
+  })()
+`;
+
 async function tryConnect(type: BrowserType, gridUrl: string, timeoutMs: number): Promise<Browser | null> {
   let timeout: NodeJS.Timeout | null = null;
   let isTimeout = false;
@@ -232,6 +264,7 @@ export class InternalBrowser {
   }
 
   async loadStoriesFromBrowser(): Promise<StoriesRaw> {
+    await this.#page.evaluate(PLAYWRIGHT_STORYBOOK_EVALUATE_SHIM_SCRIPT);
     // @ts-expect-error TODO: Fix this
     return await this.#page.evaluate(getStories);
   }
@@ -355,37 +388,7 @@ export class InternalBrowser {
 
     this.#page.setDefaultTimeout(60000);
 
-    await this.#page.addInitScript(() => {
-      // Some Vite/esbuild outputs reference __name during module evaluation.
-      // Define it before Storybook loads, otherwise the preview crashes before Creevey can initialize.
-      const defineName = (func: unknown) => func;
-      // @ts-expect-error https://github.com/evanw/esbuild/issues/2605#issuecomment-2050808084
-      window.__name = defineName;
-      // @ts-expect-error Keep globalThis in sync for modules that read the helper directly.
-      globalThis.__name = defineName;
-
-      requestAnimationFrame(check);
-
-      function check() {
-        if (
-          document.readyState !== 'complete' ||
-          typeof window.__STORYBOOK_PREVIEW__ === 'undefined' ||
-          typeof window.__STORYBOOK_ADDONS_CHANNEL__ === 'undefined' ||
-          (!('ready' in window.__STORYBOOK_PREVIEW__) &&
-            window.__STORYBOOK_ADDONS_CHANNEL__.last('setGlobals') === undefined)
-        ) {
-          requestAnimationFrame(check);
-          return;
-        }
-
-        if ('ready' in window.__STORYBOOK_PREVIEW__) {
-          // NOTE: Storybook <= 7.x doesn't have ready() method
-          void window.__STORYBOOK_PREVIEW__.ready().then(() => (window.__CREEVYE_STORYBOOK_READY__ = true));
-        } else {
-          window.__CREEVYE_STORYBOOK_READY__ = true;
-        }
-      }
-    });
+    await this.#page.addInitScript(PLAYWRIGHT_STORYBOOK_INIT_SCRIPT);
 
     return await runSequence(
       [() => this.openStorybookPage(storybookUrl), () => this.initStorybook()],

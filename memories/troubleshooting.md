@@ -112,7 +112,7 @@ If Playwright fails during browser startup with `page.waitForFunction: Timeout 6
 - `setGlobalsReceived: false` on partially initialized Storybook pages
 - `pageErrors` showing Storybook runtime failures before stories load
 
-If `pageErrors` contains `ReferenceError: __name is not defined`, the Storybook preview crashed during module evaluation before Creevey reached its previous globals setup step. Creevey now injects a `__name` shim before Storybook modules execute: Playwright uses `addInitScript()`, while Selenium prefers a WebDriver BiDi preload script and falls back to Chromium CDP injection when BiDi is unavailable.
+If `pageErrors` contains `ReferenceError: __name is not defined`, the Storybook preview crashed during module evaluation before Creevey reached its previous globals setup step. Selenium still injects a `__name` shim before navigation through WebDriver BiDi or Chromium CDP. Playwright no longer does that globally; instead it applies a narrow `__name` shim immediately before evaluating serialized Storybook helper functions such as `getStories`. If startup succeeds but story extraction still throws `ReferenceError: __name is not defined`, inspect the `page.evaluate(...)` helper path next.
 
 When adding Playwright diagnostics with `page.evaluate()`, do not reference imported module variables directly inside the evaluated callback. Firefox can fail with errors like `import_webdriver is not defined`; pass such values as explicit evaluate arguments instead.
 

@@ -75,7 +75,8 @@ src/
 - Docker and CI integration options
 - `.storybook/package.json` declares `"type": "module"`, so `.storybook/main.ts` must avoid CommonJS globals such as bare `require` and use `createRequire(import.meta.url)` for package resolution
 - The Creevey UI server serves the built Vite bundle from `dist/client/web`; published and other runtime server flows require those built assets to already exist and fail clearly if they are missing, while repo-local CLI execution keeps a dev-only bootstrap that builds the client bundle on demand before `creevey report` and local `creevey test` flows that need report statics
-- Selenium Storybook startup now installs the `__name` shim before navigation, preferring WebDriver BiDi preload scripts when `webSocketUrl` is enabled for supported browsers and falling back to Chromium CDP when BiDi is unavailable
+- Selenium Storybook startup installs the `__name` shim before navigation, preferring WebDriver BiDi preload scripts when `webSocketUrl` is enabled for supported browsers and falling back to Chromium CDP when BiDi is unavailable
+- Playwright no longer injects the `__name` shim during page startup; instead it applies a narrow shim immediately before evaluating serialized Storybook helper functions such as `getStories`, which avoids crashing iframe initialization while still covering the `tsx`/esbuild stringification path
 
 ## Entry Points
 
