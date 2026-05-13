@@ -226,6 +226,7 @@ story('ComponentStory', () => {
 - Consider Docker for consistent test environments
 - Use fail-fast mode for quick CI feedback
 - Enable debug mode for troubleshooting
+- Keep the `AUTHORS` file synchronized with contributor attribution changes and co-authored commit backfills.
 
 ## Related Documentation
 

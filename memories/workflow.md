@@ -86,6 +86,8 @@ git commit -m "fix: resolve screenshot capture issue"
 git commit -m "docs: update configuration examples"
 ```
 
+- When backfilling or sharing work, add `Co-authored-by:` trailers with the contributor's GitHub-associated email and keep `AUTHORS` updated.
+
 ## Build and Release Process
 
 ### Build Pipeline
