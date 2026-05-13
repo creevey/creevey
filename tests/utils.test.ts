@@ -1,5 +1,7 @@
+import fs from 'fs';
+import path from 'path';
 import { expect, describe, test } from 'vitest';
-import { shouldSkip } from '../src/server/utils.js';
+import { getClientDir, getRequiredClientDir, shouldSkip } from '../src/server/utils.js';
 
 describe('shouldSkip', () => {
   describe('browsers', () => {
@@ -184,5 +186,48 @@ describe('shouldSkip', () => {
 
       expect(result).to.equal('Skip click tests');
     });
+  });
+});
+
+describe('getRequiredClientDir', () => {
+  const clientDir = getClientDir();
+  const indexHtml = path.join(clientDir, 'index.html');
+  const backupHtml = path.join(clientDir, 'index.html.test-backup');
+  const hadIndexHtml = fs.existsSync(indexHtml);
+
+  const cleanupIndexHtml = (): void => {
+    if (fs.existsSync(backupHtml)) {
+      fs.renameSync(backupHtml, indexHtml);
+      return;
+    }
+
+    if (!hadIndexHtml && fs.existsSync(indexHtml)) {
+      fs.unlinkSync(indexHtml);
+    }
+  };
+
+  test('returns client dir when built statics exist', () => {
+    if (!hadIndexHtml) {
+      fs.mkdirSync(clientDir, { recursive: true });
+      fs.writeFileSync(indexHtml, '<!doctype html>');
+    }
+
+    expect(getRequiredClientDir()).toBe(clientDir);
+
+    cleanupIndexHtml();
+  });
+
+  test('throws a clear error when built statics are missing', () => {
+    if (fs.existsSync(indexHtml)) {
+      fs.renameSync(indexHtml, backupHtml);
+    }
+
+    try {
+      expect(() => getRequiredClientDir()).toThrow(
+        /^Creevey web UI assets are missing\. Run `yarn build` or `yarn build:client` before starting UI mode\.$/,
+      );
+    } finally {
+      cleanupIndexHtml();
+    }
   });
 });

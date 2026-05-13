@@ -38,30 +38,15 @@ export function getClientDir(): string {
   return path.join(path.dirname(fileURLToPath(importMetaUrl)), '../../dist/client/web');
 }
 
-export async function ensureClientStatics(): Promise<string> {
+export function getRequiredClientDir(): string {
   const clientDir = getClientDir();
   const indexHtml = path.join(clientDir, 'index.html');
 
   if (fs.existsSync(indexHtml)) return clientDir;
 
-  logger().info('Building Creevey web UI...');
-
-  try {
-    const { build } = await import('vite');
-    await build({
-      configFile: path.join(path.dirname(fileURLToPath(importMetaUrl)), '../../vite.config.mts'),
-      logLevel: 'error',
-    });
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    throw new Error(`Failed to build Creevey web UI: ${errorMessage}`);
-  }
-
-  if (!fs.existsSync(indexHtml)) {
-    throw new Error(`Failed to build Creevey web UI: ${indexHtml} was not created`);
-  }
-
-  return clientDir;
+  throw new Error(
+    'Creevey web UI assets are missing. Run `yarn build` or `yarn build:client` before starting UI mode.',
+  );
 }
 
 function matchBy(pattern: string | string[] | RegExp | undefined, value: string): boolean {
@@ -345,7 +330,7 @@ export function waitOnUrl(waitUrl: string, timeout: number, delay: number) {
  * @param reportDir Directory where the report will be generated
  */
 export async function copyStatics(reportDir: string): Promise<void> {
-  const clientDir = await ensureClientStatics();
+  const clientDir = getRequiredClientDir();
   const assets = (await fs.promises.readdir(path.join(clientDir, 'assets'), { withFileTypes: true }))
     .filter((dirent) => dirent.isFile())
     .map((dirent) => dirent.name);
