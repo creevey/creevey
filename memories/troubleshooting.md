@@ -450,6 +450,9 @@ const config: CreeveyConfig = {
   with:
     name: creevey-report
     path: report/
+
+# Creevey's built-in JUnit reporter falls back to reportDir/junit.xml
+# when reporterOptions.outputFile is omitted.
 ```
 
 ### Debugging Techniques

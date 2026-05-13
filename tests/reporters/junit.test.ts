@@ -94,6 +94,29 @@ afterEach(() => {
 // ── smoke test ────────────────────────────────────────────────────────────────
 
 describe('JUnitReporter', () => {
+  test('falls back to reportDir when reporterOptions is undefined', () => {
+    const outputDir = join(tmpdir(), `junit-dir-${randomUUID()}`);
+    const outputFile = join(outputDir, 'junit.xml');
+    createdFiles.push(outputFile);
+
+    const runner = new EventEmitter();
+    const test = makeFakeTest();
+
+    expect(() => {
+      new JUnitReporter(runner, {
+        reportDir: outputDir,
+        reporterOptions: undefined as never,
+      });
+    }).not.toThrow();
+
+    runner.emit(TEST_EVENTS.RUN_BEGIN);
+    runner.emit(TEST_EVENTS.TEST_BEGIN, test);
+    runner.emit(TEST_EVENTS.TEST_PASS, test);
+    runner.emit(TEST_EVENTS.RUN_END);
+
+    expect(readFileSync(outputFile, 'utf-8')).toContain('<testsuites');
+  });
+
   test('produces valid XML for a single passing test', () => {
     const out = tempXmlPath();
     const xml = runReporter([makeFakeTest()], out);

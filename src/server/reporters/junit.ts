@@ -43,10 +43,10 @@ export class JUnitReporter {
   private suiteStartTimes: Record<string, Date> = {};
   // TODO classnameTemplate
   // TODO Output console logs
-  constructor(runner: EventEmitter, options: { reportDir: string; reporterOptions: { outputFile?: string } }) {
+  constructor(runner: EventEmitter, options: { reportDir: string; reporterOptions?: { outputFile?: string } }) {
     const { reportDir, reporterOptions } = options;
 
-    this.reportFile = reporterOptions.outputFile ?? resolve(reportDir, 'junit.xml');
+    this.reportFile = reporterOptions?.outputFile ?? resolve(reportDir, 'junit.xml');
 
     this.logger = new IndentedLogger((text) => {
       this.fileFd ??= openSync(this.reportFile, 'w+');
