@@ -3,7 +3,7 @@ import { describe, expect, test, vi, beforeEach } from 'vitest';
 const addPreloadScript = vi.fn();
 
 vi.mock('selenium-webdriver/bidi/scriptManager.js', () => ({
-  default: vi.fn().mockResolvedValue({
+  default: vi.fn().mockReturnValue({
     addPreloadScript,
   }),
 }));
