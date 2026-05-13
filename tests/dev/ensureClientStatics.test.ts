@@ -17,20 +17,19 @@ import { getClientDir } from '../../src/server/utils.js';
 
 describe('shouldEnsureClientStaticsForCommand', () => {
   test('returns true for report', () => {
-    expect(shouldEnsureClientStaticsForCommand('report', {})).toBe(true);
+    expect(shouldEnsureClientStaticsForCommand('report')).toBe(true);
   });
 
   test('returns true for test with ui enabled', () => {
-    expect(shouldEnsureClientStaticsForCommand('test', { ui: true })).toBe(true);
+    expect(shouldEnsureClientStaticsForCommand('test')).toBe(true);
   });
 
-  test('returns false for test without ui enabled', () => {
-    expect(shouldEnsureClientStaticsForCommand('test', { ui: false })).toBe(false);
-    expect(shouldEnsureClientStaticsForCommand('test', {})).toBe(false);
+  test('returns true for test without ui enabled', () => {
+    expect(shouldEnsureClientStaticsForCommand('test')).toBe(true);
   });
 
   test('returns false for other commands', () => {
-    expect(shouldEnsureClientStaticsForCommand('worker', { ui: true })).toBe(false);
+    expect(shouldEnsureClientStaticsForCommand('worker')).toBe(false);
   });
 });
 

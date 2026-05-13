@@ -1,6 +1,5 @@
 import fs from 'fs';
 import path from 'path';
-import type { Options, WorkerOptions } from '../schema.js';
 import { getClientDir } from '../server/utils.js';
 
 const getClientIndexHtml = (): string => path.join(getClientDir(), 'index.html');
@@ -17,10 +16,8 @@ const getErrorMessage = (error: unknown): string => (error instanceof Error ? er
 export const isLocalSourceCheckout = (runtimeDir: string): boolean =>
   getSourceLayoutMarkers(runtimeDir).every((filePath) => fs.existsSync(filePath));
 
-export const shouldEnsureClientStaticsForCommand = (
-  command: 'report' | 'test' | 'worker',
-  options: Readonly<Partial<Options & WorkerOptions>>,
-): boolean => command === 'report' || (command === 'test' && options.ui === true);
+export const shouldEnsureClientStaticsForCommand = (command: 'report' | 'test' | 'worker'): boolean =>
+  command === 'report' || command === 'test';
 
 export async function ensureClientStaticsForLocalDev(): Promise<void> {
   const indexHtml = getClientIndexHtml();

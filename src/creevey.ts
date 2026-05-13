@@ -132,7 +132,7 @@ if (options.trace) {
 }
 
 void (async (): Promise<void> => {
-  if (!cluster.isWorker && isLocalSourceCheckout(runtimeDir) && shouldEnsureClientStaticsForCommand(command, options)) {
+  if (!cluster.isWorker && isLocalSourceCheckout(runtimeDir) && shouldEnsureClientStaticsForCommand(command)) {
     await ensureClientStaticsForLocalDev();
   }
 
