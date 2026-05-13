@@ -30,6 +30,8 @@ tests:
     when: always
     paths:
       - report/
+    reports:
+      junit: report/junit.xml
   script:
     - yarn playwright install --with-deps chromium firefox
     - yarn build

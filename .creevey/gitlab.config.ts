@@ -5,6 +5,7 @@ import firefox from './browsers/firefox.js';
 
 const config: CreeveyConfig = {
   ...baseConfig,
+  reporter: 'junit',
   useDocker: false,
   browsers: {
     chrome,

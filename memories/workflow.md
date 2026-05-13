@@ -163,6 +163,7 @@ yarn creevey test --fail-fast
 
 - GitHub Actions and GitLab CI both run Creevey against locally installed Playwright browsers instead of Selenoid services.
 - The GitLab pipeline installs Playwright browser binaries during the visual test job before running `yarn creevey:gitlab`.
+- The GitLab screenshot job now uses Creevey's JUnit reporter and publishes `report/junit.xml` through `artifacts:reports:junit` for GitLab test summaries.
 
 ### Test Configuration
 
