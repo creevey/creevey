@@ -10,6 +10,7 @@ vi.mock('vite', () => ({
 
 import {
   ensureClientStaticsForLocalDev,
+  isLocalSourceCheckout,
   shouldEnsureClientStaticsForCommand,
 } from '../../src/dev/ensure-client-statics.js';
 import { getClientDir } from '../../src/server/utils.js';
@@ -89,5 +90,30 @@ describe('ensureClientStaticsForLocalDev', () => {
     await expect(ensureClientStaticsForLocalDev()).rejects.toThrow(
       'Failed to build Creevey web UI: index.html was not generated.',
     );
+  });
+});
+
+describe('isLocalSourceCheckout', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  test('returns true when runtime layout includes source-only client files', () => {
+    const runtimeDir = '/repo/src';
+    const sourceClientEntry = path.join(runtimeDir, 'client/web/index.tsx');
+    const sourceServerEntry = path.join(runtimeDir, 'server/index.ts');
+    vi.spyOn(fs, 'existsSync').mockImplementation(
+      (filePath) => filePath === sourceClientEntry || filePath === sourceServerEntry,
+    );
+
+    expect(isLocalSourceCheckout(runtimeDir)).toBe(true);
+  });
+
+  test('returns false for packaged layouts even when parent paths contain src', () => {
+    const runtimeDir = '/tmp/src-containing-parent/node_modules/creevey/dist';
+    const builtIndexHtml = path.join(runtimeDir, 'client/web/index.html');
+    vi.spyOn(fs, 'existsSync').mockImplementation((filePath) => filePath === builtIndexHtml);
+
+    expect(isLocalSourceCheckout(runtimeDir)).toBe(false);
   });
 });

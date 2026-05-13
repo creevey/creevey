@@ -7,7 +7,15 @@ const getClientIndexHtml = (): string => path.join(getClientDir(), 'index.html')
 
 const getViteConfigPath = (): string => path.resolve(getClientDir(), '../../../vite.config.mts');
 
+const getSourceLayoutMarkers = (runtimeDir: string): readonly string[] => [
+  path.join(runtimeDir, 'client/web/index.tsx'),
+  path.join(runtimeDir, 'server/index.ts'),
+];
+
 const getErrorMessage = (error: unknown): string => (error instanceof Error ? error.message : String(error));
+
+export const isLocalSourceCheckout = (runtimeDir: string): boolean =>
+  getSourceLayoutMarkers(runtimeDir).every((filePath) => fs.existsSync(filePath));
 
 export const shouldEnsureClientStaticsForCommand = (
   command: 'report' | 'test' | 'worker',
