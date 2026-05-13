@@ -3,7 +3,7 @@ import { logger } from './logger.js';
 import { TestsManager } from './master/testsManager.js';
 import { start as startServer } from './master/server.js';
 import { CreeveyApi } from './master/api.js';
-import { ensureClientStatics, shutdownWorkers } from './utils.js';
+import { getRequiredClientDir, shutdownWorkers } from './utils.js';
 import { subscribeOn } from './messages.js';
 
 /**
@@ -14,9 +14,9 @@ import { subscribeOn } from './messages.js';
  * @param config Creevey configuration
  * @param port Port to run the server on
  */
-export async function report(config: Config, reportDir: string, port: number): Promise<void> {
+export function report(config: Config, reportDir: string, port: number): void {
   logger().info('Starting UI Update Mode');
-  await ensureClientStatics();
+  getRequiredClientDir();
 
   process.on('SIGINT', () => void shutdownWorkers());
 

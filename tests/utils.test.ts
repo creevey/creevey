@@ -1,7 +1,11 @@
 import fs from 'fs';
 import path from 'path';
-import { expect, describe, test } from 'vitest';
+import { afterEach, expect, describe, test, vi } from 'vitest';
 import { getClientDir, getRequiredClientDir, shouldSkip } from '../src/server/utils.js';
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 describe('shouldSkip', () => {
   describe('browsers', () => {
@@ -190,44 +194,22 @@ describe('shouldSkip', () => {
 });
 
 describe('getRequiredClientDir', () => {
-  const clientDir = getClientDir();
-  const indexHtml = path.join(clientDir, 'index.html');
-  const backupHtml = path.join(clientDir, 'index.html.test-backup');
-  const hadIndexHtml = fs.existsSync(indexHtml);
-
-  const cleanupIndexHtml = (): void => {
-    if (fs.existsSync(backupHtml)) {
-      fs.renameSync(backupHtml, indexHtml);
-      return;
-    }
-
-    if (!hadIndexHtml && fs.existsSync(indexHtml)) {
-      fs.unlinkSync(indexHtml);
-    }
-  };
-
   test('returns client dir when built statics exist', () => {
-    if (!hadIndexHtml) {
-      fs.mkdirSync(clientDir, { recursive: true });
-      fs.writeFileSync(indexHtml, '<!doctype html>');
-    }
+    const clientDir = getClientDir();
+    const indexHtml = path.join(clientDir, 'index.html');
+    const existsSync = vi.spyOn(fs, 'existsSync').mockImplementation((filePath) => filePath === indexHtml);
 
     expect(getRequiredClientDir()).toBe(clientDir);
-
-    cleanupIndexHtml();
+    expect(existsSync).toHaveBeenCalledWith(indexHtml);
   });
 
   test('throws a clear error when built statics are missing', () => {
-    if (fs.existsSync(indexHtml)) {
-      fs.renameSync(indexHtml, backupHtml);
-    }
+    const indexHtml = path.join(getClientDir(), 'index.html');
+    const existsSync = vi.spyOn(fs, 'existsSync').mockReturnValue(false);
 
-    try {
-      expect(() => getRequiredClientDir()).toThrow(
-        /^Creevey web UI assets are missing\. Run `yarn build` or `yarn build:client` before starting UI mode\.$/,
-      );
-    } finally {
-      cleanupIndexHtml();
-    }
+    expect(() => getRequiredClientDir()).toThrow(
+      /^Creevey web UI assets are missing\. Run `yarn build` or `yarn build:client` before starting UI mode\.$/,
+    );
+    expect(existsSync).toHaveBeenCalledWith(indexHtml);
   });
 });
