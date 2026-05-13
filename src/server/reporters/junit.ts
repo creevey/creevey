@@ -163,6 +163,10 @@ export class JUnitReporter {
     return this.normalizePath(relative(process.env.CI_PROJECT_DIR ?? process.cwd(), absPath));
   }
 
+  private preferredGitlabAttachment(attachments: readonly string[]): string | undefined {
+    return attachments.find((absPath) => /-diff(?:-\d+)?\.png$/i.test(this.normalizePath(absPath))) ?? attachments[0];
+  }
+
   private writeAttachments(attachments: string[]): void {
     if (attachments.length === 0) {
       return;
@@ -177,12 +181,10 @@ export class JUnitReporter {
       }
     });
 
-    this.writeElement(
-      'system-out',
-      {},
-      undefined,
-      attachments.map((absPath) => `[[ATTACHMENT|${this.gitlabAttachmentPath(absPath)}]]`).join('\n'),
-    );
+    const gitlabAttachment = this.preferredGitlabAttachment(attachments);
+    if (gitlabAttachment) {
+      this.writeElement('system-out', {}, undefined, `[[ATTACHMENT|${this.gitlabAttachmentPath(gitlabAttachment)}]]`);
+    }
   }
 
   private writeFailureOrError(test: FakeTest): void {

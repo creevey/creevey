@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Preserve Creevey's existing JUnit attachment properties while adding GitLab-compatible screenshot attachment tags in testcase `system-out` output.
+**Goal:** Preserve Creevey's existing JUnit attachment properties while adding a GitLab-compatible screenshot attachment tag in testcase `system-out` output.
 
-**Architecture:** Keep the change confined to the JUnit reporter and its focused test file. The reporter will continue writing XML-relative `property name="attachment"` entries, and also emit GitLab `[[ATTACHMENT|...]]` markers using project-root-relative paths so GitLab can resolve files from uploaded `report/` artifacts.
+**Architecture:** Keep the change confined to the JUnit reporter and its focused test file. The reporter will continue writing XML-relative `property name="attachment"` entries, and also emit a single GitLab `[[ATTACHMENT|...]]` marker using a project-root-relative path so GitLab can resolve files from uploaded `report/` artifacts. When multiple screenshots exist, the GitLab marker should prefer the diff image because GitLab only links the first parsed attachment.
 
 **Tech Stack:** TypeScript, Vitest, Node.js `path` utilities, GitLab JUnit attachment format
 
@@ -14,7 +14,7 @@
 
 - Modify: `src/server/reporters/junit.ts`
   - Add small path-formatting helpers.
-  - Emit both generic JUnit attachment properties and GitLab testcase `system-out` attachment lines.
+  - Emit generic JUnit attachment properties and a single GitLab testcase `system-out` attachment line that prefers the diff image.
 - Modify: `tests/reporters/junit.test.ts`
   - Preserve existing attachment-property assertions.
   - Add GitLab `system-out` assertions.
@@ -61,7 +61,7 @@ afterEach(() => {
 
 - [ ] **Step 2: Write failing assertions for GitLab testcase attachments**
 
-Add assertions to the existing screenshot-attachments section so one test verifies both formats are present and another verifies no testcase `system-out` attachment block is written when attachments are absent.
+Add assertions to the existing screenshot-attachments section so one test verifies both formats are present, another verifies multi-attachment cases still emit only one GitLab marker that prefers the diff image, and another verifies no testcase `system-out` attachment block is written when attachments are absent.
 
 ```ts
 test('writes GitLab attachment markers in testcase system-out', () => {
@@ -126,9 +126,13 @@ private relativeAttachmentPath(absPath: string): string {
 
 - [ ] **Step 2: Add a dedicated writer for testcase attachments**
 
-Extract the attachment rendering so both formats are emitted from one place.
+Extract the attachment rendering so both formats are emitted from one place while GitLab receives only one preferred marker.
 
 ```ts
+private preferredGitlabAttachment(attachments: readonly string[]): string | undefined {
+  return attachments.find((absPath) => /-diff(?:-\d+)?\.png$/i.test(this.normalizePath(absPath))) ?? attachments[0];
+}
+
 private writeAttachments(attachments: string[]): void {
   if (attachments.length === 0) return;
 
@@ -141,12 +145,10 @@ private writeAttachments(attachments: string[]): void {
     }
   });
 
-  this.writeElement(
-    'system-out',
-    {},
-    undefined,
-    attachments.map((absPath) => `[[ATTACHMENT|${this.gitlabAttachmentPath(absPath)}]]`).join('\n'),
-  );
+  const gitlabAttachment = this.preferredGitlabAttachment(attachments);
+  if (gitlabAttachment) {
+    this.writeElement('system-out', {}, undefined, `[[ATTACHMENT|${this.gitlabAttachmentPath(gitlabAttachment)}]]`);
+  }
 }
 ```
 

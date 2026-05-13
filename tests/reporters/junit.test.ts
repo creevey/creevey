@@ -282,23 +282,27 @@ describe('JUnitReporter', () => {
       expect(xml).not.toContain('<system-out>');
     });
 
-    test('writes one property element per attachment', () => {
+    test('writes one property element per attachment and prefers diff for the GitLab marker', () => {
       const out = tempXmlPath();
       const base = dirname(out);
       const t = makeFakeTest({
         state: 'failed',
         images: { header: {} },
-        attachments: [join(base, 'screen-actual.png'), join(base, 'screen-diff.png')],
+        attachments: [join(base, 'screen-actual.png'), join(base, 'screen-expect.png'), join(base, 'screen-diff.png')],
       });
       const xml = runReporter([t], out);
       const normalizedXml = xml.replaceAll('\\', '/');
 
       const matches = normalizedXml.match(/name="attachment"/g) ?? [];
       const attachmentMarkers = normalizedXml.match(/\[\[ATTACHMENT\|/g) ?? [];
-      expect(matches).toHaveLength(2);
-      expect(attachmentMarkers).toHaveLength(2);
+      expect(matches).toHaveLength(3);
+      expect(attachmentMarkers).toHaveLength(1);
       expect(normalizedXml).toContain('value="screen-actual.png"');
+      expect(normalizedXml).toContain('value="screen-expect.png"');
       expect(normalizedXml).toContain('value="screen-diff.png"');
+      expect(normalizedXml).toContain('screen-diff.png]]');
+      expect(normalizedXml).not.toContain('screen-actual.png]]');
+      expect(normalizedXml).not.toContain('screen-expect.png]]');
     });
 
     test('uses CI_PROJECT_DIR for GitLab system-out attachment markers when set', () => {

@@ -166,7 +166,7 @@ yarn creevey test --fail-fast
 - Local linting ignores the generated `storybook-static/` output; ESLint and Prettier should only check source files, not the built Storybook artifacts.
 - The GitLab pipeline installs Playwright browser binaries during the visual test job before running `yarn creevey:gitlab`.
 - The GitLab screenshot job uses Creevey's JUnit reporter and publishes `report/junit.xml` through `artifacts:reports:junit` for GitLab test summaries.
-- The GitLab screenshot job keeps generic `property name="attachment"` paths relative to the JUnit XML file, and writes testcase `system-out` attachment markers relative to `CI_PROJECT_DIR` when set, otherwise `process.cwd()`; in this repo's CI layout those markers resolve to `report/...` paths for GitLab's Tests UI.
+- The GitLab screenshot job keeps generic `property name="attachment"` paths relative to the JUnit XML file, and writes a single testcase `system-out` attachment marker relative to `CI_PROJECT_DIR` when set, otherwise `process.cwd()`; in this repo's CI layout that marker resolves to a `report/...` path for GitLab's Tests UI and prefers the diff image when one exists.
 
 ### Test Configuration
 

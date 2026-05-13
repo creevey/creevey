@@ -28,7 +28,7 @@ For each testcase with attachments:
 
 1. Preserve the current `<properties>` block.
 2. Add a `<system-out>` element directly under the same `<testcase>`.
-3. Emit one attachment marker per line inside `system-out`.
+3. Emit a single attachment marker inside `system-out`, preferring the diff image when one exists.
 
 Example:
 
@@ -40,7 +40,6 @@ Example:
     <property name="attachment" value="Button/primary/chrome/button-diff-1.png" />
   </properties>
   <system-out>
-    [[ATTACHMENT|report/Button/primary/chrome/button-actual-1.png]]
     [[ATTACHMENT|report/Button/primary/chrome/button-diff-1.png]]
   </system-out>
 </testcase>
@@ -59,12 +58,14 @@ Implementation target:
 
 - Property path: `relative(dirname(reportFile), attachmentAbsPath)`
 - GitLab path: `relative(process.env.CI_PROJECT_DIR ?? process.cwd(), attachmentAbsPath)`
+- GitLab selection: choose the diff attachment when present, otherwise fall back to the first attachment.
 
 The resulting GitLab path must be normalized to forward slashes so the XML is stable across platforms and matches GitLab examples.
 
 ## Behavior Rules
 
 - Emit `system-out` only when `test.attachments` is non-empty.
+- Emit only one GitLab attachment marker per testcase, because GitLab links only the first parsed marker and shows later markers as raw text.
 - Do not write suite-level `system-out` because GitLab does not parse attachments there.
 - Do not change failure or error rendering.
 - Do not add new reporter options for this fix.
@@ -75,7 +76,8 @@ Update `tests/reporters/junit.test.ts` to verify:
 
 - the existing attachment property output still exists
 - testcase `system-out` is emitted when attachments exist
-- `system-out` contains one `[[ATTACHMENT|...]]` marker per attachment
+- `system-out` contains exactly one `[[ATTACHMENT|...]]` marker per testcase
+- the single GitLab marker prefers the diff image when one exists
 - GitLab markers include the `report/` prefix in the current output layout
 - no testcase attachment `system-out` is emitted when attachments are empty or undefined
 

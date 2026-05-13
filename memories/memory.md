@@ -212,7 +212,7 @@ story('ComponentStory', () => {
 5. GitHub Actions and GitLab CI build Storybook with `yarn build-storybook --test`, serve the generated `storybook-static` output locally on port `6006` via the repo's pinned `http-server` dev dependency, and run Creevey against that static build instead of `storybook dev`
 6. GitLab CI installs local Playwright browsers for `chrome` and `firefox` instead of using Selenoid services
 7. The GitLab-specific Creevey config uses the built-in `junit` reporter, writing `report/junit.xml` so GitLab can ingest screenshot test results as unit test reports
-8. Creevey's JUnit reporter keeps `property name="attachment"` entries relative to the JUnit XML file and also emits GitLab-compatible testcase `system-out` attachment markers relative to `CI_PROJECT_DIR` when set, otherwise `process.cwd()`; in this repo's current CI layout those marker paths resolve under `report/...` so screenshot artifacts are visible in GitLab test details
+8. Creevey's JUnit reporter keeps `property name="attachment"` entries relative to the JUnit XML file and also emits a single GitLab-compatible testcase `system-out` attachment marker relative to `CI_PROJECT_DIR` when set, otherwise `process.cwd()`; in this repo's current CI layout that marker resolves under `report/...` and prefers the diff image so screenshot artifacts are visible in GitLab test details
 
 ## File Locations
 
