@@ -1,18 +1,6 @@
 import { describe, expect, test, vi, beforeEach } from 'vitest';
 
-const addPreloadScript = vi.fn();
-
-vi.mock('selenium-webdriver/bidi/scriptManager.js', () => ({
-  default: vi.fn().mockReturnValue({
-    addPreloadScript,
-  }),
-}));
-
-import {
-  buildSeleniumCapabilities,
-  installStorybookInitScript,
-  STORYBOOK_INIT_SCRIPT,
-} from '../src/server/selenium/internal.js';
+import { buildSeleniumCapabilities, SELENIUM_STORYBOOK_EVALUATE_SHIM_SCRIPT } from '../src/server/selenium/internal.js';
 
 describe('selenium Storybook init support', () => {
   beforeEach(() => {
@@ -35,39 +23,8 @@ describe('selenium Storybook init support', () => {
     expect(capabilities.get('webSocketUrl')).toBeUndefined();
   });
 
-  test('installs the Storybook preload script through BiDi when available', async () => {
-    const driver = {
-      getCapabilities: vi.fn().mockResolvedValue({
-        get: (key: string) => (key === 'webSocketUrl' ? 'ws://grid.example.test/session' : undefined),
-      }),
-      createCDPConnection: vi.fn(),
-    };
-
-    const result = await installStorybookInitScript(driver as never);
-
-    expect(result).toBe('bidi');
-    expect(addPreloadScript).toHaveBeenCalledTimes(1);
-    expect(addPreloadScript.mock.calls[0]?.[0]).toEqual(expect.any(Function));
-    expect(driver.createCDPConnection).not.toHaveBeenCalled();
-  });
-
-  test('falls back to CDP when BiDi is unavailable', async () => {
-    const execute = vi.fn().mockResolvedValue(undefined);
-    const driver = {
-      getCapabilities: vi.fn().mockResolvedValue({
-        get: () => undefined,
-      }),
-      createCDPConnection: vi.fn().mockResolvedValue({ execute }),
-    };
-
-    const result = await installStorybookInitScript(driver as never);
-
-    expect(result).toBe('cdp');
-    expect(driver.createCDPConnection).toHaveBeenCalledWith('page');
-    expect(execute).toHaveBeenCalledWith(
-      'Page.addScriptToEvaluateOnNewDocument',
-      { source: STORYBOOK_INIT_SCRIPT },
-      null,
-    );
+  test('provides a dedicated __name shim for serialized story helpers', () => {
+    expect(SELENIUM_STORYBOOK_EVALUATE_SHIM_SCRIPT).toContain('window.__name = defineName;');
+    expect(SELENIUM_STORYBOOK_EVALUATE_SHIM_SCRIPT).toContain('globalThis.__name = defineName;');
   });
 });

@@ -37,18 +37,14 @@ interface ElementRect {
 // type UnPromise<P> = P extends Promise<infer T> ? T : never;
 // let context: UnPromise<ReturnType<typeof BrowsingContext>> | null = null;
 
-type StorybookInitInstallMethod = 'bidi' | 'cdp' | 'none';
-
-interface CdpConnection {
-  execute: (command: string, params?: object, callback?: unknown) => Promise<unknown>;
-}
-
 const seleniumBidiBrowserNames = new Set(['chrome', 'firefox', 'msedge', 'MicrosoftEdge']);
 
-export const STORYBOOK_INIT_SCRIPT = String.raw`
-  const defineName = (func) => func;
-  window.__name = defineName;
-  globalThis.__name = defineName;
+export const SELENIUM_STORYBOOK_EVALUATE_SHIM_SCRIPT = String.raw`
+  (() => {
+    const defineName = (func) => func;
+    window.__name = defineName;
+    globalThis.__name = defineName;
+  })()
 `;
 
 function supportsSeleniumBidi(browserName: string): boolean {
@@ -70,45 +66,6 @@ export function buildSeleniumCapabilities(
   }
 
   return capabilities;
-}
-
-export async function installStorybookInitScript(browser: WebDriver): Promise<StorybookInitInstallMethod> {
-  const capabilities = await browser.getCapabilities();
-  const hasBidi = Boolean(capabilities.get('webSocketUrl'));
-
-  if (hasBidi) {
-    try {
-      const { default: getScriptManager } = await import('selenium-webdriver/bidi/scriptManager.js');
-      const scriptManager = getScriptManager('', browser as never);
-      await scriptManager.addPreloadScript(() => {
-        const defineName = (func: unknown) => func;
-        // @ts-expect-error https://github.com/evanw/esbuild/issues/2605#issuecomment-2050808084
-        window.__name = defineName;
-        // @ts-expect-error Keep globalThis in sync for modules that read the helper directly.
-        globalThis.__name = defineName;
-      });
-      return 'bidi';
-    } catch (error) {
-      logger().warn(
-        `Failed to install Storybook preload script through WebDriver BiDi: ${
-          error instanceof Error ? error.message : String(error)
-        }`,
-      );
-    }
-  }
-
-  try {
-    const cdpConnection = (await browser.createCDPConnection('page')) as CdpConnection;
-    await cdpConnection.execute('Page.addScriptToEvaluateOnNewDocument', { source: STORYBOOK_INIT_SCRIPT }, null);
-    return 'cdp';
-  } catch (error) {
-    logger().warn(
-      `Failed to install Storybook preload script through CDP: ${
-        error instanceof Error ? error.message : String(error)
-      }`,
-    );
-    return 'none';
-  }
 }
 
 function getSessionData(grid: string, sessionId = ''): Promise<Record<string, unknown>> {
@@ -446,6 +403,7 @@ export class InternalBrowser {
   }
 
   async loadStoriesFromBrowser(): Promise<StoriesRaw> {
+    await this.#browser.executeScript(SELENIUM_STORYBOOK_EVALUATE_SHIM_SCRIPT);
     return await this.#browser.executeAsyncScript(getStories);
   }
 
@@ -542,7 +500,6 @@ export class InternalBrowser {
     return await runSequence(
       [
         () => this.#browser.manage().setTimeouts({ pageLoad: 60000, script: 60000 }),
-        () => installStorybookInitScript(this.#browser),
         () => this.openStorybookPage(storybookUrl),
         () => this.initStorybook(),
         // NOTE: Selenium draws automation toolbar with some delay after webdriver initialization
