@@ -1,38 +1,38 @@
-image: node:latest
+image: node:20
+
+stages:
+  - build
+  - test
 
 cache:
   paths:
     - node_modules/
-    - .yarn
+    - .yarn/
+
+before_script:
+  - corepack enable
+  - yarn
 
 build:
   stage: build
   artifacts:
     paths:
       - dist/
-      - creevey-*.tgz
-  before_script:
-    - curl https://get.volta.sh | bash
+      - package.tgz
   script:
-    - volta setup
-    - yarn lint
-    - yarn test:unit
     - yarn build
+    - yarn lint
     - yarn pack
 
-ui:
+tests:
   stage: test
-  services:
-    - selenoid/chrome
-    - selenoid/firefox
-  dependencies:
-    - build
   artifacts:
     when: always
     paths:
       - report/
   script:
-    - mkdir report
-    - cp dist/client/web/*.js report/
+    - yarn playwright install --with-deps chromium firefox
+    - yarn build
+    - yarn test
     - yarn start:storybook &
     - yarn creevey:gitlab

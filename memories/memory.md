@@ -208,6 +208,7 @@ story('ComponentStory', () => {
 2. Configure browser installation
 3. Use appropriate reporter (junit, teamcity)
 4. Handle screenshot storage in artifacts
+5. GitLab CI now mirrors the GitHub flow more closely by installing local Playwright browsers for `chrome` and `firefox` instead of using Selenoid services
 
 ## File Locations
 

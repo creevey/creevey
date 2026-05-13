@@ -5,9 +5,10 @@ import firefox from './browsers/firefox.js';
 
 const config: CreeveyConfig = {
   ...baseConfig,
+  useDocker: false,
   browsers: {
-    chrome: { ...chrome, gridUrl: 'http://selenoid__chrome:4444' },
-    firefox: { ...firefox, gridUrl: 'http://selenoid__firefox:4444/wd/hub' },
+    chrome,
+    firefox,
   },
 };
 
