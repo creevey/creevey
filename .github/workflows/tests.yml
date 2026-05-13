@@ -43,10 +43,14 @@ jobs:
         run: yarn build
       - name: unit tests
         run: yarn test
-      - name: storybook
-        run: yarn start:storybook &
+      - name: build storybook
+        run: yarn build-storybook --test
       - name: creevey
-        run: yarn creevey:github
+        run: |
+          yarn http-server storybook-static --port 6006 --silent &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID' EXIT
+          yarn creevey:github
       - uses: actions/upload-artifact@v4
         if: always()
         with:

@@ -162,8 +162,9 @@ yarn creevey test --fail-fast
 ```
 
 - GitHub Actions and GitLab CI both run Creevey against locally installed Playwright browsers instead of Selenoid services.
+- The visual-test jobs build Storybook with `yarn build-storybook --test`, serve the static `storybook-static` output on port `6006` via the repo's pinned `http-server` dev dependency, and run Creevey against that static build instead of Storybook dev mode.
 - The GitLab pipeline installs Playwright browser binaries during the visual test job before running `yarn creevey:gitlab`.
-- The GitLab screenshot job now uses Creevey's JUnit reporter and publishes `report/junit.xml` through `artifacts:reports:junit` for GitLab test summaries.
+- The GitLab screenshot job uses Creevey's JUnit reporter and publishes `report/junit.xml` through `artifacts:reports:junit` for GitLab test summaries.
 
 ### Test Configuration
 

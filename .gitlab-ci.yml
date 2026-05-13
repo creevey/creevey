@@ -36,5 +36,8 @@ tests:
     - yarn playwright install --with-deps chromium firefox
     - yarn build
     - yarn test
-    - yarn start:storybook &
+    - yarn build-storybook --test
+    - yarn http-server storybook-static --port 6006 --silent &
+    - SERVER_PID=$!
+    - trap 'kill $SERVER_PID' EXIT
     - yarn creevey:gitlab

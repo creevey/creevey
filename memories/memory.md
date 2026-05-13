@@ -208,8 +208,9 @@ story('ComponentStory', () => {
 2. Configure browser installation
 3. Use appropriate reporter (junit, teamcity)
 4. Handle screenshot storage in artifacts
-5. GitLab CI now mirrors the GitHub flow more closely by installing local Playwright browsers for `chrome` and `firefox` instead of using Selenoid services
-6. The GitLab-specific Creevey config uses the built-in `junit` reporter, writing `report/junit.xml` so GitLab can ingest screenshot test results as unit test reports
+5. GitHub Actions and GitLab CI build Storybook with `yarn build-storybook --test`, serve the generated `storybook-static` output locally on port `6006` via the repo's pinned `http-server` dev dependency, and run Creevey against that static build instead of `storybook dev`
+6. GitLab CI installs local Playwright browsers for `chrome` and `firefox` instead of using Selenoid services
+7. The GitLab-specific Creevey config uses the built-in `junit` reporter, writing `report/junit.xml` so GitLab can ingest screenshot test results as unit test reports
 
 ## File Locations
 
