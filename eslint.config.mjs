@@ -9,7 +9,7 @@ import { importX, createNodeResolver } from 'eslint-plugin-import-x';
 import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
 
 const config = tseslint.config(
-  { ignores: ['.vscode/*', '.yarn/*', 'dist/*', 'report/*', 'scripts/*', '.pnp.*'] },
+  { ignores: ['.vscode/*', '.yarn/*', 'dist/*', 'report/*', 'scripts/*', 'storybook-static/*', '.pnp.*'] },
   js.configs.recommended,
   prettierRecommended,
   importX.flatConfigs.recommended,
