@@ -5,6 +5,141 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.36](https://github.com/creevey/creevey/compare/v0.10.35...v0.10.36) (2026-05-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* The Creevey Storybook addon has been removed. Remove Creevey addon preset/decorator usage from your Storybook config and migrate to the standalone web UI or the Playwright/Selenium workflows. See documentation for updated setup and migration guidance.
+
+### Features
+
+* 🎸 add `dockerImagePlatform` config option ([f52de6c](https://github.com/creevey/creevey/commit/f52de6c31ab41012ce127702d0967c8f40fb7c20))
+* 🎸 add `failFast` CLI option. Terminates on first fail ([0023bbb](https://github.com/creevey/creevey/commit/0023bbb022e71b7b3cb60fd7cea9bdb89a7e87bc))
+* 🎸 add `failFat` parameter to the config ([c4fe538](https://github.com/creevey/creevey/commit/c4fe538569311cc7ca3c0c9e8e93916cf4a3cb8b))
+* 🎸 add ability to update story arguments from test cases ([18d8ecb](https://github.com/creevey/creevey/commit/18d8ecb909097b585282a04bfb0b0c721ad45e22))
+* 🎸 add storiesProvider config option ([7cf7454](https://github.com/creevey/creevey/commit/7cf74542d527bcfd5b41b17026464a4f9298e1f5))
+* 🎸 add support `play()` story method ([318ac62](https://github.com/creevey/creevey/commit/318ac628cb14fb0de7a89c088ae241df520df1e7))
+* 🎸 add webdriver debug logging ([6124a43](https://github.com/creevey/creevey/commit/6124a43b79d2761c3f04f6f3f118599ecb517c27))
+* 🎸 change format for `skip` parameter ([f244b7c](https://github.com/creevey/creevey/commit/f244b7cd344b276762408a1df841e5afc3853fad))
+* 🎸 failFast doesn't disable maxRetries option ([c81c637](https://github.com/creevey/creevey/commit/c81c63784aecea890596647225ce8278d7383df5))
+* 🎸 improve delay option to allow specify browsers ([4bec3b5](https://github.com/creevey/creevey/commit/4bec3b5a4ddca2e2610db4ecf79f0e859202da65))
+* 🎸 Improve skip options ([2fcc624](https://github.com/creevey/creevey/commit/2fcc624a9b2ab1dcdce3927779c8f58bb0a0d02c))
+* 🎸 run extract stories.json on storybook-build ([803a1d1](https://github.com/creevey/creevey/commit/803a1d1b9b774121e1a611dfbbe1a3ad041339af))
+* add git-cliff changelog and automated release/publish workflows ([f69890b](https://github.com/creevey/creevey/commit/f69890b9ef8b65e267c8e3e2251527b976732660))
+* add host param to config ([4d10422](https://github.com/creevey/creevey/commit/4d10422aa57e7dbc80c1f4a880f3472200abdf7b))
+* devcontainer support ([75ccad0](https://github.com/creevey/creevey/commit/75ccad0079b6fe13af8b8a02fb4a476f48fd5bdc))
+* devcontainer support ([5347af1](https://github.com/creevey/creevey/commit/5347af135ffe0dc70f4aa1484a60156e184773ed))
+* drop support for storybook &lt; 6.4 ([fb8c0f5](https://github.com/creevey/creevey/commit/fb8c0f5158ab7c0495949eaa61ba52049c3d66cf))
+* drop support of storybook &lt; 6.4 ([4ce669e](https://github.com/creevey/creevey/commit/4ce669e7cee58af3bfc8b8fe09d8b31559512b01))
+* host option for creevey-server ([c9b4738](https://github.com/creevey/creevey/commit/c9b4738f2500299d5c96da4c791bcfb65caf7c91))
+* host option for creevey-server ([c38eb4a](https://github.com/creevey/creevey/commit/c38eb4a5849195a0bbee5fcb999a11c26d71d31b))
+* hybrid stories provider ([89d9c73](https://github.com/creevey/creevey/commit/89d9c7357369dffb320ea06fe158b4113f57034c))
+* **junit:** add failure/error body text and separate errors count ([e702c4e](https://github.com/creevey/creevey/commit/e702c4ee3fec01cef2a9d1f1486554a0082af882))
+* **junit:** add hostname and sequential id attributes to testsuite ([c4e69f7](https://github.com/creevey/creevey/commit/c4e69f75bf5955b1fb7af85cbeb3730abf370652))
+* **junit:** add screenshot attachment properties to testcase elements ([693b375](https://github.com/creevey/creevey/commit/693b3753a1918a1d2bf8a46bafbcffbf9b5bf923))
+* **junit:** extend writeElement with textContent parameter ([5334660](https://github.com/creevey/creevey/commit/53346607fd7781ff1323ddedbfa9cd6c4c351395))
+* **junit:** fix suite keying for multi-browser runs ([0ea235a](https://github.com/creevey/creevey/commit/0ea235af51faa857cabcc2f390dfd4d7ef2afdc4))
+* new creevey params: "global" and "kind" ([7d7c885](https://github.com/creevey/creevey/commit/7d7c88521a28c91586bfdd663500bea576845292))
+* remove Creevey Storybook addon; unify webdriver plumbing; update web UI ([37f36e5](https://github.com/creevey/creevey/commit/37f36e5452daf7d43b560d26c3adaee71138cfca))
+* support storybook 6.4 ([74010e5](https://github.com/creevey/creevey/commit/74010e53d93ff1815427cd7ee818481ce6e21288))
+* support Storybook 6.4 ([b4baf97](https://github.com/creevey/creevey/commit/b4baf97a31208c74671b4d24141d6b19f0f7635c))
+
+
+### Bug Fixes
+
+* 🐛 icons layout ([6cca3bf](https://github.com/creevey/creevey/commit/6cca3bf0c789ab3b2cbfd3c757fc0a1e1520e50f))
+* 🐛 improve `waitForStorybook` wait for `setStories` event ([8431918](https://github.com/creevey/creevey/commit/8431918656378b6760a60da8570fb18952de210c))
+* 🐛 improve update to approve only failed images ([f0e5719](https://github.com/creevey/creevey/commit/f0e5719f1b8d1b0fb105bacb5619cd903eadced6))
+* 🐛 make creevey work with vite ([0d576c6](https://github.com/creevey/creevey/commit/0d576c6e2660fd4f29ba4efd440d4af9ee590ac2))
+* 🐛 report test as a failed for teamcity reporter ([0e58915](https://github.com/creevey/creevey/commit/0e58915b6d14441e14851c7c3bc888fe0759ddce))
+* 🐛 resolve storybook preview config after babel/register ([cb3f46c](https://github.com/creevey/creevey/commit/cb3f46c0502264cdd5aefc2dc397da1892938eb5))
+* 🐛 revert cross-env scripts, as they not work in unix ([92b04a5](https://github.com/creevey/creevey/commit/92b04a5bed56191b7ee6bd169f5327e30a1c2232))
+* 🐛 save report data after each tests run ([86c6c2e](https://github.com/creevey/creevey/commit/86c6c2ee1261bdc38fc3b7c6ebb1753348339a0a))
+* 🐛 selenium url path to '/' for webkit browsers ([748d896](https://github.com/creevey/creevey/commit/748d8968c645ee684cec5dcd899d2de749d5e2c6))
+* 🐛 some issues for storybook 5.3 and create-react-preset ([c1e20b3](https://github.com/creevey/creevey/commit/c1e20b31234875d3ef961ce3804e3384d858f94d))
+* 🐛 update didn't use report data to approve failed tests ([107d0fa](https://github.com/creevey/creevey/commit/107d0faf4c717bbb7a547422e9baf7105389d0bd))
+* **addon:** make bundlers to load esm version of addon ([07a4c12](https://github.com/creevey/creevey/commit/07a4c12fc8311c96e33c92df595d2934d80a6410))
+* **addon:** make bundlers to load esm version of addon ([f2937ca](https://github.com/creevey/creevey/commit/f2937caccca158e68c8be45d0882ec9b62eb05b2))
+* **addon:** restore and move ie11 support to separate addon ([3ba2cc7](https://github.com/creevey/creevey/commit/3ba2cc7fde281037406f1705c0abc616c576e641))
+* **addon:** restore and move ie11 support to separate preset ([2d65e94](https://github.com/creevey/creevey/commit/2d65e9417d366d956ee32f4f0c9acd57864fc820))
+* **addon:** restore IE11 support ([3561391](https://github.com/creevey/creevey/commit/35613914618cb86911dfafad538576a95d57f84a))
+* **addon:** restore IE11 support ([94f452f](https://github.com/creevey/creevey/commit/94f452fff4225e974c9efdff21f982d5155de4f8))
+* allow setting timeouts via capabilities ([72de9e5](https://github.com/creevey/creevey/commit/72de9e50b818587309f665c782637ae43c3e4864))
+* allow using "capture"  with nodejsStoriesProvider ([c4d8562](https://github.com/creevey/creevey/commit/c4d8562d5f5839cc27267e24127bbc42dcecd427))
+* browser-node regexp parameters transfering ([737670e](https://github.com/creevey/creevey/commit/737670e18aa5d0ce416fe12b765406116b453e31))
+* correct call of the test fn ([98c03ad](https://github.com/creevey/creevey/commit/98c03ad1700486bfd75170f4517970717250f6d8))
+* default yarn verison to stable ([48bfaed](https://github.com/creevey/creevey/commit/48bfaed9ccadb3f804c68612084ed41409f8d970))
+* deps issue with storybook@6.5 and yarn@1 ([f91990a](https://github.com/creevey/creevey/commit/f91990a594828766b212a657dcb4c7df895bf877))
+* drop support of SkipOption on root skip level ([bfaae0b](https://github.com/creevey/creevey/commit/bfaae0b8c0190516cde02575e7e3140a6dcaf812))
+* drop support of SkipOption on root skip level ([31be1bf](https://github.com/creevey/creevey/commit/31be1bf4d67f464ea6790e6e218ca75674366711))
+* handle null from selectStory ([1895602](https://github.com/creevey/creevey/commit/1895602143b3236ab195e11fcfa162df2a01af03))
+* ie11 support ([523e35b](https://github.com/creevey/creevey/commit/523e35b6950d978ca3aaa77dd4f072a835053687))
+* infinite UI loading ([94d61aa](https://github.com/creevey/creevey/commit/94d61aa7bb92762c2fa84e385b39b98845f63f70))
+* infinite UI loading ([4f7b47d](https://github.com/creevey/creevey/commit/4f7b47db3ff1274217b044ce608e34d22148fe32))
+* **junit:** address code quality issues in test infrastructure ([c7351dd](https://github.com/creevey/creevey/commit/c7351ddaf62d20dee2279a6c13afdf37a15cacc9))
+* **junit:** align failure/error counting with XML elements ([abfb9e2](https://github.com/creevey/creevey/commit/abfb9e26a3b926e03a1879490a0f325fc2987935))
+* **junit:** fix multi-line textContent indentation and isImageMismatch guard ([bebbaac](https://github.com/creevey/creevey/commit/bebbaac2888dd95d9ae326269a5e581556f6131f))
+* **junit:** hoist hostname call and tighten spec-attr test assertions ([ee83f41](https://github.com/creevey/creevey/commit/ee83f4130920688e7a78d07dffd208b74a00546a))
+* **junit:** tighten attachment assertions and add multi-attachment test ([d9e1840](https://github.com/creevey/creevey/commit/d9e1840e7fbf057b234eb0f640fe4b1f571b73c8))
+* move addon to the separate entry point ([f3fc59f](https://github.com/creevey/creevey/commit/f3fc59f980a56f87f882507c3a0367ed6a356d33))
+* move the addon to a separate entry point ([7c23ee1](https://github.com/creevey/creevey/commit/7c23ee1323220bede4df5b4c26c6c4811f8652e5))
+* prevent importing browser-specific code to node ([37706ef](https://github.com/creevey/creevey/commit/37706efbb49dd5bd1d6ec06821fac52480a0e132))
+* **providers:** set creevey port for all providers ([79e8aae](https://github.com/creevey/creevey/commit/79e8aae629d79260f93a93057486bab659801a46))
+* **release:** use manifest mode instead of release-type in workflow ([bbb78c0](https://github.com/creevey/creevey/commit/bbb78c03cc9033f67e8e107a95ff96623ade6e79))
+* rename creevey config extensions from .mts to .ts ([fc8d7c4](https://github.com/creevey/creevey/commit/fc8d7c44ced881aa84b5ed043510e00569107e77))
+* **selenium-webdriver:** bump [@types](https://github.com/types) package version ([fcc6a2c](https://github.com/creevey/creevey/commit/fcc6a2c056c116125f8d3162375ea8e6acd1de06))
+* **selenium-webdriver:** bump [@types](https://github.com/types) package version ([ca4b369](https://github.com/creevey/creevey/commit/ca4b369046e2c56e0548f5cbb6f98c17b0125228))
+* stabilize 0.8.0 ([15dfdda](https://github.com/creevey/creevey/commit/15dfddafe9c9a48f57fe86843f6f7981930214e7))
+
+
+### Documentation
+
+* ✏️ add maintaining note in readme ([2a1354d](https://github.com/creevey/creevey/commit/2a1354ddbb1de7fb5cce3d6349aa9f8335f6f7a7))
+* ✏️ update todos ([57ddc97](https://github.com/creevey/creevey/commit/57ddc979555b0128a9a1e029e025400dfccea90b))
+* add creevey logo ([b75d3f7](https://github.com/creevey/creevey/commit/b75d3f7231ca4dd4f268f88da220b4aa63dd2f46))
+* add creevey logo ([acf7e78](https://github.com/creevey/creevey/commit/acf7e784e6cab0d5333f76236c3a754e198c2012))
+* add junit reporter improvements design spec ([0c8be62](https://github.com/creevey/creevey/commit/0c8be62247f1cfa7fb908dc4844959f19ff0dd9e))
+* doc global and kind parameters ([851ee45](https://github.com/creevey/creevey/commit/851ee45c4b4da6958f8cb78f6062d8fa8eb186e4))
+* doc supported storybook versions ([1870ce8](https://github.com/creevey/creevey/commit/1870ce850f5098a39ed899ed02cded21dba17a3f))
+* extend multiple skip example ([81d2f0e](https://github.com/creevey/creevey/commit/81d2f0eafa5bce841297e8ae3f8764b8bd5486e1))
+* mark junit reporter improvements plan and design as completed ([c3a05c9](https://github.com/creevey/creevey/commit/c3a05c93ae3c43f90b7c973b79a5a6b318fadde5))
+* update release process in memories ([b51c574](https://github.com/creevey/creevey/commit/b51c574cb444b87782ce53d72f8c060d8cb2d5a7))
+* update skip examples ([08dc28e](https://github.com/creevey/creevey/commit/08dc28eb6dfb77e18fc33f4bbc0981c49ad8ce67))
+
+
+### Code Refactoring
+
+* 💡 cleanup some stuff ([d6ed892](https://github.com/creevey/creevey/commit/d6ed892f32ba3602d1fc3f2617b49f45389031fd))
+* 💡 prepare to support svelte CSF stories ([7d9c2c6](https://github.com/creevey/creevey/commit/7d9c2c6887ca1de33b3abea9ca106bc3c46547bb))
+* **junit:** extract suiteKey/getOrCreateSuite helpers, fix test assertions ([e43191c](https://github.com/creevey/creevey/commit/e43191cf9260dfaf9bf78b580a2fe16c3bc94800))
+
+
+### Tests
+
+* 💍 add more e2e tests for storybook building and extract ([1f6b559](https://github.com/creevey/creevey/commit/1f6b559d591e80c4cc2dc7a9b20803175c11d751))
+* 💍 add one more test for skip options ([b6ff022](https://github.com/creevey/creevey/commit/b6ff02236da6b9d27fa15ddf2278c9bd012d6d85))
+* 💍 approve tests ([fed22af](https://github.com/creevey/creevey/commit/fed22af34afe8070f90849114bc4d30f85132053))
+* 💍 fix line endings for windows ([3a69def](https://github.com/creevey/creevey/commit/3a69def5f0f283cfe0ad6325f57d639185665dd8))
+* 💍 fix loader test for windows ([14955b1](https://github.com/creevey/creevey/commit/14955b143585111562498387d498bb8d15c812e4))
+* 💍 fix some e2e cases ([8cbe731](https://github.com/creevey/creevey/commit/8cbe731b4fceaaf7a854dc8532b34962033ce2dc))
+* 💍 fix utils tests names ([e400c22](https://github.com/creevey/creevey/commit/e400c22f19264fd737415246aa2bf22dafa21847))
+* 💍 remove e2e tests use jest instead for unit tests ([82339e8](https://github.com/creevey/creevey/commit/82339e8c852c22324fbf795fb9ea90489d3c17fd))
+* 💍 update approval e2e tests ([c5d62d2](https://github.com/creevey/creevey/commit/c5d62d2712104d971ab159fe395223028bbf436a))
+* 💍 update e2e tests ([9b72248](https://github.com/creevey/creevey/commit/9b7224849cc40d23836240c8397647c10b823c2d))
+* 💍 Update screenshot images ([6effd5a](https://github.com/creevey/creevey/commit/6effd5a4904e85703091e83b174ce211e6431700))
+* add e2e test for 6.4 ([946a257](https://github.com/creevey/creevey/commit/946a2575bbfcf2c0c51883d35e820b397a8f4fac))
+* approve latest e2e changes ([75ba132](https://github.com/creevey/creevey/commit/75ba13246e5c96ad414fa8b7c83c4c6ccacfb281))
+* approve minor changes ([419475d](https://github.com/creevey/creevey/commit/419475df54ced555079463b356be42d7e7a85071))
+* stories serialization ([9446990](https://github.com/creevey/creevey/commit/94469909c75f70b956c1ab7159fc1a6b05e72a1b))
+* update screenshots due browsers update ([ec85c0a](https://github.com/creevey/creevey/commit/ec85c0a60e79b94e69b97c4d31668d81292d2347))
+* wip ([42c3535](https://github.com/creevey/creevey/commit/42c35356f78d756ed79cc0bd88dc06756940c31f))
+
+
+### Miscellaneous
+
+* release as 0.10.36 ([b4644cf](https://github.com/creevey/creevey/commit/b4644cf9fb6cb1ce47a79e1fa020b695ef7908fe))
+
 ## [Unreleased]
 
 ### Added
@@ -2360,4 +2495,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.0.4]: https://github.com/wKich/creevey/compare/v0.0.3...v0.0.4
 [0.0.3]: https://github.com/wKich/creevey/compare/v0.0.2...v0.0.3
 [0.0.2]: https://github.com/wKich/creevey/compare/v0.0.1...v0.0.2
-
