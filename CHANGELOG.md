@@ -5,6 +5,55 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.37](https://github.com/creevey/creevey/compare/v0.10.36...v0.10.37) (2026-05-13)
+
+
+### Features
+
+* add local dev client statics bootstrap ([99d05c5](https://github.com/creevey/creevey/commit/99d05c53909d2da50290608c30a1ce5680ad2385))
+
+
+### Bug Fixes
+
+* bootstrap client statics for local test runs ([29e0565](https://github.com/creevey/creevey/commit/29e05654f1af0ff6cb0681d3509f7bfb00d0786e))
+* default JUnit output path without reporter options ([eef12a6](https://github.com/creevey/creevey/commit/eef12a645e2eee8307c6cdb627bb2334decdc50e))
+* harden Storybook startup and project checks ([f5dd50a](https://github.com/creevey/creevey/commit/f5dd50a81a4bcaa78e52f46462d0d7fc19637079))
+* ignore built Storybook output in linting ([bf064c6](https://github.com/creevey/creevey/commit/bf064c60fffece01f706b25d227dd478e3f89bfd))
+* **junit:** expose screenshot attachments in GitLab ([2d53211](https://github.com/creevey/creevey/commit/2d53211949d8c75ffd29e4a95684ffff6a504897))
+* **junit:** prefer diff attachment for GitLab ([fcbf794](https://github.com/creevey/creevey/commit/fcbf794e2607ce65561045cd0c6f680943a70055))
+* migrate GitLab CI to local Playwright browsers ([b3e4dff](https://github.com/creevey/creevey/commit/b3e4dffdfe502f2a5623fa4890b301df31480dbc))
+* narrow Playwright Storybook init shim ([2b9fcd3](https://github.com/creevey/creevey/commit/2b9fcd3d4a15b603099476d5b1508b6a55b351c5))
+* publish GitLab screenshot results as JUnit ([4f35d24](https://github.com/creevey/creevey/commit/4f35d244048ccd82fa8337511b9bb65a62696364))
+* restore async report flow and format docs ([fc13e4f](https://github.com/creevey/creevey/commit/fc13e4fb34f87504e6c4cea11af198534f40e5a0))
+* restore Storybook 9+ compatibility without dist artifacts ([cb43f63](https://github.com/creevey/creevey/commit/cb43f630feab152f1721d3c7b57321a863b4c92e))
+* restore Storybook 9+ compatibility without dist artifacts ([8b1dce6](https://github.com/creevey/creevey/commit/8b1dce6af619a2db47943d4285101403c302010c))
+* run screenshot CI against built Storybook ([6cd9c39](https://github.com/creevey/creevey/commit/6cd9c39b3c846483bb3cbed5b8bcfc8ffd4a9d77))
+* scope Selenium __name workaround to story extraction ([2fa7ae2](https://github.com/creevey/creevey/commit/2fa7ae2681e766528a85d811ea27f09262e3d6e2))
+* tighten local client statics bootstrap detection ([cdce0bd](https://github.com/creevey/creevey/commit/cdce0bdd5b52a7381af35f9087668b06a6c138e2))
+* update client statics references and tests ([6a1ef6a](https://github.com/creevey/creevey/commit/6a1ef6a36ada38b2112c9f4c690fa74ac30b587c))
+* use vite config as local bootstrap marker ([caff05c](https://github.com/creevey/creevey/commit/caff05c09e7bcc1361b86adf96013316f16b58e0))
+
+
+### Documentation
+
+* update contributor attribution notes ([d405302](https://github.com/creevey/creevey/commit/d405302583f52b546510a58c21c6ed272225cb1c))
+* update memory for client statics bootstrap split ([51f946a](https://github.com/creevey/creevey/commit/51f946a2ddb8275d5f2e9ff0720ac5a2ab6baa9e))
+
+
+### Code Refactoring
+
+* require built client statics at runtime ([e95873c](https://github.com/creevey/creevey/commit/e95873cc53a93362632ea49c89294e83cd013099))
+
+
+### Tests
+
+* align Selenium BiDi mock with runtime import ([3ad1054](https://github.com/creevey/creevey/commit/3ad10541527f8bc1db3a5141856bf17330070e24))
+
+
+### Miscellaneous
+
+* release as 0.10.37 ([8a8e6de](https://github.com/creevey/creevey/commit/8a8e6deac81569d8fe27553144d47c8fc7422e93))
+
 ## [0.10.36](https://github.com/creevey/creevey/compare/v0.10.35...v0.10.36) (2026-05-12)
 
 
