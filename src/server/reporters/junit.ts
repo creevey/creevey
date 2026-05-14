@@ -224,7 +224,7 @@ export class JUnitReporter {
         failures,
         errors,
         time,
-        timestamp: toISO8601(this.suiteStartTimes[key] ?? this.runStartTime),
+        timestamp: (this.suiteStartTimes[key] ?? this.runStartTime).toISOString(),
       };
     });
     const stats = suites.reduce(
@@ -240,7 +240,7 @@ export class JUnitReporter {
 
     this.writeElement(
       'testsuites',
-      { ...stats, time: executionTime(stats.time), timestamp: toISO8601(this.runStartTime) },
+      { ...stats, time: executionTime(stats.time), timestamp: this.runStartTime.toISOString() },
       () => {
         const hostname = os.hostname();
         suites.forEach(({ suiteName, browserName, tests, failures, errors, time, timestamp }, index) => {
@@ -327,9 +327,4 @@ function executionTime(durationMS: number) {
 function getDuration(task: FakeTest): string | undefined {
   const duration = task.duration ?? 0;
   return executionTime(duration);
-}
-
-// ISO 8601 without timezone per Jenkins JUnit plugin convention: "2021-04-02T15:48:23"
-function toISO8601(date: Date): string {
-  return date.toISOString().replace(/\.\d{3}Z$/, '');
 }
