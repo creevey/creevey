@@ -33,7 +33,7 @@
   "author": "Dmitriy Lazarev <w@kich.dev>",
   "repository": {
     "type": "git",
-    "url": "github.com:creevey/creevey"
+    "url": "git+https://github.com/creevey/creevey.git"
   },
   "keywords": [
     "testing",
