@@ -1,5 +1,4 @@
 import type { Worker as ClusterWorker } from 'cluster';
-import type { expect } from 'chai';
 import type EventEmitter from 'events';
 import type { ODiffOptions } from 'odiff-bin';
 import type { LaunchOptions } from 'playwright-core';
@@ -454,10 +453,6 @@ export interface BaseCreeveyTestContext {
   browserName: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   webdriver: any;
-  /**
-   * @deprecated Usually for screenshot testing you don't need other type of assertions except matching images, but if you really need it, please use external `expect` libs
-   */
-  expect: typeof expect;
   /**
    * @internal
    */

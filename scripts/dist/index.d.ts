@@ -1,4 +1,3 @@
-/// <reference types="../types/chai" />
 /// <reference types="../types/global" />
 export * from './types.js';
 export { loadStories as browserStoriesProvider } from './server/providers/browser.js';

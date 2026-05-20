@@ -98,7 +98,6 @@
   "dependencies": {
     "@octokit/core": "^6.1.5",
     "@storybook/icons": "^1.4.0",
-    "@types/chai": "^4.3.20",
     "@types/dockerode": "^3.3.39",
     "@types/lodash": "^4.17.17",
     "@types/micromatch": "^4.0.9",
@@ -111,7 +110,6 @@
     "@types/shelljs": "^0.8.15",
     "@types/ws": "^8.18.1",
     "cac": "^6.7.14",
-    "chai": "^4.5.0",
     "chalk": "^4.1.2",
     "chokidar": "^4.0.3",
     "dockerode": "^4.0.6",

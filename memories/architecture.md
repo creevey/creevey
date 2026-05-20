@@ -113,7 +113,6 @@ Creevey follows a client-server architecture with a master-worker pattern for di
 
 - `context.ts` - Test context setup
 - `match-image.ts` - Image comparison logic
-- `chai-image.ts` - Custom assertions
 
 ### 5. Client UI (`src/client/`)
 

@@ -1,4 +1,3 @@
-import chai from 'chai';
 import {
   BaseCreeveyTestContext,
   Config,
@@ -11,7 +10,6 @@ import {
 } from '../../types.js';
 import { WorkerOptions } from '../../schema.js';
 import { subscribeOn, emitTestMessage, emitWorkerMessage } from '../messages.js';
-import chaiImage from './chai-image.js';
 import { getMatchers, getOdiffMatchers } from './match-image.js';
 import { loadTestsFromStories } from '../stories.js';
 import { logger } from '../logger.js';
@@ -131,7 +129,6 @@ export async function start(browser: string, gridUrl: string, config: Config, op
   const { matchImage, matchImages } = options.odiff
     ? await getOdiffMatchers(imagesContext, config)
     : await getMatchers(imagesContext, config);
-  chai.use(chaiImage(matchImage, matchImages));
 
   const tests = await (async () => {
     try {
@@ -175,9 +172,6 @@ export async function start(browser: string, gridUrl: string, config: Config, op
 
       matchImage: matchImage,
       matchImages: matchImages,
-
-      // NOTE: Deprecated
-      expect: chai.expect,
     };
 
     imagesContext.attachments = [];
