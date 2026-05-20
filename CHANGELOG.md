@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.11.4](https://github.com/creevey/creevey/compare/v0.11.3...v0.11.4) (2026-05-20)
+
+
+### Miscellaneous
+
+* release as 0.11.4 ([c6f88fb](https://github.com/creevey/creevey/commit/c6f88fb1b9c55e3c020e60f205a6baf92d5c3350))
+
 ## [0.11.3](https://github.com/creevey/creevey/compare/v0.11.2...v0.11.3) (2026-05-20)
 
 
