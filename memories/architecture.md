@@ -86,6 +86,8 @@ Creevey follows a client-server architecture with a master-worker pattern for di
 - Grid support (BrowserStack, SauceLabs, etc.)
 - Legacy compatibility
 
+**Session lifecycle**: `SeleniumWebdriver.ensureBrowser()` (added 2026-07-25) is invoked by the worker before each test. It runs an activity-gated liveness probe (`getTitle()`); if the session was reaped by the grid it recreates the session in-process via `openBrowser(true)`, escalating to the master kill+refork path only if rebuild fails. There is no longer a keep-alive ping — idle sessions die per the grid's own timeout and are lazily recovered. `isSessionDeadError` (in `internal.ts`) classifies reaped-session errors. The Playwright backend inherits the no-op default.
+
 #### Playwright Webdriver (`src/server/playwright/`)
 
 **Files**: `internal.ts`, `webdriver.ts`, `docker.ts`

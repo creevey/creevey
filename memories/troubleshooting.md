@@ -193,6 +193,8 @@ const config: CreeveyConfig = {
 };
 ```
 
+**Session recreated after idle (UI mode)**: By design, idle Selenium sessions are reaped by the grid. When a test runs after inactivity, the worker logs `Session appears dead; recreating...` and rebuilds the session in-process. If you see this log repeatedly during active runs, the grid may be killing sessions prematurely — check the grid's `sessionTimeout`/idle timeout. If recreation itself fails, the worker emits `subtype:'unknown'` and the master kills+reforks the worker (existing behavior).
+
 ### Test Execution Issues
 
 #### Issue: Tests timing out

@@ -77,6 +77,7 @@ src/
 - The Creevey UI server serves the built Vite bundle from `dist/client/web`; published and other runtime server flows require those built assets to already exist and fail clearly if they are missing, while repo-local CLI execution keeps a dev-only bootstrap that builds the client bundle on demand before `creevey report` and local `creevey test` flows that need report statics
 - Selenium and Playwright no longer inject the `__name` shim during page startup; instead they apply narrow shims immediately before evaluating serialized Storybook helper functions such as `getStories`, which avoids crashing iframe initialization while still covering the `tsx`/esbuild stringification path
 - Selenium's `__name` workaround now lives only on the serialized helper execution path
+- Selenium sessions are no longer kept alive during idle (removed keep-alive). Idle sessions are reaped by the grid and lazily recreated via `ensureBrowser()` on the next test (in-process, with master kill+refork escalation on failure). UI-mode grid spend now limited to active runs + grid idle timeout.
 
 ## Entry Points
 
