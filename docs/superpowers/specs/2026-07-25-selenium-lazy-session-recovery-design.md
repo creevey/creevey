@@ -150,9 +150,21 @@ In `src/server/worker/start.ts`, inside the `subscribeOn('test', ...)` handler, 
 (async () => {
   // ...
   try {
-    if (await webdriver.ensureBrowser()) {
-      // lazy recovery if session was reaped
-      sessionId = await webdriver.getSessionId();
+    try {
+      if (await webdriver.ensureBrowser()) {
+        // lazy recovery if session was reaped
+        sessionId = await webdriver.getSessionId();
+      }
+    } catch (recoveryError) {
+      // ensureBrowser threw (recovery failed, or a non-session-dead probe error
+      // escaped). The worker is now unreliable/browserless, so escalate directly
+      // to a fatal worker error — do NOT route through runHandler, whose
+      // hasTimeout/hasDisconnected heuristic would misclassify it.
+      emitWorkerMessage({
+        type: 'error',
+        payload: { subtype: 'unknown', error: serializeError(recoveryError) },
+      });
+      return;
     }
     await Promise.race([
       // existing timeout race
@@ -239,8 +251,8 @@ So the classifier errs toward precision: require either a strong signal (class/n
 
 ## Error Handling
 
-- Probe throws a non-session-dead error: rethrown, surfaces as a normal test failure. No recovery attempted.
-- In-process recreate throws or `openBrowser(true)` returns null: rethrown from `ensureBrowser()` as `'Failed to recreate session after it was reaped by the grid'`; the worker catches it in a dedicated try/catch around `ensureBrowser()` and emits `subtype:'unknown'` directly (bypassing `runHandler`'s message heuristic); master kill+refork engages and the test is re-queued.
+- Probe throws a non-session-dead error: rethrown by `ensureBrowser()`; caught by the worker's dedicated `ensureBrowser()` catch and escalated to `subtype:'unknown'` (master kill+refork). This is safe — the test is retried on a fresh worker, bounded by `maxRetries`/`FORK_RETRIES`. (Non-session-dead probe failures are rare: `getTitle()` almost always fails with session-death, so over-escalation is negligible.)
+- In-process recreate throws or `openBrowser(true)` returns null: rethrown from `ensureBrowser()` as `'Failed to recreate session after it was reaped by the grid'`; the worker catches it in the same dedicated try/catch around `ensureBrowser()` and emits `subtype:'unknown'` directly (bypassing `runHandler`'s message heuristic); master kill+refork engages and the test is re-queued.
 - No recursion guard is needed: `ensureBrowser()` is invoked exactly once per test, and `openBrowser(true)` does not call back into it. A failed recreate throws once and escalates.
 
 ## Scope Boundaries (Out of Scope)
