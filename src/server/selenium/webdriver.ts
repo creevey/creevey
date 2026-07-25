@@ -7,6 +7,14 @@ import type { InternalBrowser } from './internal.js';
 import { logger } from '../logger.js';
 import { removeWorkerContainer } from '../worker/context.js';
 
+/**
+ * Idle probe threshold. The liveness probe in `ensureBrowser` is skipped if the
+ * session was used within this window, making recovery free during continuous
+ * test runs. Must stay comfortably below typical grid idle timeouts
+ * (Selenoid ~60s, Selenium Grid 4 ~300s). Not configurable — rely on grid defaults.
+ */
+export const IDLE_PROBE_THRESHOLD = 30_000;
+
 // TODO Update context interface through references
 export class SeleniumWebdriver extends CreeveyWebdriverBase {
   #browser: InternalBrowser | null = null;
@@ -14,6 +22,7 @@ export class SeleniumWebdriver extends CreeveyWebdriverBase {
   #gridUrl: string;
   #config: Config;
   #debug: boolean;
+  #lastActivityAt = 0;
 
   constructor(browser: string, gridUrl: string, config: Config, debug: boolean) {
     super();
@@ -43,6 +52,34 @@ export class SeleniumWebdriver extends CreeveyWebdriverBase {
     return this.#browser.browser.getSession().then((session) => session.getId());
   }
 
+  async ensureBrowser(): Promise<boolean> {
+    if (!this.#browser) return false;
+    if (Date.now() - this.#lastActivityAt < IDLE_PROBE_THRESHOLD) return false;
+
+    this.#lastActivityAt = Date.now();
+
+    try {
+      // Cheap read-only command that round-trips to the grid; reveals a reaped session.
+      await this.#browser.browser.getTitle();
+      return false;
+    } catch (error) {
+      // Dynamic import preserves the optional-dependency lazy-load invariant.
+      const { isSessionDeadError } = await import('./internal.js');
+      if (!isSessionDeadError(error)) throw error;
+
+      logger().info('Session appears dead; recreating...');
+      // Reuses the existing close+rebuild+re-init path. openBrowser(true) discards
+      // the dead InternalBrowser and builds a fresh one.
+      if ((await this.openBrowser(true)) == null) {
+        // Grid refused a new session; propagate so the worker classifies this as
+        // subtype:'unknown' and the master kill+refork path engages.
+        throw new Error('Failed to recreate session after it was reaped by the grid');
+      }
+      this.#lastActivityAt = Date.now();
+      return true;
+    }
+  }
+
   async openBrowser(fresh = false): Promise<SeleniumWebdriver | null> {
     if (this.#browser) {
       if (fresh) {
@@ -70,6 +107,7 @@ export class SeleniumWebdriver extends CreeveyWebdriverBase {
     if (!browser) return null;
 
     this.#browser = browser;
+    this.#lastActivityAt = Date.now();
 
     return this;
   }
