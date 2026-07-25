@@ -186,8 +186,21 @@ export async function start(browser: string, gridUrl: string, config: Config, op
       let isRejected = false;
       const start = Date.now();
       try {
-        if (await webdriver.ensureBrowser()) {
-          sessionId = await webdriver.getSessionId();
+        try {
+          if (await webdriver.ensureBrowser()) {
+            sessionId = await webdriver.getSessionId();
+          }
+        } catch (recoveryError) {
+          // ensureBrowser throws only when the session could not be recovered
+          // (the worker is now browserless). Emit a fatal worker error so the
+          // master kills+reforks this worker. Do NOT route through runHandler:
+          // its message heuristic (hasTimeout/hasDisconnected) would misclassify
+          // the recovery error as a normal test failure, leaving a dead worker.
+          emitWorkerMessage({
+            type: 'error',
+            payload: { subtype: 'unknown', error: serializeError(recoveryError) },
+          });
+          return;
         }
         await Promise.race([
           new Promise(

@@ -168,7 +168,7 @@ In `src/server/worker/start.ts`, inside the `subscribeOn('test', ...)` handler, 
 })();
 ```
 
-A `session-dead` error that escapes `ensureBrowser()` (only possible when in-process recovery itself fails) is classified into `subtype:'unknown'` via the existing `worker/start.ts:64-68` heuristic, engaging the master kill+refork path.
+The worker wraps the `ensureBrowser()` call in a dedicated try/catch (separate from the test's try/catch). If `ensureBrowser()` throws (only possible when in-process recovery itself fails, or a non-session-dead probe error escapes), the worker emits `subtype:'unknown'` directly and returns from the test handler — it does NOT route through `runHandler`, whose message heuristic (`hasTimeout`/`hasDisconnected`) would misclassify the recovery error as a normal test failure. The master kill+refork path engages, and `afterTest` is not run on a browserless worker.
 
 ### 6. Make the captured session id reassignable
 
@@ -230,7 +230,7 @@ So the classifier errs toward precision: require either a strong signal (class/n
 
 ### Escalation
 
-- If in-process recovery fails (e.g. grid refuses a new session), the worker surfaces `subtype:'unknown'`; the master kills and reforks the worker (`pool.ts:122-136`), and the test is re-queued. This is existing, unchanged behavior for unrecoverable situations.
+- If in-process recovery fails (e.g. grid refuses a new session), the worker catches the `ensureBrowser()` throw in a dedicated handler and emits `subtype:'unknown'` directly; the master kills and reforks the worker (`pool.ts:122-136`), and the test is re-queued. This reuses the existing kill+refork behavior for unrecoverable situations.
 
 ## Retry-Budget Interaction
 
@@ -240,7 +240,7 @@ So the classifier errs toward precision: require either a strong signal (class/n
 ## Error Handling
 
 - Probe throws a non-session-dead error: rethrown, surfaces as a normal test failure. No recovery attempted.
-- In-process recreate throws or `openBrowser(true)` returns null: rethrown from `ensureBrowser()` as `'Failed to recreate session after it was reaped by the grid'`; classified as `subtype:'unknown'` at the worker layer; master kill+refork engages.
+- In-process recreate throws or `openBrowser(true)` returns null: rethrown from `ensureBrowser()` as `'Failed to recreate session after it was reaped by the grid'`; the worker catches it in a dedicated try/catch around `ensureBrowser()` and emits `subtype:'unknown'` directly (bypassing `runHandler`'s message heuristic); master kill+refork engages and the test is re-queued.
 - No recursion guard is needed: `ensureBrowser()` is invoked exactly once per test, and `openBrowser(true)` does not call back into it. A failed recreate throws once and escalates.
 
 ## Scope Boundaries (Out of Scope)

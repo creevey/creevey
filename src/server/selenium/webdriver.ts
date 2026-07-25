@@ -71,8 +71,8 @@ export class SeleniumWebdriver extends CreeveyWebdriverBase {
       // Reuses the existing close+rebuild+re-init path. openBrowser(true) discards
       // the dead InternalBrowser and builds a fresh one.
       if ((await this.openBrowser(true)) == null) {
-        // Grid refused a new session; propagate so the worker classifies this as
-        // subtype:'unknown' and the master kill+refork path engages.
+        // Grid refused a new session; propagate so the worker's ensureBrowser
+        // catch emits subtype:'unknown' and the master kill+refork path engages.
         throw new Error('Failed to recreate session after it was reaped by the grid');
       }
       this.#lastActivityAt = Date.now();
