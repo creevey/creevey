@@ -121,7 +121,8 @@ export async function start(browser: string, gridUrl: string, config: Config, op
     images: {},
   };
   const Webdriver = config.webdriver;
-  const [sessionId, webdriver] =
+  // eslint-disable-next-line prefer-const
+  let [sessionId, webdriver] =
     (await setupWebdriver(new Webdriver(browser, gridUrl, config, options.debug ?? false))) ?? [];
 
   if (!webdriver || !sessionId) return;
@@ -185,6 +186,9 @@ export async function start(browser: string, gridUrl: string, config: Config, op
       let isRejected = false;
       const start = Date.now();
       try {
+        if (await webdriver.ensureBrowser()) {
+          sessionId = await webdriver.getSessionId();
+        }
         await Promise.race([
           new Promise(
             (_, reject) =>
