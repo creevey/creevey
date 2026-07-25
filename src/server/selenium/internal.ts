@@ -5,7 +5,7 @@ import https from 'https';
 import Logger from 'loglevel';
 import prefix from 'loglevel-plugin-prefix';
 import { PNG } from 'pngjs';
-import { Builder, By, Capabilities, Origin, WebDriver, WebElement, logging } from 'selenium-webdriver';
+import { Builder, By, Capabilities, Origin, WebDriver, WebElement, error, logging } from 'selenium-webdriver';
 // import { Options as IeOptions } from 'selenium-webdriver/ie';
 // import { Options as EdgeOptions } from 'selenium-webdriver/edge';
 // import { Options as ChromeOptions } from 'selenium-webdriver/chrome';
@@ -26,6 +26,8 @@ import { emitWorkerMessage, subscribeOn } from '../messages.js';
 import { isShuttingDown, runSequence } from '../utils.js';
 import { appendIframePath, LOCALHOST_REGEXP, resolveStorybookUrl, storybookRootID } from '../webdriver.js';
 import { getStories, insertIgnoreStyles, removeIgnoreStyles, selectStory } from '../storybook-helpers.js';
+
+const NoSuchSessionErrorClass = error.NoSuchSessionError;
 
 interface ElementRect {
   top: number;
@@ -208,6 +210,43 @@ async function buildWebdriver(
   }
 
   return webdriver;
+}
+
+const SESSION_DEAD_PHRASES = [
+  'no such session',
+  'session not found',
+  'session does not exist',
+  'session timed out or not found',
+  'invalid session id',
+];
+
+/**
+ * Returns true when an error indicates the WebDriver session no longer exists on
+ * the grid (reaped after idle timeout, restarted, etc.). Errs toward precision:
+ * a strong signal (the NoSuchSessionError class/name) always wins; otherwise an
+ * exact W3C-phrase substring match is required.
+ *
+ * Note: generic timeouts/disconnects are NOT separately excluded — the phrase
+ * list is specific enough that messages like "Request timed out" or "socket
+ * disconnected" match none of the phrases, so they correctly return false and
+ * keep their existing `subtype:'unknown'` handling at the worker layer.
+ */
+export function isSessionDeadError(error: unknown): boolean {
+  if (!error) return false;
+
+  const name = (error as { name?: unknown }).name;
+  const message = (error as { message?: unknown }).message;
+
+  // Strong signal: the real class, or an object whose name matches.
+  if (typeof error === 'object' && error instanceof NoSuchSessionErrorClass) return true;
+  if (name === 'NoSuchSessionError') return true;
+
+  const messageStr = typeof message === 'string' ? message.toLowerCase() : '';
+  if (!messageStr) return false;
+
+  // Substring fallback: an exact W3C-phrase match. Phrase specificity is the
+  // guard against false positives (no generic timeout/disconnect string matches).
+  return SESSION_DEAD_PHRASES.some((phrase) => messageStr.includes(phrase));
 }
 
 export class InternalBrowser {
