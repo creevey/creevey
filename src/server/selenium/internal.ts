@@ -22,7 +22,7 @@ import {
   StorybookEvents,
 } from '../../types.js';
 import { colors, logger } from '../logger.js';
-import { emitWorkerMessage, subscribeOn } from '../messages.js';
+import { subscribeOn } from '../messages.js';
 import { isShuttingDown, runSequence } from '../utils.js';
 import { appendIframePath, LOCALHOST_REGEXP, resolveStorybookUrl, storybookRootID } from '../webdriver.js';
 import { getStories, insertIgnoreStyles, removeIgnoreStyles, selectStory } from '../storybook-helpers.js';
@@ -254,7 +254,6 @@ export class InternalBrowser {
   #browser: WebDriver;
   #storybookGlobals?: StorybookGlobals;
   #unsubscribe: () => void = noop;
-  #keepAliveInterval: NodeJS.Timeout | null = null;
   #sessionId = '';
   constructor(browser: WebDriver, storybookGlobals?: StorybookGlobals) {
     this.#browser = browser;
@@ -273,7 +272,6 @@ export class InternalBrowser {
 
     this.#isShuttingDown = true;
     this.#unsubscribe();
-    if (this.#keepAliveInterval !== null) clearInterval(this.#keepAliveInterval);
 
     try {
       await this.#browser.quit();
@@ -545,9 +543,6 @@ export class InternalBrowser {
         // NOTE: So if we resize window right after getting webdriver instance we might get situation
         // NOTE: When the toolbar appears after resize and final viewport size become smaller than we set
         () => this.resizeViewport(viewport),
-        () => {
-          this.keepAlive();
-        },
       ],
       () => !this.#isShuttingDown,
     );
@@ -889,23 +884,5 @@ export class InternalBrowser {
       return widthDiff;
     });
     return scrollBarWidth;
-  }
-
-  private keepAlive(): void {
-    this.#keepAliveInterval = setInterval(() => {
-      // NOTE Simple way to keep session alive
-      void this.#browser
-        .getCurrentUrl()
-        .then((url) => {
-          logger().debug('current url', chalk.magenta(url));
-        })
-        .catch((error: unknown) => {
-          logger().error(error);
-          emitWorkerMessage({
-            type: 'error',
-            payload: { subtype: 'browser', error: 'Failed to ping browser' },
-          });
-        });
-    }, 10 * 1000);
   }
 }
