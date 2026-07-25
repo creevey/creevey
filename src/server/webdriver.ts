@@ -64,6 +64,15 @@ export abstract class CreeveyWebdriverBase implements CreeveyWebdriver {
 
   abstract getSessionId(): Promise<string>;
 
+  /**
+   * Ensures the browser session is alive before running a test. The default is
+   * a no-op (returns false = "session was not recreated"). The Selenium
+   * implementation overrides this to probe and lazily recreate reaped sessions.
+   */
+  ensureBrowser(): Promise<boolean> {
+    return Promise.resolve(false);
+  }
+
   abstract openBrowser(fresh?: boolean): Promise<CreeveyWebdriver | null>;
 
   abstract closeBrowser(): Promise<void>;

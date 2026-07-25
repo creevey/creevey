@@ -161,6 +161,7 @@ export type CreeveyWebdriverConstructor = new (
 
 export interface CreeveyWebdriver {
   getSessionId(): Promise<string>;
+  ensureBrowser(): Promise<boolean>;
   openBrowser(fresh?: boolean): Promise<CreeveyWebdriver | null>;
   closeBrowser(): Promise<void>;
   loadStoriesFromBrowser(): Promise<StoriesRaw>;
