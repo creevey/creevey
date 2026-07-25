@@ -7,3 +7,4 @@ examples
 CHANGELOG*
 tests/**/approvals
 tests/**/*.fixtures
+.superpowers
