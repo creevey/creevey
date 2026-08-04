@@ -84,16 +84,21 @@ const handler = (message: ProcessMessage): void => {
 process.on('message', handler);
 
 export function sendStoriesMessage(target: NodeJS.Process | Worker, message: StoriesMessage): void {
-  target.send?.({ scope: 'stories', ...message });
+  sendMessage(target, { scope: 'stories', ...message });
 }
 export function sendTestMessage(target: NodeJS.Process | Worker, message: TestMessage): void {
-  target.send?.({ scope: 'test', ...message });
+  sendMessage(target, { scope: 'test', ...message });
 }
 export function sendShutdownMessage(target: NodeJS.Process | Worker): void {
-  target.send?.({ scope: 'shutdown' });
+  sendMessage(target, { scope: 'shutdown' });
 }
 export function sendWorkerMessage(target: NodeJS.Process | Worker, message: WorkerMessage): void {
-  target.send?.({ scope: 'worker', ...message });
+  sendMessage(target, { scope: 'worker', ...message });
+}
+
+function sendMessage(target: NodeJS.Process | Worker, message: unknown): void {
+  const send = target.send as ((message: unknown) => boolean) | undefined;
+  send?.(message);
 }
 
 export function subscribeOn(scope: 'worker', handler: WorkerHandler): () => void;
