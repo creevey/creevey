@@ -32,6 +32,7 @@ It named after [Colin Creevey](https://harrypotter.fandom.com/wiki/Colin_Creevey
 - [Storybook parameters](docs/storybook.md)
 - [Write interactive tests](docs/tests.md)
 - [Use your Selenium Grid (LambdaTest/BrowserStack/SauceLabs/etc)](docs/grid.md)
+- [Selenium idle sessions and recovery](#selenium-idle-sessions-and-recovery)
 - [Future plans](#future-plans)
 - [Known issues](#known-issues)
 - [Used by](#used-by)
@@ -85,6 +86,36 @@ export const MyModalStory = { creevey: { captureElement: null } };
 | Built-in Docker       | :heavy_check_mark: | :heavy_check_mark: | :no_entry:         | :no_entry:         | :heavy_check_mark: | :warning:          | :warning:          |
 | Tests hot-reload      | :heavy_check_mark: | :no_entry:         | :no_entry:         | :no_entry:         | :no_entry:         | :no_entry:         | :no_entry:         |
 | OSS/SaaS              | OSS                | OSS                | OSS                | OSS                | OSS                | SaaS               | SaaS               |
+
+## Selenium idle sessions and recovery
+
+Creevey does not keep Selenium sessions alive while a worker is idle. In UI mode, once a worker finishes its runs, the grid reaps the idle session after its own idle timeout (Selenoid ~60s, Selenium Grid 4 ~300s). When you trigger the next run, Creevey detects the reaped session and recreates it transparently — you just see a short delay on the first test after inactivity, then tests continue normally. No keep-alive traffic is sent while idle, so metered grids only bill for active runs plus the short idle window.
+
+You can tune how long an idle session lives before it ends by setting the grid's idle timeout through `seleniumCapabilities`. Keep it above Creevey's internal probe threshold of 30s; a shorter value lets the grid reap a session inside the window where Creevey skips its liveness check:
+
+```ts
+// creevey.config.ts
+import { CreeveyConfig } from 'creevey';
+import { SeleniumWebdriver } from 'creevey/selenium';
+
+const config: CreeveyConfig = {
+  webdriver: SeleniumWebdriver,
+  gridUrl: 'http://selenium-hub:4444/wd/hub',
+  browsers: {
+    chrome: {
+      browserName: 'chrome',
+      seleniumCapabilities: {
+        // Selenoid (default docker grid): duration string, keep > 30s
+        sessionTimeout: '60s',
+      },
+    },
+  },
+};
+
+export default config;
+```
+
+> **Note** Selenium Grid 4 sets its session timeout on the server (`--session-timeout`), not via a capability. See [Use your Selenium Grid](docs/grid.md) for more on idle sessions and billing.
 
 ## Future plans
 
