@@ -5,6 +5,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.11.5](https://github.com/creevey/creevey/compare/v0.11.4...v0.11.5) (2026-08-04)
+
+
+### Features
+
+* **selenium:** add isSessionDeadError session-death classifier ([c3a26c9](https://github.com/creevey/creevey/commit/c3a26c9ce1f5e243204064ad877f21cd10c748cf))
+* **selenium:** lazy session recovery via ensureBrowser probe ([8485e50](https://github.com/creevey/creevey/commit/8485e509650930417ff1823a5801a0da31eef0c6))
+* **webdriver:** add ensureBrowser liveness hook to interface ([3b33076](https://github.com/creevey/creevey/commit/3b33076451e07dd0db1f375dc2199ca1f5acbd65))
+* **worker:** ensure browser session before each test ([23e7434](https://github.com/creevey/creevey/commit/23e74342c3f9fd8498dce392e8569248ba1fbe40))
+
+
+### Bug Fixes
+
+* **deps:** resolve dependabot vulnerabilities and bump @types/node to 20 ([eba3f05](https://github.com/creevey/creevey/commit/eba3f056f006a03be905dd526a6c656b6e9274ab))
+* **worker:** emit subtype:'unknown' when ensureBrowser recovery fails ([d3202f9](https://github.com/creevey/creevey/commit/d3202f992c643762aaac88b42f02103d23621d5a))
+
+
+### Documentation
+
+* add selenium lazy session recovery design spec ([9ab9f31](https://github.com/creevey/creevey/commit/9ab9f31e864d9238306534483f1e0e749778c698))
+* add selenium lazy session recovery implementation plan ([1a0622f](https://github.com/creevey/creevey/commit/1a0622f2274f44f595f41a9efd4b088a7f43c9d7))
+* align spec with worker escalation mechanism ([4efc002](https://github.com/creevey/creevey/commit/4efc0024aa55f1dc21b3d75a9b4d59ce1f64d094))
+* document selenium lazy session recovery ([d6d5e1a](https://github.com/creevey/creevey/commit/d6d5e1aab5306b6c766483272e2affe1f8d103f6))
+
+
+### Code Refactoring
+
+* **selenium:** remove session keep-alive ([dbb1ca1](https://github.com/creevey/creevey/commit/dbb1ca1a4381860b8e1ddd297b6851aa4f2bc488))
+
+
+### Miscellaneous
+
+* release 0.11.5 ([f1f8ee4](https://github.com/creevey/creevey/commit/f1f8ee40e486071d84335eb21e81ab266812f59c))
+
 ## [0.11.4](https://github.com/creevey/creevey/compare/v0.11.3...v0.11.4) (2026-05-20)
 
 
