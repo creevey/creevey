@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.11.6](https://github.com/creevey/creevey/compare/v0.11.5...v0.11.6) (2026-08-06)
+
+
+### Bug Fixes
+
+* preserve receiver when sending messages to cluster workers ([c49858c](https://github.com/creevey/creevey/commit/c49858c2b7efe88bf3098f3e8187309d636d573f))
+
+
+### Documentation
+
+* document selenium idle session recovery in README ([a96608a](https://github.com/creevey/creevey/commit/a96608a9bcde2e705b41fb4502a1229761fb3a9f))
+
 ## [0.11.5](https://github.com/creevey/creevey/compare/v0.11.4...v0.11.5) (2026-08-04)
 
 
