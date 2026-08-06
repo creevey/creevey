@@ -98,7 +98,7 @@ export function sendWorkerMessage(target: NodeJS.Process | Worker, message: Work
 
 function sendMessage(target: NodeJS.Process | Worker, message: unknown): void {
   const send = target.send as ((message: unknown) => boolean) | undefined;
-  send?.(message);
+  send?.call(target, message);
 }
 
 export function subscribeOn(scope: 'worker', handler: WorkerHandler): () => void;
