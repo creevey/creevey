@@ -195,6 +195,8 @@ const config: CreeveyConfig = {
 
 **Session recreated after idle (UI mode)**: By design, idle Selenium sessions are reaped by the grid. When a test runs after inactivity, the worker logs `Session appears dead; recreating...` and rebuilds the session in-process. If you see this log repeatedly during active runs, the grid may be killing sessions prematurely — check the grid's `sessionTimeout`/idle timeout. If recreation itself fails, the worker emits `subtype:'unknown'` and the master kills+reforks the worker (existing behavior).
 
+**Playwright browser server unreachable in Docker (`socket hang up` / `ECONNRESET` on `ws://localhost:<port>/creevey`)**: Since playwright-core 1.62 (upstream commit `a8ad57f`, microsoft/playwright#40500), `launchServer` binds to `localhost` by default. Inside the creevey browser container that made the WS server unreachable through the published port 4444, so every worker's `browserType.connect` timed out and respawned forever (CI jobs hung until cancellation/6h). Fixed in `src/server/playwright/index-source.mjs` by passing `host: '0.0.0.0'` to `launchServer` (before the `...config` spread, so user `playwrightOptions.host` can still override). Note: local stale images tagged with the current creevey version are not rebuilt automatically — remove `creevey/<browser>:v<playwrightVersion>` images to force a rebuild after upgrading creevey.
+
 ### Test Execution Issues
 
 #### Issue: Tests timing out
